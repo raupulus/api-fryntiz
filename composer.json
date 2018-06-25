@@ -1,0 +1,19 @@
+{
+  "name": "fryntiz/api-slim-template",
+  "description": "API php template basic",
+  "keywords": ["json", "api", "php",
+    "project template", "api template", "fryntiz"],
+  "homepage": "http://fryntiz.es",
+  "type": "project",
+  "license": "GPL-3.0-only",
+  "require": {
+    "php": "^7.0.0",
+    "slim/slim": "^3.10",
+    "symfony/dotenv": "^3.0"
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "[[ -f setup.sh ]] && ./setup.sh || true"
+    ]
+  }
+}
