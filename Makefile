@@ -1,5 +1,5 @@
 .PHONY: all test tests install db psql clean permisos perm p requeriments \
-	req dbfull dbh dbheroku
+	req dbfull dbh dbheroku deploy
 
 all: requeriments install db permisos
 
@@ -23,6 +23,12 @@ dbh dbheroku:
 
 psql:
 	db/psql.sh
+
+deploy:
+	deploy.sh
+	install
+	dbfull
+	permisos
 
 clean:
 	find 'runtime' -not -path 'runtime' -not -name ".gitignore" -exec rm -Rf {} \; || echo ''
