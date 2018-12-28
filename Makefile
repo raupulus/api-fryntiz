@@ -25,7 +25,7 @@ psql:
 	db/psql.sh
 
 deploy:
-	deploy.sh
+	./deploy.sh
 	install
 	dbfull
 	permisos
