@@ -187,7 +187,7 @@ elif [[ "$1" = '-f' ]]; then
     dependencias
     configuraciones
     apache
-    certificado "$2"
+    certificado "-y"
     permisos
     recargarServicios
 else
