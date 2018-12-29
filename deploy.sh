@@ -30,7 +30,7 @@ DIR_LOG="/var/log/apache2/${PROYECTO}"
 ##
 setEnv() {
     if [[ "$ENV" = '' ]]; then
-        while [[ "$input" != 'dev' ]] || [[ "$input" != 'prod' ]]; do
+        while [[ "$ENV" != 'dev' ]] || [[ "$ENV" != 'prod' ]]; do
             echo 'Introduce el entorno sobre el que desplegar'
             read -p 'dev o prod → ' $ENV
         done
