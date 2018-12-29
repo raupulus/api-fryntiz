@@ -32,7 +32,7 @@ setEnv() {
     if [[ "$ENV" = '' ]]; then
         while [[ "$ENV" != 'dev' ]] || [[ "$ENV" != 'prod' ]]; do
             echo 'Introduce el entorno sobre el que desplegar'
-            read -p 'dev o prod → ' $ENV
+            read -p 'dev o prod → ' ENV
         done
     fi
 
