@@ -59,10 +59,10 @@ setEnv() {
 ##
 permisos() {
     echo 'Aplicando permisos y propietario www-data'
-    if [[ "$ENV" = 'prod' ]]; then
+    if [[ "$ENV" = 'prod' ]] && [[ -d "${ruta}/${PROYECTO}" ]]; then
         sudo chown -R ${USER}:www-data "${ruta}/${PROYECTO}"
         sudo chmod ug+rw -R "${ruta}/${PROYECTO}"
-    elif [[ "$ENV" = 'dev' ]]; then
+    elif [[ "$ENV" = 'dev' ]] && [[ -d "${ruta}/${PROYECTO}" ]]; then
         sudo chown -R ${ADMIN}:www-data "${ruta}/${PROYECTO}"
     fi
 }
