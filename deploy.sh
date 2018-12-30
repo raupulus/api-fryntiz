@@ -17,10 +17,10 @@ URL2='www.api.fryntiz.es'  ## Segunda url con www
 URL_LOCAL='api.fryntiz.local'  ## Url para entorno de desarrollo
 
 
-RUTA_DEV='/var/www/Proyect'
-RUTA_PROD='/var/www/Public'
+RUTA_DEV='/var/www/proyect'
+RUTA_PROD='/var/www/public'
 
-PROYECTO='api-fryntiz'  ## Nombre de apacheconf y directorio web
+PROYECTO='api-fryntiz'  ## Nombre de apacheconf dentro del dir de proyecto y directorio web
 REPOSITORIO='https://gitlab.com/fryntiz/api-fryntiz.git'
 
 DIR_LOG="/var/log/apache2/${PROYECTO}"
@@ -81,7 +81,7 @@ configuraciones() {
     echo 'Aplicando configuraciones'
 
     if [[ ! -d "${ruta}/${PROYECTO}" ]]; then
-        sudo ln -s "${ruta}/${PROYECTO}" "$PWD"
+        sudo ln -s "$WORKSCRIPT" "${ruta}/${PROYECTO}"
     fi
 }
 
@@ -91,7 +91,7 @@ configuraciones() {
 apache() {
     echo 'Agregando configuración de Apache'
     ## Copio la configuración
-    sudo cp "${ruta}/${PROYECTO}/${apacheConf}" "$DIR_APACHECONF"
+    sudo cp "${ruta}/${PROYECTO}/${apacheConf}" "${DIR_APACHECONF}/${URL1}.conf"
 
     ## Creo directorio para guardar logs
     if [[ ! -d "$DIR_LOG" ]]; then
@@ -99,14 +99,19 @@ apache() {
     fi
 
     ## Habilito el sitio
-    read -p '¿Habilitar sitio?' $input
-    if [[ "$input" = 'y' ]] || [[ "$input" = 'Y' ]]; then
-        sudo a2ensite "${apacheConf}.conf"
+    read -p '¿Habilitar sitio? s/N → ' input
+    if [[ "$input" = 's' ]] || [[ "$input" = 'S' ]]; then
+        sudo a2ensite "${URL1}.conf"
     fi
 
-    read -p '¿Añadir a hosts? → ' $input
-    if [[ "$input" = 'y' ]] || [[ "$input" = 'Y' ]]; then
-        echo "127.0.0.1 ${URL_LOCAL}.local | sudo tee -a /etc/hosts"
+    read -p '¿Añadir a hosts? s/N → ' input
+    if [[ "$input" = 's' ]] || [[ "$input" = 'S' ]]; then
+        if [[ "$ENV" = 'dev' ]]; then
+            echo "127.0.0.1 $URL_LOCAL" | sudo tee -a /etc/hosts
+        elif [[ "$ENV" = 'prod' ]]; then
+            echo "127.0.0.1 $URL1" | sudo tee -a /etc/hosts
+            echo "127.0.0.1 $URL2" | sudo tee -a /etc/hosts
+        fi
     fi
 }
 
@@ -189,6 +194,7 @@ elif [[ "$1" = '-f' ]]; then
     dependencias
     configuraciones
     apache
+    recargarServicios
     certificado "-y"
     permisos
     recargarServicios
