@@ -148,7 +148,7 @@ certificado() {
 
         if [[ "$SN" = 's' ]] || [[ "$SN" = 'S' ]]; then
             sudo certbot --authenticator webroot --installer apache \
-                -w "$ruta/$DIR_WEB" \
+                -w "${ruta}/${PROYECTO}/${DIR_WEB}" \
                 -d "$URL1" -d "$URL2"
         fi
     else
@@ -189,7 +189,6 @@ elif [[ "$1" = '-u' ]]; then
     update
     permisos
 elif [[ "$1" = '-f' ]]; then
-    permisos
     update
     dependencias
     configuraciones
