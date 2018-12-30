@@ -47,8 +47,9 @@ setEnv() {
         exit 1
     fi
 
-    if [[ -d "$ruta" ]]; then
-        sudo -u $ADMIN mkdir -p "$ruta"
+    if [[ ! -d "$ruta" ]]; then
+        echo "Creando directorio: $ruta"
+        sudo -u "$ADMIN" mkdir -p "$ruta"
     fi
 }
 
