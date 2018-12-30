@@ -49,7 +49,8 @@ setEnv() {
 
     if [[ ! -d "$ruta" ]]; then
         echo "Creando directorio: $ruta"
-        sudo -u "$ADMIN" mkdir -p "$ruta"
+        sudo mkdir -p "$ruta"
+        sudo chmod 775 "$ruta"
     fi
 }
 
