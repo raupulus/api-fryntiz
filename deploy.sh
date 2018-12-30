@@ -7,7 +7,7 @@
 
 VERSION="0.0.2"
 WORKSCRIPT="$PWD"
-ADMIN='web'  ## Nombre del usuario administrador
+ADMIN='web'  ## Nombre del usuario administrador que gestiona servidor web.
 
 DIR_APACHECONF='/etc/apache2/sites-available'  ## Donde guarda conf de apache
 DIR_WEB=''  ## Directorio publico dentro de la raíz del repositorio
@@ -48,7 +48,7 @@ setEnv() {
     fi
 
     if [[ -d "$ruta" ]]; then
-        mkdir -p "$ruta"
+        sudo -u $ADMIN mkdir -p "$ruta"
     fi
 }
 
