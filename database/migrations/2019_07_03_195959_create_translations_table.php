@@ -18,10 +18,11 @@ class CreateTranslationsTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('language_id');
             $table->foreign('language_id')
                   ->references('id')->on('languages')
                   ->onUpdate('cascade')
-                  ->onDelete('delete');
+                  ->onDelete('cascade');
             $table->string('token', 512);
             $table->text('text');
             $table->timestamps();
@@ -35,6 +36,8 @@ class CreateTranslationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('translations');
+        Schema::dropIfExists('translations', function (Blueprint $table) {
+            $table->dropForeign(['language_id']);
+        });
     }
 }
