@@ -15,6 +15,9 @@ class CreateFileTypesTable extends Migration
     {
         // id - type - mime - icon16 - icon32 - icon64 - icon128
         Schema::create('file_types', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->string('type', 127);
             $table->string('mime', 127);
