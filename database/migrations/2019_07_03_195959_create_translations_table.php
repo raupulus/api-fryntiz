@@ -23,7 +23,7 @@ class CreateTranslationsTable extends Migration
                   ->references('id')->on('languages')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-            $table->string('token', 512);
+            $table->string('token', 512)->unique()->index();
             $table->text('text');
             $table->timestamps();
         });
@@ -38,6 +38,7 @@ class CreateTranslationsTable extends Migration
     {
         Schema::dropIfExists('translations', function (Blueprint $table) {
             $table->dropForeign(['language_id']);
+            $table->dropUnique(['token']);
         });
     }
 }

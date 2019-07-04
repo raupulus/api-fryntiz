@@ -19,12 +19,12 @@ class CreateTableFiles extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->integer('file_type_id', 11);
+            $table->unsignedBigInteger('file_type_id');
             $table->foreign('file_type_id')
-                ->references('id')->on('file_type')
+                ->references('id')->on('file_types')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('translation_token', 512);
+            $table->string('translation_token', 512)->unsigned();
             $table->foreign('translation_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
@@ -42,7 +42,7 @@ class CreateTableFiles extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('translations', function (Blueprint $table) {
+        Schema::dropIfExists('files', function (Blueprint $table) {
             $table->dropForeign(['language_id']);
             $table->dropForeign(['translation_token']);
         });
