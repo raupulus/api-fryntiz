@@ -20,11 +20,11 @@ class CreateLanguagesTable extends Migration
             $table->bigIncrements('id');
             $table->char('code', 8);
             $table->char('code2', 2);
-            $table->string('name', 200);
+            $table->string('name', 255);
             $table->string('country', 255);
-            $table->string('icon16', 512);
-            $table->string('icon32', 512);
-            $table->string('icon64', 512);
+            $table->string('icon16', 511);
+            $table->string('icon32', 511);
+            $table->string('icon64', 511);
             $table->timestamp('created_at')->nullable();
         });
     }

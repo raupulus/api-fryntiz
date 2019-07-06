@@ -24,13 +24,13 @@ class CreateFilesTable extends Migration
                 ->references('id')->on('file_types')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('translation_token', 512)->unsigned();
+            $table->string('translation_token', 511)->unsigned();
             $table->foreign('translation_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->bigInteger('size');
-            $table->string('originalname', 512);
+            $table->string('originalname', 511);
             $table->text('path');
         });
     }

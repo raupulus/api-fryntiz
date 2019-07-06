@@ -23,7 +23,7 @@ class CreateTranslationsTable extends Migration
                   ->references('id')->on('languages')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-            $table->string('token', 512)->unique()->index();
+            $table->string('token', 511)->unique()->index();
             $table->text('text');
             $table->timestamps();
         });
