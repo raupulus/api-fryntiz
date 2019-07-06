@@ -41,6 +41,9 @@ class CreateSocialNetworksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('social_networks');
+        Schema::dropIfExists('social_networks', function (Blueprint $table) {
+            $table->dropForeign(['image_id']);
+            $table->dropForeign(['translation_token']);
+        });
     }
 }
