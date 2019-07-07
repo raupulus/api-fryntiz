@@ -20,6 +20,7 @@ class CreateAcademicTrainingTable extends Migration
          */
         Schema::create('academic_training', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
