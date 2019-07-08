@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAcademicComplementaryTable extends Migration
+class CreateAcademicComplementaryOnlineTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,9 +15,9 @@ class CreateAcademicComplementaryTable extends Migration
     {
         /**
          * id - image_id - translation_name_token -
-         * translation_description_token - entity - hours
+         * translation_description_token - entity - hours - instructor - url
          */
-        Schema::create('academic_complementary', function (Blueprint $table) {
+        Schema::create('academic_complementary_online', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')
@@ -36,6 +36,8 @@ class CreateAcademicComplementaryTable extends Migration
                 ->onDelete('no action');
             $table->string('entity', 511);
             $table->integer('hours');
+            $table->string('instructor', 255);
+            $table->text('url');
             $table->timestamps();
         });
     }
@@ -47,7 +49,7 @@ class CreateAcademicComplementaryTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('academic_complementary', function (Blueprint $table) {
+        Schema::dropIfExists('academic_complementary_online', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['translation_name_token']);
             $table->dropForeign(['translation_description_token']);
