@@ -55,6 +55,11 @@ class CreateAcademicTrainingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('academic_training');
+        Schema::dropIfExists('academic_training', function (Blueprint $table) {
+            $table->dropForeign(['image_id']);
+            $table->dropForeign(['translation_name_token']);
+            $table->dropForeign(['translation_rank_token']);
+            $table->dropForeign(['translation_description_token']);
+        });
     }
 }
