@@ -13,7 +13,7 @@ class CreateUsersRolesTable extends Migration
      */
     public function up()
     {
-        // id - name - display_name - created_at - updated_at
+        // id - name - translation_display_name_token - created_at - updated_at
         Schema::create('users_roles', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', '255');
@@ -22,8 +22,6 @@ class CreateUsersRolesTable extends Migration
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
             $table->timestamps();
         });
     }

@@ -22,9 +22,9 @@ class CreateLanguagesTable extends Migration
             $table->char('code2', 2);
             $table->string('name', 255);
             $table->string('country', 255);
-            $table->string('icon16', 511);
-            $table->string('icon32', 511);
-            $table->string('icon64', 511);
+            $table->string('icon16', 511)->nullable();
+            $table->string('icon32', 511)->nullable();
+            $table->string('icon64', 511)->nullable();
             $table->timestamp('created_at')->nullable();
         });
     }

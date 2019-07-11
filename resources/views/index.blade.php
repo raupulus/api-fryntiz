@@ -95,5 +95,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Testeando</h3>
+            </div>
+
+            <div class="col-md-12">
+                @foreach(\App\User::all() as $user)
+                    {{$user->name}}
+                @endforeach
+            </div>
+        </div>
     </body>
 </html>

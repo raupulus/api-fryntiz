@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')
-                ->references('id')->on('users_role')
+                ->references('id')->on('users_roles')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             $table->string('name');
@@ -36,6 +36,8 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users', function (Blueprint $table) {
+            $table->dropForeign(['users_roles']);
+        });
     }
 }
