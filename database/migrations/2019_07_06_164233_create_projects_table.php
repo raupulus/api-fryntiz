@@ -30,21 +30,27 @@ class CreateProjectsTable extends Migration
                 ->references('id')->on('repositories')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->string('translation_title_token', 511);
+            $table->unsignedBigInteger('translation_title_token');
+            /*
             $table->foreign('translation_title_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('translation_description_token', 511);
+            */
+            $table->unsignedBigInteger('translation_description_token');
+            /*
             $table->foreign('translation_description_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('translation_info_token', 511);
+            */
+            $table->unsignedBigInteger('translation_info_token');
+            /*
             $table->foreign('translation_info_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
+            */
             $table->text('url');
             $table->text('urlinfo');
             $table->text('repository');

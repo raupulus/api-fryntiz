@@ -15,17 +15,22 @@ class CreateSocialNetworksTable extends Migration
     {
         // id - image_id - translation_token - name - url - perfil - nick
         Schema::create('social_networks', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('translation_token', 511);
+            $table->unsignedBigInteger('translation_token');
+            /*
             $table->foreign('translation_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
+            */
             $table->string('name', 511);
             $table->text('url');
             $table->text('perfil');

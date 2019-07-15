@@ -29,16 +29,20 @@ class CreateSkillsTable extends Migration
                 ->references('id')->on('skills_type')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->string('translation_name_token', 511);
+            $table->unsignedBigInteger('translation_name_token');
+            /*
             $table->foreign('translation_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('translation_description_token', 511);
+            */
+            $table->unsignedBigInteger('translation_description_token');
+            /*
             $table->foreign('translation_description_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
+            */
             $table->integer('level');
             $table->timestamps();
         });

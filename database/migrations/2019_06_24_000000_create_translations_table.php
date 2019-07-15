@@ -23,9 +23,12 @@ class CreateTranslationsTable extends Migration
                   ->references('id')->on('languages')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-            $table->string('token', 511)->unique()->index();
+            $table->unsignedBigInteger('token')->index();
             $table->text('text');
             $table->timestamps();
+
+            ## Restricciones
+            $table->unique(['language_id', 'token']);
         });
     }
 

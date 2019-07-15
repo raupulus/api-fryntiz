@@ -16,16 +16,20 @@ class CreateExperienceOthersTable extends Migration
         // id - translation_name_token - translation_description_token
         Schema::create('experience_others', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('translation_name_token', 511);
+            $table->unsignedBigInteger('translation_name_token');
+            /*
             $table->foreign('translation_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('translation_description_token', 511);
+            */
+            $table->unsignedBigInteger('translation_description_token');
+            /*
             $table->foreign('translation_description_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
+            */
             $table->timestamps();
         });
     }

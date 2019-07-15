@@ -21,11 +21,13 @@ class CreateServicesTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->string('translation_token', 511);
+            $table->unsignedBigInteger('translation_token');
+            /*
             $table->foreign('translation_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
+            */
             $table->string('name', 511);
             $table->text('url');
             $table->timestamps();

@@ -22,11 +22,13 @@ class CreateRepositoriesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             $table->text('url');
-            $table->string('translation_token', 511);
+            $table->unsignedBigInteger('translation_token');
+            /*
             $table->foreign('translation_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
+            */
             $table->string('title', 511);
             $table->string('name', 255);
             $table->string('perfil', 255);

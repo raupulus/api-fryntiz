@@ -15,13 +15,18 @@ class CreateUsersRolesTable extends Migration
     {
         // id - name - translation_display_name_token - created_at - updated_at
         Schema::create('users_roles', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->string('name', '255');
-            $table->string('translation_display_name_token', 511);
+            $table->unsignedBigInteger('translation_display_name_token');
+            /*
             $table->foreign('translation_display_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
+            */
             $table->timestamps();
         });
     }
