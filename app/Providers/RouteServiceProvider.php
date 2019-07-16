@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use function base_path;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -35,6 +36,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->mapApiWeatherStationRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
@@ -69,5 +72,16 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
+    }
+
+    /**
+     * Rutas para la API de la estación meteorológica
+     */
+    protected function mapApiWeatherStationRoutes()
+    {
+        Route::prefix('ws')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/weather_station.php'));
     }
 }
