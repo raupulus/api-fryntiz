@@ -100,7 +100,7 @@ class HumidityController extends BaseWheaterStationController
     public function addValidate($request)
     {
         return $request->validate([
-            'value' => 'required|digits_between:10,4'
+            'value' => 'required|numeric'
         ]);
     }
 
