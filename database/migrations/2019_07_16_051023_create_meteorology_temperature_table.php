@@ -15,7 +15,7 @@ class CreateMeteorologyTemperatureTable extends Migration
     {
         Schema::create('meteorology_temperature', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('value', 9, 4);
+            $table->decimal('value', 14, 4);
             $table->timestamp('created_at')->nullable();
         });
     }

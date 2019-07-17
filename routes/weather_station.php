@@ -4,9 +4,6 @@
  * sufijo /ws/*
  */
 
-
-use Illuminate\Http\Request;
-
 ######################################################
 ##                    Pública
 ######################################################
@@ -15,14 +12,16 @@ Route::get('/test', function () {
 });
 
 ## Obtengo todos los datos de humedad.
-Route::get('/humidity', 'HumidityController@all');
+Route::get('/humidity/all', 'HumidityController@all');
+Route::get('/humidity/find', 'HumidityController@find');
 
 ## Obtengo todos los datos de presión.
-Route::get('/pressure', 'PressureController@all');
+Route::get('/pressure/all', 'PressureController@all');
 
 ## Obtengo todos los datos de temperatura.
-Route::get('/temperature', 'TemperatureController@all');
+Route::get('/temperature/all', 'TemperatureController@all');
 
 ######################################################
 ##                    Privada
 ######################################################
+Route::post('/humidity/add', 'HumidityController@add');

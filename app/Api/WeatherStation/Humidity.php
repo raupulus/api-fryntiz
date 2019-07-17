@@ -2,11 +2,7 @@
 
 namespace App;
 
-class Humidity extends MinModel
+class Humidity extends BaseWheaterStation
 {
     protected $table = 'meteorology_humidity';
-
-    protected $fillable = [
-        'value'
-    ];
 }
