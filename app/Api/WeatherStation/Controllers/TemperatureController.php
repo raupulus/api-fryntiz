@@ -7,14 +7,7 @@ use App\Temperature;
 use Illuminate\Http\Request;
 use function response;
 
-class TemperatureController extends Controller
+class TemperatureController extends BaseWheaterStationController
 {
-    /**
-     * Devuelve todos los elementos de Temperatura.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function all()
-    {
-        return response()->json(Temperature::all());
-    }
+    protected $model = '\App\Temperature';
 }

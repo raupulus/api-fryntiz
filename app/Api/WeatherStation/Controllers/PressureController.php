@@ -6,14 +6,7 @@ use App\Pressure;
 use Illuminate\Http\Request;
 use function response;
 
-class PressureController extends Controller
+class PressureController extends BaseWheaterStationController
 {
-    /**
-     * Devuelve todos los elementos de presión.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function all()
-    {
-        return response()->json(Pressure::all());
-    }
+    protected $model = '\App\Pressure';
 }

@@ -2,7 +2,7 @@
 
 namespace App;
 
-class Temperature extends MinModel
+class Temperature extends BaseWheaterStation
 {
     protected $table = 'meteorology_temperature';
 
