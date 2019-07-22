@@ -42,9 +42,15 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
             'provider' => 'users',
-            'hash' => false,
+            //'hash' => false,
+        ],
+
+        ## Weather Station
+        'ws' => [
+            'driver' => 'passport',
+            'provider' => 'users',
         ],
     ],
 

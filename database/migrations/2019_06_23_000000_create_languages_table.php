@@ -18,8 +18,8 @@ class CreateLanguagesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->char('code', 8);
-            $table->char('code2', 2);
+            $table->char('code', 8)->unique();
+            $table->char('code2', 2)->unique();
             $table->string('name', 255);
             $table->string('country', 255);
             $table->string('icon16', 511)->nullable();
