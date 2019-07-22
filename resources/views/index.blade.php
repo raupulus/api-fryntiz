@@ -10,9 +10,9 @@
     <body>
         @php
             $datos = [
-                'Humedad' => \App\Humidity::all(),
-                'Temperatura' => \App\Temperature::all(),
-                'Presión' => \App\Pressure::all(),
+                'Humedad' => \App\Humidity::paginate(20),
+                'Temperatura' => \App\Temperature::paginate(20),
+                'Presión' => \App\Pressure::paginate(20),
             ];
         @endphp
 
@@ -69,6 +69,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+
+                        {{-- Paginación --}}
+                        {{$collection->links()}}
                     @endforeach
                 </div>
             </div>
