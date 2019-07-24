@@ -39,11 +39,20 @@ Route::group([
         ## Añadir nuevo registro de humedad.
         Route::post('/humidity/add', 'HumidityController@add');
 
+        ## Añadir nuevos registros de humedad por lotes
+        Route::post('/humidity/add-json', 'HumidityController@addJson');
+
         ## Añadir nuevo registro de Presión.
         Route::post('/pressure/add', 'PressureController@add');
 
+        ## Añadir nuevos registros de humedad por lotes
+        Route::post('/pressure/add-json', 'PressureController@addJson');
+
         ## Añadir nuevo registro de temperatura.
         Route::post('/temperature/add', 'TemperatureController@add');
+
+        ## Añadir nuevos registros de humedad por lotes
+        Route::post('/temperature/add-json', 'TemperatureController@addJson');
     }
 );
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use function GuzzleHttp\json_decode;
 use Illuminate\Http\Request;
 
 abstract class BaseWheaterStationController extends Controller
@@ -103,6 +104,22 @@ abstract class BaseWheaterStationController extends Controller
 
         // response mal
         return response()->json('No se ha guardado nada', 500);
+    }
+
+    /**
+     * Recibe JSON con datos para guardar por lote.
+     *
+     * @param \Illuminate\Http\Request $request
+     */
+    public function addJson(Request $request)
+    {
+
+        //$requestValidate = $this->addValidate($request);
+
+        //$model = new $this->model;
+        //$model->fill($requestValidate);
+
+        return response()->json('Recibido correctamente', 200);
     }
 
     /**
