@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use function GuzzleHttp\json_decode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use function response;
+use function utf8_decode;
 
 abstract class BaseWheaterStationController extends Controller
 {
@@ -113,13 +116,42 @@ abstract class BaseWheaterStationController extends Controller
      */
     public function addJson(Request $request)
     {
+        $data = json_decode($request->get('data'));
 
-        //$requestValidate = $this->addValidate($request);
+        $fallidos = 0;
 
-        //$model = new $this->model;
-        //$model->fill($requestValidate);
+        foreach ($data as $d) {
+            $model = new $this->model;
 
-        return response()->json('Recibido correctamente', 200);
+            // Created_at problemas, desactivar el de laravel?
+            // cuidado que en add() si es necesario
+            $model->fill([
+                'value' => $d->value,
+                //'created_at' => $d->created_at
+            ]);
+
+            try {
+                $model->save();
+            } catch (Exception $e) {
+                Log::error('Error insertando datos estación meteorológica');
+                Log::error($e);
+                $fallidos++;
+            }
+        }
+
+        return response()->json('Fallidos: ' . $fallidos, 200);
+
+        ## Respuesta cuando se ha guardado el modelo correctamente
+        if (true) {
+            // response bien
+
+            // TODO → Crear sistema de respuestas habituales 200,201,404,419...
+
+            return response()->json('Guardado Correctamente', 201);
+        }
+
+        // response mal
+        return response()->json('No se ha guardado nada', 500);
     }
 
     /**

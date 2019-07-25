@@ -5,7 +5,8 @@ namespace App;
 class BaseWheaterStation extends MinModel
 {
     protected $fillable = [
-        'value'
+        'value',
+        'created_at'
     ];
 
     /**
