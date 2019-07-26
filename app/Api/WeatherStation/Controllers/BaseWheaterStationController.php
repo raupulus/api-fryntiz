@@ -7,7 +7,6 @@ use function GuzzleHttp\json_decode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use function response;
-use function utf8_decode;
 
 abstract class BaseWheaterStationController extends Controller
 {
@@ -27,7 +26,10 @@ abstract class BaseWheaterStationController extends Controller
      */
     public function all()
     {
-        return response()->json($this->model::all());
+        $model = $this->model::whereNotNull('value')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return response()->json($model);
     }
 
     /**
@@ -79,6 +81,8 @@ abstract class BaseWheaterStationController extends Controller
             $model->where('created_at', '<=', $dateMax);
         }
 
+        $model->orderBy('created_at', 'DESC');
+
         return response()->json($model->get());
     }
 
@@ -113,6 +117,8 @@ abstract class BaseWheaterStationController extends Controller
      * Recibe JSON con datos para guardar por lote.
      *
      * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function addJson(Request $request)
     {
@@ -123,11 +129,11 @@ abstract class BaseWheaterStationController extends Controller
         foreach ($data as $d) {
             $model = new $this->model;
 
-            // Created_at problemas, desactivar el de laravel?
-            // cuidado que en add() si es necesario
+            $created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
+
             $model->fill([
                 'value' => $d->value,
-                //'created_at' => $d->created_at
+                'created_at' => $created_at,
             ]);
 
             try {
