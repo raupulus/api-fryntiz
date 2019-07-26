@@ -10,9 +10,15 @@
     <body>
         @php
             $datos = [
-                'Humedad' => \App\Humidity::paginate(20),
-                'Temperatura' => \App\Temperature::paginate(20),
-                'Presión' => \App\Pressure::paginate(20),
+                'Humedad' => \App\Humidity::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'Temperatura' => \App\Temperature::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'Presión' => \App\Pressure::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
             ];
         @endphp
 
