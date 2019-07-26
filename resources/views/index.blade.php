@@ -48,7 +48,72 @@
             <div class="row">
                 <div class="col-md-12">
                     @foreach($datos as $title => $collection)
-                        <h2>{{$title}}</h2>
+                        <h2>
+                            {{$title}} -
+                            <small>
+                                <strong>{{$collection->count()}}</strong>
+                                registros
+                            </small>
+                        </h2>
+
+                        <div class="row">
+                            <div class="card text-white bg-danger mb-3 mr-3
+                            ml-3"
+                                 style="width: 18rem">
+                                <div class="card-header">
+                                    Mayor valor registrado
+                                </div>
+
+                                <div class="card-body">
+                                    <h5 class="card-title"></h5>
+                                    <p class="card-text text-center">
+                                        <strong>
+                                            {{$collection->max('value')}}
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="card text-white bg-primary mb-3 mr-3
+                            ml-3"
+                                 style="width: 18rem;">
+                                <div class="card-header">
+                                    Menor valor registrado
+                                </div>
+
+                                <div class="card-body">
+                                    <h5 class="card-title"></h5>
+                                    <p class="card-text text-center">
+                                        <strong>
+                                            {{$collection->min('value')}}
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="card text-white bg-warning mb-3 mr-3
+                            ml-3"
+                                 style="width: 18rem;">
+                                <div class="card-header">
+                                    Valor Medio
+                                </div>
+
+                                <div class="card-body">
+                                    <h5 class="card-title"></h5>
+                                    <p class="card-text text-center">
+                                        <strong>
+                                            @php
+                                                $max = $collection->min('value');
+                                                $min = $collection->min('value');
+                                                $media = ($max + $min)/ 2.000;
+                                            @endphp
+                                            {{$collection->avg('value')}}
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <table class="table table-bordered table-dark">
                             <head>
                                 <tr>
