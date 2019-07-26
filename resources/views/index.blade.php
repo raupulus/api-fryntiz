@@ -28,18 +28,31 @@
                     <h1>API - Modo depuración temporalmente</h1>
 
                     <p>
-                        Datos no reales/fiables
+                        Datos no fiables durante el desarrollo, franja horaria
+                        UTC
                     </p>
 
                     <p>
-                        Esta API se encuentra en construcción.
+                        Esta API se encuentra en construcción y mide el tiempo
+                        actual en Chipiona con una frecuencia de 1-2 minutos.
                     </p>
 
                     <p>
                         Puedes ver el desarrollo aquí:
+
                         <a href="https://gitlab.com/fryntiz/api-fryntiz/tree/master"
                            title="Api fryntiz en GitLab">
                             https://gitlab.com/fryntiz/api-fryntiz
+                        </a>
+                    </p>
+
+                    <p>
+                        Puedes ver el desarrollo de la estación meteorológica
+                        para la raspberry aquí:
+
+                        <a href="https://gitlab.com/fryntiz/raspberry-weather-station"
+                           title="Raspberry pi 4 estación meteorológica">
+                            https://gitlab.com/fryntiz/raspberry-weather-station
                         </a>
                     </p>
                 </div>
