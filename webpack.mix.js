@@ -19,8 +19,10 @@ mix.js('resources/js/scripts.js', 'public/js')
   .js('resources/js/header.js', 'public/js')
   .js('resources/js/footer.js', 'public/js')
   .js('resources/js/functions.js', 'public/js')
-  .js('node_modules/bootstrap-sass/assets/javascripts/bootstrap.js', 'public/assets/js')
-  .js('node_modules/jquery-easing/jquery.easing.1.3.js', 'public/assets/js/jquery.easing.js')
+  .js('resources/js/bootstrap.js', 'public/assets/js')
+  .js('resources/js/jquery.js', 'public/assets/js')
+  .js('resources/js/popper.js', 'public/assets/js')
+  //.js('node_modules/bootstrap-sass/assets/javascripts/bootstrap.js', 'public/assets/js')
   .sass('resources/sass/styles.scss', 'public/css/')
   .sass('resources/sass/panel/styles.scss', 'public/admin-panel/css')
   .sass('resources/sass/panel/login/styles.scss', 'public/admin-panel/login/css')
@@ -29,7 +31,7 @@ mix.js('resources/js/scripts.js', 'public/js')
   .autoload({
     jQuery: 'jquery',
     $: 'jquery',
-    jquery: 'jquery',
-    Popper: 'popper.js'
+    Popper: 'popper.js',
+    jquery: ['$', 'window.jQuery', 'jquery']
   });
 

@@ -24,8 +24,9 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "bootstrap-sass": "^3.4.1",
         "font-awesome": "^4.7.0",
-        "jquery-easing": "0.0.1"
+        "popper.js": "^1.12",
+        "jquery": "^3.4",
+        "bootstrap": "^4.1.0"
     }
 }

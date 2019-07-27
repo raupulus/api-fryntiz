@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    @extends('panel.layouts.head')
+    @include('panel.layouts.head')
     @extends('panel.layouts.head_meta')
 
     @section('head-css-custom')
