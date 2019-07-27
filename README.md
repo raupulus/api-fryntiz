@@ -15,12 +15,17 @@ cd /var/www/web/api-fryntiz
 sudo -u postgres createdb -O web -T template1 api_fryntiz
 cp .env.example .env
 nano .env
+
 composer install --no-dev
 php artisan migrate
 php artisan db:seed
 php artisan passport:install
 php artisan key:generate
+
+#ln -s $PWD/storage/app/public $PWD/public/storage
 php artisan storage:link
+
+npm install
 
 sudo chown -R www-data:www-data /var/www/web/api-fryntiz
 sudo find /var/www/web/api-fryntiz/ -type f -exec chmod 644 {} \;

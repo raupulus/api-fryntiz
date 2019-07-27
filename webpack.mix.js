@@ -11,5 +11,25 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+mix.js('resources/js/scripts.js', 'public/js')
+  .js('resources/js/panel/scripts.js', 'public/admin-panel/js')
+  .js('resources/js/panel/functions.js', 'public/admin-panel/js')
+  .js('resources/js/panel/login/scripts.js', 'public/admin-panel/login/js')
+  .js('resources/js/panel/login/functions.js', 'public/admin-panel/login/js')
+  .js('resources/js/header.js', 'public/js')
+  .js('resources/js/footer.js', 'public/js')
+  .js('resources/js/functions.js', 'public/js')
+  .js('node_modules/bootstrap-sass/assets/javascripts/bootstrap.js', 'public/assets/js')
+  .js('node_modules/jquery-easing/jquery.easing.1.3.js', 'public/assets/js/jquery.easing.js')
+  .sass('resources/sass/styles.scss', 'public/css/')
+  .sass('resources/sass/panel/styles.scss', 'public/admin-panel/css')
+  .sass('resources/sass/panel/login/styles.scss', 'public/admin-panel/login/css')
+  .sass('resources/sass/assets/bootstrap.scss', 'public/assets/css')
+  .sass('resources/sass/assets/fontawesome.scss', 'public/assets/css')
+  .autoload({
+    jQuery: 'jquery',
+    $: 'jquery',
+    jquery: 'jquery',
+    Popper: 'popper.js'
+  });
+

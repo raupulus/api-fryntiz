@@ -1,0 +1,17 @@
+{
+    "/admin-panel/js/functions.js": "/admin-panel/js/functions.js",
+    "/admin-panel/js/scripts.js": "/admin-panel/js/scripts.js",
+    "/admin-panel/login/js/functions.js": "/admin-panel/login/js/functions.js",
+    "/admin-panel/login/js/scripts.js": "/admin-panel/login/js/scripts.js",
+    "/assets/js/bootstrap.js": "/assets/js/bootstrap.js",
+    "/assets/js/jquery.easing.js": "/assets/js/jquery.easing.js",
+    "/js/footer.js": "/js/footer.js",
+    "/js/functions.js": "/js/functions.js",
+    "/js/header.js": "/js/header.js",
+    "/js/scripts.js": "/js/scripts.js",
+    "/css/styles.css": "/css/styles.css",
+    "/admin-panel/css/styles.css": "/admin-panel/css/styles.css",
+    "/admin-panel/login/css/styles.css": "/admin-panel/login/css/styles.css",
+    "/assets/css/bootstrap.css": "/assets/css/bootstrap.css",
+    "/assets/css/fontawesome.css": "/assets/css/fontawesome.css"
+}

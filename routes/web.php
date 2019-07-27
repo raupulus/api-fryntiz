@@ -11,6 +11,21 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('index');
+});
+
+/******************************************
+ *            PANEL DE GESTIÓN
+ ******************************************/
+Route::group(['prefix' => 'panel'], function() {
+    Route::get('/', function() {
+        return view('panel.index');
+    });
+
+    Route::get('/login', function() {
+        return view('panel.login');
+    });
 });
