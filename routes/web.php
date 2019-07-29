@@ -46,7 +46,7 @@ Route::group(['prefix' => 'panel'], function() {
     })->name('panel-blank');
 
     ## DEMOS
-    Route::group(['prefix' => 'panel'], function() {
+    Route::group(['prefix' => 'demos'], function() {
         Route::get('/charts', function () {
             return view('panel.demos.charts');
         })->name('panel-demo-charts');

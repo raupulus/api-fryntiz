@@ -15,7 +15,7 @@
            data-toggle="dropdown"
            aria-haspopup="true"
            aria-expanded="false">
-            <i class="fas fa-fw fa-folder"></i>
+            <i class="fas fa-fw fa-user"></i>
             <span>Usuarios</span>
         </a>
         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
