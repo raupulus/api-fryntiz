@@ -19,9 +19,18 @@ E-mail: dev@fryntiz.es
     <body id="page-top" class="header-sticky">
          @include('panel.layouts.navbar')
 
-        <div id="box-content">
-            @yield('content')
-        </div>
+         <div id="wrapper">
+             @include('panel.layouts.sidebar')
+
+             <div id="content-wrapper">
+
+                 <div class="container-fluid">
+                     <div id="box-content">
+                         @yield('content')
+                     </div>
+                 </div>
+             </div>
+         </div>
 
         <footer id="box-footer" class="footer sticky-footer">
             @include('panel.layouts.footer')
