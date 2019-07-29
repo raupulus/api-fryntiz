@@ -12,7 +12,8 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.8.*",
         "laravel/passport": "^7.3",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "yajra/laravel-datatables-oracle": "^9.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",

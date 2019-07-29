@@ -19,19 +19,26 @@ mix.js('resources/js/scripts.js', 'public/js')
   .js('resources/js/header.js', 'public/js')
   .js('resources/js/footer.js', 'public/js')
   .js('resources/js/functions.js', 'public/js')
-  .js('resources/js/bootstrap.js', 'public/assets/js')
-  .js('resources/js/jquery.js', 'public/assets/js')
-  .js('resources/js/popper.js', 'public/assets/js')
-  //.js('node_modules/bootstrap-sass/assets/javascripts/bootstrap.js', 'public/assets/js')
+  .js('resources/js/assets/jquery.js', 'public/assets/js')
+  //.js('resources/js/assets/jquery.easing.js', 'public/assets/js')
+  //.js('node_modules/jquery.easing/jquery.easing.min.js', 'public/assets/js/jquery.easing.js')
+  .js('resources/js/assets/bootstrap.js', 'public/assets/js')
+  .js('resources/js/assets/popper.js', 'public/assets/js')
+  .js('resources/js/assets/datatables.js', 'public/assets/js')
+  .js('resources/js/assets/chart.js', 'public/assets/js')
+  .js('resources/js/assets/fontawesome.js', 'public/assets/js')
+
   .sass('resources/sass/styles.scss', 'public/css/')
   .sass('resources/sass/panel/styles.scss', 'public/admin-panel/css')
   .sass('resources/sass/panel/login/styles.scss', 'public/admin-panel/login/css')
   .sass('resources/sass/assets/bootstrap.scss', 'public/assets/css')
   .sass('resources/sass/assets/fontawesome.scss', 'public/assets/css')
+  .sass('resources/sass/assets/datatables.scss', 'public/assets/css')
+
   .autoload({
-    jQuery: 'jquery',
+    jquery: ['$', 'window.jQuery',"jQuery","window.$","jquery","window.jquery"],
     $: 'jquery',
-    Popper: 'popper.js',
-    jquery: ['$', 'window.jQuery', 'jquery']
+    Popper: ['popper', 'Popper', 'popper.js'],
+    DataTable : 'datatables.net-bs4'
   });
 

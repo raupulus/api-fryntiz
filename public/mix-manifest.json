@@ -4,6 +4,9 @@
     "/admin-panel/login/js/functions.js": "/admin-panel/login/js/functions.js",
     "/admin-panel/login/js/scripts.js": "/admin-panel/login/js/scripts.js",
     "/assets/js/bootstrap.js": "/assets/js/bootstrap.js",
+    "/assets/js/chart.js": "/assets/js/chart.js",
+    "/assets/js/datatables.js": "/assets/js/datatables.js",
+    "/assets/js/fontawesome.js": "/assets/js/fontawesome.js",
     "/assets/js/jquery.js": "/assets/js/jquery.js",
     "/assets/js/popper.js": "/assets/js/popper.js",
     "/js/footer.js": "/js/footer.js",
@@ -14,5 +17,6 @@
     "/admin-panel/css/styles.css": "/admin-panel/css/styles.css",
     "/admin-panel/login/css/styles.css": "/admin-panel/login/css/styles.css",
     "/assets/css/bootstrap.css": "/assets/css/bootstrap.css",
-    "/assets/css/fontawesome.css": "/assets/css/fontawesome.css"
+    "/assets/css/fontawesome.css": "/assets/css/fontawesome.css",
+    "/assets/css/datatables.css": "/assets/css/datatables.css"
 }

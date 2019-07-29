@@ -1,6 +1,6 @@
 @extends('panel.layouts.app')
 
-@section('title', 'SB Admin - Dashboard')
+@section('title', 'Panel Admin - Dashboard')
 
 @section('content')
 <div id="wrapper">

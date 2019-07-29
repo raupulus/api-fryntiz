@@ -6,7 +6,15 @@ window._ = require('lodash');
  * code may be modified to fit the specific needs of your application.
  */
 
-require('bootstrap');
+try {
+  window.$ = window.jQuery = require('jquery');
+
+  // Popper daba problemas con dropdown desplegables en el panel de
+  // administración, por eso opté por usar directamente bootstrap con bundle.
+  //window.Popper = window.popper = require('popper.js').default;
+
+  include('~bootstrap/dist/js/bootstrap.bundle.js');
+} catch (e) {}
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

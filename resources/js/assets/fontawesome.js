@@ -1,0 +1,1 @@
+require('@fortawesome/fontawesome-free');
