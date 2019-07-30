@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Webhook;
 
+use App\Http\Controllers\Controller;
 use function config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

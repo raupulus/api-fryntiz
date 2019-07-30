@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Webhook;
+namespace App\Webhook\GitlabWebhook;
 
 use Illuminate\Database\Eloquent\Model;
 
