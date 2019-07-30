@@ -1,5 +1,5 @@
 {{-- JQuery --}}
-<script src="{{ mix('assets/js/jquery.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.js') }}"></script>
 
 {{-- jquery.easing --}}
 {{--
@@ -23,12 +23,16 @@
     {{-- Chart.js --}}
     <script src="{{ mix('assets/js/chart.js') }}"></script>
 
-    <!-- Demo scripts for this page-->
+    {{-- Demos scripts --}}
     {{--
     <script src="{{ url('admin-panel/js/demos/datatables-demo.js') }}"></script>
     <script src="{{ url('admin-panel/js/demos/chart-area-demo.js') }}"></script>
+    <script src="{{ url('admin-panel/js/demos/chart-bar-demo.js') }}"></script>
+    <script src="{{ url('admin-panel/js/demos/chart-pie-demo.js') }}"></script>
     --}}
 
     <script src="{{ mix('admin-panel/js/functions.js') }}"></script>
     <script src="{{ mix('admin-panel/js/scripts.js') }}"></script>
+
+
 @show

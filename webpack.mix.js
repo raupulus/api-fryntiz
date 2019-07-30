@@ -19,14 +19,20 @@ mix.js('resources/js/scripts.js', 'public/js')
   .js('resources/js/header.js', 'public/js')
   .js('resources/js/footer.js', 'public/js')
   .js('resources/js/functions.js', 'public/js')
-  .js('resources/js/assets/jquery.js', 'public/assets/js')
+  .copy('node_modules/jquery/dist/jquery.min.js', 'public/assets/js/jquery.js')
+  //.js('resources/js/assets/jquery.js', 'public/assets/js')
   //.js('resources/js/assets/jquery.easing.js', 'public/assets/js')
-  //.js('node_modules/jquery.easing/jquery.easing.min.js', 'public/assets/js/jquery.easing.js')
+  .copy('node_modules/jquery.easing/jquery.easing.min.js', 'public/assets/js/jquery.easing.js')
   .js('resources/js/assets/bootstrap.js', 'public/assets/js')
   .js('resources/js/assets/popper.js', 'public/assets/js')
   .js('resources/js/assets/datatables.js', 'public/assets/js')
   .js('resources/js/assets/chart.js', 'public/assets/js')
   .js('resources/js/assets/fontawesome.js', 'public/assets/js')
+
+  .js('resources/js/panel/demos/chart-area-demo.js', 'public/admin-panel/js/demos')
+  .js('resources/js/panel/demos/chart-bar-demo.js', 'public/admin-panel/js/demos')
+  .js('resources/js/panel/demos/chart-pie-demo.js', 'public/admin-panel/js/demos')
+  .js('resources/js/panel/demos/datatables-demo.js', 'public/admin-panel/js/demos')
 
   .sass('resources/sass/styles.scss', 'public/css/')
   .sass('resources/sass/panel/styles.scss', 'public/admin-panel/css')
@@ -37,8 +43,7 @@ mix.js('resources/js/scripts.js', 'public/js')
 
   .autoload({
     jquery: ['$', 'window.jQuery',"jQuery","window.$","jquery","window.jquery"],
-    $: 'jquery',
     Popper: ['popper', 'Popper', 'popper.js'],
-    DataTable : 'datatables.net-bs4'
+    DataTable : ['datatables.net-bs4', 'Datatable']
   });
 

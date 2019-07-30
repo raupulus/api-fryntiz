@@ -43,3 +43,9 @@
         <em>More chart examples coming soon...</em>
     </p>
 @endsection
+
+@section('javascript')
+    <script src="{{ url('admin-panel/js/demos/chart-area-demo.js') }}"></script>
+    <script src="{{ url('admin-panel/js/demos/chart-bar-demo.js') }}"></script>
+    <script src="{{ url('admin-panel/js/demos/chart-pie-demo.js') }}"></script>
+@endsection

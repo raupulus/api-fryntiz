@@ -500,3 +500,7 @@
         <em>More table examples coming soon...</em>
     </p>
 @endsection
+
+@section('javascript')
+    <script src="{{ url('admin-panel/js/demos/datatables-demo.js') }}"></script>
+@endsection
