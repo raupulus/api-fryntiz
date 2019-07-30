@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Webhook;
 
 use App\Http\Controllers\Controller;
-use App\Webhook\GitlabWebhook\GitlabWebhook;
+use App\Webhook\Gitlab\GitlabWebhook;
 use function config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -38,12 +38,11 @@ class GitlabWebhookController extends Controller
      */
     public function apiDeploy(Request $request)
     {
+        //$request->header('X-Gitlab-Token'),
         Log::info('Entra en apiDeploy');
         $gitLabWebHook = new GitlabWebhook();
-        $gitLabWebHook->fill([
-            'token' => $request->header('X-Gitlab-Token'),
-            'request' => $request->all(),
-        ]);
+        $gitLabWebHook->token = 'testTOKEN';
+        $gitLabWebHook->request = $request->all();
 
         ## Si coinciden los hashs lanza el comando bash para desplegar
         if ($gitLabWebHook->isValidHash()) {

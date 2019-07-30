@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Webhook\GitlabWebhook;
+namespace App\Webhook\Gitlab;
 
 use App\Webhook\SimpleWebhookModel;
 use function config;
