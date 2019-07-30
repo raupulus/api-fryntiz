@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Webhook;
 
 use App\Http\Controllers\Controller;
+use App\Webhook\GitlabWebhook\GitlabWebhook;
 use function config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use function info;
 
 /**
  * Class GitlabWebhookController
@@ -37,26 +39,15 @@ class GitlabWebhookController extends Controller
     public function apiDeploy(Request $request)
     {
         Log::info('Entra en apiDeploy');
-        Log::emergency($request->all());
-
-        // TODO ↓→ validar entrada de datos para filtrar basura
-        $input = $request->all();
-
-        ## Obtengo el token desde la cabecera de la petición.
-        $gitLabHash = $request->header('X-Gitlab-Token');
-
-        ## Obtengo el token y hash local.
-        $localHash = config('app.gitlab_token_deploy_api');
-
-        Log::info('localHash');
-        Log::emergency($localHash);
-
-        Log::info('gitLabHash');
-        Log::emergency($gitLabHash);
+        $gitLabWebHook = new GitlabWebhook();
+        $gitLabWebHook->fill([
+            'token' => $request->header('X-Gitlab-Token'),
+            'request' => $request->all(),
+        ]);
 
         ## Si coinciden los hashs lanza el comando bash para desplegar
-        if ($gitLabHash == $localHash) {
-            Log::info('Hash coinciden: $gitLabHash = $localHash');
+        if ($gitLabWebHook->isValidHash()) {
+            Log::info('Hash de Gitlab validado');
             /*
             $root_path = base_path();
             $process = new Process('cd ' . $root_path . '; ./deploy.sh');
