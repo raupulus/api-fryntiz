@@ -46,11 +46,7 @@ class GitlabWebhookController extends Controller
         $gitLabHash = $request->header('X-Gitlab-Token');
 
         ## Obtengo el token y hash local.
-        $localHash = config('app.deploy_secret');
-
-        /*
-        $localHash = 'sha1=' . hash_hmac('sha1', $gitLabHash, $localToken, false);
-        */
+        $localHash = config('app.gitlab_token_deploy_api');
 
         Log::info('localHash');
         Log::emergency($localHash);
@@ -59,7 +55,7 @@ class GitlabWebhookController extends Controller
         Log::emergency($gitLabHash);
 
         ## Si coinciden los hashs lanza el comando bash para desplegar
-        if (hash_equals($gitLabHash, $localHash)) {
+        if ($gitLabHash == $localHash) {
             Log::info('Hash coinciden: $gitLabHash = $localHash');
             /*
             $root_path = base_path();
