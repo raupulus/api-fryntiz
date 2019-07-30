@@ -38,10 +38,9 @@ class GitlabWebhookController extends Controller
      */
     public function apiDeploy(Request $request)
     {
-        //$request->header('X-Gitlab-Token'),
         Log::info('Entra en apiDeploy');
         $gitLabWebHook = new GitlabWebhook();
-        $gitLabWebHook->token = 'testTOKEN';
+        $gitLabWebHook->token = $request->header('X-Gitlab-Token');
         $gitLabWebHook->request = $request->all();
 
         ## Si coinciden los hashs lanza el comando bash para desplegar
