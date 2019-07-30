@@ -2,6 +2,7 @@
 
 namespace App\Webhook\GitlabWebhook;
 
+use App\Webhook\SimpleWebhookModel;
 use function config;
 use Illuminate\Database\Eloquent\Model;
 
