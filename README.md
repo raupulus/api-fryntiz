@@ -25,7 +25,7 @@ php artisan key:generate
 #ln -s $PWD/storage/app/public $PWD/public/storage
 php artisan storage:link
 
-npm install
+npm install --production
 
 sudo chown -R www-data:www-data /var/www/web/api-fryntiz
 sudo find /var/www/web/api-fryntiz/ -type f -exec chmod 644 {} \;

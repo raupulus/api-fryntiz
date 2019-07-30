@@ -22,5 +22,6 @@
     "/assets/css/bootstrap.css": "/assets/css/bootstrap.css",
     "/assets/css/fontawesome.css": "/assets/css/fontawesome.css",
     "/assets/css/datatables.css": "/assets/css/datatables.css",
-    "/assets/js/jquery.js": "/assets/js/jquery.js"
+    "/assets/js/jquery.js": "/assets/js/jquery.js",
+    "/assets/js/jquery.easing.js": "/assets/js/jquery.easing.js"
 }

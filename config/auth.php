@@ -52,6 +52,11 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+
+        ## Webhooks (Gitlab)
+        'webhooks' => [
+
+        ],
     ],
 
     /*
