@@ -236,4 +236,6 @@ return [
         'Datatables' => Yajra\Datatables\Facades\Datatables::class,
     ],
 
+    ## WebHook Deploys
+    'gitlab_token_deploy_api' => env('GITLAB_TOKEN_DEPLOY_API'),
 ];
