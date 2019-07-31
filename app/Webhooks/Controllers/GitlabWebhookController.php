@@ -60,8 +60,8 @@ class GitlabWebhookController extends Controller
             }
 
             // TODO → Crear log en "webhooks/api-deploy"
-            Log::info('webhooks/api-deploy', $process->getOutput());
-            Log::info('webhooks/api-deploy', $process->getErrorOutput());
+            Log::info(['webhooks/api-deploy', $process->getOutput()]);
+            Log::info(['webhooks/api-deploy', $process->getErrorOutput()]);
         }
     }
 
