@@ -40,9 +40,9 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapApiRoutes();
 
-        $this->mapWebRoutes();
+        $this->mapWebhookRoutes();
 
-        //
+        $this->mapWebRoutes();
     }
 
     /**
@@ -83,5 +83,16 @@ class RouteServiceProvider extends ServiceProvider
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/weather_station.php'));
+    }
+
+    /**
+     * Rutas para los webhooks.
+     */
+    protected function mapWebhookRoutes()
+    {
+        Route::prefix('webhook')
+            //->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/webhook.php'));
     }
 }
