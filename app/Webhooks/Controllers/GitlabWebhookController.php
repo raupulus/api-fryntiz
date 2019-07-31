@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Webhook;
 
 use App\Http\Controllers\Controller;
 use App\Webhook\Gitlab\GitlabWebhook;
-use function config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use function info;
 use Symfony\Component\Process\Process;
 
 /**
@@ -46,23 +44,25 @@ class GitlabWebhookController extends Controller
 
         ## Si coinciden los hashs lanza el comando bash para desplegar
         if ($gitLabWebHook->isValidHash()) {
-            Log::info('Hash de Gitlab validado');
+            Log::info('Hash de Gitlab validado, ver log del despliegue en storage/logs/script-api-deploy.log');
             $root_path = base_path();
-            $process = new Process([
-                'cd ' . $root_path . ';' .
-                ' ./scripts/webhooks/api-deploy.sh',
-            ]);
+            //Log::info(['base_path()', base_path()]);
+
+            $process = Process::fromShellCommandline(
+                'cd ' . $root_path . ' &&' .
+                'bash ' . $root_path . '/scripts/webhooks/api-deploy.sh &'
+            );
 
             try {
                 $process->run();
             } catch (Exception $e) {
-                Log::error('Fallo al ejecutar WebHook');
+                Log::error('Fallo al ejecutar WebHook para desplegar API');
             }
 
-            // TODO → Crear log en "webhooks/api-deploy"
-            Log::info(['webhooks/api-deploy', $process->getOutput()]);
-            Log::info(['webhooks/api-deploy', $process->getErrorOutput()]);
+            //Log::info(['webhooks/api-deploy - getOutput: ',$process->getOutput()]);
+            //Log::info(['webhooks/api-deploy - getErrorOutput: ',$process->getErrorOutput()]);
         }
+
     }
 
     /**

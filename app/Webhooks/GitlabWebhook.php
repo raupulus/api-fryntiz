@@ -24,6 +24,7 @@ class GitlabWebhook extends SimpleWebhookModel
 
     public function __construct()
     {
+        parent::__construct();
         $this->localToken = config('app.gitlab_token_deploy_api');
     }
 
