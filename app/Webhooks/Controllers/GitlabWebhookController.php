@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Webhook\Gitlab\GitlabWebhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use function response;
 use Symfony\Component\Process\Process;
 
 /**
@@ -61,8 +62,10 @@ class GitlabWebhookController extends Controller
 
             //Log::info(['webhooks/api-deploy - getOutput: ',$process->getOutput()]);
             //Log::info(['webhooks/api-deploy - getErrorOutput: ',$process->getErrorOutput()]);
+            return response()->json('ok', 200);
         }
 
+        return response()->json('ko', 500);
     }
 
     /**

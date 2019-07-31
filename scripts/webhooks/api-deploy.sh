@@ -28,7 +28,7 @@ git pull >> $LOG 2>> $LOG
 npm install --production >> $LOG 2>> $LOG
 
 ## Actualizo paquetes de composer.
-composer install --no-interaction --no-dev --prefer-dist >> $LOG 2>> $LOG
+export COMPOSER_HOME=/tmp/composer_home && composer install --no-interaction --no-dev --prefer-dist >> $LOG 2>> $LOG
 
 ## Fuerzo actualización de migraciones nuevas.
 php artisan migrate --force >> $LOG 2>> $LOG
