@@ -28,13 +28,10 @@ class GitlabWebhookController extends Controller
     /**
      * Despliega la última versión del master para la API
      * php artisan down
-     * git checkout -- .
-     * git pull
-     * npm install --production
-     * composer install --no-interaction --no-dev --prefer-dist
-     * php artisan migrate --force
-     * php artisan up
      *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function apiDeploy(Request $request)
     {
