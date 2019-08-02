@@ -29,6 +29,12 @@ Route::get('/temperature/all', 'TemperatureController@all');
 ## Busco un dato concreto para temperatura
 Route::get('/temperature/find', 'TemperatureController@find');
 
+## Obtengo todos los datos de luz.
+Route::get('/light/all', 'LuzController@all');
+
+## Busco un dato concreto para luz
+Route::get('/light/find', 'LuzController@find');
+
 ######################################################
 ##                    Privada
 ######################################################
@@ -39,20 +45,26 @@ Route::group([
         ## Añadir nuevo registro de humedad.
         Route::post('/humidity/add', 'HumidityController@add');
 
-        ## Añadir nuevos registros de humedad por lotes
+        ## Añadir nuevos registros de humedad por lotes JSON
         Route::post('/humidity/add-json', 'HumidityController@addJson');
 
-        ## Añadir nuevo registro de Presión.
+        ## Añadir nuevo registro de presión.
         Route::post('/pressure/add', 'PressureController@add');
 
-        ## Añadir nuevos registros de humedad por lotes
+        ## Añadir nuevos registros de presión por lotes JSON
         Route::post('/pressure/add-json', 'PressureController@addJson');
 
         ## Añadir nuevo registro de temperatura.
         Route::post('/temperature/add', 'TemperatureController@add');
 
-        ## Añadir nuevos registros de humedad por lotes
+        ## Añadir nuevos registros de temperatura por lotes JSON
         Route::post('/temperature/add-json', 'TemperatureController@addJson');
+
+        ## Añadir nuevo registro de luz.
+        Route::post('/light/add', 'LightController@add');
+
+        ## Añadir nuevos registros de humedad por lotes JSON
+        Route::post('/light/add-json', 'LightController@addJson');
     }
 );
 
