@@ -19,6 +19,9 @@
                 'Presión' => \App\Pressure::whereNotNull('value')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
+                'Luz' => \App\Light::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
             ];
         @endphp
 
