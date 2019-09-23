@@ -38,6 +38,7 @@ abstract class BaseWheaterStationController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function find(Request $request)
     {
@@ -170,7 +171,7 @@ abstract class BaseWheaterStationController extends Controller
     public function addValidate($request)
     {
         return $request->validate([
-            'value' => 'required|numeric'
+            'value' => 'required|numeric',
         ]);
     }
 

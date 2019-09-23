@@ -63,8 +63,14 @@ Route::group([
         ## Añadir nuevo registro de luz.
         Route::post('/light/add', 'LightController@add');
 
-        ## Añadir nuevos registros de humedad por lotes JSON
+        ## Añadir nuevos registros de Luz por lotes JSON
         Route::post('/light/add-json', 'LightController@addJson');
+
+        ## Añadir nuevo registro de rayos uv.
+        Route::post('/uv/add', 'UvController@add');
+
+        ## Añadir nuevos registros de rayos uv por lotes JSON
+        Route::post('/uv/add-json', 'UvController@addJson');
     }
 );
 
