@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -96,7 +98,7 @@ abstract class BaseWheaterStationController extends Controller
      */
     public function add(Request $request)
     {
-        $requestValidate = $this->addValidate($request);
+        $requestValidate = $this->addValidate($request->all());
 
         $model = new $this->model;
         $model->fill($requestValidate);
@@ -120,6 +122,7 @@ abstract class BaseWheaterStationController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function addJson(Request $request)
     {
@@ -127,15 +130,17 @@ abstract class BaseWheaterStationController extends Controller
 
         $fallidos = 0;
 
+        ## Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
             $model = new $this->model;
 
-            $created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
+            ## Parseo la fecha
+            $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
 
-            $model->fill([
-                'value' => $d->value,
-                'created_at' => $created_at,
-            ]);
+            ## Obtengo atributos y los validos para exluir posible basura.
+            $attributes = $this->addValidate(get_object_vars($d));
+
+            $model->fill($attributes);
 
             try {
                 $model->save();
@@ -146,18 +151,13 @@ abstract class BaseWheaterStationController extends Controller
             }
         }
 
-        return response()->json('Fallidos: ' . $fallidos, 200);
-
         ## Respuesta cuando se ha guardado el modelo correctamente
-        if (true) {
-            // response bien
-
-            // TODO → Crear sistema de respuestas habituales 200,201,404,419...
-
+        if ($fallidos == 0) {
             return response()->json('Guardado Correctamente', 201);
+        } else if ($fallidos >= 1) {
+            return response()->json('Fallidos: ' . $fallidos, 200);
         }
 
-        // response mal
         return response()->json('No se ha guardado nada', 500);
     }
 
@@ -168,11 +168,17 @@ abstract class BaseWheaterStationController extends Controller
      *
      * @return mixed
      */
-    public function addValidate($request)
+    public function addValidate($data)
     {
-        return $request->validate([
+        $validator = Validator::make($data, [
             'value' => 'required|numeric',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json('Error al validar datos de entrada', 500);
+        }
+
+        return $validator->validate();
     }
 
     /**
@@ -188,7 +194,7 @@ abstract class BaseWheaterStationController extends Controller
             'date_min' => 'nullable|date',
             'date_max' => 'nullable|date',
             'value_min' => 'nullable|numeric',
-            'value_max' => 'nullable|numeric',
+            'value_ max' => 'nullable|numeric',
             'date' => 'nullable|date',
         ];
 
