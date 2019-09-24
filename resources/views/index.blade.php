@@ -22,7 +22,13 @@
                 'Luz' => \App\Light::whereNotNull('value')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
-                'Rayos UV' => \App\Uv::whereNotNull('uv_raw')
+                'Rayos-UV' => \App\Uv::whereNotNull('uv_raw')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'Viento' => \App\Winter::whereNotNull('speed')
+                    ->whereNotNull('average')
+                    ->whereNotNull('min')
+                    ->whereNotNull('max')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
             ];

@@ -23,6 +23,11 @@ class BaseWheaterStation extends MinModel
         //Do-nothing
     }
 
+    /**
+     * Devuelve un array con todos los atributos para un modelo instanciado
+     *
+     * @return array
+     */
     public function getAllAttributes()
     {
         $columns = $this->getFillable();
