@@ -172,11 +172,11 @@ abstract class BaseWheaterStationController extends Controller
     {
         return Validator::make($data, [
             'value' => 'required|numeric',
+            'created_at' => 'date_format:Y-m-d H:i:s',
         ])->validate();
     }
 
     /**
-
      * Reglas de validación para las peticiones de búsqueda.
      *
      * @param $request

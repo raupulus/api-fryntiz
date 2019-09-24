@@ -21,6 +21,7 @@ class UvController extends BaseWheaterStationController
         return Validator::make($data, [
             'uv_raw' => 'required|numeric',
             'risk_level' => 'nullable|string',
+            'created_at' => 'date_format:Y-m-d H:i:s',
         ])->validate();
     }
 

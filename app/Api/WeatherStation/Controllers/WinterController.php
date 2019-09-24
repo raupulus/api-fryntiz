@@ -23,6 +23,7 @@ class WinterController extends BaseWheaterStationController
             'average' => 'required|numeric',
             'min' => 'required|numeric',
             'max' => 'required|numeric',
+            'created_at' => 'date_format:Y-m-d H:i:s',
         ])->validate();
     }
 
