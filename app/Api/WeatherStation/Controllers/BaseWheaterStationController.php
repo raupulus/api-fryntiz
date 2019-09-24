@@ -170,18 +170,13 @@ abstract class BaseWheaterStationController extends Controller
      */
     public function addValidate($data)
     {
-        $validator = Validator::make($data, [
+        return Validator::make($data, [
             'value' => 'required|numeric',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json('Error al validar datos de entrada', 500);
-        }
-
-        return $validator->validate();
+        ])->validate();
     }
 
     /**
+
      * Reglas de validación para las peticiones de búsqueda.
      *
      * @param $request
