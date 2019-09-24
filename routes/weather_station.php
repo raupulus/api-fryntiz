@@ -71,6 +71,12 @@ Route::group([
 
         ## Añadir nuevos registros de rayos uv por lotes JSON
         Route::post('/uv/add-json', 'UvController@addJson');
+
+        ## Añadir nuevo registro de viento.
+        Route::post('/uv/add', 'WinterController@add');
+
+        ## Añadir nuevos registros de viento por lotes JSON
+        Route::post('/uv/add-json', 'WinterController@addJson');
     }
 );
 
