@@ -18,16 +18,10 @@ class UvController extends BaseWheaterStationController
      */
     public function addValidate($data)
     {
-        $validator = Validator::make($data, [
+        return Validator::make($data, [
             'uv_raw' => 'required|numeric',
             'risk_level' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json('Error al validar datos de entrada', 500);
-        }
-
-        return $validator->validate();
+        ])->validate();
     }
 
     /**

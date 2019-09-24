@@ -18,18 +18,12 @@ class WinterController extends BaseWheaterStationController
      */
     public function addValidate($data)
     {
-        $validator = Validator::make($data, [
+        return Validator::make($data, [
             'speed' => 'required|numeric',
             'average' => 'required|numeric',
             'min' => 'required|numeric',
             'max' => 'required|numeric',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json('Error al validar datos de entrada', 500);
-        }
-
-        return $validator->validate();
+        ])->validate();
     }
 
     /**
