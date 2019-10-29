@@ -19,18 +19,31 @@
                 'Presión' => \App\Pressure::whereNotNull('value')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
-                'Luz' => \App\Light::whereNotNull('value')
-                    ->orderBy('created_at', 'DESC')
-                    ->paginate(20),
-                'Rayos-UV' => \App\Uv::whereNotNull('uv_raw')
-                    ->orderBy('created_at', 'DESC')
-                    ->paginate(20),
                 'Viento' => \App\Winter::whereNotNull('speed')
                     ->whereNotNull('average')
                     ->whereNotNull('min')
                     ->whereNotNull('max')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
+                'Luz' => \App\Light::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'Indice-UV' => \App\UvIndex::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'UVA' => \App\Uva::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'UVB' => \App\Uvb::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'CO2-ECO2' => \App\Eco2::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+                'TVOC' => \App\Tvoc::whereNotNull('value')
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate(20),
+
             ];
         @endphp
 
