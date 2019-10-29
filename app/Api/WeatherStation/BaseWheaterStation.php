@@ -3,6 +3,7 @@
 namespace App;
 
 use function array_key_exists;
+use function response;
 
 class BaseWheaterStation extends MinModel
 {
@@ -45,5 +46,17 @@ class BaseWheaterStation extends MinModel
             }
         }
         return $attributes;
+    }
+
+    /**
+     * Devuelve todos los elementos del modelo.
+     */
+    public static function all($columns = ['*'])
+    {
+        $query = parent::all();
+        $query::whereNotNull('value')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return $query;
     }
 }

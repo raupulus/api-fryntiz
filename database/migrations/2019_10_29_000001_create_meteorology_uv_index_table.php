@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMeteorologyUvTable extends Migration
+class CreateMeteorologyUvIndexTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateMeteorologyUvTable extends Migration
      */
     public function up()
     {
-        Schema::create('meteorology_uv', function (Blueprint $table) {
+        Schema::create('meteorology_uv_index', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('uv_raw', 14, 4);
-            $table->string('risk_level', 32);
+            $table->decimal('value', 14, 4);
             $table->timestamp('created_at')->nullable();
         });
     }
@@ -28,6 +27,6 @@ class CreateMeteorologyUvTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meteorology_uv');
+        Schema::dropIfExists('meteorology_uv_index');
     }
 }
