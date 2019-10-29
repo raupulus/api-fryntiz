@@ -77,6 +77,36 @@ Route::group([
 
         ## Añadir nuevos registros de viento por lotes JSON
         Route::post('/winter/add-json', 'WinterController@addJson');
+
+        ## Añadir nuevo registro de CO2.
+        Route::post('/eco2/add', 'Eco2Controller@add');
+
+        ## Añadir nuevos registros de CO2 por lotes JSON
+        Route::post('/eco2/add-json', 'Eco2Controller@addJson');
+
+        ## Añadir nuevo registro de TVOC.
+        Route::post('/tvoc/add', 'TvocController@add');
+
+        ## Añadir nuevos registros de TVOC por lotes JSON
+        Route::post('/tvoc/add-json', 'TvocController@addJson');
+
+        ## Añadir nuevo registro de Índice UV.
+        Route::post('/uv_index/add', 'UvIndexController@add');
+
+        ## Añadir nuevos registros de Índice UV por lotes JSON
+        Route::post('/uv_index/add-json', 'UvIndexController@addJson');
+
+        ## Añadir nuevo registro de UVA.
+        Route::post('/uva/add', 'UvaController@add');
+
+        ## Añadir nuevos registros de UVA por lotes JSON
+        Route::post('/uva/add-json', 'UvaController@addJson');
+
+        ## Añadir nuevo registro de UVB.
+        Route::post('/uvb/add', 'UvbController@add');
+
+        ## Añadir nuevos registros de UVB por lotes JSON
+        Route::post('/uvb/add-json', 'UvbController@addJson');
     }
 );
 
