@@ -2,8 +2,6 @@
 
 namespace App;
 
-use function response;
-
 class AirQuality extends BaseWheaterStation
 {
     protected $fillable = [

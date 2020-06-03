@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMeteorologyTvocTable extends Migration
+class CreateMeteorologyAirQualityTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateMeteorologyTvocTable extends Migration
      */
     public function up()
     {
-        Schema::create('meteorology_tvoc', function (Blueprint $table) {
+        Schema::create('meteorology_air_quality', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('value', 14, 4);
+            $table->decimal('gas_resistance', 22, 11);
+            $table->decimal('air_quality', 14, 4);
             $table->timestamp('created_at')->nullable();
         });
     }
@@ -27,6 +28,6 @@ class CreateMeteorologyTvocTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meteorology_tvoc');
+        Schema::dropIfExists('meteorology_air_quality');
     }
 }
