@@ -132,17 +132,17 @@ abstract class BaseWheaterStationController extends Controller
 
         ## Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
-            $model = new $this->model;
-
-            ## Parseo la fecha
-            $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
-
-            ## Obtengo atributos y los validos para exluir posible basura.
-            $attributes = $this->addValidate(get_object_vars($d));
-
-            $model->fill($attributes);
-
             try {
+                $model = new $this->model;
+
+                ## Parseo la fecha
+                $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
+
+                ## Obtengo atributos y los validos para excluir posible basura.
+                $attributes = $this->addValidate(get_object_vars($d));
+
+                $model->fill($attributes);
+
                 $model->save();
             } catch (Exception $e) {
                 Log::error('Error insertando datos estación meteorológica');

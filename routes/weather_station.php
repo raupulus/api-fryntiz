@@ -29,11 +29,6 @@ Route::get('/temperature/all', 'TemperatureController@all');
 ## Busco un dato concreto para temperatura
 Route::get('/temperature/find', 'TemperatureController@find');
 
-## Obtengo todos los datos de luz.
-Route::get('/light/all', 'LuzController@all');
-
-## Busco un dato concreto para luz
-Route::get('/light/find', 'LuzController@find');
 
 ######################################################
 ##                    Privada
