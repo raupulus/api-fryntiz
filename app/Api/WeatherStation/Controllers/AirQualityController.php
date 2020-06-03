@@ -19,8 +19,8 @@ class AirQualityController extends BaseWheaterStationController
     public function addValidate($data)
     {
         return Validator::make($data, [
-            'spegas_resistanceed' => 'required|numeric',
             'gas_resistance' => 'required|numeric',
+            'air_quality' => 'required|numeric',
             'created_at' => 'date_format:Y-m-d H:i:s',
         ])->validate();
     }
