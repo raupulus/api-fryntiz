@@ -235,6 +235,10 @@
 
                             <tbody>
                                 @foreach($collection as $ele)
+                                    @if (!$ele)
+                                        @continue
+                                    @endif
+
                                     <tr>
                                         @php
                                         $x = $ele->getFillable();
