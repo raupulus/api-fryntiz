@@ -43,7 +43,7 @@
                 'TVOC' => \App\Tvoc::whereNotNull('value')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
-                'Calidad del Aire' => \App\Tvoc::whereNotNull('gas_resistance')
+                'Calidad del Aire' => \App\AirQuality::whereNotNull('gas_resistance')
                     ->whereNotNull('air_quality')
                 ->orderBy('created_at', 'DESC')
                 ->paginate(20),
