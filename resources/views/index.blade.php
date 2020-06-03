@@ -43,6 +43,10 @@
                 'TVOC' => \App\Tvoc::whereNotNull('value')
                     ->orderBy('created_at', 'DESC')
                     ->paginate(20),
+                'Calidad del Aire' => \App\Tvoc::whereNotNull('gas_resistance')
+                    ->whereNotNull('air_quality')
+                ->orderBy('created_at', 'DESC')
+                ->paginate(20),
 
             ];
         @endphp
@@ -123,6 +127,10 @@
             <div class="row">
                 <div class="col-md-12">
                     @foreach($datos as $title => $collection)
+                        @if(!$collection->count())
+                            @continue
+                        @endif
+
                         @php
                             $att_fillables = $collection->get(0)->getFillable();
                         @endphp
