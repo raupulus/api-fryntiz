@@ -19,6 +19,9 @@ class CreateExperienceAccreditedTable extends Migration
          * - date_end
          */
         Schema::create('experience_accredited', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')

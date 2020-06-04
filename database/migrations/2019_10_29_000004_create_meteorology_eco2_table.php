@@ -14,6 +14,9 @@ class CreateMeteorologyEco2Table extends Migration
     public function up()
     {
         Schema::create('meteorology_eco2', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->decimal('value', 14, 4)
                 ->comment('Valor entre 400ppm y 8192ppm');

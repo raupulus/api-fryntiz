@@ -19,6 +19,9 @@ class CreateCollaborationsTable extends Migration
          * urlinfo - repository - role
          */
         Schema::create('collaborations', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')

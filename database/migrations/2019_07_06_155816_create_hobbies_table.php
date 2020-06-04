@@ -18,6 +18,9 @@ class CreateHobbiesTable extends Migration
          * - translation_description_token - url
          */
         Schema::create('hobbies', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')

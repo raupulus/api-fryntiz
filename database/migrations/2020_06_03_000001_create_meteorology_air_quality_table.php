@@ -14,6 +14,9 @@ class CreateMeteorologyAirQualityTable extends Migration
     public function up()
     {
         Schema::create('meteorology_air_quality', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->decimal('gas_resistance', 22, 11)
                 ->comment('Valor de la resistencia del sensor');

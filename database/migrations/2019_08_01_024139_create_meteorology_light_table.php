@@ -14,6 +14,9 @@ class CreateMeteorologyLightTable extends Migration
     public function up()
     {
         Schema::create('meteorology_light', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->decimal('value', 14, 4);
             $table->timestamp('created_at')->nullable();

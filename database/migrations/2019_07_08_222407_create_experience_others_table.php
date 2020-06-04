@@ -15,6 +15,9 @@ class CreateExperienceOthersTable extends Migration
     {
         // id - translation_name_token - translation_description_token
         Schema::create('experience_others', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('translation_name_token');
             /*

@@ -14,6 +14,9 @@ class CreateMeteorologyWindDirectionTable extends Migration
     public function up()
     {
         Schema::create('meteorology_wind_direction', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->decimal('resistance', 22, 11)
                 ->comment('Valor de la resistencia usado para calcular la posición del viento');

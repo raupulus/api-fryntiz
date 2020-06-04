@@ -14,6 +14,9 @@ class CreateMeteorologyWinterTable extends Migration
     public function up()
     {
         Schema::create('meteorology_winter', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->decimal('speed', 14, 4);
             $table->decimal('average', 14, 4);

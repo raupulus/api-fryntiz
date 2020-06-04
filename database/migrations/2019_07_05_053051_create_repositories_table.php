@@ -15,6 +15,9 @@ class CreateRepositoriesTable extends Migration
     {
         // id - image_id - url - translation_token (fg languages) - title - description - name - perfil - alt
         Schema::create('repositories', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')

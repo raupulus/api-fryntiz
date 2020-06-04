@@ -14,6 +14,9 @@ class CreateMeteorologyTvocTable extends Migration
     public function up()
     {
         Schema::create('meteorology_tvoc', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->decimal('value', 14, 4)
                 ->comment('Valor entre  0ppb y 1187ppb');

@@ -18,6 +18,9 @@ class CreateAcademicComplementaryOnlineTable extends Migration
          * translation_description_token - entity - hours - instructor - url
          */
         Schema::create('academic_complementary_online', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')

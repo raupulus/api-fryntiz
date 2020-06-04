@@ -19,6 +19,9 @@ class CreateProjectsTable extends Migration
          * urlinfo - repositorie_id - repository
          */
         Schema::create('projects', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')
