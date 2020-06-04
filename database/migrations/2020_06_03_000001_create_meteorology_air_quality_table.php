@@ -15,8 +15,10 @@ class CreateMeteorologyAirQualityTable extends Migration
     {
         Schema::create('meteorology_air_quality', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('gas_resistance', 22, 11);
-            $table->decimal('air_quality', 14, 4);
+            $table->decimal('gas_resistance', 22, 11)
+                ->comment('Valor de la resistencia del sensor');
+            $table->decimal('air_quality', 14, 4)
+                ->comment('Resultado del algoritmo para calcular porcentaje de calidad del aire según resistencia, medida en frio y compensación por humedad');
             $table->timestamp('created_at')->nullable();
         });
     }

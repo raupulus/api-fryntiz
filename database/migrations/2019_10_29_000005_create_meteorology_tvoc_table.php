@@ -15,7 +15,8 @@ class CreateMeteorologyTvocTable extends Migration
     {
         Schema::create('meteorology_tvoc', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('value', 14, 4);
+            $table->decimal('value', 14, 4)
+                ->comment('Valor entre  0ppb y 1187ppb');
             $table->timestamp('created_at')->nullable();
         });
     }

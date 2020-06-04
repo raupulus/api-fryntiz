@@ -30,6 +30,6 @@ class CreateMeteorologyWindDirectionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meteorology_air_quality');
+        Schema::dropIfExists('meteorology_wind_direction');
     }
 }

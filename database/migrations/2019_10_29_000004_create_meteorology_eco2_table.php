@@ -15,7 +15,8 @@ class CreateMeteorologyEco2Table extends Migration
     {
         Schema::create('meteorology_eco2', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('value', 14, 4);
+            $table->decimal('value', 14, 4)
+                ->comment('Valor entre 400ppm y 8192ppm');
             $table->timestamp('created_at')->nullable();
         });
     }
