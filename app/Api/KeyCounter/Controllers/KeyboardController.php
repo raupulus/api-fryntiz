@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use function response;
 
-abstract class KeyboardController extends Controller
+class KeyboardController extends Controller
 {
     /**
      * @var string Mensaje de error al agregar un nuevo dato.

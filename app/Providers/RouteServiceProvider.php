@@ -38,6 +38,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->mapApiWeatherStationRoutes();
 
+        $this->mapApiKeycounterRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapWebhookRoutes();
@@ -83,6 +85,17 @@ class RouteServiceProvider extends ServiceProvider
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/weather_station.php'));
+    }
+
+    /**
+     * Rutas para la API de la estación meteorológica
+     */
+    protected function mapApiKeycounterRoutes()
+    {
+        Route::prefix('keycounter')
+            //->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/keycounter.php'));
     }
 
     /**

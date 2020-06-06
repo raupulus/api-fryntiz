@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use function response;
 
-abstract class MouseController extends Controller
+class MouseController extends Controller
 {
     /**
      * @var string Mensaje de error al agregar un nuevo dato.
