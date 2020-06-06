@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\KeyCounter;
 
+use App\Http\Controllers\Controller;
 use App\Keycounter\Mouse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;

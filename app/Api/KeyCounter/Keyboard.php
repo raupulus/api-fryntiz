@@ -2,6 +2,7 @@
 
 namespace App\Keycounter;
 
+use App\MinModel;
 use function array_key_exists;
 
 class Keyboard extends MinModel
@@ -55,7 +56,7 @@ class Keyboard extends MinModel
     public static function all($columns = ['*'])
     {
         $query = parent::all();
-        $query::whereNotNull('value')
+        $query::where('created_at', '!=', null)
             ->orderBy('created_at', 'DESC')
             ->get();
         return $query;
