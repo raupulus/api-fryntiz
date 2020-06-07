@@ -56,9 +56,8 @@ class Keyboard extends MinModel
     public static function all($columns = ['*'])
     {
         $query = parent::all();
-        $query::where('created_at', '!=', null)
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $query->where('created_at', '!=', null)
+            ->sortByDesc('created_at');
         return $query;
     }
 }

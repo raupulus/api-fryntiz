@@ -7,7 +7,7 @@
 ######################################################
 ##                    Pública
 ######################################################
-Route::get('/', 'KeyCounter\KeyCounterController@index');
+Route::get('/', 'Keycounter\KeyCounterController@index');
 
 Route::get('/test', function () {
     return 'Ruta de prueba accesible desde' . url('test');
@@ -21,15 +21,15 @@ Route::group([
     'middleware' => ['auth:api']
 ], function () {
     ## Añadir nuevo registro de pulsaciones para el teclado.
-    Route::post('/keyboard/add', 'KeyCounter\KeyboardController@add');
+    Route::post('/keyboard/add', 'Keycounter\KeyboardController@add');
 
     ## Añadir nuevos registros de pulsaciones para el teclado  por lotes JSON
-    Route::post('/keyboard/add-json', 'KeyCounter\KeyboardController@addJson');
+    Route::post('/keyboard/add-json', 'Keycounter\KeyboardController@addJson');
 
     ## Añadir nuevo registro de pulsaciones para el teclado.
-    Route::post('/mouse/add', 'KeyCounter\MouseController@add');
+    Route::post('/mouse/add', 'Keycounter\MouseController@add');
 
     ## Añadir nuevos registros de pulsaciones para el teclado  por lotes JSON
-    Route::post('/mouse/add-json', 'KeyCounter\MouseController@addJson');
+    Route::post('/mouse/add-json', 'Keycounter\MouseController@addJson');
 });
 

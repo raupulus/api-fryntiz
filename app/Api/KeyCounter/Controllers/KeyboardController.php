@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\KeyCounter;
+namespace App\Http\Controllers\Keycounter;
 
 use App\Http\Controllers\Controller;
 use App\Keycounter\Keyboard;
