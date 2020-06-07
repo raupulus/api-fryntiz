@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Keycounter\KeyCounterController;
+namespace App\Http\Controllers\Keycounter;
 
 class KeyboardController extends KeyCounterController
 {
