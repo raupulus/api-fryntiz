@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Keycounter;
+use App\Http\Controllers\Keycounter\KeyCounterController;
 
-use App\Keycounter\KeyCounter;
-
-class KeyboardController extends KeyCounter
+class KeyboardController extends KeyCounterController
 {
     /**
      * @var string Ruta y modelo sobre el que se trabajará.
