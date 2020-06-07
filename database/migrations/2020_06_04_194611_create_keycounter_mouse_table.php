@@ -32,6 +32,10 @@ class CreateKeycounterMouseTable extends Migration
                 ->comment('Puntuación conseguida en esta racha');
             $table->bigInteger('weekday')
                 ->comment('Día de la semana (0 es domingo)');
+            $table->string('device_id')
+                ->comment('Identificador del dispositivo asociado');
+            $table->string('device_name')
+                ->comment('Nombre del dispositivo asociado');
             $table->timestamps();
         });
     }
