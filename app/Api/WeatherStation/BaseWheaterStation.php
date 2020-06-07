@@ -3,7 +3,6 @@
 namespace App;
 
 use function array_key_exists;
-use function response;
 
 class BaseWheaterStation extends MinModel
 {

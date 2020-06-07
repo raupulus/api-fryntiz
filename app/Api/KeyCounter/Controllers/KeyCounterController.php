@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Keycounter;
 
 use App\Http\Controllers\Controller;
-use App\Keycounter\Keyboard;
-use App\Keycounter\Mouse;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use function response;
-use function view;
 
 abstract class KeyCounterController extends Controller
 {

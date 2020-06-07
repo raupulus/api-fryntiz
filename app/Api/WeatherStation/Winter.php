@@ -2,8 +2,6 @@
 
 namespace App;
 
-use function response;
-
 class Winter extends BaseWheaterStation
 {
     protected $fillable = [
