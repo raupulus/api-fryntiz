@@ -83,14 +83,18 @@ abstract class KeyCounterController extends Controller
                 ## Parseo la fecha
                 $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
 
-                ## Obtengo atributos y los validos para excluir posible basura.
-                $attributes = $this->addValidate(get_object_vars($d));
 
-                $model->fill($attributes);
+                // TODO → Corregir fallo al subir cuando se está validando
+
+                ## Obtengo atributos y los validos para excluir posible basura.
+                #$attributes = $this->addValidate(get_object_vars($d));
+
+                #$model->fill($attributes);
+                $model->fill($d);
 
                 $model->save();
             } catch (Exception $e) {
-                Log::error('Error insertando datos estación meteorológica');
+                Log::error('Error insertando datos en contador de pulsaciones');
                 Log::error($e);
                 $fallidos++;
             }
