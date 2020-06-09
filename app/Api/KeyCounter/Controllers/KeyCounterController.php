@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
+use function is_array;
 use function response;
 
 abstract class KeyCounterController extends Controller
@@ -87,12 +88,16 @@ abstract class KeyCounterController extends Controller
                 // TODO → Corregir fallo al subir cuando se está validando
 
                 ## Obtengo atributos y los validos para excluir posible basura.
-                #$attributes = $this->addValidate(get_object_vars($d));
+                //$attributes = $this->addValidate(get_object_vars($d));
+                //$model->fill($attributes);
+                // TEMPORAL:
+                $z = get_object_vars($d);
+                if (is_array($z)) {
+                    $model->fill(get_object_vars($d));
+                    $model->save();
+                }
 
-                #$model->fill($attributes);
-                $model->fill($d);
-
-                $model->save();
+                //$model->save();
             } catch (Exception $e) {
                 Log::error('Error insertando datos en contador de pulsaciones');
                 Log::error($e);
