@@ -6,7 +6,9 @@
 
     <div class="col-md-12 text-center">
         <h1>KEYBOARD</h1>
+    </div>
 
+    <div class="card-deck m-5">
         <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
             <div class="card-header">Pulsaciones media</div>
             <div class="card-body">
