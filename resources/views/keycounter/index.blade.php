@@ -5,10 +5,33 @@
 <div class="row">
 
     <div class="col-md-12 text-center">
-        <h1>KEYBOARD</h1>
+        <h1>Estadísticas para estos 100 resultados</h1>
+        <p>
+            Registro en hora UTC
+        </p>
     </div>
 
     <div class="card-deck m-5">
+        <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+            <div class="card-header">Total de pulsaciones</div>
+            <div class="card-body">
+                <h5 class="card-title"></h5>
+                <p class="card-text">
+                    {{$keyboard->sum('pulsations')}}
+                </p>
+            </div>
+        </div>
+
+        <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+            <div class="card-header">Total de puntuación</div>
+            <div class="card-body">
+                <h5 class="card-title"></h5>
+                <p class="card-text">
+                    {{$keyboard->sum('score')}}
+                </p>
+            </div>
+        </div>
+
         <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
             <div class="card-header">Pulsaciones media</div>
             <div class="card-body">
@@ -47,6 +70,10 @@
                 </p>
             </div>
         </div>
+    </div>
+
+    <div class="col-md-12 text-center">
+        <h1>KEYBOARD</h1>
     </div>
 
     <div class="col-md-12 p-5">
