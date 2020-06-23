@@ -18,12 +18,14 @@ class ViewsController extends Controller
     public function index()
     {
         return view('keycounter.index')->with([
-            'keyboard' => Keyboard::whereNotNull('pulsations')
+            'keyboard' => Keyboard::whereNotNull('start_at')
+                ->whereNotNull('end_at')
+                ->where('pulsations', '>=', 1)
                 ->orderBy('created_at', 'DESC')
-                ->paginate(30),
+                ->paginate(100),
             'mouse' => Mouse::whereNotNull('pulsations')
                 ->orderBy('created_at', 'DESC')
-                ->paginate(30),
+                ->paginate(100),
         ]);
     }
 }
