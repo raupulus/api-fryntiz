@@ -49,10 +49,11 @@
         </div>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-md-12 p-5">
         <table class="table table-sm table-striped table-dark table-bordered table-hover">
             <thead>
             <tr>
+                <td>nº</td>
                 <td>start_at</td>
                 <td>end_at</td>
                 <td>pulsations</td>
@@ -69,6 +70,7 @@
             <tbody>
             @foreach($keyboard as $reg)
                 <tr>
+                    <td>{{$reg->id}}</td>
                     <td>{{$reg->start_at}}</td>
                     <td>{{$reg->end_at}}</td>
                     <td>{{$reg->pulsations}}</td>
@@ -89,10 +91,11 @@
         <h1>MOUSE</h1>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-md-12 p-5">
         <table class="table table-sm table-striped table-dark table-bordered table-hover">
             <thead>
             <tr>
+                <td>nº</td>
                 <td>start_at</td>
                 <td>end_at</td>
                 <td>pulsations</td>
@@ -109,6 +112,7 @@
             <tbody>
             @foreach($mouse as $reg)
                 <tr>
+                    <td>{{$reg->id}}</td>
                     <td>{{$reg->start_at}}</td>
                     <td>{{$reg->end_at}}</td>
                     <td>{{$reg->pulsations}}</td>
