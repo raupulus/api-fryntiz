@@ -18,8 +18,8 @@ class ViewsController extends Controller
     public function index()
     {
         return view('keycounter.index')->with([
-            'keyboard' => Keyboard::all(),
-            'mouse' => Mouse::all(),
+            'keyboard' => Keyboard::paginate(50),
+            'mouse' => Mouse::paginate(50),
         ]);
     }
 }
