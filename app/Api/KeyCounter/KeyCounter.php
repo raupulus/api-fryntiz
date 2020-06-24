@@ -188,6 +188,7 @@ class KeyCounter extends MinModel
             ])
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('device_id', 'device_name', 'day', 'weekday')
+            ->orderBy('day')
             ->get();
 
 
