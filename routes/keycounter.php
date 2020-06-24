@@ -7,7 +7,7 @@
 ######################################################
 ##                    Pública
 ######################################################
-Route::get('/', 'Keycounter\ViewsController@index');
+Route::get('/', 'Keycounter\ViewsController@index')->name('keycounter.index');
 
 Route::get('/test', function () {
     return 'Ruta de prueba accesible desde' . url('test');

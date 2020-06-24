@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Keycounter;
 use App\Http\Controllers\Controller;
 use App\Keycounter\Keyboard;
 use App\Keycounter\Mouse;
+use Illuminate\Http\Request;
 use function view;
 
 class ViewsController extends Controller
@@ -15,10 +16,19 @@ class ViewsController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $month = $request->get('month');
+        $year = $request->get('year');
+
         //dd(Keyboard::statistics());
         return view('keycounter.index')->with([
+            'month' => $month,
+            'year' => $year,
+            'keyboard_statistics' => Keyboard::statistics($month, $year),
+            'meses' => ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+                        'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+                        'Noviembre', 'Diciembre'],
             'keyboard' => Keyboard::whereNotNull('start_at')
                 ->whereNotNull('end_at')
                 ->where('pulsations', '>=', 1)

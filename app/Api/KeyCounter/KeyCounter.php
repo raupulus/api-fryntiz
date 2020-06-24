@@ -182,10 +182,12 @@ class KeyCounter extends MinModel
                 DB::Raw('sum(pulsations_special_keys) as total_pulsations_special_keys'),
                 DB::Raw('sum(pulsation_average) as total_pulsation_average'),
                 DB::Raw('sum(score) as total_score'),
-                'weekday'
+                'weekday',
+                'device_id',
+                'device_name'
             ])
             ->whereBetween('created_at', [$start, $end])
-            ->groupBy('day', 'weekday')
+            ->groupBy('device_id', 'device_name', 'day', 'weekday')
             ->get();
 
 
