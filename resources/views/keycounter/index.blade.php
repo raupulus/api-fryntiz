@@ -13,7 +13,7 @@
         </h1>
     </div>
 
-    <div class="col-md-12 text-center">
+    <div class="col-md-12 text-center p-5">
         <h2>Cambiar periodo</h2>
 
         <form action="{{route('keycounter.index')}}" method="GET">
