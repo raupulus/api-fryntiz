@@ -3,11 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Keycounter\Keyboard;
-use App\Keycounter\KeyCounter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class KeyCounterKeyCounterRemoveDuplicate extends Command
+class KeyCounterRemoveDuplicate extends Command
 {
     /**
      * The name and signature of the console command.
@@ -21,7 +20,7 @@ class KeyCounterKeyCounterRemoveDuplicate extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Elimina de la base de datos todos los registros duplicados que pudieran haber';
 
     /**
      * Create a new command instance.
