@@ -51,8 +51,9 @@
     </div>
 
 
-    <div class="col-md-12">
-        <canvas id="line-chart" width="800" height="450"></canvas>
+    <div class="col-md-10 mx-auto text-center">
+        <canvas id="line-chart" width="600" height="450"
+                style="max-height: 600px; max-width: 1000px; margin: auto"></canvas>
     </div>
 </div>
 
