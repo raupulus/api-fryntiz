@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Keycounter\Keyboard;
 use App\Keycounter\Mouse;
 use Illuminate\Http\Request;
+use function date;
 use function view;
 
 class ViewsController extends Controller
@@ -18,8 +19,8 @@ class ViewsController extends Controller
      */
     public function index(Request $request)
     {
-        $month = $request->get('month');
-        $year = $request->get('year');
+        $month = $request->get('month') ?? date('m');
+        $year = $request->get('year') ?? date('Y');
 
         //dd(Keyboard::statistics());
         return view('keycounter.index')->with([
