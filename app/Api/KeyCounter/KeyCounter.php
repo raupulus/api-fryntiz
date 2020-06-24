@@ -3,13 +3,17 @@
 namespace App\Keycounter;
 
 use App\MinModel;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use function array_key_exists;
+use function count;
 
 class KeyCounter extends MinModel
 {
     protected $fillable = [
         'start_at',
         'end_at',
+        'duration',
         'pulsations',
         'pulsations_special_keys',
         'pulsation_average',
@@ -72,5 +76,126 @@ class KeyCounter extends MinModel
             ->where('created_at', '!=', null)
             ->sortByDesc('created_at');
         return $query;
+    }
+
+    /**
+     * Devuelve la consulta filtrada sin ejecutar para obtener elementos
+     * seguros.
+     *
+     * By Raúl Caro
+     *
+     * @param array $filter Recibe una matriz con los tipos de filtros dentro:
+     *                      where => ['campo' => 'condicion'],
+     *                      orWhere => ['campo' => 'condicion'],
+     *                      whereNull => ['campo'],
+     *                      whereNotNull => ['campo'],
+     *
+     * @return mixed
+     */
+    public static function getAllFiltered($filter = [])
+    {
+        $model = self::whereNotNull('start_at')
+            ->whereNotNull('end_at')
+            ->where('pulsations', '>=', 1);
+
+        ## Proceso el filtro de condiciones obligatorias.
+        if (isset($filter['where']) && count($filter['where'])) {
+            foreach ($filter['where'] as $idx => $filtro) {
+                if ($filtro != null) {
+                    $model->where($idx, $filtro);
+                }
+            }
+        }
+
+        ## Proceso el filtro de condiciones para no null.
+        if (isset($filter['whereNotNull']) && count($filter['whereNotNull'])) {
+            foreach ($filter['whereNotNull'] as $ele) {
+                $model->whereNotNull($ele);
+            }
+        }
+
+        ## Proceso el filtro de condiciones para obligar campos null.
+        if (isset($filter['whereNull']) && count($filter['whereNull'])) {
+            foreach ($filter['whereNull'] as $ele) {
+                $model->whereNull($ele);
+            }
+        }
+
+        ## Proceso el filtro de condiciones opcionales
+        if (isset($filter['orWhere']) && count($filter['orWhere'])) {
+            $model->where(function ($query) use ($filter) {
+                foreach ($filter['orWhere'] as $idx => $filtro) {
+                    if ($filtro) {
+                        $query->orWhere($idx, 'LIKE', '%'.$filtro.'%');
+                    }
+                }
+
+                return $query;
+            });
+        }
+
+        return $model;
+    }
+
+    /**
+     * Devuelve estadísticas del mes y año para el modelo que representa;
+     *
+     * @return array
+     */
+    public static function statistics($month = null, $year = null)
+    {
+        $now = Carbon::now();
+        $now->setDay(1);
+        $now->setTime(0, 0);
+
+        ## Establezco mes si se ha indicado.
+        if ($month) {
+            $now->setMonth($month);
+        }
+
+        ## Establezco año si se ha indicado.
+        if ($year) {
+            $now->setYear($year);
+        }
+
+        ## Inicio del mes.
+        $start = (clone($now))->format('Y-m-d H:i:s');
+
+        ## Final del mes.
+        $end = clone($now);
+        $end->addMonth();
+        $end->subDay();
+        $end->setTime(23, 59, 59);
+        $end = $end->format('Y-m-d H:i:s');
+
+        ## Obtengo la consulta con los datos filtrados.
+        $count = self::getAllFiltered()
+            ->whereBetween('created_at', [$start, $end])
+            ->count();
+
+        $data = self::getAllFiltered()
+            ->select([
+                DB::Raw('count(id) as spurts'), # Cantidad de rachasstart_at
+                DB::Raw('sum(duration) as duration'),
+                DB::Raw('DATE(created_at) as day'),
+                DB::Raw('sum(pulsations) as total_pulsations'),
+                DB::Raw('sum(pulsations_special_keys) as total_pulsations_special_keys'),
+                DB::Raw('sum(pulsation_average) as total_pulsation_average'),
+                DB::Raw('sum(score) as total_score'),
+                'weekday'
+            ])
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('day', 'weekday')
+            ->get();
+
+
+        return [
+            'period_start' => $start,  ## Comienzo del periodo
+            'period_end' => $end,  ## Final del periodo
+            'period_count' => $count,  ## Total de registros/rachas este periodo
+            'period_max_pulsations' => $data->max('total_pulsations'),
+            'period_max_pulsations' => $data->max('total_pulsations'),
+            'data' => $data,  ## Los datos devueltos como resultado
+        ];
     }
 }

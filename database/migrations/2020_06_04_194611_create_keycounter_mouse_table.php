@@ -22,6 +22,8 @@ class CreateKeycounterMouseTable extends Migration
                 ->comment('Momento de iniciar la racha');
             $table->timestamp('end_at')
                 ->comment('Momento del final de la racha');
+            $table->bigInteger('duration')
+                ->comment('Duración en Segundos de la racha');
             $table->bigInteger('pulsations')
                 ->comment('Cantidad de pulsaciones total de la racha');
             $table->bigInteger('pulsations_special_keys')

@@ -17,6 +17,7 @@ class ViewsController extends Controller
      */
     public function index()
     {
+        //dd(Keyboard::statistics());
         return view('keycounter.index')->with([
             'keyboard' => Keyboard::whereNotNull('start_at')
                 ->whereNotNull('end_at')

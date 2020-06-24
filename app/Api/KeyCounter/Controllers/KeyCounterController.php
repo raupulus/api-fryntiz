@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Keycounter;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -94,6 +95,15 @@ abstract class KeyCounterController extends Controller
                 $z = get_object_vars($d);
                 if (is_array($z)) {
                     $model->fill(get_object_vars($d));
+
+                    ## Calculo la duración en segundos de la racha.
+                    $start = new Carbon($model->start_at);
+                    $end = new Carbon($model->end_at);
+                    $duration = $start->diffInSeconds($end);
+
+                    ## Almaceno la duración en segundos de la racha.
+                    $model->duration = $duration;
+
                     $model->save();
                 }
 
