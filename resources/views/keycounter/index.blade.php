@@ -240,6 +240,18 @@ foreach ($days as $day) {
 
         ## Compruebo que haya registro para este dispositivo este día o seteo 0.
         if ($s && isset($datasetTMP[$device])) {
+            if (!isset($datasetTMP[$device]['label'])) {
+                $datasetTMP[$device]['label'] = $s->device_name;
+            }
+
+            if (!isset($datasetTMP[$device]['borderColor'])) {
+                $datasetTMP[$device]['borderColor'] = $colors[$s->device_id];
+            }
+
+            if (!isset($datasetTMP[$device]['fill'])) {
+                $datasetTMP[$device]['fill'] = 'false';
+            }
+
             $datasetTMP[$device]['data'][] = $s->total_pulsations;
         } else if ($s) {
             $datasetTMP[$device] = [
@@ -251,7 +263,6 @@ foreach ($days as $day) {
         } else {
             $datasetTMP[$device]['data'][] = 0;
         }
-
     }
 }
 
