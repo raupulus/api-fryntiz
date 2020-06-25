@@ -225,22 +225,33 @@ $stats = $keyboard_statistics['data'];
 $colors = ['#3e95cd', '#8e5ea2', '#3cba9f', '#e8c3b9', '#c45850', '#ff0000',
            '#00ff00', '#0000ff'];
 
+$days = array_unique($stats->pluck('day')->sortBy('day')->toArray());
+$devices = array_unique($stats->pluck('device_id')->toArray());
+
 $labels = [];
 $dataset = [];
 $datasetTMP = [];
 
-foreach ($stats as $s) {
-    $labels[] = (new Carbon\Carbon($s->day))->format('d');
+foreach ($days as $day) {
+    $labels[] = (new Carbon\Carbon($day))->format('d');
 
-    if (isset($datasetTMP[$s->device_id])) {
-        $datasetTMP[$s->device_id]['data'][] = $s->total_pulsations;
-    } else {
-        $datasetTMP[$s->device_id] = [
-            'data' => [$s->total_pulsations],
-            'label' => $s->device_name,
-            'borderColor' => $colors[$s->device_id],
-            'fill' => 'false'
-        ];
+    foreach ($devices as $device) {
+        $s = $stats->where('day', $day)->where('device_id', $device)->first();
+
+        ## Compruebo que haya registro para este dispositivo este día o seteo 0.
+        if ($s && isset($datasetTMP[$device])) {
+            $datasetTMP[$device]['data'][] = $s->total_pulsations;
+        } else if ($s) {
+            $datasetTMP[$device] = [
+                'data' => [$s->total_pulsations],
+                'label' => $s->device_name,
+                'borderColor' => $colors[$s->device_id],
+                'fill' => 'false'
+            ];
+        } else {
+            $datasetTMP[$device]['data'][] = 0;
+        }
+
     }
 }
 
