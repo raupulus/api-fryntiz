@@ -270,7 +270,9 @@ foreach ($days as $day) {
 
         ## Añado al array total el valor actual.
         if ($s) {
-            $totalTMP[$day] += $s->total_pulsations;
+            $totalTMP[$day] = isset($totalTMP[$day]) ? $totalTMP[$day] +
+                              $s->total_pulsations :
+                              $s->total_pulsations;
         }
     }
 }
