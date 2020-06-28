@@ -56,21 +56,27 @@
                 style="max-height: 600px; max-width: 1000px; margin: auto"></canvas>
     </div>
 
-    <div class="col-md-12 m-5">
+    <div class="col-md-12 m-5 text-secondary text-danger">
         <div class="row">
             <div class="col-md-10 mx-auto text-left">
                 Total de rachas este mes:
-                {{$keyboard_statistics['period_count']}}
+                <strong>
+                    {{$keyboard_statistics['period_count']}}
+                </strong>
             </div>
 
             <div class="col-md-10 mx-auto text-left">
                 Total de puntuaciones este mes:
-                {{$keyboard_statistics['period_total_pulsations']}}
+                <strong>
+                    {{$keyboard_statistics['period_total_pulsations']}}
+                </strong>
             </div>
 
             <div class="col-md-10 mx-auto text-left">
                 Pulsaciones máximas de un dispositivo en un día:
-                {{$keyboard_statistics['data']->max('total_pulsations')}}
+                <strong>
+                    {{$keyboard_statistics['data']->max('total_pulsations')}}
+                </strong>
             </div>
         </div>
     </div>
