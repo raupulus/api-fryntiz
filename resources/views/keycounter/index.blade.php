@@ -221,17 +221,21 @@
 </div>
 
 @php
-$stats = $keyboard_statistics['data'];
+$stats = $keyboard_statistics['data']->sortBy('day');
 $colors = ['#3e95cd', '#8e5ea2', '#3cba9f', '#e8c3b9', '#c45850', '#ff0000',
            '#00ff00', '#0000ff'];
 
-$days = array_unique($stats->pluck('day')->sortBy('day')->toArray());
+$days = array_unique($stats->pluck('day')->toArray());
 $devices = array_unique($stats->pluck('device_id')->toArray());
 
 $labels = [];
 $dataset = [];
 $datasetTMP = [];
 
+## Array temporal de días con el valor de las pulsaciones por día de todos los dispositivos.
+$totalTMP = [];
+
+## Recorro todos los días y genero por cada dispositivo un array con los datos.
 foreach ($days as $day) {
     $labels[] = (new Carbon\Carbon($day))->format('d');
 
@@ -263,14 +267,33 @@ foreach ($days as $day) {
         } else {
             $datasetTMP[$device]['data'][] = 0;
         }
+
+        ## Añado al array total el valor actual.
+        if ($s) {
+            $totalTMP[$d] += $s->total_pulsations;
+        }
     }
 }
 
+## Añado un nuevo elemento que agrupe todos los dispositivos con el total por día.
+$total = [];
+foreach ($totalTMP as $t) {
+    $total[] = $t;
+}
+
+$datasetTMP[0] = [
+    'data' => $total,
+    'label' => 'Total',
+    'borderColor' => '#000000',
+    'fill' => 'false'
+];
+
+## Añado todos los datos por días y dispositivos al array final.
 foreach ($datasetTMP as $d) {
     $dataset[] = $d;
 }
 
-
+## Convierto los datos a string y json para luego extraerlos en javascript.
 $labelsString = implode(',', array_unique($labels));
 $datasetJson = json_encode($dataset);
 

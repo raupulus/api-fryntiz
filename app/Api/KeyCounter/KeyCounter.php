@@ -173,6 +173,7 @@ class KeyCounter extends MinModel
             ->whereBetween('created_at', [$start, $end])
             ->count();
 
+        ## Obtengo las estadísticas agrupadas por cada dispositivo
         $data = self::getAllFiltered()
             ->select([
                 DB::Raw('count(id) as spurts'), # Cantidad de rachasstart_at
@@ -182,14 +183,12 @@ class KeyCounter extends MinModel
                 DB::Raw('sum(pulsations_special_keys) as total_pulsations_special_keys'),
                 DB::Raw('sum(pulsation_average) as total_pulsation_average'),
                 DB::Raw('sum(score) as total_score'),
-                'weekday',
                 'device_id',
                 'device_name'
             ])
             ->whereBetween('created_at', [$start, $end])
-            ->groupBy('device_id', 'device_name', 'day', 'weekday', 'created_at')
+            ->groupBy('device_id', 'day', 'device_name')
             ->orderBy('day')
-            ->orderBy('created_at')
             ->get();
 
 
