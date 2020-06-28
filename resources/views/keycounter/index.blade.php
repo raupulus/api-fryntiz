@@ -222,7 +222,7 @@
 
 @php
 $stats = $keyboard_statistics['data']->sortBy('day');
-$colors = ['#3e95cd', '#8e5ea2', '#3cba9f', '#e8c3b9', '#c45850', '#ff0000',
+$colors = ['#3e95cd', '#8e5ea2', '#3cba9f', '#e8c3b9', '#c45850', '#000000',
            '#00ff00', '#0000ff'];
 
 $days = array_unique($stats->pluck('day')->toArray());
@@ -286,7 +286,7 @@ foreach ($totalTMP as $t) {
 $datasetTMP[0] = [
     'data' => $total,
     'label' => 'Total',
-    'borderColor' => '#000000',
+    'borderColor' => '#ff0000',
     'fill' => 'false'
 ];
 
