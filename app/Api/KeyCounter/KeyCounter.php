@@ -197,7 +197,6 @@ class KeyCounter extends MinModel
             'period_end' => $end,  ## Final del periodo
             'period_count' => $count,  ## Total de registros/rachas este periodo
             'period_max_pulsations' => $data->max('total_pulsations'),
-            'period_max_pulsations' => $data->max('total_pulsations'),
             'data' => $data,  ## Los datos devueltos como resultado
         ];
     }

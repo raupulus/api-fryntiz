@@ -55,6 +55,25 @@
         <canvas id="line-chart" width="600" height="450"
                 style="max-height: 600px; max-width: 1000px; margin: auto"></canvas>
     </div>
+
+    <div class="col-md-12 m-5">
+        <div class="row">
+            <div class="col-md-10 mx-auto text-left">
+                Total de rachas este mes:
+                {{$keyboard_statistics['period_count']}}
+            </div>
+
+            <div class="col-md-10 mx-auto text-left">
+                Pulsaciones máximas en un día:
+                {{$keyboard_statistics['period_max_pulsations']}}
+            </div>
+
+            <div class="col-md-10 mx-auto text-left">
+                Total de puntuaciones este mes:
+                {{$keyboard_statistics['data']->sum('total_pulsations')}}
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row">
@@ -222,8 +241,8 @@
 
 @php
 $stats = $keyboard_statistics['data']->sortBy('day');
-$colors = ['#3e95cd', '#8e5ea2', '#3cba9f', '#e8c3b9', '#c45850', '#000000',
-           '#00ff00', '#0000ff'];
+$colors = ['#3e95cd', '#8e5ea2', '#007bff', '#e8c3b9', '#c45850',
+           '#000000', '#00ff00', '#0000ff', '#3cba9f'];
 
 $days = array_unique($stats->pluck('day')->toArray());
 $devices = array_unique($stats->pluck('device_id')->toArray());
