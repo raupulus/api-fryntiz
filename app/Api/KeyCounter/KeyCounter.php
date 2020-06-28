@@ -6,6 +6,7 @@ use App\MinModel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use function array_key_exists;
+use function array_unique;
 use function count;
 
 class KeyCounter extends MinModel
@@ -191,12 +192,18 @@ class KeyCounter extends MinModel
             ->orderBy('day')
             ->get();
 
+        ## Extraigo el id de todos los dispositivos para este mes.
+        $devices_ids = array_unique($data->pluck('device_id')->toArray());
+
+        $total_puntuations = $data->sum('total_pulsations');
 
         return [
+            'devices_ids' => $devices_ids,  ## Ids de todos los dispositivos.
             'period_start' => $start,  ## Comienzo del periodo
             'period_end' => $end,  ## Final del periodo
             'period_count' => $count,  ## Total de registros/rachas este periodo
-            'period_max_pulsations' => $data->max('total_pulsations'),
+            'period_total_pulsations' => $total_puntuations,
+             #'period_max_pulsations' => $day_max_puntuations,
             'data' => $data,  ## Los datos devueltos como resultado
         ];
     }

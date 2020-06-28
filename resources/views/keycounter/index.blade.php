@@ -64,13 +64,13 @@
             </div>
 
             <div class="col-md-10 mx-auto text-left">
-                Pulsaciones máximas en un día:
-                {{$keyboard_statistics['period_max_pulsations']}}
+                Total de puntuaciones este mes:
+                {{$keyboard_statistics['period_total_pulsations']}}
             </div>
 
             <div class="col-md-10 mx-auto text-left">
-                Total de puntuaciones este mes:
-                {{$keyboard_statistics['data']->sum('total_pulsations')}}
+                Pulsaciones máximas de un dispositivo en un día:
+                {{$keyboard_statistics['data']->max('total_pulsations')}}
             </div>
         </div>
     </div>
@@ -245,7 +245,7 @@ $colors = ['#3e95cd', '#8e5ea2', '#007bff', '#e8c3b9', '#c45850',
            '#000000', '#00ff00', '#0000ff', '#3cba9f'];
 
 $days = array_unique($stats->pluck('day')->toArray());
-$devices = array_unique($stats->pluck('device_id')->toArray());
+$devices = $keyboard_statistics['devices_ids'];
 
 $labels = [];
 $dataset = [];
