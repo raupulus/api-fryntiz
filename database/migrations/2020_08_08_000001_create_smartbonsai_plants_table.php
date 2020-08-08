@@ -18,6 +18,18 @@ class CreateSmartbonsaiPlantsTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->string('name')
+                ->comment('Nombre común de la planta');
+            $table->string('name_scientific')
+                ->comment('Nombre científico de la planta');
+            $table->string('description')
+                ->comment('Descripción general de la planta');
+            $table->text('details')
+                ->comment('Descripción avanzada con detalles de la planta');
+            $table->timestamp('start_at')
+                ->comment('Momento en el que se ha sembrado');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
