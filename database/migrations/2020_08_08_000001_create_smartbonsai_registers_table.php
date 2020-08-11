@@ -31,7 +31,8 @@ class CreateSmartbonsaiRegistersTable extends Migration
                 ->comment('Cantidad de humedad en el ambiente');
             $table->decimal('soil_humidity', 13, 2)
                 ->comment('Humedad del suelo');
-            $table->integer('full_water_tank')
+            $table->boolean('full_water_tank')
+                ->default(false)
                 ->comment('Indica si hay agua en el tanque de agua');
             $table->boolean('waterpump_enabled')
                 ->default(false)
@@ -39,7 +40,7 @@ class CreateSmartbonsaiRegistersTable extends Migration
             $table->boolean('vaporizer_enabled')
                 ->default(false)
                 ->comment('Indica si se ha activado el vaporizador');
-            $table->timestamp('created_at');
+            $table->timestamp('created_at')->nullable();
         });
     }
 
