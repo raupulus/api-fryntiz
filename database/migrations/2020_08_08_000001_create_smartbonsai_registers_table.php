@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmartbonsai_registersTable extends Migration
+class CreateSmartbonsaiRegistersTable extends Migration
 {
     /**
      * Run the migrations.

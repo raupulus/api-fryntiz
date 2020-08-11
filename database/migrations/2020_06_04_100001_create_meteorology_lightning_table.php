@@ -18,11 +18,11 @@ class CreateMeteorologyLightningTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->integer('distance', 11)
+            $table->integer('distance')
                 ->comment('Distancia estimada de la caída del rayo');
-            $table->integer('energy', 11)
+            $table->integer('energy')
                 ->comment('Energía detectada para detectar el rayo');
-            $table->integer('noise_floor', 11)
+            $table->integer('noise_floor')
                 ->comment('Ruido de fondo compensado para diferenciar el rayo');
             $table->timestamp('created_at')->nullable();
         });
