@@ -106,8 +106,14 @@ Route::group([
         ## Añadir nuevo registro de Air Quality.
         Route::post('/air_quality/add', 'AirQualityController@add');
 
-        ## Añadir nuevos registros de UVB por lotes JSON
+        ## Añadir nuevos registros de Air Quality por lotes JSON
         Route::post('/air_quality/add-json', 'AirQualityController@addJson');
+
+        ## Añadir nuevo registro de Air Quality.
+        Route::post('/lightning/add', 'LightningController@add');
+
+        ## Añadir nuevos registros de UVB por lotes JSON
+        Route::post('/lightning/add-json', 'LightningController@addJson');
     }
 );
 

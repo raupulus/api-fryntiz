@@ -45,6 +45,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapWebhookRoutes();
 
         $this->mapWebRoutes();
+
+        $this->mapSmartPlantRoutes();
     }
 
     /**
@@ -93,7 +95,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiKeycounterRoutes()
     {
         Route::prefix('keycounter')
-            //->middleware('api')
+            ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/keycounter.php'));
     }
@@ -107,5 +109,16 @@ class RouteServiceProvider extends ServiceProvider
             //->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/webhook.php'));
+    }
+
+    /**
+     * Rutas para los webhooks.
+     */
+    protected function mapSmartPlantRoutes()
+    {
+        Route::prefix('sp')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/smart_plant.php'));
     }
 }
