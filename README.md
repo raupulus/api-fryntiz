@@ -48,3 +48,16 @@ sudo certbot --authenticator webroot --installer apache \
 
 sudo certbot certonly --webroot -w /var/www/web/api-fryntiz/public \
     -d www.api.fryntiz.dev -d api.fryntiz.dev
+
+
+## API Estación meteorológica
+
+Ruta de acceso: /ws
+
+## API Contador de teclas (Keycounter)
+
+Ruta de acceso: /keycounter
+
+## API Smart Plant
+
+Ruta de acceso: /sp
