@@ -2,7 +2,7 @@
 
 namespace App;
 
-class Lighting extends BaseWheaterStation
+class Lightning extends BaseWheaterStation
 {
     protected $table = 'meteorology_lightning';
 }

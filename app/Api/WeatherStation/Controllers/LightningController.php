@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LightningController extends BaseWheaterStationController
 {
-    protected $model = '\App\Lighting';
+    protected $model = '\App\Lightning';
 
     /**
      * Reglas de validación a la hora de insertar datos.
