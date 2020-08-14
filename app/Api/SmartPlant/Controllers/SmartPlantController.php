@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SmartPlant;
 
 use App\Http\Controllers\Controller;
+use App\SmartPlant\PlantRegister;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ abstract class SmartPlantController extends Controller
     /**
      * @var string Ruta y modelo sobre el que se trabajará.
      */
-    protected $model;
+    protected $model = PlantRegister::class;
 
     /**
      * @var string Mensaje de error al agregar un nuevo dato.
@@ -30,7 +31,7 @@ abstract class SmartPlantController extends Controller
      */
     public function all()
     {
-        $model = $this->model::whereNotNull('value')
+        $model = $this->model::whereNotNull('soil_humidity')
             ->orderBy('created_at', 'DESC')
             ->get();
         return response()->json($model);
@@ -89,22 +90,15 @@ abstract class SmartPlantController extends Controller
                 // TODO → Corregir fallo al subir cuando se está validando
 
                 ## Obtengo atributos y los validos para excluir posible basura.
-                //$attributes = $this->addValidate(get_object_vars($d));
-                //$model->fill($attributes);
+                $attributes = $this->addValidate(get_object_vars($d));
+                $model->fill($attributes);
                 // TEMPORAL:
-                $z = get_object_vars($d);
-                if (is_array($z)) {
-                    $model->fill(get_object_vars($d));
-
-                    ## Calculo la duración en segundos de la racha.
-                    $start = new Carbon($model->start_at);
-                    $end = new Carbon($model->end_at);
-                    $duration = $start->diffInSeconds($end);
-
-                    ## Almaceno la duración en segundos de la racha.
-                    $model->duration = $duration;
-
+                //$z = get_object_vars($d);
+                if (is_array($attributes)) {
+                    $model->fill($attributes);
                     $model->save();
+                } else {
+                    $fallidos++;
                 }
 
                 //$model->save();
@@ -135,14 +129,15 @@ abstract class SmartPlantController extends Controller
     public function addValidate($data)
     {
         return Validator::make($data, [
-            'start_at' => 'required|date_format:Y-m-d H:i:s',
-            'end_at' => 'required|date_format:Y-m-d H:i:s',
-            'pulsations' => 'required|numeric',
-            'pulsations_special_keys' => 'required|numeric',
-            'pulsation_average' => 'required|numeric',
-            'score' => 'required|numeric',
-            'weekday' => 'required|integer|size:1',
-            'created_at' => 'required|date_format:Y-m-d H:i:s',
+            'smartbonsai_plant_id' => 'required|numeric',
+            'uv' => 'nullable|numeric',
+            'temperature' => 'nullable|numeric',
+            'humidity' => 'nullable|numeric',
+            'soil_humidity' => 'required|numeric',
+            'full_water_tank' => 'nullable|boolean',
+            'waterpump_enabled' => 'nullable|boolean',
+            'vaporizer_enabled' => 'nullable|boolean',
+            //'created_at' => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
     }
 }
