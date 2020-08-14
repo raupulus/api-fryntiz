@@ -13,6 +13,8 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $admin = User::firstOrCreate([
+                'email' => 'admin@domain.es',
+            ],[
             'name' => 'Administrador Principal',
             'role_id' => 1,
             'email' => 'admin@domain.es',
@@ -20,6 +22,8 @@ class UsersTableSeeder extends Seeder
         ]);
 
         $user = User::firstOrCreate([
+            'email' => 'user@domain.es',
+            ],[
             'name' => 'Usuario Normal',
             'role_id' => 2,
             'email' => 'user@domain.es',
