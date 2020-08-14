@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\SmartPlant\Plant;
 use App\SmartPlant\PlantRegister;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -53,18 +54,24 @@ class SmartPlantController extends Controller
      */
     public function add(Request $request)
     {
+        Log::info('Entra en controlador para guardar registro de planta json');
+
         $requestValidate = $this->addValidate($request->all());
 
-        $model = new PlantRegister();
-        $model->fill($requestValidate);
+        try {
+            $model = new PlantRegister();
+            $model->fill($requestValidate);
 
-        ## Respuesta cuando se ha guardado el modelo correctamente
-        if ($model->save()) {
-            // response bien
+            ## Respuesta cuando se ha guardado el modelo correctamente
+            if ($model->save()) {
+                // response bien
 
-            // TODO → Crear sistema de respuestas habituales 200,201,404,419...
+                // TODO → Crear sistema de respuestas habituales 200,201,404,419...
 
-            return response()->json('Guardado Correctamente', 201);
+                return response()->json('Guardado Correctamente', 201);
+            }
+        } catch (Exception $e) {
+            Log::error('Error en controlador SmartPlantController método add');
         }
 
         // response mal
@@ -81,6 +88,8 @@ class SmartPlantController extends Controller
      */
     public function addJson(Request $request)
     {
+        Log::info('Entra en controlador para guardar registro de planta json');
+
         $data = json_decode($request->get('data'));
 
         $fallidos = 0;
@@ -90,17 +99,10 @@ class SmartPlantController extends Controller
             try {
                 $model = new PlantRegister();
 
-                ## Parseo la fecha
-                $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
-
-
-                // TODO → Corregir fallo al subir cuando se está validando
-
                 ## Obtengo atributos y los validos para excluir posible basura.
                 $attributes = $this->addValidate(get_object_vars($d));
                 $model->fill($attributes);
-                // TEMPORAL:
-                //$z = get_object_vars($d);
+
                 if (is_array($attributes)) {
                     $model->fill($attributes);
                     $model->save();
