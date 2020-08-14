@@ -21,9 +21,9 @@ Route::group([
     'middleware' => ['auth:api']
 ], function () {
     ##
-    //Route::post('/keyboard/add', 'SmartPlant\SmartPlantController@add');
+    Route::post('/add', 'SmartPlant\SmartPlantController@add');
 
     ##
-    //Route::post('//add-json', 'SmartPlant\SmartPlantController@addJson');
+    Route::post('/add-json', 'SmartPlant\SmartPlantController@addJson');
 });
 
