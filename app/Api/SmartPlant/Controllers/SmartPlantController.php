@@ -16,7 +16,7 @@ use function redirect;
 use function response;
 use function view;
 
-abstract class SmartPlantController extends Controller
+class SmartPlantController extends Controller
 {
     /**
      * @var string Ruta y modelo sobre el que se trabajará.
@@ -28,6 +28,11 @@ abstract class SmartPlantController extends Controller
      */
     protected $addError = '';
 
+    /**
+     * LLeva a la vista resumen con datos para depurar subidas.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
         $smartplants = Plant::all();
