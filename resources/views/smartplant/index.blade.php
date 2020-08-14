@@ -51,7 +51,8 @@
                 </thead>
 
                 <tbody>
-                @foreach($plant->registers as $reg)
+
+                @foreach($plant->last100registers() as $reg)
                     <tr>
                         <td>{{$reg->uv}}</td>
                         <td>{{$reg->temperature}}</td>
