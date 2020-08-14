@@ -116,7 +116,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapSmartPlantRoutes()
     {
-        Route::prefix('sp')
+        Route::prefix('smartplant')
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/smart_plant.php'));
