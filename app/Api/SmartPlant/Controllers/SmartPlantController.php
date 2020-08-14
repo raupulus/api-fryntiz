@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SmartPlant;
 
 use App\Http\Controllers\Controller;
+use App\SmartPlant\Plant;
 use App\SmartPlant\PlantRegister;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,7 +12,9 @@ use Illuminate\Support\Facades\Validator;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use function is_array;
+use function redirect;
 use function response;
+use function view;
 
 abstract class SmartPlantController extends Controller
 {
@@ -24,6 +27,15 @@ abstract class SmartPlantController extends Controller
      * @var string Mensaje de error al agregar un nuevo dato.
      */
     protected $addError = '';
+
+    public function index()
+    {
+        $smartplants = Plant::all();
+
+        return view('smartplant.index')->with([
+            'smartplants' => $smartplants,
+        ]);
+    }
 
     /**
      * Devuelve todos los elementos del modelo.
