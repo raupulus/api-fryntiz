@@ -26,4 +26,9 @@ class PlantRegister extends Model
         'waterpump_enabled',
         'vaporizer_enabled',
     ];
+
+    public function setUpdatedAt($value)
+    {
+        // Desactivo el updated_at
+    }
 }
