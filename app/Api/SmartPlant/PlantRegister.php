@@ -2,6 +2,8 @@
 
 namespace App\SmartPlant;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * Class Plant
  *
@@ -10,7 +12,7 @@ namespace App\SmartPlant;
  *
  * @package App\SmartPlant
  */
-class PlantRegister
+class PlantRegister extends Model
 {
     protected $table = 'smartbonsai_registers';
 }
