@@ -58,9 +58,9 @@
                         <td>{{$reg->temperature}}</td>
                         <td>{{$reg->humidity}}</td>
                         <td>{{$reg->soil_humidity}}</td>
-                        <td>{{$reg->full_water_tank}}</td>
-                        <td>{{$reg->waterpump_enabled}}</td>
-                        <td>{{$reg->vaporizer_enabled}}</td>
+                        <td>{{$reg->full_water_tank ? 'Si' : 'No'}}</td>
+                        <td>{{$reg->waterpump_enabled ? 'Si' : 'No'}}</td>
+                        <td>{{$reg->vaporizer_enabled ? 'Si' : 'No'}}</td>
                         <td>{{$reg->created_at}}</td>
                     </tr>
                 @endforeach
