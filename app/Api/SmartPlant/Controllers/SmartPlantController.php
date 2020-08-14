@@ -101,7 +101,6 @@ class SmartPlantController extends Controller
 
                 ## Obtengo atributos y los validos para excluir posible basura.
                 $attributes = $this->addValidate(get_object_vars($d));
-                $model->fill($attributes);
 
                 if (is_array($attributes)) {
                     $model->fill($attributes);
@@ -111,7 +110,6 @@ class SmartPlantController extends Controller
                 }
             } catch (Exception $e) {
                 Log::error('Error insertando datos en registros de smartplant');
-                Log::error($d);
                 Log::error($e);
                 $fallidos++;
             }
