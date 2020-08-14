@@ -12,18 +12,30 @@ class LanguagesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('languages')->insert([
-            'code' => 'esp',
-            'code2' => 'es',
-            'name' => 'Español',
-            'country' => 'España',
-        ]);
+        $languages = [
+            [
+                'code' => 'esp',
+                'code2' => 'es',
+                'name' => 'Español',
+                'country' => 'España',
+            ],
+            [
+                'code' => 'eng',
+                'code2' => 'en',
+                'name' => 'Inglés',
+                'country' => 'Reino Unido',
+            ]
+        ];
 
-        DB::table('languages')->insert([
-            'code' => 'eng',
-            'code2' => 'en',
-            'name' => 'Inglés',
-            'country' => 'Reino Unido',
-        ]);
+        ## Recorre idiomas y los inserta solo cuando no existen.
+        foreach ($languages as $lang) {
+            $exist = DB::table('languages')
+                ->where('code', $lang['code'])
+                ->first();
+
+            if (!$exist) {
+                DB::table('languages')->insert($lang);
+            }
+        }
     }
 }
