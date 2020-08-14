@@ -42,11 +42,11 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapApiRoutes();
 
+        $this->mapSmartPlantRoutes();
+
         $this->mapWebhookRoutes();
 
         $this->mapWebRoutes();
-
-        $this->mapSmartPlantRoutes();
     }
 
     /**

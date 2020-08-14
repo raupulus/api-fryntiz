@@ -19,16 +19,6 @@ use function view;
 class SmartPlantController extends Controller
 {
     /**
-     * @var string Ruta y modelo sobre el que se trabajará.
-     */
-    protected $model = PlantRegister::class;
-
-    /**
-     * @var string Mensaje de error al agregar un nuevo dato.
-     */
-    protected $addError = '';
-
-    /**
      * LLeva a la vista resumen con datos para depurar subidas.
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -48,7 +38,7 @@ class SmartPlantController extends Controller
      */
     public function all()
     {
-        $model = $this->model::whereNotNull('soil_humidity')
+        $model = PlantRegister::whereNotNull('soil_humidity')
             ->orderBy('created_at', 'DESC')
             ->get();
         return response()->json($model);
@@ -65,7 +55,7 @@ class SmartPlantController extends Controller
     {
         $requestValidate = $this->addValidate($request->all());
 
-        $model = new $this->model;
+        $model = new PlantRegister();
         $model->fill($requestValidate);
 
         ## Respuesta cuando se ha guardado el modelo correctamente
@@ -98,7 +88,7 @@ class SmartPlantController extends Controller
         ## Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
             try {
-                $model = new $this->model;
+                $model = new PlantRegister();
 
                 ## Parseo la fecha
                 $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
