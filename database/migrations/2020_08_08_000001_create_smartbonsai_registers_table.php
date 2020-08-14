@@ -24,10 +24,13 @@ class CreateSmartbonsaiRegistersTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->integer('uv')
+                ->nullable()
                 ->comment('Cantidad rayos UV en el ambiente');
             $table->decimal('temperature', 13, 2)
+                ->nullable()
                 ->comment('Cantidad de temperatura en el ambiente');
             $table->decimal('humidity', 13, 2)
+                ->nullable()
                 ->comment('Cantidad de humedad en el ambiente');
             $table->decimal('soil_humidity', 13, 2)
                 ->comment('Humedad del suelo');
