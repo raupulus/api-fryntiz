@@ -15,4 +15,15 @@ use Illuminate\Database\Eloquent\Model;
 class PlantRegister extends Model
 {
     protected $table = 'smartbonsai_registers';
+
+    protected $fillable = [
+        'smartbonsai_plant_id',
+        'uv',
+        'temperature',
+        'humidity',
+        'soil_humidity',
+        'full_water_tank',
+        'waterpump_enabled',
+        'vaporizer_enabled',
+    ];
 }

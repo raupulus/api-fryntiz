@@ -109,10 +109,9 @@ class SmartPlantController extends Controller
                 } else {
                     $fallidos++;
                 }
-
-                //$model->save();
             } catch (Exception $e) {
-                Log::error('Error insertando datos en contador de pulsaciones');
+                Log::error('Error insertando datos en registros de smartplant');
+                Log::error($d);
                 Log::error($e);
                 $fallidos++;
             }
@@ -146,7 +145,6 @@ class SmartPlantController extends Controller
             'full_water_tank' => 'nullable|boolean',
             'waterpump_enabled' => 'nullable|boolean',
             'vaporizer_enabled' => 'nullable|boolean',
-            //'created_at' => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
     }
 }
