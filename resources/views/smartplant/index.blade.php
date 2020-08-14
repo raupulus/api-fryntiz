@@ -22,7 +22,7 @@
         </p>
     </div>
 
-    @foreach($smartPlants as $plant)
+    @foreach($smartplants as $plant)
         <div class="col-md-12 text-center">
             <h2>{{$plant->name}}</h2>
             <h3>{{$plant->name_scientific}}</h3>
