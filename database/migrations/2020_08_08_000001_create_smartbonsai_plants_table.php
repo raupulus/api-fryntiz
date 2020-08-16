@@ -26,6 +26,10 @@ class CreateSmartbonsaiPlantsTable extends Migration
                 ->comment('Descripción general de la planta');
             $table->text('details')
                 ->comment('Descripción avanzada con detalles de la planta');
+            $table->text('image')
+                ->nullable()
+                ->default('smartplant/default.jpg')
+                ->comment('Imagen que representa a la planta');
             $table->timestamp('start_at')
                 ->comment('Momento en el que se ha sembrado');
             $table->timestamps();
