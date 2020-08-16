@@ -73,17 +73,17 @@
 
         <div class="col-md-12 p-5">
             <table class="table table-sm table-striped table-dark table-bordered table-hover"
-                   style="width: 100%; overflow: scroll; display: block;">
+                   style="width: 90%; margin:auto; overflow: scroll; display: block;">
                 <thead>
                 <tr>
-                    <td>UV</td>
-                    <td>Temperatura</td>
-                    <td>Humedad ambiente</td>
-                    <td>Humedad en tierra</td>
-                    <td>Tanque de agua lleno</td>
-                    <td>Motor de riego activo</td>
-                    <td>Vaporizador de agua activo</td>
-                    <td>Momento del registro</td>
+                    <th>UV</th>
+                    <th>Temperatura</th>
+                    <th>Humedad ambiente</th>
+                    <th>Humedad en tierra</th>
+                    <th>Tanque de agua lleno</th>
+                    <th>Motor de riego activo</th>
+                    <th>Vaporizador de agua activo</th>
+                    <th>Momento del registro</th>
                 </tr>
                 </thead>
 
