@@ -49,6 +49,8 @@
                 {!! $plant->description !!}
             </div>
 
+            <br />
+
             {{-- Añado imagen si existe --}}
             @if($plant->image)
             <div class="row">
@@ -60,6 +62,8 @@
                 </div>
             </div>
             @endif
+
+            <br />
 
             {{-- Detalles de la planta --}}
             <div class="row">
