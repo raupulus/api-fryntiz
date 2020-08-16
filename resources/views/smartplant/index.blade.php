@@ -63,7 +63,7 @@
 
             {{-- Detalles de la planta --}}
             <div class="row">
-                <div class="col-md-10 col-md-offset-1 text-left mb-3 p-2">
+                <div class="col-md-10 offset-md-1 text-left mb-3 p-2">
                     <div class="smartplant-details">
                         {!! $plant->details !!}
                     </div>
