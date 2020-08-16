@@ -104,6 +104,19 @@ class SmartPlantController extends Controller
 
                 if (is_array($attributes)) {
                     $model->fill($attributes);
+
+                    if ($model->soil_humidity > 100.0) {
+                        $model->soil_humidity = 100.0;
+                    }
+
+                    if ($model->temperature > 100.0) {
+                        $model->temperature = 100.0;
+                    }
+
+                    if ($model->humidity > 100.0) {
+                        $model->humidity = 100.0;
+                    }
+
                     $model->save();
                 } else {
                     $fallidos++;
