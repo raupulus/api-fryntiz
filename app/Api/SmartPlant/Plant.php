@@ -25,6 +25,18 @@ class Plant extends Model
         return $this->hasMany(PlantRegister::class, 'smartbonsai_plant_id', 'id');
     }
 
+    public function getUrlImageAttribute()
+    {
+        $image = $this->image ?? 'smartplant/default.jpg';
+
+        return asset('storage/' . $image);
+    }
+
+    /**
+     * Devuelve los 100 últimos registros.
+     *
+     * @return mixed
+     */
     public function last100registers()
     {
         return PlantRegister::where('smartbonsai_plant_id', $this->id)
