@@ -3,13 +3,29 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd" crossorigin="anonymous"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-
 <div class="row">
     <div class="col-md-12 text-center">
         <h1>
-            Regstros del plantas
+            Registros del plantas
         </h1>
+
+        <p>
+            Condiciones para encender motor de riego:
+        </p>
+
+        <ul>
+            <li>Tanque de agua lleno</li>
+            <li>Humedad de tierra al 35%</li>
+        </ul>
+
+        <p>
+            Condiciones para vaporizador de agua:
+        </p>
+
+        <ul>
+            <li>Temperatura ambiente menor a 30ºC</li>
+            <li>Humedad ambiente menor a 60%</li>
+        </ul>
     </div>
 </div>
 
@@ -54,9 +70,9 @@
 
                 @foreach($plant->last100registers() as $reg)
                     <tr>
-                        <td>{{$reg->uv}}</td>
-                        <td>{{$reg->temperature}}</td>
-                        <td>{{$reg->humidity}}</td>
+                        <td>{{$reg->uv ?? 0}}</td>
+                        <td>{{$reg->temperature ?? 0.00}}</td>
+                        <td>{{$reg->humidity ?? 0.00}}</td>
                         <td>{{$reg->soil_humidity}}</td>
                         <td>{{$reg->full_water_tank ? 'Si' : 'No'}}</td>
                         <td>{{$reg->waterpump_enabled ? 'Si' : 'No'}}</td>
