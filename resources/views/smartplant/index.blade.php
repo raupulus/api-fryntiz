@@ -41,13 +41,34 @@
     @foreach($smartplants as $plant)
         <div class="col-md-12 text-center">
             <h2>{{$plant->name}}</h2>
-            <h3>{{$plant->name_scientific}}</h3>
+            <h3>(<small>Scientific Name:</small> {{$plant->name_scientific}})</h3>
 
             <br />
 
-            <p>
-                {{$plant->description}}
-            </p>
+            <div class="smartplant-description">
+                {!! $plant->description !!}
+            </div>
+
+            {{-- Añado imagen si existe --}}
+            @if($plant->image)
+            <div class="row">
+                <div class="col-md-12">
+                    <img src="{{$plant->urlImage}}"
+                         title="{{$plant->name}}"
+                         alt="{{$plant->name}}"
+                         style="width: 300px; margin: auto;"/>
+                </div>
+            </div>
+            @endif
+
+            {{-- Detalles de la planta --}}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="smartplant-details">
+                        {!! $plant->details !!}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="col-md-12 p-5">
@@ -85,3 +106,14 @@
         </div>
     @endforeach
 </div>
+
+
+<style>
+    .smartplant-description {
+        font-size: 0.8em;
+    }
+
+    .smartplant-details {
+        font-size: 0.6em;
+    }
+</style>
