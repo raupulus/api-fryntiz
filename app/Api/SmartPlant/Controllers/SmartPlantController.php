@@ -26,7 +26,7 @@ class SmartPlantController extends Controller
      */
     public function index()
     {
-        $smartplants = Plant::orderBy('start_at', 'DESC')->whereNull('deleted_at');
+        $smartplants = Plant::all();
 
         return view('smartplant.index')->with([
             'smartplants' => $smartplants,
@@ -40,7 +40,9 @@ class SmartPlantController extends Controller
     public function all()
     {
         $model = PlantRegister::whereNotNull('soil_humidity')
+            ->orderBy('start_at', 'DESC')
             ->orderBy('created_at', 'DESC')
+            ->whereNull('deleted_at')
             ->get();
         return response()->json($model);
     }
