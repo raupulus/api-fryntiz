@@ -26,7 +26,7 @@ class SmartPlantController extends Controller
      */
     public function index()
     {
-        $smartplants = Plant::all();
+        $smartplants = Plant::orderBy('start_at', 'DESC')->whereNull('deleted_at');
 
         return view('smartplant.index')->with([
             'smartplants' => $smartplants,
