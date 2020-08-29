@@ -20,4 +20,21 @@ class Mouse extends Keyboard
         'device_name',
         'created_at'
     ];
+
+    /**
+     * Devuelve todos los elementos del modelo.
+     */
+    public static function all($columns = ['*'])
+    {
+        $query = parent::all();
+        $query->where('start_at', '!=', null)
+            ->where('end_at', '!=', null)
+            ->where('pulsations', '!=', null)
+            ->where('total_clicks', '>', 0)
+            ->where('clicks_average', '>', 0)
+            ->where('weekday', '!=', null)
+            ->where('created_at', '!=', null)
+            ->sortByDesc('created_at');
+        return $query;
+    }
 }
