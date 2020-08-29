@@ -25,17 +25,15 @@ class CreateKeycounterMouseTable extends Migration
             $table->bigInteger('duration')
                 ->comment('Duración en Segundos de la racha');
             $table->bigInteger('clicks_left')
-                ->comment('Cantidad de pulsaciones total de la racha');
+                ->comment('Cantidad de clicks derecho');
             $table->bigInteger('clicks_right')
-                ->comment('Cantidad de pulsaciones total de la racha');
+                ->comment('Cantidad de clicks izquierdo');
             $table->bigInteger('clicks_middle')
-                ->comment('Cantidad de pulsaciones total de la racha');
+                ->comment('Cantidad de clicks centrales');
             $table->bigInteger('total_clicks')
-                ->comment('Cantidad de pulsaciones total de la racha');
+                ->comment('Cantidad de clicks total de la racha');
             $table->bigInteger('clicks_average')
-                ->comment('Cantidad de pulsaciones total de la racha');
-            $table->decimal('pulsation_average', 15, 5)
-                ->comment('Velocidad media de pulsaciones para la racha');
+                ->comment('Cantidad de cliks medio de la racha');
             $table->bigInteger('weekday')
                 ->comment('Día de la semana (0 es domingo)');
             $table->string('device_id')
