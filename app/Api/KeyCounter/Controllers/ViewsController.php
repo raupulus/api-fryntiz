@@ -35,7 +35,10 @@ class ViewsController extends Controller
                 ->where('pulsations', '>=', 1)
                 ->orderBy('created_at', 'DESC')
                 ->paginate(100),
-            'mouse' => Mouse::whereNotNull('pulsations')
+            'mouse' => Mouse::whereNotNull('start_at')
+                ->whereNotNull('end_at')
+                ->where('total_clicks', '>', 0)
+                ->where('clicks_average', '>', 0)
                 ->orderBy('created_at', 'DESC')
                 ->paginate(100),
         ]);
