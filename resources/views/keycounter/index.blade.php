@@ -209,10 +209,12 @@
                 <td>nº</td>
                 <td>start_at</td>
                 <td>end_at</td>
-                <td>pulsations</td>
-                <td>pulsations_special_keys</td>
-                <td>pulsation_average</td>
-                <td>score</td>
+                <td>duration</td>
+                <td>clicks_left</td>
+                <td>clicks_right</td>
+                <td>clicks_middle</td>
+                <td>total_clicks</td>
+                <td>clicks_average</td>
                 <td>weekday</td>
                 <td>device_id</td>
                 <td>device_name</td>
@@ -226,10 +228,12 @@
                     <td>{{$reg->id}}</td>
                     <td>{{$reg->start_at}}</td>
                     <td>{{$reg->end_at}}</td>
-                    <td>{{$reg->pulsations}}</td>
-                    <td>{{$reg->pulsations_special_keys}}</td>
-                    <td>{{$reg->pulsation_average}}</td>
-                    <td>{{$reg->score}}</td>
+                    <td>{{$reg->duration}}</td>
+                    <td>{{$reg->clicks_left}}</td>
+                    <td>{{$reg->clicks_right}}</td>
+                    <td>{{$reg->clicks_middle}}</td>
+                    <td>{{$reg->total_clicks}}</td>
+                    <td>{{$reg->clicks_average}}</td>
                     <td>{{$reg->weekday}}</td>
                     <td>{{$reg->device_id}}</td>
                     <td>{{$reg->device_name}}</td>
