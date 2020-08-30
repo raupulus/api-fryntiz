@@ -84,8 +84,8 @@ class MouseController extends KeyCounterController
     public function addValidate($data)
     {
         return Validator::make($data, [
-            'start_at' => 'required|date_format:Y-m-d H:i:s',
-            'end_at' => 'required|date_format:Y-m-d H:i:s',
+            'start_at' => 'required',
+            'end_at' => 'required',
             'clicks_left' => 'required|numeric',
             'clicks_right' => 'required|numeric',
             'clicks_middle' => 'required|numeric',
@@ -93,7 +93,7 @@ class MouseController extends KeyCounterController
             'clicks_average' => 'required|numeric',
             'device_id' => 'required|numeric',
             'device_name' => 'required',
-            'weekday' => 'required|integer|size:1',
+            'weekday' => 'required|numeric',
             //'created_at' => 'nullable|date_format:Y-m-d H:i:s',
             'created_at' => 'nullable',
         ])->validate();

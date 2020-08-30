@@ -32,7 +32,7 @@ class CreateKeycounterMouseTable extends Migration
                 ->comment('Cantidad de clicks centrales');
             $table->bigInteger('total_clicks')
                 ->comment('Cantidad de clicks total de la racha');
-            $table->bigInteger('clicks_average')
+            $table->decimal('clicks_average', 10, 5)
                 ->comment('Cantidad de cliks medio de la racha');
             $table->bigInteger('weekday')
                 ->comment('Día de la semana (0 es domingo)');
