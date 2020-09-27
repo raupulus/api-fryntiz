@@ -7,27 +7,84 @@
 ######################################################
 ##                    Pública
 ######################################################
-Route::get('/test', function () {
-    return 'Ruta de prueba accesible desde' . url('test');
-});
 
 ## Obtengo todos los datos de humedad.
-Route::get('/humidity/all', 'HumidityController@all');
+//Route::get('/humidity/all', 'HumidityController@all');
 
-## Busco un dato concreto para humedad
-Route::get('/humidity/find', 'HumidityController@find');
+## Busco un dato concreto para humedad.
+//Route::get('/humidity/find', 'HumidityController@find');
 
 ## Obtengo todos los datos de presión.
-Route::get('/pressure/all', 'PressureController@all');
+//Route::get('/pressure/all', 'PressureController@all');
 
-## Busco un dato concreto para presión
-Route::get('/pressure/find', 'PressureController@find');
+## Busco un dato concreto para presión.
+//Route::get('/pressure/find', 'PressureController@find');
 
 ## Obtengo todos los datos de temperatura.
-Route::get('/temperature/all', 'TemperatureController@all');
+//Route::get('/temperature/all', 'TemperatureController@all');
 
-## Busco un dato concreto para temperatura
-Route::get('/temperature/find', 'TemperatureController@find');
+## Busco un dato concreto para temperatura.
+//Route::get('/temperature/find', 'TemperatureController@find');
+
+## Obtengo todos los datos de Luz.
+//Route::get('/light/all', 'LightController@all');
+
+## Busco un dato concreto para Luz.
+//Route::get('/light/find', 'LightController@find');
+
+## Obtengo todos los datos de Uv.
+//Route::get('/uv/all', 'UvController@all');
+
+## Busco un dato concreto para Uv.
+//Route::get('/uv/find', 'UvController@find');
+
+## Obtengo todos los datos de Viento.
+//Route::get('/winter/all', 'WinterController@all');
+
+## Busco un dato concreto para Viento.
+//Route::get('/winter/find', 'WinterController@find');
+
+## Obtengo todos los datos de Eco2.
+//Route::get('/eco2/all', 'Eco2Controller@all');
+
+## Busco un dato concreto para Eco2.
+//Route::get('/eco2/find', 'Eco2Controller@find');
+
+## Obtengo todos los datos de TVOC.
+//Route::get('/tvoc/all', 'TvocController@all');
+
+## Busco un dato concreto para TVOC.
+//Route::get('/tvoc/find', 'TvocController@find');
+
+## Obtengo todos los datos de Índice UV.
+//Route::get('/uv_index/all', 'UvIndexController@all');
+
+## Busco un dato concreto para Índice UV.
+//Route::get('/uv_index/find', 'UvIndexController@find');
+
+## Obtengo todos los datos de Rayos UVA.
+//Route::get('/uva/all', 'UvaController@all');
+
+## Busco un dato concreto para Rayos UVA.
+//Route::get('/uva/find', 'UvaController@find');
+
+## Obtengo todos los datos de Rayos UVB.
+//Route::get('/uvb/all', 'UvbController@all');
+
+## Busco un dato concreto para Rayos UVB.
+//Route::get('/uvb/find', 'UvbController@find');
+
+## Obtengo todos los datos de Air Quality.
+//Route::get('/air_quality/all', 'AirQualityController@all');
+
+## Busco un dato concreto para Air Quality.
+//Route::get('/air_quality/find', 'AirQualityController@find');
+
+## Obtengo todos los datos de Rayos.
+//Route::get('/lightning/all', 'LightningController@all');
+
+## Busco un dato concreto para Rayos.
+//Route::get('/lightning/find', 'LightningController@find');
 
 
 ######################################################
@@ -109,10 +166,10 @@ Route::group([
         ## Añadir nuevos registros de Air Quality por lotes JSON
         Route::post('/air_quality/add-json', 'AirQualityController@addJson');
 
-        ## Añadir nuevo registro de Air Quality.
+        ## Añadir nuevo registro de Rayos.
         Route::post('/lightning/add', 'LightningController@add');
 
-        ## Añadir nuevos registros de UVB por lotes JSON
+        ## Añadir nuevos registros de Rayos por lotes JSON
         Route::post('/lightning/add-json', 'LightningController@addJson');
     }
 );
