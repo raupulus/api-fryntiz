@@ -9,7 +9,7 @@
 ######################################################
 
 ## Obtengo un resumen con todos los datos principales.
-Route::get('/resume', 'GeneralController@resume');
+Route::get('/resume', '\App\Api\WeatherStation\Controllers\GeneralController@resume');
 
 ## Obtengo todos los datos de humedad.
 //Route::get('/humidity/all', 'HumidityController@all');
