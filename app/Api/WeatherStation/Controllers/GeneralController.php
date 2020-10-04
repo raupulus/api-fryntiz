@@ -15,6 +15,7 @@ use App\Uvb;
 use App\UvIndex;
 use App\WindDirection;
 use App\Winter;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use function response;
@@ -128,6 +129,34 @@ class GeneralController
                 ->first()
                 ->toArray();
         });
+
+        $now = Carbon::now();
+        $now->tz = 'Europe/Madrid';
+
+        $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
+                   'Diciembre'];
+
+        $days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Sábado'];
+
+        ## Almaceno el momento de la comprobación
+        $data['instant'] = [
+            'timestamp' => $now->format('Y-m-d H:i:s'),
+            'year' => $now->format('Y'),
+            'month' => $now->format('m'),
+            'month_name' => $months[$now->format('m') - 1],
+            'day' => $now->format('d'),
+            'dayWeek' => $now->dayOfWeek,
+            'dayName' => $days[$now->dayOfWeek],
+            'date_human_format' => $now->format('d') . ' ' .$months[$now->format('m') - 1] . ' ' . $now->format('Y'),
+            'time' => $now->format('H:i:s'),
+
+            //En el futuro mostrar tiempo: Muy Soleado, día, noche, lluvia...
+            'dayStatus' => (($now->format('H') > 20) ||
+                ($now->format('H') < 8)) ?
+                'Noche' :
+                'Día',
+        ];
 
         return response()->json($data);
     }
