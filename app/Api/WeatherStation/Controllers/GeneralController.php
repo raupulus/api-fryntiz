@@ -14,6 +14,7 @@ use App\Uva;
 use App\Uvb;
 use App\UvIndex;
 use App\WindDirection;
+use App\Winter;
 use Illuminate\Support\Facades\DB;
 use function dd;
 use function response;
@@ -88,6 +89,21 @@ class GeneralController
             ->limit(1)
             ->toSql();
 
+        $wind_average = Winter::select('meteorology_winter.average as wind_average')
+            ->orderByDesc('created_at')
+            ->limit(1)
+            ->toSql();
+
+        $wind_min = Winter::select('meteorology_winter.min as wind_min')
+            ->orderByDesc('created_at')
+            ->limit(1)
+            ->toSql();
+
+        $wind_max = Winter::select('meteorology_winter.max as wind_max')
+            ->orderByDesc('created_at')
+            ->limit(1)
+            ->toSql();
+
         $data = Temperature::select([
                 'meteorology_temperature.value as temperature',
                 DB::raw("($airQuality) as air_quality"),
@@ -101,34 +117,13 @@ class GeneralController
                 DB::raw("($uva) as uva"),
                 DB::raw("($uvb) as uvb"),
                 DB::raw("($wind_direction) as wind_direction"),
+                DB::raw("($wind_average) as wind_average"),
+                DB::raw("($wind_min) as wind_min"),
+                DB::raw("($wind_max) as wind_max"),
             ])
             ->orderByDesc('created_at')
             ->first()
             ->toArray();
-
-        /*
-        $data =  DB::table(DB::raw('meteorology_temperature temperature, meteorology_air_quality air_quality'))
-            ->select([
-                'temperature.value as temperature',
-                'air_quality.air_quality as air_quality',
-            ])
-            ->joinSub($temp, 'value')
-            ->orderBy('temperature.created_at', 'desc')
-            ->take(10)
-            ->get();
-
-        $data = DB::table('meteorology_air_quality')
-            ->select([
-                'meteorology_air_quality.air_quality as air_quality',
-                'meteorology_temperature.value as temperature'
-            ])
-            ->unionAll($temp)
-            ->orderBy('meteorology_air_quality.created_at')
-            ->orderBy('meteorology_temperature.created_at')
-            ->first();
-        */
-
-        dd($data);
 
         return response()->json($data);
     }
