@@ -145,17 +145,16 @@ class GeneralController
             'year' => $now->format('Y'),
             'month' => $now->format('m'),
             'month_name' => $months[$now->format('m') - 1],
-            'day' => $now->format('d'),
-            'dayWeek' => $now->dayOfWeek,
-            'dayName' => $days[$now->dayOfWeek],
+            'day' => (int) $now->format('d'),
+            'day_week' => $now->dayOfWeek,
+            'day_name' => $days[$now->dayOfWeek],
             'date_human_format' => $now->format('d') . ' ' .$months[$now->format('m') - 1] . ' ' . $now->format('Y'),
             'time' => $now->format('H:i:s'),
 
             //En el futuro mostrar tiempo: Muy Soleado, día, noche, lluvia...
-            'dayStatus' => (($now->format('H') > 20) ||
-                ($now->format('H') < 8)) ?
-                'Noche' :
-                'Día',
+            'day_status' => (($now->format('H') >= 20) || ($now->format('H') <= 8)) ?
+                            'Noche' :
+                            'Día',
         ];
 
         return response()->json($data);
