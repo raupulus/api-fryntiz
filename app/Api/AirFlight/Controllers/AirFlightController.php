@@ -3,6 +3,7 @@
 namespace App\Api\AirFlight\Controllers;
 
 use App\Http\Controllers\Controller;
+use function view;
 
 /**
  * Class AirFlightController
@@ -11,5 +12,8 @@ use App\Http\Controllers\Controller;
  */
 class AirFlightController extends Controller
 {
-
+    public function index()
+    {
+        return view('airflight.index');
+    }
 }

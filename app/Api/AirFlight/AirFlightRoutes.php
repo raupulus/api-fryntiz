@@ -13,5 +13,5 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AirFlightRoutes extends Model
 {
-    protected $table = '???';
+    protected $table = 'airflight_routes';
 }

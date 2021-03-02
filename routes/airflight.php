@@ -7,7 +7,8 @@
 ######################################################
 ##                    Pública
 ######################################################
-Route::get('/', 'AirFlight\AirFlightController@index')->name('airflight.index');
+Route::get('/', '\App\Api\AirFlight\Controllers\AirFlightController@index')
+    ->name('airflight.index');
 
 ######################################################
 ##                    Privada
@@ -17,9 +18,9 @@ Route::group([
     'middleware' => ['auth:api']
 ], function () {
     ##
-    Route::post('/register/add', 'AirFlight\AirFlightController@add');
+    Route::post('/register/add', '\App\Api\AirFlight\Controllers\AirFlightController@add');
 
     ##
-    Route::post('/register/add-json', 'AirFlight\AirFlightController@addJson');
+    Route::post('/register/add-json', '\App\Api\AirFlight\Controllers\AirFlightController@addJson');
 });
 
