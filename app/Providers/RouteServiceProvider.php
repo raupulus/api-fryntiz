@@ -121,4 +121,15 @@ class RouteServiceProvider extends ServiceProvider
             ->namespace($this->namespace)
             ->group(base_path('routes/smart_plant.php'));
     }
+
+    /**
+     * Rutas para los webhooks.
+     */
+    protected function mapAirFlightRoutes()
+    {
+        Route::prefix('airflight')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/airflight.php'));
+    }
 }

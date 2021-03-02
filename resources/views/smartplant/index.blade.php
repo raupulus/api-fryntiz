@@ -58,7 +58,7 @@
                     <img src="{{$plant->urlImage}}"
                          title="{{$plant->name}}"
                          alt="{{$plant->name}}"
-                         style="width: 300px; margin: auto;"/>
+                         style="width: 300px; margin: auto;" />
                 </div>
             </div>
             @endif
