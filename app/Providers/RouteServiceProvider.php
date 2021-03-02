@@ -44,6 +44,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapSmartPlantRoutes();
 
+        $this->mapAirFlightRoutes();
+
         $this->mapWebhookRoutes();
 
         $this->mapWebRoutes();
