@@ -18,32 +18,63 @@ class CreateAirFlightRoutesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('smartbonsai_plant_id');
-            $table->foreign('smartbonsai_plant_id')
-                ->references('id')->on('smartbonsai_plants')
+            $table->unsignedBigInteger('airflight_airplane_id');
+            $table->foreign('airflight_airplane_id')
+                ->references('id')->on('airflight_airplane')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->integer('uv')
+            $table->string('squawk')
                 ->nullable()
-                ->comment('Cantidad rayos UV en el ambiente');
-            $table->decimal('temperature', 13, 2)
+                ->comment('Código de transpondedor seleccionado (Señal squawk en representación octal)');
+            $table->string('flight')
                 ->nullable()
-                ->comment('Cantidad de temperatura en el ambiente');
-            $table->decimal('humidity', 13, 2)
+                ->comment('Nombre del vuelo');
+
+            $table->string('lat')
                 ->nullable()
-                ->comment('Cantidad de humedad en el ambiente');
-            $table->decimal('soil_humidity', 13, 2)
-                ->comment('Humedad del suelo');
-            $table->boolean('full_water_tank')
-                ->default(false)
-                ->comment('Indica si hay agua en el tanque de agua');
-            $table->boolean('waterpump_enabled')
-                ->default(false)
-                ->comment('Indica si se ha activado la bomba de agua');
-            $table->boolean('vaporizer_enabled')
-                ->default(false)
-                ->comment('Indica si se ha activado el vaporizador');
-            $table->timestamp('created_at')->nullable();
+                ->comment('Latitude');
+
+            $table->string('lon')
+                ->nullable()
+                ->comment('Latitude');
+
+            $table->string('nucp')
+                ->nullable()
+                ->comment('the NUCp (navigational uncertainty category) reported for the position');
+
+            $table->string('seen_pos')
+                ->nullable()
+                ->comment('Tiempo en segundos (antes de ahora) desde el que fue visto por última vez');
+
+            $table->string('altitude')
+                ->nullable()
+                ->comment('Altitud en pies, o "ground" si está en tierra');
+
+            $table->string('vert_rate')
+                ->nullable()
+                ->comment('Velocidad vertical en pies/minuto');
+
+            $table->string('track')
+                ->nullable()
+                ->comment('Track verdadero sobre el suelo en grados (0-359)');
+
+            $table->string('speed')
+                ->nullable()
+                ->comment('velocidad informada en kt. esto suele ser la velocidad sobre el suelo, pero podría ser ias');
+
+            $table->string('messages')
+                ->nullable()
+                ->comment('Número total de mensajes de modo s recibidos desde esta aeronave');
+
+            $table->string('seen')
+                ->nullable()
+                ->comment('Cuánto tiempo (en segundos antes de "ahora") se recibió un mensaje de este avión por última vez');
+
+            $table->string('rssi')
+                ->nullable()
+                ->comment('rssi promedio reciente (potencia de señal), en dbfs; esto siempre será negativo.');
+
+            $table->timestamps();
         });
     }
 
