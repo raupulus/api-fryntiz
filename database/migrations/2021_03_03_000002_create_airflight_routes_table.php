@@ -42,9 +42,11 @@ class CreateAirFlightRoutesTable extends Migration
                 ->nullable()
                 ->comment('the NUCp (navigational uncertainty category) reported for the position');
 
+            /*
             $table->string('seen_pos')
                 ->nullable()
                 ->comment('Tiempo en segundos (antes de ahora) desde el que fue visto por última vez');
+            */
 
             $table->string('altitude')
                 ->nullable()
@@ -66,9 +68,9 @@ class CreateAirFlightRoutesTable extends Migration
                 ->nullable()
                 ->comment('Número total de mensajes de modo s recibidos desde esta aeronave');
 
-            $table->string('seen')
+            $table->timestamp('seen_at')
                 ->nullable()
-                ->comment('Cuánto tiempo (en segundos antes de "ahora") se recibió un mensaje de este avión por última vez');
+                ->comment('Momento en el que recibió el último mensaje de este avión');
 
             $table->string('rssi')
                 ->nullable()
