@@ -26,6 +26,14 @@ class CreateAirFlightAirplaneTable extends Migration
                 ->nullable()
                 ->comment('Categoría del avión');
 
+            $table->timestamp('seen_first_at')
+                ->nullable()
+                ->comment('Indica momento en el que se ha visto por primera vez');
+
+            $table->timestamp('seen_last_at')
+                ->nullable()
+                ->comment('Indica momento en el que se ha visto por última vez');
+
             $table->timestamps();
         });
     }

@@ -28,9 +28,11 @@ class AirFlightController extends Controller
     public function addValidate($data)
     {
         return Validator::make($data, [
+            ## Avión
             'icao' => 'required|string',
             'category' => 'nullable|string',
 
+            ## Vuelo
             'squawk' => 'required|string',
             'flight' => 'required|string',
             'lat' => 'nullable|string',
@@ -43,17 +45,6 @@ class AirFlightController extends Controller
             'messages' => 'nullable|numeric',
             'seen_at' => 'required|timestamp',
             'rssi' => 'required|numeric',
-
-
-
-
-            'uv' => 'nullable|numeric',
-            'temperature' => 'nullable|numeric',
-            'humidity' => 'nullable|numeric',
-            'soil_humidity' => 'required|numeric',
-            'full_water_tank' => 'nullable|boolean',
-            'waterpump_enabled' => 'nullable|boolean',
-            'vaporizer_enabled' => 'nullable|boolean',
         ])->validate();
     }
 }
