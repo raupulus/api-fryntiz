@@ -18,6 +18,10 @@ class AirFlightController extends Controller
         return view('airflight.index');
     }
 
+    public function addJson() {
+
+    }
+
     /**
      * Reglas de validación a la hora de insertar datos.
      *

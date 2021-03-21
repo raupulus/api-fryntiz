@@ -30,51 +30,45 @@ class CreateAirFlightRoutesTable extends Migration
                 ->nullable()
                 ->comment('Nombre del vuelo');
 
-            $table->string('lat')
+            $table->float('lat')
                 ->nullable()
-                ->comment('Latitude');
+                ->comment('Latitud');
 
-            $table->string('lon')
+            $table->float('lon')
                 ->nullable()
-                ->comment('Latitude');
+                ->comment('Longitud');
 
-            $table->string('nucp')
+            $table->float('altitude')
                 ->nullable()
-                ->comment('the NUCp (navigational uncertainty category) reported for the position');
+                ->comment('Altitud en metros');
 
-            /*
-            $table->string('seen_pos')
+            $table->float('vert_rate')
                 ->nullable()
-                ->comment('Tiempo en segundos (antes de ahora) desde el que fue visto por última vez');
-            */
+                ->comment('Velocidad vertical en metros por segundo');
 
-            $table->string('altitude')
-                ->nullable()
-                ->comment('Altitud en pies, o "ground" si está en tierra');
-
-            $table->string('vert_rate')
-                ->nullable()
-                ->comment('Velocidad vertical en pies/minuto');
-
-            $table->string('track')
+            $table->integer('track')
                 ->nullable()
                 ->comment('Track verdadero sobre el suelo en grados (0-359)');
 
-            $table->string('speed')
+            $table->float('speed')
                 ->nullable()
-                ->comment('velocidad informada en kt. esto suele ser la velocidad sobre el suelo, pero podría ser ias');
-
-            $table->string('messages')
-                ->nullable()
-                ->comment('Número total de mensajes de modo s recibidos desde esta aeronave');
+                ->comment('Velocidad en metros por segundos');
 
             $table->timestamp('seen_at')
                 ->nullable()
                 ->comment('Momento en el que recibió el último mensaje de este avión');
 
-            $table->string('rssi')
+            $table->integer('messages')
+                ->nullable()
+                ->comment('Número total de mensajes de modo s recibidos desde esta aeronave');
+
+            $table->float('rssi')
                 ->nullable()
                 ->comment('rssi promedio reciente (potencia de señal), en dbfs; esto siempre será negativo.');
+
+            $table->string('emergency')
+                ->nullable()
+                ->comment('Indica si hay señal de emergencia');
 
             $table->timestamps();
         });
