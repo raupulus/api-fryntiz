@@ -3,7 +3,10 @@
 namespace App\Api\AirFlight\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use function GuzzleHttp\json_decode;
+use function response;
 use function view;
 
 /**
@@ -18,8 +21,15 @@ class AirFlightController extends Controller
         return view('airflight.index');
     }
 
-    public function addJson() {
+    public function addJson(Request $request) {
+        $data = json_decode($request->get('data'));
 
+        $fallidos = 0;
+
+        return response()->json([
+            'status' => '200',
+            'data' => $data
+        ], 200);
     }
 
     /**
