@@ -14,4 +14,21 @@ use Illuminate\Database\Eloquent\Model;
 class AirFlightRoutes extends Model
 {
     protected $table = 'airflight_routes';
+
+    protected $fillable = [
+        'airflight_airplane_id',
+        'squawk',
+        'flight',
+        'lat',
+        'lon',
+        'altitude',
+        'vert_rate',
+        'track',
+        'speed',
+        'seen_at',
+        'messages',
+        'rssi',
+        'emergency',
+    ];
+
 }
