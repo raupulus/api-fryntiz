@@ -62,6 +62,7 @@ class AirFlightController extends Controller
 
                     if (! $airflight->seen_first_at) {
                         $airflight->seen_first_at = $d->seen_at;
+                        $airflight->save();
                     }
 
                     ## Solo almaceno rutas cuando hay latitud y longitud.

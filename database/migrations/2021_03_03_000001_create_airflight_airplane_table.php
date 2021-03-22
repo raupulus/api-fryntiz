@@ -18,7 +18,7 @@ class CreateAirFlightAirplaneTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->integer('icao')
+            $table->string('icao')
                 ->nullable()
                 ->comment('Código ICAO 24 bits (6 dígitos hexadecimales)');
 
