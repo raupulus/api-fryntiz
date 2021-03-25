@@ -5,6 +5,7 @@ namespace App\Api\AirFlight\Controllers;
 use App\Api\AirFlight\AirFlightAirPlane;
 use App\Api\AirFlight\AirFlightRoutes;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use function GuzzleHttp\json_decode;
@@ -25,9 +26,6 @@ class AirFlightController extends Controller
     }
 
     public function addJson(Request $request) {
-        //return response()->json(['res' => $request->get('data')]);
-        Log::error('TEST:');
-        Log::error($request->get('data'));
         $data = json_decode($request->get('data'));
 
         //return response()->json(['ok' => true]);
@@ -35,8 +33,6 @@ class AirFlightController extends Controller
 
         ## Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
-
-
             try {
                 ## Parseo la fecha
                 if ($d->seen_at) {
@@ -51,28 +47,39 @@ class AirFlightController extends Controller
                 // TEMPORAL:
                 $z = get_object_vars($d);
                 if (is_array($z)) {
-                    $airflight = AirFlightAirPlane::updateOrCreate([
-                        'icao' => $d->icao,
-                        'category' => $d->category,
-                    ],
+                    $airflight = AirFlightAirPlane::updateOrCreate(
                         [
-                            'seen_last_at' => $d->seen_at
+                            'icao' => $d->icao,
+                        ],
+                        [
+                            'seen_last_at' => $d->seen_at,
+                            'category' => $d->category,
                         ]
                     );
 
-                    if (! $airflight->seen_first_at) {
+                    ## Comprueba si no se marcó al verse por primera vez o hay fecha anterior.
+                    if (! $airflight->seen_first_at || ($airflight->seen_first_at > $d->seen_at)) {
                         $airflight->seen_first_at = $d->seen_at;
                         $airflight->save();
                     }
 
                     ## Solo almaceno rutas cuando hay latitud y longitud.
                     if ($d->lat && $d->lon) {
+                        $lastHour = (Carbon::now())->subHour()->format('Y-m-d H:i:s');
+                        $lastSeenRoute = AirFlightRoutes::where('seen_at', '<=', $lastHour )
+                            ->where('airflight_airplane_id', $airflight->id)
+                            ->where('lat', $d->lat)
+                            ->where('lon', $d->lon)
+                            ->orderByDesc('seen_at')
+                            ->first();
+                        $lastSeen = $lastSeenRoute ? $lastSeenRoute->seen_at : null;
+
                         $route = AirFlightRoutes::updateOrCreate(
                             [
                                 'airflight_airplane_id' => $airflight->id,
                                 'lat' => $d->lat,
                                 'lon' => $d->lon,
-                                'seen_at' => $d->seen_at,
+                                'seen_at' => $lastSeen,
                             ],
                             [
                                 'airflight_airplane_id' => $airflight->id,
@@ -91,10 +98,8 @@ class AirFlightController extends Controller
                             ]
                         );
                     }
-
                 }
 
-                //$model->save();
             } catch (Exception $e) {
                 Log::error('Error insertando airflight');
                 Log::error($e);
