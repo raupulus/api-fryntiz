@@ -22,7 +22,16 @@ class AirFlightController extends Controller
 {
     public function index()
     {
-        return view('airflight.index');
+        $now = Carbon::now();
+        $lastHour = (clone($now))->subHour();
+
+        $planes = AirFlightAirPlane::where('seen_last_at', '>=', $lastHour)
+            ->orderByDesc('seen_last_at')
+            ->paginate(20);
+
+        return view('airflight.index')->with([
+            'planes' => $planes,
+        ]);
     }
 
     public function addJson(Request $request) {
