@@ -6,8 +6,10 @@ use App\Api\AirFlight\AirFlightAirPlane;
 use App\Api\AirFlight\AirFlightRoutes;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use function array_map;
 use function GuzzleHttp\json_decode;
 use function response;
 use function view;
@@ -31,6 +33,57 @@ class AirFlightController extends Controller
 
         return view('airflight.index')->with([
             'planes' => $planes,
+        ]);
+    }
+
+    /**
+     * Devuelve los últimos aviones en una respuesta json.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAircraftjson(Request $request) {
+        $now = Carbon::now();
+        $lasTenMinutes = (clone($now))->subMinutes(10);
+
+        $aircrafts = AirFlightAirPlane::select([
+                'airflight_airplane.icao as hex',
+                'airflight_airplane.category',
+                'airflight_airplane.seen_last_at as seen_at',
+                'airflight_routes.squawk',
+                'airflight_routes.flight',
+                'airflight_routes.lat',
+                'airflight_routes.lon',
+                'airflight_routes.altitude',
+                'airflight_routes.vert_rate',
+                'airflight_routes.track',
+                'airflight_routes.speed',
+                'airflight_routes.rssi',
+                'airflight_routes.emergency',
+                'airflight_routes.messages',
+            ])
+            ->leftJoin('airflight_routes', 'airflight_routes.airflight_airplane_id', 'airflight_airplane.id')
+            ->where('airflight_airplane.seen_last_at', '>=', $lasTenMinutes)
+            ->where('airflight_routes.created_at', '>=', $lasTenMinutes)
+            ->orderByDesc('airflight_airplane.seen_last_at')
+            ->orderByDesc('airflight_routes.seen_at')
+            ->get();
+
+        $aircrafts->map(function ($ele) {
+            try {
+                $ele->seen_at = (Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at))->getTimestamp();
+            } catch (Exception $e) {
+                $ele->seen_at = null;
+            }
+
+            return $ele;
+        });
+
+        return response()->json([
+            'now' => (Carbon::now())->getTimestamp(),
+            'messages' => $aircrafts->sum('messages'),
+            'aircraft' => $aircrafts->toArray(),
         ]);
     }
 
