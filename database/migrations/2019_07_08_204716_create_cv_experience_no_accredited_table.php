@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAcademicComplementaryOnlineTable extends Migration
+class CreateCvExperienceNoAccreditedTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,9 +15,10 @@ class CreateAcademicComplementaryOnlineTable extends Migration
     {
         /**
          * id - image_id - translation_name_token -
-         * translation_description_token - entity - hours - instructor - url
+         * translation_description_token - position - company - url - date_start
+         * - date_end
          */
-        Schema::create('academic_complementary_online', function (Blueprint $table) {
+        Schema::create('cv_experience_no_accredited', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -28,7 +29,7 @@ class CreateAcademicComplementaryOnlineTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             $table->unsignedBigInteger('translation_name_token');
-            /*
+            /*/
             $table->foreign('translation_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
@@ -41,10 +42,11 @@ class CreateAcademicComplementaryOnlineTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
-            $table->string('entity', 511);
-            $table->integer('hours');
-            $table->string('instructor', 255);
+            $table->string('position', 255);
+            $table->string('company', 511);
             $table->text('url');
+            $table->timestamp('date_start');
+            $table->timestamp('date_end');
             $table->timestamps();
         });
     }
@@ -56,7 +58,7 @@ class CreateAcademicComplementaryOnlineTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('academic_complementary_online', function (Blueprint $table) {
+        Schema::dropIfExists('cv_experience_no_accredited', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['translation_name_token']);
             $table->dropForeign(['translation_description_token']);

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCollaborationsTable extends Migration
+class CreateCvHobbiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +14,10 @@ class CreateCollaborationsTable extends Migration
     public function up()
     {
         /**
-         * id - image_id - translation_title_token -
-         * translation_description_token - translation_info_token - url -
-         * urlinfo - repository - role
+         * id - image_id - translation_title_token - translation_subtitle_token
+         * - translation_description_token - url
          */
-        Schema::create('collaborations', function (Blueprint $table) {
+        Schema::create('cv_hobbies', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -35,6 +34,13 @@ class CreateCollaborationsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
+            $table->unsignedBigInteger('translation_subtitle_token');
+            /*
+            $table->foreign('translation_subtitle_token')
+                ->references('token')->on('translations')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            */
             $table->unsignedBigInteger('translation_description_token');
             /*
             $table->foreign('translation_description_token')
@@ -42,17 +48,7 @@ class CreateCollaborationsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
-            $table->unsignedBigInteger('translation_info_token');
-            /*
-            $table->foreign('translation_info_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
             $table->text('url');
-            $table->text('urlinfo');
-            $table->text('repository');
-            $table->string('role', 255);
             $table->timestamps();
         });
     }
@@ -64,11 +60,11 @@ class CreateCollaborationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('collaborations', function (Blueprint $table) {
+        Schema::dropIfExists('cv_hobbies', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['translation_title_token']);
+            $table->dropForeign(['translation_subtitle_token']);
             $table->dropForeign(['translation_description_token']);
-            $table->dropForeign(['translation_info_token']);
         });
     }
 }

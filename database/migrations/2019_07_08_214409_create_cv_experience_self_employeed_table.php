@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExperienceAccreditedTable extends Migration
+class CreateCvExperienceSelfEmployeedTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,7 +18,7 @@ class CreateExperienceAccreditedTable extends Migration
          * translation_description_token - position - company - url - date_start
          * - date_end
          */
-        Schema::create('experience_accredited', function (Blueprint $table) {
+        Schema::create('cv_experience_self_employeed', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -58,7 +58,7 @@ class CreateExperienceAccreditedTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('experience_accredited', function (Blueprint $table) {
+        Schema::dropIfExists('cv_experience_self_employeed', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['translation_name_token']);
             $table->dropForeign(['translation_description_token']);

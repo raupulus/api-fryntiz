@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSocialNetworksTable extends Migration
+class CreateCvSkillsTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateSocialNetworksTable extends Migration
      */
     public function up()
     {
-        // id - image_id - translation_token - name - url - perfil - nick
-        Schema::create('social_networks', function (Blueprint $table) {
+        // id - image_id - translation_name_token - translation_description_token
+        Schema::create('cv_skills_type', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -24,17 +24,20 @@ class CreateSocialNetworksTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('translation_token');
+            $table->unsignedBigInteger('translation_name_token');
             /*
-            $table->foreign('translation_token')
+            $table->foreign('translation_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
-            $table->string('name', 511);
-            $table->text('url');
-            $table->text('perfil');
-            $table->string('nick', 255);
+            $table->unsignedBigInteger('translation_description_token');
+            /*
+            $table->foreign('translation_description_token')
+                ->references('token')->on('translations')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            */
             $table->timestamps();
         });
     }
@@ -46,9 +49,10 @@ class CreateSocialNetworksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('social_networks', function (Blueprint $table) {
+        Schema::dropIfExists('cv_skills_type', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_token']);
+            $table->dropForeign(['translation_name_token']);
+            $table->dropForeign(['translation_description_token']);
         });
     }
 }

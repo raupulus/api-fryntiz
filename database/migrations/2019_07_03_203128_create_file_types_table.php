@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateFileTypesTable
+ */
 class CreateFileTypesTable extends Migration
 {
     /**
@@ -13,18 +16,24 @@ class CreateFileTypesTable extends Migration
      */
     public function up()
     {
-        // id - type - mime - icon16 - icon32 - icon64 - icon128
         Schema::create('file_types', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->string('type', 127);
-            $table->string('mime', 127);
-            $table->text('icon16');
-            $table->text('icon32');
-            $table->text('icon64');
-            $table->text('icon128');
+            $table->string('type', 127)
+                ->comment('Tipo de archivo');
+            $table->string('mime', 127)
+                ->index()
+                ->comment('Tipo mime que representa el tipo de archivo');
+            $table->string('extension', 12)
+                ->comment('Extensión con la que se representa de forma mayoritaria.');
+            $table->text('icon16')->default('images/icons/file-types/default_16.png');
+            $table->text('icon32')->default('images/icons/file-types/default_32.png');
+            $table->text('icon64')->default('images/icons/file-types/default_64.png');
+            $table->text('icon128')->default('images/icons/file-types/default_128.png');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

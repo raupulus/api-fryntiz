@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSkillsTypeTable extends Migration
+class CreateCvJobsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class CreateSkillsTypeTable extends Migration
      */
     public function up()
     {
-        // id - image_id - translation_name_token - translation_description_token
-        Schema::create('skills_type', function (Blueprint $table) {
+        /*
+         * id - image_id - translation_title_token -
+         * translation_description_token - translation_info_token - url -
+         * urlinfo - repository - role
+         */
+        Schema::create('cv_jobs', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -24,9 +28,9 @@ class CreateSkillsTypeTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('translation_name_token');
+            $table->unsignedBigInteger('translation_title_token');
             /*
-            $table->foreign('translation_name_token')
+            $table->foreign('translation_title_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
@@ -38,6 +42,17 @@ class CreateSkillsTypeTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
+            $table->unsignedBigInteger('translation_info_token');
+            /*
+            $table->foreign('translation_info_token')
+                ->references('token')->on('translations')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            */
+            $table->text('url');
+            $table->text('urlinfo');
+            $table->text('repository');
+            $table->string('role', 255);
             $table->timestamps();
         });
     }
@@ -49,10 +64,11 @@ class CreateSkillsTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('skills_type', function (Blueprint $table) {
+        Schema::dropIfExists('cv_jobs', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_name_token']);
+            $table->dropForeign(['translation_title_token']);
             $table->dropForeign(['translation_description_token']);
+            $table->dropForeign(['translation_info_token']);
         });
     }
 }

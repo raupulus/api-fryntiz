@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProjectsTable extends Migration
+class CreateCvAcademicComplementaryOnlineTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateProjectsTable extends Migration
      */
     public function up()
     {
-        /*
-         * id - image_id - translation_title_token -
-         * translation_description_token - translation_info_token - url -
-         * urlinfo - repositorie_id - repository
+        /**
+         * id - image_id - translation_name_token -
+         * translation_description_token - entity - hours - instructor - url
          */
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('cv_academic_complementary_online', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -28,14 +27,9 @@ class CreateProjectsTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('repositorie_id')->nullable();
-            $table->foreign('repositorie_id')
-                ->references('id')->on('repositories')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
-            $table->unsignedBigInteger('translation_title_token');
+            $table->unsignedBigInteger('translation_name_token');
             /*
-            $table->foreign('translation_title_token')
+            $table->foreign('translation_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
@@ -47,16 +41,10 @@ class CreateProjectsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
-            $table->unsignedBigInteger('translation_info_token');
-            /*
-            $table->foreign('translation_info_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
+            $table->string('entity', 511);
+            $table->integer('hours');
+            $table->string('instructor', 255);
             $table->text('url');
-            $table->text('urlinfo');
-            $table->text('repository');
             $table->timestamps();
         });
     }
@@ -68,12 +56,10 @@ class CreateProjectsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects', function (Blueprint $table) {
+        Schema::dropIfExists('cv_academic_complementary_online', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['repositorie_id']);
-            $table->dropForeign(['translation_title_token']);
+            $table->dropForeign(['translation_name_token']);
             $table->dropForeign(['translation_description_token']);
-            $table->dropForeign(['translation_info_token']);
         });
     }
 }

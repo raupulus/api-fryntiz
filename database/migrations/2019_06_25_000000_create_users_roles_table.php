@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateUsersRolesTable
+ */
 class CreateUsersRolesTable extends Migration
 {
     /**
@@ -13,21 +16,25 @@ class CreateUsersRolesTable extends Migration
      */
     public function up()
     {
-        // id - name - translation_display_name_token - created_at - updated_at
-        Schema::create('users_roles', function (Blueprint $table) {
+        Schema::create('user_roles', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->string('name', '255');
-            $table->unsignedBigInteger('translation_display_name_token');
-            /*
-            $table->foreign('translation_display_name_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
-            */
+            $table->string('name', '255')
+                ->unique()
+                ->comment('Nombre para control del role en permisos.');
+            $table->string('display_name', '255')
+                ->unique()
+                ->comment('Nombre a mostrar');
+            $table->string('slug', '255')
+                ->unique()
+                ->comment('Nombre interno del role.');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del funcionamiento del role.');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -38,8 +45,6 @@ class CreateUsersRolesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_roles', function (Blueprint $table) {
-            $table->dropForeign(['translation_display_name_token']);
-        });
+        Schema::dropIfExists('user_roles');
     }
 }

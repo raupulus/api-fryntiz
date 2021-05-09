@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRepositoriesTable extends Migration
+class CreateCvRepositoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateRepositoriesTable extends Migration
     public function up()
     {
         // id - image_id - url - translation_token (fg languages) - title - description - name - perfil - alt
-        Schema::create('repositories', function (Blueprint $table) {
+        Schema::create('cv_repositories', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -46,7 +46,7 @@ class CreateRepositoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('repositories', function (Blueprint $table) {
+        Schema::dropIfExists('cv_repositories', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['translation_token']);
         });

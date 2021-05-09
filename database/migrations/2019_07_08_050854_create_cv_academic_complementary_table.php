@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateServicesTable extends Migration
+class CreateCvAcademicComplementaryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class CreateServicesTable extends Migration
      */
     public function up()
     {
-        // id - image_id - translation_token - name - url
-        Schema::create('services', function (Blueprint $table) {
+        /**
+         * id - image_id - translation_name_token -
+         * translation_description_token - entity - hours
+         */
+        Schema::create('cv_academic_complementary', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -24,15 +27,22 @@ class CreateServicesTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('translation_token');
+            $table->unsignedBigInteger('translation_name_token');
             /*
-            $table->foreign('translation_token')
+            $table->foreign('translation_name_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
-            $table->string('name', 511);
-            $table->text('url');
+            $table->unsignedBigInteger('translation_description_token');
+            /*
+            $table->foreign('translation_description_token')
+                ->references('token')->on('translations')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            */
+            $table->string('entity', 511);
+            $table->integer('hours');
             $table->timestamps();
         });
     }
@@ -44,9 +54,10 @@ class CreateServicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('services', function (Blueprint $table) {
+        Schema::dropIfExists('cv_academic_complementary', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_token']);
+            $table->dropForeign(['translation_name_token']);
+            $table->dropForeign(['translation_description_token']);
         });
     }
 }

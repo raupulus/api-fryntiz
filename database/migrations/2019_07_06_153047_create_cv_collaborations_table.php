@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSkillsTable extends Migration
+class CreateCvCollaborationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,10 +14,11 @@ class CreateSkillsTable extends Migration
     public function up()
     {
         /**
-         * id - image_id - skill_type_id - translation_name_token -
-         * translation_description_token - level (1-100)
+         * id - image_id - translation_title_token -
+         * translation_description_token - translation_info_token - url -
+         * urlinfo - repository - role
          */
-        Schema::create('skills', function (Blueprint $table) {
+        Schema::create('cv_collaborations', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -27,14 +28,9 @@ class CreateSkillsTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('skill_type_id');
-            $table->foreign('skill_type_id')
-                ->references('id')->on('skills_type')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
-            $table->unsignedBigInteger('translation_name_token');
+            $table->unsignedBigInteger('translation_title_token');
             /*
-            $table->foreign('translation_name_token')
+            $table->foreign('translation_title_token')
                 ->references('token')->on('translations')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
@@ -46,7 +42,17 @@ class CreateSkillsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             */
-            $table->integer('level');
+            $table->unsignedBigInteger('translation_info_token');
+            /*
+            $table->foreign('translation_info_token')
+                ->references('token')->on('translations')
+                ->onUpdate('cascade')
+                ->onDelete('no action');
+            */
+            $table->text('url');
+            $table->text('urlinfo');
+            $table->text('repository');
+            $table->string('role', 255);
             $table->timestamps();
         });
     }
@@ -58,10 +64,11 @@ class CreateSkillsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('skills', function (Blueprint $table) {
-            $table->dropForeign(['skill_type_id']);
-            $table->dropForeign(['translation_name_token']);
+        Schema::dropIfExists('cv_collaborations', function (Blueprint $table) {
+            $table->dropForeign(['image_id']);
+            $table->dropForeign(['translation_title_token']);
             $table->dropForeign(['translation_description_token']);
+            $table->dropForeign(['translation_info_token']);
         });
     }
 }
