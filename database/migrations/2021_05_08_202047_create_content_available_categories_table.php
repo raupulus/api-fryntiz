@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 /**
  * Class CreateContentCategoriesAvailabeTable
  */
-class CreateContentAvailabeCategoriesTable extends Migration
+class CreateContentAvailableCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -56,6 +56,6 @@ class CreateContentAvailabeCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_categories_available');
+        Schema::dropIfExists('content_available_categories');
     }
 }

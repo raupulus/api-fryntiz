@@ -5,9 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateContentStatusTable
+ * Class CreateContentTypesTable
  */
-class CreateContentStatusTable extends Migration
+class CreateContentAvailableTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class CreateContentStatusTable extends Migration
      */
     public function up()
     {
-        Schema::create('content_status', function (Blueprint $table) {
+        Schema::create('content_available_types', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -30,14 +30,17 @@ class CreateContentStatusTable extends Migration
                 ->onDelete('set null');
             $table->string('name', 511)
                 ->unique()
-                ->comment('Nombre del estado');
+                ->comment('Nombre del tipo de contenido');
+            $table->string('plural_name', 511)
+                ->unique()
+                ->comment('Nombre en plural para los tipos de contenido');
             $table->string('slug', 255)
                 ->index()
                 ->unique()
                 ->comment('Slug para el URL');
             $table->string('description', 1023)
                 ->nullable()
-                ->comment('Descripción acerca del estado');
+                ->comment('Descripción acerca del tipo de contenido');
             $table->string('icon', 255)->nullable()->comment('Clase css para el icono');
             $table->string('color', 255)
                 ->default('#000000')
@@ -54,7 +57,7 @@ class CreateContentStatusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_status', function (Blueprint $table) {
+        Schema::dropIfExists('content_available_types', function (Blueprint $table) {
             $table->dropForeign(['file_id']);
         });
     }

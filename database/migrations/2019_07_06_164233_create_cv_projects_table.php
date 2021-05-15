@@ -28,32 +28,11 @@ class CreateCvProjectsTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('repositorie_id')->nullable();
-            $table->foreign('repositorie_id')
-                ->references('id')->on('repositories')
+            $table->unsignedBigInteger('repository_id')->nullable();
+            $table->foreign('repository_id')
+                ->references('id')->on('cv_repositories')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->unsignedBigInteger('translation_title_token');
-            /*
-            $table->foreign('translation_title_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_description_token');
-            /*
-            $table->foreign('translation_description_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_info_token');
-            /*
-            $table->foreign('translation_info_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
             $table->text('url');
             $table->text('urlinfo');
             $table->text('repository');
@@ -70,10 +49,7 @@ class CreateCvProjectsTable extends Migration
     {
         Schema::dropIfExists('cv_projects', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['repositorie_id']);
-            $table->dropForeign(['translation_title_token']);
-            $table->dropForeign(['translation_description_token']);
-            $table->dropForeign(['translation_info_token']);
+            $table->dropForeign(['repository_id']);
         });
     }
 }

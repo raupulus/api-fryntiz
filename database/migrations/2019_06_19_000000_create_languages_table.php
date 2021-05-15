@@ -21,7 +21,6 @@ class CreateLanguagesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('localization_country_id', 255);
             $table->char('code', 8)
                 ->unique()
                 ->comment('Código del país e idioma: es_ES');

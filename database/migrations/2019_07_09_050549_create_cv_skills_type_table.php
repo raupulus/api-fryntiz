@@ -24,20 +24,6 @@ class CreateCvSkillsTypeTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('translation_name_token');
-            /*
-            $table->foreign('translation_name_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_description_token');
-            /*
-            $table->foreign('translation_description_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
             $table->timestamps();
         });
     }
@@ -51,8 +37,6 @@ class CreateCvSkillsTypeTable extends Migration
     {
         Schema::dropIfExists('cv_skills_type', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_name_token']);
-            $table->dropForeign(['translation_description_token']);
         });
     }
 }

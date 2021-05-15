@@ -29,23 +29,9 @@ class CreateCvSkillsTable extends Migration
                 ->onDelete('no action');
             $table->unsignedBigInteger('skill_type_id');
             $table->foreign('skill_type_id')
-                ->references('id')->on('skills_type')
+                ->references('id')->on('cv_skills_type')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->unsignedBigInteger('translation_name_token');
-            /*
-            $table->foreign('translation_name_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_description_token');
-            /*
-            $table->foreign('translation_description_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
             $table->integer('level');
             $table->timestamps();
         });
@@ -60,8 +46,6 @@ class CreateCvSkillsTable extends Migration
     {
         Schema::dropIfExists('cv_skills', function (Blueprint $table) {
             $table->dropForeign(['skill_type_id']);
-            $table->dropForeign(['translation_name_token']);
-            $table->dropForeign(['translation_description_token']);
         });
     }
 }

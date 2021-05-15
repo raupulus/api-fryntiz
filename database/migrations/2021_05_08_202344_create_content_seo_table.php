@@ -29,23 +29,22 @@ class CreateContentSeoTable extends Migration
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->bigInteger('language_id')
-                ->index()
-                ->nullable()
-                ->comment('FK al idioma asociado');
-            $table->foreign('language_id')
-                ->references('id')->on('languages')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
-
-            $table->string('author', 511)->nullable();
-            $table->string('description', 511)->nullable();
-            $table->string('keywords', 511)->nullable();
-            $table->string('robots', 127)->nullable();
-            $table->string('copyright', 511)->nullable();
+            $table->string('search_image', 511)->nullable();
+            $table->string('search_title', 511)->nullable();
+            $table->string('search_description', 511)->nullable();
+            $table->string('meta_author', 511)->nullable();
+            $table->string('meta_distribution', 255)
+                ->default('global')
+                ->nullable();
+            $table->string('meta_description', 511)->nullable();
+            $table->string('meta_keywords', 511)->nullable();
+            $table->string('meta_robots', 127)
+                ->default('index, follow')
+                ->nullable();
+            $table->string('meta_copyright', 511)->nullable();
             $table->string('og_title', 511)->nullable();
-            $table->string('og_site_name', 511)->nullable();
             $table->string('og_description', 511)->nullable();
+            $table->string('og_type', 511)->nullable();
             $table->string('og_image', 511)->nullable();
             $table->string('og_image_alt', 511)->nullable();
             $table->string('twitter_card', 511)->nullable();

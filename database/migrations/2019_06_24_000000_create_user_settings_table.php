@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 /**
  * Class CreateUsersConfigurationTable
  */
-class CreateUsersConfigurationTable extends Migration
+class CreateUserSettingsTable extends Migration
 {
     /**
      * Run the migrations.

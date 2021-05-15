@@ -35,7 +35,7 @@ class CreateContentCategoriesTable extends Migration
                 ->references('id')->on('content_available_categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->bigInteger('order')
+            $table->integer('priority')
                 ->nullable()
                 ->comment('Orden de prioridad de la categoría sobre otras, esto crea una ruta por ejemplo: /terminal/editores/vim');
             $table->timestamps();
@@ -53,9 +53,7 @@ class CreateContentCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_categories');
-
-        Schema::dropIfExists('content_subcategories', function (Blueprint $table) {
+        Schema::dropIfExists('content_categories', function (Blueprint $table) {
             $table->dropForeign(['content_id']);
             $table->dropForeign(['category_id']);
         });
