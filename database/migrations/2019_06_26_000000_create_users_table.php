@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('role_id');
+            $table->unsignedBigInteger('role_id')->default(3);
             $table->foreign('role_id')
                 ->references('id')->on('user_roles')
                 ->onUpdate('cascade')
