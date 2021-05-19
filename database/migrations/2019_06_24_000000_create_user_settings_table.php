@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateUsersConfigurationTable
+ * Class CreateUserSettingsTable
  */
 class CreateUserSettingsTable extends Migration
 {

@@ -1,8 +1,16 @@
 <?php
 
-use App\User;
-use Illuminate\Database\Seeder;
+namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use function bcrypt;
+
+/**
+ * Class UsersTableSeeder
+ *
+ * @package Database\Seeders
+ */
 class UsersTableSeeder extends Seeder
 {
     /**
@@ -12,22 +20,34 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $admin = User::firstOrCreate([
-                'email' => 'admin@domain.es',
+        $superadmin = User::firstOrCreate([
+                'email' => 'superadmin@domain.es',
             ],[
             'name' => 'Administrador Principal',
             'role_id' => 1,
-            'email' => 'admin@domain.es',
-            'password' => bcrypt('temp'),
+            'email' => 'superadmin@test.es',
+            'email_verified_at' => '2021-03-03 12:00:00',
+            'password' => bcrypt('123123'),
+        ]);
+
+        $admin = User::firstOrCreate([
+            'email' => 'admin@test.es',
+        ],[
+            'name' => 'Administrador',
+            'role_id' => 2,
+            'email' => 'admin@test.es',
+            'email_verified_at' => '2021-03-03 12:00:00',
+            'password' => bcrypt('123123'),
         ]);
 
         $user = User::firstOrCreate([
-            'email' => 'user@domain.es',
+            'email' => 'user@test.es',
             ],[
             'name' => 'Usuario Normal',
-            'role_id' => 2,
+            'role_id' => 3,
             'email' => 'user@domain.es',
-            'password' => bcrypt('temp'),
+            'email_verified_at' => '2021-03-03 12:00:00',
+            'password' => bcrypt('123123'),
         ]);
     }
 }

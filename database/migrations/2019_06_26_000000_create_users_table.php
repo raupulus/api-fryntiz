@@ -24,11 +24,11 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('role_id')->default(3);
             $table->foreign('role_id')
                 ->references('id')->on('user_roles')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onUpdate('CASCADE')
+                ->onDelete('SET NULL');
             $table->foreignId('current_team_id')->nullable();
             $table->string('name');
-            $table->string('surname');
+            $table->string('surname')->nullable();
             $table->text('profile_photo_path')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

@@ -1,9 +1,16 @@
 <?php
+namespace Database\Seeders;
 
+use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class RolesTableSeeder
+ *
+ * @package Database\Seeders
+ */
 class RolesTableSeeder extends Seeder
 {
     /**
@@ -13,31 +20,29 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-        // id - name - display_name - created_at - updated_at
-
         try {
-            ## Creo rol para administrador
-            DB::table('translations')->insert([
-                'language_id' => 1,
-                'token' => 1,
-                'text' => 'Administrador',
+            ## Creo rol para administrador principal.
+            DB::table('user_roles')->insert([
+                'name' => 'superadmin',
+                'display_name' => 'Super Admin',
+                'slug' => 'super-admin',
+                'description' => 'Administrador Principal',
             ]);
 
-            DB::table('users_roles')->insert([
+            ## Creo rol para administradores.
+            DB::table('user_roles')->insert([
                 'name' => 'admin',
-                'translation_display_name_token' => 1,
+                'display_name' => 'Admin',
+                'slug' => 'admin',
+                'description' => 'Administradores',
             ]);
 
             ## Creo rol para usuario normal
-            DB::table('translations')->insert([
-                'language_id' => 1,
-                'token' => 2,
-                'text' => 'Usuario Normal',
-            ]);
-
-            DB::table('users_roles')->insert([
+            DB::table('user_roles')->insert([
                 'name' => 'user',
-                'translation_display_name_token' => 2,
+                'display_name' => 'Usuario',
+                'slug' => 'usuario',
+                'description' => 'Usuario normal',
             ]);
         } catch (Exception $e) {
             Log::info('Ya existían los roles y traducciones');
