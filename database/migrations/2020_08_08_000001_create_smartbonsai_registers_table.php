@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateSmartbonsaiRegistersTable
+ */
 class CreateSmartbonsaiRegistersTable extends Migration
 {
     /**
@@ -13,14 +16,14 @@ class CreateSmartbonsaiRegistersTable extends Migration
      */
     public function up()
     {
-        Schema::create('smartbonsai_registers', function (Blueprint $table) {
+        Schema::create('smartplant_registers', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('smartbonsai_plant_id');
-            $table->foreign('smartbonsai_plant_id')
-                ->references('id')->on('smartbonsai_plants')
+            $table->unsignedBigInteger('plant_id');
+            $table->foreign('plant_id')
+                ->references('id')->on('smartplant_plants')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->integer('uv')
@@ -54,6 +57,6 @@ class CreateSmartbonsaiRegistersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smartbonsai_registers');
+        Schema::dropIfExists('smartplant_registers');
     }
 }

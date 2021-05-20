@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateSmartbonsaiPlantsTable
+ */
 class CreateSmartbonsaiPlantsTable extends Migration
 {
     /**
@@ -13,7 +16,7 @@ class CreateSmartbonsaiPlantsTable extends Migration
      */
     public function up()
     {
-        Schema::create('smartbonsai_plants', function (Blueprint $table) {
+        Schema::create('smartplant_plants', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -44,6 +47,6 @@ class CreateSmartbonsaiPlantsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smartbonsai_plants');
+        Schema::dropIfExists('smartplant_plants');
     }
 }

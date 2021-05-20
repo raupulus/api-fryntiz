@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAirFlightAirplaneTable extends Migration
+/**
+ * Class CreateAirFlightAirplanesTable
+ */
+class CreateAirFlightAirplanesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +16,7 @@ class CreateAirFlightAirplaneTable extends Migration
      */
     public function up()
     {
-        Schema::create('airflight_airplane', function (Blueprint $table) {
+        Schema::create('airflight_airplanes', function (Blueprint $table) {
            $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
