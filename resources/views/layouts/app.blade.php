@@ -1,46 +1,37 @@
 <!DOCTYPE html>
+<!--
+@author Raúl Caro Pastorino
+@copyright Copyright (c) 2019 Raúl Caro Pastorino
+@license https://www.gnu.org/licenses/gpl-3.0-standalone.html
+
+Author Web: https://fryntiz.es
+E-mail: dev@fryntiz.es
+-->
+
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{--}} RecaptchaV3::initJs() --}}
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-
-        @livewireStyles
-
-        <!-- Scripts -->
-        <script src="{{ mix('js/app.js') }}" defer></script>
+        @include('resources.global_vars_js')
+        @include('layouts.head')
+        @include('layouts.head_meta')
+        @yield('head_css')
+        @yield('head_javascript')
     </head>
-    <body class="font-sans antialiased">
-        <x-jet-banner />
 
-        <div class="min-h-screen bg-gray-100">
-            @livewire('navigation-menu')
+    <body>
+         @include('layouts.navbar')
+         @include('layouts.alerts')
+         @yield('header')
 
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
+         <div id="app" class="container">
+             @yield('content')
+         </div>
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
-
-        @stack('modals')
-
-        @livewireScripts
+         @include('layouts.footer')
+         @include('layouts.footer_meta')
+         @yield('css')
+         @yield('javascript')
+         @yield('js')
     </body>
 </html>
