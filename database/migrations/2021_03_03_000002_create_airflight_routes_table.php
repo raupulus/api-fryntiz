@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateAirFlightRoutesTable
+ */
 class CreateAirFlightRoutesTable extends Migration
 {
     /**
@@ -18,9 +21,9 @@ class CreateAirFlightRoutesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('airflight_airplane_id');
-            $table->foreign('airflight_airplane_id')
-                ->references('id')->on('airflight_airplane')
+            $table->unsignedBigInteger('airplane_id');
+            $table->foreign('airplane_id')
+                ->references('id')->on('airflight_airplanes')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->string('squawk')
