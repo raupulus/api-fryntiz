@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use function base_path;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -46,6 +47,31 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
+            Route::prefix('weatherstation')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/weather_station.php'));
+
+            Route::prefix('keycounter')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/keycounter.php'));
+
+            Route::prefix('webhook')
+                //->middleware('TODO → New custom middleware')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/webhook.php'));
+
+            Route::prefix('smartplant')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/smart_plant.php'));
+
+            Route::prefix('airflight')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/airflight.php'));
         });
     }
 

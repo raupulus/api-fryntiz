@@ -14,9 +14,22 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    return view('home');
+})->name('home');
+
+## Pantalla de bienvenida, la mantengo para ir a la docu oficial
+Route::get('/welcome', function () {
     return view('welcome');
 });
 
+## Documentación
+Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
+    return view('documentation');
+})->name('documentation');
+
+############################################################
+##                      Dashboard                         ##
+############################################################
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard.index');
 })->name('dashboard');
