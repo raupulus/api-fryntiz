@@ -4,6 +4,11 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
+/**
+ * Class GuestLayout
+ *
+ * @package App\View\Components
+ */
 class GuestLayout extends Component
 {
     /**
@@ -13,6 +18,6 @@ class GuestLayout extends Component
      */
     public function render()
     {
-        return view('layouts.guest');
+        return view('layouts.guest_livewire');
     }
 }
