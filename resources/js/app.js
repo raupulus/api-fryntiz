@@ -1,3 +1,5 @@
 require('./bootstrap');
 
-require('alpinejs');
+//require('alpinejs');
+require('./functions.js')
+require('./scripts.js')
