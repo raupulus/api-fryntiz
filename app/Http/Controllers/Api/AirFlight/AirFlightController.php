@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Api\AirFlight;
+namespace App\Http\Controllers\Api\AirFlight;
 
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use function array_map;
 use function GuzzleHttp\json_decode;
 use function response;
 use function view;
