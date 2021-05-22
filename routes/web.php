@@ -30,6 +30,13 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
 ############################################################
 ##                      Dashboard                         ##
 ############################################################
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+Route::group(['prefix' => 'panel', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    Route::get('/', function () {
+        return view('dashboard.index');
+    })->name('dashboard.index');
+});
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
