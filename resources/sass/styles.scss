@@ -1,0 +1,23 @@
+// Fonts
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+@import "header";
+@import "body";
+@import "footer";
+
+@import "contact";
+
+body {
+  padding-top: 56px;
+}
+
+#app {
+  padding-top: 30px;
+}
+
+.fondoAzul {
+  background: -webkit-linear-gradient(left, #0072ff, #00c6ff);
+}
