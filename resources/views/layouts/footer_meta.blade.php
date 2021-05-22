@@ -1,3 +1,6 @@
+<script src="{{ mix('js/app.js') }}"></script>
+
+
 {{-- Mis funciones generales --}}
 <script src="{{ mix('js/functions.js') }}"></script>
 
@@ -5,3 +8,4 @@
 @section('footer-js-custom')
     <script src="{{ mix('js/scripts.js') }}"></script>
 @show
+

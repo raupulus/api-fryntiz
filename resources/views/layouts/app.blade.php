@@ -5,7 +5,7 @@
 @license https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
 Author Web: https://fryntiz.es
-E-mail: dev@fryntiz.es
+E-mail: raul@fryntiz.dev
 -->
 
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

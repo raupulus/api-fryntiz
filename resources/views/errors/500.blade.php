@@ -12,7 +12,7 @@
                 administrador. Puedes
                 <a href="javascript:history.back()">volver</a>
                 a la página anterior o ir a la
-                <a href="{{route('index')}}">página principal</a>.</p>
+                <a href="{{route('home')}}">página principal</a>.</p>
         </div>
 
         <div>
