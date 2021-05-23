@@ -1,3 +1,6 @@
+{{-- Tailwind --}}
+<link href="{{ mix('css/tailwind.css') }}" rel="stylesheet" />
+
 {{-- Estilos Propios --}}
 
 {{-- Estilos que serán reemplazados por algunas páginas --}}
