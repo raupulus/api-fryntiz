@@ -1,56 +1,19 @@
-/**
- * Función que toma el atributo "data-route" del elemento al que
- * se asignó esta función como evento y redirige a esa url.
- */
-function goToUrlData() {
-    var route = $(this).attr('data-route');
-
-    window.location.href = route;
-}
-
-async function createDatatable(id, url, columns, options = {}) {
-    let basic = {
-        processing: true,
-        serverSide: true,
-        responsive: true,
-        select: true,
-        //dom: '<"toolbar">frtip', // Barra para añadir arriba
-        ajax: url,
-        columns: columns,
-        language: {
-            url : dataTableTranslation
-        }
-
-        /*
-         // Botones
-         dom: 'Bfrtip',
-         buttons: [
-             {
-             text: 'Example Button',
-             action: function ( e, dt, node, config ) {
-                 alert('Botón pulsado');
-                 }
-             }
-         ]
-         */
-    };
-
-    return await $('#' + id).DataTable({...basic, ...options});
-}
+'use strict';
 
 /**
- * Pregunta antes de enviar, si es aceptado envía el formulario padre
- * que se encuentre primero como ancestro de el propio nodo que contenga
- * esta función.
+ * Conmuta una clase para el elemento recibido. La quita si la tiene o la pone
+ * en caso de no tenerla aún.
  *
- * @param e Evento actual (Click).
- * @param ele Elemento actual.
- * @param text Texto para el mensaje de confirmar.
+ * @param selector El selector al que se le cambia la clase.
+ * @param name La clase que se asignará, por defecto 'hidden'.
  */
-function formSendConfirm(e, ele, text) {
-    e.preventDefault();
+export function toggle(selector, name = 'hidden') {
+    let elements = document.querySelectorAll(selector);
 
-    if (confirm(text)) {
-        $(ele).closest('form').submit();
+    if (elements && elements.length) {
+        Array.from(elements).forEach((ele) => {
+            let isHidden = ele.classList.contains(name);
+            isHidden ? ele.classList.remove(name) : ele.classList.add(name);
+        });
     }
 }
