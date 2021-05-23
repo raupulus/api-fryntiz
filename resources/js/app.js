@@ -7,3 +7,6 @@
 require('./bootstrap');
 require('./vue');
 
+require('./functions');
+require('./navbar');
+require('./footer');
