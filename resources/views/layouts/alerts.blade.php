@@ -2,7 +2,7 @@
 {{-- FIX arreglar con componente de tailwind --}}
 
 
-@if (isset($message))
+@if (false && isset($message))
     <div class="row mt-2 mb-2">
         <div class="col-12">
             {{-- Si es un array, por cada tipo de mensaje recorro sus elementos--}}
