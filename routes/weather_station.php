@@ -15,7 +15,8 @@ Route::group([
     'middleware' => []
 ], function () {
     ## Muestra la vista de resumen para depurar los datos
-    Route::get('/', 'App\Http\Controllers\WeatherStation\WeatherStationController@index');
+    Route::get('/', 'App\Http\Controllers\WeatherStation\WeatherStationController@index')
+    ->name('weather_station.index');
 });
 
 ## Obtengo un resumen con todos los datos principales.
