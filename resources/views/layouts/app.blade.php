@@ -24,7 +24,7 @@ E-mail: raul@fryntiz.dev
          @include('layouts.alerts')
          @yield('header')
 
-         <div id="app" class="container">
+         <div id="app">
              @yield('content')
          </div>
 
