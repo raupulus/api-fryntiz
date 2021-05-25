@@ -2,7 +2,7 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": ["api", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
@@ -21,7 +21,8 @@
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3.3"
+        "phpunit/phpunit": "^9.3.3",
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
