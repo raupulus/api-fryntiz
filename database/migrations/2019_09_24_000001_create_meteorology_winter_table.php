@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateMeteorologyWinterTable
+ */
 class CreateMeteorologyWinterTable extends Migration
 {
     /**
@@ -18,6 +21,13 @@ class CreateMeteorologyWinterTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->decimal('speed', 14, 4);
             $table->decimal('average', 14, 4);
             $table->decimal('min', 14, 4);
@@ -33,6 +43,8 @@ class CreateMeteorologyWinterTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meteorology_winter');
+        Schema::dropIfExists('meteorology_winter', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

@@ -21,6 +21,13 @@ class CreateGalleriesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario que realiza la subida');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->bigInteger('image_id')
                 ->nullable()
                 ->comment('FK a la imagen en la tabla files, representa la imagen principal o destacada');
@@ -44,6 +51,7 @@ class CreateGalleriesTable extends Migration
     {
         Schema::dropIfExists('galleries', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
+            $table->dropForeign(['user_id']);
         });
     }
 }

@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateMeteorologyLightningTable
+ */
 class CreateMeteorologyLightningTable extends Migration
 {
     /**
@@ -18,6 +21,13 @@ class CreateMeteorologyLightningTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->integer('distance')
                 ->comment('Distancia estimada de la caída del rayo');
             $table->integer('energy')
@@ -35,6 +45,8 @@ class CreateMeteorologyLightningTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meteorology_lightning');
+        Schema::dropIfExists('meteorology_lightning', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

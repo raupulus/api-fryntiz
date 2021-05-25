@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateKeycounterKeyboardTable
+ */
 class CreateKeycounterKeyboardTable extends Migration
 {
     /**
@@ -18,6 +21,13 @@ class CreateKeycounterKeyboardTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->timestamp('start_at')
                 ->comment('Momento de iniciar la racha');
             $table->timestamp('end_at')
@@ -49,6 +59,8 @@ class CreateKeycounterKeyboardTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('keycounter_keyboard');
+        Schema::dropIfExists('keycounter_keyboard', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

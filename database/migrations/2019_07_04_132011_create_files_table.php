@@ -23,11 +23,11 @@ class CreateFilesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
-                ->comment('Usuario que realiza la subida');
+                ->comment('Usuario asociado');
             $table->foreign('user_id')
                 ->references('id')->on('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->unsignedBigInteger('file_type_id')
                 ->nullable()
                 ->comment('FK al tipo de archivo');

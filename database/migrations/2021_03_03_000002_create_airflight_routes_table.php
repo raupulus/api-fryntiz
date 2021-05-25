@@ -21,6 +21,13 @@ class CreateAirFlightRoutesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->unsignedBigInteger('airplane_id');
             $table->foreign('airplane_id')
                 ->references('id')->on('airflight_airplanes')
@@ -84,6 +91,8 @@ class CreateAirFlightRoutesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('airflight_routes');
+        Schema::dropIfExists('airflight_routes', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

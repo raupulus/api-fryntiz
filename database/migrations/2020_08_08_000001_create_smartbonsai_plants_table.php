@@ -21,6 +21,13 @@ class CreateSmartbonsaiPlantsTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->string('name')
                 ->comment('Nombre común de la planta');
             $table->string('name_scientific')
@@ -47,6 +54,8 @@ class CreateSmartbonsaiPlantsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smartplant_plants');
+        Schema::dropIfExists('smartplant_plants', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

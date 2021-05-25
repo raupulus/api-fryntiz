@@ -27,7 +27,7 @@ class CreateContentsTable extends Migration
                 ->comment('FK al usuario propietario del post');
             $table->foreign('author_id')
                 ->references('id')->on('users')
-                ->onUpdate('cascade')
+                ->onUpdate('CASCADE')
                 ->onDelete('SET NULL');
             $table->bigInteger('section_id')
                 ->index()

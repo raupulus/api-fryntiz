@@ -21,6 +21,13 @@ class CreateAirFlightAirplanesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->string('icao')
                 ->nullable()
                 ->comment('Código ICAO 24 bits (6 dígitos hexadecimales)');
@@ -48,6 +55,8 @@ class CreateAirFlightAirplanesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('airflight_airplane');
+        Schema::dropIfExists('airflight_airplane', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

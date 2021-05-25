@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateMeteorologyAirQualityTable
+ */
 class CreateMeteorologyAirQualityTable extends Migration
 {
     /**
@@ -18,6 +21,13 @@ class CreateMeteorologyAirQualityTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->decimal('gas_resistance', 22, 11)
                 ->comment('Valor de la resistencia del sensor');
             $table->decimal('air_quality', 14, 4)
@@ -33,6 +43,8 @@ class CreateMeteorologyAirQualityTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meteorology_air_quality');
+        Schema::dropIfExists('meteorology_air_quality', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }
