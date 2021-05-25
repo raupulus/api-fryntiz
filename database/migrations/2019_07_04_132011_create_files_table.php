@@ -16,12 +16,18 @@ class CreateFilesTable extends Migration
      */
     public function up()
     {
-        // id - file_type_id - translation_token - size - originalname - path
         Schema::create('files', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario que realiza la subida');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->unsignedBigInteger('file_type_id')
                 ->nullable()
                 ->comment('FK al tipo de archivo');

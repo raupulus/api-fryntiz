@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCvRepositoriesTable extends Migration
+/**
+ * Class CreateCvTable
+ */
+class CreateCvTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,35 +16,29 @@ class CreateCvRepositoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cv_repositories', function (Blueprint $table) {
+        Schema::create('cv_curriculums', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('curriculum_id')
-                ->comment('Relación con el curriculum');
-            $table->foreign('curriculum_id')
-                ->references('id')->on('cv_curriculums')
-                ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
+            $table->unsignedBigInteger('user_id')
+                ->comment('Relación con el usuario');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->unsignedBigInteger('image_id')
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('CASCADE')
-                ->onDelete('SET NULL');
-            $table->unsignedBigInteger('repository_type')
-                ->comment('Relación con el tipo de repositorios');
-            $table->foreign('repository_type')
-                ->references('id')->on('repository_types')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->text('url')
-                ->comment('Dirección al repositorio');
             $table->string('title', 511)
-                ->comment('Título para el repositorio');
-            $table->string('name', 255)
-                ->comment('Nombre del repositorio');
+                ->comment('Título para el curriculum');
+            $table->boolean('is_active')
+                ->comment('Indica si está activo');
+            $table->boolean('is_downloadable')
+                ->comment('Indica si permite descargar el curriculum');
             $table->timestamps();
         });
     }
@@ -54,8 +51,8 @@ class CreateCvRepositoriesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('cv_repositories', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['curriculum_id']);
         });
     }
 }

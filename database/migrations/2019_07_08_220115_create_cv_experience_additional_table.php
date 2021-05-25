@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateCvExperienceAdditionalTable
+ */
 class CreateCvExperienceAdditionalTable extends Migration
 {
     /**
@@ -13,35 +16,22 @@ class CreateCvExperienceAdditionalTable extends Migration
      */
     public function up()
     {
-        /**
-         * id - image_id - translation_name_token -
-         * translation_description_token - position - company - url - date_start
-         * - date_end
-         */
         Schema::create('cv_experience_additional', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('curriculum_id')
+                ->comment('Relación con el curriculum');
+            $table->foreign('curriculum_id')
+                ->references('id')->on('cv_curriculums')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('translation_name_token');
-            /*
-            $table->foreign('translation_name_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_description_token');
-            /*
-            $table->foreign('translation_description_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
             $table->string('position', 255);
             $table->string('company', 511);
             $table->text('url');
@@ -60,8 +50,7 @@ class CreateCvExperienceAdditionalTable extends Migration
     {
         Schema::dropIfExists('cv_experience_additional', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_name_token']);
-            $table->dropForeign(['translation_description_token']);
+            $table->dropForeign(['curriculum_id']);
         });
     }
 }

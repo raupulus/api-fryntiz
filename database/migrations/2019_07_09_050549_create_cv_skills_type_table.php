@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateCvSkillsTypeTable
+ */
 class CreateCvSkillsTypeTable extends Migration
 {
     /**
@@ -13,12 +16,17 @@ class CreateCvSkillsTypeTable extends Migration
      */
     public function up()
     {
-        // id - image_id - translation_name_token - translation_description_token
         Schema::create('cv_skills_type', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('curriculum_id')
+                ->comment('Relación con el curriculum');
+            $table->foreign('curriculum_id')
+                ->references('id')->on('cv_curriculums')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->unsignedBigInteger('image_id');
             $table->foreign('image_id')
                 ->references('id')->on('files')
@@ -37,6 +45,7 @@ class CreateCvSkillsTypeTable extends Migration
     {
         Schema::dropIfExists('cv_skills_type', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
+            $table->dropForeign(['curriculum_id']);
         });
     }
 }
