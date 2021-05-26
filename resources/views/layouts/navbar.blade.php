@@ -33,7 +33,7 @@ p-2 navbar-main">
 
         @php(
             $menuElements = [
-                'weather_station' => [
+                'weatherstation' => [
                     'route' => route('weather_station.index'),
                     'name' => 'Weather Station'
                 ],

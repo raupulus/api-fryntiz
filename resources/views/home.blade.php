@@ -90,19 +90,19 @@
                             Sobre esta api
                         </h3>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Esta api es para consumo personal en proyectos
                             que desarrollo como código público principalmente
                             en gitlab.
                         </p>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             El contenido puede no ser preciso o real ya que este
                             proyecto es una herramienta más para desarrollar y
                             depurar.
                         </p>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Aún así, puede solicitarme acceso al consumo de
                             alguna parte de mi api para trabajar con sus
                             valores.
@@ -110,6 +110,17 @@
                             el radar de vuelos si que <strong>intento</strong>
                             tomar datos reales afinando los sensores de mi
                             propia estación.
+                        </p>
+
+                        <p class="text-gray-600 mb-3">
+                            Puedes ver el desarrollo de la api aquí:
+
+                            <a href="https://gitlab.com/fryntiz/api-fryntiz/tree/master"
+                               class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150" type="button"
+                               target="_blank"
+                               title="Api fryntiz en GitLab">
+                                https://gitlab.com/fryntiz/api-fryntiz
+                            </a>
                         </p>
                     </div>
 

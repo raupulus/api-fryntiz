@@ -39,7 +39,7 @@
     </div>
 @endif
 
-@if ($errors->any())
+@if (isset($errors) && $errors && $errors->any())
     <div class="row mt-2 mb-2">
         <div class="col-12">
             <div class="alert alert-danger alert-dismissible">
