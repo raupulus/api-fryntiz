@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 /**
  * Class CreateCvRepositoryTypesTable
  */
-class CreateCvRepositoryTypesTable extends Migration
+class CreateCvAvailableRepositoryTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class CreateCvRepositoryTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cv_repository_type_availables', function (Blueprint $table) {
+        Schema::create('cv_available_repository_types', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -25,12 +25,6 @@ class CreateCvRepositoryTypesTable extends Migration
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->unsignedBigInteger('repository_type_availables')
-                ->comment('Relación con el tipo de repositorios');
-            $table->foreign('repository_type')
-                ->references('id')->on('repository_types')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             $table->text('url')
@@ -50,7 +44,7 @@ class CreateCvRepositoryTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cv_repositories', function (Blueprint $table) {
+        Schema::dropIfExists('cv_available_repository_types', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
         });
     }

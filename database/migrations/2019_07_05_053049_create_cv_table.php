@@ -16,7 +16,7 @@ class CreateCvTable extends Migration
      */
     public function up()
     {
-        Schema::create('cv_curriculums', function (Blueprint $table) {
+        Schema::create('cv', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

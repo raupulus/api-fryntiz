@@ -21,7 +21,7 @@ class CreateCvRepositoriesTable extends Migration
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
-                ->references('id')->on('cv_curriculums')
+                ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->unsignedBigInteger('image_id')
@@ -33,7 +33,7 @@ class CreateCvRepositoriesTable extends Migration
             $table->unsignedBigInteger('repository_type')
                 ->comment('Relación con el tipo de repositorios');
             $table->foreign('repository_type')
-                ->references('id')->on('repository_types')
+                ->references('id')->on('cv_available_repository_types')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
             $table->text('url')

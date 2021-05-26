@@ -25,7 +25,7 @@ class CreateCvExperienceOthersTable extends Migration
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
-                ->references('id')->on('cv_curriculums')
+                ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->timestamps();
