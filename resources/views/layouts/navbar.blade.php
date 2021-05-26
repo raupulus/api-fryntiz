@@ -1,14 +1,18 @@
-<nav class="fixed w-full top-0 flex items-center justify-between flex-wrap p-6
-navbar-color-background">
+@php($path = request()->path())
+@php($classSelected = 'navbar-menu-element-current')
+
+<nav class="fixed w-full top-0 flex items-center justify-between flex-wrap
+p-2 navbar-main">
     <div class="flex items-center flex-no-shrink text-white mr-6">
         <img src="{{asset('images/logo-64x64.png')}}"
              alt="Logo Api Fryntiz"
-             class="w-12"/>
+             class="w-16"/>
         &nbsp;
         &nbsp;
-        <span>
+        <a href="{{route('home')}}"
+           class="navbar-site-title {{($path == '/') ? $classSelected : ''}}" >
             Api Fryntiz
-        </span>
+        </a>
     </div>
 
     <div class="block lg:hidden">
@@ -25,28 +29,40 @@ navbar-color-background">
     lg:items-center
     lg:w-auto">
 
+
+
+        @php(
+            $menuElements = [
+                'weather_station' => [
+                    'route' => route('weather_station.index'),
+                    'name' => 'Weather Station'
+                ],
+                'keycounter' => [
+                    'route' => route('keycounter.index'),
+                    'name' => 'Keycounter'
+                ],
+                'airflight' => [
+                    'route' => route('airflight.index'),
+                    'name' => 'Airflight'
+                ],
+                'smartplant' => [
+                    'route' => route('smartplant.index'),
+                    'name' => 'Smart Plant'
+                ],
+            ]
+        )
+
         <div class="text-sm lg:flex-grow">
-            <a href="{{route('weather_station.index')}}"
-               class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white" >
-                Weather Station
-            </a>
+            @foreach($menuElements as $idx => $ele)
+                <a href="{{$ele['route']}}"
 
-            <a href="{{route('keycounter.index')}}"
-               class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white">
-                Keycounter
-            </a>
-
-            <a href="{{route('airflight.index')}}"
-               class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white">
-                Airflight
-            </a>
-
-            <a href="{{route('smartplant.index')}}"
-               class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white">
-                Smart Plant
-            </a>
+                   class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white {{($path == $idx) ? $classSelected : ''}}" >
+                    {{$ele['name']}}
+                </a>
+            @endforeach
 
             <a href="https://fryntiz.es/contact"
+               target="_blank"
                class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white">
                 Contacto
             </a>
