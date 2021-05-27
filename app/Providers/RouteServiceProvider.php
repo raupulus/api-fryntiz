@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use function base_path;
 
+/**
+ * Class RouteServiceProvider
+ *
+ * @package App\Providers
+ */
 class RouteServiceProvider extends ServiceProvider
 {
     /**
@@ -18,7 +23,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';
+    public const HOME = '/';
 
     /**
      * The controller namespace for the application.
