@@ -173,7 +173,7 @@
         <section class="bg-white border-b">
 
             @foreach($datos as $title => $collection)
-                <div class="container max-w-5xl mx-auto m-4">
+                <div class="container max-w-5xl mx-auto m-4 overflow-x-scroll">
                     @if(!$collection->count())
                         @continue
                     @endif
@@ -195,8 +195,7 @@
                         <tr class="bg-gray-800">
                             @if($collection->count() >= 1)
                                 @foreach($att_fillables as $value)
-                                    <td class="px-1 py-2 text-gray-300
-                                    capitalize text-center">
+                                    <td class="px-1 py-2 text-gray-300 capitalize text-center">
                                         {{$value}}
                                     </td>
                                 @endforeach

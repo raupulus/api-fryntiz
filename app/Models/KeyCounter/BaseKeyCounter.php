@@ -3,11 +3,14 @@
 namespace App\Models\KeyCounter;
 
 use Carbon\Carbon;
+use Carbon\Traits\Creator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use function array_key_exists;
 use function array_unique;
 use function count;
+use function implode;
+use function json_encode;
 
 /**
  * Class KeyCounter
@@ -180,7 +183,7 @@ class BaseKeyCounter extends Model
         ## Obtengo las estadísticas agrupadas por cada dispositivo
         $data = self::getAllFiltered()
             ->select([
-                DB::Raw('count(id) as spurts'), # Cantidad de rachasstart_at
+                DB::Raw('count(id) as spurts'), # Cantidad de rachas
                 DB::Raw('sum(duration) as duration'),
                 DB::Raw('DATE(created_at) as day'),
                 DB::Raw('sum(pulsations) as total_pulsations'),
@@ -208,6 +211,97 @@ class BaseKeyCounter extends Model
             'period_total_pulsations' => $total_puntuations,
              #'period_max_pulsations' => $day_max_puntuations,
             'data' => $data,  ## Los datos devueltos como resultado
+        ];
+    }
+
+    public static function getStatisticsPreparedToGraphics($month = null, $year = null)
+    {
+        $keyboard_statistics = self::statistics($month, $year);
+        $stats = $keyboard_statistics['data']->sortBy('day');
+        $colors = ['#3e95cd', '#8e5ea2', '#007bff', '#e8c3b9', '#c45850',
+            '#000000', '#00ff00', '#0000ff', '#3cba9f'];
+        $days = array_unique($stats->pluck('day')->toArray());
+        $devices = $keyboard_statistics['devices_ids'];
+
+        $labels = [];
+        $dataset = [];
+        $datasetTMP = [];
+
+        ## Array temporal de días con el valor de las pulsaciones por día de todos los dispositivos.
+        $totalTMP = [];
+
+        ## Recorro todos los días y genero por cada dispositivo un array con los datos.
+        foreach ($days as $day) {
+            $labels[] = (new Carbon($day))->format('d');
+
+            foreach ($devices as $device) {
+
+                // FIXME → Esto no puede quedar haciendo consultas así
+                // TODO → Mejorar forma de preparar los datos y usar REDIS/CACHE
+
+                $s = $stats->where('day', $day)->where('device_id', $device)->first();
+
+                ## Compruebo que haya registro para este dispositivo este día o seteo 0.
+                if ($s && isset($datasetTMP[$device])) {
+                    if (!isset($datasetTMP[$device]['label'])) {
+                        $datasetTMP[$device]['label'] = $s->device_name;
+                    }
+
+                    if (!isset($datasetTMP[$device]['borderColor'])) {
+                        $datasetTMP[$device]['borderColor'] = $colors[$s->device_id];
+                    }
+
+                    if (!isset($datasetTMP[$device]['fill'])) {
+                        $datasetTMP[$device]['fill'] = 'false';
+                    }
+
+                    $datasetTMP[$device]['data'][] = $s->total_pulsations;
+                } else if ($s) {
+                    $datasetTMP[$device] = [
+                        'data' => [$s->total_pulsations],
+                        'label' => $s->device_name,
+                        'borderColor' => $colors[$s->device_id],
+                        'fill' => 'false'
+                    ];
+                } else {
+                    $datasetTMP[$device]['data'][] = 0;
+                }
+
+                ## Añado al array total el valor actual.
+                if ($s) {
+                    $totalTMP[$day] = isset($totalTMP[$day]) ? $totalTMP[$day] +
+                        $s->total_pulsations :
+                        $s->total_pulsations;
+                }
+            }
+        }
+
+        ## Añado un nuevo elemento que agrupe todos los dispositivos con el total por día.
+        $total = [];
+        foreach ($totalTMP as $t) {
+            $total[] = $t;
+        }
+
+        $datasetTMP[0] = [
+            'data' => $total,
+            'label' => 'Total',
+            'borderColor' => '#ff0000',
+            'fill' => 'false'
+        ];
+
+        ## Añado todos los datos por días y dispositivos al array final.
+        foreach ($datasetTMP as $d) {
+            $dataset[] = $d;
+        }
+
+        ## Convierto los datos a string y json para luego extraerlos en javascript.
+        $labelsString = implode(',', array_unique($labels));
+        $datasetJson = json_encode($dataset);
+
+        return [
+            'keyboard_statistics' => $keyboard_statistics,
+            'labelsString' => $labelsString,
+            'datasetJson' => $datasetJson,
         ];
     }
 }
