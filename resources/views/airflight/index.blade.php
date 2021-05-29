@@ -1,120 +1,122 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    <script
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-        crossorigin="anonymous"></script>
+{{-- Descripción sobre esta página --}}
+@section('title', 'Vuelos en Chipiona')
+@section('description', '')
+@section('keywords', '')
 
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+{{-- Etiquetas para Redes sociales --}}
+@section('rs-title', '')
+@section('rs-sitename', '')
+@section('rs-description', '')
+@section('rs-image', '')
+@section('rs-url', '')
+@section('rs-image-alt', '')
 
-    <link rel="stylesheet"
-          href="{{asset('resources/airflight/ol3/ol-3.17.1.css')}}"
-          type="text/css" />
-    <script src="{{asset('resources/airflight/ol3/ol-3.17.1.js')}}"
-            type="text/javascript"></script>
+@section('twitter-site', '')
+@section('twitter-creator', '')
 
-    <link rel="stylesheet"
-          href="{{asset('resources/airflight/ol3/ol3-layerswitcher.css')}}" type="text/css"/>
-    <script src="{{asset('resources/airflight/ol3/ol3-layerswitcher.js')}}"
-            type="text/javascript"></script>
+{{-- Marca el elemento del menú que se encuentra activo --}}
+@section('active-index', 'active')
 
-    <link
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-        crossorigin="anonymous">
+@section('content')
+    <div class="leading-normal tracking-normal"
+         style="font-family: 'Source Sans Pro', sans-serif;">
 
-    <script type="text/javascript" src="{{asset('resources/airflight/config.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/markers.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/dbloader.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/registrations.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/planeObject.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/formatter.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/flags.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/layers.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/script.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/coolclock/excanvas.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/coolclock/coolclock.js')}}"></script>
-    <script type="text/javascript" src="{{asset('resources/airflight/coolclock/moreskins.js')}}"></script>
+        <section class="bg-white border-b">
+            <div class="container max-w-5xl mx-auto m-4">
+                <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
+                    Registros de vuelos en tiempo real
+                </h1>
 
-    <title>Vuelos en Chipiona</title>
-</head>
+                <h2 class="w-full my-2 text-4xl font-bold leading-tight text-center text-gray-800">
+                    Chipiona
+                </h2>
 
-<body onload="initialize()">
+                {{-- Información general sobre el proyecto --}}
+                <div class="flex flex-wrap content-center">
+                    <div class="w-full p-6">
+                        <div class="bg-red-100 border border-red-400 m-2 mb-5 text-red-700 px-2 py-2 rounded relative"
+                             role="alert">
+                            <span class="inline text-sm">
+                                 Sitio
+                                <strong>temporal</strong>
+                                con la finalidad de comprobar el
+                                funcionamiento de los dispositivos que uso
+                                para recopilar los datos (raspberry pi y
+                                capturadora de televisión digital con una antena
+                                modificada para 1090Mhz)
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <h1>API - Modo depuración temporalmente</h1>
+                                <br/>
 
-            <p>
-                Datos no fiables ni sitio final, solo se muestran datos para
-                depurar subida e integridad de datos.
-            </p>
+                                Una vez acabada la aplicación desaparecerá quedando
+                                en el subdominio:
+                                <a href="https://desdechipiona.es/vuelos"
+                                   class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
+                                   type="button"
+                                   target="_blank"
+                                   title="Vuelos en tiempo real en Chipiona">
+                                    https://eltiempo.desdechipiona.es/vuelos
+                                </a>
+                            </span>
+                        </div>
 
-            <p class="alert alert-danger text-left">
-                <span class="text-danger ">
-                    Los datos pueden estar manipulados puntualmente o ser borrados
-                    inesperadamente ya que a veces el objetivo es preparar
-                    entornos en los que quiero observar el comportamiento ante
-                    ciertas situaciones.
+                        <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
+                            Sobre esta api
+                        </h3>
 
-                    <br/>
+                        <p class="text-gray-600 mb-2">
+                            Básicamente monitorizo la señal que emiten los
+                            aviones enviando su posición para no chocarse
+                            entre ellos obteniendo esos datos por ondas que
+                            decodifico y parseo para poder sacar estadísticas
+                            y trazar rutas de vuelos en tiempo real.
+                        </p>
 
-                    Aún así los datos mostrados son tomados por una
-                    capturadora de televisión digital que alcanza el rango 1090Mhz
+                        <p class="text-gray-600 mb-2">
+                            Los datos pueden no ser precisos debido a que aún se
+                            encuentra en depuración mientras voy detectando
+                            posibles problemas en el hardware que he
+                            manipulado y el software que le he construido.
+                        </p>
 
-                    <br/>
+                        <p class="text-gray-600 mb-2">
+                            Puedes ver el desarrollo del programa para obtener los datos
+                            de los aviones detectados con la tarjeta de televisión y una
+                            raspberry pi con el que los exporto a una db:
 
-                    Una vez acabada la aplicación desaparecerá quedando
-                    en el subdominio:
-                    <a href="https://eltiempo.desdechipiona.es"
-                       title="El tiempo Desde Chipiona">
-                        https://eltiempo.desdechipiona.es
-                    </a>
-                </span>
-            </p>
+                            <a href="https://gitlab.com/fryntiz/dump1090-to-db"
+                               class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
+                               type="button"
+                               target="_blank"
+                               title="Exportador dump1090 a db postgresql">
+                                https://gitlab.com/fryntiz/dump1090-to-db
+                            </a>
+                        </p>
 
-            <p>
-                Puedes ver el desarrollo de la API aquí:
-
-                <a href="https://gitlab.com/fryntiz/api-fryntiz/tree/master"
-                   title="Api fryntiz en GitLab">
-                    https://gitlab.com/fryntiz/api-fryntiz
-                </a>
-            </p>
-
-            <p>
-                Puedes ver el desarrollo del programa para obtener los datos
-                de los aviones detectados con la tarjeta de televisión y una
-                raspberry pi:
-
-                <a href="https://gitlab.com/fryntiz/dump1090-to-db"
-                   title="Exportador dump1090 a db postgresql">
-                    https://gitlab.com/fryntiz/dump1090-to-db
-                </a>
-            </p>
-
-            <p class="alert alert-danger text-left">
-                <span class="text-danger">
-                    Todas las horas están en formato UTC
-                </span>
-            </p>
-        </div>
+                        <div class="bg-yellow-100 border border-red-400 m-2 my-4 text-red-700 px-2 py-2 rounded relative text-center"
+                             role="alert">
+                            <span class="inline font-bold">
+                                Franja horaria UTC +0:00
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <h2>
+    {{-- Mapa con los vuelos --}}
+    <section class="bg-white border-b">
+        <div class="container max-w-5xl mx-auto m-4">
+            <h2 class="w-full my-2 text-4xl font-bold leading-tight text-center text-gray-800">
                 Vuelos recientes
             </h2>
-        </div>
 
-        <div class="col-md-12">
+            <div id="map_container">
+                <div id="map_canvas"></div>
+            </div>
+
             <div id="map_container">
                 <div id="map_canvas"></div>
             </div>
@@ -185,65 +187,102 @@
                 </div> <!-- sidebar_canvas -->
             </div> <!-- sidebar_container -->
         </div>
-    </div>
+    </section>
 
-    <div class="row">
-        <div class="col-md-12">
-            <h2>
-                Aviones en la última hora
-            </h2>
-        </div>
 
-        <div class="col-md-12">
-            <table class="table table-bordered table-dark">
-                <head>
-                    <tr>
-                        <th>
+    <section class="bg-white border-b">
+            <div class="container max-w-5xl mx-auto m-4 overflow-x-scroll">
+
+                <h2 class="w-full my-2 text-4xl font-bold leading-tight text-center text-gray-800">
+                    Aviones en la última hora
+                </h2>
+
+                <table class="min-w-max w-full table-auto">
+                    <thead class="justify-between">
+                    <tr class="bg-gray-800">
+                        <th class="px-1 py-2 text-gray-300 capitalize text-center">
                             ICAO
                         </th>
 
-                        <th>
+                        <th class="px-1 py-2 text-gray-300 capitalize text-center">
                             Categoría
                         </th>
 
-                        <th>
+                        <th class="px-1 py-2 text-gray-300 capitalize text-center">
                             Visto primera vez
                         </th>
 
-                        <th>
+                        <th class="px-1 py-2 text-gray-300 capitalize text-center">
                             Visto última vez
                         </th>
                     </tr>
-                </head>
+                    </thead>
 
-                <tbody>
-                @foreach($planes as $plane)
-                    <tr>
-                        <td>
-                            {{$plane->icao}}
-                        </td>
+                    <tbody class="bg-gray-200">
+                    @foreach($planes as $plane)
+                        <tr class="bg-white border-4 border-gray-200">
+                            <td class="px-1 py-2 items-center text-center">
+                                {{$plane->icao}}
+                            </td>
 
-                        <td>
-                            {{$plane->category}}
-                        </td>
+                            <td class="px-1 py-2 items-center text-center">
+                                {{$plane->category}}
+                            </td>
 
-                        <td>
-                            {{$plane->seen_first_at}}
-                        </td>
+                            <td class="px-1 py-2 items-center text-center">
+                                {{$plane->seen_first_at}}
+                            </td>
 
-                        <td>
-                            {{$plane->seen_last_at}}
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+                            <td class="px-1 py-2 items-center text-center">
+                                {{$plane->seen_last_at}}
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+    </section>
+@endsection
 
-            {{-- Paginación --}}
-            {{$planes->links()}}
-        </div>
-    </div>
-</div>
-</body>
-</html>
+@section('css')
+    <link rel="stylesheet"
+          href="{{asset('resources/airflight/ol3/ol-3.17.1.css')}}"
+          type="text/css" />
 
+    <link rel="stylesheet"
+          href="{{asset('resources/airflight/ol3/ol3-layerswitcher.css')}}" type="text/css"/>
+@endsection
+
+@section('js')
+    <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+    <script src="{{asset('resources/airflight/ol3/ol-3.17.1.js')}}"
+            type="text/javascript"></script>
+
+    <script src="{{asset('resources/airflight/ol3/ol3-layerswitcher.js')}}"
+            type="text/javascript"></script>
+
+    <script type="text/javascript" src="{{asset('resources/airflight/config.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/markers.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/dbloader.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/registrations.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/planeObject.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/formatter.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/flags.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/layers.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/script.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/coolclock/excanvas.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/coolclock/coolclock.js')}}"></script>
+    <script type="text/javascript" src="{{asset('resources/airflight/coolclock/moreskins.js')}}"></script>
+
+    <script>
+        window.document.addEventListener('DOMContentLoaded', () => {
+            initialize();
+        });
+    </script>
+@endsection
