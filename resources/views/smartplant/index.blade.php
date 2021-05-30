@@ -142,9 +142,9 @@
                     @endif
 
                     {{-- Detalles de la planta --}}
-                    <div class="smartplant-details w-full">
+                    <p class="text-gray-600 mb-2 smartplant-details w-full">
                         {!! $plant->details !!}
-                    </div>
+                    </p>
 
                     <table class="min-w-max w-full table-auto">
                         <thead class="justify-between">
