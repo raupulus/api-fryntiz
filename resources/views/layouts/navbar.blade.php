@@ -1,4 +1,3 @@
-@php($path = request()->path())
 @php($classSelected = 'navbar-menu-element-current')
 
 <nav class="fixed w-full top-0 flex items-center justify-between flex-wrap
@@ -10,7 +9,7 @@ p-2 navbar-main">
         &nbsp;
         &nbsp;
         <a href="{{route('home')}}"
-           class="navbar-site-title {{($path == '/') ? $classSelected : ''}}" >
+           class="navbar-site-title {{(request()->path() == '/') ? $classSelected : ''}}" >
             Api Fryntiz
         </a>
     </div>
@@ -29,34 +28,11 @@ p-2 navbar-main">
     lg:items-center
     lg:w-auto">
 
-
-
-        @php(
-            $menuElements = [
-                'weatherstation' => [
-                    'route' => route('weather_station.index'),
-                    'name' => 'Weather Station'
-                ],
-                'keycounter' => [
-                    'route' => route('keycounter.index'),
-                    'name' => 'Keycounter'
-                ],
-                'airflight' => [
-                    'route' => route('airflight.index'),
-                    'name' => 'Airflight'
-                ],
-                'smartplant' => [
-                    'route' => route('smartplant.index'),
-                    'name' => 'Smart Plant'
-                ],
-            ]
-        )
-
         <div class="text-sm lg:flex-grow">
-            @foreach($menuElements as $idx => $ele)
+            @foreach(MenuHelper::getApiRoutesIndex() as $idx => $ele)
                 <a href="{{$ele['route']}}"
 
-                   class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white {{($path == $idx) ? $classSelected : ''}}" >
+                   class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white {{$ele['selected'] ? $classSelected : ''}}" >
                     {{$ele['name']}}
                 </a>
             @endforeach
