@@ -29,7 +29,7 @@
 
 
                 <p class="text-white text-3xl mb-4 text-center">
-                    y
+                    +
                 </p>
 
                 <div class="text-center">
