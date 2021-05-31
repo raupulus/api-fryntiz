@@ -166,7 +166,43 @@
                                 Estación Meteorológica
                             </h3>
                             <p class="text-gray-600 mb-8">
-                                Description
+                                La estación meteorológica es un proyecto que
+                                realizo utilizando raspberry pi, arduino y
+                                una serie de sensores en mi localidad,
+                                <strong>Chipiona</strong>.
+                            </p>
+
+                            <p class="text-gray-600 mb-8">
+                                Las lecturas tomadas hasta el momento son:
+                            </p>
+
+                            <ul class="text-gray-600 list-disc pl-8">
+                                <li>Humedad</li>
+                                <li>Temperatura</li>
+                                <li>Presión atmosférica</li>
+                                <li>Viento (Velocidad, dirección y ráfagas)</li>
+                                <li>Cantidad de luz en general</li>
+                                <li>Indice UV</li>
+                                <li>UVA</li>
+                                <li>UVB</li>
+                                <li>CO2-ECO2</li>
+                                <li>TVOC</li>
+                                <li>Calidad del aire</li>
+                                <li>Relámpagos (Cantidad, distancia y potencia)</li>
+                            </ul>
+
+                            <p class="text-gray-600 mb-8">
+                                Puedes ver el desarrollo de este software en
+                                python3 usando una base de datos sqlite como
+                                caché temporal dónde almacenar lecturas hasta
+                                subirlas a esta API desde el siguiente enlace:
+
+                                <a href="https://gitlab.com/fryntiz/raspberry-weather-station"
+                                   class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150" type="button"
+                                   target="_blank"
+                                   title="Enlace al repositorio de mi estación meteorológica de Chipiona en python3 para raspberry pi">
+                                    https://gitlab.com/fryntiz/raspberry-weather-station
+                                </a>
                             </p>
                         </div>
                     </div>
@@ -268,7 +304,9 @@
                     {{-- Author --}}
                     <div class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
                         <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-                            <a href="#" class="flex flex-wrap no-underline hover:no-underline">
+                            <a href="#"
+                               target="_blank"
+                               class="flex flex-wrap no-underline hover:no-underline">
                                 <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
                                     Información sobre el autor
                                 </p>
