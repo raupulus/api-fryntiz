@@ -216,7 +216,34 @@
                         </h3>
 
                         <p class="text-gray-600 mb-8">
-                            Desripción
+                            Este proyecto pretende monitorizar plantas
+                            delicadas, principalmente bonsais pudiendo
+                            observar el comportamiento de la misma ante
+                            determinadas variaciones y asegurar que se cubren
+                            las necesidades básicas de cada una de elles como
+                            podría ser la cantidad/horas de luz o agua.
+                        </p>
+
+                        <p class="text-gray-600 mb-8">
+                            Para el proyecto he optado utilizar un
+                            <strong>esp32 lite</strong> conectado a una placa
+                            solar y sensores para medir la humedad en tierra,
+                            humedad en aire, temperatura, cantidad de luz y
+                            detectar si el tanque de agua está lleno además
+                            de activar un pequeño motor de riego.
+                        </p>
+
+                        <p class="text-gray-600 mb-8">
+                            El código para este proyecto está realizado en
+                            <strong>C++</strong> publicado en gitlab desde el
+                            siguiente enlace:
+
+                            <a href="https://gitlab.com/fryntiz/esp32-smart-bonsai"
+                               class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150" type="button"
+                               target="_blank"
+                               title="Enlace al repositorio con el código para el smart plant con esp32 lite en c++">
+                                https://gitlab.com/fryntiz/esp32-smart-bonsai
+                            </a>
                         </p>
                     </div>
 
