@@ -341,7 +341,33 @@
                         </h3>
 
                         <p class="text-gray-600 mb-8">
-                            Desripción
+                            Con este radar monitorizo los aviones que
+                            transmiten su posición cerca de mi ciudad.
+                        </p>
+
+                        <p class="text-gray-600 mb-8">
+                            Para tal fin utilizo una <strong>raspberry pi 4</strong>
+                            y una capturadora de televisión digital usando
+                            la banda de
+                            <strong>1090Mhz</strong>
+                            y decodificando los datos recibidos para
+                            agruparlos y preparar rutas a partir de las
+                            coordenadas si las tuvieras.
+                        </p>
+
+                        <p class="text-gray-600 mb-8">
+                            Puedes ver el código del exportador para la
+                            herramienta
+                            <strong>dump1090</strong>
+                            a sql escrito en php desde aquí:
+
+                            <a href="https://gitlab.com/fryntiz/dump1090-to-db"
+                               class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
+                               type="button"
+                               target="_blank"
+                               title="Enlace al repositorio con el código para exportar datos capturados con dump1090 a sql escrito en php">
+                                https://gitlab.com/fryntiz/dump1090-to-db
+                            </a>
                         </p>
                     </div>
 
