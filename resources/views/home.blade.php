@@ -390,10 +390,16 @@
                     <div class="w-full sm:w-1/2 p-6 mt-6">
                         <div class="align-middle">
                             <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
-                                Blog
+                                Blogs
                             </h3>
+
                             <p class="text-gray-600 mb-8">
-                                Description
+                                Sistema de blogs para diversos proyectos
+                                desde los que consumo las entradas de esta
+                                api centralizando su mantenimiento y además
+                                sincronización mediante nube, pudiendo editar
+                                las entradas en Markdown desde cualquier
+                                equipo y actualizándose dinámicamente en la api.
                             </p>
                         </div>
                     </div>
