@@ -3,7 +3,7 @@
 
         <div class="md:flex md:flex-wrap md:-mx-4 py-6 md:pb-12">
 
-            <div class="footer-info lg:w-1/3 md:px-4">
+            <div class="footer-info w-full lg:w-1/3 md:px-4">
                 <h4 class="text-white text-2xl mb-4  text-center">
                     Hecho con
                     <svg width="30"
@@ -34,8 +34,8 @@
 
                 <div class="text-center">
                     <span
-                        class="text-gray-400 inline-block text-center text-xl mx-3">
-                        <svg width="50" height="52" viewBox="0 0 50 52"
+                        class="text-gray-400 inline-block text-center text-lg mx-1">
+                        <svg width="40" height="42" viewBox="0 0 50 52"
                              class="mx-auto"
                              xmlns="http://www.w3.org/2000/svg">
 
@@ -62,10 +62,10 @@
                     </span>
 
                     <span
-                        class="text-gray-400 inline-block text-center text-xl mx-3">
-                        <svg height="31"
+                        class="text-gray-400 inline-block text-center text-lg mx-1">
+                        <svg height="21"
                              preserveAspectRatio="xMidYMid"
-                             width="52" xmlns="http://www.w3.org/2000/svg"
+                             width="42" xmlns="http://www.w3.org/2000/svg"
                              class="mx-auto"
                              viewBox="0 0 256 153.6">
                             <linearGradient id="a"
@@ -86,7 +86,7 @@
                             <animateTransform
                                 attributeName="transform"
                                 type="translate"
-                                values="0 0; 0 -12; 0 -8; 0 -4; 0 0;"
+                                values="0 -12; 0 -8; 0 -4; 0 0; 0 -12;"
                                 begin="0s"
                                 dur="2s"
                                 repeatCount="indefinite">
@@ -97,10 +97,10 @@
                     </span>
 
                     <span
-                        class="text-gray-400 inline-block text-center text-xl mx-3">
+                        class="text-gray-400 inline-block text-center text-lg mx-1">
                         <svg version="1.1"
-                             height="52"
-                             width="48"
+                             height="42"
+                             width="38"
                              viewBox="0 0 261.76 226.69"
                              class="mx-auto"
                              xmlns="http://www.w3.org/2000/svg">
@@ -135,10 +135,10 @@
                     </span>
 
                     <span
-                        class="text-gray-400 inline-block text-center text-xl mx-3">
+                        class="text-gray-400 inline-block text-center text-lg mx-1">
                         <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
-                        <svg width="50" height="52"
+                        <svg width="40" height="42"
                              viewBox="0 0 432.071 445.383"
                              xml:space="preserve"
                              class="mx-auto"
@@ -256,6 +256,7 @@
                 <h5 class="text-lg text-white font-medium mb-4">
                     Explora mi sitio Personal
                 </h5>
+
                 <a href="https://fryntiz.es"
                    target="_blank"
                    class="bg-indigo-600 text-white hover:bg-indigo-700 rounded py-2 px-6 md:px-12 transition-colors duration-300">
@@ -273,7 +274,7 @@
             <div class="md:flex md:-mx-4 md:items-center">
                 <div class="md:flex-1 md:px-4 text-center md:text-left">
                     <p class="text-white">
-                        &copy; <strong>Raúl Caro Pastorino</strong>
+                        &copy; <strong>Raúl Caro Pastorino</strong> 2018
                     </p>
                 </div>
 
