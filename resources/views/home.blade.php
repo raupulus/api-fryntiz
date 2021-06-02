@@ -186,35 +186,27 @@
                             <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
                                 Estación Meteorológica
                             </h3>
-                            <p class="text-gray-600 mb-8">
+                            <p class="text-gray-600 mb-3">
                                 La estación meteorológica es un proyecto que
                                 realizo utilizando raspberry pi, arduino y
                                 una serie de sensores en mi localidad,
                                 <strong>Chipiona</strong>.
                             </p>
 
-                            <p class="text-gray-600 mb-8">
+                            <p class="text-gray-600 mb-3">
                                 Las lecturas tomadas hasta el momento son:
                             </p>
 
-                            <ul class="text-gray-600 list-disc pl-8">
-                                <li>Humedad</li>
-                                <li>Temperatura</li>
-                                <li>Presión atmosférica</li>
-                                <li>Viento (Velocidad, dirección y ráfagas)</li>
-                                <li>Cantidad de luz en general</li>
-                                <li>Indice UV</li>
-                                <li>UVA</li>
-                                <li>UVB</li>
-                                <li>CO2-ECO2</li>
-                                <li>TVOC</li>
-                                <li>Calidad del aire</li>
-                                <li>Relámpagos (Cantidad, distancia y
-                                    potencia)
-                                </li>
-                            </ul>
+                            <p class="text-gray-600 mb-3">
+                                Humedad, Temperatura, Presión atmosférica,
+                                Viento (Velocidad, dirección y ráfagas),
+                                Cantidad de luz en general, Indice UV, UVA,
+                                UVB, CO2-ECO2, TVOC, Calidad del aire,
+                                Relámpagos (Cantidad, distancia y potencia)
+                            </p>
 
-                            <p class="text-gray-600 mb-8">
+
+                            <p class="text-gray-600 mb-3">
                                 Puedes ver el desarrollo de este software en
                                 python3 usando una base de datos sqlite como
                                 caché temporal dónde almacenar lecturas hasta
@@ -239,7 +231,7 @@
                             Smart Plant
                         </h3>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Este proyecto pretende monitorizar plantas
                             delicadas, principalmente bonsais pudiendo
                             observar el comportamiento de la misma ante
@@ -248,7 +240,7 @@
                             podría ser la cantidad/horas de luz o agua.
                         </p>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Para el proyecto he optado utilizar un
                             <strong>esp32 lite</strong> conectado a una placa
                             solar y sensores para medir la humedad en tierra,
@@ -257,7 +249,7 @@
                             de activar un pequeño motor de riego.
                         </p>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             El código para este proyecto está realizado en
                             <strong>C++</strong> publicado en gitlab desde el
                             siguiente enlace:
@@ -294,11 +286,11 @@
                                 Key Counter
                             </h3>
 
-                            <p class="text-gray-900 mb-3">
+                            <p class="text-gray-900 mb-2">
                                 (Contador de teclas pulsadas y clicks de ratón)
                             </p>
 
-                            <p class="text-gray-600 mb-8">
+                            <p class="text-gray-600 mb-3">
                                 El contador de pulsaciones realiza una
                                 monitorización de las teclas pulsadas además
                                 de los clicks de ratón distinguiendo teclas
@@ -308,14 +300,14 @@
                                 comprometer la privacidad.
                             </p>
 
-                            <p class="text-gray-600 mb-8">
+                            <p class="text-gray-600 mb-3">
                                 Esta aplicación para tomar datos que luego se
                                 subirán a la api realiza las estadísticas por
                                 rachas recomenzando una nueva racha tras 15
                                 segundos sin ninguna interacción.
                             </p>
 
-                            <p class="text-gray-600 mb-8">
+                            <p class="text-gray-600 mb-3">
                                 El código solo para sistemas GNU/Linux lo he
                                 realizado en
                                 <strong>Python3</strong>
@@ -340,12 +332,12 @@
                             Radar de vuelo
                         </h3>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Con este radar monitorizo los aviones que
                             transmiten su posición cerca de mi ciudad.
                         </p>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Para tal fin utilizo una <strong>raspberry pi 4</strong>
                             y una capturadora de televisión digital usando
                             la banda de
@@ -355,7 +347,7 @@
                             coordenadas si las tuvieras.
                         </p>
 
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-3">
                             Puedes ver el código del exportador para la
                             herramienta
                             <strong>dump1090</strong>
@@ -393,7 +385,7 @@
                                 Blogs
                             </h3>
 
-                            <p class="text-gray-600 mb-8">
+                            <p class="text-gray-600 mb-3">
                                 Sistema de blogs para diversos proyectos
                                 desde los que consumo las entradas de esta
                                 api centralizando su mantenimiento y además
@@ -424,7 +416,8 @@
                         class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
                         <div
                             class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-                            <a href="#"
+                            <a href="https://fryntiz.es"
+                               title="Web de Raúl Caro Pastorino (fryntiz)"
                                target="_blank"
                                class="flex flex-wrap no-underline hover:no-underline">
                                 <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
@@ -434,43 +427,11 @@
                                     class="w-full font-bold text-xl text-gray-800 px-6">
                                     Raúl Caro Pastorino
                                 </div>
-                                <p class="text-gray-800 text-base px-6 mb-5">
-                                    Lorem ipsum dolor sit amet, consectetur
-                                    adipiscing elit. Aliquam at ipsum eu nunc
-                                    commodo posuere et sit amet ligula.
-                                </p>
-                            </a>
-                        </div>
 
-                        <div
-                            class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-                            <div class="flex items-center justify-start">
-                                <button
-                                    class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-                                    Ir
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Contacto --}}
-                    <div
-                        class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-                        <div
-                            class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-                            <a href="#"
-                               class="flex flex-wrap no-underline hover:no-underline">
-                                <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
-                                    Puedes contactar con el autor
-                                </p>
-                                <div
-                                    class="w-full font-bold text-xl text-gray-800 px-6">
-                                    Contactar
-                                </div>
                                 <p class="text-gray-800 text-base px-6 mb-5">
-                                    Lorem ipsum dolor sit amet, consectetur
-                                    adipiscing elit. Aliquam at ipsum eu nunc
-                                    commodo posuere et sit amet ligula.
+                                    Puedes visitar mi sitio web personal en
+                                    el que describo mis trabajos,
+                                    colaboraciones, proyectos, formación..
                                 </p>
                             </a>
                         </div>
@@ -478,10 +439,51 @@
                         <div
                             class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
                             <div class="flex items-center justify-center">
-                                <button
+                                <a href="https://fryntiz.es"
+                                   title="Web de Raúl Caro Pastorino (fryntiz)"
+                                   target="_blank"
+                                   class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                                    Explorar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Contacto --}}
+                    <div
+                        class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
+                        <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
+                            <a href="https://fryntiz.es/contact"
+                               title="Contactar con Raúl Caro Pastorino (fryntiz)"
+                               target="_blank"
+                               class="flex flex-wrap no-underline hover:no-underline">
+                                <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
+                                    Puedes contactar con el autor
+                                </p>
+
+                                <div
+                                    class="w-full font-bold text-xl text-gray-800 px-6">
+                                    Contactar
+                                </div>
+
+                                <p class="text-gray-800 text-base px-6 mb-5">
+                                    ¿Has detectado algún error?
+                                    <br />
+                                    ¿Alguna sugerencia o propuesta?
+                                    <br />
+                                    ¡Contacta conmigo, estaré encantado!
+                                </p>
+                            </a>
+                        </div>
+
+                        <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+                            <div class="flex items-center justify-center">
+                                <a href="https://fryntiz.es/contact"
+                                   title="Contactar con Raúl Caro Pastorino (fryntiz)"
+                                   target="_blank"
                                     class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-                                    Ir
-                                </button>
+                                    Contactar
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -491,29 +493,33 @@
                         class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
                         <div
                             class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-                            <a href="#"
+                            <a href="{{route('dashboard.index')}}"
+                               title="Acceso al panel de gestión para la api de Raúl Caro Pastorino"
+                               target="_blank"
                                class="flex flex-wrap no-underline hover:no-underline">
                                 <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
-                                    other info
+                                    Dashboard
                                 </p>
-                                <div
-                                    class="w-full font-bold text-xl text-gray-800 px-6">
-                                    Lorem ipsum dolor sit amet.
+
+                                <div class="w-full font-bold text-xl text-gray-800 px-6">
+                                    Panel de gestión.
                                 </div>
+
                                 <p class="text-gray-800 text-base px-6 mb-5">
-                                    Lorem ipsum dolor sit amet, consectetur
-                                    adipiscing elit. Aliquam at ipsum eu nunc
-                                    commodo posuere et sit amet ligula.
+                                    Desde el panel de gestión se pueden crear
+                                    tokens para conectar y subir o consumir
+                                    los datos que se ofrecen en esta api.
                                 </p>
                             </a>
                         </div>
-                        <div
-                            class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-                            <div class="flex items-center justify-end">
-                                <button
-                                    class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-                                    Ir
-                                </button>
+                        <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+                            <div class="flex items-center justify-center">
+                                <a href="{{route('dashboard.index')}}"
+                                   title="Acceso al panel de gestión para la api de Raúl Caro Pastorino"
+                                   target="_blank"
+                                   class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                                    Acceder
+                                </a>
                             </div>
                         </div>
                     </div>
