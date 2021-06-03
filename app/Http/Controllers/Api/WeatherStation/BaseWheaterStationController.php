@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\WeatherStation;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use function auth;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use Illuminate\Http\Request;
@@ -109,6 +110,8 @@ abstract class BaseWheaterStationController extends Controller
         $model = new $this->model;
         $model->fill($requestValidate);
 
+        $model->user_id = auth()->id();
+
         ## Respuesta cuando se ha guardado el modelo correctamente
         if ($model->save()) {
             // response bien
@@ -148,6 +151,8 @@ abstract class BaseWheaterStationController extends Controller
                 $attributes = $this->addValidate(get_object_vars($d));
 
                 $model->fill($attributes);
+
+                $model->user_id = auth()->id();
 
                 $model->save();
             } catch (Exception $e) {

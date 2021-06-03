@@ -423,6 +423,7 @@
                                 <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
                                     Información sobre el autor
                                 </p>
+
                                 <div
                                     class="w-full font-bold text-xl text-gray-800 px-6">
                                     Raúl Caro Pastorino

@@ -21,8 +21,6 @@ class BaseWheaterStation extends Model
      * Sobreescribo la actualización del updated_at para no hacerle nada.
      *
      * @param mixed $value
-     *
-     * @return \App\MinModel|void
      */
     public function setUpdatedAt($value)
     {

@@ -53,10 +53,15 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
-            Route::prefix('weatherstation')
-                ->middleware('api')
+            Route::prefix('api/weatherstation')
+                //->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/weather_station.php'));
+                ->group(base_path('routes/weather_station/v1.php'));
+
+            Route::prefix('weatherstation')
+                ->middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/weather_station/web.php'));
 
             Route::prefix('keycounter')
                 ->middleware('api')
