@@ -6,108 +6,96 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => '/v1'], function () {
-    ######################################################
-    ##                    Pública
-    ######################################################
-
-    Route::get('/test', function () {
-        return response()->json([
-            'test' => 'ok2',
-            'user' => auth()->user()
-        ]);
-    });
+######################################################
+##                    Pública
+######################################################
 
 
+######################################################
+##                    Privada
+######################################################
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    ## Obtengo un resumen con todos los datos principales.
+    Route::match(['get', 'options'], '/resume', 'App\Http\Controllers\Api\WeatherStation\GeneralController@resume')
+        ->middleware('cors.allow.all');
 
+    ## Añadir nuevo registro de humedad.
+    Route::post('/humidity/add', 'App\Http\Controllers\Api\WeatherStation\HumidityController@add');
 
-    ######################################################
-    ##                    Privada
-    ######################################################
-    Route::group(['middleware' => ['auth:sanctum']], function () {
-        ## Obtengo un resumen con todos los datos principales.
-        Route::match(['get', 'options'], '/resume', 'App\Http\Controllers\Api\WeatherStation\GeneralController@resume')
-            ->middleware('cors.allow.all');
+    ## Añadir nuevos registros de humedad por lotes JSON
+    Route::post('/humidity/add-json', 'App\Http\Controllers\Api\WeatherStation\HumidityController@addJson');
 
-        ## Añadir nuevo registro de humedad.
-        Route::post('/humidity/add', 'App\Http\Controllers\Api\WeatherStation\HumidityController@add');
+    ## Añadir nuevo registro de presión.
+    Route::post('/pressure/add', 'App\Http\Controllers\Api\WeatherStation\PressureController@add');
 
-        ## Añadir nuevos registros de humedad por lotes JSON
-        Route::post('/humidity/add-json', 'App\Http\Controllers\Api\WeatherStation\HumidityController@addJson');
+    ## Añadir nuevos registros de presión por lotes JSON
+    Route::post('/pressure/add-json', 'App\Http\Controllers\Api\WeatherStation\PressureController@addJson');
 
-        ## Añadir nuevo registro de presión.
-        Route::post('/pressure/add', 'App\Http\Controllers\Api\WeatherStation\PressureController@add');
+    ## Añadir nuevo registro de temperatura.
+    Route::post('/temperature/add', 'App\Http\Controllers\Api\WeatherStation\TemperatureController@add');
 
-        ## Añadir nuevos registros de presión por lotes JSON
-        Route::post('/pressure/add-json', 'App\Http\Controllers\Api\WeatherStation\PressureController@addJson');
+    ## Añadir nuevos registros de temperatura por lotes JSON
+    Route::post('/temperature/add-json', 'App\Http\Controllers\Api\WeatherStation\TemperatureController@addJson');
 
-        ## Añadir nuevo registro de temperatura.
-        Route::post('/temperature/add', 'App\Http\Controllers\Api\WeatherStation\TemperatureController@add');
+    ## Añadir nuevo registro de luz.
+    Route::post('/light/add', 'App\Http\Controllers\Api\WeatherStation\LightController@add');
 
-        ## Añadir nuevos registros de temperatura por lotes JSON
-        Route::post('/temperature/add-json', 'App\Http\Controllers\Api\WeatherStation\TemperatureController@addJson');
+    ## Añadir nuevos registros de Luz por lotes JSON
+    Route::post('/light/add-json', 'App\Http\Controllers\Api\WeatherStation\LightController@addJson');
 
-        ## Añadir nuevo registro de luz.
-        Route::post('/light/add', 'App\Http\Controllers\Api\WeatherStation\LightController@add');
+    ## Añadir nuevo registro de rayos uv.
+    Route::post('/uv/add', 'App\Http\Controllers\Api\WeatherStation\UvController@add');
 
-        ## Añadir nuevos registros de Luz por lotes JSON
-        Route::post('/light/add-json', 'App\Http\Controllers\Api\WeatherStation\LightController@addJson');
+    ## Añadir nuevos registros de rayos uv por lotes JSON
+    Route::post('/uv/add-json', 'App\Http\Controllers\Api\WeatherStation\UvController@addJson');
 
-        ## Añadir nuevo registro de rayos uv.
-        Route::post('/uv/add', 'App\Http\Controllers\Api\WeatherStation\UvController@add');
+    ## Añadir nuevo registro de viento.
+    Route::post('/winter/add', 'App\Http\Controllers\Api\WeatherStation\WinterController@add');
 
-        ## Añadir nuevos registros de rayos uv por lotes JSON
-        Route::post('/uv/add-json', 'App\Http\Controllers\Api\WeatherStation\UvController@addJson');
+    ## Añadir nuevos registros de viento por lotes JSON
+    Route::post('/winter/add-json', 'App\Http\Controllers\Api\WeatherStation\WinterController@addJson');
 
-        ## Añadir nuevo registro de viento.
-        Route::post('/winter/add', 'App\Http\Controllers\Api\WeatherStation\WinterController@add');
+    ## Añadir nuevo registro de CO2.
+    Route::post('/eco2/add', 'App\Http\Controllers\Api\WeatherStation\Eco2Controller@add');
 
-        ## Añadir nuevos registros de viento por lotes JSON
-        Route::post('/winter/add-json', 'App\Http\Controllers\Api\WeatherStation\WinterController@addJson');
+    ## Añadir nuevos registros de CO2 por lotes JSON
+    Route::post('/eco2/add-json', 'App\Http\Controllers\Api\WeatherStation\Eco2Controller@addJson');
 
-        ## Añadir nuevo registro de CO2.
-        Route::post('/eco2/add', 'App\Http\Controllers\Api\WeatherStation\Eco2Controller@add');
+    ## Añadir nuevo registro de TVOC.
+    Route::post('/tvoc/add', 'App\Http\Controllers\Api\WeatherStation\TvocController@add');
 
-        ## Añadir nuevos registros de CO2 por lotes JSON
-        Route::post('/eco2/add-json', 'App\Http\Controllers\Api\WeatherStation\Eco2Controller@addJson');
+    ## Añadir nuevos registros de TVOC por lotes JSON
+    Route::post('/tvoc/add-json', 'App\Http\Controllers\Api\WeatherStation\TvocController@addJson');
 
-        ## Añadir nuevo registro de TVOC.
-        Route::post('/tvoc/add', 'App\Http\Controllers\Api\WeatherStation\TvocController@add');
+    ## Añadir nuevo registro de Índice UV.
+    Route::post('/uv_index/add', 'App\Http\Controllers\Api\WeatherStation\UvIndexController@add');
 
-        ## Añadir nuevos registros de TVOC por lotes JSON
-        Route::post('/tvoc/add-json', 'App\Http\Controllers\Api\WeatherStation\TvocController@addJson');
+    ## Añadir nuevos registros de Índice UV por lotes JSON
+    Route::post('/uv_index/add-json', 'App\Http\Controllers\Api\WeatherStation\UvIndexController@addJson');
 
-        ## Añadir nuevo registro de Índice UV.
-        Route::post('/uv_index/add', 'App\Http\Controllers\Api\WeatherStation\UvIndexController@add');
+    ## Añadir nuevo registro de UVA.
+    Route::post('/uva/add', 'App\Http\Controllers\Api\WeatherStation\UvaController@add');
 
-        ## Añadir nuevos registros de Índice UV por lotes JSON
-        Route::post('/uv_index/add-json', 'App\Http\Controllers\Api\WeatherStation\UvIndexController@addJson');
+    ## Añadir nuevos registros de UVA por lotes JSON
+    Route::post('/uva/add-json', 'App\Http\Controllers\Api\WeatherStation\UvaController@addJson');
 
-        ## Añadir nuevo registro de UVA.
-        Route::post('/uva/add', 'App\Http\Controllers\Api\WeatherStation\UvaController@add');
+    ## Añadir nuevo registro de UVB.
+    Route::post('/uvb/add', 'App\Http\Controllers\Api\WeatherStation\UvbController@add');
 
-        ## Añadir nuevos registros de UVA por lotes JSON
-        Route::post('/uva/add-json', 'App\Http\Controllers\Api\WeatherStation\UvaController@addJson');
+    ## Añadir nuevos registros de UVB por lotes JSON
+    Route::post('/uvb/add-json', 'App\Http\Controllers\Api\WeatherStation\UvbController@addJson');
 
-        ## Añadir nuevo registro de UVB.
-        Route::post('/uvb/add', 'App\Http\Controllers\Api\WeatherStation\UvbController@add');
+    ## Añadir nuevo registro de Air Quality.
+    Route::post('/air_quality/add', 'App\Http\Controllers\Api\WeatherStation\AirQualityController@add');
 
-        ## Añadir nuevos registros de UVB por lotes JSON
-        Route::post('/uvb/add-json', 'App\Http\Controllers\Api\WeatherStation\UvbController@addJson');
+    ## Añadir nuevos registros de Air Quality por lotes JSON
+    Route::post('/air_quality/add-json', 'App\Http\Controllers\Api\WeatherStation\AirQualityController@addJson');
 
-        ## Añadir nuevo registro de Air Quality.
-        Route::post('/air_quality/add', 'App\Http\Controllers\Api\WeatherStation\AirQualityController@add');
+    ## Añadir nuevo registro de Rayos.
+    Route::post('/lightning/add', 'App\Http\Controllers\Api\WeatherStation\LightningController@add');
 
-        ## Añadir nuevos registros de Air Quality por lotes JSON
-        Route::post('/air_quality/add-json', 'App\Http\Controllers\Api\WeatherStation\AirQualityController@addJson');
-
-        ## Añadir nuevo registro de Rayos.
-        Route::post('/lightning/add', 'App\Http\Controllers\Api\WeatherStation\LightningController@add');
-
-        ## Añadir nuevos registros de Rayos por lotes JSON
-        Route::post('/lightning/add-json', 'App\Http\Controllers\Api\WeatherStation\LightningController@addJson');
-    });
-
+    ## Añadir nuevos registros de Rayos por lotes JSON
+    Route::post('/lightning/add-json', 'App\Http\Controllers\Api\WeatherStation\LightningController@addJson');
 });
 
 
