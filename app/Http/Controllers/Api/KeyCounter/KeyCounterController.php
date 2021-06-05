@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use function auth;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use function is_array;
@@ -54,6 +55,8 @@ abstract class KeyCounterController extends Controller
 
         $model = new $this->model;
         $model->fill($requestValidate);
+
+        $model->user_id = auth()->id();
 
         ## Respuesta cuando se ha guardado el modelo correctamente
         if ($model->save()) {
@@ -108,6 +111,8 @@ abstract class KeyCounterController extends Controller
 
                     ## Almaceno la duración en segundos de la racha.
                     $model->duration = $duration;
+
+                    $model->user_id = auth()->id();
 
                     $model->save();
                 }
