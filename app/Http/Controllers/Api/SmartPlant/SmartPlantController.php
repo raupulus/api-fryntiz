@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use function auth;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use function is_array;
@@ -22,20 +23,6 @@ use function view;
  */
 class SmartPlantController extends Controller
 {
-    /**
-     * LLeva a la vista resumen con datos para depurar subidas.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function index()
-    {
-        $smartplants = SmartPlantPlant::all();
-
-        return view('smartplant.index')->with([
-            'smartplants' => $smartplants,
-        ]);
-    }
-
     /**
      * Devuelve todos los elementos del modelo.
      * @return \Illuminate\Http\JsonResponse
@@ -66,6 +53,8 @@ class SmartPlantController extends Controller
         try {
             $model = new SmartPlanRegister();
             $model->fill($requestValidate);
+
+            $model->user_id = auth()->id();
 
             ## Respuesta cuando se ha guardado el modelo correctamente
             if ($model->save()) {
@@ -121,6 +110,8 @@ class SmartPlantController extends Controller
                     if ($model->humidity > 100.0) {
                         $model->humidity = 100.0;
                     }
+
+                    $model->user_id = auth()->id();
 
                     $model->save();
                 } else {
