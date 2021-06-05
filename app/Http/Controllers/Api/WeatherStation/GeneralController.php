@@ -142,7 +142,7 @@ class GeneralController
                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
                    'Diciembre'];
 
-        $days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Sábado'];
+        $days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
         ## Almaceno el momento de la comprobación
         $data['instant'] = [
