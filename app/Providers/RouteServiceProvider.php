@@ -53,7 +53,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
-            Route::prefix('api/weatherstation')
+            Route::prefix('api/weatherstation/v1')
                 //->middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/weather_station/v1.php'));
@@ -63,25 +63,50 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/weather_station/web.php'));
 
-            Route::prefix('keycounter')
-                ->middleware('api')
+            Route::prefix('api/keycounter/v1')
+                //->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/keycounter.php'));
+                ->group(base_path('routes/keycounter/v1.php'));
+
+            Route::prefix('keycounter')
+                ->middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/keycounter/web.php'));
+
+            Route::prefix('api/smartplant/v1')
+                //->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/smart_plant/v1.php'));
+
+            Route::prefix('smartplant')
+                ->middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/smart_plant/web.php'));
+
+            Route::prefix('api/airflight/v1')
+                //->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/airflight/v1.php'));
+
+            Route::prefix('airflight')
+                ->middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/airflight/web.php'));
+
+            Route::prefix('api/cv/v1')
+                //->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/cv/v1.php'));
+
+            Route::prefix('cv')
+                ->middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/cv/web.php'));
 
             Route::prefix('webhook')
                 //->middleware('TODO → New custom middleware')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/webhook.php'));
-
-            Route::prefix('smartplant')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/smart_plant.php'));
-
-            Route::prefix('airflight')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/airflight.php'));
         });
     }
 
