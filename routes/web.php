@@ -18,11 +18,6 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-## Pantalla de bienvenida, la mantengo para ir a la docu oficial
-Route::get('/welcome', function () {
-    return view('welcome');
-});
-
 ## Documentación
 Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
     return view('documentation');
@@ -31,12 +26,12 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
 ############################################################
 ##                      Dashboard                         ##
 ############################################################
-Route::group(['prefix' => 'panel', 'middleware' => ['auth:sanctum', 'verified']], function () {
+Route::group(['prefix' => '/panel', 'middleware' => ['auth', 'verified']],
+    function () {
     Route::get('/', function () {
         return view('dashboard.index');
     })->name('dashboard.index');
 });
-
 
 Auth::routes();
 

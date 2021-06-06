@@ -12,6 +12,8 @@
 import { createApp } from 'vue'
 
 import VueAxios from 'vue-axios';
+
+/*
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 const routes = [
@@ -23,6 +25,7 @@ const router = createRouter({
     routes
 })
 
+*/
 
 /*
  Vue.use(VueAxios, {
@@ -36,7 +39,7 @@ const router = createRouter({
 let app = createApp({
     components: {
         VueAxios,
-        router
+        //router
     }
 });
 
