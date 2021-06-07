@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', '')
+@section('title', 'API de Raúl Caro Pastorino')
 @section('description', '')
 @section('keywords', '')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', '')
-@section('rs-sitename', '')
+@section('rs-title', 'API de Raúl Caro Pastorino')
+@section('rs-sitename', 'API Fryntiz')
 @section('rs-description', '')
 @section('rs-image', '')
 @section('rs-url', '')
 @section('rs-image-alt', '')
 
-@section('twitter-site', '')
-@section('twitter-creator', '')
+@section('twitter-site', config('app.url'))
+@section('twitter-creator', 'Raúl Caro Pastorino')
 
 {{-- Marca el elemento del menú que se encuentra activo --}}
 @section('active-index', 'active')
@@ -177,8 +177,8 @@
                 <div class="flex flex-wrap flex-col-reverse sm:flex-row">
                     {{-- Imagen --}}
                     <div class="w-full sm:w-1/2 p-6 mt-6">
-                        <img src="{{asset('images/logo-fryntiz.png')}}"
-                             alt="Logo fryntiz"/>
+                        <img src="{{asset('images/wheater-station/wheater-station-main-thumbnail.jpg')}}"
+                             alt="Logo estación meteorológica en Chipiona"/>
                     </div>
 
                     <div class="w-full sm:w-1/2 p-6 mt-6">
@@ -266,9 +266,9 @@
 
                     {{-- Imagen --}}
                     <div class="w-full sm:w-1/2 p-6">
-                        <img src="{{asset('images/logo-smart-plant.png')}}"
+                        <img src="{{asset('images/smart-plant/smart-plant-main-thumbnail.jpg')}}"
                              class="m-auto w-192 h-192"
-                             alt="Logo fryntiz"/>
+                             alt="Circuitos para el smart plant"/>
                     </div>
                 </div>
 
@@ -276,8 +276,8 @@
                 <div class="flex flex-wrap flex-col-reverse sm:flex-row">
                     {{-- Imagen --}}
                     <div class="w-full sm:w-1/2 p-6 mt-6">
-                        <img src="{{asset('images/logo-keycounter.png')}}"
-                             alt="Logo fryntiz"/>
+                        <img src="{{asset('images/keycounter/keycounter-main-thumbnail.jpg')}}"
+                             alt="Pantalla para la visualización de mi contador de teclas"/>
                     </div>
 
                     <div class="w-full sm:w-1/2 p-6 mt-6">
@@ -365,9 +365,9 @@
 
                     {{-- Imagen --}}
                     <div class="w-full sm:w-1/2 p-6">
-                        <img src="{{asset('images/logo-airflight.png')}}"
+                        <img src="{{asset('images/airflight/airflight-main-thumbnail.jpg')}}"
                              class="m-auto w-192 h-192"
-                             alt="Logo fryntiz"/>
+                             alt="Dispositivos utilizados para el radar de vuelos en chipiona"/>
                     </div>
                 </div>
 
