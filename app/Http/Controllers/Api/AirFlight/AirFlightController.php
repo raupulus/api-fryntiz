@@ -114,7 +114,7 @@ class AirFlightController extends Controller
                     if ($d->lat && $d->lon) {
                         $lastHour = (Carbon::now())->subHour()->format('Y-m-d H:i:s');
                         $lastSeenRoute = AirFlightRoute::where('seen_at', '<=', $lastHour )
-                            ->where('airflight_airplane_id', $airflight->id)
+                            ->where('airplane_id', $airflight->id)
                             ->where('lat', $d->lat)
                             ->where('lon', $d->lon)
                             ->orderByDesc('seen_at')
@@ -123,13 +123,13 @@ class AirFlightController extends Controller
 
                         $route = AirFlightRoute::updateOrCreate(
                             [
-                                'airflight_airplane_id' => $airflight->id,
+                                'airplane_id' => $airflight->id,
                                 'lat' => $d->lat,
                                 'lon' => $d->lon,
                                 'seen_at' => $lastSeen,
                             ],
                             [
-                                'airflight_airplane_id' => $airflight->id,
+                                'airplane_id' => $airflight->id,
                                 'squawk' => $d->squawk,
                                 'flight' => $d->flight,
                                 'lat' => $d->lat,

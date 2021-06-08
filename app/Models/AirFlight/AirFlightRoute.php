@@ -16,7 +16,7 @@ class AirFlightRoute extends Model
     protected $table = 'airflight_routes';
 
     protected $fillable = [
-        'airflight_airplane_id',
+        'airplane_id',
         'squawk',
         'flight',
         'lat',
