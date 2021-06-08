@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 ######################################################
 ##                    Privada
 ######################################################
-Route::get('/get/aircrafts/json', 'Api\AirFlight\AirFlightController@getAircraftjson');
+Route::get('/get/aircrafts/json', [AirFlightController::class, 'getAircraftjson']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     ##
-    Route::post('/register/add', 'Api\AirFlight\AirFlightController@add');
+    Route::post('/register/add', [AirFlightController::class, 'add']);
 
     ## Añade entradas por lotes json
     #Route::post('/register/add-json','Api\AirFlight\AirFlightController@addJson');
