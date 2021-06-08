@@ -6,7 +6,5 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', 'App\Http\Controllers\AirFlight\AirFlightController@index')
+Route::get('/', 'AirFlight\AirFlightController@index')
     ->name('airflight.index');
-
-Route::get('/get/aircrafts/json', 'App\Http\Controllers\Api\AirFlight\AirFlightController@getAircraftjson');

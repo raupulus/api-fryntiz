@@ -21,20 +21,6 @@ use Illuminate\Support\Facades\Log;
  */
 class AirFlightController extends Controller
 {
-    public function index()
-    {
-        $now = Carbon::now();
-        $lastHour = (clone($now))->subHour();
-
-        $planes = AirFlightAirPlane::where('seen_last_at', '>=', $lastHour)
-            ->orderByDesc('seen_last_at')
-            ->paginate(20);
-
-        return view('airflight.index')->with([
-            'planes' => $planes,
-        ]);
-    }
-
     /**
      * Devuelve los últimos aviones en una respuesta json.
      *
@@ -62,7 +48,7 @@ class AirFlightController extends Controller
                 'airflight_routes.emergency',
                 'airflight_routes.messages',
             ])
-            ->leftJoin('airflight_routes', 'airflight_routes.airflight_airplane_id', 'airflight_airplane.id')
+            ->leftJoin('airflight_routes', 'airflight_routes.airplane_id', 'airflight_airplane.id')
             ->where('airflight_airplane.seen_last_at', '>=', $lasTenMinutes)
             ->where('airflight_routes.created_at', '>=', $lasTenMinutes)
             ->orderByDesc('airflight_airplane.seen_last_at')
