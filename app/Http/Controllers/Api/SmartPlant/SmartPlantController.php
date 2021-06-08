@@ -94,7 +94,8 @@ class SmartPlantController extends Controller
                 $model = new SmartPlanRegister();
 
                 ## Obtengo atributos y los validos para excluir posible basura.
-                $attributes = $this->addValidate(get_object_vars($d));
+                //$attributes = $this->addValidate(get_object_vars($d));
+                $attributes = get_object_vars($d);
 
                 if (is_array($attributes)) {
                     $model->fill($attributes);
@@ -110,6 +111,11 @@ class SmartPlantController extends Controller
                     if ($model->humidity > 100.0) {
                         $model->humidity = 100.0;
                     }
+
+                    if (! $model->plant_id) {
+                        $model->plant_id = 1;
+                    }
+
 
                     //$model->user_id = auth()->id();
 
