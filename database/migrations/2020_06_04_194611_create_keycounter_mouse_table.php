@@ -28,6 +28,13 @@ class CreateKeycounterMouseTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->unsignedBigInteger('hardware_device_id')
+                ->nullable()
+                ->comment('Dispositivo asociado');
+            $table->foreign('hardware_device_id')
+                ->references('id')->on('hardware_devices')
+                ->onUpdate('CASCADE')
+                ->onDelete('SET NULL');
             $table->timestamp('start_at')
                 ->comment('Momento de iniciar la racha');
             $table->timestamp('end_at')
@@ -63,6 +70,7 @@ class CreateKeycounterMouseTable extends Migration
     {
         Schema::dropIfExists('keycounter_mouse', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
+            $table->dropForeign(['hardware_device_id']);
         });
     }
 }

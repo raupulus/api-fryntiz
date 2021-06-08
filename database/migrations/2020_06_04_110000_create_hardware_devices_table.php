@@ -5,9 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateCvTable
+ * Class CreateHardwareDevicesTable
  */
-class CreateCvTable extends Migration
+class CreateHardwareDevicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,35 +16,35 @@ class CreateCvTable extends Migration
      */
     public function up()
     {
-        Schema::create('cv', function (Blueprint $table) {
+        Schema::create('hardware_devices', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')
-                ->comment('Relación con el usuario');
+                ->nullable()
+                ->comment('Usuario asociado');
             $table->foreign('user_id')
                 ->references('id')->on('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+
             $table->unsignedBigInteger('image_id')
                 ->nullable()
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->string('title', 511)
-                ->comment('Título para el curriculum');
-            $table->boolean('is_active')
+                ->onUpdate('CASCADE')
+                ->onDelete('SET NULL');
+
+            $table->string('name', 511)
+                ->comment('Nombre asociado');
+            $table->text('description')
                 ->nullable()
-                ->default(0)
-                ->comment('Indica si está activo');
-            $table->boolean('is_downloadable')
-                ->nullable()
-                ->default(0)
-                ->comment('Indica si permite descargar el curriculum');
+                ->comment('Descripción del dispositivo.');
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -55,7 +55,7 @@ class CreateCvTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cv_repositories', function (Blueprint $table) {
+        Schema::dropIfExists('hardware_devices', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['image_id']);
         });

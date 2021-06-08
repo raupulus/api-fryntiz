@@ -21,6 +21,12 @@ class CreateUserDataTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->comment('Relación con el usuario');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->string('phone')
                 ->nullable()
                 ->comment('Teléfono del usuario.');
@@ -42,6 +48,8 @@ class CreateUserDataTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_data');
+        Schema::dropIfExists('user_data', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

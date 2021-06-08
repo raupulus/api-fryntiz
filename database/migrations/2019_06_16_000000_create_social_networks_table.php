@@ -35,12 +35,16 @@ class CreateSocialNetworksTable extends Migration
             $table->text('url')
                 ->comment('Url a la página principal de la red social');
             $table->text('url_user')
+                ->nullable()
                 ->comment('Parte de la url hacia el perfil de usuario');
             $table->text('url_privacity')
+                ->nullable()
                 ->comment('Url a la política de privacidad de la red social');
             $table->string('icon', 255)
+                ->nullable()
                 ->comment('Icono para la red social');
             $table->text('image')
+                ->nullable()
                 ->comment('Imagen de la red social a 120x120px');
             $table->timestamps();
             $table->softDeletes();

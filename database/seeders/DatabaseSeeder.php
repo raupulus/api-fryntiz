@@ -4,6 +4,11 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
+/**
+ * Class DatabaseSeeder
+ *
+ * @package Database\Seeders
+ */
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -17,5 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LanguagesTableSeeder::class);
         $this->call(RolesTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+        $this->call(HardwareAvailableComponentsTableSeeder::class);
     }
 }
