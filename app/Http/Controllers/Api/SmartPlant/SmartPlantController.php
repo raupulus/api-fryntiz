@@ -111,7 +111,7 @@ class SmartPlantController extends Controller
                         $model->humidity = 100.0;
                     }
 
-                    $model->user_id = auth()->id();
+                    //$model->user_id = auth()->id();
 
                     $model->save();
                 } else {
