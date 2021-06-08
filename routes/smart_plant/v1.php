@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 ##                    Privada
 ######################################################
 ##
-Route::post('/register/add', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@add');
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    ##
+    Route::post('/register/add', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@add');
 
-##
-Route::post('/register/add-json', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@addJson');
+    ##
+    Route::post('/register/add-json', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@addJson');
+});
