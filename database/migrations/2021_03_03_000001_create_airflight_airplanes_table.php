@@ -55,7 +55,8 @@ class CreateAirFlightAirplanesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('airflight_airplane', function (Blueprint $table) {
+        Schema::dropIfExists('airflight_airplanes', function (Blueprint
+                                                              $table) {
             $table->dropForeign(['user_id']);
         });
     }

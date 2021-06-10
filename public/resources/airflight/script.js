@@ -129,7 +129,7 @@ function fetchData() {
     }
 
     FetchPending = $.ajax({
-        url:'/airflight/get/aircrafts/json',
+        url:'/api/airflight/v1/get/aircrafts/json',
         timeout:5000,
         cache:false,
         dataType:'json'
@@ -169,7 +169,8 @@ function fetchData() {
     });
 }
 
-var PositionHistorySize = 0;
+// Tamaño del historial
+var PositionHistorySize = 10;
 
 function initialize() {
     // Set page basics
@@ -215,7 +216,8 @@ function load_history_item(i) {
     console.log("Loading history #" + i);
     $("#loader_progress").attr('value',i);
 
-    $.ajax({ url: 'data/history_' + i + '.json',
+    //$.ajax({ url: '/api/aircraft/v1/data/get/history_' + i + '.json',
+    $.ajax({ url: '/api/airflight/v1/get/aircrafts/json?history=' + i,
         timeout: 5000,
         cache: false,
         dataType: 'json' })

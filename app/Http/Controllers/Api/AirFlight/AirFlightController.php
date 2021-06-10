@@ -9,7 +9,9 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use function abort;
 use function GuzzleHttp\json_decode;
+use function random_int;
 use function response;
 use function view;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +23,11 @@ use Illuminate\Support\Facades\Log;
  */
 class AirFlightController extends Controller
 {
+    public function getAircraftHistory(Request $request)
+    {
+
+    }
+
     /**
      * Devuelve los últimos aviones en una respuesta json.
      *
@@ -30,12 +37,36 @@ class AirFlightController extends Controller
      */
     public function getAircraftjson(Request $request) {
         $now = Carbon::now();
-        $lasTenMinutes = (clone($now))->subMinutes(10);
+
+        $lastCheckTimestampMs = $request->get('_');
+        $historyPage = $request->get('history');
+
+        if ($historyPage) {
+            $checkFrom = (clone($now))->subMinutes($historyPage);
+
+            if ($historyPage > 0) {
+                $checkTo = (clone($now))->subMinutes($historyPage - 1);
+            }
+
+        } else if ($lastCheckTimestampMs) {
+            try {
+                $checkFrom = Carbon::createFromTimestampMsUTC($lastCheckTimestampMs);
+            } catch (Exception $e) {
+                $checkFrom = (clone($now))->subMinutes(60);
+            }
+        } else {
+            $checkFrom = (clone($now))->subDays(60);
+        }
+
+
+        //$lasTenMinutes = (clone($now))->subMinutes(10);
+        //$lasTenMinutes = (clone($now))->subDays(10);
 
         $aircrafts = AirFlightAirPlane::select([
-                'airflight_airplane.icao as hex',
-                'airflight_airplane.category',
-                'airflight_airplane.seen_last_at as seen_at',
+                'airflight_airplanes.icao as hex',
+                'airflight_airplanes.category',
+                'airflight_airplanes.seen_last_at as seen_at',
+                // TODO → Espera que se devuelva un campo "age" o "seen" ???
                 'airflight_routes.squawk',
                 'airflight_routes.flight',
                 'airflight_routes.lat',
@@ -48,18 +79,29 @@ class AirFlightController extends Controller
                 'airflight_routes.emergency',
                 'airflight_routes.messages',
             ])
-            ->leftJoin('airflight_routes', 'airflight_routes.airplane_id', 'airflight_airplane.id')
-            ->where('airflight_airplane.seen_last_at', '>=', $lasTenMinutes)
-            ->where('airflight_routes.created_at', '>=', $lasTenMinutes)
-            ->orderByDesc('airflight_airplane.seen_last_at')
+            ->leftJoin('airflight_routes', 'airflight_routes.airplane_id', 'airflight_airplanes.id')
+            //->where('airflight_airplanes.seen_last_at', '>=', $checkFrom)
+            ->where('airflight_routes.created_at', '>=', $checkFrom)
+            ;
+
+        if (isset($checkTo) && $checkTo) {
+            $aircrafts->where('airflight_routes.created_at', '<=', $checkTo);
+        }
+
+
+        $aircrafts = $aircrafts
+            ->orderByDesc('airflight_airplanes.seen_last_at')
             ->orderByDesc('airflight_routes.seen_at')
             ->get();
 
-        $aircrafts->map(function ($ele) {
+        $aircrafts->map(function ($ele) use ($now) {
             try {
-                $ele->seen_at = (Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at))->getTimestamp();
+                $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at);
+                $ele->seen_at = $seenAt->getTimestamp();
+                $ele->seen = $seenAt->diffInSeconds($now);
             } catch (Exception $e) {
-                $ele->seen_at = null;
+                $ele->seen_at = 0;
+                $ele->seen = 0;
             }
 
             return $ele;
