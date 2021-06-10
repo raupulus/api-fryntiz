@@ -42,10 +42,10 @@ class AirFlightController extends Controller
         $historyPage = $request->get('history');
 
         if ($historyPage) {
-            $checkFrom = (clone($now))->subMinutes($historyPage);
+            $checkFrom = (clone($now))->subMinutes($historyPage*12);
 
             if ($historyPage > 0) {
-                $checkTo = (clone($now))->subMinutes($historyPage - 1);
+                $checkTo = (clone($now))->subMinutes(($historyPage*12) - 1);
             }
 
         } else if ($lastCheckTimestampMs) {

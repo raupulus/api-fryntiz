@@ -169,8 +169,8 @@ function fetchData() {
     });
 }
 
-// Tamaño del historial
-var PositionHistorySize = 10;
+// Tamaño del historial, cada uno son 5 minutos (12 por hora)
+var PositionHistorySize = 12;
 
 function initialize() {
     // Set page basics
