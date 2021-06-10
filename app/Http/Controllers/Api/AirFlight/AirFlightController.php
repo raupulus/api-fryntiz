@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use function abort;
+use function auth;
 use function GuzzleHttp\json_decode;
 use function random_int;
 use function response;
@@ -42,10 +43,10 @@ class AirFlightController extends Controller
         $historyPage = $request->get('history');
 
         if ($historyPage) {
-            $checkFrom = (clone($now))->subMinutes($historyPage*12);
+            $checkFrom = (clone($now))->subMinutes($historyPage*5);
 
             if ($historyPage > 0) {
-                $checkTo = (clone($now))->subMinutes(($historyPage*12) - 1);
+                $checkTo = (clone($now))->subMinutes(($historyPage*5) - 1);
             }
 
         } else if ($lastCheckTimestampMs) {
@@ -58,9 +59,6 @@ class AirFlightController extends Controller
             $checkFrom = (clone($now))->subDays(60);
         }
 
-
-        //$lasTenMinutes = (clone($now))->subMinutes(10);
-        //$lasTenMinutes = (clone($now))->subDays(10);
 
         $aircrafts = AirFlightAirPlane::select([
                 'airflight_airplanes.icao as hex',
@@ -107,6 +105,15 @@ class AirFlightController extends Controller
             return $ele;
         });
 
+        /*
+         { "now" : 1623358369.4,
+              "messages" : 121565,
+              "aircraft" : [
+                {"hex":"34510f","flight":"SWT185  ","alt_baro":20000,"alt_geom":21150,"gs":283.1,"ias":194,"tas":268,"mach":0.428,"track":20.0,"roll":0.7,"mag_heading":13.4,"baro_rate":0,"geom_rate":0,"squawk":"4466","emergency":"none","category":"A2","nav_qnh":1012.8,"nav_altitude_fms":20000,"lat":36.789116,"lon":-5.880082,"nic":8,"rc":186,"seen_pos":40.5,"version":2,"nic_baro":1,"nac_p":9,"nac_v":2,"sil":3,"sil_type":"perhour","gva":2,"sda":2,"mlat":[],"tisb":[],"messages":1877,"seen":12.6,"rssi":-26.0}
+              ]
+            }
+         */
+
         return response()->json([
             'now' => (Carbon::now())->getTimestamp(),
             'messages' => $aircrafts->sum('messages'),
@@ -142,9 +149,18 @@ class AirFlightController extends Controller
                         ],
                         [
                             'seen_last_at' => $d->seen_at,
-                            'category' => $d->category,
                         ]
                     );
+
+                    if (!$airflight->category) {
+                        $airflight->category = $d->category;
+                        $airflight->save();
+                    }
+
+                    if (!$airflight->user_id) {
+                        $airflight->user_id = auth()->id();
+                        $airflight->save();
+                    }
 
                     ## Comprueba si no se marcó al verse por primera vez o hay fecha anterior.
                     if (! $airflight->seen_first_at || ($airflight->seen_first_at > $d->seen_at)) {
@@ -171,6 +187,7 @@ class AirFlightController extends Controller
                                 'seen_at' => $lastSeen,
                             ],
                             [
+                                'user_id' => auth()->id(),
                                 'airplane_id' => $airflight->id,
                                 'squawk' => $d->squawk,
                                 'flight' => $d->flight,
