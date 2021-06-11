@@ -30,6 +30,22 @@ class AirFlightController extends Controller
     }
 
     /**
+     * Devuelve información del receptor emulado
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getReceiverInformation()
+    {
+        return response()->json([
+            'history' => 12,
+            'lat' => 36.7381,
+            'lon' =>  -6.4301,
+            'refresh' => 10000,
+            'version' => 'dump978 5.0'
+        ]);
+    }
+
+    /**
      * Devuelve los últimos aviones en una respuesta json.
      *
      * @param \Illuminate\Http\Request $request
@@ -113,6 +129,53 @@ class AirFlightController extends Controller
               ]
             }
          */
+
+        /*
+        return response()->json([
+            'now' => (Carbon::now())->getTimestamp(),
+            'messages' => $aircrafts->sum('messages'),
+            'aircraft' => [
+                "hex" => "34510f",
+                "flight" => "SWT185  ",
+                "alt_baro" => 20000,
+                "alt_geom" => 21150,
+                "gs" => 283.1,
+                "ias" => 194,
+                "tas" => 268,
+                "mach" => 0.428,
+                "track" => 20,
+                "roll" => 0.7,
+                "mag_heading" => 13.4,
+                "baro_rate" => 0,
+                "geom_rate" => 0,
+                "squawk" => "4466",
+                "emergency" => "none",
+                "category" => "A2",
+                "nav_qnh" => 1012.8,
+                "nav_altitude_fms" => 20000,
+                "lat" => 36.789116,
+                "lon" => -6.010082,
+                "nic" => 8,
+                "rc" => 186,
+                "seen_pos" => 20.5,
+                "version" => 2,
+                "nic_baro" => 1,
+                "nac_p" => 9,
+                "nac_v" => 2,
+                "sil" => 3,
+                "sil_type" => "perhour",
+                "gva" => 2,
+                "sda" => 2,
+                "mlat" => [
+                ],
+                "tisb" => [
+                ],
+                "messages" => 1877,
+                "seen" => 0.1,
+                "rssi" => -26
+            ]
+        ]);
+        */
 
         return response()->json([
             'now' => (Carbon::now())->getTimestamp(),
