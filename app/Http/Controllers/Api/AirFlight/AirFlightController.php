@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use function abort;
 use function auth;
+use function base_path;
 use function GuzzleHttp\json_decode;
+use function public_path;
 use function random_int;
 use function response;
 use function view;
@@ -27,6 +29,20 @@ class AirFlightController extends Controller
     public function getAircraftHistory(Request $request)
     {
 
+    }
+
+    /**
+     * Devuelve datos de la db para los vuelos.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param                string    $data Temporalmente el archivo a
+     *                                       devolver.
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function getFromDb(Request $request, $data)
+    {
+        return response()->file(public_path('resources/airflight/db/' . $data . '.json'));
     }
 
     /**

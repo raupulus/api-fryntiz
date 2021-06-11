@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 ######################################################
 Route::get('/get/aircrafts/json', [AirFlightController::class, 'getAircraftjson']);
 Route::get('/get/receiver/json', [AirFlightController::class, 'getReceiverInformation']);
+Route::get('/get/db/json/{data}', [AirFlightController::class, 'getFromDb']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     ##
