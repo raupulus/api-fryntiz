@@ -13,6 +13,7 @@ use function abort;
 use function auth;
 use function base_path;
 use function GuzzleHttp\json_decode;
+use function in_array;
 use function public_path;
 use function random_int;
 use function response;
@@ -26,9 +27,16 @@ use Illuminate\Support\Facades\Log;
  */
 class AirFlightController extends Controller
 {
+    /**
+     * Devuelve el historial para la página del historial solicitada.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getAircraftHistory(Request $request)
     {
-
+        return $this->getAircraftjson($request);
     }
 
     /**
@@ -53,11 +61,11 @@ class AirFlightController extends Controller
     public function getReceiverInformation()
     {
         return response()->json([
-            'history' => 12,
+            'history' => 20,
             'lat' => 36.7381,
             'lon' =>  -6.4301,
-            'refresh' => 10000,
-            'version' => 'dump978 5.0'
+            'refresh' => 5000,
+            'version' => '5.0'
         ]);
     }
 
@@ -73,30 +81,38 @@ class AirFlightController extends Controller
 
         $lastCheckTimestampMs = $request->get('_');
         $historyPage = $request->get('history');
+        $checkTo = null;
 
-        if ($historyPage) {
-            $checkFrom = (clone($now))->subMinutes($historyPage*5);
-
-            if ($historyPage > 0) {
-                $checkTo = (clone($now))->subMinutes(($historyPage*5) - 1);
-            }
-
-        } else if ($lastCheckTimestampMs) {
+        if ($lastCheckTimestampMs) {
             try {
                 $checkFrom = Carbon::createFromTimestampMsUTC($lastCheckTimestampMs);
             } catch (Exception $e) {
-                $checkFrom = (clone($now))->subMinutes(60);
+                $checkFrom = (clone($now))->subMinutes(10);
             }
         } else {
-            $checkFrom = (clone($now))->subDays(60);
+            $checkFrom = (clone($now))->subMinutes(10);
         }
 
+        if ($historyPage) {
+            if (! $checkFrom) {
+                $checkFrom = $checkFrom ?? (clone($now));
+            }
+
+            $checkFrom = $checkFrom->subSeconds($historyPage * 30);
+
+            if ($historyPage > 1) {
+                $checkTo = (clone($checkFrom))->subSeconds(($historyPage * 30) - 30);
+            }
+        }
+
+        ## Para el retraso al subir datos que serían descartados en seen_at
+        $checkFrom = $checkFrom->subSeconds(10);
 
         $aircrafts = AirFlightAirPlane::select([
                 'airflight_airplanes.icao as hex',
                 'airflight_airplanes.category',
                 'airflight_airplanes.seen_last_at as seen_at',
-                // TODO → Espera que se devuelva un campo "age" o "seen" ???
+                'airflight_routes.seen_at as route_seen_at',
                 'airflight_routes.squawk',
                 'airflight_routes.flight',
                 'airflight_routes.lat',
@@ -109,30 +125,113 @@ class AirFlightController extends Controller
                 'airflight_routes.emergency',
                 'airflight_routes.messages',
             ])
-            ->leftJoin('airflight_routes', 'airflight_routes.airplane_id', 'airflight_airplanes.id')
-            //->where('airflight_airplanes.seen_last_at', '>=', $checkFrom)
-            ->where('airflight_routes.created_at', '>=', $checkFrom)
+            ->leftJoin('airflight_routes', function ($join) use ($checkFrom, $checkTo, $historyPage) {
+                $join->on('airflight_routes.airplane_id', '=', 'airflight_airplanes.id');
+
+                if (! isset($checkTo) || ! $checkTo || ! $historyPage) {
+                    $join->on('airflight_routes.seen_at', '=', 'airflight_airplanes.seen_last_at');
+                } else {
+                    $join->where('airflight_routes.seen_at', '>=', $checkFrom);
+                    $join->where('airflight_routes.seen_at', '<=', $checkTo);
+                }
+            })
+
+            ->where(function ($q) use($checkFrom) {
+                return $q->whereNull('airflight_routes.seen_at')
+                         ->orWhere('airflight_routes.seen_at', '>=', $checkFrom);
+            })
             ;
 
-        if (isset($checkTo) && $checkTo) {
-            $aircrafts->where('airflight_routes.created_at', '<=', $checkTo);
-        }
+        ## Para el historial tomo rangos horarios, aquí establezco el fin.
+        if (isset($checkTo) && $checkTo && $historyPage) {
+            $aircrafts->where('airflight_airplanes.seen_last_at', '>=', clone($now)->subMinutes(10));
+            $aircrafts->where('airflight_airplanes.seen_last_at', '<=', $now);
 
+            $aircrafts->where(function ($q) use($checkTo) {
+                return $q->whereNull('airflight_routes.seen_at')
+                         ->orWhere('airflight_routes.seen_at', '<=', $checkTo);
+            });
+        } else {
+            $aircrafts->where('airflight_airplanes.seen_last_at', '>=', $checkFrom);
+        }
 
         $aircrafts = $aircrafts
             ->orderByDesc('airflight_airplanes.seen_last_at')
             ->orderByDesc('airflight_routes.seen_at')
             ->get();
 
-        $aircrafts->map(function ($ele) use ($now) {
+        $aircrafts->map(function ($ele) use ($checkFrom, $checkTo, $historyPage) {
             try {
-                $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at);
-                $ele->seen_at = $seenAt->getTimestamp();
-                $ele->seen = $seenAt->diffInSeconds($now);
+
+                if (isset($checkTo) && $checkTo && $historyPage && $ele->route_seen_at ) {
+                    $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at);
+
+                    $ele->seen_at = $seenAt->getTimestamp();
+                    $ele->seen = $seenAt->diffInSeconds($checkFrom);
+                    $ele->seen_pos = $seenAt->diffInSeconds($checkFrom);
+                } else {
+                    $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at);
+
+                    $ele->seen_at = $seenAt->getTimestamp();
+                    $ele->seen = $seenAt->diffInSeconds($checkFrom);
+                    $ele->seen_pos = $seenAt->diffInSeconds($checkFrom);
+                }
+
             } catch (Exception $e) {
-                $ele->seen_at = 0;
-                $ele->seen = 0;
+                $ele->seen_at = (clone($checkFrom))->subSeconds(600)->getTimestamp();
+                $ele->seen = 600;
+                $ele->seen_pos = 600;
             }
+
+            $ele->rssi = $ele->rssi ?? null;
+            $ele->lat = (float) $ele->lat != 0 ? (float) $ele->lat : null;
+            $ele->lon = (float) $ele->lon != 0 ? (float) $ele->lon : null;
+            $ele->category = $ele->category ?? null;
+            $ele->messages = $ele->messages ?? 1;
+
+            ## Altitud convertida de metros a ft
+            $ele->altitude = (float) $ele->altitude != 0 ? (float) $ele->altitude * 3.28084 : null;
+
+            ## Velocidad convertida de kt a m
+            $ele->speed = (float) $ele->speed != 0 ? (float) $ele->speed / 0.54 : null;
+
+            if (!$ele->lat) {
+                unset($ele->lat);
+            }
+
+            if (!$ele->lon) {
+                unset($ele->lon);
+            }
+
+            if (!$ele->altitude) {
+                unset($ele->altitude);
+            }
+
+            if (!$ele->speed) {
+                unset($ele->speed);
+            }
+
+            if (!$ele->vert_rate) {
+                unset($ele->vert_rate);
+            }
+
+            if (!$ele->track) {
+                unset($ele->track);
+            }
+
+            if (!$ele->squawk) {
+                unset($ele->squawk);
+            }
+
+            if (!$ele->flight) {
+                unset($ele->flight);
+            }
+
+            if (!$ele->flight) {
+                unset($ele->flight);
+            }
+
+            unset($ele->route_seen_at);
 
             return $ele;
         });
@@ -225,30 +324,31 @@ class AirFlightController extends Controller
                     $airflight = AirFlightAirPlane::updateOrCreate(
                         [
                             'icao' => $d->icao,
-                        ],
-                        [
-                            'seen_last_at' => $d->seen_at,
                         ]
                     );
 
-                    if (!$airflight->category) {
-                        $airflight->category = $d->category;
-                        $airflight->save();
+                    ## Añade o actualiza la última vez que se vió si es mayor a la actual
+                    if (! $airflight->seen_last_at || ($airflight->seen_last_at < $d->seen_at)) {
+                        $airflight->seen_last_at = $d->seen_at;
+                    }
+
+                    if (!$airflight->category || ($airflight->category == 'null')) {
+                        $airflight->category = $d->category == 'null' ? null : $d->category;
                     }
 
                     if (!$airflight->user_id) {
                         $airflight->user_id = auth()->id();
-                        $airflight->save();
                     }
 
                     ## Comprueba si no se marcó al verse por primera vez o hay fecha anterior.
                     if (! $airflight->seen_first_at || ($airflight->seen_first_at > $d->seen_at)) {
                         $airflight->seen_first_at = $d->seen_at;
-                        $airflight->save();
                     }
 
+                    $airflight->save();
+
                     ## Solo almaceno rutas cuando hay latitud y longitud.
-                    if ($d->lat && $d->lon) {
+                    if ($d->lat && ($d->lat != 0) && $d->lon && ($d->lon != 0)) {
                         $lastHour = (Carbon::now())->subHour()->format('Y-m-d H:i:s');
                         $lastSeenRoute = AirFlightRoute::where('seen_at', '<=', $lastHour )
                             ->where('airplane_id', $airflight->id)
@@ -256,14 +356,29 @@ class AirFlightController extends Controller
                             ->where('lon', $d->lon)
                             ->orderByDesc('seen_at')
                             ->first();
+
                         $lastSeen = $lastSeenRoute ? $lastSeenRoute->seen_at : null;
+
+                        if (! $d->flight || in_array($d->flight, ['null', 'none',  ''])) {
+                            $d->flight = $lastSeenRoute && $lastSeenRoute->flight ? $lastSeenRoute->flight : null;
+                        }
+
+                        if (! $d->squawk || in_array($d->squawk, ['null', 'none',  ''])) {
+                            $d->squawk = $lastSeenRoute && $lastSeenRoute->squawk ? $lastSeenRoute->squawk : null;
+                        }
+
+                        if (! $d->messages || in_array($d->messages, ['null', 'none',  ''])) {
+                            $d->messages = $lastSeenRoute && $lastSeenRoute->messages ?  $lastSeenRoute->messages + 1 : null;
+                        }
+
+                        if (in_array($d->emergency, ['null', 'none', '', null])) {
+                            $d->emergency = null;
+                        }
 
                         $route = AirFlightRoute::updateOrCreate(
                             [
                                 'airplane_id' => $airflight->id,
-                                'lat' => $d->lat,
-                                'lon' => $d->lon,
-                                'seen_at' => $lastSeen,
+                                'seen_at' => $d->seen_at,
                             ],
                             [
                                 'user_id' => auth()->id(),
@@ -276,7 +391,6 @@ class AirFlightController extends Controller
                                 'vert_rate' => $d->vert_rate,
                                 'track' => $d->track,
                                 'speed' => $d->speed,
-                                'seen_at' => $d->seen_at,
                                 'messages' => $d->messages,
                                 'rssi' => $d->rssi,
                                 'emergency' => $d->emergency,
