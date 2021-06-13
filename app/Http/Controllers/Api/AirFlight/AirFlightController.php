@@ -164,7 +164,7 @@ class AirFlightController extends Controller
             ->orderByDesc('airflight_routes.seen_at')
             ->get();
 
-        $aircrafts->map(function ($ele) use ($checkFrom, $historyPage) {
+        $aircrafts->map(function ($ele) use ($now, $checkFrom, $historyPage) {
             try {
                 if ($historyPage && $ele->route_seen_at ) {
                     $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at);
@@ -176,8 +176,8 @@ class AirFlightController extends Controller
                     $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at);
 
                     $ele->seen_at = $seenAt->getTimestamp();
-                    $ele->seen = $seenAt->diffInSeconds($checkFrom);
-                    $ele->seen_pos = $seenAt->diffInSeconds($checkFrom);
+                    $ele->seen = $seenAt->diffInSeconds($now);
+                    $ele->seen_pos = $seenAt->diffInSeconds($now);
                 }
 
             } catch (Exception $e) {
