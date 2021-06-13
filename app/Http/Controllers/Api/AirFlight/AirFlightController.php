@@ -61,7 +61,7 @@ class AirFlightController extends Controller
     public function getReceiverInformation()
     {
         return response()->json([
-            'history' => 20,
+            'history' => 10,
             'lat' => 36.7381,
             'lon' =>  -6.4301,
             'refresh' => 5000,
@@ -98,15 +98,15 @@ class AirFlightController extends Controller
                 $checkFrom = $checkFrom ?? (clone($now));
             }
 
-            $checkFrom = $checkFrom->subSeconds($historyPage * 30);
+            $checkFrom = $checkFrom->subSeconds($historyPage * 5);
 
-            if ($historyPage > 1) {
-                $checkTo = (clone($checkFrom))->subSeconds(($historyPage * 30) - 30);
+            if ($historyPage > 0) {
+                $checkTo = (clone($checkFrom))->subSeconds(($historyPage * 5) - 5);
             }
         }
 
         ## Para el retraso al subir datos que serían descartados en seen_at
-        $checkFrom = $checkFrom->subSeconds(10);
+        $checkFrom = $checkFrom->subSeconds($historyPage ? 5 : 30);
 
         $aircrafts = AirFlightAirPlane::select([
                 'airflight_airplanes.icao as hex',
@@ -128,29 +128,33 @@ class AirFlightController extends Controller
             ->leftJoin('airflight_routes', function ($join) use ($checkFrom, $checkTo, $historyPage) {
                 $join->on('airflight_routes.airplane_id', '=', 'airflight_airplanes.id');
 
-                if (! isset($checkTo) || ! $checkTo || ! $historyPage) {
-                    $join->on('airflight_routes.seen_at', '=', 'airflight_airplanes.seen_last_at');
-                } else {
+                if ($historyPage) {
                     $join->where('airflight_routes.seen_at', '>=', $checkFrom);
-                    $join->where('airflight_routes.seen_at', '<=', $checkTo);
+
+                    if ($checkTo) {
+                        $join->where('airflight_routes.seen_at', '<=', $checkTo);
+                    }
+                } else {
+                    $join->on('airflight_routes.seen_at', '=', 'airflight_airplanes.seen_last_at');
                 }
             })
-
-            ->where(function ($q) use($checkFrom) {
-                return $q->whereNull('airflight_routes.seen_at')
-                         ->orWhere('airflight_routes.seen_at', '>=', $checkFrom);
-            })
-            ;
+        ;
 
         ## Para el historial tomo rangos horarios, aquí establezco el fin.
-        if (isset($checkTo) && $checkTo && $historyPage) {
-            $aircrafts->where('airflight_airplanes.seen_last_at', '>=', clone($now)->subMinutes(10));
-            $aircrafts->where('airflight_airplanes.seen_last_at', '<=', $now);
+        if ($historyPage) {
+            $aircrafts->where('airflight_airplanes.seen_last_at', '>=', (clone($now))->subMinutes(10));
 
-            $aircrafts->where(function ($q) use($checkTo) {
+            $aircrafts->where(function ($q) use($checkFrom) {
                 return $q->whereNull('airflight_routes.seen_at')
-                         ->orWhere('airflight_routes.seen_at', '<=', $checkTo);
+                    ->orWhere('airflight_routes.seen_at', '>=', $checkFrom);
             });
+
+            if ($checkTo) {
+                $aircrafts->where(function ($q) use($checkTo) {
+                    return $q->whereNull('airflight_routes.seen_at')
+                        ->orWhere('airflight_routes.seen_at', '<=', $checkTo);
+                });
+            }
         } else {
             $aircrafts->where('airflight_airplanes.seen_last_at', '>=', $checkFrom);
         }
@@ -160,10 +164,9 @@ class AirFlightController extends Controller
             ->orderByDesc('airflight_routes.seen_at')
             ->get();
 
-        $aircrafts->map(function ($ele) use ($checkFrom, $checkTo, $historyPage) {
+        $aircrafts->map(function ($ele) use ($checkFrom, $historyPage) {
             try {
-
-                if (isset($checkTo) && $checkTo && $historyPage && $ele->route_seen_at ) {
+                if ($historyPage && $ele->route_seen_at ) {
                     $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at);
 
                     $ele->seen_at = $seenAt->getTimestamp();
@@ -183,7 +186,7 @@ class AirFlightController extends Controller
                 $ele->seen_pos = 600;
             }
 
-            $ele->rssi = $ele->rssi ?? null;
+            $ele->rssi = $ele->rssi ? (float) $ele->rssi : (float) -100;
             $ele->lat = (float) $ele->lat != 0 ? (float) $ele->lat : null;
             $ele->lon = (float) $ele->lon != 0 ? (float) $ele->lon : null;
             $ele->category = $ele->category ?? null;
@@ -392,7 +395,7 @@ class AirFlightController extends Controller
                                 'track' => $d->track,
                                 'speed' => $d->speed,
                                 'messages' => $d->messages,
-                                'rssi' => $d->rssi,
+                                'rssi' => $d->rssi ?? -100,
                                 'emergency' => $d->emergency,
                             ]
                         );
