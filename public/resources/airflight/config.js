@@ -7,7 +7,7 @@
 
 // -- Title Settings --------------------------------------
 // Show number of aircraft and/or messages per second in the page title
-PlaneCountInTitle = false;
+PlaneCountInTitle = true;
 MessageRateInTitle = false;
 
 // -- Output Settings -------------------------------------
@@ -26,18 +26,18 @@ ShowOtherUnits = true;
 // degrees.
 
 // Default center of the map.
-DefaultCenterLat = 36.73805;
-DefaultCenterLon = -6.43008;
+DefaultCenterLat = 36.7381;
+DefaultCenterLon = -6.4301;
 // The google maps zoom level, 0 - 16, lower is further out
 DefaultZoomLvl   = 7;
 
 // Center marker. If dump1090 provides a receiver location,
 // that location is used and these settings are ignored.
 
-SiteShow    = false;           // true to show a center marker
-SiteLat     = 36.73805;            // position of the marker
-SiteLon     = -6.43008;
-SiteName    = "Vuelos en chipiona"; // tooltip of the marker
+SiteShow    = true;           // true to show a center marker
+SiteLat     = 36.7381;            // position of the marker
+SiteLon     = -6.4301;
+SiteName    = "Vuelos en Chipiona"; // tooltip of the marker
 
 // -- Marker settings -------------------------------------
 
@@ -99,37 +99,38 @@ OutlineMlatColor = '#4040FF';
 
 SiteCircles = true; // true to show circles (only shown if the center marker is shown)
 // In nautical miles or km (depending settings value 'Metric')
-SiteCirclesDistances = new Array(100,150,200);
-
-// Show the clocks at the top of the righthand pane? You can disable the clocks if you want here
-ShowClocks = true;
+SiteCirclesDistances = new Array(20, 50, 100);
 
 // Controls page title, righthand pane when nothing is selected
-PageName = "Vuelos en chipiona";
+PageName = "Vuelos en Chipiona";
 
 // Show country flags by ICAO addresses?
 ShowFlags = true;
 
 // Path to country flags (can be a relative or absolute URL; include a trailing /)
-FlagPath = "/resources/airflight/flags-tiny/";
+FlagPath = "https://api.fryntiz.dev/resources/airflight/flags-tiny/";
 
 // Set to true to enable the ChartBundle base layers (US coverage only)
 ChartBundleLayers = true;
 
-// Provide a Bing Maps API key here to enable the Bing imagery layer.
-// You can obtain a free key (with usage limits) at
-// https://www.bingmapsportal.com/ (you need a "basic key")
-//
-// Be sure to quote your key:
-//   BingMapsAPIKey = "your key here";
-//
-BingMapsAPIKey = null;
+var urlAircrafts = 'https://api.fryntiz.dev/api/airflight/v1/get/aircrafts/json';
+var urlHistory = 'https://api.fryntiz.dev/api/airflight/v1/get/aircrafts/json';
+var urlFlags = 'https://api.fryntiz.dev/resources/airflight/flags-tiny/';
+var urlReceiver = 'https://api.fryntiz.dev/api/airflight/v1/get/receiver/json';
+var urlUpInTheHair = 'https://api.fryntiz.dev/api/airflight/v1/upintheair.json';
+var urlDb = 'https://api.fryntiz.dev/api/airflight/v1/get/db/json';
 
-// Provide a Mapzen API key here to enable the Mapzen vector tile layer.
-// You can obtain a free key at https://mapzen.com/developers/
-// (you need a "vector tiles" key)
-//
-// Be sure to quote your key:
-//   MapzenAPIKey = "your key here";
-//
-MapzenAPIKey = null;
+
+// Mensajes
+var messageProblemAjax = 'Se está demorando demasiado en sincronizar los vuelos, está conectado a internet?'
+
+
+// Tiempo hasta borrar historial.
+var historyTimeToDelete = 600;
+
+// Indica si activo el modo DEBUG
+const DEBUG = true;
+
+
+var Dump1090Version = "unknown version";
+var RefreshInterval = 5000;
