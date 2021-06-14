@@ -326,6 +326,16 @@ class AirFlightController extends Controller
                         ]
                     );
 
+                    ## Compruebo si no tiene el país o la bandera para buscarlos.
+                    if (! $airflight->country || ! $airflight->flag) {
+                        $hex = AirFlightAirPlane::searchHex($airflight->icao);
+
+                        if ($hex) {
+                            $airflight->flag = $hex['flag_image'];
+                            $airflight->country = $hex['country'];
+                        }
+                    }
+
                     ## Añade o actualiza la última vez que se vió si es mayor a la actual
                     if (! $airflight->seen_last_at || ($airflight->seen_last_at < $d->seen_at)) {
                         $airflight->seen_last_at = $d->seen_at;
