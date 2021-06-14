@@ -416,7 +416,15 @@
                     <thead class="justify-between">
                     <tr class="bg-gray-800">
                         <th class="px-1 py-2 text-gray-300 capitalize text-center">
+
+                        </th>
+
+                        <th class="px-1 py-2 text-gray-300 capitalize text-center">
                             ICAO
+                        </th>
+
+                        <th class="px-1 py-2 text-gray-300 capitalize text-center">
+                            Country
                         </th>
 
                         <th class="px-1 py-2 text-gray-300 capitalize text-center">
@@ -424,11 +432,11 @@
                         </th>
 
                         <th class="px-1 py-2 text-gray-300 capitalize text-center">
-                            Visto primera vez
+                            Visto última vez
                         </th>
 
                         <th class="px-1 py-2 text-gray-300 capitalize text-center">
-                            Visto última vez
+                            Visto primera vez
                         </th>
                     </tr>
                     </thead>
@@ -437,7 +445,17 @@
                     @foreach($planes as $plane)
                         <tr class="bg-white border-4 border-gray-200">
                             <td class="px-1 py-2 items-center text-center">
+                                <img src="{{$plane->urlFlag}}"
+                                     title="{{$plane->country}}"
+                                     alt="{{$plane->icao}}" />
+                            </td>
+
+                            <td class="px-1 py-2 items-center text-center">
                                 {{$plane->icao}}
+                            </td>
+
+                            <td class="px-1 py-2 items-center text-center">
+                                {{$plane->country}}
                             </td>
 
                             <td class="px-1 py-2 items-center text-center">
@@ -445,11 +463,11 @@
                             </td>
 
                             <td class="px-1 py-2 items-center text-center">
-                                {{$plane->seen_first_at}}
+                                {{$plane->seen_last_at}}
                             </td>
 
                             <td class="px-1 py-2 items-center text-center">
-                                {{$plane->seen_last_at}}
+                                {{$plane->seen_first_at}}
                             </td>
                         </tr>
                     @endforeach
