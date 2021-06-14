@@ -507,8 +507,10 @@
             let btnsDownTo = document.getElementsByClassName('btn-downto-map');
             Array.from(btnsDownTo).forEach((e) => {
                 e.addEventListener('click', () => {
+                    let position = e.getBoundingClientRect().top+window.scrollY;
+
                     window.scrollTo({
-                        top: 440,
+                        top: position + 440,
                         left: 0,
                         behavior: 'smooth'
                     });
@@ -519,8 +521,10 @@
             let btnsUpTo = document.getElementsByClassName('btn-upto-map');
             Array.from(btnsUpTo).forEach((e) => {
                 e.addEventListener('click', () => {
+                    let position = e.getBoundingClientRect().top-window.scrollY;
+
                     window.scrollTo({
-                        top: -440,
+                        top: position,
                         left: 0,
                         behavior: 'smooth'
                     });

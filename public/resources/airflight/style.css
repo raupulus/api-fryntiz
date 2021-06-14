@@ -18,8 +18,8 @@
 .box-map-loader {
   position: absolute;
   margin: 0;
-  width: 79.2%;
   height: inherit;
+  left: 50%;
   background: #aad3df;
   opacity: 0.7;
   filter: alpha(opacity=70);
@@ -27,10 +27,7 @@
 .box-map-loader .spinny {
   width: 64px;
   height: 64px;
-  position: absolute;
-  top: 35%;
-  left: 50%;
-  margin: -64px 0 0 -40px;
+  margin-top: 80px;
 }
 .box-map-loader .loader-progress {
   width: 250px;
@@ -46,6 +43,8 @@
 .box-buttons {
   display: flex;
   flex-flow: row nowrap;
+  margin-top: 7px;
+  margin-bottom: 7px;
   vertical-align: middle;
   font-size: x-small;
   font-family: monospace;
