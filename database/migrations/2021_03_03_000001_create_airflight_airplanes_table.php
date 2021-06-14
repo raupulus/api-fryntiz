@@ -32,6 +32,10 @@ class CreateAirFlightAirplanesTable extends Migration
                 ->nullable()
                 ->comment('Código ICAO 24 bits (6 dígitos hexadecimales)');
 
+            $table->string('country')
+                ->nullable()
+                ->comment('País de origen del avión');
+
             $table->string('category')
                 ->nullable()
                 ->comment('Categoría del avión');
@@ -43,6 +47,10 @@ class CreateAirFlightAirplanesTable extends Migration
             $table->timestamp('seen_last_at')
                 ->nullable()
                 ->comment('Indica momento en el que se ha visto por última vez');
+
+            $table->string('flag')
+                ->nullable()
+                ->comment('Imagen de la bandera');
 
             $table->timestamps();
         });
