@@ -116,6 +116,11 @@
                     Aviones en Tiempo Real
                 </h2>
 
+                <p class="text-sm text-center">
+                    (Selecciona el avión en el mapa o la primera tabla para
+                    ver el recorrido que realiza.)
+                </p>
+
                 <div id="box-airflight" class="w-full">
                     <div class="box-information">
                         <div class="box-buttons">
