@@ -196,7 +196,7 @@
 
                                     <tr class="infoblock_body">
                                         <td>
-                                            Aircraft (total): <span
+                                            Aviones (total): <span
                                                 id="dump1090_total_ac">n/a</span>
                                         </td>
                                         <td>
