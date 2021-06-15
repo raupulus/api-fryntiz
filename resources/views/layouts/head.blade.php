@@ -17,7 +17,7 @@
 <meta name="author" content="@yield('meta-author', 'Raúl Caro Pastorino')">
 <meta name="copyright" content="@yield('meta-author', 'Raúl Caro Pastorino')" />
 <meta name="robots" content="@yield('meta-robots', 'index,follow')">
-<meta name="keywords" content="@yield('meta-keywords', 'Api Fryntiz, fryntiz, chipiona, desarrollador web')" />
+<meta name="keywords" content="@yield('meta-keywords', 'Api Fryntiz, fryntiz, chipiona, desarrollador web, Raúl Caro Pastorino')" />
 
 {{-- Redes sociales --}}
 <meta property="og:title"
@@ -28,12 +28,13 @@
 <meta property="og:description"
       content="@yield('meta-og-description', config('app.description'))">
 <meta property="og:image"
-      content="@yield('meta-og-image', asset('images/redes-sociales/rs-1200x1200.png')))">
+      content="@yield('meta-og-image', asset('images/logo-fryntiz-512x512.png)))">
 <meta property="og:url"
       content="@yield('meta-og-url', config('app.name'))">
 <meta property="og:image:alt"
       content="@yield('meta-og-image_alt', config('app.description'))">
 
+<meta name="twitter:card" content="@yield('meta-twitter-title', config('app.name'))">
 <meta name="twitter:card" content="@yield('meta-twitter-card', 'summary')">
 <meta name="twitter:site" content="@yield('meta-twitter-site', '@fryntiz')">
 <meta name="twitter:creator" content="@yield('meta-twitter-creator', '@fryntiz')">

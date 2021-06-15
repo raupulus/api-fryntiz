@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', 'Vuelos en Chipiona')
-@section('description', '')
-@section('keywords', '')
+@section('title', 'Vuelos en tiempo real sobre Chipiona')
+@section('description', 'Registro de vuelos en tiempo real para aviones en Chipiona y alrededores')
+@section('keywords', 'vuelos, aviones, chipiona, Raúl Caro Pastorino, fryntiz, airplanes, airflight')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', '')
-@section('rs-sitename', '')
-@section('rs-description', '')
-@section('rs-image', '')
-@section('rs-url', '')
-@section('rs-image-alt', '')
+@section('rs-title', 'Vuelos en tiempo real sobre Chipiona')
+@section('rs-sitename', 'Api Fryntiz')
+@section('rs-description', 'Registro de vuelos en tiempo real para aviones en Chipiona y alrededores')
+@section('rs-image', asset('images/airflight/social-thumbnail.jpg'))
+@section('rs-url', route('airflight.index'))
+@section('rs-image-alt', 'Vuelos en tiempo real sobre Chipiona')
 
-@section('twitter-site', '')
-@section('twitter-creator', '')
-
-{{-- Marca el elemento del menú que se encuentra activo --}}
-@section('active-index', 'active')
+@section('meta-twitter-title', 'Vuelos en tiempo real sobre Chipiona')
 
 @section('content')
     <div class="leading-normal tracking-normal"
