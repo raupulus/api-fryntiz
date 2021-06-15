@@ -240,12 +240,14 @@ class AirFlightAirPlane extends Model
      * Busca a partir del código hexadecimal ICAO los datos  a partir del
      * array de banderas (FLAGS) para devolverlo
      *
-     * @param number|string $hexa Código ICAO hexadecimal.
+     * @param number|string $icao Código ICAO hexadecimal.
      *
      * @return array|null Devuelve el array con los datos (bandera, país)
      */
-    public static function searchHex($hexa)
+    public static function searchHex($icao)
     {
+        $hexa = base_convert('0x' . $icao, 16, 10);
+
         foreach (self::FLAGS as $f) {
             if ($hexa >= $f['start'] && $hexa <= $f['end']) {
                 return $f;
@@ -262,9 +264,9 @@ class AirFlightAirPlane extends Model
      *
      * @return mixed|null
      */
-    public static function searchFlag($hexa)
+    public static function searchFlag($icao)
     {
-        $hex = self::searchHex($hexa);
+        $hex = self::searchHex($icao);
 
         if ($hex) {
             return $hex['flag_image'];
@@ -283,8 +285,7 @@ class AirFlightAirPlane extends Model
         $image = $this->flag;
 
         if (! $image) {
-            $hexa = $this->icao;
-            $image = self::searchFlag($hexa);
+            $image = self::searchFlag($this->icao);
         }
 
         if (! $image ||
