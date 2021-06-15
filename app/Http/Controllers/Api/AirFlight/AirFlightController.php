@@ -59,9 +59,9 @@ class AirFlightController extends Controller
         return response()->json([
             'history' => 10,
             'lat' => 36.7381,
-            'lon' =>  -6.4301,
+            'lon' => -6.4301,
             'refresh' => 5000,
-            'version' => '5.0'
+            'version' => 'api fryntiz v1'
         ]);
     }
 
