@@ -58,7 +58,7 @@ class AirFlightController extends Controller
     public function getReceiverInformation()
     {
         return response()->json([
-            'history' => 120,
+            'history' => 30,
             'lat' => 36.7381,
             'lon' => -6.4301,
             'refresh' => 5000,
