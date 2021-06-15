@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use function auth;
 use function GuzzleHttp\json_decode;
@@ -57,7 +58,7 @@ class AirFlightController extends Controller
     public function getReceiverInformation()
     {
         return response()->json([
-            'history' => 10,
+            'history' => 120,
             'lat' => 36.7381,
             'lon' => -6.4301,
             'refresh' => 5000,
@@ -94,15 +95,16 @@ class AirFlightController extends Controller
                 $checkFrom = $checkFrom ?? (clone($now));
             }
 
-            $checkFrom = $checkFrom->subSeconds($historyPage * 5);
-
             if ($historyPage > 0) {
+                $checkFrom = $checkFrom->subSeconds($historyPage * 5);
                 $checkTo = (clone($checkFrom))->subSeconds(($historyPage * 5) - 5);
+            } else {
+                $checkFrom = $checkFrom->subMinutes(10);
             }
         }
 
         ## Para el retraso al subir datos que serían descartados en seen_at
-        $checkFrom = $checkFrom->subSeconds($historyPage ? 5 : 30);
+        $checkFrom = $checkFrom->subSeconds($historyPage ? 5 : 60);
 
         $aircrafts = AirFlightAirPlane::select([
                 'airflight_airplanes.icao as hex',
@@ -120,8 +122,19 @@ class AirFlightController extends Controller
                 'airflight_routes.rssi',
                 'airflight_routes.emergency',
                 'airflight_routes.messages',
-            ])
-            ->leftJoin('airflight_routes', function ($join) use ($checkFrom, $checkTo, $historyPage) {
+            ]);
+
+        $subq = AirFlightRoute::select([
+            '*',
+            DB::raw('max(seen_at) as max_seen_at')
+        ])
+            ->where('seen_at', '>=', $checkFrom)
+            ->groupBy('id')
+            //->having('seen_at', '=', 'max_seen_at)')
+            ->orderByDesc('seen_at')
+            ->limit(1);
+
+        $aircrafts->leftJoinSub($subq, 'airflight_routes', function ($join) use ($checkFrom, $checkTo, $historyPage) {
                 $join->on('airflight_routes.airplane_id', '=', 'airflight_airplanes.id');
 
                 if ($historyPage) {
@@ -130,8 +143,6 @@ class AirFlightController extends Controller
                     if ($checkTo) {
                         $join->where('airflight_routes.seen_at', '<=', $checkTo);
                     }
-                } else {
-                    $join->on('airflight_routes.seen_at', '=', 'airflight_airplanes.seen_last_at');
                 }
             })
         ;
@@ -162,21 +173,21 @@ class AirFlightController extends Controller
 
         $aircrafts->map(function ($ele) use ($now, $checkFrom, $historyPage) {
             try {
-                if ($historyPage && $ele->route_seen_at ) {
-                    $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at);
+                if ($historyPage && ($ele->route_seen_at || $ele->seen_at)) {
+                    $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at ?? $ele->seen_at);
 
                     $ele->seen_at = $seenAt->getTimestamp();
                     $ele->seen = $seenAt->diffInSeconds($checkFrom);
                     $ele->seen_pos = $seenAt->diffInSeconds($checkFrom);
                 } else {
-                    $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->seen_at);
+                    $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at ?? $ele->seen_at);
 
                     $ele->seen_at = $seenAt->getTimestamp();
                     $ele->seen = $seenAt->diffInSeconds($now);
                     $ele->seen_pos = $seenAt->diffInSeconds($now);
                 }
-
             } catch (Exception $e) {
+
                 $ele->seen_at = (clone($checkFrom))->subSeconds(600)->getTimestamp();
                 $ele->seen = 600;
                 $ele->seen_pos = 600;
@@ -234,62 +245,6 @@ class AirFlightController extends Controller
 
             return $ele;
         });
-
-        /*
-         { "now" : 1623358369.4,
-              "messages" : 121565,
-              "aircraft" : [
-                {"hex":"34510f","flight":"SWT185  ","alt_baro":20000,"alt_geom":21150,"gs":283.1,"ias":194,"tas":268,"mach":0.428,"track":20.0,"roll":0.7,"mag_heading":13.4,"baro_rate":0,"geom_rate":0,"squawk":"4466","emergency":"none","category":"A2","nav_qnh":1012.8,"nav_altitude_fms":20000,"lat":36.789116,"lon":-5.880082,"nic":8,"rc":186,"seen_pos":40.5,"version":2,"nic_baro":1,"nac_p":9,"nac_v":2,"sil":3,"sil_type":"perhour","gva":2,"sda":2,"mlat":[],"tisb":[],"messages":1877,"seen":12.6,"rssi":-26.0}
-              ]
-            }
-         */
-
-        /*
-        return response()->json([
-            'now' => (Carbon::now())->getTimestamp(),
-            'messages' => $aircrafts->sum('messages'),
-            'aircraft' => [
-                "hex" => "34510f",
-                "flight" => "SWT185  ",
-                "alt_baro" => 20000,
-                "alt_geom" => 21150,
-                "gs" => 283.1,
-                "ias" => 194,
-                "tas" => 268,
-                "mach" => 0.428,
-                "track" => 20,
-                "roll" => 0.7,
-                "mag_heading" => 13.4,
-                "baro_rate" => 0,
-                "geom_rate" => 0,
-                "squawk" => "4466",
-                "emergency" => "none",
-                "category" => "A2",
-                "nav_qnh" => 1012.8,
-                "nav_altitude_fms" => 20000,
-                "lat" => 36.789116,
-                "lon" => -6.010082,
-                "nic" => 8,
-                "rc" => 186,
-                "seen_pos" => 20.5,
-                "version" => 2,
-                "nic_baro" => 1,
-                "nac_p" => 9,
-                "nac_v" => 2,
-                "sil" => 3,
-                "sil_type" => "perhour",
-                "gva" => 2,
-                "sda" => 2,
-                "mlat" => [
-                ],
-                "tisb" => [
-                ],
-                "messages" => 1877,
-                "seen" => 0.1,
-                "rssi" => -26
-            ]
-        ]);
-        */
 
         return response()->json([
             'now' => (Carbon::now())->getTimestamp(),
