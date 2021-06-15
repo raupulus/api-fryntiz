@@ -2,6 +2,7 @@
 
 namespace App\Models\AirFlight;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -280,6 +281,22 @@ class AirFlightAirPlane extends Model
         }
 
         return null;
+    }
+
+    public static function getRecentsAircrafts(Carbon $lastCheck = null)
+    {
+        $now = Carbon::now();
+
+        if ($lastCheck) {
+            $checkFrom = $lastCheck->subSeconds(8);
+        } else {
+            $checkFrom = (clone($now))->subMinutes(10);
+        }
+
+
+        //TODO → traer aquí la lógica del controlador
+
+
     }
 
     /**
