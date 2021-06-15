@@ -2,7 +2,9 @@
 
 namespace App\Models\AirFlight;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use function asset;
 use function base_convert;
 use function base_path;
@@ -246,12 +248,17 @@ class AirFlightAirPlane extends Model
      */
     public static function searchHex($icao)
     {
-        $hexa = base_convert('0x' . $icao, 16, 10);
+        try {
+            $hexa = base_convert('0x' . $icao, 16, 10);
 
-        foreach (self::FLAGS as $f) {
-            if ($hexa >= $f['start'] && $hexa <= $f['end']) {
-                return $f;
+            foreach (self::FLAGS as $f) {
+                if ($hexa >= $f['start'] && $hexa <= $f['end']) {
+                    return $f;
+                }
             }
+        } catch (Exception $e) {
+            Log::error('Error en modelo AirflightAirPlane, método searchHex para el código ICAO: ' . $icao);
+            Log::error($e);
         }
 
         return null;
