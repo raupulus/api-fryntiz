@@ -1,32 +1,19 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', '')
-@section('description', '')
-@section('keywords', '')
+@section('title', 'Keycounter && Mousecounter')
+@section('description', 'Contador de pulsaciones de teclado y ratón por rachas')
+@section('keywords', 'keycounter, mousecounter, teclado, Raúl Caro Pastorino, fryntiz, ratón, pulsaciones de teclado, pulsaciones de ratón, contador de pulsaciones')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', '')
-@section('rs-sitename', '')
-@section('rs-description', '')
-@section('rs-image', '')
-@section('rs-url', '')
-@section('rs-image-alt', '')
+@section('rs-title', 'Keycounter && Mousecounter, contador de pulsaciones')
+@section('rs-sitename', 'Api Fryntiz')
+@section('rs-description', 'Contador de pulsaciones de teclado y ratón por rachas')
+@section('rs-image', asset('images/keycounter/social-thumbnail.jpg'))
+@section('rs-url', route('keycounter.index'))
+@section('rs-image-alt', 'Contador de pulsaciones de teclado y ratón por rachas')
 
-@section('twitter-site', '')
-@section('twitter-creator', '')
-
-{{-- Marca el elemento del menú que se encuentra activo --}}
-@section('active-index', 'active')
-
-{{-- Marca el elemento del menú que se encuentra activo --}}
-@section('active-index', 'active')
-
-@section('header')
-    <header class="">
-
-    </header>
-@endsection
+@section('meta-twitter-title', 'Keycounter && Mousecounter, contador de pulsaciones')
 
 @section('content')
     <div class="leading-normal tracking-normal"
@@ -35,7 +22,7 @@
         <section class="bg-white border-b">
             <div class="container max-w-5xl mx-auto m-4">
                 <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
-                    Contador de teclas pulsadas (KeyCounter)
+                    Contador de teclas pulsadas (KeyCounter && Mousecounter)
                 </h1>
 
                 <div class="w-full py-3 px-6 text-center">
