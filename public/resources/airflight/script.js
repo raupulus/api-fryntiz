@@ -243,9 +243,9 @@ function load_history_item(i) {
 
     $.ajax({
         url:urlHistory + '?history=' + i,
-        timeout:5000,
-        cache:false,
-        dataType:'json'
+        timeout: 5000,
+        cache: false,
+        dataType: 'json'
     })
 
         .done(function(data) {

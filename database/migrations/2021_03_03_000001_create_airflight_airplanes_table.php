@@ -48,6 +48,10 @@ class CreateAirFlightAirplanesTable extends Migration
                 ->nullable()
                 ->comment('Indica momento en el que se ha visto por última vez');
 
+            $table->timestamp('route_last_at')
+                ->nullable()
+                ->comment('El momento del último registro con ruta válida');
+
             $table->string('flag')
                 ->nullable()
                 ->comment('Imagen de la bandera');

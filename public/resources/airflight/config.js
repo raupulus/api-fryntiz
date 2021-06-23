@@ -114,7 +114,7 @@ FlagPath = "https://api.fryntiz.dev/resources/airflight/flags-tiny/";
 ChartBundleLayers = true;
 
 var urlAircrafts = 'https://api.fryntiz.dev/api/airflight/v1/get/aircrafts/json';
-var urlHistory = 'https://api.fryntiz.dev/api/airflight/v1/get/aircrafts/json';
+var urlHistory = 'https://api.fryntiz.dev/api/airflight/v1/get/history/json';
 var urlFlags = 'https://api.fryntiz.dev/resources/airflight/flags-tiny/';
 var urlReceiver = 'https://api.fryntiz.dev/api/airflight/v1/get/receiver/json';
 var urlUpInTheHair = 'https://api.fryntiz.dev/api/airflight/v1/upintheair.json';

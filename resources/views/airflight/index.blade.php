@@ -224,7 +224,7 @@
                                             <b>
                                                 <span id="selected_callsign"
                                                       class="map-selected-callsign pointer"
-                                                    >n/a
+                                                >n/a
                                                 </span>
                                             </b>
 
@@ -248,10 +248,12 @@
                                             <span id="selected_icaotype"
                                                   class="selected-icao-type"></span>
 
-                                            <span id="selected_emergency"></span>
+                                            <span
+                                                id="selected_emergency"></span>
 
                                             <div style="display: inline-block;">
-                                                <span style="color: green; font-size: small;">
+                                                <span
+                                                    style="color: green; font-size: small;">
                                                     &nbsp;
                                                     Ver otras plataformas:
                                                 </span>

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 ##                    Privada
 ######################################################
 Route::get('/get/aircrafts/json', [AirFlightController::class, 'getAircraftjson']);
+Route::get('/get/history/json', [AirFlightController::class, 'getAircraftHistoryJson']);
 Route::get('/get/receiver/json', [AirFlightController::class, 'getReceiverInformation']);
 Route::get('/get/db/json/{data}', [AirFlightController::class, 'getFromDb']);
 

@@ -283,20 +283,126 @@ class AirFlightAirPlane extends Model
         return null;
     }
 
-    public static function getRecentsAircrafts(Carbon $lastCheck = null)
+    public static function getQueryAirplaneWithRoutes()
+    {
+
+    }
+
+    public static function getRecentsAircrafts(Carbon $checkFrom = null, Carbon $checkTo = null)
     {
         $now = Carbon::now();
+        $checkFrom = $checkFrom ?? (clone($now))->subMinutes(10);
+        $checkTo = $checkTo ?? clone($now);
 
-        if ($lastCheck) {
-            $checkFrom = $lastCheck->subSeconds(8);
-        } else {
-            $checkFrom = (clone($now))->subMinutes(10);
-        }
+        $aircrafts = AirFlightAirPlane::select([
+            'airflight_airplanes.icao as hex',
+            'airflight_airplanes.category',
+            'airflight_airplanes.seen_last_at as seen_at',
+            'airflight_routes.seen_at as route_seen_at',
+            'airflight_routes.squawk',
+            'airflight_routes.flight',
+            'airflight_routes.lat',
+            'airflight_routes.lon',
+            'airflight_routes.altitude',
+            'airflight_routes.vert_rate',
+            'airflight_routes.track',
+            'airflight_routes.speed',
+            'airflight_routes.rssi',
+            'airflight_routes.emergency',
+            'airflight_routes.messages',
+        ]);
 
+        $aircrafts->leftJoin('airflight_routes', function ($join) use ($checkFrom, $checkTo) {
+            $join->on('airflight_routes.airplane_id', '=', 'airflight_airplanes.id')
+                ->on('airflight_routes.seen_at', '=', 'airflight_airplanes.route_last_at')
+            ;
+        });
 
-        //TODO → traer aquí la lógica del controlador
+        $aircrafts->where('airflight_airplanes.seen_last_at', '>=', $checkFrom);
 
+        $aircrafts->where(function ($q) use($checkFrom, $checkTo) {
+            return $q->whereNull('airflight_routes.seen_at')
+                ->orWhereBetween('airflight_routes.seen_at', [$checkFrom, $checkTo]);
+        });
 
+        $aircrafts = $aircrafts
+            ->orderByDesc('airflight_routes.seen_at')
+            ->orderByDesc('airflight_airplanes.seen_last_at')
+            ->get()
+        ;
+
+        $aircrafts->map(function ($ele) use ($now, $checkFrom) {
+            try {
+                $seenAt = Carbon::createFromFormat('Y-m-d H:i:s', $ele->route_seen_at ?? $ele->seen_at);
+
+                $ele->seen_at = $seenAt->getTimestamp();
+                $ele->seen = $seenAt->diffInSeconds($now);
+                $ele->seen_pos = $seenAt->diffInSeconds($now);
+            } catch (Exception $e) {
+
+                $ele->seen_at = (clone($checkFrom))->subSeconds(600)->getTimestamp();
+                $ele->seen = 600;
+                $ele->seen_pos = 600;
+            }
+
+            $ele->rssi = $ele->rssi ? (float) $ele->rssi : (float) -100;
+            $ele->lat = (float) $ele->lat != 0 ? (float) $ele->lat : null;
+            $ele->lon = (float) $ele->lon != 0 ? (float) $ele->lon : null;
+            $ele->category = $ele->category ?? null;
+            //$ele->messages = $ele->messages ?? 1;
+
+            if (!$ele->messages || $ele->messages <= 1) {
+                unset($ele->messages);
+            }
+
+            ## Altitud convertida de metros a ft
+            $ele->altitude = (float) $ele->altitude != 0 ? (float) $ele->altitude * 3.28084 : null;
+
+            ## Velocidad convertida de kt a m
+            $ele->speed = (float) $ele->speed != 0 ? (float) $ele->speed / 0.54 : null;
+
+            if (!$ele->lat) {
+                unset($ele->lat);
+            }
+
+            if (!$ele->lon) {
+                unset($ele->lon);
+            }
+
+            if (!$ele->altitude) {
+                unset($ele->altitude);
+            }
+
+            if (!$ele->speed) {
+                unset($ele->speed);
+            }
+
+            if (!$ele->vert_rate) {
+                unset($ele->vert_rate);
+            }
+
+            if (!$ele->track) {
+                unset($ele->track);
+            }
+
+            if (!$ele->squawk) {
+                unset($ele->squawk);
+            }
+
+            if (!$ele->flight) {
+                unset($ele->flight);
+            }
+
+            if (!$ele->flight) {
+                unset($ele->flight);
+            }
+
+            unset($ele->route_seen_at);
+
+            return $ele;
+        });
+
+        return $aircrafts;
     }
 
     /**

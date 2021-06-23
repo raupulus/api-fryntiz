@@ -15,6 +15,8 @@ class AirFlightRoute extends Model
 {
     protected $table = 'airflight_routes';
 
+    public const HISTORY_LENGTH = 30;
+
     protected $fillable = [
         'airplane_id',
         'user_id',
