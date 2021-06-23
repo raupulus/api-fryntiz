@@ -3,7 +3,7 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'Chipiona Estación Meteorológica')
 @section('description', 'Estación meteorológica en tiempo real para la ciudad de Chipiona tomando Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Indice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)')
-@section('keywords', 'Raúl Caro Pastorino, fryntiz, smartplant, smart plant, plant, plantas, riego automático, monitorizar planta, monitorización de planta, monitorización, riego')
+@section('keywords', 'Raúl Caro Pastorino, fryntiz, chipiona, clima, meteorología, tiempo, el tiempo, el clima, tiempo en chipiona, el tiempo en chipiona, humedad, calor, temperatura, presión, presión atmosférica, viento, luz, uv, uva, uvb, co2, eco2, co2-eco2, tvoc, relámpagos, relámpago, rayo, trueno, tormenta, tormentas')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Chipiona Estación Meteorológica')
