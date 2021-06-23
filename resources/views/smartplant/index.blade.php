@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', 'SmartPlant')
-@section('description', '')
-@section('keywords', '')
+@section('title', 'Smart Plant, monitorización de plantas')
+@section('description', 'Monitorización, control y riego automatizado en plantas')
+@section('keywords', 'Raúl Caro Pastorino, fryntiz, smartplant, smart plant, plant, plantas, riego automático, monitorizar planta, monitorización de planta, monitorización, riego')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', '')
-@section('rs-sitename', '')
-@section('rs-description', '')
-@section('rs-image', '')
-@section('rs-url', '')
-@section('rs-image-alt', '')
+@section('rs-title', 'Smart Plant, monitorización de plantas')
+@section('rs-sitename', 'Api Fryntiz')
+@section('rs-description', 'Monitorización, control y riego automatizado en plantas')
+@section('rs-image', asset('images/smartplant/social-thumbnail.jpg'))
+@section('rs-url', route('smartplant.index'))
+@section('rs-image-alt', 'Smartplant, monitorización de plantas')
 
-@section('twitter-site', '')
-@section('twitter-creator', '')
-
-{{-- Marca el elemento del menú que se encuentra activo --}}
-@section('active-index', 'active')
+@section('meta-twitter-title', 'Smart Plant, monitorización de plantas')
 
 @section('content')
     <div class="leading-normal tracking-normal"
