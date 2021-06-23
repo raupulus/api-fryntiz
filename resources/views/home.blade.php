@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', 'API de Raúl Caro Pastorino')
-@section('description', '')
-@section('keywords', '')
+@section('title', 'API Privada de Raúl Caro Pastorino')
+@section('description', 'Api privada dónde depuro desarrollos y monitorizo datos de mis aplicaciones')
+@section('keywords', 'Raúl Caro Pastorino, fryntiz, chipiona, api, laravel, vue.js, javascript, php, tailwind, tailwindcss, postgresql, mysql, mariadb, linux, debian, fedora, gnu, open source, software libre, programador, desarrollador, developer, web, web developer, informático, redes, sistema, ingeniero')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', 'API de Raúl Caro Pastorino')
+@section('rs-title', 'API Privada de Raúl Caro Pastorino')
 @section('rs-sitename', 'API Fryntiz')
-@section('rs-description', '')
-@section('rs-image', '')
-@section('rs-url', '')
-@section('rs-image-alt', '')
+@section('rs-description', 'Api privada dónde depuro desarrollos y monitorizo datos de mis aplicaciones')
+@section('rs-image', asset('images/social-thumbnail.jpg'))
+@section('rs-url', route('weather_station.index'))
+@section('rs-image-alt', 'API Privada de Raúl Caro Pastorino')
 
-@section('twitter-site', config('app.url'))
-@section('twitter-creator', 'Raúl Caro Pastorino')
-
-{{-- Marca el elemento del menú que se encuentra activo --}}
-@section('active-index', 'active')
+@section('meta-twitter-title', 'API Privada de Raúl Caro Pastorino')
 
 @section('content')
     <div class="leading-normal tracking-normal text-white gradient"
@@ -43,14 +39,16 @@
                         Una api para depurarlas a todas...
                     </p>
 
-                    <button
-                        class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                    <a href="https://fryntiz.es"
+                       target="_blank"
+                       class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
                         Sobre Mi
-                    </button>
+                    </a>
                 </div>
+
                 <!--Right Col-->
                 <div class="w-full md:w-3/5 py-6 text-center">
-                    <img class="m-auto w-full md:w-4/5 z-50"
+                    <img class="m-auto w-full sm:4/5 md:w-3/5 z-50"
                          src="{{asset('images/logo-fryntiz-512x512.png')}}"/>
                 </div>
             </div>
