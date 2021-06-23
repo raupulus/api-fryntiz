@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', '')
-@section('description', '')
-@section('keywords', '')
+@section('title', 'Chipiona Estación Meteorológica')
+@section('description', 'Estación meteorológica en tiempo real para la ciudad de Chipiona tomando Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Indice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)')
+@section('keywords', 'Raúl Caro Pastorino, fryntiz, smartplant, smart plant, plant, plantas, riego automático, monitorizar planta, monitorización de planta, monitorización, riego')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', '')
-@section('rs-sitename', '')
-@section('rs-description', '')
-@section('rs-image', '')
-@section('rs-url', '')
-@section('rs-image-alt', '')
+@section('rs-title', 'Chipiona Estación Meteorológica')
+@section('rs-sitename', 'Api Fryntiz')
+@section('rs-description', 'Estación meteorológica en tiempo real para la ciudad de Chipiona tomando Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Indice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)')
+@section('rs-image', asset('images/wheater-station/social-thumbnail.jpg'))
+@section('rs-url', route('weather_station.index'))
+@section('rs-image-alt', 'Chipiona Estación Meteorológica')
 
-@section('twitter-site', '')
-@section('twitter-creator', '')
-
-{{-- Marca el elemento del menú que se encuentra activo --}}
-@section('active-index', 'active')
+@section('meta-twitter-title', 'Chipiona Estación Meteorológica')
 
 @section('content')
     @php
