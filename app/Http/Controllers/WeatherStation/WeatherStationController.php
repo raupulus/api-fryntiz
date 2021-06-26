@@ -18,6 +18,9 @@ class WeatherStationController extends Controller
      */
     public function index()
     {
+
+
+
         return view('weather_station.index')->with([
 
         ]);

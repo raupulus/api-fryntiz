@@ -16,6 +16,7 @@
 @section('meta-twitter-title', 'Chipiona Estación Meteorológica')
 
 @section('content')
+    {{--
     @php
         $datos = [
             'Humedad' => \App\Models\WeatherStation\Humidity::whereNotNull('value')
@@ -58,8 +59,6 @@
 
         ];
     @endphp
-
-    {{-- Navbar --}}
     <nav
         class="flex items-center justify-between flex-wrap bg-white py-4 px-4 shadow border-solid border-t-2 border-blue-700">
 
@@ -75,6 +74,25 @@
             </div>
         </div>
     </nav>
+--}}
+
+
+
+
+    <div class="leading-normal tracking-normal"
+         style="font-family: 'Source Sans Pro', sans-serif;">
+
+        <section class="bg-white border-b">
+            <div class="container max-w-5xl mx-auto m-4">
+                <v-table-component title="Título de la tabla"
+                                   url="test" />
+            </div>
+        </section>
+    </div>
+
+
+{{--
+
 
     <div class="leading-normal tracking-normal"
          style="font-family: 'Source Sans Pro', sans-serif;">
@@ -87,7 +105,6 @@
                     Modo depuración
                 </h1>
 
-                {{-- Información general sobre el proyecto --}}
                 <div class="flex flex-wrap content-center">
                     <div class="w-full p-6">
                         <div class="bg-red-100 border border-red-400 m-2 mb-5 text-red-700 px-2 py-2 rounded relative"
@@ -216,11 +233,10 @@
                         </tbody>
                     </table>
 
-                    {{-- Paginación --}}
                     {{$collection->links()}}
                 </div>
             @endforeach
         </section>
     </div>
-
+--}}
 @endsection

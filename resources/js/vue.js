@@ -45,5 +45,6 @@ let app = createApp({
 
 //import ExampleComponent from "./vue/Components/ExampleComponent";
 app.component('example-component', require('./vue/Components/ExampleComponent.vue').default);
+app.component('v-table-component', require('./vue/Components/TableComponent.vue').default);
 
 app.mount('#app');
