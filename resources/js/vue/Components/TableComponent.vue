@@ -20,9 +20,9 @@
                 </tr>
                 </tbody>
 
-                <tfoot v-if="heads.length || (rows.length && rows[0].length)">
+                <tfoot>
                 <tr>
-                    <td :colspan="heads.length ?? rows[0].length">
+                    <td :colspan="Object.keys(heads).length ?? Object.keys(rows[0]).length">
                         Mostrando página {{ currentPage }} de {{ totalPages }}
                         ({{ totalElements }} resultados)
                     </td>
@@ -34,7 +34,8 @@
 
         <div class="v-table-paginator">
 
-            <a href="#" :class="!hasBackPage ? 'disabled' : ''">
+            <span @click="(currentPage > 1) ? changePage(currentPage - 1) : null"
+                  :class="!hasBackPage ? 'disabled' : 'pointer'">
                 <svg :class="'page-back' +  (!hasBackPage ? ' disabled' : '')"
                      fill="currentColor"
                      viewBox="0 0 20 20">
@@ -43,50 +44,16 @@
                           clip-rule="evenodd">
                     </path>
                 </svg>
-            </a>
+            </span>
 
-
-
-            <a v-for="page in showPages"
+            <span v-for="page in showPages"
+                  @click="(page != '...') ? changePage(page) : null"
                :class="'page' + ((page == currentPage) ? ' current-page' : '') +  ((page == '...') ? ' page-points' : '')">
                 {{page}}
-            </a>
-
-            <!--
-            <span class="page page-points">
-                ...
             </span>
 
-
-            <a class="page current-page" href="#">
-                21500
-            </a>
-
-            <a class="page" href="#">
-                21501
-            </a>
-
-            <a class="page" href="#">
-                21502
-            </a>
-
-            <a class="page" href="#">
-                21503
-            </a>
-
-
-            <span class="page page-points">
-                ...
-            </span>
-
-
-            <a class="page" :href="url">
-                {{ totalPages }}
-            </a>
-
-            -->
-
-            <a href="#" :class="!hasNextPage ? 'disabled' : ''">
+            <span @click="(currentPage < totalPages) ? changePage(currentPage + 1) : null"
+               :class="!hasNextPage ? 'disabled' : 'pointer'">
                 <svg :class="'page-next' +  (!hasNextPage ? ' disabled' : '')"
                      fill="currentColor"
                      viewBox="0 0 20 20">
@@ -96,7 +63,7 @@
 
                     </path>
                 </svg>
-            </a>
+            </span>
         </div>
 
     </div>
@@ -126,9 +93,6 @@ export default {
             required: false
         }
     },
-    data() {
-        return {}
-    },
 
     setup(props) {
         const rows = ref([]);  // Columnas con los datos
@@ -140,99 +104,162 @@ export default {
         const hasNextPage = ref(false);  // Indica si tiene próxima página
         const showPages = ref([]);  // Lista con las páginas a mostrar
 
-        onBeforeMount(() => {
+        const getQuery = async (page) => {
 
-            console.log('Tirar ajax para rellenar datos');
+            return await fetch(props.url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    page: page,
+                    size: props.elements,
+                    orderBy: 'created_at',
+                    orderDirection: 'DESC'
+                })
+            }
+            ).then((response) => response.json());
 
-            totalPages.value = 46100;
-            currentPage.value = 46098;
-            totalElements.value = 461000;
-            hasBackPage.value = (totalPages.value > 1) && (currentPage.value > 1);
-            hasNextPage.value = (totalPages.value > 1) && (currentPage.value < totalPages.value);
 
-            switch (true) {
-                // No hay páginas → OK
-                case 0 == totalPages.value:
-                    showPages.value.push('...');
-                    break;
-                // Hay más de 8 páginas y la actual es la última → OK
-                case (8 < totalPages.value) && (currentPage.value == totalPages.value):
+            /*
+            return {
+                totalElements: 461000,
+                currentPage: page,
+                rows: [
+                    {
+                        uno: 1,
+                        dos: 2,
+                        tres: 3,
+                        cuatro: '<a href="#">Botón</a>',
+                    },
+                    [
+                        'Visa - 3412',
+                        '04/01/2016',
+                        '$1,190',
+                        '03/01/2016 - 03/31/2016',
+                    ],
+                    [
+                        'Visa - 6076',
+                        '03/01/2016',
+                        '$2,443',
+                        '02/01/2016 - 02/29/2016',
+                    ]
+                ],
 
-                    showPages.value = ['1', '...'];
+                heads: [
+                    'Account',
+                    'Due Date',
+                    'Amount',
+                    'Period',
+                ],
+            }
+            */
+        };
 
-                    for (let i = 5; i >= 1; i--) {
-                        showPages.value.push(totalPages.value - i);
-                    }
-
-                    showPages.value.push(totalPages.value);
-
-                    break;
-
-                // Hay más de 8 páginas y la actual es la primera → OK
-                case (8 < totalPages.value) && (currentPage.value == 1):
-                    for (let i = 1; i <= 6; i++) {
-                        showPages.value.push(i);
-                    }
-
-                    showPages.value.push('...');
-                    showPages.value.push(totalPages.value);
-
-                    break;
-
-                // Hay 8 o menos páginas → OK
-                case (8 >= totalPages.value):
-
-                    for (let i = 1; i <= totalPages.value; i++) {
-                        showPages.value.push(i);
-                    }
-                    break;
-                default:
-                    showPages.value = ['1', '...', currentPage.value - 1, currentPage.value, currentPage.value + 1];
-
-                    if ((currentPage.value + 2) < totalPages.value) {
-                        showPages.value.push(currentPage.value + 2);
-                        showPages.value.push('...');
-                        showPages.value.push(totalPages.value);
-                    } else if ((currentPage.value + 2) == totalPages.value) {
-                        showPages.value.push(totalPages.value);
-                    }
-
-                    console.log('ENTRA EN SWITCH DEFAULT');
-
-                    break;
+        /**
+         * Procesa el cambio de página.
+         * @param {number} page La página a la que se está cambiando.
+         */
+        const changePage = (page) => {
+            // Descarto si intenta cargar la página actual.
+            if (page == currentPage.value) {
+                return null;
             }
 
-            rows.value = [
-                {
-                    uno: 1,
-                    dos: 2,
-                    tres: 3,
-                    cuatro: '<a href="#">Botón</a>',
-                },
-                [
-                    'Visa - 3412',
-                    '04/01/2016',
-                    '$1,190',
-                    '03/01/2016 - 03/31/2016',
-                ],
-                [
-                    'Visa - 6076',
-                    '03/01/2016',
-                    '$2,443',
-                    '02/01/2016 - 02/29/2016',
-                ]
-            ];
+            getQuery(page).then((response) => {
+                const data = response.data;
 
-            heads.value = [
-                'Account',
-                'Due Date',
-                'Amount',
-                'Period',
-            ];
+                if (! data) {
+                    console.log('No hay respuesta del servidor');
+                    return null;
+                }
+
+                currentPage.value = data.currentPage;
+                totalElements.value = data.totalElements;
+
+                if (
+                    (totalElements.value / props.elements > 1) &&
+                    ((totalElements.value % props.elements) == 0)) {
+                    totalPages.value = Math.floor(totalElements.value / props.elements) - 1;
+                } else {
+                    totalPages.value = Math.floor(totalElements.value / props.elements);
+                }
+
+                hasBackPage.value = (totalPages.value > 1) && (currentPage.value > 1);
+                hasNextPage.value = (totalPages.value > 1) && (currentPage.value < totalPages.value);
+
+                switch (true) {
+                    // No hay páginas → OK
+                    case 0 == totalPages.value:
+                        showPages.value = ['...'];
+
+                        break;
+
+                    // Hay más de 8 páginas y la actual es la última → OK
+                    case (8 < totalPages.value) && (currentPage.value == totalPages.value):
+
+                        showPages.value = [1, '...'];
+
+                        for (let i = 5; i >= 1; i--) {
+                            showPages.value.push(totalPages.value - i);
+                        }
+
+                        showPages.value.push(totalPages.value);
+
+                        break;
+
+                    // Hay más de 8 páginas y la actual es la primera → OK
+                    case (8 < totalPages.value) && (currentPage.value == 1):
+                        showPages.value = [];
+
+                        for (let i = 1; i <= 6; i++) {
+                            showPages.value.push(i);
+                        }
+
+                        showPages.value.push('...');
+                        showPages.value.push(totalPages.value);
+
+                        break;
+
+                    // Hay 8 o menos páginas → OK
+                    case (8 >= totalPages.value):
+                        showPages.value = [];
+
+                        for (let i = 1; i <= totalPages.value; i++) {
+                            showPages.value.push(i);
+                        }
+                        break;
+                    default:
+                        if (currentPage.value == 2) {
+                            showPages.value = [1, currentPage.value, currentPage.value + 1];
+                        } else if (currentPage.value == 3) {
+                            showPages.value = [1, currentPage.value - 1, currentPage.value, currentPage.value + 1];
+                        } else {
+                            showPages.value = [1, '...', currentPage.value - 1, currentPage.value, currentPage.value + 1];
+                        }
+
+                        if ((currentPage.value + 2) < totalPages.value) {
+                            showPages.value.push(currentPage.value + 2);
+                            showPages.value.push('...');
+                            showPages.value.push(totalPages.value);
+                        } else if ((currentPage.value + 2) == totalPages.value) {
+                            showPages.value.push(totalPages.value);
+                        }
+
+                        break;
+                }
+
+                rows.value = data.rows;
+                heads.value = data.heads;
+            })
+        };
+
+        onBeforeMount(() => {
+            changePage(1);
         });
         onMounted(() => {
             console.log('Component mounted.');
-
         });
 
         return {
@@ -244,6 +271,8 @@ export default {
             hasBackPage: hasBackPage,
             hasNextPage: hasNextPage,
             showPages: showPages,
+
+            changePage: changePage,
         }
     }
 
@@ -333,6 +362,10 @@ export default {
 
 .v-table-paginator .page-next {
     margin-left: 0.3rem;
+}
+
+.v-table-paginator .pointer:hover {
+    cursor: pointer;
 }
 
 .v-table-paginator .disabled:hover {
