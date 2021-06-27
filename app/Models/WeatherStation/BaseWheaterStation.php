@@ -4,6 +4,8 @@ namespace App\Models\WeatherStation;
 
 use Illuminate\Database\Eloquent\Model;
 use function array_key_exists;
+use function array_keys;
+use function response;
 
 /**
  * Class BaseWheaterStation
@@ -25,6 +27,35 @@ class BaseWheaterStation extends Model
     public function setUpdatedAt($value)
     {
         //Do-nothing
+    }
+
+    /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads()
+    {
+        return ['value' => 'Valor', 'created_at' => 'Instante'];
+    }
+
+    /**
+     * Devuelve los resultados para una página.
+     *
+     * @param number $size Tamaño de cada página
+     * @param number $page Página a la que buscar.
+     *
+     * @return array
+     */
+    public static function getTableRowsByPage($size, $page, $columns,
+                                              $orderBy, $orderDirection = 'ASC')
+    {
+        return self::select($columns)
+            ->offset($page * $size)
+            ->limit($size)
+            ->orderBy($orderBy, $orderDirection)
+            ->get()
+            ->toArray();
     }
 
     /**

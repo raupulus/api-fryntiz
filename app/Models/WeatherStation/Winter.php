@@ -20,6 +20,22 @@ class Winter extends BaseWheaterStation
     protected $table = 'meteorology_winter';
 
     /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads()
+    {
+        return [
+            'speed' => 'Velocidad',
+            'average' => 'Media',
+            'min' => 'Mínimo',
+            'max' => 'Máximo',
+            'created_at' => 'Instante'
+        ];
+    }
+
+    /**
      * Devuelve todos los elementos del modelo.
      */
     public static function all($columns = ['*'])

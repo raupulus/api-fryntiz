@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\WeatherStation;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use function array_keys;
 use function auth;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
@@ -28,6 +29,37 @@ abstract class BaseWheaterStationController extends Controller
      * @var string Mensaje de error al agregar un nuevo dato.
      */
     protected $addError = '';
+
+    /**
+     * Devuelve los resultados para una página.
+     *
+     * @param number $size Tamaño de cada página
+     * @param number $page Página a la que buscar.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTableDataSearchJson(Request $request)
+    {
+        $page = $request->json('page') ?? 1;
+        $size = $request->json('size') ?? 10;
+        $orderBy = $request->json('orderBy') ?? 'created_at';
+        $orderDirection = $request->json('orderDirection') ?? 'DESC';
+
+        $tableHeads = $this->model::getTableHeads($page);
+        $columns = array_keys($tableHeads);
+        $tableRows = $this->model::getTableRowsByPage($size, $page, $columns, $orderBy, $orderDirection);
+        $totalElements = $this->model::whereNotNull('created_at')->count();
+
+        return response()->json([
+            'data' => [
+                'heads' => $tableHeads,
+                'rows' => $tableRows,
+                'currentPage' => $page,
+                'totalElements' => $totalElements,
+                'size' => $size,
+            ]
+        ]);
+    }
 
     /**
      * Devuelve todos los elementos del modelo.
