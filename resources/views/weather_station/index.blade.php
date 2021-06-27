@@ -59,39 +59,24 @@
 
         ];
     @endphp
+--}}
+
+
     <nav
         class="flex items-center justify-between flex-wrap bg-white py-4 px-4 shadow border-solid border-t-2 border-blue-700">
 
         <div class="menu w-full block flex-grow flex items-center w-auto">
             <div class="text-md font-bold text-blue-700 flex-grow text-center">
 
-                @foreach(array_keys($datos) as $titulo)
-                    <a href="#{{$titulo}}"
+                @foreach($sections as $title => $url)
+                    <a href="#{{$title}}"
                        class="block mt-4 inline-block mt-0 px-2 py-2 rounded mr-2">
-                        {{$titulo}}
+                        {{$title}}
                     </a>
                 @endforeach
             </div>
         </div>
     </nav>
---}}
-
-
-
-
-    <div class="leading-normal tracking-normal"
-         style="font-family: 'Source Sans Pro', sans-serif;">
-
-        <section class="bg-white border-b">
-            <div class="container max-w-5xl mx-auto m-4">
-                <v-table-component title="Título de la tabla"
-                                   url="test" />
-            </div>
-        </section>
-    </div>
-
-
-{{--
 
 
     <div class="leading-normal tracking-normal"
@@ -180,62 +165,19 @@
 
         <section class="bg-white border-b">
 
-            @foreach($datos as $title => $collection)
-                <div class="container max-w-5xl mx-auto m-4 overflow-x-scroll">
-                    @if(!$collection->count())
-                        @continue
-                    @endif
+            @foreach($sections as $title => $url)
+                <div class="leading-normal tracking-normal"
+                     style="font-family: 'Source Sans Pro', sans-serif;">
 
-                    @php
-                        $att_fillables = $collection->get(0)->getFillable();
-                    @endphp
-                    <h2 id="{{$title}}">
-                        {{$title}} -
-                        <small>
-                            Viendo últimos
-                            <strong>{{$collection->count()}}</strong>
-                            registros
-                        </small>
-                    </h2>
-
-                    <table class="min-w-max w-full table-auto">
-                        <thead class="justify-between">
-                        <tr class="bg-gray-800">
-                            @if($collection->count() >= 1)
-                                @foreach($att_fillables as $value)
-                                    <td class="px-1 py-2 text-gray-300 capitalize text-center">
-                                        {{$value}}
-                                    </td>
-                                @endforeach
-                            @endif
-                        </tr>
-                        </thead>
-
-                        <tbody class="bg-gray-200">
-                        @foreach($collection as $ele)
-                            @if (!$ele)
-                                @continue
-                            @endif
-
-                            <tr class="bg-white border-4 border-gray-200">
-                                @php
-                                    $x = $ele->getFillable();
-                                @endphp
-
-                                @foreach($att_fillables as $name)
-                                    <td class="px-1 py-2 items-center text-center">
-                                        {{$ele->$name}}
-                                    </td>
-                                @endforeach
-
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-
-                    {{$collection->links()}}
+                    <section id="{{$title}}" class="bg-white border-b">
+                        <div class="container max-w-5xl mx-auto m-4">
+                            <v-table-component title="{{$title}}"
+                                               url="{{$url}}" />
+                        </div>
+                    </section>
                 </div>
             @endforeach
+
         </section>
     </div>
 --}}
