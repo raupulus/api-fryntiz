@@ -113,7 +113,7 @@
 
         <section class="bg-white border-b">
             <div class="container max-w-5xl mx-auto m-4">
-
+                <v-chipiona-weather-component></v-chipiona-weather-component>
             </div>
         </section>
 
