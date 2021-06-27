@@ -15,7 +15,7 @@
                 <tbody>
                 <tr v-for="row in rows">
                     <td v-for="( cell, key ) of row">
-                        {{ cell }}
+                        {{ key  == 'created_at' ? (new Date(cell)).toLocaleString() : cell }}
                     </td>
                 </tr>
                 </tbody>
@@ -120,41 +120,6 @@ export default {
                 })
             }
             ).then((response) => response.json());
-
-
-            /*
-            return {
-                totalElements: 461000,
-                currentPage: page,
-                rows: [
-                    {
-                        uno: 1,
-                        dos: 2,
-                        tres: 3,
-                        cuatro: '<a href="#">Botón</a>',
-                    },
-                    [
-                        'Visa - 3412',
-                        '04/01/2016',
-                        '$1,190',
-                        '03/01/2016 - 03/31/2016',
-                    ],
-                    [
-                        'Visa - 6076',
-                        '03/01/2016',
-                        '$2,443',
-                        '02/01/2016 - 02/29/2016',
-                    ]
-                ],
-
-                heads: [
-                    'Account',
-                    'Due Date',
-                    'Amount',
-                    'Period',
-                ],
-            }
-            */
         };
 
         /**
@@ -291,8 +256,26 @@ export default {
 }
 
 .v-table caption {
-    font-size: 1.5em;
-    margin: .5em 0 .75em;
+    margin: 0.5rem 0 0.75rem;
+    color: rgba(31, 41, 55, 0.9);
+    font-size: 2.5em;
+}
+
+.v-table tfoot {
+    margin: 0.2rem 0;
+    font-size: 0.7rem;
+}
+
+.v-table thead tr {
+    background-color: rgba(31, 41, 55, 0.9);
+}
+
+.v-table thead tr th {
+    color: rgba(209, 213, 219, 0.9);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
 }
 
 .v-table tr {
@@ -305,12 +288,6 @@ export default {
 .v-table td {
     padding: .625em;
     text-align: center;
-}
-
-.v-table th {
-    font-size: .85em;
-    letter-spacing: .1em;
-    text-transform: uppercase;
 }
 
 .v-table-paginator {

@@ -16,51 +16,6 @@
 @section('meta-twitter-title', 'Chipiona Estación Meteorológica')
 
 @section('content')
-    {{--
-    @php
-        $datos = [
-            'Humedad' => \App\Models\WeatherStation\Humidity::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'Temperatura' => \App\Models\WeatherStation\Temperature::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'Presión' => \App\Models\WeatherStation\Pressure::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'Viento' => \App\Models\WeatherStation\Winter::whereNotNull('speed')
-                ->whereNotNull('average')
-                ->whereNotNull('min')
-                ->whereNotNull('max')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'Luz' => \App\Models\WeatherStation\Light::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'Indice-UV' => \App\Models\WeatherStation\UvIndex::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'UVA' => \App\Models\WeatherStation\Uva::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'UVB' => \App\Models\WeatherStation\Uvb::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'CO2-ECO2' => \App\Models\WeatherStation\Eco2::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'TVOC' => \App\Models\WeatherStation\Tvoc::whereNotNull('value')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(20),
-            'Calidad del Aire' => \App\Models\WeatherStation\AirQuality::whereNotNull('gas_resistance')
-                ->whereNotNull('air_quality')
-            ->orderBy('created_at', 'DESC')
-            ->paginate(20),
-
-        ];
-    @endphp
---}}
-
 
     <nav
         class="flex items-center justify-between flex-wrap bg-white py-4 px-4 shadow border-solid border-t-2 border-blue-700">
@@ -151,15 +106,14 @@
                                 https://gitlab.com/fryntiz/raspberry-weather-station
                             </a>
                         </p>
-
-                        <div class="bg-yellow-100 border border-red-400 m-2 my-4 text-red-700 px-2 py-2 rounded relative text-center"
-                             role="alert">
-                            <span class="inline font-bold">
-                                Franja horaria UTC +0:00
-                            </span>
-                        </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section class="bg-white border-b">
+            <div class="container max-w-5xl mx-auto m-4">
+
             </div>
         </section>
 
