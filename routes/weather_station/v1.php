@@ -5,11 +5,62 @@
  */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\WeatherStation;
 
 ######################################################
 ##                    Pública
 ######################################################
 
+## Grupo de rutas para búsquedas de resultados en tablas.
+Route::group(['prefix' => 'table'], function () {
+    ## Obtengo todos los datos de temperatura.
+    Route::match(['post', 'options'],'/temperature', [WeatherStation\TemperatureController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.temperature');
+
+    ## Obtengo todos los datos de humedad.
+    Route::match(['post', 'options'],'/humidity', [WeatherStation\HumidityController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.humidity');
+
+    ## Obtengo todos los datos de presión atmosférica.
+    Route::match(['post', 'options'],'/pressure', [WeatherStation\PressureController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.pressure');
+
+    ## Obtengo todos los datos de Luz.
+    Route::match(['post', 'options'],'/light', [WeatherStation\LightController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.light');
+
+    ## Obtengo todos los datos de Indice UV.
+    Route::match(['post', 'options'],'/uv', [WeatherStation\UvIndexController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.uv');
+
+    ## Obtengo todos los datos de Viento.
+    Route::match(['post', 'options'],'/winter', [WeatherStation\WinterController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.winter');
+
+    ## Obtengo todos los datos de CO2.
+    Route::match(['post', 'options'],'/eco2', [WeatherStation\Eco2Controller::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.eco2');
+
+    ## Obtengo todos los datos de TVOC.
+    Route::match(['post', 'options'],'/tvoc', [WeatherStation\TvocController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.tvoc');
+
+    ## Obtengo todos los datos de UVA.
+    Route::match(['post', 'options'],'/uva', [WeatherStation\UvaController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.uva');
+
+    ## Obtengo todos los datos de UVB.
+    Route::match(['post', 'options'],'/uvb', [WeatherStation\UvbController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.uvb');
+
+    ## Obtengo todos los datos de Calidad de aire.
+    Route::match(['post', 'options'],'/air_quality', [WeatherStation\AirQualityController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.air_quality');
+
+    ## Obtengo todos los datos de Rayos.
+    Route::match(['post', 'options'],'/lightning', [WeatherStation\LightningController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.lightning');
+});
 
 ######################################################
 ##                    Privada
