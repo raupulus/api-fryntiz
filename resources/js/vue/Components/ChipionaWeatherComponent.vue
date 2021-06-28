@@ -142,129 +142,124 @@
 import {onBeforeMount, onMounted, ref} from "vue";
 
 export default {
-    /*
-     props: {
-     items: {
-     type: Array,
-     required: true,
-     default: () => []
-     }
-     }
-     */
-    data() {
-        return {
-            instant: {
-                timestamp: "2020-10-04 20:26:31",
-                year: "2020",
-                month: "10",
-                month_name: "Octubre",
-                day: 4,
-                day_week: 0,
-                day_name: "Domingo",
-                date_human_format: "04 Octubre 2020",
-                time: "20:26:31",
-                day_status: "Noche"
-            },
-            api: {
-                domain: 'api.fryntiz.dev',
-                path: 'ws',
-                endpoint: 'resume',
-                origin: 'vue-component-weather-chipiona',
-                configuration: {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
+    props: {
+
+        api: {
+            default:{
+                //domain:'api.fryntiz.dev',
+                domain:'localhost:8000',
+                path:'api/weatherstation/v1/resume',
+                protocol: 'http',
+                origin:'vue-component-weather-chipiona',
+                configuration:{
+                    headers:{
+                        'Content-Type':'application/json',
+                        'Accept':'application/json',
                     },
-                    method: 'GET',
-                    mode: 'cors',
-                    cache: 'default',
+                    method:'GET',
+                    mode:'cors',
+                    cache:'default',
                     //credentials: 'same-origin',
-                    redirect: 'follow',
+                    redirect:'follow',
                     //referrerPolicy: 'no-referrer',
                 }
-            },
-            info: {
-                temperature: 29.435345,
-            },
-            wind: {
-                average: 0.0,
-                min: 0.0,
-                max: 0.0,
-                direction: 'N'
-            },
-            air_quality: {
-                quality: 100,
-                co2_eco2: 416.0,
-                tvoc: 0.0,
-            },
-            light: {
-                light: 0,
-                index: 0,
-                uva: 0,
-                uvb: 0
-            },
-            lightning: {
-                last: '29/09/2020'
-            },
+            }
+        },
 
-            // Uso este objeto para el control de navegación.
-            navigation: {
-                info: true,
+    },
+    setup(props) {
+        const intervals = ref({
+            id_1: null
+        });
+
+        // Uso este objeto para el control de navegación.
+        const navigation = ref({
+            info: true,
                 wind: false,
                 tvoc: false,
                 light: false,
-            },
+        });
 
-            intervals: {
-                id_1: null
-            }
-        }
-    },
-    setup(props) {
+        const instant = ref({
+            timestamp: "2020-10-04 20:26:31",
+            year: "2021",
+            month: "06",
+            month_name: "Octubre",
+            day: 4,
+            day_week: 0,
+            day_name: "Domingo",
+            date_human_format: "01 Junio 2021",
+            time: "20:26:31",
+            day_status: "Noche"
+        });
 
-        //TODO → pasar todos los data a props y aquí
-        const api = ref(null);
+        const info = ref({
+            temperature: 29.435345,
+        });
+
+        const wind = ref({
+            average: 0.0,
+                min: 0.0,
+                max: 0.0,
+                direction: 'N'
+        });
+
+        const air_quality =  ref({
+            quality: 100,
+                co2_eco2: 416.0,
+                tvoc: 0.0,
+        });
+
+        const light = ref({
+            light: 0,
+                index: 0,
+                uva: 0,
+                uvb: 0
+        });
+
+        const lightning = ref({
+            last: '29/09/2020'
+        });
 
         /**
          * Obtiene los datos actualizados desde la API.
          */
         const getApiData = () => {
-            let apiUrl = 'https://' + api.domain + '/' + api.path + '/' + api.endpoint;
-            const configuration = api.configuration;
+            let apiUrl = props.api.protocol + '://' + props.api.domain + '/' + props.api.path;
+            const configuration = props.api.configuration;
 
             fetch(apiUrl, configuration)
                 .then(response => response.json())
                 .then(data => {
                     // Instante de los datos.
-                    instant = data.instant;
+                    instant.value = data.instant;
 
                     // Información General.
-                    info.temperature = data.temperature;
-                    info.pressure = data.pressure;
-                    info.humidity = data.humidity;
+                    info.value.temperature = data.temperature;
+                    info.value.pressure = data.pressure;
+                    info.value.humidity = data.humidity;
 
                     // Información del Viento.
-                    wind.direction = data.wind_direction;
-                    wind.average = data.wind_average;
-                    wind.min = data.wind_min;
-                    wind.max = data.wind_max;
+                    wind.value.direction = data.wind_direction;
+                    wind.value.average = data.wind_average;
+                    wind.value.min = data.wind_min;
+                    wind.value.max = data.wind_max;
 
                     // Información de luz y rayos UV/UVA/UVB.
-                    light.light = data.light;
-                    light.index = data.uv_index;
-                    light.uva = data.uva;
-                    light.uvb = data.uvb;
+                    light.value.light = data.light;
+                    light.value.index = data.uv_index;
+                    light.value.uva = data.uva;
+                    light.value.uvb = data.uvb;
 
                     // Calidad del aire.
-                    air_quality.quality = data.air_quality;
-                    air_quality.tvoc = data.tvoc;
-                    air_quality.co2_eco2 = data.eco2;
+                    air_quality.value.quality = data.air_quality;
+                    air_quality.value.tvoc = data.tvoc;
+                    air_quality.value.co2_eco2 = data.eco2;
 
                     // Rayos
-                    lightning.last = data.last_lightning_at;
+                    lightning.value.last = data.last_lightning_at;
                 })
                 .catch(error => {
-                    errorMessage = error;
                     console.error("¡Error al obtener datos desde la API!", error);
                 });
         };
@@ -273,8 +268,8 @@ export default {
          * Establece en el control de navegación el elemento activo actualmente.
          */
         const menuSelect = (item) => {
-            Object.keys(navigation).forEach(key => {
-                navigation[key] = (key == item)
+            Object.keys(navigation.value).forEach(key => {
+                navigation.value[key] = (key == item)
             });
         };
 
@@ -282,7 +277,7 @@ export default {
         onBeforeMount(() => {
             getApiData();
 
-            intervals.id_1 = setInterval(() => {
+            intervals.value.id_1 = setInterval(() => {
                 getApiData();
             }, 65000);
         });
@@ -293,6 +288,14 @@ export default {
         return {
             getApiData: getApiData,
             menuSelect: menuSelect,
+            intervals: intervals,
+            navigation: navigation,
+            instant: instant,
+            info: info,
+            wind: wind,
+            air_quality: air_quality,
+            light: light,
+            lightning: lightning,
         };
     },
 
@@ -430,7 +433,6 @@ export default {
 
 .resume-location {
     display: inline-block;
-    margin-top: 10px;
 }
 
 .resume-location-icon {

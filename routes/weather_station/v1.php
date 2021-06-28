@@ -11,6 +11,10 @@ use App\Http\Controllers\Api\WeatherStation;
 ##                    Pública
 ######################################################
 
+## Obtengo un resumen con todos los datos principales.
+Route::match(['get', 'options'], '/resume', 'App\Http\Controllers\Api\WeatherStation\GeneralController@resume')
+    ->middleware('cors.allow.all');
+
 ## Grupo de rutas para búsquedas de resultados en tablas.
 Route::group(['prefix' => 'table'], function () {
     ## Obtengo todos los datos de temperatura.
@@ -66,9 +70,6 @@ Route::group(['prefix' => 'table'], function () {
 ##                    Privada
 ######################################################
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    ## Obtengo un resumen con todos los datos principales.
-    Route::match(['get', 'options'], '/resume', 'App\Http\Controllers\Api\WeatherStation\GeneralController@resume')
-        ->middleware('cors.allow.all');
 
     ## Añadir nuevo registro de humedad.
     Route::post('/humidity/add', 'App\Http\Controllers\Api\WeatherStation\HumidityController@add');
