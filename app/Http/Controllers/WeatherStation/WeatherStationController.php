@@ -20,8 +20,9 @@ class WeatherStationController extends Controller
     public function index()
     {
         $sections = [
-            'Humedad' => route('api.wheaterstation.v1.table.humidity'),
+            'Relámpagos' => route('api.wheaterstation.v1.table.lightning'),
             'Temperatura' => route('api.wheaterstation.v1.table.temperature'),
+            'Humedad' => route('api.wheaterstation.v1.table.humidity'),
             'Presión' => route('api.wheaterstation.v1.table.pressure'),
             'Viento' => route('api.wheaterstation.v1.table.winter'),
             'Luz' => route('api.wheaterstation.v1.table.light'),
