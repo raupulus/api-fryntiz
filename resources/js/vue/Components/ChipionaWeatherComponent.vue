@@ -143,30 +143,29 @@ import {onBeforeMount, ref} from "vue";
 
 export default {
     props: {
-
-
         api: {
             default:{
                 //domain:'api.fryntiz.dev',
-                domain:'localhost:8000',
+                baseUrl:'http://localhost:8000',
                 path:'api/weatherstation/v1/resume',
-                protocol: 'http',
-                origin:'vue-component-weather-chipiona',
-                configuration:{
-                    headers:{
-                        'Content-Type':'application/json',
-                        'Accept':'application/json',
-                    },
-                    method:'GET',
-                    mode:'cors',
-                    cache:'default',
-                    //credentials: 'same-origin',
-                    redirect:'follow',
-                    //referrerPolicy: 'no-referrer',
-                }
             }
         },
 
+        apiConfiguration: {
+            default: {
+                headers:{
+                    'Content-Type':'application/json',
+                    'Accept':'application/json',
+                },
+                origin:'vue-component-weather-chipiona',
+                method:'GET',
+                mode:'cors',
+                cache:'default',
+                //credentials: 'same-origin',
+                redirect:'follow',
+                //referrerPolicy: 'no-referrer',
+            }
+        },
     },
     setup(props) {
         const intervals = ref({
@@ -226,8 +225,10 @@ export default {
          * Obtiene los datos actualizados desde la API.
          */
         const getApiData = () => {
-            let apiUrl = props.api.protocol + '://' + props.api.domain + '/' + props.api.path;
-            const configuration = props.api.configuration;
+            let apiUrl = props.api.baseUrl + '/' + props.api.path;
+            const configuration = props.apiConfiguration;
+
+            console.log(props);
 
             fetch(apiUrl, configuration)
                 .then(response => response.json())

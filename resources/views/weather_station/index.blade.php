@@ -112,8 +112,20 @@
         </section>
 
         <section class="bg-white border-b">
-            <div class="container max-w-5xl mx-auto m-4">
-                <v-chipiona-weather-component></v-chipiona-weather-component>
+            <div class="container max-w-5xl mx-auto mt-4">
+                <v-chipiona-weather-component :api="{{json_encode([
+                    'baseUrl' => config('app.url'),
+                    'path' => 'api/weatherstation/v1/resume'
+                ], true)}}" ></v-chipiona-weather-component>
+            </div>
+
+            <div class="container max-w-5xl mx-auto mt-1 mb-4 text-center">
+                <a href="https://gitlab.com/fryntiz/vue-component-weather-chipiona"
+                   class="block inline-block rounded underline text-blue-500
+                   text-sm"
+                   target="_blank" >
+                        Ver el desarrollo/código de mi componente Vue
+                </a>
             </div>
         </section>
 
@@ -134,5 +146,4 @@
 
         </section>
     </div>
---}}
 @endsection
