@@ -144,6 +144,11 @@ export default {
                 totalElements.value = data.totalElements;
 
                 if (
+                    (totalElements.value && (totalElements.value > 0)) &&
+                    (totalElements.value <= props.elements)
+                ) {
+                    totalPages.value = 1;
+                } else if (
                     (totalElements.value / props.elements > 1) &&
                     ((totalElements.value % props.elements) == 0)) {
                     totalPages.value = Math.floor(totalElements.value / props.elements) - 1;
@@ -159,6 +164,10 @@ export default {
                     case 0 == totalPages.value:
                         showPages.value = ['...'];
 
+                        break;
+
+                    case 1 == totalPages.value:
+                        showPages.value = [1]
                         break;
 
                     // Hay más de 8 páginas y la actual es la última → OK
