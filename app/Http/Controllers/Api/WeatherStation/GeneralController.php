@@ -18,6 +18,7 @@ use App\Models\WeatherStation\Winter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use function count;
 use function response;
 
 /**
@@ -34,8 +35,10 @@ class GeneralController
     public function resume()
     {
 
-
         $data = Cache::remember('ws.resume', 60, function () {
+            $now = Carbon::now();
+            $lastTenMinutes = (clone($now))->subMinutes(10);
+
             /*
             $temp = Temperature::select('meteorology_temperature.value as temperature')
                 ->orderByDesc('created_at')
@@ -113,13 +116,15 @@ class GeneralController
                 ->limit(1)
                 ->toSql();
 
-            return Temperature::select([
+            $d = Temperature::select([
                 'meteorology_temperature.value as temperature',
                 DB::raw("($airQuality) as air_quality"),
                 DB::raw("($eco2) as eco2"),
                 DB::raw("($humidity) as humidity"),
                 DB::raw("($light) as light"),
                 DB::raw("($lightning) as last_lightning_at"),
+                //DB::raw("($lightningQuantityLastTenMinutes) as
+                // lightningQuantityLastTenMinutes"),
                 DB::raw("($pressure) as pressure"),
                 DB::raw("($tvoc) as tvoc"),
                 DB::raw("($uv_index) as uv_index"),
@@ -133,6 +138,16 @@ class GeneralController
                 ->orderByDesc('created_at')
                 ->first()
                 ->toArray();
+
+            $lightningQuantityLastTenMinutes = Lightning::selectRaw('count(*) as qm')
+                ->where('created_at', '>=', $lastTenMinutes)
+                ->limit(1)
+                ->pluck('qm')
+                ->first();
+
+            $d['lightningQuantityLastTenMinutes'] =  $lightningQuantityLastTenMinutes;
+
+            return $d;
         });
 
         $now = Carbon::now();

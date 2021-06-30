@@ -1,8 +1,8 @@
 <template>
-    <div id="box-weather-chipiona">
+    <div class="box-weather-chipiona">
         <div class="container">
 
-            <div class="box-resume m-0 p-0">
+            <div class="box-resume">
 
                 <div class="box-resume-center">
                     <div class="resume-gradient"></div>
@@ -10,40 +10,76 @@
                     <!-- Bloque con información general del tiempo -->
                     <div>
                         <div class="resume-container-date">
-                            <h2 class="resume-date-dayname">
-                                {{ instant.day_name }}
-                            </h2>
+                            <div class="resume-inline resume-location">
+                                <span class="icon icon-location"></span>
 
-                            <span class="resume-date-day">
-                                {{ instant.date_human_format }}
-                            </span>
-
-                            <span class="icon icon-location"></span>
-
-                            <span class="resume-location">
                                 Chipiona, Es
-                            </span>
+                            </div>
+
+                            <div></div>
+
+                            <div class="resume-inline resume-date-dayname">
+                                {{ instant.day_name }}
+                            </div>
+
+                            <div class="resume-inline resume-date-day">
+                                {{ instant.date_human_format }}
+                            </div>
                         </div>
 
                         <div class="resume-weather-container">
                             <!-- Muestra información general -->
-                            <div v-show="navigation.info">
-                                <span class="icon icon-sun"></span>
+                            <div v-show="navigation.info"
+                                 class="navigation navigation-info-box">
+                                <div class="navigation-info-left">
+                                    <div>
+                                        <span class="icon icon-sun"></span>
 
-                                <h1 class="resume-weather-temp">
-                                    {{ info.temperature | roundTo2Decimals }} ºC
-                                </h1>
+                                        <span class="resume-weather-desc">
+                                            {{ instant.day_status }}
+                                            {{ instant.time }}
+                                        </span>
+                                    </div>
+                                </div>
 
-                                <h3 class="resume-weather-desc">
-                                    {{ instant.time }}
-                                    <br />
-                                    {{ instant.day_status }}
-                                </h3>
+                                <div>
+                                    <span class="resume-weather-temp">
+                                        {{ info.temperature | roundTo2Decimals }} ºC
+                                    </span>
+                                </div>
+
+                                <div class="mt-5">
+                                    <span>
+                                        <span class="icon icon-humidity color-yellow"></span>
+
+                                        {{ info.humidity | roundTo2Decimals }} %
+                                    </span>
+                                </div>
+
+                                <div class="mt-5">
+                                    <span class="icon icon-pressure color-yellow"></span>
+
+                                    <span>
+                                        {{ info.pressure | roundTo2Decimals }} mb
+                                    </span>
+                                </div>
+
+                                <div class="mt-5">
+                                    <span class="icon icon-lightning color-yellow"></span>
+
+                                    <span>
+                                        {{ lightning.quantityLastTenMinutes }}
+                                    </span>
+                                </div>
+
                             </div>
 
                             <!-- Muestra información del viento -->
-                            <div v-show="navigation.wind">
+                            <div v-show="navigation.wind"
+                                class="navigation">
                                 <span class="icon icon-wind color-blue"></span>
+
+                                Viento
 
                                 <h1 class="resume-weather-temp">
                                     {{ wind.average | roundTo2Decimals }} km/h
@@ -57,7 +93,8 @@
                             </div>
 
                             <!-- Muestra información de calidad del aire -->
-                            <div v-show="navigation.tvoc">
+                            <div v-show="navigation.tvoc"
+                                 class="navigation">
                                 <span class="icon icon-tvoc color-yellow"></span>
                                 Calidad del Aire
 
@@ -73,8 +110,11 @@
                             </div>
 
                             <!-- Muestra información de rayos UV -->
-                            <div v-show="navigation.light">
+                            <div v-show="navigation.light"
+                                 class="navigation">
                                 <span class="icon icon-uv color-orange"></span>
+
+                                Radiación Solar
 
                                 <h1 class="resume-weather-temp">
                                     {{ light.index | roundTo2Decimals }} UV
@@ -86,7 +126,6 @@
                                     UVB: {{ light.uvb | roundTo2Decimals }}
                                 </h3>
                             </div>
-
 
                         </div>
                     </div>
@@ -181,14 +220,14 @@ export default {
         });
 
         const instant = ref({
-            timestamp: "2020-10-04 20:26:31",
+            timestamp: "2021-07-01 20:26:31",
             year: "2021",
-            month: "06",
-            month_name: "Octubre",
-            day: 4,
-            day_week: 0,
-            day_name: "Domingo",
-            date_human_format: "01 Junio 2021",
+            month: "07",
+            month_name: "Julio",
+            day: 1,
+            day_week: 4,
+            day_name: "Jueves",
+            date_human_format: "01 Julio 2021",
             time: "20:26:31",
             day_status: "Noche"
         });
@@ -218,7 +257,8 @@ export default {
         });
 
         const lightning = ref({
-            last: '29/09/2020'
+            last: '2021-07-01',
+            quantityLastTenMinutes: 0,
         });
 
         /**
@@ -260,6 +300,7 @@ export default {
 
                     // Rayos
                     lightning.value.last = data.last_lightning_at;
+                    lightning.value.quantityLastTenMinutes = data.lightningQuantityLastTenMinutes;
                 })
                 .catch(error => {
                     console.error("¡Error al obtener datos desde la API!", error);
@@ -328,6 +369,7 @@ export default {
 /* Iconos */
 .icon {
     display: inline-block;
+    margin-bottom: -8px;
     width: 30px;
     height: 30px;
     background-repeat: no-repeat;
@@ -375,8 +417,37 @@ export default {
     filter: invert(57%) sepia(41%) saturate(8000%) hue-rotate(346deg) brightness(144%) contrast(97%);
 }
 
+.icon-humidity {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' aria-labelledby='title' aria-describedby='desc' role='img' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3EHumidity%3C/title%3E%3Cdesc%3EA line styled icon from Orion Icon Library.%3C/desc%3E%3Cpath data-name='layer2' d='M51.9 40.1a20.6 20.6 0 0 0-1-4.9C46.9 20.8 32 2 32 2S17.1 20.8 13 35.2a20.6 20.6 0 0 0-1 4.9c0 .5-.1 1-.1 1.5A20.2 20.2 0 0 0 32 62a20.2 20.2 0 0 0 20-20.4c0-.5 0-1-.1-1.5z' fill='none' stroke='%23202020' stroke-miterlimit='10' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'%3E%3C/path%3E%3Cpath data-name='layer1' fill='none' stroke='%23202020' stroke-miterlimit='10' stroke-width='2' d='M38 30L26 50' stroke-linejoin='round' stroke-linecap='round'%3E%3C/path%3E%3Ccircle data-name='layer1' cx='26' cy='32' r='4' fill='none' stroke='%23202020' stroke-miterlimit='10' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'%3E%3C/circle%3E%3Ccircle data-name='layer1' cx='38' cy='48' r='4' fill='none' stroke='%23202020' stroke-miterlimit='10' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'%3E%3C/circle%3E%3C/svg%3E");
+}
+
+.icon-humidity.color-yellow {
+    color: #fcff6b;
+    filter: invert(87%) sepia(71%) saturate(6000%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.icon-pressure {
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' standalone='no'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20010904//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'%3E%3Csvg version='1.0' xmlns='http://www.w3.org/2000/svg' width='1280.000000pt' height='1280.000000pt' viewBox='0 0 1280.000000 1280.000000' preserveAspectRatio='xMidYMid meet'%3E%3Cmetadata%3E%0ACreated by potrace 1.15, written by Peter Selinger 2001-2017%0A%3C/metadata%3E%3Cg transform='translate(0.000000,1280.000000) scale(0.100000,-0.100000)'%0Afill='%23000000' stroke='none'%3E%3Cpath d='M6095 12794 c-27 -2 -115 -8 -195 -14 -1870 -137 -3611 -1123 -4715%0A-2671 -1505 -2110 -1582 -4947 -193 -7132 824 -1296 2092 -2261 3548 -2701%0A926 -279 1884 -347 2840 -200 761 117 1520 381 2180 759 1230 704 2185 1777%0A2734 3070 866 2040 607 4403 -679 6204 -886 1241 -2181 2128 -3645 2496 -340%0A86 -633 135 -1005 171 -150 14 -756 27 -870 18z m547 -984 c776 -36 1477 -217%0A2158 -556 560 -279 978 -580 1426 -1028 435 -435 743 -858 1008 -1386 325%0A-645 500 -1269 567 -2020 26 -288 14 -767 -27 -1095 -128 -1030 -548 -1992%0A-1224 -2805 -133 -160 -427 -458 -591 -601 -792 -688 -1757 -1133 -2774 -1278%0A-283 -41 -469 -53 -785 -53 -880 0 -1667 187 -2450 582 -738 373 -1398 931%0A-1901 1605 -552 742 -909 1630 -1023 2550 -55 438 -55 912 0 1350 115 926 471%0A1810 1031 2560 163 219 293 368 522 596 241 240 338 325 576 504 863 649 1910%0A1026 2980 1075 238 10 281 10 507 0z'/%3E%3Cpath d='M6240 10996 l0 -214 -77 -6 c-431 -34 -740 -89 -1062 -191 -611 -193%0A-1123 -482 -1608 -908 l-130 -114 -155 148 -156 149 -110 -119 -111 -118 151%0A-151 152 -150 -75 -89 c-664 -778 -1037 -1786 -1039 -2805 l0 -167 -52 -5%0Ac-29 -3 -125 -11 -213 -17 -88 -6 -161 -11 -162 -12 -4 -5 21 -313 26 -319 3%0A-4 96 0 205 8 110 8 205 13 213 10 7 -3 13 -20 13 -40 0 -63 60 -392 101 -552%0A80 -317 220 -686 361 -954 156 -298 322 -544 561 -831 82 -100 146 -184 140%0A-188 -25 -17 -313 -262 -313 -267 0 -11 204 -244 211 -242 4 2 169 138 365%0A303 197 165 364 305 372 310 11 9 -37 71 -233 305 -135 162 -281 344 -324 405%0A-372 523 -598 1102 -688 1765 -22 168 -26 712 -5 880 108 876 465 1631 1062%0A2244 627 643 1406 1026 2320 1138 66 8 223 13 420 13 197 0 354 -5 420 -13%0A755 -93 1397 -361 1980 -826 150 -120 433 -400 553 -547 423 -520 699 -1118%0A811 -1759 45 -260 51 -338 51 -680 -1 -280 -4 -347 -23 -481 -66 -466 -197%0A-882 -403 -1278 -151 -288 -279 -471 -609 -866 -192 -230 -239 -291 -228 -300%0A8 -5 175 -145 372 -310 196 -165 361 -301 365 -303 7 -2 211 231 211 242 0 5%0A-288 251 -314 268 -5 3 44 71 110 150 203 244 309 388 426 578 245 399 417%0A806 529 1253 42 166 99 481 99 543 0 20 6 37 13 40 8 3 103 -2 213 -10 109 -8%0A202 -12 205 -8 5 6 30 314 26 319 -1 1 -74 6 -162 12 -88 6 -183 14 -211 17%0Al-51 5 -6 247 c-11 459 -76 838 -217 1262 -183 555 -439 1011 -824 1468 l-70%0A84 152 150 151 151 -111 118 -110 119 -156 -149 -155 -148 -130 114 c-484 426%0A-997 715 -1608 908 -322 102 -631 157 -1061 191 l-78 6 0 214 0 214 -160 0%0A-160 0 0 -214z'/%3E%3Cpath d='M8385 8348 c-165 -138 -605 -505 -978 -816 l-679 -565 -56 27 c-31%0A15 -82 33 -112 41 -74 20 -246 19 -323 -1 -229 -59 -412 -243 -471 -472 -21%0A-80 -22 -229 -1 -317 8 -38 12 -71 7 -74 -5 -3 -151 -125 -326 -270 l-317%0A-264 98 -101 c54 -56 156 -161 226 -233 70 -73 130 -133 132 -133 2 0 131 140%0A286 311 198 218 287 309 298 305 118 -37 270 -48 371 -26 193 43 359 175 445%0A355 52 107 65 166 65 285 0 103 -13 173 -47 249 l-23 54 23 26 c121 131 1675%0A1850 1681 1859 4 7 6 12 4 11 -2 0 -138 -113 -303 -251z'/%3E%3C/g%3E%3C/svg%3E%0A");
+}
+
+.icon-pressure.color-yellow {
+    color: #fcff6b;
+    filter: invert(87%) sepia(71%) saturate(6000%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.icon-lightning {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' aria-labelledby='title' aria-describedby='desc' role='img' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3ECloudy Lightning%3C/title%3E%3Cdesc%3EA line styled icon from Orion Icon Library.%3C/desc%3E%3Cpath data-name='layer2' d='M43 40h4a9.9 9.9 0 0 0 10-9.8 10.1 10.1 0 0 0-10.2-9.9h-1A13.6 13.6 0 0 0 33.1 12a13.5 13.5 0 0 0-13.5 11.6h-.1a8.4 8.4 0 0 0-8.5 8.2c0 4.5 4.3 8.2 9 8.2h5.8m-9.1-16A10 10 0 1 1 27 13.5' fill='none' stroke='%23202020' stroke-miterlimit='10' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'%3E%3C/path%3E%3Cpath data-name='layer1' fill='none' stroke='%23202020' stroke-miterlimit='10' stroke-width='2' d='M37.7 27L23 43h7.5l-3.3 14L43 40h-7.4l2.1-13z' stroke-linejoin='round' stroke-linecap='round'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.icon-lightning.color-yellow {
+    color: #fcff6b;
+    filter: invert(87%) sepia(71%) saturate(6000%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
 /* Box Resume */
 .box-resume {
+    margin: 0;
+    padding: 0;
     width: 100%;
     min-height: 300px;
 
@@ -392,7 +463,6 @@ export default {
     -webkit-transition: -webkit-transform 400ms ease;
     transition: -webkit-transform 400ms ease;
     -o-transition: transform 400ms ease;
-    transition: transform 400ms ease;
     transition: transform 400ms ease, -webkit-transform 400ms ease;
     -webkit-transform: translateZ(0) scale(1.02) perspective(1000px);
     transform: translateZ(0) scale(1.02) perspective(1000px);
@@ -404,6 +474,15 @@ export default {
     transform: scale(1.1) perspective(1500px) rotateY(10deg);
 }
 
+.resume-container-date {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.resume-inline {
+    display: inline-flex;
+}
+
 .resume-gradient {
     position: absolute;
     width: 100%;
@@ -413,48 +492,53 @@ export default {
     background-image: var(--gradient);
     border-radius: 25px;
     opacity: 0.8;
-}
-
-.resume-container-date {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-}
-
-.resume-date-dayname {
-    margin: 0;
-}
-
-.resume-date-day {
-    display: block;
-}
-
-.resume-location {
-    display: inline-block;
+    z-index: -1;
 }
 
 .resume-location-icon {
-    display: inline-block;
     height: 0.8em;
     width: auto;
-    margin-right: 5px;
+}
+
+.resume-date-day {
+    margin-left: 5px;
+}
+
+.resume-date-dayname {
+    margin-left: 8px;
 }
 
 .resume-weather-container {
-    position: absolute;
-    bottom: 25px;
-    left: 25px;
+    margin-top: 8px;
+    margin-left: 15px;
 }
 
 .resume-weather-temp {
     margin: 0;
     font-weight: 700;
-    font-size: 4em;
+    font-size: 3.5rem;
     text-shadow: 3px 3px 3px #222831;
 }
 
 .resume-weather-desc {
     margin: 0;
+}
+
+.navigation-info-box {
+    padding: 0;
+}
+
+.navigation-info-left {
+    display: inline-block;
+    text-align: left;
+    margin-left: 8px;
+}
+
+.navigation-info-right {
+    display: inline-block;
+    text-align: right;
+    margin-right: 8px;
+    margin-top: 0;
 }
 
 /* Box Selectors - Menú inferior de selección */
@@ -529,5 +613,8 @@ export default {
 }
 .color-orange {
     color: #ffc568;
+}
+.mt-5 {
+    margin-top: 5px;
 }
 </style>

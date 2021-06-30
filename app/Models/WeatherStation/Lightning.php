@@ -26,7 +26,7 @@ class Lightning extends BaseWheaterStation
     public static function getTableHeads()
     {
         return [
-            'distance' => 'Distancia',
+            'distance' => 'Distancia (Km)',
             'energy' => 'Energía',
             'noise_floor' => 'Reducción de Ruido',
             'created_at' => 'Instante'
