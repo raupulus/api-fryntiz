@@ -51,7 +51,7 @@ class BaseWheaterStation extends Model
                                               $orderBy, $orderDirection = 'ASC')
     {
         return self::select($columns)
-            ->offset($page * $size)
+            ->offset(($page * $size) - $size)
             ->limit($size)
             ->orderBy($orderBy, $orderDirection)
             ->get()
