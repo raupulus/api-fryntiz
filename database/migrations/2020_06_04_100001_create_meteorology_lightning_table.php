@@ -33,6 +33,7 @@ class CreateMeteorologyLightningTable extends Migration
             $table->integer('energy')
                 ->comment('Energía detectada para detectar el rayo');
             $table->integer('noise_floor')
+                ->nullable()
                 ->comment('Ruido de fondo compensado para diferenciar el rayo');
             $table->timestamp('created_at')->nullable();
         });
