@@ -36,16 +36,16 @@ const router = createRouter({
  */
 
 
-let app = createApp({
+const app = createApp({
     components: {
         VueAxios,
         //router
     }
 });
 
-//import ExampleComponent from "./vue/Components/ExampleComponent";
-app.component('example-component', require('./vue/Components/ExampleComponent.vue').default);
-app.component('v-table-component', require('./vue/Components/TableComponent.vue').default);
+import TableComponent from './vue/Components/TableComponent.vue';
+app.component('v-table-component', TableComponent)
+
 app.component('v-chipiona-weather-component', require('./vue/Components/ChipionaWeatherComponent.vue').default);
 
 app.mount('#app');

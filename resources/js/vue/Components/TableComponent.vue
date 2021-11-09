@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="box-vue-table-component">
         <div>
             <table class="v-table">
                 <caption v-if="title">{{ title }}</caption>
@@ -23,10 +23,9 @@
                 <tfoot>
                 <tr>
                     <td :colspan="Object.keys(heads).length ?? Object.keys(rows[0]).length">
-                        Mostrando página {{ currentPage }} de {{ totalPages }}
-                        ({{ totalElements }} resultados)
+                        Mostrando página {{ currentPage ?? 0 }} de {{ totalPages ?? 0 }}
+                        ({{ totalElements ?? 0 }} resultados)
                     </td>
-
                 </tr>
                 </tfoot>
             </table>
@@ -70,7 +69,7 @@
 </template>
 
 
-<script lang="ts">
+<script>
 import {onBeforeMount, onMounted, ref} from 'vue';
 
 export default {
@@ -78,7 +77,7 @@ export default {
     props: {
         title: {
             type: String,
-            default: null,
+            default: '',
             required: false
         },
 

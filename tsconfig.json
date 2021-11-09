@@ -33,6 +33,8 @@
     "include": [
         "resources/js/vue/**/*.ts",
         "resources/js/vue/*.ts",
+        "resources/js/vue/*/*.vue",
+        "resources/js/vue/*.vue",
         "src/**/*.tsx",
         "src/*.tsx",
         "src/**/*.vue",

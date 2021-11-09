@@ -15,8 +15,6 @@ yarn-error.log
 public/css
 public/js
 public/mix-manifest.json
-package-lock.json
-composer.lock
 /code-generator
 /public/admin-panel
 /public/assets
