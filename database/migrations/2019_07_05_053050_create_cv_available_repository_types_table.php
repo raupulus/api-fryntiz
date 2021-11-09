@@ -32,7 +32,7 @@ class CreateCvAvailableRepositoryTypesTable extends Migration
             $table->string('title', 511)
                 ->comment('Título para el repositorio');
             $table->string('name', 255)
-                ->comment('Nomre del repositorio');
+                ->comment('Nombre del repositorio');
             $table->timestamps();
         });
     }
