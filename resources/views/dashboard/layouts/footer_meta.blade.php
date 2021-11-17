@@ -1,8 +1,12 @@
 {{-- Vue --}}
+{{--
 <script src="{{ mix('js/vue.js') }}"></script>
+--}}
 
 {{-- JQuery --}}
+{{--
 <script src="{{ asset('assets/js/jquery.js') }}"></script>
+--}}
 
 {{-- jquery.easing --}}
 {{--
@@ -10,19 +14,27 @@
 --}}
 
 {{-- Popper.js --}}
+{{--
 <script src="{{ mix('assets/js/popper.js') }}"></script>
+--}}
 
 {{-- Boostrap JS --}}
+{{--
 <script src="{{ mix('assets/js/bootstrap.js') }}"></script>
+--}}
 
 {{-- Fontawesome --}}
+{{--
 <script src="{{ mix('assets/js/fontawesome.js') }}"></script>
+--}}
 
 {{-- Mis scripts propios --}}
+{{--
 <script src="{{ mix('js/functions.js') }}"></script>
 <script src="{{ mix('admin-panel/js/functions.js') }}"></script>
 <script src="{{ mix('admin-panel/js/scripts.js') }}"></script>
 <script src="{{ mix('admin-panel/js/theme.js') }}"></script>
+--}}
 
 
 {{--

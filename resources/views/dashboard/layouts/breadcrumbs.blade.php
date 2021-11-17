@@ -1,3 +1,5 @@
+
+{{--
 @if (isset($breadcrumbs))
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb cyan lighten-2">
@@ -32,3 +34,4 @@
         </ol>
     </nav>
 @endif
+--}}

@@ -11,8 +11,8 @@ E-mail: dev@fryntiz.es
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('resources.global_vars_js')
-    @include('panel.layouts.head')
-    @include('panel.layouts.head_meta')
+    @include('dashboard.layouts.head')
+    @include('dashboard.layouts.head_meta')
     @yield('head_css')
     @yield('head_javascript')
 </head>
@@ -20,17 +20,17 @@ E-mail: dev@fryntiz.es
 <body class="page-top header-sticky">
 <div id="app">
 
-    @include('panel.layouts.navbar')
+    @include('dashboard.layouts.navbar')
 
     <div id="wrapper">
-        @include('panel.layouts.sidebar')
+        @include('dashboard.layouts.aside')
 
         <div id="content-wrapper">
 
             <div class="container-fluid">
-                {{-- Caja para las alertas, errores y notificaciones --}}
-                <div id="box-alerts">
-                    @include('panel.alerts.all_messages')
+                {{-- Caja para las alertas, errores y notificaciones flash --}}
+                <div id="box-flash">
+                    @include('dashboard.partials.flash')
                 </div>
 
                 {{-- Caja con el contenido principal de la aplicación --}}
@@ -42,13 +42,13 @@ E-mail: dev@fryntiz.es
     </div>
 
     <footer id="box-footer" class="footer {{-- sticky-footer --}}">
-        @include('panel.layouts.footer')
+        @include('dashboard.layouts.footer')
     </footer>
 
 </div>
 
 @yield('modal')
-@include('panel.layouts.footer_meta')
+@include('dashboard.layouts.footer_meta')
 @yield('css')
 @yield('javascript')
 @yield('js')

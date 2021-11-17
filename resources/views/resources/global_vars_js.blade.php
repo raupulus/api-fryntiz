@@ -3,7 +3,7 @@
     /**
      * Parámetros de la aplicación.
      */
-    const app =  {
+    const site =  {
         url: "{{config('app.url')}}",
         route: "{{request()->url()}}",
         path: "{{request()->path()}}",
