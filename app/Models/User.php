@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use function asset;
 
 /**
  * Class User
@@ -59,4 +60,61 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function urlAvatarIcon()
+    {
+        if ($this->profile_photo_path) {
+            return asset($this->image);
+        }
+
+        return asset('images/avatar-icon.png');
+    }
+
+    public function urlAvatar()
+    {
+        if ($this->profile_photo_path) {
+            return asset($this->image);
+        }
+
+        return asset('images/avatar.png');
+    }
+
+    public function urlProfile()
+    {
+        //return route('users.show', $this);
+        return '#';
+    }
+
+    public function adminlte_image()
+    {
+        return $this->urlAvatarIcon();
+    }
+
+    public function adminlte_desc()
+    {
+        return 'Role_X';
+    }
+
+    public function adminlte_profile_url()
+    {
+        return $this->urlProfile();
+    }
+
+    /*
+     public function adminlte_image()
+    {
+        return 'https://picsum.photos/300/300';
+    }
+
+    public function adminlte_desc()
+    {
+        return 'That\'s a nice guy';
+    }
+
+    public function adminlte_profile_url()
+    {
+        return 'profile/username';
+    }
+     */
+
 }
