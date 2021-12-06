@@ -22,17 +22,24 @@ class CreateCvAvailableRepositoryTypesTable extends Migration
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('image_id')
+                ->nullable()
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->text('url')
-                ->comment('Dirección al repositorio');
             $table->string('title', 511)
+                ->nullable()
                 ->comment('Título para el repositorio');
             $table->string('name', 255)
+                ->nullable()
                 ->comment('Nombre del repositorio');
+            $table->text('slug')
+                ->unique()
+                ->comment('Identificador único para el repositorio');
+            $table->text('url')
+                ->nullable()
+                ->comment('Dirección al repositorio');
             $table->timestamps();
         });
     }

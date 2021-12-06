@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class CurriculumAvailableRepositoryType extends Model
 {
-    use HasFactory;
+    protected $table = 'cv_available_repository_types';
 }

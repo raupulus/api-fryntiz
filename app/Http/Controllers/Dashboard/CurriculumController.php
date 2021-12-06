@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\CV\Curriculum;
 use Illuminate\Http\Request;
 use function redirect;
 use function view;
@@ -19,7 +20,11 @@ class CurriculumController extends Controller
 
     public function create()
     {
-        return view('dashboard.curriculums.add-edit');
+        $cv = new Curriculum();
+
+        return view('dashboard.curriculums.add-edit')->with([
+            'cv' => $cv,
+        ]);
     }
 
     public function store()

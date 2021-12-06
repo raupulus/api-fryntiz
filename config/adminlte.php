@@ -302,6 +302,17 @@ return [
             'icon' => 'fas fa-fw fa-users',
             'submenu' => [
                 [
+                    'text' => 'Listado',
+                    'icon' => 'far fa-fw fa-file',
+                    'route' => 'dashboard.cv.index',
+                ],
+                [
+                    'text' => 'Nuevo',
+                    'icon' => 'far fa-fw fa-file',
+                    'route' => 'dashboard.cv.create',
+                ],
+                    /*
+                [
                     'text' => 'Curriculums',
                     'icon' => 'far fa-fw fa-file',
                     'route' => 'dashboard.cv.index',
@@ -381,6 +392,7 @@ return [
                     'url' => '#',
                     'icon' => 'far fa-fw fa-file',
                 ],
+                */
                 [
                     'text' => 'Gestionar Habilidades',
                     'url' => '#',
