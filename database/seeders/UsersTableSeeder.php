@@ -25,23 +25,23 @@ class UsersTableSeeder extends Seeder
             ],[
             'name' => 'Administrador Principal',
             'role_id' => 1,
-            'email' => 'superadmin@test.es',
+            'email' => 'superadmin@domain.es',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
         ]);
 
         $admin = User::firstOrCreate([
-            'email' => 'admin@test.es',
+            'email' => 'admin@domain.es',
         ],[
             'name' => 'Administrador',
             'role_id' => 2,
-            'email' => 'admin@test.es',
+            'email' => 'admin@domain.es',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
         ]);
 
         $user = User::firstOrCreate([
-            'email' => 'user@test.es',
+            'email' => 'user@domain.es',
             ],[
             'name' => 'Usuario Normal',
             'role_id' => 3,
