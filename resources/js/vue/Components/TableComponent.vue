@@ -14,8 +14,8 @@
 
                 <tbody>
                 <tr v-for="row in rows">
-                    <td v-for="( cell, key ) of row">
-                        {{ key  == 'created_at' ? (new Date(cell)).toLocaleString() : cell }}
+                    <td v-for="( cell, key ) of row"
+                        v-html="getCellContent( cell, key )">
                     </td>
                 </tr>
                 </tbody>
@@ -102,13 +102,19 @@ export default {
         const hasBackPage = ref(false);  // Indica si tiene página anterior
         const hasNextPage = ref(false);  // Indica si tiene próxima página
         const showPages = ref([]);  // Lista con las páginas a mostrar
+        const cellsInfo = ref([]);  // Información de las celdas
 
         const getQuery = async (page) => {
+
+            let csrfToken = document.head.querySelector('meta[name="csrf-token"]')
+                ? document.head.querySelector('meta[name="csrf-token"]').content : '';
+
 
             return await fetch(props.url, {
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 method: "POST",
                 body: JSON.stringify({
@@ -148,7 +154,7 @@ export default {
                 ) {
                     totalPages.value = 1;
                 } else if (
-                    (totalElements.value / props.elements > 1) &&
+                    ((totalElements.value / props.elements) > 1) &&
                     ((totalElements.value % props.elements) == 0)) {
                     totalPages.value = Math.floor(totalElements.value / props.elements) - 1;
                 } else {
@@ -225,8 +231,75 @@ export default {
 
                 rows.value = data.rows;
                 heads.value = data.heads;
+                cellsInfo.value = data.cellsInfo ?? [];
             })
         };
+
+        /**
+         * Devuelve el contenido de la celda formateado según el tipo de dato
+         * indicado en el objeto cellsInfo.
+         * @param cell
+         * @param field
+         * @returns {string|string|*}
+         */
+        const getCellContent = (cell, field) => {
+
+            // TODO → obtener de controlador tipos y mirar si hay metadatos en él (button, image, etc) para saber como mostrarlo
+                //let info = cellsInfo.value.find(ele => ele.key == field);
+                let info = cellsInfo.value ? cellsInfo.value[field] : null;
+
+                /*
+                console.log('s:', cellsInfo.value ?
+                    cellsInfo.value[field] : '');
+
+            Object.keys(cellsInfo.value).forEach(key => {
+                const item = cellsInfo.value[key]
+                console.log('i:', item.value);
+
+                if (item == field) {
+                    info = item
+
+                }
+            })
+*/
+
+/*
+
+            Object.keys(cellsInfo.value).forEach(key => {
+                console.log('k:', cellsInfo.value[key].key);
+
+                if (key == field) {
+                    info == key;
+                }
+            });
+ */
+
+            console.log(cellsInfo.value);
+            console.log(info, info ? info.type : null);
+
+            //console.log(cellsInfo.value.keys);
+
+
+            console.log(field);
+            console.log(info ? info.type == 'icon' : null);
+
+                if (info) {
+                    switch (info.type) {
+                        case 'button':
+                            return '<button class="btn btn-primary">' + cell + '</button>';
+                        case 'image':
+                            return '<img src="' + cell +  '" alt=""/>';
+                        case 'icon':
+                            // TODO → preparar iconos
+                            return '<img src="' + cell +  '" alt=""/>';
+                        default:
+                            return cell;
+                    }
+                }
+
+
+            return field  == 'created_at' ? (new Date(cell)).toLocaleString() : cell;
+        }
 
         onBeforeMount(() => {
             changePage(1);
@@ -244,6 +317,8 @@ export default {
             hasBackPage: hasBackPage,
             hasNextPage: hasNextPage,
             showPages: showPages,
+            getCellContent: getCellContent,
+            cellsInfo: cellsInfo,
 
             changePage: changePage,
         }

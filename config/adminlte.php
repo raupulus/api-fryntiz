@@ -85,7 +85,7 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
+    'layout_fixed_sidebar' => true,
     'layout_fixed_navbar' => null,
     'layout_fixed_footer' => null,
     'layout_dark_mode' => null,
@@ -227,8 +227,8 @@ return [
     'menu' => [
         // Navbar items:
         [
-            'type'         => 'navbar-search',
-            'text'         => 'Búsqueda',
+            'type' => 'navbar-search',
+            'text' => 'Búsqueda',
             'search' => true,
             'topnav_right' => true,
             //'method' => 'POST',
@@ -240,7 +240,7 @@ return [
             'topnav' => true,
         ],
         [
-            'type'         => 'fullscreen-widget',
+            'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
 
@@ -248,7 +248,7 @@ return [
 
         [
             'text' => 'Link 1',
-            'url'  => '#',
+            'url' => '#',
             'topnav_user' => 'true'
         ],
 
@@ -266,103 +266,201 @@ return [
         ],
         ['header' => 'Contenido'],
         [
-            'text'        => 'Todos',
-            'url'         => '#',
-            'icon'        => 'far fa-fw fa-file',
+            'text' => 'Todos',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
         ],
         [
-            'text'        => 'Categorías',
-            'url'         => '#',
-            'icon'        => 'far fa-fw fa-file',
+            'text' => 'Categorías',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
         ],
 
         // TODO → Dinamizar por tipo de contenido
         [
             'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog', // Esto asigna permiso para ver la opción
+            'url' => 'admin/blog',
+            'can' => 'manage-blog', // Esto asigna permiso para ver la opción
         ],
         [
-            'text'        => 'pages',
-            'url'         => '#',
-            'icon'        => 'far fa-fw fa-file',
-            'label'       => 4,
+            'text' => 'pages',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
+            'label' => 4,
             'label_color' => 'success',
         ],
         [
-            'text'        => 'noticias',
-            'url'         => '#',
-            'icon'        => 'far fa-fw fa-file',
-            'label'       => 4,
+            'text' => 'noticias',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
+            'label' => 4,
             'label_color' => 'success',
         ],
+        ['header' => 'Módulos'],
+        [
+            'text' => 'Curriculum Vitae',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Curriculums',
+                    'icon' => 'far fa-fw fa-file',
+                    'route' => 'dashboard.cv.index',
+                ],
+                [
+                    'text' => 'Repositorios',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Servicios',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Colaboraciones',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Hobbies',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Trabajos',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Projectos',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Formación Académica',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Formación Complementaria',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Formación Online',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Experiencia Acreditada',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Experiencia No Acreditada',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Experiencia Autoempleado',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Experiencia Adicional',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Experiencia Otros',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Habilidades',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Gestionar Habilidades',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Gestionar Repositorios',
+                    'url' => '#',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+            ],
+        ],
+
         ['header' => 'Usuarios'],
         [
-            'text'    => 'Perfiles',
-            'icon'    => 'fas fa-fw fa-users',
+            'text' => 'Perfiles',
+            'icon' => 'fas fa-fw fa-users',
             'submenu' => [
                 [
                     'text' => 'Ver Usuarios',
-                    'url'  => '#',
+                    'url' => '#',
                 ],
                 [
                     'text' => 'Añadir Usuario',
-                    'url'  => '#',
+                    'url' => '#',
                 ],
             ],
         ],
         [
-            'text'    => 'API',
-            'icon'    => 'fas fa-fw fa-users',
+            'text' => 'API',
+            'icon' => 'fas fa-fw fa-users',
             'submenu' => [
                 [
                     'text' => 'Ver Usuarios',
-                    'url'  => '#',
+                    'url' => '#',
                 ],
                 [
                     'text' => 'Añadir Usuario',
-                    'url'  => '#',
+                    'url' => '#',
                 ],
             ],
         ],
         ['header' => 'account_settings'],
         [
             'text' => 'profile',
-            'url'  => 'admin/settings',
+            'url' => 'admin/settings',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
             'text' => 'change_password',
-            'url'  => 'admin/settings',
+            'url' => 'admin/settings',
             'icon' => 'fas fa-fw fa-lock',
         ],
         [
-            'text'    => 'multilevel',
-            'icon'    => 'fas fa-fw fa-share',
+            'text' => 'multilevel',
+            'icon' => 'fas fa-fw fa-share',
             'submenu' => [
                 [
                     'text' => 'level_one',
-                    'url'  => '#',
+                    'url' => '#',
                 ],
                 [
-                    'text'    => 'level_one',
-                    'url'     => '#',
+                    'text' => 'level_one',
+                    'url' => '#',
                     'submenu' => [
                         [
                             'text' => 'level_two',
-                            'url'  => '#',
+                            'url' => '#',
                         ],
                         [
-                            'text'    => 'level_two',
-                            'url'     => '#',
+                            'text' => 'level_two',
+                            'url' => '#',
                             'submenu' => [
                                 [
                                     'text' => 'level_three',
-                                    'url'  => '#',
+                                    'url' => '#',
                                 ],
                                 [
                                     'text' => 'level_three',
-                                    'url'  => '#',
+                                    'url' => '#',
                                 ],
                             ],
                         ],
@@ -370,45 +468,62 @@ return [
                 ],
                 [
                     'text' => 'level_one',
-                    'url'  => '#',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        ['header' => 'Traducciones'],
+        [
+            'text' => 'Idiomas',
+            'icon' => 'fas fa-fw fa-globe',
+            'submenu' => [
+                [
+                    'text' => 'Listar',
+                    'icon' => 'fas fa-fw fa-edit',
+                    'route' => 'dashboard.language.index',
+                ],
+                [
+                    'text' => 'Añadir',
+                    'icon' => 'fas fa-fw fa-plus-circle',
+                    'route' => 'dashboard.language.create',
                 ],
             ],
         ],
         ['header' => 'Acciones'],
         [
-            'text'       => 'Home',
-            'icon'    => 'fas fa-fw fa-share',
+            'text' => 'Home',
+            'icon' => 'fas fa-fw fa-share',
             'icon_color' => 'cyan',
-            'route'        => 'home',
+            'route' => 'home',
         ],
         ['header' => 'labels'],
         [
-            'text'       => 'important',
+            'text' => 'important',
             'icon_color' => 'red',
-            'url'        => '#',
+            'url' => '#',
         ],
         [
-            'text'       => 'warning',
+            'text' => 'warning',
             'icon_color' => 'yellow',
-            'url'        => '#',
+            'url' => '#',
         ],
         [
-            'text'       => 'information',
+            'text' => 'information',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'url' => '#',
         ],
 
         // Right Sidebar Items
         [
-            'text'       => 'Configuración',
+            'text' => 'Configuración',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'url' => '#',
             'rightsidebar' => true
         ],
         [
-            'text'       => 'API',
+            'text' => 'API',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'url' => '#',
         ],
 
     ],

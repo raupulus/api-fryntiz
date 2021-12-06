@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -27,9 +28,10 @@ class LanguagesTableSeeder extends Seeder
                 'iso3' => 'esp',
                 'name' => 'Español',
                 'iso_language' => 'spanish',
-                'icon16' => 'img/languages/16_es.png',
-                'icon32' => 'img/languages/32_es.png',
-                'icon64' => 'img/languages/64_es.png',
+                'icon16' => 'images/icons/flags/16x16/es.png',
+                'icon32' => 'images/icons/flags/32x32/es.png',
+                'icon64' => 'images/icons/flags/64x64/es.png',
+                'created_at' => Carbon::now(),
             ],
             [
                 'locale' => 'en_EN',
@@ -38,9 +40,10 @@ class LanguagesTableSeeder extends Seeder
                 'iso3' => 'eng',
                 'name' => 'English',
                 'iso_language' => 'english',
-                'icon16' => 'img/languages/16_en.png',
-                'icon32' => 'img/languages/32_en.png',
-                'icon64' => 'img/languages/64_en.png',
+                'icon16' => 'images/icons/flags/16x16/en.png',
+                'icon32' => 'images/icons/flags/32x32/en.png',
+                'icon64' => 'images/icons/flags/64x64/en.png',
+                'created_at' => Carbon::now(),
             ]
         ];
 
