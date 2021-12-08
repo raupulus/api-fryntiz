@@ -5,10 +5,11 @@
     "keywords": ["api", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "intervention/image": "^2.7",
         "jeroennoten/laravel-adminlte": "^3.7",
         "laravel/framework": "^8.40",
         "laravel/sanctum": "^2.6",

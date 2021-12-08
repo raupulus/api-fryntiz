@@ -2,6 +2,7 @@
 
 namespace App\Models\CV;
 
+use App\Models\File;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use function array_key_exists;
@@ -11,6 +12,20 @@ class Curriculum extends Model
 {
     protected $table = 'cv';
 
+    protected $guarded = [
+        'id'
+    ];
+
+    /**
+     * Relación con la imagen asociada al curriculum.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function image()
+    {
+        return $this->hasOne(File::class, 'id', 'image_id');
+    }
+
     /**
      * Devuelve la ruta hacia la foto asociada al curriculum.
      *
@@ -18,8 +33,44 @@ class Curriculum extends Model
      */
     public function getUrlImageAttribute()
     {
-        //return asset('???');
-        return '#';
+        $path = $this->image ? $this->image->path : 'images/templates/1024x1024.png';
+
+        return asset($path);
+    }
+
+    public function getUrlImageThumbnail1024Attribute()
+    {
+        $path = $this->image ? $this->image->path : 'images/templates/1024x1024.png';
+
+        return asset($path);
+    }
+
+    public function getUrlImageThumbnail512Attribute()
+    {
+        $path = $this->image ? $this->image->path : 'images/templates/512x512.png';
+
+        return asset($path);
+    }
+
+    public function getUrlImageThumbnail256Attribute()
+    {
+        $path = $this->image ? $this->image->path : 'images/templates/256x256.png';
+
+        return asset($path);
+    }
+
+    public function getUrlImageThumbnail150Attribute()
+    {
+        $path = $this->image ? $this->image->path : 'images/templates/150x150.png';
+
+        return asset($path);
+    }
+
+    public function getUrlImageThumbnail80Attribute()
+    {
+        $path = $this->image ? $this->image->path : 'images/templates/80x80.png';
+
+        return asset($path);
     }
 
     /**

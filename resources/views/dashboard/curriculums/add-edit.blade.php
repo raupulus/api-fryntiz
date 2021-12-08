@@ -5,7 +5,7 @@
 @section('content_header')
     <h1>
         <i class="fas fa-globe"></i>
-        Añadir nuevo Curriculum Vitae
+        Curriculum Vitae
     </h1>
 @stop
 
@@ -13,19 +13,63 @@
 
     <div class="row" id="app">
         <div class="col-12">
-            <h2>
-                Añade un nuevo Curriculum Vitae
-                <a href="{{ route('dashboard.cv.store') }}"
-                   class="btn btn-success float-right">
-                    <i class="fas fa-save"></i>
-                    Guardar
-                </a>
-            </h2>
-        </div>
+            <form action="{{route('dashboard.cv.store')}}"
+                  enctype="multipart/form-data"
+                  method="POST">
 
-        <div class="col-12">
-            <form action="{{route('dashboard.cv.store')}}">
+                @csrf
+
                 <div class="row">
+                    <div class="col-12">
+                        <h2>
+                            {{(isset($cv) && $cv && $cv->id) ? 'Editar ' .
+                            $cv->title : 'Creando nuevo Curriculum Vitae'}}
+
+                            <button type="submit" class="btn btn-success float-right">
+                                <i class="fas fa-save"></i>
+                                Guardar
+                            </button>
+                        </h2>
+                    </div>
+
+                    {{-- Imagen --}}
+                    <div class="col-12">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    Imagen Adjunta
+                                </h3>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="image">
+                                        Imagen
+                                    </label>
+
+                                    <div class="input-group">
+                                        <img src="{{ $cv->urlImageThumbnail80 }}"
+                                             style="width: 80px; margin-right: 10px;"/>
+
+                                        <div class="custom-file">
+
+                                            <input type="file"
+                                                   name="image"
+                                                   id="image"
+                                                   class="form-control-file">
+
+                                            <label class="custom-file-label"
+                                                   for="image">
+                                                Cambiar archivo
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="col-md-6">
                         <div class="card card-primary">
                             <div class="card-header">
@@ -63,9 +107,11 @@
                                         class="custom-control custom-switch">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               id="customSwitch1" checked>
+                                               name="is_active"
+                                               id="is_active"
+                                               {{(old('is_active',  $cv->is_active) || !$cv->id) ? 'checked' : ''}} >
                                         <label class="custom-control-label"
-                                               for="customSwitch1">
+                                               for="is_active">
                                             Habilitado
                                         </label>
                                     </div>
@@ -77,9 +123,11 @@
                                         class="custom-control custom-switch">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               id="customSwitch1" checked>
+                                               name="is_downloadable"
+                                               id="is_downloadable"
+                                               {{(old('is_downloadable',  $cv->is_downloadable) || !$cv->id) ? 'checked' : ''}} >
                                         <label class="custom-control-label"
-                                               for="customSwitch1">
+                                               for="is_downloadable">
                                             Permitir descarga
                                         </label>
                                     </div>
@@ -87,139 +135,71 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Imagen --}}
-                <div class="col-12">
-                    <div class="card card-default">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                Imagen Adjunta
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="image">
-                                    Imagen
-                                </label>
-                                <div class="input-group">
-                                    <img src="#" style="width: 80px" />
+                    {{-- Presentación --}}
+                    <div class="col-12">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    Carta de Presentación
+                                </h3>
+                            </div>
 
-                                    <div class="custom-file">
-
-                                        <input type="file"
-                                               name="image"
-                                               id="image"
-                                               class="form-control-file">
-
-                                        <label class="custom-file-label"
-                                               for="image">
-                                            Cambiar archivo
-                                        </label>
-                                    </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Contenido de la presentación</label>
+                                    <textarea class="form-control"
+                                              rows="5"
+                                              name="presentation"
+                                              placeholder="Añade tu presentación...">{{ old('presentation', $cv->presentation) }}</textarea>
                                 </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <hr />
-
-                {{-- Repositorios --}}
-                <div class="col-12">
-                    <div class="card card-info">
-                        <div class="card-header">
-                            <h3 class="card-title">Repositorios</h3>
-                        </div>
-
-                        <div class="card-body">
-                            <table class="table table-bordered table-dark">
-                                <tr>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                </tr>
-                            </table>
-
-                            <span class="btn btn-primary">
-                                <i class="fas fa-plus"></i>
-                                Añadir
-                            </span>
-
-                            <div class="form-group">
-                                <label for="image">
-                                    Imagen
-                                </label>
-                                <div class="input-group">
-                                    <img src="#" style="width: 80px" />
-
-                                    <div class="custom-file">
-
-                                        <input type="file"
-                                               name="image"
-                                               id="image"
-                                               class="form-control-file">
-
-                                        <label class="custom-file-label"
-                                               for="image">
-                                            Cambiar archivo
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Tipo de Repositorio</label>
-                                <select class="form-control">
-                                    @foreach(\App\Models\CV\CurriculumAvailableRepositoryType::all() as $type)
-                                        <option value="{{ $type->id }}">
-                                            {{ $type->title }}
-                                        </option>
-                                    @endforeach
-
-                                    <option>option 1</option>
-                                    <option>option 2</option>
-                                    <option>option 3</option>
-                                    <option>option 4</option>
-                                    <option>option 5</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>
-                                    URL
-                                </label>
-
-                                <div class="input-group mb-3">
-
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-link"></i>
-                                        </span>
-                                    </div>
-
-                                    <input type="text"
-                                           name="url"
-                                           value="{{old('url') }}"
-                                           class="form-control"
-                                           placeholder="https://gitlab.com/username/...">
-                                </div>
-                            </div>
-
-
-                            <div class="form-group">
-                                <label>Color picker:</label>
-                                <input type="text" class="form-control my-colorpicker1 colorpicker-element" data-colorpicker-id="1" data-original-title="" title="">
                             </div>
 
                         </div>
                     </div>
-
                 </div>
+
+
+
 
             </form>
         </div>
+
+        @if (isset($cv) && $cv && $cv->id)
+            <div class="col-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Contenido
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="btn-group">
+                            <a href="#"
+                               class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Repositorios
+                            </a>
+
+                            <a href="#"
+                               class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                ....
+                            </a>
+
+                            <a href="#"
+                               class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                ....
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        @endif
     </div>
 @stop
 

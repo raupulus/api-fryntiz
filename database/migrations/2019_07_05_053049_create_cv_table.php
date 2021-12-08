@@ -36,6 +36,9 @@ class CreateCvTable extends Migration
                 ->onDelete('no action');
             $table->string('title', 511)
                 ->comment('Título para el curriculum');
+            $table->text('presentation')
+                ->nullable()
+                ->comment('Contenido para la presentación del curriculum');
             $table->boolean('is_active')
                 ->nullable()
                 ->default(0)
@@ -45,6 +48,7 @@ class CreateCvTable extends Migration
                 ->default(0)
                 ->comment('Indica si permite descargar el curriculum');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
