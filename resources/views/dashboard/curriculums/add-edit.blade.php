@@ -13,11 +13,13 @@
 
     <div class="row" id="app">
         <div class="col-12">
-            <form action="{{route('dashboard.cv.store')}}"
+            <form action="{{$cv && $cv->id ? route('dashboard.cv.update', $cv->id) : route('dashboard.cv.store')}}"
                   enctype="multipart/form-data"
                   method="POST">
 
                 @csrf
+
+                <input type="hidden" name="cv_id" value="{{$cv->id}}">
 
                 <div class="row">
                     <div class="col-12">
@@ -48,19 +50,28 @@
                                     </label>
 
                                     <div class="input-group">
-                                        <img src="{{ $cv->urlImageThumbnail80 }}"
+                                        <img src="{{ $cv->urlImageThumbnailSmall }}"
+                                             alt="Curriculum Image"
+                                             id="cv-image-preview"
                                              style="width: 80px; margin-right: 10px;"/>
 
                                         <div class="custom-file">
 
                                             <input type="file"
                                                    name="image"
-                                                   id="image"
+                                                   id="cv-image-input"
+                                                   accept="image/*"
                                                    class="form-control-file">
 
                                             <label class="custom-file-label"
-                                                   for="image">
-                                                Cambiar archivo
+                                                   id="cv-image-label"
+                                                   for="cv-image-input">
+
+                                                @if ($cv->image)
+                                                    {{$cv->image->original_name}}
+                                                @else
+                                                    Añadir archivo
+                                                @endif
                                             </label>
                                         </div>
                                     </div>
@@ -205,4 +216,32 @@
 
 @section('js')
     <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
+
+    <script>
+        window.document.addEventListener('click', () => {
+            /********** Cambiar Imagen al subirla **********/
+            const avatarInput = document.getElementById('cv-image-input');
+            const imageView = document.getElementById('cv-image-preview');
+            const imageLabel = document.getElementById('cv-image-label');
+
+            if (avatarInput) {
+                avatarInput.onchange = () => {
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                        imageView.src = reader.result;
+                    }
+
+                    if (avatarInput.files && avatarInput.files[0]) {
+                        reader.readAsDataURL(avatarInput.files[0]);
+
+                        if (imageLabel) {
+                            imageLabel.textContent = avatarInput.files[0].name;
+                        }
+                    }
+                };
+            }
+
+        });
+    </script>
 @stop

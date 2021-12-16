@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\FileThumbnailController;
 use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +33,28 @@ Route::group(['prefix' => '/languages'], function () {
         Route::match(['get', 'post'], '/get/languages', [LanguageController::class, 'ajaxGetLanguages'])
             ->name('language.ajax.get.languages');
     });
+});
+
+Route::group(['prefix' => '/file'], function () {
+
+    Route::group(['prefix' => '/thumbnail'], function () {
+        Route::get('/get/{module}/{id}/{slug?}', [FileThumbnailController::class, 'get'])
+            ->name('file.thumbnail.get');
+    });
+
+
+    Route::get('/get/{module}/{id}/{slug?}', [FileController::class, 'get'])
+        ->name('file.get');
+
+    Route::post('/upload', [FileController::class, 'upload'])
+        ->name('file.upload');
+
+    Route::get('/download/{module}/{id}/{slug?}', [FileController::class, 'download'])
+        ->name('file.download');
+
+    Route::get('/resize/{module}/{id}/{width}/{slug?}', [FileController::class, 'resizeAndGet'])
+        ->name('file.resize');
+
 });
 
 Auth::routes();

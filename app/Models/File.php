@@ -13,6 +13,7 @@ use function dd;
 use function explode;
 use function file_exists;
 use function getimagesize;
+use function route;
 use function storage_path;
 
 /**
@@ -32,6 +33,19 @@ class File extends Model
         'large' => 320,
         'xlarge' => 640,
         'xxlarge' => 1280
+    ];
+
+    public static $genericImages = [
+        'error' => 'error.png',
+        'default' => 'default.png',
+        'not_found' => 'not_found.png',
+        'not_image' => 'not_image.png',  // No Es una imagen
+        'not_authorized' => 'not_authorized.png',
+        'not_allowed' => 'not_allowed.png',
+        'not_allowed_extension' => 'not_allowed_extension.png',
+        'not_allowed_size' => 'not_allowed_size.png',
+        'not_allowed_type' => 'not_allowed_type.png',
+        'not_available' => 'not_available.png',
     ];
 
     /**
@@ -61,24 +75,15 @@ class File extends Model
      */
     public function getUrlAttribute()
     {
-        if ($this->path && $this->name) {
-            //TODO → Mirar si mejor entrar por ID o generar token random?
-            // DEberá haber un controlador genérico para las imágenes y así
-            // no tener que gestionar parte privada/pública. Excepto si tiene
-            // roles obligados. Replantear si tiene sentido por la ruta
-            // /a/b/c..../file.png creo que mejor pillar id y marcar algo
-            // como el "role" de la imagen.
-
-            if ($this->is_private) {
-                // TODO → usar controlador
-            } else {
-                // TODO → Usar directorio público
-            }
-
-            return asset('storage/' . $this->path . '/' . $this->name);
+        if ($this->path && $this->name && !$this->deleted_at) {
+            return route('file.get', [
+                'module' => $this->module,
+                'id' => $this->id,
+                'slug' => $this->name,
+            ]);
         }
 
-        return '';
+        return File::$genericImages['not_found'];
     }
 
     /**
@@ -93,6 +98,26 @@ class File extends Model
         }
 
         return '';
+    }
+
+    /**
+     * Devuelve la url de una miniatura.
+     *
+     * @param string $key   Clave de la miniatura.
+     *
+     * @return string
+     */
+    public function thumbnail($key = 'small')
+    {
+        if ($this->fileType && ($this->fileType->type === 'image')) {
+            $thumbnail = $this->thumbnails()->where('key', $key)->first();
+
+            if ($thumbnail) {
+                return $thumbnail->url;
+            }
+        }
+
+        return $this->url;
     }
 
     /**
@@ -155,6 +180,9 @@ class File extends Model
             $height = getimagesize($uploadedFile)[1];
         }
 
+        $module = explode('/', $path);
+        $module = count($module) ? $module[0] : 'uploads';
+
         ## Registro el archivo.
         $file = self::updateOrCreate([
             'id' => $file_id
@@ -166,6 +194,7 @@ class File extends Model
             'height' => $height,
             'name' => $imageName,
             'original_name' => $uploadedFile->getClientOriginalName(),
+            'module' => $module,
             'path' => $path,
             'storage_path' => $fullPath,
             'alt' => $uploadedFile->getClientOriginalName(),
@@ -183,7 +212,13 @@ class File extends Model
     }
 
 
-
+    /**
+     * Crea las miniaturas de un archivo.
+     *
+     * @param \App\Models\File $file
+     *
+     * @return \App\Models\File
+     */
     public static function createThumbnails(File $file)
     {
         $sizes = self::$thumbnailsSizeWidth;
@@ -193,6 +228,9 @@ class File extends Model
         $img = Image::make($file->storagePathFile);
 
         $oldThumbnails = $file->thumbnails;
+
+        $module = explode('/', $file->path);
+        $module = count($module) ? $module[0] : 'uploads';
 
         ## Borro las miniaturas antiguas.
         foreach ($oldThumbnails as $oldThumbnail) {
@@ -226,6 +264,7 @@ class File extends Model
                 $thumbnails[] = FileThumbnail::create([
                     'file_id' => $file->id,
                     'file_type_id' => $file->file_type_id,
+                    'module' => $module,
                     'path' => $file->path . '/' . $size,
                     'storage_path' => $file->storage_path . '/' . $size,
                     'name' => $file->name,

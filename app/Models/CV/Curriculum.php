@@ -38,39 +38,58 @@ class Curriculum extends Model
         return asset($path);
     }
 
-    public function getUrlImageThumbnail1024Attribute()
+    public function getUrlImageThumbnailMicroAttribute()
     {
-        $path = $this->image ? $this->image->path : 'images/templates/1024x1024.png';
+        if ($this->image) {
+            return $this->image->thumbnail('micro');
+        }
 
-        return asset($path);
+        return '';
     }
 
-    public function getUrlImageThumbnail512Attribute()
+    public function getUrlImageThumbnailSmallAttribute()
     {
-        $path = $this->image ? $this->image->path : 'images/templates/512x512.png';
+        if ($this->image) {
+            return $this->image->thumbnail('small');
+        }
 
-        return asset($path);
+        return '';
     }
 
-    public function getUrlImageThumbnail256Attribute()
+    public function getUrlImageThumbnailMediumAttribute()
     {
-        $path = $this->image ? $this->image->path : 'images/templates/256x256.png';
+        if ($this->image) {
+            return $this->image->thumbnail('medium');
+        }
 
-        return asset($path);
+        return '';
     }
 
-    public function getUrlImageThumbnail150Attribute()
+    public function getUrlImageThumbnailLargeAttribute()
     {
-        $path = $this->image ? $this->image->path : 'images/templates/150x150.png';
+        if ($this->image) {
+            return $this->image->thumbnail('large');
+        }
 
-        return asset($path);
+        return '';
     }
 
-    public function getUrlImageThumbnail80Attribute()
+    public function getUrlImageThumbnailXlargeAttribute()
     {
-        $path = $this->image ? $this->image->path : 'images/templates/80x80.png';
+        if ($this->image) {
+            return $this->image->thumbnail('xlarge');
+        }
 
-        return asset($path);
+        return '';
+    }
+
+    public function getUrlImageThumbnailXXlargeAttribute()
+    {
+        if ($this->image) {
+            return $this->image->thumbnail('xxlarge');
+        }
+
+        return '';
     }
 
     /**

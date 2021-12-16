@@ -36,6 +36,10 @@ class CreateFilesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('set null');
 
+            $table->string('module', 255)
+                ->nullable()
+                ->comment('Nombre del módulo para acceder por path');
+
             $table->string('path', 511)
                 ->comment('Ruta que tiene la aplicación hacia el archivo, por ejemplo: users/avatar');
             $table->string('storage_path', 511)
