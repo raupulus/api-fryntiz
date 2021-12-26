@@ -3,11 +3,12 @@
 namespace App\Models\CV;
 
 use App\Models\File;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use function array_key_exists;
-use function asset;
 
+/**
+ * Class Curriculum
+ */
 class Curriculum extends Model
 {
     protected $table = 'cv';
@@ -33,63 +34,53 @@ class Curriculum extends Model
      */
     public function getUrlImageAttribute()
     {
-        $path = $this->image ? $this->image->path : 'images/templates/1024x1024.png';
-
-        return asset($path);
+        return $this->image ? $this->image->url : File::urlDefaultImage('large');
     }
+
+
+    // BORRAR desde aquí (refactorizando antes)
 
     public function getUrlImageThumbnailMicroAttribute()
     {
-        if ($this->image) {
-            return $this->image->thumbnail('micro');
-        }
-
-        return '';
+        return $this->urlThumbnail('micro');
     }
 
     public function getUrlImageThumbnailSmallAttribute()
     {
-        if ($this->image) {
-            return $this->image->thumbnail('small');
-        }
-
-        return '';
+        return $this->urlThumbnail('small');
     }
 
     public function getUrlImageThumbnailMediumAttribute()
     {
-        if ($this->image) {
-            return $this->image->thumbnail('medium');
-        }
+        return $this->urlThumbnail('medium');
+    }
 
-        return '';
+    public function getUrlImageThumbnailNormalAttribute()
+    {
+        return $this->urlThumbnail('normal');
     }
 
     public function getUrlImageThumbnailLargeAttribute()
     {
-        if ($this->image) {
-            return $this->image->thumbnail('large');
-        }
-
-        return '';
+        return $this->urlThumbnail('large');
     }
 
-    public function getUrlImageThumbnailXlargeAttribute()
+    // BORRAR Hasta aquí
+
+    /**
+     * Devuelve el thumbnail de la imagen asociada.
+     *
+     * @param $size
+     *
+     * @return mixed
+     */
+    public function urlThumbnail($size = 'medium')
     {
         if ($this->image) {
-            return $this->image->thumbnail('xlarge');
+            return $this->image->thumbnail($size);
         }
 
-        return '';
-    }
-
-    public function getUrlImageThumbnailXXlargeAttribute()
-    {
-        if ($this->image) {
-            return $this->image->thumbnail('xxlarge');
-        }
-
-        return '';
+        return File::urlDefaultImage($size);
     }
 
 

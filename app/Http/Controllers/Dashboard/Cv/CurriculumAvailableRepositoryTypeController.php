@@ -74,7 +74,9 @@ class CurriculumAvailableRepositoryTypeController extends Controller
 
         ## Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
-            $file = File::addFile($request->file('image'), 'cv', true, $repositoryType->image_id);
+            $file = File::addFile($request->file('image'), 'cv_repository_type',
+                false,
+                $repositoryType->image_id);
 
             if (!$repositoryType->image_id && $file) {
                 $repositoryType->image_id = $file->id;

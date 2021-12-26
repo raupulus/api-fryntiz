@@ -28,11 +28,10 @@ class File extends Model
 
     public static $thumbnailsSizeWidth = [
         'micro' => 50,
-        'small' => 100,
-        'medium' => 160,
-        'large' => 320,
-        'xlarge' => 640,
-        'xxlarge' => 1280
+        'small' => 160,
+        'medium' => 320,
+        'normal' => 640,
+        'large' => 1280,
     ];
 
     public static $genericImages = [
@@ -132,6 +131,37 @@ class File extends Model
     }
 
     /**
+     * Devuelve la url de una imagen genérica.
+     *
+     * @return string
+     */
+    public static function urlDefaultImage($size = 'medium')
+    {
+        switch ($size) {
+            case 'micro':
+                $name = 'micro.jpg';
+                break;
+            case 'small':
+                $name = 'small.jpg';
+                break;
+            case 'medium':
+                $name = 'medium.jpg';
+                break;
+            case 'normal':
+                $name = 'normal.jpg';
+                break;
+            case 'large':
+                $name = 'large.jpg';
+                break;
+            default:
+                $name = 'medium.jpg';
+                break;
+        }
+
+        return asset('images/default/' . $name);
+    }
+
+    /**
      * Almacena y devuelve un archivo recibiendo el objeto de tipo UploadFile.
      * Lo devuelve una vez almacenado.
      *
@@ -180,6 +210,10 @@ class File extends Model
             }
         }
 
+
+        // TODO → Máximo tamaño de archivo original 2560x1800px
+
+        // TODO → Borrar o cambiar metadatos de las imágenes.
 
         $width = $height = null;
 

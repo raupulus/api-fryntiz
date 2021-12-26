@@ -58,22 +58,22 @@
 
                                     <div class="input-group">
                                         <img
-                                            src="{{ $repositoryType->urlImageThumbnailSmall }}"
-                                            alt="Curriculum Image"
-                                            id="cv-image-preview"
+                                            src="{{ $repositoryType->urlThumbnail ('small') }}"
+                                            alt="Imagen para el repositorio"
+                                            id="repository-image-preview"
                                             style="width: 80px; margin-right: 10px;"/>
 
                                         <div class="custom-file">
 
                                             <input type="file"
                                                    name="image"
-                                                   id="cv-image-input"
+                                                   id="repository-image-input"
                                                    accept="image/*"
                                                    class="form-control-file">
 
                                             <label class="custom-file-label"
-                                                   id="cv-image-label"
-                                                   for="cv-image-input">
+                                                   id="repository-image-label"
+                                                   for="repository-image-input">
 
                                                 @if ($repositoryType->image)
                                                     {{$repositoryType->image->original_name}}
@@ -148,10 +148,8 @@
 
                 </div>
 
-
             </form>
         </div>
-
 
     </div>
 @stop
@@ -162,9 +160,9 @@
     <script>
         window.document.addEventListener('click', () => {
             /********** Cambiar Imagen al subirla **********/
-            const avatarInput = document.getElementById('cv-image-input');
-            const imageView = document.getElementById('cv-image-preview');
-            const imageLabel = document.getElementById('cv-image-label');
+            const avatarInput = document.getElementById('repository-image-input');
+            const imageView = document.getElementById('repository-image-preview');
+            const imageLabel = document.getElementById('repository-image-label');
 
             if(avatarInput) {
                 avatarInput.onchange = () => {
