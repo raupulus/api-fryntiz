@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard\Cv;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest;
 use App\Http\Requests\StoreCvRequest;
 use App\Models\CV\Curriculum;
 use App\Models\CV\CurriculumAvailableRepositoryType;
@@ -53,11 +54,11 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Guarda un tipo de repositorio en la base de datos.
      *
-     * @param \App\Http\Requests\StoreCvRequest $request
+     * @param \App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreCvRequest $request)
+    public function store(StoreCvAvailableRepositoryTypeRequest $request)
     {
         // TODO → Check if is admin and can modify repositories type
 
@@ -84,7 +85,7 @@ class CurriculumAvailableRepositoryTypeController extends Controller
             }
         }
 
-        return redirect()->route('dashboard.curriculums.repository-available');
+        return redirect()->route('dashboard.cv.repository_available_type.index');
     }
 
     /**
@@ -112,11 +113,11 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Procesa el guardado de las modificaciones sobre un tipo de repositorio.
      *
-     * @param \App\Http\Requests\StoreCvRequest $request
+     * @param \App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(StoreCvRequest $request)
+    public function update(StoreCvAvailableRepositoryTypeRequest $request)
     {
         // TODO → Check if is admin and can modify repositories type
 
@@ -146,6 +147,6 @@ class CurriculumAvailableRepositoryTypeController extends Controller
 
         $deleted = $repositoryType->safeDelete();
 
-        return redirect()->route('dashboard.curriculums.repository-available');
+        return redirect()->route('dashboard.cv.repository_available_type.index');
     }
 }

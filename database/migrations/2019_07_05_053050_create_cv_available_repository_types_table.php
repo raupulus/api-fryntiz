@@ -27,7 +27,7 @@ class CreateCvAvailableRepositoryTypesTable extends Migration
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('SET NULL');
             $table->string('title', 511)
                 ->nullable()
                 ->comment('Título para el repositorio');

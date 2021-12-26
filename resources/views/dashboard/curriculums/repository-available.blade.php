@@ -102,7 +102,7 @@
                                 <td class="project-actions text-right">
 
                                     <a class="btn btn-info btn-sm"
-                                       href="{{route('dashboard.cv.repository.edit',  $repositoryType->id)}}">
+                                       href="{{route('dashboard.cv.repository_available_type.edit',  $repositoryType->id)}}">
                                         <i class="fas fa-pencil-alt">
                                         </i>
                                         Editar

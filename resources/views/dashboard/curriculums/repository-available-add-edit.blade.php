@@ -13,14 +13,28 @@
 
     <div class="row" id="app">
         <div class="col-12">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </div>
+
+        <div class="col-12">
             <form
-                action="{{$repositoryType && $repositoryType->id ? route('dashboard.cv.update', $repositoryType->id) : route('dashboard.cv.store')}}"
+                action="{{$repositoryType && $repositoryType->id ? route
+                ('dashboard.cv.repository_available_type.update',
+                $repositoryType->id) : route('dashboard.cv.repository_available_type.store')}}"
                 enctype="multipart/form-data"
                 method="POST">
 
                 @csrf
 
-                <input type="hidden" name="cv_id"
+                <input type="hidden" name="repositoryType_id"
                        value="{{$repositoryType->id}}">
 
                 <div class="row">
@@ -99,7 +113,7 @@
 
                             <div class="card-body" style="min-height: 160px;">
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">
+                                    <label for="title">
                                         Título
                                     </label>
                                     <input type="text"
@@ -110,7 +124,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">
+                                    <label for="name">
                                         Nombre
                                     </label>
                                     <input type="text"
@@ -121,7 +135,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">
+                                    <label for="slug">
                                         Slug
                                     </label>
                                     <input type="text"
@@ -132,7 +146,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">
+                                    <label for="url">
                                         Url
                                     </label>
                                     <input type="text"

@@ -51,8 +51,11 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.cv.repository_available_type.edit');
         Route::post('/repository-available-type/store', [CurriculumAvailableRepositoryTypeController::class, 'store'])
             ->name('dashboard.cv.repository_available_type.store');
+        Route::post('/repository-available-type/update/{id}', [CurriculumAvailableRepositoryTypeController::class, 'update'])
+            ->name('dashboard.cv.repository_available_type.update');
         Route::post('/repository-available-type/destroy', [CurriculumAvailableRepositoryTypeController::class, 'destroy'])
             ->name('dashboard.cv.repository_available_type.destroy');
+
 
         ## Curriculums
         Route::get('/index', [CurriculumController::class, 'index'])
