@@ -222,9 +222,6 @@
                     </div>
                 </div>
 
-
-
-
             </form>
         </div>
 
@@ -240,22 +237,66 @@
 
                     <div class="card-body">
                         <div class="btn-group">
-                            <a href="#"
-                               class="btn btn-primary">
-                                <i class="fas fa-plus"></i>
+                            <a href="{{route('dashboard.cv.repository.index', $cv->id)}}"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
                                 Repositorios
                             </a>
 
-                            <a href="#"
-                               class="btn btn-primary">
-                                <i class="fas fa-plus"></i>
-                                ....
-                            </a>
+                            &nbsp;
 
                             <a href="#"
-                               class="btn btn-primary">
-                                <i class="fas fa-plus"></i>
-                                ....
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
+                            </a>
+
+                            &nbsp;
+
+                            <a href="#"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
+                            </a>
+
+                            &nbsp;
+
+                            <a href="#"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
+                            </a>
+
+                            &nbsp;
+
+                            <a href="#"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
+                            </a>
+
+                            &nbsp;
+
+                            <a href="#"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
+                            </a>
+
+                            &nbsp;
+
+                            <a href="#"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
+                            </a>
+
+                            &nbsp;
+
+                            <a href="#"
+                               class="btn btn-info">
+                                <i class="fas fa-folder-open"></i>
+                                ...
                             </a>
                         </div>
                     </div>

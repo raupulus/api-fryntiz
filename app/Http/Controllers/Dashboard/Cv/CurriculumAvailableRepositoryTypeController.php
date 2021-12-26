@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Dashboard\Cv;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest;
-use App\Http\Requests\StoreCvRequest;
-use App\Models\CV\Curriculum;
 use App\Models\CV\CurriculumAvailableRepositoryType;
 use App\Models\File;
 use Illuminate\Http\Request;
-use function auth;
 use function redirect;
 use function view;
 
