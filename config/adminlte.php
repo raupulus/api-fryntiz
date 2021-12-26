@@ -394,15 +394,17 @@ return [
                 ],
                 */
                 [
+                    'text' => 'Gestionar Repositorios',
+                    'route' => 'dashboard.cv.repository_available_type.index',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+
+                [
                     'text' => 'Gestionar Habilidades',
                     'url' => '#',
                     'icon' => 'far fa-fw fa-file',
                 ],
-                [
-                    'text' => 'Gestionar Repositorios',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
+
             ],
         ],
 
