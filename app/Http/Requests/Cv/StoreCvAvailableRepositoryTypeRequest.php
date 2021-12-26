@@ -42,10 +42,11 @@ class StoreCvAvailableRepositoryTypeRequest extends FormRequest
     {
         return [
             'image' => 'nullable|image|max:2048',
-            'title' => 'required|string|max:511',
-            'name' => 'required|string|max:511',
-            'slug' => 'required|string|max:511|unique:cv_available_repository_types,slug,'.$this->id,
-            'url' => 'required|string|max:511|url',
+            'title' => 'required|string|min:3|max:511',
+            'name' => 'required|string|min:3|max:511',
+            'slug' => 'required|alpha_dash|max:511|unique:cv_available_repository_types,slug' .
+                ($this->id ? (',' . $this->id) : ''),
+            'url' => 'required|string|min:12|max:511|url',
         ];
     }
 }

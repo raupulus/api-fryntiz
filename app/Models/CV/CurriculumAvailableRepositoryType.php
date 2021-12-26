@@ -4,6 +4,8 @@ namespace App\Models\CV;
 
 use App\Models\File;
 use Illuminate\Database\Eloquent\Model;
+use function func_get_args;
+use function is_array;
 
 /**
  * Class CurriculumAvailableRepositoryType
@@ -65,5 +67,22 @@ class CurriculumAvailableRepositoryType extends Model
         }
 
         return $this->delete();
+    }
+
+    /**
+     * Devuelve todos los elementos filtrados y ordenados en una colección de
+     * eloquent.
+     *
+     * @param $columns
+     *
+     * @return \App\Models\CV\CurriculumAvailableRepositoryType[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function all($columns = ['*'])
+    {
+        return static::query()
+            ->orderByDesc('updated_at')
+            ->get(
+                is_array($columns) ? $columns : func_get_args()
+            );
     }
 }

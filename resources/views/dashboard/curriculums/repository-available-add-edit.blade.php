@@ -141,7 +141,7 @@
                                     <input type="text"
                                            class="form-control"
                                            name="slug"
-                                           value="{{ old('slug', $repositoryType->slug) }}"
+                                           value="{{ \Str::slug(old('slug', $repositoryType->slug)) }}"
                                            placeholder="Slug, abreviatura para rutas">
                                 </div>
 
