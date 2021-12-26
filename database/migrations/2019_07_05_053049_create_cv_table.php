@@ -32,8 +32,8 @@ class CreateCvTable extends Migration
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onUpdate('CASCADE')
+                ->onDelete('SET NULL');
             $table->string('title', 511)
                 ->comment('Título para el curriculum');
             $table->text('presentation')
@@ -47,6 +47,14 @@ class CreateCvTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Indica si permite descargar el curriculum');
+            $table->boolean('is_default')
+                ->nullable()
+                ->default(0)
+                ->comment('Indica si es el curriculum por defecto');
+            $table->boolean('is_public')
+                ->nullable()
+                ->default(0)
+                ->comment('Indica si su visibilidad es pública');
             $table->timestamps();
             $table->softDeletes();
         });

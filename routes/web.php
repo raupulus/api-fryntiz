@@ -55,6 +55,9 @@ Route::group(['prefix' => '/file'], function () {
     Route::get('/resize/{module}/{id}/{width}/{slug?}', [FileController::class, 'resizeAndGet'])
         ->name('file.resize');
 
+    Route::post('/delete/{id}', [FileController::class, 'delete'])
+        ->name('file.delete');
+
 });
 
 Auth::routes();

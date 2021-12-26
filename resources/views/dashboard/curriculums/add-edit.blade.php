@@ -23,15 +23,42 @@
 
                 <div class="row">
                     <div class="col-12">
-                        <h2>
+                        <h2 style="display: inline-block;">
                             {{(isset($cv) && $cv && $cv->id) ? 'Editar ' .
                             $cv->title : 'Creando nuevo Curriculum Vitae'}}
 
+
+                        </h2>
+
+                        <div class="float-right">
                             <button type="submit" class="btn btn-success float-right">
                                 <i class="fas fa-save"></i>
                                 Guardar
                             </button>
-                        </h2>
+
+                            {{--
+                            @if (isset($cv) && $cv && $cv->id)
+
+                                &nbsp;
+
+                                <form action="{{route('dashboard.cv.destroy', $cv->id)}}"
+                                      method="POST"
+                                      style="display: inline-block;">
+
+                                    @csrf
+
+                                    <input type="hidden" name="id"
+                                           value="{{$cv->id}}">
+
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                        Eliminar
+                                    </button>
+
+                                </form>
+                            @endif
+                            --}}
+                        </div>
                     </div>
 
                     {{-- Imagen --}}
@@ -89,7 +116,7 @@
                                 </h3>
                             </div>
 
-                            <div class="card-body">
+                            <div class="card-body" style="min-height: 160px;">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">
                                         Título
@@ -108,10 +135,13 @@
                     <div class="col-md-6">
                         <div class="card card-warning">
                             <div class="card-header">
-                                <h3 class="card-title">Opciones del
-                                    Curriculum</h3>
+                                <h3 class="card-title">
+                                    Opciones del
+                                    Curriculum
+                                </h3>
                             </div>
-                            <div class="card-body">
+
+                            <div class="card-body" style="min-height: 160px;">
 
                                 <div class="form-group">
                                     <div
@@ -140,6 +170,28 @@
                                         <label class="custom-control-label"
                                                for="is_downloadable">
                                             Permitir descarga
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <!-- Default checked -->
+                                    <div
+                                        class="custom-control custom-switch">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               name="is_default"
+                                               id="is_default"
+                                            {{(old('is_default',  $cv->is_default) || !$cv->id) ? 'checked' : ''}} >
+                                        <label class="custom-control-label"
+                                               for="is_default">
+                                            Curriculum por defecto
+
+                                            <small class="text-muted">
+                                                <i>
+                                                    (Solo puede haber uno por usuario)
+                                                </i>
+                                            </small>
                                         </label>
                                     </div>
                                 </div>
@@ -175,6 +227,7 @@
 
             </form>
         </div>
+
 
         @if (isset($cv) && $cv && $cv->id)
             <div class="col-12">

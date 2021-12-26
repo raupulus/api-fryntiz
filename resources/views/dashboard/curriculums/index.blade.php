@@ -116,14 +116,24 @@
                                         Editar
                                     </a>
 
-                                    {{--
-                                    <a class="btn btn-danger btn-sm"
-                                       href="{{route('dashboard.cv.destroy')}}">
-                                        <i class="fas fa-trash">
-                                        </i>
-                                        Eliminar
-                                    </a>
-                                    --}}
+                                    &nbsp;
+
+                                    <form action="{{route('dashboard.cv.destroy')}}"
+                                          method="POST"
+                                          style="display: inline-block;">
+
+                                        @csrf
+
+                                        <input type="hidden" name="id"
+                                               value="{{$curriculum->id}}">
+
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                            Eliminar
+                                        </button>
+
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

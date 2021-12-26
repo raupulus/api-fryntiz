@@ -6,6 +6,7 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
 use function auth;
+use function redirect;
 use function response;
 
 /**
@@ -113,5 +114,27 @@ class FileController extends Controller
     public function download(string $module, int $id, string|null $slug = null)
     {
 
+    }
+
+    /**
+     * Elimina un archivo.
+     *
+     * @param int $id
+     *
+     * @return void
+     */
+    public function delete( int $id)
+    {
+        $destroy = File::safeDeleteById($id);
+
+        if ($destroy) {
+            $message = 'Archivo eliminado correctamente.';
+        } else {
+            $message = 'No se ha podido eliminar el archivo.';
+        }
+
+        // TODO → Redireccionar a la página de archivos? o atrás?.
+
+        return redirect()->back()->with('message', $message);
     }
 }

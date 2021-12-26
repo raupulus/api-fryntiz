@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCvRequest;
 use App\Models\CV\Curriculum;
 use App\Models\File;
 use Illuminate\Http\Request;
@@ -50,16 +51,17 @@ class CurriculumController extends Controller
     /**
      * Guarda un curriculum en la base de datos.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \App\Http\Requests\StoreCvRequest $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreCvRequest $request)
     {
         if (auth()->guest()) {
             return redirect()->route('login');
         }
 
+        ## Compruebo si está editando o creando un curriculum.
         if ($request->has('cv_id') && ($request->get('cv_id') > 0)) {
             $cv = Curriculum::find($request->get('cv_id'));
         } else {
@@ -72,10 +74,18 @@ class CurriculumController extends Controller
             return redirect()->back()->with('error', 'You are not authorized to edit this curriculum.');
         }
 
-
-        $cv->fill($request->all());
+        ## Guardo todos los campos que han pasado validación.
+        $cv->fill($request->validated());
         $cv->save();
 
+        ## Actualizo los demás curriculums para que solo haya 1 predefinido.
+        if ($cv->is_default) {
+            Curriculum::where('user_id', auth()->id())
+                ->where('id', '!=', $cv->id)
+                ->update(['is_default' => false]);
+        }
+
+        ## Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $file = File::addFile($request->file('image'), 'cv', true, $cv->image_id);
 
@@ -111,11 +121,11 @@ class CurriculumController extends Controller
     /**
      * Procesa el guardado de las modificaciones sobre un curriculum.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \App\Http\Requests\StoreCvRequest $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request)
+    public function update(StoreCvRequest $request)
     {
         return $this->store($request);
     }
@@ -125,9 +135,22 @@ class CurriculumController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy()
+    public function destroy(Request $request)
     {
-        //TODO
+        $id = $request->post('id');
+
+        if (! $id) {
+            return redirect()->back()->with('error', 'Curriculum not found.');
+        }
+
+        $cv = Curriculum::find($id);
+
+        if (!$cv) {
+            return redirect()->back()->with('error', 'Curriculum not found.');
+        }
+
+        $deleted = $cv->safeDelete();
+
         return redirect()->route('dashboard.cv.index');
     }
 }

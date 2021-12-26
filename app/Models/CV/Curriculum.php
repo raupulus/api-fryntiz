@@ -92,6 +92,22 @@ class Curriculum extends Model
         return '';
     }
 
+
+    /**
+     * Elimina de forma segura un curriculum y los datos asociados.
+     *
+     * @return bool
+     */
+    public function safeDelete()
+    {
+        ## Elimino la imagen asociada al curriculum y todas las miniaturas.
+        if ($this->image) {
+            $this->image->safeDelete();
+        }
+
+        return $this->delete();
+    }
+
     /**
      * Devuelve un array con todos los títulos de una tabla.
      *

@@ -121,6 +121,17 @@ class File extends Model
     }
 
     /**
+     * Elimina de forma segura la instancia actual con todos sus datos
+     * asociados como imágenes thumbnail y/o el propio archivo.
+     *
+     * @return bool
+     */
+    public function safeDelete()
+    {
+        return self::safeDeleteById($this->id);
+    }
+
+    /**
      * Almacena y devuelve un archivo recibiendo el objeto de tipo UploadFile.
      * Lo devuelve una vez almacenado.
      *
@@ -217,7 +228,7 @@ class File extends Model
      *
      * @param \App\Models\File $file
      *
-     * @return \App\Models\File
+     * @return array[\APP\Models\File]
      */
     public static function createThumbnails(File $file)
     {
@@ -277,5 +288,62 @@ class File extends Model
         }
 
         return array_filter($thumbnails);
+    }
+
+    /**
+     * Procesa el borrado por lote de un conjunto de archivos.
+     *
+     * @param array $ids Ids de los archivos a borrar.
+     *
+     * @return array[int]
+     */
+    public static function safeDeleteByIds(array $ids)
+    {
+        $files = File::whereIn('id', $ids)->get();
+
+        $result = [];
+
+        ## Elimino cada archivo recibido.
+        foreach ($files as $file) {
+            $result[] = [
+                'id' => $file->id,
+                'success' => self::safeDeleteById($file->id)
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Elimina un archivo.
+     * @param $id
+     *
+     * @return false|int
+     */
+    public static function safeDeleteById($id)
+    {
+        $file = File::find($id);
+
+        if (! $file) {
+            return false;
+        }
+
+        ## Elimino las miniaturas si tuviera.
+        $thumbnails = $file->thumbnails;
+
+        foreach ($thumbnails as $thumbnail) {
+            if (file_exists($thumbnail->storagePathFile)) {
+                unlink($thumbnail->storagePathFile);
+            }
+
+            $thumbnail->delete();
+        }
+
+        ## Borro el archivo.
+        if (file_exists($file->storagePathFile)) {
+            unlink($file->storagePathFile);
+        }
+
+        return $file->delete();
     }
 }
