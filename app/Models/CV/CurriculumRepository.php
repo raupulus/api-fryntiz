@@ -2,10 +2,12 @@
 
 namespace App\Models\CV;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class CurriculumRepository.
+ */
 class CurriculumRepository extends Model
 {
-    use HasFactory;
+    protected $table = 'cv_repositories';
 }

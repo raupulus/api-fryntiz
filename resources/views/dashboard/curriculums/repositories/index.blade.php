@@ -3,7 +3,7 @@
 @section('title', 'Curriculum Repositorios')
 
 @section('content_header')
-    <h1>
+        <h1>
         <i class="fas fa-globe"></i>
         Repositorios asociados al curriculum
     </h1>
@@ -14,16 +14,22 @@
     <div class="row" id="app">
 
         <div class="col-12">
-            <form action="{{route('dashboard.cv.store')}}">
+            <form action="{{route('dashboard.cv.repository.store')}}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @csrf
 
                 <div class="col-12">
+
                     <h2>
-                        Añade un nuevo Repositorio
-                        <a href="{{ route('dashboard.cv.store') }}"
-                           class="btn btn-success float-right">
-                            <i class="fas fa-save"></i>
-                            Guardar
+                        <a style="font-size: 2rem;"
+                           href="{{route('dashboard.cv.edit', $cv->id)}}" >
+                            <i class="fa fa-arrow-left"></i>
+
                         </a>
+
+                        Añade un nuevo Repositorio
                     </h2>
                 </div>
 
@@ -58,19 +64,26 @@
                                         <label for="image">
                                             Imagen
                                         </label>
+
                                         <div class="input-group">
-                                            <img src="#" style="width: 80px" />
+                                            <img src="{{ \App\Models\File::urlDefaultImage('small') }}"
+                                                 alt="Curriculum Image"
+                                                 id="cv-image-preview"
+                                                 style="width: 80px; margin-right: 10px;"/>
 
                                             <div class="custom-file">
 
                                                 <input type="file"
                                                        name="image"
-                                                       id="image"
+                                                       id="cv-image-input"
+                                                       accept="image/*"
                                                        class="form-control-file">
 
                                                 <label class="custom-file-label"
-                                                       for="image">
-                                                    Cambiar archivo
+                                                       id="cv-image-label"
+                                                       for="cv-image-input">
+
+                                                        Añadir archivo
                                                 </label>
                                             </div>
                                         </div>
@@ -79,7 +92,7 @@
                                     <div class="form-group">
                                         <label>Tipo de Repositorio</label>
                                         <select class="form-control">
-                                            @foreach(\App\Models\CV\CurriculumAvailableRepositoryType::all() as $type)
+                                            @foreach($availableRepositories as $type)
                                                 <option value="{{ $type->id }}">
                                                     {{ $type->title }}
                                                 </option>
@@ -141,10 +154,26 @@
                                         </span>
                                             </div>
 
-                                            <input type="text"
+                                            <input name="name"
+                                                   type="text"
                                                    value=""
                                                    class="form-control"
                                                    placeholder="arduino-project">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            Descripción
+                                        </label>
+
+                                        <div class="input-group mb-3">
+
+                                            <textarea name="description"
+                                                      class="form-control"
+                                                      rows="5"
+                                                      value=""
+                                                      placeholder="Descripción del repositorio"></textarea>
                                         </div>
                                     </div>
 
@@ -171,4 +200,33 @@
 
 @section('js')
     <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
+
+
+    <script>
+        window.document.addEventListener('click', () => {
+            /********** Cambiar Imagen al subirla **********/
+            const avatarInput = document.getElementById('cv-image-input');
+            const imageView = document.getElementById('cv-image-preview');
+            const imageLabel = document.getElementById('cv-image-label');
+
+            if (avatarInput) {
+                avatarInput.onchange = () => {
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                        imageView.src = reader.result;
+                    }
+
+                    if (avatarInput.files && avatarInput.files[0]) {
+                        reader.readAsDataURL(avatarInput.files[0]);
+
+                        if (imageLabel) {
+                            imageLabel.textContent = avatarInput.files[0].name;
+                        }
+                    }
+                };
+            }
+
+        });
+    </script>
 @stop

@@ -80,7 +80,7 @@ class CurriculumAvailableRepositoryType extends Model
     public static function all($columns = ['*'])
     {
         return static::query()
-            ->orderByDesc('updated_at')
+            ->orderBy('title')
             ->get(
                 is_array($columns) ? $columns : func_get_args()
             );

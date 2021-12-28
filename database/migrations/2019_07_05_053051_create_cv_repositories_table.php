@@ -25,21 +25,26 @@ class CreateCvRepositoriesTable extends Migration
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->unsignedBigInteger('image_id')
+                ->nullable()
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('CASCADE')
                 ->onDelete('SET NULL');
             $table->unsignedBigInteger('repository_type')
+                ->nullable()
                 ->comment('Relación con el tipo de repositorios');
             $table->foreign('repository_type')
                 ->references('id')->on('cv_available_repository_types')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onDelete('SET NULL');
             $table->text('url')
                 ->comment('Dirección al repositorio');
             $table->string('title', 511)
                 ->comment('Título para el repositorio');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del repositorio');
             $table->string('name', 255)
                 ->comment('Nombre del repositorio');
             $table->timestamps();
