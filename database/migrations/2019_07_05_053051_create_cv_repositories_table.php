@@ -31,10 +31,10 @@ class CreateCvRepositoriesTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('CASCADE')
                 ->onDelete('SET NULL');
-            $table->unsignedBigInteger('repository_type')
+            $table->unsignedBigInteger('repository_type_id')
                 ->nullable()
                 ->comment('Relación con el tipo de repositorios');
-            $table->foreign('repository_type')
+            $table->foreign('repository_type_id')
                 ->references('id')->on('cv_available_repository_types')
                 ->onUpdate('cascade')
                 ->onDelete('SET NULL');

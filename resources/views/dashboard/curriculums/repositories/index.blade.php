@@ -3,7 +3,7 @@
 @section('title', 'Curriculum Repositorios')
 
 @section('content_header')
-        <h1>
+    <h1>
         <i class="fas fa-globe"></i>
         Repositorios asociados al curriculum
     </h1>
@@ -24,7 +24,7 @@
 
                     <h2>
                         <a style="font-size: 2rem;"
-                           href="{{route('dashboard.cv.edit', $cv->id)}}" >
+                           href="{{route('dashboard.cv.edit', $cv->id)}}">
                             <i class="fa fa-arrow-left"></i>
 
                         </a>
@@ -42,14 +42,53 @@
 
                         <div class="card-body">
                             <table class="table table-bordered table-dark">
+                                <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Título</th>
+                                    <th>Tipo</th>
+                                    <th>URL</th>
+                                    <th>Nombre exacto</th>
+                                    <th>descripción</th>
+                                    <th>Acciones</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
                                 <tr>
                                     <td>data</td>
                                     <td>data</td>
                                     <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
                                 </tr>
+
+                                @foreach($repositories as $repository)
+                                    <tr>
+                                        <td>{{$repository->urlThumbnail('small')}}</td>
+                                        <td>{{$repository->title}}</td>
+                                        <td>{{$repository->type ? $repository->type->title : 'n/d'}}</td>
+                                        <td>{{$repository->url}}</td>
+                                        <td>{{$repository->name}}</td>
+                                        <td>{{$repository->description}}</td>
+                                        <td>
+                                            <a href="{{route('dashboard.cv.repository.edit', $repository->id)}}"
+                                               class="btn btn-warning btn-sm">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="{{route('dashboard.cv.repository.destroy', $repository->id)}}"
+                                               class="btn btn-danger btn-sm">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
                             </table>
 
-                            <hr />
+                            <hr/>
 
 
                             <div class="card card-secondary">
@@ -66,10 +105,11 @@
                                         </label>
 
                                         <div class="input-group">
-                                            <img src="{{ \App\Models\File::urlDefaultImage('small') }}"
-                                                 alt="Curriculum Image"
-                                                 id="cv-image-preview"
-                                                 style="width: 80px; margin-right: 10px;"/>
+                                            <img
+                                                src="{{ \App\Models\File::urlDefaultImage('small') }}"
+                                                alt="Curriculum Image"
+                                                id="cv-image-preview"
+                                                style="width: 80px; margin-right: 10px;"/>
 
                                             <div class="custom-file">
 
@@ -83,7 +123,7 @@
                                                        id="cv-image-label"
                                                        for="cv-image-input">
 
-                                                        Añadir archivo
+                                                    Añadir archivo
                                                 </label>
                                             </div>
                                         </div>
@@ -187,7 +227,6 @@
                             </div>
 
 
-
                         </div>
                     </div>
 
@@ -209,7 +248,7 @@
             const imageView = document.getElementById('cv-image-preview');
             const imageLabel = document.getElementById('cv-image-label');
 
-            if (avatarInput) {
+            if(avatarInput) {
                 avatarInput.onchange = () => {
                     const reader = new FileReader();
 
@@ -217,10 +256,10 @@
                         imageView.src = reader.result;
                     }
 
-                    if (avatarInput.files && avatarInput.files[0]) {
+                    if(avatarInput.files && avatarInput.files[0]) {
                         reader.readAsDataURL(avatarInput.files[0]);
 
-                        if (imageLabel) {
+                        if(imageLabel) {
                             imageLabel.textContent = avatarInput.files[0].name;
                         }
                     }
