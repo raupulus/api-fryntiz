@@ -14,6 +14,18 @@
     <div class="row" id="app">
 
         <div class="col-12">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </div>
+
+        <div class="col-12">
             <form action="{{route('dashboard.cv.repository.store')}}"
                   method="post"
                   enctype="multipart/form-data">
@@ -218,10 +230,11 @@
                                     </div>
 
                                     <div class="form-group">
-                                <span class="btn btn-primary">
-                                    <i class="fas fa-plus"></i>
-                                    Añadir
-                                </span>
+                                        <button type="submit"
+                                                class="btn btn-primary">
+                                            <i class="fas fa-plus"></i>
+                                            Añadir
+                                        </button>
                                     </div>
                                 </div>
                             </div>

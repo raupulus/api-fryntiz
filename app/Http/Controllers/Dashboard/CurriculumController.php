@@ -57,10 +57,6 @@ class CurriculumController extends Controller
      */
     public function store(StoreCvRequest $request)
     {
-        if (auth()->guest()) {
-            return redirect()->route('login');
-        }
-
         ## Compruebo si está editando o creando un curriculum.
         if ($request->has('cv_id') && ($request->get('cv_id') > 0)) {
             $cv = Curriculum::find($request->get('cv_id'));
