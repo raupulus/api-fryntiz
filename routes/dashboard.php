@@ -78,11 +78,11 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.repository.index');
             Route::get('/create', [CurriculumRepositoryController::class, 'create'])
                 ->name('dashboard.cv.repository.create');
-            Route::post('/store', [CurriculumRepositoryController::class, 'store'])
+            Route::post('/store/{cv_id}', [CurriculumRepositoryController::class, 'store'])
                 ->name('dashboard.cv.repository.store');
-            Route::get('/edit/{id}', [CurriculumRepositoryController::class, 'edit'])
+            Route::get('/edit/{cv_id}/{id}', [CurriculumRepositoryController::class, 'edit'])
                 ->name('dashboard.cv.repository.edit');
-            Route::post('/update/{id}', [CurriculumRepositoryController::class, 'update'])
+            Route::post('/update/{cv_id}/{id}', [CurriculumRepositoryController::class, 'update'])
                 ->name('dashboard.cv.repository.update');
             Route::post('/destroy', [CurriculumRepositoryController::class, 'destroy'])
                 ->name('dashboard.cv.repository.destroy');

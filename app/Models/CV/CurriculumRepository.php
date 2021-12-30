@@ -19,11 +19,11 @@ class CurriculumRepository extends Model
     /**
      * Relación con la imagen asociada al curriculum.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function image()
     {
-        return $this->hasOne(File::class, 'id', 'image_id');
+        return $this->belongsTo(File::class, 'image_id', 'id');
     }
 
     /**

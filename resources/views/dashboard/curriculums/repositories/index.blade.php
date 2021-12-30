@@ -26,8 +26,8 @@
         </div>
 
         <div class="col-12">
-            <form action="{{route('dashboard.cv.repository.store')}}"
-                  method="post"
+            <form action="{{route('dashboard.cv.repository.store', $cv->id)}}"
+                  method="POST"
                   enctype="multipart/form-data">
 
                 @csrf
@@ -56,40 +56,66 @@
                             <table class="table table-bordered table-dark">
                                 <thead>
                                 <tr>
-                                    <th>Imagen</th>
-                                    <th>Título</th>
-                                    <th>Tipo</th>
-                                    <th>URL</th>
-                                    <th>Nombre exacto</th>
-                                    <th>descripción</th>
-                                    <th>Acciones</th>
+                                    <th class="text-center">Imagen</th>
+                                    <th class="text-center">Título</th>
+                                    <th class="text-center">Tipo</th>
+                                    <th class="text-center">URL</th>
+                                    <th class="text-center">descripción</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
-                                <tr>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                </tr>
 
                                 @foreach($repositories as $repository)
                                     <tr>
-                                        <td>{{$repository->urlThumbnail('small')}}</td>
-                                        <td>{{$repository->title}}</td>
-                                        <td>{{$repository->type ? $repository->type->title : 'n/d'}}</td>
-                                        <td>{{$repository->url}}</td>
-                                        <td>{{$repository->name}}</td>
-                                        <td>{{$repository->description}}</td>
-                                        <td>
-                                            <a href="{{route('dashboard.cv.repository.edit', $repository->id)}}"
+                                        <td class="text-center">
+                                            <img
+                                                src="{{$repository->urlThumbnail('micro')}}"
+                                                alt="{{$repository->title}}"
+                                                style="width: 40px;">
+
+                                        </td>
+                                        <td class="align-middle">
+                                            {{$repository->title}}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            @if ($repository->type)
+                                                <a href="{{$repository->type->url}}"
+                                                   target="_blank">
+                                                    <span class="badge badge-success">
+                                                        @if ($repository->type->image)
+                                                            <img
+                                                                src="{{$repository->type->urlThumbnail('micro')}}"
+                                                                alt="{{$repository->type->image->name}}"
+                                                                style="width: 20px;"
+                                                            />
+                                                        @endif
+
+                                                        {{$repository->type->title}}
+                                                    </span>
+                                                </a>
+
+
+                                            @else
+                                                'n/d'
+                                            @endif
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="{{$repository->url}}"
+                                               target="_blank">
+                                                {{$repository->url}}
+                                            </a>
+                                        </td>
+                                        <td class="align-middle">{{$repository->description}}</td>
+                                        <td class="align-middle text-center">
+                                            <a href="{{route('dashboard.cv.repository.edit', [$cv->id, $repository->id])}}"
                                                class="btn btn-warning btn-sm">
                                                 <i class="fa fa-edit"></i>
                                             </a>
+
+                                            &nbsp;
+
                                             <a href="{{route('dashboard.cv.repository.destroy', $repository->id)}}"
                                                class="btn btn-danger btn-sm">
                                                 <i class="fa fa-trash"></i>
@@ -143,7 +169,8 @@
 
                                     <div class="form-group">
                                         <label>Tipo de Repositorio</label>
-                                        <select class="form-control">
+                                        <select class="form-control"
+                                                name="repository_type_id">
                                             @foreach($availableRepositories as $type)
                                                 <option value="{{ $type->id }}">
                                                     {{ $type->title }}
@@ -160,13 +187,14 @@
                                         <div class="input-group mb-3">
 
                                             <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-link"></i>
-                                        </span>
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-link"></i>
+                                                </span>
                                             </div>
 
-                                            <input type="text"
-                                                   value=""
+                                            <input type="url"
+                                                   value="{{old('url') }}"
+                                                   name="url"
                                                    class="form-control"
                                                    placeholder="https://gitlab.com/username/...">
                                         </div>
@@ -187,7 +215,8 @@
                                             </div>
 
                                             <input type="text"
-                                                   value=""
+                                                   value="{{old('title') }}"
+                                                   name="title"
                                                    class="form-control"
                                                    placeholder="Proyecto con Arduino">
                                         </div>
@@ -208,7 +237,7 @@
 
                                             <input name="name"
                                                    type="text"
-                                                   value=""
+                                                   value="{{old('name') }}"
                                                    class="form-control"
                                                    placeholder="arduino-project">
                                         </div>
@@ -224,8 +253,7 @@
                                             <textarea name="description"
                                                       class="form-control"
                                                       rows="5"
-                                                      value=""
-                                                      placeholder="Descripción del repositorio"></textarea>
+                                                      placeholder="Descripción del repositorio">{{old('description') }}</textarea>
                                         </div>
                                     </div>
 

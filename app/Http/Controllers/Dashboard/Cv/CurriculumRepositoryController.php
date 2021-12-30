@@ -68,10 +68,6 @@ class CurriculumRepositoryController extends Controller
             ]);
         }
 
-        if ($repository->curriculum->user_id !== auth()->id()) {
-            return abort(403);
-        }
-
         $repository->fill($request->validated());
         $repository->save();
 
@@ -79,14 +75,14 @@ class CurriculumRepositoryController extends Controller
         if ($request->hasFile('image')) {
             $file = File::addFile($request->file('image'), 'cv_repository',
                 true,
-                $cv->image_id);
+                $repository->image_id);
 
-            if (!$cv->image_id && $file) {
-                $cv->image_id = $file->id;
-                $cv->save();
+            if (!$repository->image_id && $file) {
+                $repository->image_id = $file->id;
+                $repository->save();
             }
         }
 
-        return redirect()->route('dashboard.curriculums.repositories.index', $cv->id);
+        return redirect()->route('dashboard.cv.repository.index', $cv->id);
     }
 }
