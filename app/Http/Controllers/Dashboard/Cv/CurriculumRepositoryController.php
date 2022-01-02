@@ -52,33 +52,6 @@ class CurriculumRepositoryController extends Controller
         ]);
     }
 
-    public function edit(int $cv_id, int $repository_id)
-    {
-        $cv = Curriculum::where('id', $cv_id)
-            ->where('user_id', auth()->id())
-            ->first();
-
-        if ( !$cv ) {
-            return abort(404);
-        }
-
-        $repositories = CurriculumRepository::where('curriculum_id', $cv->id)
-            ->orderByDesc('updated_at')
-            ->orderByDesc('created_at')
-            ->get();
-
-        $availableRepositories = CurriculumAvailableRepositoryType::all();
-
-        $repository = CurriculumRepository::find($repository_id);
-
-        return view('dashboard.curriculums.repositories.index')->with([
-            'cv' => $cv,
-            'repository' => $repository,
-            'repositories' => $repositories,
-            'availableRepositories' => $availableRepositories,
-        ]);
-    }
-
     /**
      * Almacena un nuevo repositorio para el usuario actual.
      *
@@ -104,6 +77,82 @@ class CurriculumRepositoryController extends Controller
                 'curriculum_id' => $cv->id,
                 'user_id' => auth()->id(),
             ]);
+        }
+
+        $repository->fill($request->validated());
+        $repository->save();
+
+        ## Compruebo si se ha subido una imagen y la guardo.
+        if ($request->hasFile('image')) {
+            $file = File::addFile($request->file('image'), 'cv_repository',
+                true,
+                $repository->image_id);
+
+            if (!$repository->image_id && $file) {
+                $repository->image_id = $file->id;
+                $repository->save();
+            }
+        }
+
+        return redirect()->route('dashboard.cv.repository.index', $cv->id);
+    }
+
+    /**
+     * Muestra la vista para editar un repoitorio.
+     *
+     * @param int $id ID del repositorio a editar.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|never
+     */
+    public function edit(int $id)
+    {
+        $repository = CurriculumRepository::find($id);
+
+        if ( !$repository ) {
+            return abort(404);
+        }
+
+        $cv = $repository->curriculum;
+
+        if ( !$cv || ($cv->user_id !== auth()->id())) {
+            return abort(404);
+        }
+
+        $repositories = CurriculumRepository::where('curriculum_id', $cv->id)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $availableRepositories = CurriculumAvailableRepositoryType::all();
+
+        return view('dashboard.curriculums.repositories.index')->with([
+            'cv' => $cv,
+            'repository' => $repository,
+            'repositories' => $repositories,
+            'availableRepositories' => $availableRepositories,
+        ]);
+    }
+
+    /**
+     * Guarda los cambios de un repositorio.
+     *
+     * @param \App\Http\Requests\Cv\StoreCvRepositoryRequest $request
+     * @param                                                $id
+     *
+     * @return \Illuminate\Http\RedirectResponse|never
+     */
+    public function update(StoreCvRepositoryRequest $request, $id)
+    {
+        $repository = CurriculumRepository::find($id);
+
+        if (!$repository) {
+            return abort(404);
+        }
+
+        $cv = $repository->curriculum;
+
+        if ( !$cv || ($cv->user_id !== auth()->id())) {
+            return abort(404);
         }
 
         $repository->fill($request->validated());

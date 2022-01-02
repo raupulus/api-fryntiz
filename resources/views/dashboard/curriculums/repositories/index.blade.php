@@ -26,11 +26,20 @@
         </div>
 
         <div class="col-12">
-            <form action="{{route('dashboard.cv.repository.store', $cv->id)}}"
+            @php($action = $repository && $repository->id ?
+                route('dashboard.cv.repository.update', $repository->id) :
+
+                route('dashboard.cv.repository.store', $cv->id))
+
+            <form action="{{$action}}"
                   method="POST"
                   enctype="multipart/form-data">
 
                 @csrf
+
+                @if ($repository && $repository->id)
+                    <input type="hidden" name="repository_id" value="{{$repository->id}}">
+                @endif
 
                 <div class="col-12">
 
@@ -111,7 +120,7 @@
                                         </td>
                                         <td class="align-middle">{{$rep->description}}</td>
                                         <td class="align-middle text-center">
-                                            <a href="{{route('dashboard.cv.repository.edit', [$cv->id, $rep->id])}}"
+                                            <a href="{{route('dashboard.cv.repository.edit', $rep->id)}}"
                                                class="btn btn-warning btn-sm">
                                                 <i class="fa fa-edit"></i>
                                             </a>
@@ -290,11 +299,19 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <button type="submit"
-                                                class="btn btn-primary">
-                                            <i class="fas fa-plus"></i>
-                                            Añadir
-                                        </button>
+                                        @if ($repository && $repository->id)
+                                            <button type="submit"
+                                                    class="btn btn-primary">
+                                                <i class="fas fa-save"></i>
+                                                Guardar
+                                            </button>
+                                        @else
+                                            <button type="submit"
+                                                    class="btn btn-primary">
+                                                <i class="fas fa-plus"></i>
+                                                Añadir
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
