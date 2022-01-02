@@ -11,6 +11,7 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use function auth;
 use function dd;
+use function redirect;
 use function view;
 
 /**
@@ -49,6 +50,14 @@ class CurriculumRepositoryController extends Controller
         ]);
     }
 
+    /**
+     * Almacena un nuevo repositorio para el usuario actual.
+     *
+     * @param \App\Http\Requests\Cv\StoreCvRepositoryRequest $request
+     * @param int                                            $cv_id ID del CV
+     *
+     * @return \Illuminate\Http\RedirectResponse|never
+     */
     public function store(StoreCvRepositoryRequest $request, int $cv_id)
     {
         $cv = Curriculum::where('id', $cv_id)
@@ -84,5 +93,31 @@ class CurriculumRepositoryController extends Controller
         }
 
         return redirect()->route('dashboard.cv.repository.index', $cv->id);
+    }
+
+    /**
+     * Elimina un repositorio para el usuario actual.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id
+     *
+     * @return never|void
+     */
+    public function destroy(Request $request, int $id)
+    {
+        $repository = CurriculumRepository::where('id', $id)->first();
+
+        if ( !$repository ||
+            !$repository->curriculum ||
+            ($repository->curriculum->user_id != auth()->id()))
+        {
+            return abort(404);
+        }
+
+        $cv_id = $repository->curriculum_id;
+
+        $repository->delete();
+
+        return redirect()->route('dashboard.cv.repository.index', $cv_id);
     }
 }

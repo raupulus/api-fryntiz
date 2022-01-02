@@ -84,7 +84,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.repository.edit');
             Route::post('/update/{cv_id}/{id}', [CurriculumRepositoryController::class, 'update'])
                 ->name('dashboard.cv.repository.update');
-            Route::post('/destroy', [CurriculumRepositoryController::class, 'destroy'])
+            Route::post('/destroy/{id}', [CurriculumRepositoryController::class, 'destroy'])
                 ->name('dashboard.cv.repository.destroy');
         });
     }

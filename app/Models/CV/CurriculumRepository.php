@@ -17,6 +17,16 @@ class CurriculumRepository extends Model
     ];
 
     /**
+     * Relaciona con el curriculum.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function curriculum()
+    {
+        return $this->belongsTo(Curriculum::class, 'curriculum_id', 'id');
+    }
+
+    /**
      * Relación con la imagen asociada al curriculum.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

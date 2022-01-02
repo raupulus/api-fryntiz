@@ -76,9 +76,11 @@
                                                 style="width: 40px;">
 
                                         </td>
+
                                         <td class="align-middle">
                                             {{$repository->title}}
                                         </td>
+
                                         <td class="align-middle text-center">
                                             @if ($repository->type)
                                                 <a href="{{$repository->type->url}}"
@@ -116,10 +118,22 @@
 
                                             &nbsp;
 
-                                            <a href="{{route('dashboard.cv.repository.destroy', $repository->id)}}"
-                                               class="btn btn-danger btn-sm">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
+                                            <form method="POST"
+                                                  action="{{route('dashboard.cv.repository.destroy', $repository->id)}}"
+                                                  class="d-inline-block">
+
+                                                @csrf
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="{{$repository->id}}" />
+
+                                                <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
+
                                         </td>
                                     </tr>
                                 @endforeach
