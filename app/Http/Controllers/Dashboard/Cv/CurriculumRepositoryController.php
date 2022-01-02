@@ -9,6 +9,7 @@ use App\Models\CV\CurriculumAvailableRepositoryType;
 use App\Models\CV\CurriculumRepository;
 use App\Models\File;
 use Illuminate\Http\Request;
+use function abort;
 use function auth;
 use function dd;
 use function redirect;
@@ -45,6 +46,34 @@ class CurriculumRepositoryController extends Controller
 
         return view('dashboard.curriculums.repositories.index')->with([
             'cv' => $cv,
+            'repository' => new CurriculumRepository(),
+            'repositories' => $repositories,
+            'availableRepositories' => $availableRepositories,
+        ]);
+    }
+
+    public function edit(int $cv_id, int $repository_id)
+    {
+        $cv = Curriculum::where('id', $cv_id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ( !$cv ) {
+            return abort(404);
+        }
+
+        $repositories = CurriculumRepository::where('curriculum_id', $cv->id)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $availableRepositories = CurriculumAvailableRepositoryType::all();
+
+        $repository = CurriculumRepository::find($repository_id);
+
+        return view('dashboard.curriculums.repositories.index')->with([
+            'cv' => $cv,
+            'repository' => $repository,
             'repositories' => $repositories,
             'availableRepositories' => $availableRepositories,
         ]);
