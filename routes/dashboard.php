@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dashboard\CurriculumController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
 use Illuminate\Support\Facades\Route;
 
@@ -86,6 +87,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.repository.update');
             Route::post('/destroy/{id}', [CurriculumRepositoryController::class, 'destroy'])
                 ->name('dashboard.cv.repository.destroy');
+        });
+
+        ## Servicios
+        Route::group(['prefix' => '/service'],  function () {
+            Route::get('/index/{id}',  [CurriculumServiceController::class, 'index'])
+                ->name('dashboard.cv.service.index');
+            Route::get('/create', [CurriculumServiceController::class, 'create'])
+                ->name('dashboard.cv.service.create');
+            Route::post('/store/{cv_id}', [CurriculumServiceController::class, 'store'])
+                ->name('dashboard.cv.service.store');
+            Route::get('/edit/{id}', [CurriculumServiceController::class, 'edit'])
+                ->name('dashboard.cv.service.edit');
+            Route::post('/update/{id}', [CurriculumServiceController::class, 'update'])
+                ->name('dashboard.cv.service.update');
+            Route::post('/destroy/{id}', [CurriculumServiceController::class, 'destroy'])
+                ->name('dashboard.cv.service.destroy');
         });
     }
 );
