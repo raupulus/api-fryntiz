@@ -27,14 +27,22 @@ class CreateCvServicesTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
 
-            $table->string('name', 511);
-            $table->text('url');
+            $table->string('name', 511)
+                ->comment('Nombre del servicio');
+            $table->string('url', 511)
+                ->nullable()
+                ->comment('URL hacia el servicio');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del servicio');
             $table->timestamps();
         });
     }
