@@ -28,7 +28,6 @@ class StoreCvRepositoryRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        //dd($this->all());
         $this->merge([
             'name' => Str::slug($this->name),
             'title' => Str::of($this->title)->trim()->ucfirst()

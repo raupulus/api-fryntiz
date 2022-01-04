@@ -260,7 +260,7 @@
                             <a href="#"
                                class="btn btn-info">
                                 <i class="fas fa-folder-open"></i>
-                                ...
+                                Servicios
                             </a>
 
                             &nbsp;
