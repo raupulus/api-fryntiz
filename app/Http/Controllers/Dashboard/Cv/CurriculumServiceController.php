@@ -51,12 +51,12 @@ class CurriculumServiceController extends Controller
     /**
      * Almacena un nuevo repositorio para el usuario actual.
      *
-     * @param \App\Http\Requests\Cv\StoreCvRepositoryRequest $request
+     * @param \App\Http\Requests\Cv\StoreCvServiceRequest $request
      * @param int                                            $cv_id ID del CV
      *
      * @return \Illuminate\Http\RedirectResponse|never
      */
-    public function store(StoreCvRepositoryRequest $request, int $cv_id)
+    public function store(StoreCvServiceRequest $request, int $cv_id)
     {
         $cv = Curriculum::where('id', $cv_id)
             ->where('user_id', auth()->id())
@@ -129,12 +129,12 @@ class CurriculumServiceController extends Controller
     /**
      * Guarda los cambios de un repositorio.
      *
-     * @param \App\Http\Requests\Cv\StoreCvRepositoryRequest $request
+     * @param \App\Http\Requests\Cv\StoreCvServiceRequest $request
      * @param                                                $id
      *
      * @return \Illuminate\Http\RedirectResponse|never
      */
-    public function update(StoreCvRepositoryRequest $request, $id)
+    public function update(StoreCvServiceRequest $request, $id)
     {
         $service = CurriculumService::find($id);
 

@@ -6,9 +6,9 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
 /**
- * Class StoreCvRepositoryRequest
+ * Class StoreCvServiceRequest
  */
-class StoreCvRepositoryRequest extends FormRequest
+class StoreCvServiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,8 +28,7 @@ class StoreCvRepositoryRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'name' => Str::slug($this->name),
-            'title' => Str::of($this->title)->trim()->ucfirst()
+            'name' => Str::of($this->name)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
             'description' => Str::of($this->description)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
@@ -47,9 +46,7 @@ class StoreCvRepositoryRequest extends FormRequest
     {
         return [
             'image' => 'nullable|image|max:2048',
-            'repository_type_id' => 'integer',
-            'title' => 'required|string|min:3|max:511',
-            'name' => 'required|string|alpha_dash|min:3|max:511',
+            'name' => 'required|string|min:3|max:511',
             'url' => 'required|string|min:12|max:511|url',
             'description' => 'nullable|string|min:10|max:1500',
         ];
