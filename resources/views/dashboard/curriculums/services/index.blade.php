@@ -26,10 +26,10 @@
         </div>
 
         <div class="col-12">
-            @php($action = $repository && $repository->id ?
-                route('dashboard.cv.repository.update', $repository->id) :
+            @php($action = $service && $service->id ?
+                route('dashboard.cv.service.update', $service->id) :
 
-                route('dashboard.cv.repository.store', $cv->id))
+                route('dashboard.cv.service.store', $cv->id))
 
             <form action="{{$action}}"
                   method="POST"
@@ -37,8 +37,9 @@
 
                 @csrf
 
-                @if ($repository && $repository->id)
-                    <input type="hidden" name="repository_id" value="{{$repository->id}}">
+                @if ($service && $service->id)
+                    <input type="hidden" name="service_id"
+                           value="{{$service->id}}">
                 @endif
 
                 <div class="col-12">
@@ -50,7 +51,7 @@
 
                         </a>
 
-                        Añade un nuevo Repositorio
+                        Añade un nuevo Servicio
                     </h2>
                 </div>
 
@@ -58,7 +59,7 @@
                 <div class="col-12">
                     <div class="card card-info">
                         <div class="card-header">
-                            <h3 class="card-title">Repositorios</h3>
+                            <h3 class="card-title">Servicios</h3>
                         </div>
 
                         <div class="card-body">
@@ -66,61 +67,38 @@
                                 <thead>
                                 <tr>
                                     <th class="text-center">Imagen</th>
-                                    <th class="text-center">Título</th>
-                                    <th class="text-center">Tipo</th>
+                                    <th class="text-center">Nombre</th>
                                     <th class="text-center">URL</th>
-                                    <th class="text-center">descripción</th>
+                                    <th class="text-center">Descripción</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
 
-                                @foreach($repositories as $rep)
+                                @foreach($services as $serv)
                                     <tr>
                                         <td class="text-center">
                                             <img
-                                                src="{{$rep->urlThumbnail('micro')}}"
-                                                alt="{{$rep->title}}"
+                                                src="{{$serv->urlThumbnail('micro')}}"
+                                                alt="{{$serv->name}}"
                                                 style="width: 40px;">
 
                                         </td>
 
                                         <td class="align-middle">
-                                            {{$rep->title}}
+                                            {{$serv->name}}
                                         </td>
 
-                                        <td class="align-middle text-center">
-                                            @if ($rep->type)
-                                                <a href="{{$rep->type->url}}"
-                                                   target="_blank">
-                                                    <span class="badge badge-success">
-                                                        @if ($rep->type->image)
-                                                            <img
-                                                                src="{{$rep->type->urlThumbnail('micro')}}"
-                                                                alt="{{$rep->type->image->name}}"
-                                                                style="width: 20px;"
-                                                            />
-                                                        @endif
-
-                                                        {{$rep->type->title}}
-                                                    </span>
-                                                </a>
-
-
-                                            @else
-                                                'n/d'
-                                            @endif
-                                        </td>
                                         <td class="align-middle">
-                                            <a href="{{$rep->url}}"
+                                            <a href="{{$serv->url}}"
                                                target="_blank">
-                                                {{$rep->url}}
+                                                {{$serv->url}}
                                             </a>
                                         </td>
-                                        <td class="align-middle">{{$rep->description}}</td>
+                                        <td class="align-middle">{{$serv->description}}</td>
                                         <td class="align-middle text-center">
-                                            <a href="{{route('dashboard.cv.repository.edit', $rep->id)}}"
+                                            <a href="{{route('dashboard.cv.service.edit', $serv->id)}}"
                                                class="btn btn-warning btn-sm">
                                                 <i class="fa fa-edit"></i>
                                             </a>
@@ -128,14 +106,14 @@
                                             &nbsp;
 
                                             <form method="POST"
-                                                  action="{{route('dashboard.cv.repository.destroy', $rep->id)}}"
+                                                  action="{{route('dashboard.cv.service.destroy', $serv->id)}}"
                                                   class="d-inline-block">
 
                                                 @csrf
 
                                                 <input type="hidden"
                                                        name="id"
-                                                       value="{{$rep->id}}" />
+                                                       value="{{$serv->id}}" />
 
                                                 <button type="submit"
                                                     class="btn btn-danger btn-sm">
@@ -155,7 +133,7 @@
                             <div class="card card-secondary">
                                 <div class="card-header">
                                     <h4 class="card-title">
-                                        Añadir nuevo repositorio
+                                        Añadir nuevo servicio
                                     </h4>
                                 </div>
 
@@ -168,8 +146,8 @@
                                         <div class="input-group">
                                             <img
                                                 src="{{
-                                                $repository ?
-                                                $repository->urlThumbnail('small') :
+                                                $service ?
+                                                $service->urlThumbnail('small') :
                                                 \App\Models\File::urlDefaultImage('small') }}"
                                                 alt="Curriculum Image"
                                                 id="cv-image-preview"
@@ -194,25 +172,6 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Tipo de Repositorio</label>
-                                        <select class="form-control"
-                                                name="repository_type_id">
-                                            @foreach($availableRepositories as $type)
-                                                @php($selected = '')
-
-                                                @if ($repository && $repository->repository_type_id == $type->id)
-                                                    @php($selected = 'selected')
-                                                @endif
-
-                                                <option value="{{ $type->id }}"
-                                                        {{$selected}}>
-                                                    {{ $type->title }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
                                         <label>
                                             URL
                                         </label>
@@ -227,18 +186,18 @@
 
                                             <input type="url"
                                                    value="{{old('url',
-                                                   $repository ?
-                                                   $repository->url : '') }}"
+                                                   $service ?
+                                                   $service->url : '') }}"
                                                    name="url"
                                                    class="form-control"
-                                                   placeholder="https://gitlab.com/username/...">
+                                                   placeholder="https://fryntiz.es">
                                         </div>
                                     </div>
 
 
                                     <div class="form-group">
                                         <label>
-                                            Título amigable
+                                            Nombre
                                         </label>
 
                                         <div class="input-group mb-3">
@@ -250,35 +209,12 @@
                                             </div>
 
                                             <input type="text"
-                                                   value="{{old('title',
-                                                   $repository ?
-                                                   $repository->title : '') }}"
-                                                   name="title"
-                                                   class="form-control"
-                                                   placeholder="Proyecto con Arduino">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>
-                                            Nombre exacto del repositorio
-                                        </label>
-
-                                        <div class="input-group mb-3">
-
-                                            <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-tint"></i>
-                                        </span>
-                                            </div>
-
-                                            <input name="name"
-                                                   type="text"
                                                    value="{{old('name',
-                                                   $repository ?
-                                                   $repository->name : '') }}"
+                                                   $service ?
+                                                   $service->name : '') }}"
+                                                   name="name"
                                                    class="form-control"
-                                                   placeholder="arduino-project">
+                                                   placeholder="Mumble">
                                         </div>
                                     </div>
 
@@ -292,14 +228,14 @@
                                             <textarea name="description"
                                                       class="form-control"
                                                       rows="5"
-                                                      placeholder="Descripción del repositorio">{{old('description',
-                                                   $repository ?
-                                                   $repository->description : '') }}</textarea>
+                                                      placeholder="Descripción del servicio">{{old('description',
+                                                   $service ?
+                                                   $service->description : '') }}</textarea>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        @if ($repository && $repository->id)
+                                        @if ($service && $service->id)
                                             <button type="submit"
                                                     class="btn btn-primary">
                                                 <i class="fas fa-save"></i>

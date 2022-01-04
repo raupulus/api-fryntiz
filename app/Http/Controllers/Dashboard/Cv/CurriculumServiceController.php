@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Dashboard\Cv;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Cv\StoreCvRepositoryRequest;
+use App\Http\Requests\Cv\StoreCvServiceRequest;
 use App\Models\CV\Curriculum;
 use App\Models\CV\CurriculumRepository;
 use App\Models\CV\CurriculumService;

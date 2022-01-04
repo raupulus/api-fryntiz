@@ -257,7 +257,7 @@
 
                             &nbsp;
 
-                            <a href="#"
+                            <a href="{{route('dashboard.cv.service.index', $cv->id)}}"
                                class="btn btn-info">
                                 <i class="fas fa-folder-open"></i>
                                 Servicios
