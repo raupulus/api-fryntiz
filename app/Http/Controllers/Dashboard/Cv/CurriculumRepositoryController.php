@@ -70,7 +70,7 @@ class CurriculumRepositoryController extends Controller
         }
 
         if ($request->has('repository_id')) {
-            $repository = CurriculumRepository::find($request->has('repository_id'));
+            $repository = CurriculumRepository::find($request->get('repository_id'));
         } else {
             $repository = new CurriculumRepository([
                 'curriculum_id' => $cv->id,
