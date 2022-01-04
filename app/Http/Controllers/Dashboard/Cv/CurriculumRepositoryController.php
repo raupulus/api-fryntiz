@@ -11,7 +11,6 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use function abort;
 use function auth;
-use function dd;
 use function redirect;
 use function view;
 
@@ -194,7 +193,8 @@ class CurriculumRepositoryController extends Controller
 
         $cv_id = $repository->curriculum_id;
 
-        $repository->delete();
+        ## Elimina el repositorio con todos los datos asociados como imágenes.
+        $deleted = $repository->safeDelete();
 
         return redirect()->route('dashboard.cv.repository.index', $cv_id);
     }

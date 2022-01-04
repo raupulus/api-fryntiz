@@ -71,4 +71,19 @@ class CurriculumRepository extends Model
 
         return File::urlDefaultImage($size);
     }
+
+    /**
+     * Elimina de forma segura un repositorio y los datos asociados.
+     *
+     * @return bool
+     */
+    public function safeDelete()
+    {
+        ## Elimino la imagen asociada al curriculum y todas las miniaturas.
+        if ($this->image) {
+            $this->image->safeDelete();
+        }
+
+        return $this->delete();
+    }
 }
