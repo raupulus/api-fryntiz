@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\Dashboard\CurriculumController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryOnlineController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
-use App\Models\CV\CurriculumAcademicComplementary;
 use Illuminate\Support\Facades\Route;
 
 ############################################################
@@ -107,19 +108,35 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Formación Académica Complementaria
-        Route::group(['prefix' => '/service'],  function () {
-            Route::get('/index/{id}',  [CurriculumAcademicComplementary::class, 'index'])
+        Route::group(['prefix' => '/academic-complementary'],  function () {
+            Route::get('/index/{id}', [CurriculumAcademicComplementaryController::class, 'index'])
                 ->name('dashboard.cv.academic_complementary.index');
-            Route::get('/create', [CurriculumAcademicComplementary::class, 'create'])
+            Route::get('/create', [CurriculumAcademicComplementaryController::class, 'create'])
                 ->name('dashboard.cv.academic_complementary.create');
-            Route::post('/store/{cv_id}', [CurriculumAcademicComplementary::class, 'store'])
+            Route::post('/store/{cv_id}', [CurriculumAcademicComplementaryController::class, 'store'])
                 ->name('dashboard.cv.academic_complementary.store');
-            Route::get('/edit/{id}', [CurriculumAcademicComplementary::class, 'edit'])
+            Route::get('/edit/{id}', [CurriculumAcademicComplementaryController::class, 'edit'])
                 ->name('dashboard.cv.academic_complementary.edit');
-            Route::post('/update/{id}', [CurriculumAcademicComplementary::class, 'update'])
+            Route::post('/update/{id}', [CurriculumAcademicComplementaryController::class, 'update'])
                 ->name('dashboard.cv.academic_complementary.update');
-            Route::post('/destroy/{id}', [CurriculumAcademicComplementary::class, 'destroy'])
+            Route::post('/destroy/{id}', [CurriculumAcademicComplementaryController::class, 'destroy'])
                 ->name('dashboard.cv.academic_complementary.destroy');
+        });
+
+        ## Formación Académica Online
+        Route::group(['prefix' => '/academic-complementary-online'],  function () {
+            Route::get('/index/{id}',  [CurriculumAcademicComplementaryOnlineController::class, 'index'])
+                ->name('dashboard.cv.academic_complementary_online.index');
+            Route::get('/create', [CurriculumAcademicComplementaryOnlineController::class, 'create'])
+                ->name('dashboard.cv.academic_complementary_online.create');
+            Route::post('/store/{cv_id}', [CurriculumAcademicComplementaryOnlineController::class, 'store'])
+                ->name('dashboard.cv.academic_complementary_online.store');
+            Route::get('/edit/{id}', [CurriculumAcademicComplementaryOnlineController::class, 'edit'])
+                ->name('dashboard.cv.academic_complementary_online.edit');
+            Route::post('/update/{id}', [CurriculumAcademicComplementaryOnlineController::class, 'update'])
+                ->name('dashboard.cv.academic_complementary_online.update');
+            Route::post('/destroy/{id}', [CurriculumAcademicComplementaryOnlineController::class, 'destroy'])
+                ->name('dashboard.cv.academic_complementary_online.destroy');
         });
     }
 );
