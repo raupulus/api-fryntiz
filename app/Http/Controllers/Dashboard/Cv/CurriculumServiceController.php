@@ -102,7 +102,7 @@ class CurriculumServiceController extends Controller
      */
     public function edit(int $id)
     {
-        $service = CurriculumRepository::find($id);
+        $service = CurriculumService::find($id);
 
         if ( !$service ) {
             return abort(404);

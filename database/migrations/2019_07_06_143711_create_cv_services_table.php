@@ -32,8 +32,8 @@ class CreateCvServicesTable extends Migration
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
 
             $table->string('name', 511)
                 ->comment('Nombre del servicio');
