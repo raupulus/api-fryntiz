@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeControlle
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
+use App\Models\CV\CurriculumAcademicComplementary;
 use Illuminate\Support\Facades\Route;
 
 ############################################################
@@ -103,6 +104,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.service.update');
             Route::post('/destroy/{id}', [CurriculumServiceController::class, 'destroy'])
                 ->name('dashboard.cv.service.destroy');
+        });
+
+        ## Formación Académica Complementaria
+        Route::group(['prefix' => '/service'],  function () {
+            Route::get('/index/{id}',  [CurriculumAcademicComplementary::class, 'index'])
+                ->name('dashboard.cv.academic_complementary.index');
+            Route::get('/create', [CurriculumAcademicComplementary::class, 'create'])
+                ->name('dashboard.cv.academic_complementary.create');
+            Route::post('/store/{cv_id}', [CurriculumAcademicComplementary::class, 'store'])
+                ->name('dashboard.cv.academic_complementary.store');
+            Route::get('/edit/{id}', [CurriculumAcademicComplementary::class, 'edit'])
+                ->name('dashboard.cv.academic_complementary.edit');
+            Route::post('/update/{id}', [CurriculumAcademicComplementary::class, 'update'])
+                ->name('dashboard.cv.academic_complementary.update');
+            Route::post('/destroy/{id}', [CurriculumAcademicComplementary::class, 'destroy'])
+                ->name('dashboard.cv.academic_complementary.destroy');
         });
     }
 );
