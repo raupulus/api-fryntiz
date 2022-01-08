@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryOnlineController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicTrainingController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumCollaborationController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -155,6 +156,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.academic_training.update');
             Route::post('/destroy/{id}', [CurriculumAcademicTrainingController::class, 'destroy'])
                 ->name('dashboard.cv.academic_training.destroy');
+        });
+
+        ## Colaboraciones
+        Route::group(['prefix' => '/collaboration'],  function () {
+            Route::get('/index/{id}',  [CurriculumCollaborationController::class, 'index'])
+                ->name('dashboard.cv.collaboration.index');
+            Route::get('/create', [CurriculumCollaborationController::class, 'create'])
+                ->name('dashboard.cv.collaboration.create');
+            Route::post('/store/{cv_id}', [CurriculumCollaborationController::class, 'store'])
+                ->name('dashboard.cv.collaboration.store');
+            Route::get('/edit/{id}', [CurriculumCollaborationController::class, 'edit'])
+                ->name('dashboard.cv.collaboration.edit');
+            Route::post('/update/{id}', [CurriculumCollaborationController::class, 'update'])
+                ->name('dashboard.cv.collaboration.update');
+            Route::post('/destroy/{id}', [CurriculumCollaborationController::class, 'destroy'])
+                ->name('dashboard.cv.collaboration.destroy');
         });
     }
 );
