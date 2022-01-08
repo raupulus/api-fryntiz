@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dashboard\CurriculumController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryOnlineController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicTrainingController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
@@ -137,6 +138,23 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.academic_complementary_online.update');
             Route::post('/destroy/{id}', [CurriculumAcademicComplementaryOnlineController::class, 'destroy'])
                 ->name('dashboard.cv.academic_complementary_online.destroy');
+        });
+
+        ## Formación Académica
+        Route::group(['prefix' => '/academic-training'],  function () {
+            Route::get('/index/{id}',  [CurriculumAcademicTrainingController::class,
+                'index'])
+                ->name('dashboard.cv.academic_training.index');
+            Route::get('/create', [CurriculumAcademicTrainingController::class, 'create'])
+                ->name('dashboard.cv.academic_training.create');
+            Route::post('/store/{cv_id}', [CurriculumAcademicTrainingController::class, 'store'])
+                ->name('dashboard.cv.academic_training.store');
+            Route::get('/edit/{id}', [CurriculumAcademicTrainingController::class, 'edit'])
+                ->name('dashboard.cv.academic_training.edit');
+            Route::post('/update/{id}', [CurriculumAcademicTrainingController::class, 'update'])
+                ->name('dashboard.cv.academic_training.update');
+            Route::post('/destroy/{id}', [CurriculumAcademicTrainingController::class, 'destroy'])
+                ->name('dashboard.cv.academic_training.destroy');
         });
     }
 );
