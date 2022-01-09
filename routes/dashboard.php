@@ -12,6 +12,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceNoAccreditedController
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceOtherController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceSelfEmployeeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumHobbyController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumJobController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -274,6 +275,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.hobby.update');
             Route::post('/destroy/{id}', [CurriculumHobbyController::class, 'destroy'])
                 ->name('dashboard.cv.hobby.destroy');
+        });
+
+        ## Jobs
+        Route::group(['prefix' => '/job'],  function () {
+            Route::get('/index/{id}', [CurriculumJobController::class, 'index'])
+                ->name('dashboard.cv.job.index');
+            Route::get('/create', [CurriculumJobController::class, 'create'])
+                ->name('dashboard.cv.job.create');
+            Route::post('/store/{cv_id}', [CurriculumJobController::class, 'store'])
+                ->name('dashboard.cv.job.store');
+            Route::get('/edit/{id}', [CurriculumJobController::class, 'edit'])
+                ->name('dashboard.cv.job.edit');
+            Route::post('/update/{id}', [CurriculumJobController::class, 'update'])
+                ->name('dashboard.cv.job.update');
+            Route::post('/destroy/{id}', [CurriculumJobController::class, 'destroy'])
+                ->name('dashboard.cv.job.destroy');
         });
 
     }
