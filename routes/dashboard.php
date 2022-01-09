@@ -9,6 +9,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumCollaborationController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAdditionalController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceNoAccreditedController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceOtherController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -224,5 +225,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
             Route::post('/destroy/{id}', [CurriculumExperienceNoAccreditedController::class, 'destroy'])
                 ->name('dashboard.cv.experience_no_accredited.destroy');
         });
+
+        ## Experiencia Laboral Otros
+        Route::group(['prefix' => '/experience-other'],  function () {
+            Route::get('/index/{id}', [CurriculumExperienceOtherController::class, 'index'])
+                ->name('dashboard.cv.experience_other.index');
+            Route::get('/create', [CurriculumExperienceOtherController::class, 'create'])
+                ->name('dashboard.cv.experience_other.create');
+            Route::post('/store/{cv_id}', [CurriculumExperienceOtherController::class, 'store'])
+                ->name('dashboard.cv.experience_other.store');
+            Route::get('/edit/{id}', [CurriculumExperienceOtherController::class, 'edit'])
+                ->name('dashboard.cv.experience_other.edit');
+            Route::post('/update/{id}', [CurriculumExperienceOtherController::class, 'update'])
+                ->name('dashboard.cv.experience_other.update');
+            Route::post('/destroy/{id}', [CurriculumExperienceOtherController::class, 'destroy'])
+                ->name('dashboard.cv.experience_other.destroy');
+        });
+
     }
 );
