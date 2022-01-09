@@ -16,6 +16,8 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumJobController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumProjectController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumSkillTypeController;
 use App\Http\Controllers\Dashboard\LanguageController;
 use Illuminate\Support\Facades\Route;
 
@@ -308,6 +310,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.project.update');
             Route::post('/destroy/{id}', [CurriculumProjectController::class, 'destroy'])
                 ->name('dashboard.cv.project.destroy');
+        });
+
+        ## Habilidades
+        Route::group(['prefix' => '/skill'],  function () {
+            Route::get('/index/{id}', [CurriculumSkillController::class, 'index'])
+                ->name('dashboard.cv.skill.index');
+            Route::get('/create', [CurriculumSkillController::class, 'create'])
+                ->name('dashboard.cv.skill.create');
+            Route::post('/store/{cv_id}', [CurriculumSkillController::class, 'store'])
+                ->name('dashboard.cv.skill.store');
+            Route::get('/edit/{id}', [CurriculumSkillController::class, 'edit'])
+                ->name('dashboard.cv.skill.edit');
+            Route::post('/update/{id}', [CurriculumSkillController::class, 'update'])
+                ->name('dashboard.cv.skill.update');
+            Route::post('/destroy/{id}', [CurriculumSkillController::class, 'destroy'])
+                ->name('dashboard.cv.skill.destroy');
         });
 
     }
