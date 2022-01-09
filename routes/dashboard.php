@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicTrainingController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumCollaborationController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAccreditedController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAdditionalController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -189,6 +190,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_accredited.update');
             Route::post('/destroy/{id}', [CurriculumExperienceAccreditedController::class, 'destroy'])
                 ->name('dashboard.cv.experience_accredited.destroy');
+        });
+
+        ## Experiencia Laboral Adicional
+        Route::group(['prefix' => '/experience-additional'],  function () {
+            Route::get('/index/{id}', [CurriculumExperienceAdditionalController::class, 'index'])
+                ->name('dashboard.cv.experience_additional.index');
+            Route::get('/create', [CurriculumExperienceAdditionalController::class, 'create'])
+                ->name('dashboard.cv.experience_additional.create');
+            Route::post('/store/{cv_id}', [CurriculumExperienceAdditionalController::class, 'store'])
+                ->name('dashboard.cv.experience_additional.store');
+            Route::get('/edit/{id}', [CurriculumExperienceAdditionalController::class, 'edit'])
+                ->name('dashboard.cv.experience_additional.edit');
+            Route::post('/update/{id}', [CurriculumExperienceAdditionalController::class, 'update'])
+                ->name('dashboard.cv.experience_additional.update');
+            Route::post('/destroy/{id}', [CurriculumExperienceAdditionalController::class, 'destroy'])
+                ->name('dashboard.cv.experience_additional.destroy');
         });
     }
 );
