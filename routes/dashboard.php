@@ -10,6 +10,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAdditionalController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceNoAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceOtherController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceSelfEmployeeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -240,6 +241,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_other.update');
             Route::post('/destroy/{id}', [CurriculumExperienceOtherController::class, 'destroy'])
                 ->name('dashboard.cv.experience_other.destroy');
+        });
+
+        ## Experiencia Laboral Autoempleado
+        Route::group(['prefix' => '/experience-selfemployee'],  function () {
+            Route::get('/index/{id}', [CurriculumExperienceSelfEmployeeController::class, 'index'])
+                ->name('dashboard.cv.experience_selfemployee.index');
+            Route::get('/create', [CurriculumExperienceSelfEmployeeController::class, 'create'])
+                ->name('dashboard.cv.experience_selfemployee.create');
+            Route::post('/store/{cv_id}', [CurriculumExperienceSelfEmployeeController::class, 'store'])
+                ->name('dashboard.cv.experience_selfemployee.store');
+            Route::get('/edit/{id}', [CurriculumExperienceSelfEmployeeController::class, 'edit'])
+                ->name('dashboard.cv.experience_selfemployee.edit');
+            Route::post('/update/{id}', [CurriculumExperienceSelfEmployeeController::class, 'update'])
+                ->name('dashboard.cv.experience_selfemployee.update');
+            Route::post('/destroy/{id}', [CurriculumExperienceSelfEmployeeController::class, 'destroy'])
+                ->name('dashboard.cv.experience_selfemployee.destroy');
         });
 
     }
