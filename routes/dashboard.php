@@ -8,6 +8,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeControlle
 use App\Http\Controllers\Dashboard\Cv\CurriculumCollaborationController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAdditionalController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceNoAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -206,6 +207,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_additional.update');
             Route::post('/destroy/{id}', [CurriculumExperienceAdditionalController::class, 'destroy'])
                 ->name('dashboard.cv.experience_additional.destroy');
+        });
+
+        ## Experiencia Laboral No Acreditada
+        Route::group(['prefix' => '/experience-no-accredited'],  function () {
+            Route::get('/index/{id}', [CurriculumExperienceNoAccreditedController::class, 'index'])
+                ->name('dashboard.cv.experience_no_accredited.index');
+            Route::get('/create', [CurriculumExperienceNoAccreditedController::class, 'create'])
+                ->name('dashboard.cv.experience_no_accredited.create');
+            Route::post('/store/{cv_id}', [CurriculumExperienceNoAccreditedController::class, 'store'])
+                ->name('dashboard.cv.experience_no_accredited.store');
+            Route::get('/edit/{id}', [CurriculumExperienceNoAccreditedController::class, 'edit'])
+                ->name('dashboard.cv.experience_no_accredited.edit');
+            Route::post('/update/{id}', [CurriculumExperienceNoAccreditedController::class, 'update'])
+                ->name('dashboard.cv.experience_no_accredited.update');
+            Route::post('/destroy/{id}', [CurriculumExperienceNoAccreditedController::class, 'destroy'])
+                ->name('dashboard.cv.experience_no_accredited.destroy');
         });
     }
 );
