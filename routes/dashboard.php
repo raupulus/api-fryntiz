@@ -11,6 +11,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAdditionalController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceNoAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceOtherController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceSelfEmployeeController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumHobbyController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -257,6 +258,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_selfemployee.update');
             Route::post('/destroy/{id}', [CurriculumExperienceSelfEmployeeController::class, 'destroy'])
                 ->name('dashboard.cv.experience_selfemployee.destroy');
+        });
+
+        ## Hobbies
+        Route::group(['prefix' => '/hobby'],  function () {
+            Route::get('/index/{id}', [CurriculumHobbyController::class, 'index'])
+                ->name('dashboard.cv.hobby.index');
+            Route::get('/create', [CurriculumHobbyController::class, 'create'])
+                ->name('dashboard.cv.hobby.create');
+            Route::post('/store/{cv_id}', [CurriculumHobbyController::class, 'store'])
+                ->name('dashboard.cv.hobby.store');
+            Route::get('/edit/{id}', [CurriculumHobbyController::class, 'edit'])
+                ->name('dashboard.cv.hobby.edit');
+            Route::post('/update/{id}', [CurriculumHobbyController::class, 'update'])
+                ->name('dashboard.cv.hobby.update');
+            Route::post('/destroy/{id}', [CurriculumHobbyController::class, 'destroy'])
+                ->name('dashboard.cv.hobby.destroy');
         });
 
     }
