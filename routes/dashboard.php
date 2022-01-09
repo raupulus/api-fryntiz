@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryOnlineContr
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicTrainingController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAvailableRepositoryTypeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumCollaborationController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -172,6 +173,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.collaboration.update');
             Route::post('/destroy/{id}', [CurriculumCollaborationController::class, 'destroy'])
                 ->name('dashboard.cv.collaboration.destroy');
+        });
+
+        ## Experiencia Laboral Acreditada
+        Route::group(['prefix' => '/experience-accredited'],  function () {
+            Route::get('/index/{id}',  [CurriculumExperienceAccreditedController::class, 'index'])
+                ->name('dashboard.cv.experience_accredited.index');
+            Route::get('/create', [CurriculumExperienceAccreditedController::class, 'create'])
+                ->name('dashboard.cv.experience_accredited.create');
+            Route::post('/store/{cv_id}', [CurriculumExperienceAccreditedController::class, 'store'])
+                ->name('dashboard.cv.experience_accredited.store');
+            Route::get('/edit/{id}', [CurriculumExperienceAccreditedController::class, 'edit'])
+                ->name('dashboard.cv.experience_accredited.edit');
+            Route::post('/update/{id}', [CurriculumExperienceAccreditedController::class, 'update'])
+                ->name('dashboard.cv.experience_accredited.update');
+            Route::post('/destroy/{id}', [CurriculumExperienceAccreditedController::class, 'destroy'])
+                ->name('dashboard.cv.experience_accredited.destroy');
         });
     }
 );
