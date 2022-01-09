@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceOtherController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceSelfEmployeeController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumHobbyController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumJobController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumProjectController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\LanguageController;
@@ -261,7 +262,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_selfemployee.destroy');
         });
 
-        ## Hobbies
+        ## Aficciones
         Route::group(['prefix' => '/hobby'],  function () {
             Route::get('/index/{id}', [CurriculumHobbyController::class, 'index'])
                 ->name('dashboard.cv.hobby.index');
@@ -277,7 +278,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.hobby.destroy');
         });
 
-        ## Jobs
+        ## Trabajos
         Route::group(['prefix' => '/job'],  function () {
             Route::get('/index/{id}', [CurriculumJobController::class, 'index'])
                 ->name('dashboard.cv.job.index');
@@ -291,6 +292,22 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.job.update');
             Route::post('/destroy/{id}', [CurriculumJobController::class, 'destroy'])
                 ->name('dashboard.cv.job.destroy');
+        });
+
+        ## Proyectos
+        Route::group(['prefix' => '/project'],  function () {
+            Route::get('/index/{id}', [CurriculumProjectController::class, 'index'])
+                ->name('dashboard.cv.project.index');
+            Route::get('/create', [CurriculumProjectController::class, 'create'])
+                ->name('dashboard.cv.project.create');
+            Route::post('/store/{cv_id}', [CurriculumProjectController::class, 'store'])
+                ->name('dashboard.cv.project.store');
+            Route::get('/edit/{id}', [CurriculumProjectController::class, 'edit'])
+                ->name('dashboard.cv.project.edit');
+            Route::post('/update/{id}', [CurriculumProjectController::class, 'update'])
+                ->name('dashboard.cv.project.update');
+            Route::post('/destroy/{id}', [CurriculumProjectController::class, 'destroy'])
+                ->name('dashboard.cv.project.destroy');
         });
 
     }
