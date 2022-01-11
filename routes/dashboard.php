@@ -17,7 +17,6 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumProjectController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
-use App\Http\Controllers\Dashboard\Cv\CurriculumSkillTypeController;
 use App\Http\Controllers\Dashboard\LanguageController;
 use Illuminate\Support\Facades\Route;
 

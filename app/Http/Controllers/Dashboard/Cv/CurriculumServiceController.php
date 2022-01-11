@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Dashboard\Cv;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cv\StoreCvServiceRequest;
 use App\Models\CV\Curriculum;
-use App\Models\CV\CurriculumRepository;
-use App\Models\CV\CurriculumService;
 use App\Models\File;
 use Illuminate\Http\Request;
 use function abort;
 use function auth;
 use function redirect;
+use function route;
 use function view;
 
 /**
@@ -19,8 +18,10 @@ use function view;
  */
 class CurriculumServiceController extends Controller
 {
+    public $modelName = '\App\Models\CV\CurriculumService';
+
     /**
-     * Muestra el listado de todos los tipos de repositorios.
+     * Muestra el listado de todos.
      *
      * @param int       $cv_id       Curriculum Vitae ID
      *
@@ -28,23 +29,34 @@ class CurriculumServiceController extends Controller
      */
     public function index(int $cv_id)
     {
+        ## Busco el curriculum para el usuario actual.
         $cv = Curriculum::where('id', $cv_id)
             ->where('user_id', auth()->id())
             ->first();
 
+        ## En caso de no existir el curriculum asociado al usuario se aborta.
         if ( !$cv ) {
             return abort(404);
         }
 
-        $services = CurriculumService::where('curriculum_id', $cv->id)
+        ## Busco el modelo asociado ordenado por última modificación.
+        $models = $this->modelName::where('curriculum_id', $cv->id)
             ->orderByDesc('updated_at')
             ->orderByDesc('created_at')
             ->get();
 
-        return view('dashboard.curriculums.services.index')->with([
+        ## Almaceno la ruta hacia la vista desde el modelo.
+        $view = ($this->modelName)::$viewsDashboard['index'];
+
+        ## Ruta hacia la acción (Crear o Actualizar).
+        $action = route(($this->modelName)::$routesDashboard['store'], $cv->id);
+
+        return view($view)->with([
             'cv' => $cv,
-            'service' => new CurriculumService(),
-            'services' => $services,
+            'modelName' => $this->modelName,
+            'model' => new $this->modelName,
+            'models' => $models,
+            'action' => $action,
         ]);
     }
 
@@ -58,6 +70,7 @@ class CurriculumServiceController extends Controller
      */
     public function store(StoreCvServiceRequest $request, int $cv_id)
     {
+        ## Busco el curriculum para el usuario actual.
         $cv = Curriculum::where('id', $cv_id)
             ->where('user_id', auth()->id())
             ->first();
@@ -66,31 +79,33 @@ class CurriculumServiceController extends Controller
             return abort(404);
         }
 
-        if ($request->has('service_id')) {
-            $service = CurriculumService::find($request->get('service_id'));
+        if ($request->has('model_id')) {
+            $model = $this->modelName::find($request->get('model_id'));
         } else {
-            $service = new CurriculumService([
+            $model = new $this->modelName([
                 'curriculum_id' => $cv->id,
                 'user_id' => auth()->id(),
             ]);
         }
 
-        $service->fill($request->validated());
-        $service->save();
+        $model->fill($request->validated());
+        $model->save();
 
         ## Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
-            $file = File::addFile($request->file('image'), 'cv_service',
-                true,
-                $service->image_id);
+            $imagePath = ($this->modelName)::$imagePath;
 
-            if (!$service->image_id && $file) {
-                $service->image_id = $file->id;
-                $service->save();
+            $file = File::addFile($request->file('image'), $imagePath,
+                true,
+                $model->image_id);
+
+            if (!$model->image_id && $file) {
+                $model->image_id = $file->id;
+                $model->save();
             }
         }
 
-        return redirect()->route('dashboard.cv.service.index', $cv->id);
+        return redirect()->route(($this->modelName)::$routesDashboard['index'], $cv->id);
     }
 
     /**
@@ -102,32 +117,41 @@ class CurriculumServiceController extends Controller
      */
     public function edit(int $id)
     {
-        $service = CurriculumService::find($id);
+        $model = $this->modelName::find($id);
 
-        if ( !$service ) {
+        if ( !$model ) {
             return abort(404);
         }
 
-        $cv = $service->curriculum;
+        ## Busco el curriculum para el usuario actual.
+        $cv = $model->curriculum;
 
         if ( !$cv || ($cv->user_id !== auth()->id())) {
             return abort(404);
         }
 
-        $services = CurriculumService::where('curriculum_id', $cv->id)
+        $models = $this->modelName::where('curriculum_id', $cv->id)
             ->orderByDesc('updated_at')
             ->orderByDesc('created_at')
             ->get();
 
-        return view('dashboard.curriculums.services.index')->with([
+        ## Almaceno la ruta hacia la vista desde el modelo.
+        $view = ($this->modelName)::$viewsDashboard['index'];
+
+        ## Ruta hacia la acción (Crear o Actualizar).
+        $action = route(($this->modelName)::$routesDashboard['update'], $model->id);
+
+        return view($view)->with([
             'cv' => $cv,
-            'service' => $service,
-            'services' => $services,
+            'modelName' => $this->modelName,
+            'model' => $model,
+            'models' => $models,
+            'action' => $action,
         ]);
     }
 
     /**
-     * Guarda los cambios de un repositorio.
+     * Guarda los cambios de un registro.
      *
      * @param \App\Http\Requests\Cv\StoreCvServiceRequest $request
      * @param                                                $id
@@ -136,38 +160,41 @@ class CurriculumServiceController extends Controller
      */
     public function update(StoreCvServiceRequest $request, $id)
     {
-        $service = CurriculumService::find($id);
+        $model = $this->modelName::find($id);
 
-        if (!$service) {
+        if (!$model) {
             return abort(404);
         }
 
-        $cv = $service->curriculum;
+        ## Busco el curriculum para el usuario actual.
+        $cv = $model->curriculum;
 
         if ( !$cv || ($cv->user_id !== auth()->id())) {
             return abort(404);
         }
 
-        $service->fill($request->validated());
-        $service->save();
+        $model->fill($request->validated());
+        $model->save();
 
         ## Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
-            $file = File::addFile($request->file('image'), 'cv_repository',
-                true,
-                $service->image_id);
+            $imagePath = ($this->modelName)::$imagePath;
 
-            if (!$service->image_id && $file) {
-                $service->image_id = $file->id;
-                $service->save();
+            $file = File::addFile($request->file('image'), $imagePath,
+                true,
+                $model->image_id);
+
+            if (!$model->image_id && $file) {
+                $model->image_id = $file->id;
+                $model->save();
             }
         }
 
-        return redirect()->route('dashboard.cv.service.index', $cv->id);
+        return redirect()->route(($this->modelName)::$routesDashboard['index'], $cv->id);
     }
 
     /**
-     * Elimina un repositorio para el usuario actual.
+     * Elimina un registro para el usuario actual.
      *
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
@@ -176,20 +203,20 @@ class CurriculumServiceController extends Controller
      */
     public function destroy(Request $request, int $id)
     {
-        $service = CurriculumService::where('id', $id)->first();
+        $model = $this->modelName::where('id', $id)->first();
 
-        if ( !$service ||
-            !$service->curriculum ||
-            ($service->curriculum->user_id != auth()->id()))
+        if ( !$model ||
+            !$model->curriculum ||
+            ($model->curriculum->user_id != auth()->id()))
         {
             return abort(404);
         }
 
-        $cv_id = $service->curriculum_id;
+        $cv_id = $model->curriculum_id;
 
         ## Elimina el repositorio con todos los datos asociados como imágenes.
-        $deleted = $service->safeDelete();
+        $deleted = $model->safeDelete();
 
-        return redirect()->route('dashboard.cv.service.index', $cv_id);
+        return redirect()->route(($this->modelName)::$routesDashboard['index'], $cv_id);
     }
 }
