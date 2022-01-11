@@ -53,10 +53,9 @@
                             <table class="table table-bordered table-dark">
                                 <thead>
                                 <tr>
-                                    <th class="text-center">Imagen</th>
-                                    <th class="text-center">Nombre</th>
-                                    <th class="text-center">URL</th>
-                                    <th class="text-center">Descripción</th>
+                                    @foreach($modelName::getTableHeads() as $head => $key)
+                                        <th>{{$head}}</th>
+                                    @endforeach
                                     <th class="text-center">Acciones</th>
                                 </tr>
                                 </thead>
@@ -65,25 +64,30 @@
 
                                 @foreach($models as $ele)
                                     <tr>
-                                        <td class="text-center">
-                                            <img
-                                                src="{{$ele->urlThumbnail('micro')}}"
-                                                alt="{{$ele->name}}"
-                                                style="width: 40px;">
+                                        @php($datas = $modelName::getTableCellsInfo())
+                                        @foreach($modelName::getTableHeads() as $cell)
+                                            @if ($datas[$cell]['type'] === 'image')
+                                                <td class="text-center">
+                                                    <img
+                                                        src="{{$ele->urlThumbnail('micro')}}"
+                                                        alt="{{$ele->name}}"
+                                                        style="width: 40px;">
 
-                                        </td>
+                                                </td>
+                                            @elseif ($datas[$cell]['type'] === 'text')
+                                                <td class="align-middle">
+                                                    {{$ele->$cell}}
+                                                </td>
+                                            @elseif ($datas[$cell]['type'] === 'link')
+                                                <td class="align-middle">
+                                                    <a href="{{$ele->$cell}}"
+                                                       target="_blank">
+                                                        {{$ele->$cell}}
+                                                    </a>
+                                                </td>
+                                            @endif
+                                        @endforeach
 
-                                        <td class="align-middle">
-                                            {{$ele->name}}
-                                        </td>
-
-                                        <td class="align-middle">
-                                            <a href="{{$ele->url}}"
-                                               target="_blank">
-                                                {{$ele->url}}
-                                            </a>
-                                        </td>
-                                        <td class="align-middle">{{$ele->description}}</td>
                                         <td class="align-middle text-center">
                                             <a href="{{route($ele::$routesDashboard['edit'], $ele->id)}}"
                                                class="btn btn-warning btn-sm">
@@ -137,117 +141,7 @@
                                         @endif
 
 
-                                    <div class="form-group">
-                                        <label for="image">
-                                            Imagen
-                                        </label>
-
-                                        <div class="input-group">
-                                            <img
-                                                src="{{
-                                                $model ?
-                                                $model->urlThumbnail('small') :
-                                                \App\Models\File::urlDefaultImage('small') }}"
-                                                alt="Curriculum Image"
-                                                id="cv-image-preview"
-                                                style="width: 80px; margin-right: 10px;"/>
-
-                                            <div class="custom-file">
-
-                                                <input type="file"
-                                                       name="image"
-                                                       id="cv-image-input"
-                                                       accept="image/*"
-                                                       class="form-control-file">
-
-                                                <label class="custom-file-label"
-                                                       id="cv-image-label"
-                                                       for="cv-image-input">
-
-                                                    Añadir archivo
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>
-                                            URL
-                                        </label>
-
-                                        <div class="input-group mb-3">
-
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-link"></i>
-                                                </span>
-                                            </div>
-
-                                            <input type="url"
-                                                   value="{{old('url',
-                                                   $model ?
-                                                   $model->url : '') }}"
-                                                   name="url"
-                                                   class="form-control"
-                                                   placeholder="https://fryntiz.es">
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        <label>
-                                            Nombre
-                                        </label>
-
-                                        <div class="input-group mb-3">
-
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-heading"></i>
-                                                </span>
-                                            </div>
-
-                                            <input type="text"
-                                                   value="{{old('name',
-                                                   $model ?
-                                                   $model->name : '') }}"
-                                                   name="name"
-                                                   class="form-control"
-                                                   placeholder="Mumble">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>
-                                            Descripción
-                                        </label>
-
-                                        <div class="input-group mb-3">
-
-                                            <textarea name="description"
-                                                      class="form-control"
-                                                      rows="5"
-                                                      placeholder="Descripción del servicio">{{old('description',
-                                                   $model ?
-                                                   $model->description : '') }}</textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        @if ($model && $model->id)
-                                            <button type="submit"
-                                                    class="btn btn-primary">
-                                                <i class="fas fa-save"></i>
-                                                Guardar
-                                            </button>
-                                        @else
-                                            <button type="submit"
-                                                    class="btn btn-primary">
-                                                <i class="fas fa-plus"></i>
-                                                Añadir
-                                            </button>
-                                        @endif
-                                    </div>
+                                        @yield('form_inputs')
                                     </form>
                                 </div>
                             </div>
@@ -267,7 +161,7 @@
 
 
     <script>
-        window.document.addEventListener('click', () => {
+        window.document.addEventListener('DOMContentLoaded', function () {
             /********** Cambiar Imagen al subirla **********/
             const avatarInput = document.getElementById('cv-image-input');
             const imageView = document.getElementById('cv-image-preview');
@@ -275,6 +169,7 @@
 
             if(avatarInput && imageView && imageLabel) {
                 avatarInput.onchange = () => {
+                    console.log('entra click');
                     const reader = new FileReader();
 
                     reader.onload = () => {
@@ -290,7 +185,6 @@
                     }
                 };
             }
-
         });
     </script>
 @stop

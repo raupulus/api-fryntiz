@@ -3,14 +3,14 @@
 namespace App\Models\CV;
 
 use App\Models\File;
-use Illuminate\Database\Eloquent\Model;
+use function array_key_exists;
 
 /**
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
  */
-class CurriculumService extends Model
+class CurriculumService extends CurriculumBaseSection
 {
     /**
      * @var string Nombre del modelo en singular.
@@ -56,70 +56,42 @@ class CurriculumService extends Model
     protected $table = 'cv_services';
 
     /**
-     * @var string[] Campos que se pueden llenar mediante el uso de mass-assignment.
-     */
-    protected $guarded = [
-        'id'
-    ];
-
-    /**
-     * Relaciona con el curriculum.
+     * Devuelve un array con todos los títulos de una tabla.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return array
      */
-    public function curriculum()
+    public static function getTableHeads()
     {
-        return $this->belongsTo(Curriculum::class, 'curriculum_id', 'id');
+        return [
+            'Imagen' => 'image',
+            'Nombre' => 'name',
+            'URL' => 'url',
+            'Descripción' => 'description',
+        ];
     }
 
     /**
-     * Relación con la imagen asociada al curriculum.
+     * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \string[][]
      */
-    public function image()
+    public static function getTableCellsInfo()
     {
-        return $this->belongsTo(File::class, 'image_id', 'id');
-    }
-
-    /**
-     * Devuelve la ruta hacia la foto asociada al curriculum.
-     *
-     * @return string
-     */
-    public function getUrlImageAttribute()
-    {
-        return $this->image ? $this->image->url : File::urlDefaultImage('large');
-    }
-
-    /**
-     * Devuelve el thumbnail de la imagen asociada.
-     *
-     * @param $size
-     *
-     * @return mixed
-     */
-    public function urlThumbnail($size = 'medium')
-    {
-        if ($this->image) {
-            return $this->image->thumbnail($size);
-        }
-
-        return File::urlDefaultImage($size);
-    }
-
-    /**
-     * Elimina de forma segura un repositorio y los datos asociados.
-     *
-     * @return bool
-     */
-    public function safeDelete()
-    {
-        ## Elimino la imagen asociada al curriculum y todas las miniaturas.
-        if ($this->image) {
-            $this->image->safeDelete();
-        }
-
-        return $this->delete();
+        return [
+            'image' => [
+                'type' => 'image',
+                'thumbnail' => true,
+                'thumbnail_size' => 'medium',
+            ],
+            'name' => [
+                'type' => 'text',
+            ],
+            'url' => [
+                'type' => 'link',
+            ],
+            'description' => [
+                'type' => 'text',
+            ],
+        ];
     }
 }

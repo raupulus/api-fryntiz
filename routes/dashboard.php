@@ -51,6 +51,7 @@ function () {
 ############################################################
 ##                     Curriculum                         ##
 ############################################################
+// https://laravel.com/docs/8.x/controllers#actions-handled-by-resource-controller
 Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
     function () {
         ## Curriculums
