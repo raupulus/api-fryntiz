@@ -2,48 +2,100 @@
 
 namespace App\Models\CV;
 
-use App\Models\File;
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Class CurriculumRepository.
  */
-class CurriculumRepository extends Model
+class CurriculumRepository extends CurriculumBaseSection
 {
-    protected $table = 'cv_repositories';
 
-    protected $guarded = [
-        'id'
+    /**
+     * @var string Nombre del modelo en singular.
+     */
+    public static $singular = 'Repositorio';
+
+    /**
+     * @var string Nombre del modelo en plural.
+     */
+    public static $plural = 'Repositorios';
+
+    /**
+     * Ruta hacia el directorio dónde se guardarán las imágenes.
+     *
+     * @var string
+     */
+    public static $imagePath = 'cv_repository';
+
+    /**
+     * @var string[] Rutas de acción para el dashboard sobre este modelo.
+     */
+    public static $routesDashboard = [
+        'edit' => 'dashboard.cv.repository.edit',
+        'delete' => 'dashboard.cv.repository.destroy',
+        'destroy' => 'dashboard.cv.repository.destroy',
+        'store' => 'dashboard.cv.repository.store',
+        'update' => 'dashboard.cv.repository.update',
+        'index' => 'dashboard.cv.repository.index',
     ];
 
     /**
-     * Relaciona con el curriculum.
+     * Vistas para este modelo.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @var string[]
      */
-    public function curriculum()
+    public static $viewsDashboard = [
+        'index' => 'dashboard.curriculums.repositories.index'
+    ];
+
+    /**
+     * @var string Nombre de la tabla usada por el modelo.
+     */
+    protected $table = 'cv_repositories';
+
+    /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads()
     {
-        return $this->belongsTo(Curriculum::class, 'curriculum_id', 'id');
+        return [
+            'Imagen' => 'image',
+            'Título' => 'title',
+            'Tipo' => 'type',
+            'URL' => 'url',
+            'Descripción' => 'description',
+        ];
     }
 
     /**
-     * Relación con la imagen asociada al curriculum.
+     * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \string[][]
      */
-    public function image()
+    public static function getTableCellsInfo()
     {
-        return $this->belongsTo(File::class, 'image_id', 'id');
-    }
-
-    /**
-     * Devuelve la ruta hacia la foto asociada al curriculum.
-     *
-     * @return string
-     */
-    public function getUrlImageAttribute()
-    {
-        return $this->image ? $this->image->url : File::urlDefaultImage('large');
+        return [
+            'image' => [
+                'type' => 'image',
+                'thumbnail' => true,
+                'thumbnail_size' => 'medium',
+            ],
+            'title' => [
+                'type' => 'text',
+            ],
+            'type' => [
+                'relation' => true,  // Indica que es una relación
+                'relation_field' => 'name',  // Indica el atributo de la relación
+                'type' => 'text',
+                'wrapper' => '<span class="badge badge-secondary">{{value}}</span>',
+            ],
+            'url' => [
+                'type' => 'link',
+            ],
+            'description' => [
+                'type' => 'text',
+            ],
+        ];
     }
 
     /**
@@ -54,36 +106,5 @@ class CurriculumRepository extends Model
     public function type()
     {
         return $this->belongsTo(CurriculumAvailableRepositoryType::class, 'repository_type_id', 'id');
-    }
-
-    /**
-     * Devuelve el thumbnail de la imagen asociada.
-     *
-     * @param $size
-     *
-     * @return mixed
-     */
-    public function urlThumbnail($size = 'medium')
-    {
-        if ($this->image) {
-            return $this->image->thumbnail($size);
-        }
-
-        return File::urlDefaultImage($size);
-    }
-
-    /**
-     * Elimina de forma segura un repositorio y los datos asociados.
-     *
-     * @return bool
-     */
-    public function safeDelete()
-    {
-        ## Elimino la imagen asociada al curriculum y todas las miniaturas.
-        if ($this->image) {
-            $this->image->safeDelete();
-        }
-
-        return $this->delete();
     }
 }

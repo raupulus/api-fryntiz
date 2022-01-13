@@ -27,130 +27,132 @@
 
         <div class="col-12">
 
-                <div class="col-12">
+            <div class="col-12">
 
-                    <h2>
-                        <a style="font-size: 2rem;"
-                           href="{{route('dashboard.cv.edit', $cv->id)}}">
-                            <i class="fa fa-arrow-left"></i>
+                <h2>
+                    <a style="font-size: 2rem;"
+                       href="{{route('dashboard.cv.edit', $cv->id)}}">
+                        <i class="fa fa-arrow-left"></i>
 
-                        </a>
+                    </a>
 
-                        Añade un nuevo {{$modelName::$singular}}
-                    </h2>
-                </div>
+                    Añade un nuevo {{$modelName::$singular}}
+                </h2>
+            </div>
 
-                {{-- Repositorios --}}
-                <div class="col-12">
-                    <div class="card card-info">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                {{$modelName::$plural}}
-                            </h3>
-                        </div>
-
-                        <div class="card-body">
-                            <table class="table table-bordered table-dark">
-                                <thead>
-                                <tr>
-                                    @foreach($modelName::getTableHeads() as $head => $key)
-                                        <th>{{$head}}</th>
-                                    @endforeach
-                                    <th class="text-center">Acciones</th>
-                                </tr>
-                                </thead>
-
-                                <tbody>
-
-                                @foreach($models as $ele)
-                                    <tr>
-                                        @php($datas = $modelName::getTableCellsInfo())
-                                        @foreach($modelName::getTableHeads() as $cell)
-                                            @if ($datas[$cell]['type'] === 'image')
-                                                <td class="text-center">
-                                                    <img
-                                                        src="{{$ele->urlThumbnail('micro')}}"
-                                                        alt="{{$ele->name}}"
-                                                        style="width: 40px;">
-
-                                                </td>
-                                            @elseif ($datas[$cell]['type'] === 'text')
-                                                <td class="align-middle">
-                                                    {{$ele->$cell}}
-                                                </td>
-                                            @elseif ($datas[$cell]['type'] === 'link')
-                                                <td class="align-middle">
-                                                    <a href="{{$ele->$cell}}"
-                                                       target="_blank">
-                                                        {{$ele->$cell}}
-                                                    </a>
-                                                </td>
-                                            @endif
-                                        @endforeach
-
-                                        <td class="align-middle text-center">
-                                            <a href="{{route($ele::$routesDashboard['edit'], $ele->id)}}"
-                                               class="btn btn-warning btn-sm">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-
-                                            &nbsp;
-
-                                            <form method="POST"
-                                                  action="{{route($ele::$routesDashboard['destroy'], $ele->id)}}"
-                                                  class="d-inline-block">
-
-                                                @csrf
-
-                                                <input type="hidden"
-                                                       name="id"
-                                                       value="{{$ele->id}}" />
-
-                                                <button type="submit"
-                                                        class="btn btn-danger btn-sm">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
-
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-
-                            <hr/>
-
-
-                            <div class="card card-secondary">
-                                <div class="card-header">
-                                    <h4 class="card-title">
-                                        Añadir nuevo {{$modelName::$singular}}
-                                    </h4>
-                                </div>
-
-                                <div class="card-body">
-                                    <form action="{{$action}}"
-                                          method="POST"
-                                          enctype="multipart/form-data">
-
-                                        @csrf
-
-                                        @if ($model && $model->id)
-                                            <input type="hidden" name="model_id"
-                                                   value="{{$model->id}}">
-                                        @endif
-
-
-                                        @yield('form_inputs')
-                                    </form>
-                                </div>
-                            </div>
-
-
-                        </div>
+            {{-- Repositorios --}}
+            <div class="col-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            {{$modelName::$plural}}
+                        </h3>
                     </div>
 
+                    <div class="card-body">
+                        <table class="table table-bordered table-dark">
+                            <thead>
+                            <tr>
+                                @foreach($modelName::getTableHeads() as $head => $key)
+                                    <th>{{$head}}</th>
+                                @endforeach
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                            @foreach($models as $ele)
+                                <tr>
+                                    @php($datas = $modelName::getTableCellsInfo())
+                                    @foreach($modelName::getTableHeads() as $cell)
+                                        @if ($datas[$cell]['type'] === 'image')
+                                            <td class="text-center">
+                                                <img
+                                                    src="{{$ele->urlThumbnail('micro')}}"
+                                                    alt="{{$ele->name}}"
+                                                    style="width: 40px;">
+
+                                            </td>
+                                        @elseif ($datas[$cell]['type'] === 'text')
+                                            <td class="align-middle">
+                                                @if (isset($datas[$cell]['relation']) && $datas[$cell]['relation'])
+                                                    {{($ele->$cell->{$datas[$cell]['relation_field']})}}
+                                                @else
+                                                    {{$ele->$cell}}
+                                                @endif
+                                            </td>
+                                        @elseif ($datas[$cell]['type'] === 'link')
+                                            <td class="align-middle">
+                                                <a href="{{$ele->$cell}}"
+                                                   target="_blank">
+                                                    {{$ele->$cell}}
+                                                </a>
+                                            </td>
+                                        @endif
+                                    @endforeach
+
+                                    <td class="align-middle text-center">
+                                        <a href="{{route($ele::$routesDashboard['edit'], $ele->id)}}"
+                                           class="btn btn-warning btn-sm">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+
+                                        &nbsp;
+
+                                        <form method="POST"
+                                              action="{{route($ele::$routesDashboard['destroy'], $ele->id)}}"
+                                              class="d-inline-block">
+
+                                            @csrf
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="{{$ele->id}}"/>
+
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </form>
+
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+
+                        <hr/>
+
+                        <div class="card card-secondary">
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    Añadir nuevo {{$modelName::$singular}}
+                                </h4>
+                            </div>
+
+                            <div class="card-body">
+                                <form action="{{$action}}"
+                                      method="POST"
+                                      enctype="multipart/form-data">
+
+                                    @csrf
+
+                                    @if ($model && $model->id)
+                                        <input type="hidden" name="model_id"
+                                               value="{{$model->id}}">
+                                    @endif
+
+                                    @yield('form_inputs')
+                                </form>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
+
+            </div>
 
         </div>
     </div>
@@ -159,9 +161,8 @@
 @section('js')
     <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
 
-
     <script>
-        window.document.addEventListener('DOMContentLoaded', function () {
+        window.document.addEventListener('DOMContentLoaded', function() {
             /********** Cambiar Imagen al subirla **********/
             const avatarInput = document.getElementById('cv-image-input');
             const imageView = document.getElementById('cv-image-preview');
@@ -169,7 +170,6 @@
 
             if(avatarInput && imageView && imageLabel) {
                 avatarInput.onchange = () => {
-                    console.log('entra click');
                     const reader = new FileReader();
 
                     reader.onload = () => {

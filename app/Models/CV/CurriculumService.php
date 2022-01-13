@@ -2,9 +2,6 @@
 
 namespace App\Models\CV;
 
-use App\Models\File;
-use function array_key_exists;
-
 /**
  * Class CurriculumService
  *

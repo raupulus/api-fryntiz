@@ -2,54 +2,20 @@
 
 namespace App\Http\Controllers\Dashboard\Cv;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Cv\StoreCvRepositoryRequest;
+use App\Http\Requests\Cv\StoreCvRepositoryRequest as StoreRequest;
 use App\Models\CV\Curriculum;
-use App\Models\CV\CurriculumAvailableRepositoryType;
-use App\Models\CV\CurriculumRepository;
 use App\Models\File;
 use Illuminate\Http\Request;
 use function abort;
 use function auth;
 use function redirect;
-use function view;
 
 /**
  * Class CurriculumRepositoryController
  */
-class CurriculumRepositoryController extends Controller
+class CurriculumRepositoryController extends CurriculumBaseSectionController
 {
-    /**
-     * Muestra el listado de todos los tipos de repositorios.
-     *
-     * @param int       $cv_id       Curriculum Vitae ID
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|never
-     */
-    public function index(int $cv_id)
-    {
-        $cv = Curriculum::where('id', $cv_id)
-            ->where('user_id', auth()->id())
-            ->first();
-
-        if ( !$cv ) {
-            return abort(404);
-        }
-
-        $repositories = CurriculumRepository::where('curriculum_id', $cv->id)
-            ->orderByDesc('updated_at')
-            ->orderByDesc('created_at')
-            ->get();
-
-        $availableRepositories = CurriculumAvailableRepositoryType::all();
-
-        return view('dashboard.curriculums.repositories.index')->with([
-            'cv' => $cv,
-            'repository' => new CurriculumRepository(),
-            'repositories' => $repositories,
-            'availableRepositories' => $availableRepositories,
-        ]);
-    }
+    public $modelName = '\App\Models\CV\CurriculumRepository';
 
     /**
      * Almacena un nuevo repositorio para el usuario actual.
@@ -59,77 +25,44 @@ class CurriculumRepositoryController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse|never
      */
-    public function store(StoreCvRepositoryRequest $request, int $cv_id)
+    public function store(StoreRequest $request, int $cv_id)
     {
+        ## Busco el curriculum para el usuario actual.
         $cv = Curriculum::where('id', $cv_id)
             ->where('user_id', auth()->id())
             ->first();
 
-        if ( !$cv ) {
+        if (!$cv) {
             return abort(404);
         }
 
-        if ($request->has('repository_id')) {
-            $repository = CurriculumRepository::find($request->get('repository_id'));
+        if ($request->has('model_id')) {
+            $model = $this->modelName::find($request->get('model_id'));
         } else {
-            $repository = new CurriculumRepository([
+            $model = new $this->modelName([
                 'curriculum_id' => $cv->id,
                 'user_id' => auth()->id(),
             ]);
         }
 
-        $repository->fill($request->validated());
-        $repository->save();
+        $model->fill($request->validated());
+        $model->save();
 
         ## Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
-            $file = File::addFile($request->file('image'), 'cv_repository',
-                true,
-                $repository->image_id);
+            $imagePath = ($this->modelName)::$imagePath;
 
-            if (!$repository->image_id && $file) {
-                $repository->image_id = $file->id;
-                $repository->save();
+            $file = File::addFile($request->file('image'), $imagePath,
+                true,
+                $model->image_id);
+
+            if (!$model->image_id && $file) {
+                $model->image_id = $file->id;
+                $model->save();
             }
         }
 
-        return redirect()->route('dashboard.cv.repository.index', $cv->id);
-    }
-
-    /**
-     * Muestra la vista para editar un repoitorio.
-     *
-     * @param int $id ID del repositorio a editar.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|never
-     */
-    public function edit(int $id)
-    {
-        $repository = CurriculumRepository::find($id);
-
-        if ( !$repository ) {
-            return abort(404);
-        }
-
-        $cv = $repository->curriculum;
-
-        if ( !$cv || ($cv->user_id !== auth()->id())) {
-            return abort(404);
-        }
-
-        $repositories = CurriculumRepository::where('curriculum_id', $cv->id)
-            ->orderByDesc('updated_at')
-            ->orderByDesc('created_at')
-            ->get();
-
-        $availableRepositories = CurriculumAvailableRepositoryType::all();
-
-        return view('dashboard.curriculums.repositories.index')->with([
-            'cv' => $cv,
-            'repository' => $repository,
-            'repositories' => $repositories,
-            'availableRepositories' => $availableRepositories,
-        ]);
+        return redirect()->route(($this->modelName)::$routesDashboard['index'], $cv->id);
     }
 
     /**
@@ -140,62 +73,38 @@ class CurriculumRepositoryController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse|never
      */
-    public function update(StoreCvRepositoryRequest $request, $id)
+    public function update(StoreRequest $request, $id)
     {
-        $repository = CurriculumRepository::find($id);
+        $model = $this->modelName::find($id);
 
-        if (!$repository) {
+        if (!$model) {
             return abort(404);
         }
 
-        $cv = $repository->curriculum;
+        ## Busco el curriculum para el usuario actual.
+        $cv = $model->curriculum;
 
-        if ( !$cv || ($cv->user_id !== auth()->id())) {
+        if (!$cv || ($cv->user_id !== auth()->id())) {
             return abort(404);
         }
 
-        $repository->fill($request->validated());
-        $repository->save();
+        $model->fill($request->validated());
+        $model->save();
 
         ## Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
-            $file = File::addFile($request->file('image'), 'cv_repository',
-                true,
-                $repository->image_id);
+            $imagePath = ($this->modelName)::$imagePath;
 
-            if (!$repository->image_id && $file) {
-                $repository->image_id = $file->id;
-                $repository->save();
+            $file = File::addFile($request->file('image'), $imagePath,
+                true,
+                $model->image_id);
+
+            if (!$model->image_id && $file) {
+                $model->image_id = $file->id;
+                $model->save();
             }
         }
 
-        return redirect()->route('dashboard.cv.repository.index', $cv->id);
-    }
-
-    /**
-     * Elimina un repositorio para el usuario actual.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $id
-     *
-     * @return never|void
-     */
-    public function destroy(Request $request, int $id)
-    {
-        $repository = CurriculumRepository::where('id', $id)->first();
-
-        if ( !$repository ||
-            !$repository->curriculum ||
-            ($repository->curriculum->user_id != auth()->id()))
-        {
-            return abort(404);
-        }
-
-        $cv_id = $repository->curriculum_id;
-
-        ## Elimina el repositorio con todos los datos asociados como imágenes.
-        $deleted = $repository->safeDelete();
-
-        return redirect()->route('dashboard.cv.repository.index', $cv_id);
+        return redirect()->route(($this->modelName)::$routesDashboard['index'], $cv->id);
     }
 }
