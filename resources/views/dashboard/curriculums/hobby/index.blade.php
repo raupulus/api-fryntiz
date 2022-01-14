@@ -52,14 +52,14 @@
                                $model->url : '') }}"
                    name="url"
                    class="form-control"
-                   placeholder="https://fryntiz.es">
+                   placeholder="https://fryntiz.es/iot">
         </div>
     </div>
 
 
     <div class="form-group">
         <label>
-            Nombre
+            Título
         </label>
 
         <div class="input-group mb-3">
@@ -71,10 +71,10 @@
             </div>
 
             <input type="text"
-                   value="{{old('name',
+                   value="{{old('title',
                            $model ?
-                           $model->name : '') }}"
-                   name="name"
+                           $model->title : '') }}"
+                   name="title"
                    class="form-control"
                    placeholder="Mumble">
         </div>

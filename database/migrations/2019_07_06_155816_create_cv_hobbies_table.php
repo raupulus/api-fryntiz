@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvHobbiesTable
@@ -27,12 +27,22 @@ class CreateCvHobbiesTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->text('url');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->string('title', 511)
+                ->nullable()
+                ->comment('Título del hobby');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del hobby');
+            $table->string('url', 511)
+                ->nullable()
+                ->comment('URL del hobby');
             $table->timestamps();
         });
     }

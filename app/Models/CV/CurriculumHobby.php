@@ -61,9 +61,9 @@ class CurriculumHobby extends CurriculumBaseSection
     {
         return [
             'Imagen' => 'image',
-            'Nombre' => 'name',
-            'URL' => 'url',
+            'Título' => 'title',
             'Descripción' => 'description',
+            'URL' => 'url',
         ];
     }
 
@@ -80,14 +80,14 @@ class CurriculumHobby extends CurriculumBaseSection
                 'thumbnail' => true,
                 'thumbnail_size' => 'medium',
             ],
-            'name' => [
+            'title' => [
+                'type' => 'text',
+            ],
+            'description' => [
                 'type' => 'text',
             ],
             'url' => [
                 'type' => 'link',
-            ],
-            'description' => [
-                'type' => 'text',
             ],
         ];
     }
