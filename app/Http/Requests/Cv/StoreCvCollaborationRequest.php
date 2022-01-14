@@ -11,6 +11,16 @@ use Illuminate\Support\Str;
 class StoreCvCollaborationRequest extends FormRequest
 {
     /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
      * Prepare the data for validation.
      *
      * @return void
@@ -19,6 +29,8 @@ class StoreCvCollaborationRequest extends FormRequest
     {
         $this->merge([
             'title' => Str::of($this->name)->trim()->ucfirst()
+                ->replaceMatches('/\s\s+/', '')->__toString(),
+            'role' => Str::of($this->name)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
             'description' => Str::of($this->description)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
@@ -41,6 +53,7 @@ class StoreCvCollaborationRequest extends FormRequest
         return [
             'image' => 'nullable|image|max:2048',
             'title' => 'required|string|min:3|max:511',
+            'role' => 'nullable|string|min:3|max:511',
             'description' => 'nullable|string|min:10|max:1500',
             'url' => 'nullable|string|min:12|max:511|url',
             'urlinfo' => 'nullable|string|min:12|max:511|url',

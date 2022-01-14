@@ -52,7 +52,30 @@
                            $model->title : '') }}"
                    name="title"
                    class="form-control"
-                   placeholder="Mumble">
+                   placeholder="Open Source...">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>
+            Rol
+        </label>
+
+        <div class="input-group mb-3">
+
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                </span>
+            </div>
+
+            <input type="text"
+                   value="{{old('role',
+                           $model ?
+                           $model->role : '') }}"
+                   name="role"
+                   class="form-control"
+                   placeholder="Desarrollador">
         </div>
     </div>
 

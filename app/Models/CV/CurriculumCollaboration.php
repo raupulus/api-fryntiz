@@ -66,6 +66,7 @@ class CurriculumCollaboration extends CurriculumBaseSection
             'URL' => 'url',
             'URL Info' => 'urlinfo',
             'Repositorio' => 'repository',
+            'Role' => 'role'
         ];
     }
 
@@ -96,6 +97,9 @@ class CurriculumCollaboration extends CurriculumBaseSection
             ],
             'repository' => [
                 'type' => 'link',
+            ],
+            'role' => [
+                'type' => 'badge',
             ],
         ];
     }

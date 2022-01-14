@@ -27,7 +27,8 @@ class CreateCvCollaborationsTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id')->nullable()
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
                 ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
@@ -48,7 +49,9 @@ class CreateCvCollaborationsTable extends Migration
                 ->nullable()
                 ->comment('Url del repositorio');
 
-            $table->string('role', 255);
+            $table->string('role', 255)
+                ->nullable()
+                ->comment('Rol en el proyecto');
             $table->timestamps();
         });
     }

@@ -89,6 +89,13 @@
                                                     {{$ele->$cell}}
                                                 </a>
                                             </td>
+                                        @elseif ($datas[$cell]['type'] === 'badge')
+                                            <td class="text-center align-middle">
+                                                <span class="badge
+                                                badge-primary">
+                                                    {{$ele->$cell}}
+                                                </span>
+                                            </td>
                                         @endif
                                     @endforeach
 

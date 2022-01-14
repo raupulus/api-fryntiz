@@ -61,9 +61,12 @@ class CurriculumJob extends CurriculumBaseSection
     {
         return [
             'Imagen' => 'image',
-            'Nombre' => 'name',
-            'URL' => 'url',
+            'Título' => 'title',
             'Descripción' => 'description',
+            'URL' => 'url',
+            'URL Info' => 'urlinfo',
+            'Repositorio' => 'repository',
+            'Role' => 'role'
         ];
     }
 
@@ -80,14 +83,23 @@ class CurriculumJob extends CurriculumBaseSection
                 'thumbnail' => true,
                 'thumbnail_size' => 'medium',
             ],
-            'name' => [
+            'title' => [
+                'type' => 'text',
+            ],
+            'description' => [
                 'type' => 'text',
             ],
             'url' => [
                 'type' => 'link',
             ],
-            'description' => [
-                'type' => 'text',
+            'urlinfo' => [
+                'type' => 'link',
+            ],
+            'repository' => [
+                'type' => 'link',
+            ],
+            'role' => [
+                'type' => 'badge',
             ],
         ];
     }
