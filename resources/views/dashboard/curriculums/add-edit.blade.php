@@ -351,7 +351,7 @@
 
                             &nbsp;
 
-                            <a href="{{route('dashboard.cv.experience_selfemployee.index', $cv->id)}}"
+                            <a href="{{route('dashboard.cv.experience_selfemployed.index', $cv->id)}}"
                                class="btn btn-info">
                                 <i class="fas fa-folder-open"></i>
                                 Autoempleado

@@ -7,35 +7,35 @@ namespace App\Models\CV;
  *
  * Representa los servicios del usuario asociados a un curriculum.
  */
-class CurriculumColaboration extends CurriculumBaseSection
+class CurriculumAcademicTraining extends CurriculumBaseSection
 {
     /**
      * @var string Nombre del modelo en singular.
      */
-    public static $singular = 'Colaboración';
+    public static $singular = 'Formación Académica';
 
     /**
      * @var string Nombre del modelo en plural.
      */
-    public static $plural = 'Colaboraciones';
+    public static $plural = 'Formaciones Académicas';
 
     /**
      * Ruta hacia el directorio dónde se guardarán las imágenes.
      *
      * @var string
      */
-    public static $imagePath = 'cv_collaboration';
+    public static $imagePath = 'cv_academic_training';
 
     /**
      * @var string[] Rutas de acción para el dashboard sobre este modelo.
      */
     public static $routesDashboard = [
-        'edit' => 'dashboard.cv.collaboration.edit',
-        'delete' => 'dashboard.cv.collaboration.destroy',
-        'destroy' => 'dashboard.cv.collaboration.destroy',
-        'store' => 'dashboard.cv.collaboration.store',
-        'update' => 'dashboard.cv.collaboration.update',
-        'index' => 'dashboard.cv.collaboration.index',
+        'edit' => 'dashboard.cv.academic_training.edit',
+        'delete' => 'dashboard.cv.academic_training.destroy',
+        'destroy' => 'dashboard.cv.academic_training.destroy',
+        'store' => 'dashboard.cv.academic_training.store',
+        'update' => 'dashboard.cv.academic_training.update',
+        'index' => 'dashboard.cv.academic_training.index',
     ];
 
     /**
@@ -44,13 +44,13 @@ class CurriculumColaboration extends CurriculumBaseSection
      * @var string[]
      */
     public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.collaboration.index'
+        'index' => 'dashboard.curriculums.academic.index',
     ];
 
     /**
      * @var string Nombre de la tabla usada por el modelo.
      */
-    protected $table = 'cv_collaborations';
+    protected $table = 'cv_academic_training';
 
     /**
      * Devuelve un array con todos los títulos de una tabla.

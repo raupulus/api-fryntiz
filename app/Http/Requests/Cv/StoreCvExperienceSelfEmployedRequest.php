@@ -4,7 +4,7 @@ namespace App\Http\Requests\Cv;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCvSkillTypeRequest extends FormRequest
+class StoreCvExperienceSelfEmployedRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
