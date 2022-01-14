@@ -10,7 +10,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceAdditionalController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceNoAccreditedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceOtherController;
-use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceSelfEmployeeController;
+use App\Http\Controllers\Dashboard\Cv\CurriculumExperienceSelfEmployedController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumHobbyController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumJobController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumProjectController;
@@ -248,20 +248,20 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_other.destroy');
         });
 
-        ## Experiencia Laboral Autoempleado
-        Route::group(['prefix' => '/experience-selfemployee'],  function () {
-            Route::get('/index/{id}', [CurriculumExperienceSelfEmployeeController::class, 'index'])
-                ->name('dashboard.cv.experience_selfemployee.index');
-            Route::get('/create', [CurriculumExperienceSelfEmployeeController::class, 'create'])
-                ->name('dashboard.cv.experience_selfemployee.create');
-            Route::post('/store/{cv_id}', [CurriculumExperienceSelfEmployeeController::class, 'store'])
-                ->name('dashboard.cv.experience_selfemployee.store');
-            Route::get('/edit/{id}', [CurriculumExperienceSelfEmployeeController::class, 'edit'])
-                ->name('dashboard.cv.experience_selfemployee.edit');
-            Route::post('/update/{id}', [CurriculumExperienceSelfEmployeeController::class, 'update'])
-                ->name('dashboard.cv.experience_selfemployee.update');
-            Route::post('/destroy/{id}', [CurriculumExperienceSelfEmployeeController::class, 'destroy'])
-                ->name('dashboard.cv.experience_selfemployee.destroy');
+        ## Experiencia Laboral Autoempleado (Autónomo o freelance)
+        Route::group(['prefix' => '/experience-selfemployed'],  function () {
+            Route::get('/index/{id}', [CurriculumExperienceSelfEmployedController::class, 'index'])
+                ->name('dashboard.cv.experience_selfemployed.index');
+            Route::get('/create', [CurriculumExperienceSelfEmployedController::class, 'create'])
+                ->name('dashboard.cv.experience_selfemployed.create');
+            Route::post('/store/{cv_id}', [CurriculumExperienceSelfEmployedController::class, 'store'])
+                ->name('dashboard.cv.experience_selfemployed.store');
+            Route::get('/edit/{id}', [CurriculumExperienceSelfEmployedController::class, 'edit'])
+                ->name('dashboard.cv.experience_selfemployed.edit');
+            Route::post('/update/{id}', [CurriculumExperienceSelfEmployedController::class, 'update'])
+                ->name('dashboard.cv.experience_selfemployed.update');
+            Route::post('/destroy/{id}', [CurriculumExperienceSelfEmployedController::class, 'destroy'])
+                ->name('dashboard.cv.experience_selfemployed.destroy');
         });
 
         ## Aficciones

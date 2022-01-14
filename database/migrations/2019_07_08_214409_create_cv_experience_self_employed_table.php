@@ -16,7 +16,7 @@ class CreateCvExperienceSelfEmployeedTable extends Migration
      */
     public function up()
     {
-        Schema::create('cv_experience_self_employeed', function (Blueprint $table) {
+        Schema::create('cv_experience_self_employed', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -48,7 +48,7 @@ class CreateCvExperienceSelfEmployeedTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cv_experience_self_employeed', function (Blueprint $table) {
+        Schema::dropIfExists('cv_experience_self_employed', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['curriculum_id']);
         });

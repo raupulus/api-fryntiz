@@ -7,35 +7,35 @@ namespace App\Models\CV;
  *
  * Representa los servicios del usuario asociados a un curriculum.
  */
-class CurriculumExperienceNoAccredited extends CurriculumBaseSection
+class CurriculumExperienceSelfEmployed extends CurriculumBaseSection
 {
     /**
      * @var string Nombre del modelo en singular.
      */
-    public static $singular = 'Experiencia no acreditada';
+    public static $singular = 'Experiencia AutoEmpleado';
 
     /**
      * @var string Nombre del modelo en plural.
      */
-    public static $plural = 'Experiencias no acreditadas';
+    public static $plural = 'Experiencias AutoEmpleado';
 
     /**
      * Ruta hacia el directorio dónde se guardarán las imágenes.
      *
      * @var string
      */
-    public static $imagePath = 'cv_experience_no_accredited';
+    public static $imagePath = 'cv_experience_self_employed';
 
     /**
      * @var string[] Rutas de acción para el dashboard sobre este modelo.
      */
     public static $routesDashboard = [
-        'edit' => 'dashboard.cv.experience_no_accredited.edit',
-        'delete' => 'dashboard.cv.experience_no_accredited.destroy',
-        'destroy' => 'dashboard.cv.experience_no_accredited.destroy',
-        'store' => 'dashboard.cv.experience_no_accredited.store',
-        'update' => 'dashboard.cv.experience_no_accredited.update',
-        'index' => 'dashboard.cv.experience_no_accredited.index',
+        'edit' => 'dashboard.cv.experience_selfemployed.edit',
+        'delete' => 'dashboard.cv.experience_selfemployed.destroy',
+        'destroy' => 'dashboard.cv.experience_selfemployed.destroy',
+        'store' => 'dashboard.cv.experience_selfemployed.store',
+        'update' => 'dashboard.cv.experience_selfemployed.update',
+        'index' => 'dashboard.cv.experience_selfemployed.index',
     ];
 
     /**
@@ -44,13 +44,13 @@ class CurriculumExperienceNoAccredited extends CurriculumBaseSection
      * @var string[]
      */
     public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.experience-no-accredited.index'
+        'index' => 'dashboard.curriculums.experience-self-employed.index'
     ];
 
     /**
      * @var string Nombre de la tabla usada por el modelo.
      */
-    protected $table = 'cv_experience_no_accredited';
+    protected $table = 'cv_experience_self_employed';
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
