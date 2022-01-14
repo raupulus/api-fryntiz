@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvCollaborationsTable
@@ -27,14 +27,27 @@ class CreateCvCollaborationsTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->text('url');
-            $table->text('urlinfo');
-            $table->text('repository');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->string('title', 511)
+                ->comment('Título de la colaboración');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del proyecto');
+            $table->string('url', 511)
+                ->nullable()
+                ->comment('Url principal hacia el sitio oficial');
+            $table->string('urlinfo', 511)
+                ->nullable()
+                ->comment('Url de información sobre el proyecto');
+            $table->text('repository')
+                ->nullable()
+                ->comment('Url del repositorio');
+
             $table->string('role', 255);
             $table->timestamps();
         });
