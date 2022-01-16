@@ -62,7 +62,7 @@ class CurriculumSkill extends CurriculumBaseSection
         return [
             'Imagen' => 'image',
             'Nombre' => 'name',
-            'URL' => 'url',
+            'Nivel' => 'level',
             'Descripción' => 'description',
         ];
     }
@@ -83,8 +83,8 @@ class CurriculumSkill extends CurriculumBaseSection
             'name' => [
                 'type' => 'text',
             ],
-            'url' => [
-                'type' => 'link',
+            'level' => [
+                'type' => 'text',
             ],
             'description' => [
                 'type' => 'text',

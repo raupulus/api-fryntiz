@@ -35,30 +35,6 @@
 
     <div class="form-group">
         <label>
-            URL
-        </label>
-
-        <div class="input-group mb-3">
-
-            <div class="input-group-prepend">
-                <span class="input-group-text">
-                    <i class="fas fa-link"></i>
-                </span>
-            </div>
-
-            <input type="url"
-                   value="{{old('url',
-                               $model ?
-                               $model->url : '') }}"
-                   name="url"
-                   class="form-control"
-                   placeholder="https://fryntiz.es">
-        </div>
-    </div>
-
-
-    <div class="form-group">
-        <label>
             Nombre
         </label>
 
@@ -76,7 +52,34 @@
                            $model->name : '') }}"
                    name="name"
                    class="form-control"
-                   placeholder="Mumble">
+                   placeholder="Php">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>
+            Nivel (1-10)
+        </label>
+
+        <div class="input-group mb-3">
+
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fas fa-sort-numeric-down"></i>
+                </span>
+            </div>
+
+            <input type="number"
+                   min="0"
+                   max="10"
+                   minlength="0"
+                   maxlength="10"
+                   value="{{old('level',
+                           $model ?
+                           $model->level : '') }}"
+                   name="level"
+                   class="form-control"
+                   placeholder="Nivel del 1 al 10">
         </div>
     </div>
 

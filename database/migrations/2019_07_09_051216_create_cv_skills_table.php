@@ -27,17 +27,21 @@ class CreateCvSkillsTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('no action');
-            $table->unsignedBigInteger('skill_type_id');
-            $table->foreign('skill_type_id')
-                ->references('id')->on('cv_skills_type')
-                ->onUpdate('cascade')
-                ->onDelete('set null');
-            $table->integer('level');
+            $table->string('name', 255)
+                ->comment('Nombre del skill');
+            $table->tinyInteger('level')
+                ->nullable()
+                ->comment('Nivel de conocimiento del 1 al 10');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del skill');
             $table->timestamps();
         });
     }
@@ -50,8 +54,8 @@ class CreateCvSkillsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('cv_skills', function (Blueprint $table) {
-            $table->dropForeign(['skill_type_id']);
             $table->dropForeign(['curriculum_id']);
+            $table->dropForeign(['image_id']);
         });
     }
 }
