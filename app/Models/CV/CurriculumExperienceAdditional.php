@@ -61,9 +61,13 @@ class CurriculumExperienceAdditional extends CurriculumBaseSection
     {
         return [
             'Imagen' => 'image',
-            'Nombre' => 'name',
-            'URL' => 'url',
-            'Descripción' => 'description',
+            'Título' => 'title',
+            //'Descripción' => 'description',
+            //'Posición' => 'position',
+            'Empresa' => 'company',
+            //'Notas' => 'note',
+            'Inicio' => 'start_at',
+            'Fin' => 'end_at',
         ];
     }
 
@@ -80,11 +84,23 @@ class CurriculumExperienceAdditional extends CurriculumBaseSection
                 'thumbnail' => true,
                 'thumbnail_size' => 'medium',
             ],
-            'name' => [
+            'title' => [
                 'type' => 'text',
             ],
-            'url' => [
-                'type' => 'link',
+            'position' => [
+                'type' => 'text',
+            ],
+            'company' => [
+                'type' => 'text',
+            ],
+            'note' => [
+                'type' => 'text',
+            ],
+            'start_at' => [
+                'type' => 'date',
+            ],
+            'end_at' => [
+                'type' => 'date',
             ],
             'description' => [
                 'type' => 'text',
