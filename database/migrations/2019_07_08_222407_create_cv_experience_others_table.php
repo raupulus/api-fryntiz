@@ -16,7 +16,6 @@ class CreateCvExperienceOthersTable extends Migration
      */
     public function up()
     {
-        // id - translation_name_token - translation_description_token
         Schema::create('cv_experience_others', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
