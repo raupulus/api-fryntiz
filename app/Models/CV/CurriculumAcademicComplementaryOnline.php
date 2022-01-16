@@ -61,9 +61,20 @@ class CurriculumAcademicComplementaryOnline extends CurriculumBaseSection
     {
         return [
             'Imagen' => 'image',
-            'Nombre' => 'name',
-            'URL' => 'url',
-            'Descripción' => 'description',
+            'Título' => 'title',
+            'Entidad emisora' => 'credential_id',
+            //'URL' => 'url',
+            'Url' => 'credential_url',
+            //'Descripción' => 'description',
+            //'Notas' => 'note',
+            //'Conocimientos adquiridos' => 'learned',
+            'Horas' => 'hours',
+            //'Instructor de la formación' => 'instructor',
+            '¿Expira?' => 'expires',
+            //'Fecha de expiración' => 'expires_at',
+            'Expedido en' => 'expedition_at',
+            //'Fecha de inicio' => 'start_at',
+            //'Fecha de fin' => 'end_at',
         ];
     }
 
@@ -80,14 +91,47 @@ class CurriculumAcademicComplementaryOnline extends CurriculumBaseSection
                 'thumbnail' => true,
                 'thumbnail_size' => 'medium',
             ],
-            'name' => [
+            'title' => [
+                'type' => 'text',
+            ],
+            'credential_id' => [
                 'type' => 'text',
             ],
             'url' => [
                 'type' => 'link',
             ],
+            'credential_url' => [
+                'type' => 'link',
+            ],
             'description' => [
                 'type' => 'text',
+            ],
+            'note' => [
+                'type' => 'text',
+            ],
+            'learned' => [
+                'type' => 'text',
+            ],
+            'hours' => [
+                'type' => 'text',
+            ],
+            'instructor' => [
+                'type' => 'badge',
+            ],
+            'expires' => [
+                'type' => 'boolean',
+            ],
+            'expires_at' => [
+                'type' => 'datetime',
+            ],
+            'expedition_at' => [
+                'type' => 'datetime',
+            ],
+            'start_at' => [
+                'type' => 'datetime',
+            ],
+            'end_at' => [
+                'type' => 'datetime',
             ],
         ];
     }

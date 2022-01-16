@@ -648,6 +648,17 @@ return [
                 ],
             ],
         ],
+
+        'InputMask' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/inputmask/inputmask.js',
+                ],
+            ],
+        ],
     ],
 
     /*

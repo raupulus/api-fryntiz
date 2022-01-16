@@ -21,6 +21,7 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/functions.js', 'public/js')
     .js('resources/js/jquery.js', 'public/js')
     .js('resources/js/dashboard.js', 'public/dashboard/js')
+
     .sass('resources/sass/styles.scss', 'public/css/')
     .sass('resources/sass/bootstrap.scss', 'public/css/')
     .sass('resources/sass/dashboard.scss', 'public/dashboard/css/')
@@ -28,6 +29,8 @@ mix.js('resources/js/app.js', 'public/js')
         require('postcss-import'),
         require('tailwindcss'),
     ])
+    .copy('node_modules/inputmask/dist/inputmask.min.js', 'public/vendor/inputmask/inputmask.js')
+
     .sourceMaps();
 
 if (mix.inProduction()) {

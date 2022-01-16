@@ -27,19 +27,38 @@ class CreateCvProjectsTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            /*
             $table->unsignedBigInteger('repository_id')->nullable();
             $table->foreign('repository_id')
                 ->references('id')->on('cv_repositories')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->text('url');
-            $table->text('urlinfo');
-            $table->text('repository');
+            */
+            $table->string('title', 511)
+                ->comment('Título de la colaboración');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del proyecto');
+            $table->string('url', 511)
+                ->nullable()
+                ->comment('Url principal hacia el sitio oficial');
+            $table->string('urlinfo', 511)
+                ->nullable()
+                ->comment('Url de información sobre el proyecto');
+            $table->text('repository')
+                ->nullable()
+                ->comment('Url del repositorio');
+
+            $table->string('role', 255)
+                ->nullable()
+                ->comment('Rol en el proyecto');
             $table->timestamps();
         });
     }
@@ -54,7 +73,7 @@ class CreateCvProjectsTable extends Migration
         Schema::dropIfExists('cv_projects', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
             $table->dropForeign(['curriculum_id']);
-            $table->dropForeign(['repository_id']);
+            //$table->dropForeign(['repository_id']);
         });
     }
 }

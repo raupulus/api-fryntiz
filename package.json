@@ -33,6 +33,7 @@
         "autoprefixer": "^10.2.5",
         "bootstrap5": "^1.1.9",
         "cross-env": "^7.0.3",
+        "inputmask": "^5.0.7",
         "rxjs": "^7.0.1",
         "vue": "^3.0.11",
         "vue-axios": "^3.2.4",

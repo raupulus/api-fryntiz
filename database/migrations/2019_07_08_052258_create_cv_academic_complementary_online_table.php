@@ -27,15 +27,54 @@ class CreateCvAcademicComplementaryOnlineTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->string('entity', 511);
-            $table->integer('hours');
-            $table->string('instructor', 255);
-            $table->text('url');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->string('title', 511)
+                ->comment('Título obtenido');
+            $table->string('entity', 511)
+                ->nullable()
+                ->comment('Entidad o empresa emisora');
+            $table->string('credential_id', 511)
+                ->nullable()
+                ->comment('Identificador de la Credencial obtenida');
+            $table->string('credential_url', 511)
+                ->nullable()
+                ->comment('Url hacia la Credencial obtenida');
+            $table->string('learned', 511)
+                ->nullable()
+                ->comment('Conocimientos adquiridos');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción');
+            $table->text('note')
+                ->nullable()
+                ->comment('Notas');
+            $table->integer('hours')
+                ->nullable()
+                ->comment('Horas de formación');
+            $table->string('instructor', 511)
+                ->nullable()
+                ->comment('Instructor de la formación');
+            $table->boolean('expires')
+                ->default(false)
+                ->comment('¿Expira la validez?');
+            $table->dateTime('expires_at')
+                ->nullable()
+                ->comment('Fecha de expiración');
+            $table->dateTime('expedition_at')
+                ->nullable()
+                ->comment('Fecha de expedición');
+            $table->dateTime('start_at')
+                ->nullable()
+                ->comment('Fecha de inicio');
+            $table->dateTime('end_at')
+                ->nullable()
+                ->comment('Fecha de fin');
             $table->timestamps();
         });
     }
