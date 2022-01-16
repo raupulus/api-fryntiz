@@ -27,16 +27,33 @@ class CreateCvExperienceNoAccreditedTable extends Migration
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->string('position', 255);
-            $table->string('company', 511);
-            $table->text('url');
-            $table->timestamp('date_start');
-            $table->timestamp('date_end');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->string('title', 511)
+                ->comment('Título de la experiencia');
+            $table->string('position', 255)
+                ->nullable()
+                ->comment('Puesto ocupado en la experiencia');
+            $table->string('company', 511)
+                ->nullable()
+                ->comment('Empresa donde trabajó');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción');
+            $table->text('note')
+                ->nullable()
+                ->comment('Notas');
+            $table->dateTime('start_at')
+                ->nullable()
+                ->comment('Fecha de inicio');
+            $table->dateTime('end_at')
+                ->nullable()
+                ->comment('Fecha de fin');
             $table->timestamps();
         });
     }
