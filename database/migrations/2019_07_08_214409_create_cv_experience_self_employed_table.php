@@ -5,9 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateCvExperienceSelfEmployeedTable
+ * Class CreateCvExperienceSelfEmployedTable
  */
-class CreateCvExperienceSelfEmployeedTable extends Migration
+class CreateCvExperienceSelfEmployedTable extends Migration
 {
     /**
      * Run the migrations.
