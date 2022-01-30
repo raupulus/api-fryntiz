@@ -29,16 +29,12 @@ class CreateReferredPlatformsTable extends Migration
             $table->unsignedBigInteger('image_id')
                 ->nullable()
                 ->comment('Relación con la imagen asociada');
-            $table->foreign('image_id')
-                ->references('id')->on('files')
-                ->onUpdate('CASCADE')
-                ->onDelete('SET NULL');
             $table->string('name', '255')
                 ->unique()
                 ->comment('Nombre de la plataforma para afiliados.');
             $table->string('slug', '255')
                 ->unique()
-                ->comment('Nombre de identificación amigable para la plataforma.');
+                ->comment('Nombre interno del role.');
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción de la plataforma.');
