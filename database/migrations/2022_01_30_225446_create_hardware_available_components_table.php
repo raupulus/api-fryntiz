@@ -6,6 +6,11 @@ use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateHardwareAvailableComponentsTable
+ *
+ * Tabla con los tipos de components disponibles para un hardware. Esta tabla
+ * almacenará los tipos de componentes que puede tener un hardware como son
+ * tarjeta gráfica, procesador, memoria ram... A grandes rasgos sin entrar en
+ * marcas/modelos o especificaciones (esto se hace en la tabla hardware_components)
  */
 class CreateHardwareAvailableComponentsTable extends Migration
 {

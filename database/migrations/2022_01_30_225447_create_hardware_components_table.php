@@ -6,9 +6,13 @@ use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateHardwareComponentsTable
+ *
+ * Tabla asociando componentes concretos a los dispositivos.
  */
 class CreateHardwareComponentsTable extends Migration
 {
+    private $tableName = 'hardware_components';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateHardwareComponentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('hardware_components', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -54,9 +58,9 @@ class CreateHardwareComponentsTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción del componente');
-            $table->timestamp('acquired_at')
+            $table->timestamp('buy_at')
                 ->nullable()
-                ->comment('Fecha de adquisición, el momento de compra o inicio de poseción');
+                ->comment('Fecha de adquisición, el momento de compra o inicio de posesión');
 
             $table->timestamps();
             $table->softDeletes();
@@ -70,7 +74,7 @@ class CreateHardwareComponentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('hardware_components', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['hardware_available_component_id']);
         });
     }
