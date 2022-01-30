@@ -9,6 +9,8 @@ use Illuminate\Database\Migrations\Migration;
  */
 class CreateHardwareAvailableComponentsTable extends Migration
 {
+    private $tableName = 'hardware_available_components';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +18,7 @@ class CreateHardwareAvailableComponentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('hardware_available_components', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -28,6 +30,9 @@ class CreateHardwareAvailableComponentsTable extends Migration
                 ->comment('Tipo de componente (gpu, cpu, ram..)');
             $table->string('slug', 255)
                 ->comment('Slug para el tipo');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del componente');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -40,7 +45,7 @@ class CreateHardwareAvailableComponentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('hardware_available_components', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['hardware_device_id']);
         });
     }
