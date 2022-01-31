@@ -27,7 +27,7 @@ class CreateHardwareComponentsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('hardware_available_component_id')
                 ->nullable()
-                ->comment('Usuario asociado');
+                ->comment('Componente asociado al hardware');
             $table->foreign('hardware_available_component_id')
                 ->references('id')->on('hardware_available_components')
                 ->onUpdate('CASCADE')
