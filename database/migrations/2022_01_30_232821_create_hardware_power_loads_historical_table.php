@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateHardwarePowerLoadsTodayTable
+ * Class CreateHardwarePowerLoadsHistoricalTable
  *
- * Carga consumida de energía por dispositivo de hardware en el día.
+ * Carga consumida de energía por dispositivo de hardware en total.
  */
-class CreateHardwarePowerLoadsTodayTable extends Migration
+class CreateHardwarePowerLoadsHistoricalTable extends Migration
 {
-    private $tableName = 'hardware_power_loads_today';
-    private $tableComment = 'Carga de energía consumida por dispositivo de hardware en el día.';
+    private $tableName = 'hardware_power_loads_historical';
+    private $tableComment = 'Carga de energía consumida por dispositivo de hardware en el total.';
 
     /**
      * Run the migrations.
