@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateHardwareDevicesTable extends Migration
 {
     private $tableName = 'hardware_devices';
+    private $tableComment = 'Dispositivos de hardware';
 
     /**
      * Run the migrations.
@@ -97,6 +99,8 @@ class CreateHardwareDevicesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**

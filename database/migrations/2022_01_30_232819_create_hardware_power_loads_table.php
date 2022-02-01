@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -55,6 +56,8 @@ class CreateHardwarePowerLoadsTable extends Migration
             $table->timestamps();
 
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -65,7 +68,7 @@ class CreateHardwarePowerLoadsTable extends Migration
     public function down()
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
-            $table->dropForeign(['???']);
+            $table->dropForeign(['hardware_device_id']);
         });
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -15,6 +16,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateHardwareAvailableComponentsTable extends Migration
 {
     private $tableName = 'hardware_available_components';
+    private $tableComment = 'Tipos de componentes disponibles para un hardware';
 
     /**
      * Run the migrations.
@@ -41,6 +43,8 @@ class CreateHardwareAvailableComponentsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**

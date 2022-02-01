@@ -13,6 +13,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateHardwareTypesTable extends Migration
 {
     private $tableName = 'hardware_types';
+    private $tableComment = 'Tabla para almacenar los tipos de hardware, EJ: ordenador, portatil, microcontrolador, cargador solar....';
 
     /**
      * Run the migrations.
@@ -37,9 +38,7 @@ class CreateHardwareTypesTable extends Migration
             $table->softDeletes();
         });
 
-        $comment = 'Tabla para almacenar los tipos de hardware, EJ: ordenador, portatil, microcontrolador, cargador solar....';
-
-        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$comment}'");
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
