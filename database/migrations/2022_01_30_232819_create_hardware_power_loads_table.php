@@ -36,19 +36,19 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->integer('fan', 11)
+            $table->integer('fan')
                 ->nullable()
                 ->default(0)
                 ->comment('Velocidad del ventilador en RPM, EJ:3812. Será 0 por defecto');
-            $table->integer('temperature', 11)
+            $table->integer('temperature')
                 ->nullable()
                 ->default(0)
                 ->comment('Temperatura del dispositivo en grados centígrados, EJ:38. Será 0 por defecto');
-            $table->integer('voltage', 11)
+            $table->integer('voltage')
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje de la batería en milivoltios, EJ:3812. Será 0 por defecto');
-            $table->integer('amperage', 11)
+            $table->integer('amperage')
                 ->nullable()
                 ->default(0)
                 ->comment('Intensidad de la batería en milivoltios, EJ:3812. Será 0 por defecto');

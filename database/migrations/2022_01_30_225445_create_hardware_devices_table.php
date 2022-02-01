@@ -83,7 +83,7 @@ class CreateHardwareDevicesTable extends Migration
             $table->string('battery_type', 255)
                 ->nullable()
                 ->comment('Tipo de batería, EJ: Gel, li ion');
-            $table->integer('battery_nominal_capacity', 11)
+            $table->integer('battery_nominal_capacity')
                 ->nullable()
                 ->comment('Capacidad nominal de la batería en mAh, EJ: 4200');
             $table->string('url_company', 255)
