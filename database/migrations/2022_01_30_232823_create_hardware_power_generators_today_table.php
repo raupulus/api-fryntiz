@@ -37,7 +37,7 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
             $table->integer('battery_min_voltage')
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Voltaje de la batería mínimo en el día');
             $table->integer('battery_max_voltage')
                 ->nullable()
                 ->default(0)
