@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Hardware\HardwarePowerGeneratorController;
 use App\Models\Hardware\HardwareDevice;
 use Illuminate\Http\Request;
+use function auth;
 
 /*
 {
@@ -57,8 +58,30 @@ class SolarChargeController extends Controller
         $dataRequest = $request->all();
         $device_id = $request->json('device_id');
 
-        // TODO → Check if device exists and user exist
-        $device = HardwareDevice::find($device_id);
+        ## Usuario logueado.
+        $user = auth()->user();
+
+        ## Compruebo que exista usuario logueado.
+        if (! $user) {
+            return response()->json([
+                'message' => 'Unauthorized.',
+            ], 401);
+        }
+
+        ## Dispositivo sobre el que se guardan los registros.
+        $device = HardwareDevice::where('id', $device_id)
+            ->where('user_id', $user->id)
+            ->first();
+
+
+        ## No existe ese dispositivo
+        if (!$device) {
+            return response()->json([
+                'message' => 'Device not found',
+                'status' => 'error'
+            ], 404);
+        }
+
         $generator = $device->powerGenerator;
         $generatorToday = $device->powerGeneratorToday;
         $generatorHistorical = $device->powerGeneratorHistorical;
