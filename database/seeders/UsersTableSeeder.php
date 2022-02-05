@@ -30,6 +30,9 @@ class UsersTableSeeder extends Seeder
             'password' => bcrypt('123123'),
         ]);
 
+        $t = $superadmin->createToken('general');
+        echo "\n\nToken → $t->plainTextToken\n\n";
+
         $admin = User::firstOrCreate([
             'email' => 'admin@domain.es',
         ],[

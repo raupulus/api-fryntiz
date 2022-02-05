@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,30 +16,43 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+*/
 
 ######################################################
 ##                   Autenticación
 ######################################################
-/*
+
 Route::group([
     'prefix' => 'auth'
 ],
     function () {
-        Route::post('login', 'AuthController@login');
-        Route::post('signup', 'AuthController@signup');
+        Route::post('/login', [LoginController::class, 'login']);
+        Route::post('signup', [RegisterController::class, 'register']);
 
 //Route::post('/register', [AuthController::class, 'register']);
 //Route::post('/login', [AuthController::class, 'login']);
 
+        /*
+        Route::post('/tokens/create', function (Request $request) {
+            $token = $request->user()->createToken($request->token_name);
+
+            return ['token' => $token->plainTextToken];
+        });
+        */
+
         Route::group([
             'middleware' => 'auth:sanctum'
         ], function() {
-            Route::get('logout', 'AuthController@logout');
-            Route::get('user', 'AuthController@user');
+            Route::get('/logout', 'AuthController@logout');
+
+
+            Route::get('/user', function () {
+                return response()->json(auth()->user());
+            });
         });
     }
 );
-*/

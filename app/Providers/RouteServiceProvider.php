@@ -108,6 +108,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/cv/web.php'));
 
+            Route::prefix('api/hardware/v1')
+                //->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/hardware/v1.php'));
+
             Route::prefix('webhook')
                 //->middleware('TODO → New custom middleware')
                 ->namespace($this->namespace)

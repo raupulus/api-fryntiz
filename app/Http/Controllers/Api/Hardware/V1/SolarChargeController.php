@@ -1,14 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\Api\Hardware;
+namespace App\Http\Controllers\Api\Hardware\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Hardware\HardwarePowerGeneratorController;
 use App\Models\Hardware\HardwareDevice;
+use App\Models\Hardware\SolarCharge;
 use Illuminate\Http\Request;
 use function auth;
+use function response;
 
-/*
+/**
+ * Class SolarChargeController
+ */
+class SolarChargeController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    /*
 {
    "battery_voltage":12.5,
    "battery_temperature":17,
@@ -48,21 +71,19 @@ use function auth;
    "historical_cumulative_power_consumption":"None"
 }
  */
-/**
- * Class SolarChargeController
- */
-class SolarChargeController extends Controller
-{
-    public function add(Request $request)
+    public function store(Request $request)
     {
+        dd('asd');
         $dataRequest = $request->all();
         $device_id = $request->json('device_id');
 
         ## Usuario logueado.
         $user = auth()->user();
 
+        dd($user);
+
         ## Compruebo que exista usuario logueado.
-        if (! $user) {
+        if (!$user) {
             return response()->json([
                 'message' => 'Unauthorized.',
             ], 401);
@@ -88,6 +109,42 @@ class SolarChargeController extends Controller
         $loads = $device->loads;
         $loadsToday = $device->loadToday;
         $loadsHistorical = $device->loadHistorical;
+    }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Models\Hardware\SolarCharge $solarCharge
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show(SolarCharge $solarCharge)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request         $request
+     * @param \App\Models\Hardware\SolarCharge $solarCharge
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, SolarCharge $solarCharge)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Models\Hardware\SolarCharge $solarCharge
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(SolarCharge $solarCharge)
+    {
+        //
     }
 }

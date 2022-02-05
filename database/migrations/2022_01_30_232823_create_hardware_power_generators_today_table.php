@@ -34,14 +34,14 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->integer('battery_min_voltage')
+            $table->decimal('battery_min_voltage', 10, 2)
                 ->nullable()
-                ->default(0)
+                ->default(0.0)
                 ->comment('Voltaje de la batería mínimo en el día');
-            $table->integer('battery_max_voltage')
+            $table->decimal('battery_max_voltage', 10, 2)
                 ->nullable()
-                ->default(0)
-                ->comment('');
+                ->default(0.0)
+                ->comment('Voltaje de la batería máximo en el día');
             $table->integer('max_charging_current')
                 ->nullable()
                 ->default(0)
