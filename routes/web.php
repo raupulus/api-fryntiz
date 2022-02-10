@@ -61,3 +61,11 @@ Route::group(['prefix' => '/file'], function () {
 });
 
 Auth::routes();
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function () {
+    return abort(404); //default 404
+});
