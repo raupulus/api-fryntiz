@@ -7,6 +7,10 @@
  * @copyright Copyright © 2021 Raúl Caro Pastorino
  * @license https://www.gnu.org/licenses/gpl-3.0-standalone.html
 */
+
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 /**
  * Class JsonHelper
  */
@@ -18,7 +22,7 @@ class JsonHelper
      * @var array
      */
     private static $success = [
-        'status' => 'success',  // Estado de la petición.
+        'status' => 'ok',  // Estado de la petición.
         'source' => [  // Información sobre el origen.
             'domain' => null,
             'url' => null,
@@ -34,7 +38,7 @@ class JsonHelper
      * @var array
      */
     private static $error = [
-        'status' => 'error',  // Estado de la petición
+        'status' => 'ko',  // Estado de la petición
         'source' => [  // Información sobre el origen.
             'domain' => null,
             'url' => null,
@@ -55,7 +59,7 @@ class JsonHelper
      * @var array
      */
     private static $fail = [
-        'status' => 'fail',  // Estado de la petición.
+        'status' => 'ko',  // Estado de la petición.
         'source' => [  // Información sobre el origen.
             'domain' => null,
             'url' => null,
@@ -79,6 +83,7 @@ class JsonHelper
                 'url' => request()->root(),
                 'full_url' => request()->fullUrl(),
                 'path' => request()->path(),
+                'parameters' => request()->all(),
             ],
 
             /*
@@ -121,7 +126,7 @@ class JsonHelper
      *
      * @return array
      */
-    public static function prepareError(String $msg = null,
+    public static function prepareError(String $msg = 'Error',
                                  Int $status = 400,
                                  Exception $trace = null,
                                  Int $id = null)
@@ -149,13 +154,14 @@ class JsonHelper
 
      * @return array
      */
-    public static function prepareFail(Array $data)
+    public static function prepareFail(Array $data, $message = 'Fail')
     {
         return array_merge(
             self::$fail,
             self::siteData(),
             [
                 'data' => $data,
+                'message' => $message,
             ],
         );
     }
@@ -211,10 +217,34 @@ class JsonHelper
     /**
      * Respuesta indicando que la petición contiene parámetros erróneos.
      *
+     * @param array $data
+     *
      * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
      */
-    public static function failed()
+    public static function failed(Array $data = [])
     {
-        return response()->json(self::prepareFail(), 200);
+        return response()->json(self::prepareFail($data), 200);
+    }
+
+    /**
+     * Respuesta indicando que no se encuentra el elemento
+     */
+    public static function notFound(String $msg = '404 This resource does not exist')
+    {
+        $code = 404;
+        $exception = new NotFoundHttpException($msg);
+
+        return response()->json(self::prepareError($msg, $code, $exception), $code);
+    }
+
+    /**
+     * Acceso Prohibido, 403.
+     */
+    public static function forbidden($msg = '403 Forbidden Access')
+    {
+        $code = 403;
+        $exception = new AccessDeniedHttpException($msg);
+
+        return response()->json(self::prepareError($msg, $code, $exception), $code);
     }
 }
