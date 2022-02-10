@@ -2,9 +2,19 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Route;
+use JsonHelper;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use function response;
 
+/**
+ * Class Handler
+ *
+ * @package App\Exceptions
+ */
 class Handler extends ExceptionHandler
 {
     /**
@@ -37,5 +47,62 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+
+    public function render($request, Throwable $e)
+    {
+        /*
+        if ($request->wantsJson()) {
+            return response()->json(['message' => '1 Found!'], 404);
+
+            switch (class_basename($e)) {
+                case 'NotFoundHttpException':
+                    return response()->json(['message' => 'Not Found!'], 404);
+                    break;
+                case 'ModelNotFoundException':
+                    return response()->json(['message' => 'Not Found!'], 404);
+                    break;
+            }
+        }
+
+        */
+
+        /*
+        if ($e instanceof ModelNotFoundException && $request->wantsJson()) {
+            return response()->json(['message' => 'Not Found!'], 404);
+        }
+        */
+
+
+        if ($request->isJson()) {
+
+            if ($e instanceof ModelNotFoundException) {
+
+                return JsonHelper::notFound();
+
+            } else if($e instanceof NotFoundHttpException) {
+
+                return JsonHelper::notFound();
+
+            }
+        }
+
+        /*
+        if ($request->is('api/*')) {
+            return response()->json(['message' => 'Not Found!'], 404);
+        }
+
+        if ($e instanceof NotFoundHttpException) {
+            return Route::respondWithRoute('fallback');
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            return Route::respondWithRoute('fallback');
+        }
+
+        */
+
+        return parent::render($request, $e);
     }
 }
