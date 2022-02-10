@@ -28,3 +28,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     #Route::post('/register/add-json','Api\AirFlight\AirFlightController@addJson');
     Route::post('/register/add-json', [AirFlightController::class, 'addJson']);
 });
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function(){
+    return response()->json(['message' => 'Page Not Found'], 404);
+});

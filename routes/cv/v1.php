@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
 });
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function(){
+    return response()->json(['message' => 'Page Not Found'], 404);
+});

@@ -32,3 +32,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //todo
 
 });
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function(){
+    return response()->json(['message' => 'Page Not Found'], 404);
+});

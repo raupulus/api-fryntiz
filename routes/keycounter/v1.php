@@ -27,3 +27,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     ## Añadir nuevos registros de pulsaciones para el teclado  por lotes JSON
     Route::post('/mouse/add-json', 'App\Http\Controllers\Api\KeyCounter\MouseController@addJson');
 });
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function(){
+    return response()->json(['message' => 'Page Not Found'], 404);
+});

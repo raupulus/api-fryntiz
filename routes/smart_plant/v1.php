@@ -22,3 +22,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     ##
     Route::post('/register/add-json', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@addJson');
 });
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function(){
+    return response()->json(['message' => 'Page Not Found'], 404);
+});

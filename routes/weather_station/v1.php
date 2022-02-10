@@ -232,3 +232,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 ## Busco un dato concreto para Rayos.
 //Route::get('/lightning/find', 'LightningController@find');
+
+
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function(){
+    return response()->json(['message' => 'Page Not Found'], 404);
+});
