@@ -23,13 +23,6 @@ class JsonHelper
      */
     private static $success = [
         'status' => 'ok',  // Estado de la petición.
-        'source' => [  // Información sobre el origen.
-            'domain' => null,
-            'url' => null,
-            'full_url' => null,
-            'path' => null,
-        ],
-        'data' => null,
     ];
 
     /**
@@ -46,10 +39,10 @@ class JsonHelper
             'path' => null,
         ],
         'error' => [
-            'id' => null,  // Código de error interno a la app.
-            'code' => null,  // Codigo http para el error.
-            'message' => null,  // Mensaje del error.
-            'trace' => null,  // Pila de errores.
+            'codeError' => 0,  // Código de error interno a la app.
+            'httpCode' => 400,  // Codigo http para el error.
+            'message' => 'Error',  // Mensaje del error.
+            'exception' => null,  // Pila de errores.
         ],
     ];
 
@@ -60,13 +53,16 @@ class JsonHelper
      */
     private static $fail = [
         'status' => 'ko',  // Estado de la petición.
+        'httpCode' => 422,  // Codigo http para el error.
+        'codeError' => 0, // Código de error interno a la app.
+        'message' => 'The given data was invalid.',
         'source' => [  // Información sobre el origen.
             'domain' => null,
             'url' => null,
             'full_url' => null,
             'path' => null,
         ],
-        'data' => null,
+        'errors' => [],
     ];
 
     /**
@@ -77,6 +73,8 @@ class JsonHelper
      */
     private static function siteData()
     {
+        // TODO → Plantear si interesa solo cuando se está en debug, mejor rendimiento??
+
         return [
             'source' => [
                 'domain' => request()->getHost(),
@@ -106,41 +104,39 @@ class JsonHelper
      *
      * @return array
      */
-    public static function prepareSuccess(Array $data)
+    private static function prepareSuccess(Array $data)
     {
         return array_merge(
             self::$success,
             //self::siteData(),
-            [
-                'data' => $data,
-            ],
+            $data,
         );
     }
 
     /**
      * Prepara un mensaje de error para una acción fallida.
      *
-     * @param String|null     $msg Mensaje en formato humano.
-     * @param Int             $status Código http del error.
-     * @param \Exception|null $trace Excepción de seguimiento.
-     * @param Int|null        $id Id del error dentro de la aplicación.
+     * @param String|null     $message Mensaje en formato humano.
+     * @param Int             $httpCode Código http del error.
+     * @param \Exception|null $exception Excepción de seguimiento.
+     * @param Int|null        $codeError Id del error dentro de la aplicación.
      *
      * @return array
      */
-    public static function prepareError(String $msg = 'Error',
-                                 Int $status = 400,
-                                 Exception $trace = null,
-                                 Int $id = null)
+    private static function prepareError(String $message = 'Error',
+                                 Int $httpCode = 400,
+                                 Exception $exception = null,
+                                 Int $codeError = null)
     {
         return array_merge(
             self::$error,
             self::siteData(),
             [
                 'error' => [
-                    'id' => $id,
-                    'code' => $status,
-                    'trace' => $trace,
-                    'message' => $msg,
+                    'codeError' => $codeError,
+                    'httpCode' => $httpCode,
+                    'message' => $message,
+                    'exception' => $exception,
                 ],
             ],
         );
@@ -149,20 +145,26 @@ class JsonHelper
     /**
      * Prepara un mensaje de respuesta cuando se reciben parámetros mal.
      *
-     * @param array $data Datos de la respuesta con los atributos que hayan
-     *                    fallado.
+     * @param String $message Mensaje de error.
+     * @param array  $errors Array con los errores de validación.
+     * @param Int    $httpCode Código http de la respuesta.
+     * @param Int    $codeError Código de error interno para la aplicación.
      *
-
      * @return array
      */
-    public static function prepareFail(Array $data, $message = 'Fail')
+    private static function prepareFail(String $message = 'The given data was invalid.',
+                                       Array $errors = [],
+                                       Int $httpCode = 422,
+                                       Int $codeError = 0)
     {
         return array_merge(
             self::$fail,
             self::siteData(),
             [
-                'data' => $data,
+                'httpCode' => $httpCode,
+                'codeError' => $codeError,
                 'message' => $message,
+                'errors' => $errors,
             ],
         );
     }
@@ -218,33 +220,72 @@ class JsonHelper
     /**
      * Respuesta indicando que la petición contiene parámetros erróneos.
      *
-     * @param array $data
+     * @param String $message Mensaje de error.
+     * @param array  $errors Array con los errores de validación.
+     * @param Int    $httpCode Código http de la respuesta.
+     * @param Int    $codeError Código de error interno para la aplicación.
      *
      * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
      */
-    public static function failed(Array $data = [])
+    public static function failed(String $message = 'The given data was invalid.',
+                                  Array $errors = [],
+                                  Int $httpCode = 422,
+                                  Int $codeError = 0)
     {
-        return response()->json(self::prepareFail($data), 200);
+        return response()->json(self::prepareFail(
+                $message,
+                $errors,
+                $httpCode,
+                $codeError
+            ),
+            $httpCode);
     }
 
     /**
      * Respuesta indicando que no se encuentra el elemento
+     *
+     * @param String $message Mensaje de error.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public static function notFound(String $msg = '404 This resource does not exist')
+    public static function notFound(String $message = '404 This resource does not exist')
     {
-        $code = 404;
-        $exception = new NotFoundHttpException($msg);
+        $httpCode = 404;
+        $exception = new NotFoundHttpException($message);
+        $codeError = 0;
 
-        return response()->json(self::prepareError($msg, $code, $exception), $code);
+        return response()->json(self::prepareError(
+                $message,
+                $httpCode,
+                $exception,
+                $codeError
+            ),
+            $httpCode);
     }
 
     /**
      * Acceso Prohibido, 401|403.
+     *
+     * @param String          $message Mensaje de error.
+     * @param Int             $httpCode Código http de la respuesta.
+     * @param Int             $codeError Código de error interno para la aplicación.
+     * @param \Exception|null $exception Excepción.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public static function forbidden($msg = '403 Forbidden Access', $code = 403)
+    public static function forbidden(String $message = '403 Forbidden Access',
+                                     Int $httpCode = 403,
+                                     Int $codeError = 0,
+                                     Exception $exception = null)
     {
-        $exception = new AccessDeniedHttpException($msg);
+        $exception = $exception ?? new AccessDeniedHttpException($message);
 
-        return response()->json(self::prepareError($msg, $code, $exception), $code);
+        return response()->json(self::prepareError(
+                $message,
+                $httpCode,
+                $exception,
+                $codeError
+            ),
+            $httpCode);
     }
 }
