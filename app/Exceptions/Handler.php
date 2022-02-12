@@ -23,7 +23,8 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        JsonAuthorizationException::class,
+        JsonValidationException::class,
     ];
 
     /**
