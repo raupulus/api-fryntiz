@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Request;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use function asset;
@@ -144,5 +145,12 @@ class User extends Authenticatable
 
         return $this->delete();
     }
+
+    /*
+    public static function createModel(Request $request)
+    {
+
+    }
+    */
 
 }

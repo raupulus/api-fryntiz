@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Requests\Api\Auth;
+namespace App\Http\Requests\Api\User;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use function auth;
 
 /**
- * Class RegisterRequest
+ * Class CreateRequest
  */
-class RegisterRequest extends BaseFormRequest
+class CreateRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,7 +17,7 @@ class RegisterRequest extends BaseFormRequest
      */
     public function authorize()
     {
-        return ! (bool)auth()->id();
+        return auth()->id() && auth()->user()->can('create', \App\Models\User::class);
     }
 
     /**

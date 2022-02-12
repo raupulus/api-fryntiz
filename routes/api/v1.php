@@ -67,6 +67,10 @@ Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
     ## Datos del perfil de un usuario.
     Route::get('/profile/{user_id}', [UserProfileController::class, 'show'])
         ->name('api.v1.user.profile');
+
+    ## Crear un nuevo usuario.
+    Route::post('/create', [UserController::class, 'create'])
+        ->name('api.v1.user.create');
 });
 
 

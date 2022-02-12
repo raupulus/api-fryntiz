@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\User\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\User\CreateRequest;
 use App\Http\Requests\Api\User\IndexRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use JsonHelper;
 
 /**
@@ -18,7 +20,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Api\User\IndexRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(IndexRequest $request)
     {
@@ -31,44 +35,27 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * @param \App\Http\Requests\Api\User\CreateRequest $request
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function create(CreateRequest $request)
     {
-        //
-    }
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        //
-    }
+        $user = User::create($data);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
+        //$newToken = $user->createToken('login');
+
+        // TODO → Enviar email de confirmación al usuario
+
+        return JsonHelper::success([
+            'message' => 'User created successfully',
+            'user' => $user,
+            //'password' => $request->password,
+            //'token' => $newToken->plainTextToken,
+        ]);
     }
 
     /**
