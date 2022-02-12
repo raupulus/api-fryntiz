@@ -29,7 +29,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',
         'email',
+        'password',
     ];
 
     /**
@@ -38,6 +40,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
+        'email',
         'password',
         'remember_token',
         'two_factor_recovery_codes',
@@ -124,5 +127,22 @@ class User extends Authenticatable
         return 'profile/username';
     }
      */
+
+    /**
+     * Elimina de forma segura un usuario y todos los datos asociado.
+     *
+     * @return bool
+     */
+    public function safeDelete()
+    {
+        ## Elimino la imagen asociada al tipo de repositorio y todas las miniaturas.
+        /*
+        if ($this->image) {
+            $this->image->safeDelete();
+        }
+        */
+
+        return $this->delete();
+    }
 
 }
