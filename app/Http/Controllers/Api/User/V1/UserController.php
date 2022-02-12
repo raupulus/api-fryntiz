@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api\User\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\User\CreateRequest;
 use App\Http\Requests\Api\User\IndexRequest;
+use App\Http\Requests\Api\User\ShowRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use JsonHelper;
+use function response;
 
 /**
  * Class UserController
@@ -26,6 +28,8 @@ class UserController extends Controller
      */
     public function index(IndexRequest $request)
     {
+        //TODO → Implementar paginación
+
         //$users = User::all(['id', 'name', 'surname', 'created_at']);
         $users = UserResource::collection(User::all());
 
@@ -56,6 +60,13 @@ class UserController extends Controller
             //'password' => $request->password,
             //'token' => $newToken->plainTextToken,
         ]);
+    }
+
+    public function show(ShowRequest $request)
+    {
+        $user = User::findOrFail($request->user_id);
+
+        return JsonHelper::success(['user' => new UserResource($user)]);
     }
 
     /**

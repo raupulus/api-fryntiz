@@ -96,10 +96,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/light/add-json', 'App\Http\Controllers\Api\WeatherStation\LightController@addJson');
 
     ## Añadir nuevo registro de rayos uv.
-    Route::post('/uv/add', 'App\Http\Controllers\Api\WeatherStation\UvController@add');
+    Route::post('/uv/add', [WeatherStation\UvIndexController::class, 'add']);
 
     ## Añadir nuevos registros de rayos uv por lotes JSON
-    Route::post('/uv/add-json', 'App\Http\Controllers\Api\WeatherStation\UvController@addJson');
+    Route::post('/uv/add-json', [WeatherStation\UvIndexController::class, 'addJson']);
 
     ## Añadir nuevo registro de viento.
     Route::post('/winter/add', 'App\Http\Controllers\Api\WeatherStation\WinterController@add');

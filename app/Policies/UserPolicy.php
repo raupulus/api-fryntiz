@@ -32,4 +32,29 @@ class UserPolicy
         // TOFIX → Temparlmente solo permito crear usuarios al admin.
         return $user->role_id === 1;
     }
+
+    /**
+     * Permisos para ver usuario
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\User $model
+     *
+     * @return bool
+     */
+    public function view(User $user, User $model)
+    {
+        // TODO → Crear sistema de permisos
+
+        //return $user->hasPermissionTo('view-user');
+
+        if ($user->id === $model->id) {
+            return true;
+        }
+
+        if ($user->role_id === 1) {
+            return true;
+        }
+
+        return true;
+    }
 }

@@ -60,13 +60,9 @@ Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
     Route::get('/index', [UserController::class, 'index'])
         ->name('api.v1.user.index');
 
-    ## Datos del perfil para el usuario logueado.
-    Route::get('/profile', [UserProfileController::class, 'myProfile'])
-        ->name('api.v1.user.profile');
-
-    ## Datos del perfil de un usuario.
-    Route::get('/profile/{user_id}', [UserProfileController::class, 'show'])
-        ->name('api.v1.user.profile');
+    ## Devuelve un usuario en específico.
+    Route::post('/show', [UserController::class, 'show'])
+        ->name('api.v1.user.show');
 
     ## Crear un nuevo usuario.
     Route::post('/create', [UserController::class, 'create'])
