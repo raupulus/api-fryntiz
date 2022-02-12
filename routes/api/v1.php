@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\V1\LoginController;
+use App\Http\Controllers\Api\Auth\V1\RegisterController;
 use App\Http\Controllers\Api\User\V1\UserController;
 use App\Http\Controllers\Api\User\V1\UserProfileController;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 ##                   Autenticación
 ######################################################
 
-Route::group(['prefix' => 'auth'], function () {
+Route::group(['prefix' => 'v1/auth'], function () {
     Route::post('/login', [LoginController::class, 'login'])->middleware(\Illuminate\Session\Middleware\StartSession::class);
     Route::post('signup', [RegisterController::class, 'register']);
 
@@ -52,7 +52,8 @@ Route::group(['prefix' => 'auth'], function () {
 ######################################################
 ##                   Usuarios
 ######################################################
-Route::group(['prefix' => 'user','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
+() {
     ## Devuelve todos los usuarios.
     Route::get('/index', [UserController::class, 'index'])
         ->name('api.user.index');

@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth;
+namespace App\Http\Controllers\Api\Auth\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 /**
  * Class RegisterController
