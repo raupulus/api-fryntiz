@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\Auth\V1\LoginController;
 use App\Http\Controllers\Api\Auth\V1\RegisterController;
 use App\Http\Controllers\Api\User\V1\UserController;
-use App\Http\Controllers\Api\User\V1\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -67,6 +66,10 @@ Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
     ## Crear un nuevo usuario.
     Route::post('/create', [UserController::class, 'create'])
         ->name('api.v1.user.create');
+
+    ## Actualizar un usuario.
+    Route::put('/update', [UserController::class, 'update'])
+        ->name('api.v1.user.update');
 });
 
 

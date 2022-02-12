@@ -54,7 +54,7 @@ class UserController extends Controller
 
         // TODO → Enviar email de confirmación al usuario
 
-        return JsonHelper::success([
+        return JsonHelper::created([
             'message' => 'User created successfully',
             'user' => $user,
             //'password' => $request->password,
@@ -62,6 +62,13 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Devuelve los datos de un usuario.
+     *
+     * @param \App\Http\Requests\Api\User\ShowRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(ShowRequest $request)
     {
         $user = User::findOrFail($request->user_id);
@@ -74,11 +81,16 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
-        //
+        $user = User::findOrFail($request->user_id);
+
+        $user = $user->updateModel($request);
+
+        return JsonHelper::updated(['user' => new UserResource($user)]);
     }
 
     /**

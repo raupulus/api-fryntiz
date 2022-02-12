@@ -57,4 +57,31 @@ class UserPolicy
 
         return true;
     }
+
+    /**
+     * Permisos para editar usuario.
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\User $model
+     *
+     * @return bool
+     */
+    public function update(User $user, User $model)
+    {
+        // TODO → Crear sistema de permisos
+
+        //return $user->hasPermissionTo('update-user');
+
+        ## Es el propio usuario
+        if ($user->id === $model->id) {
+            return true;
+        }
+
+        ## Es el admin
+        if ($user->role_id === 1) {
+            return true;
+        }
+
+        return false;
+    }
 }
