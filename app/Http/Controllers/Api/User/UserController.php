@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\User\IndexRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use JsonHelper;
@@ -21,7 +22,8 @@ class UserController extends Controller
      */
     public function index(IndexRequest $request)
     {
-        $users = User::all(['id', 'name', 'surname', 'created_at']);
+        //$users = User::all(['id', 'name', 'surname', 'created_at']);
+        $users = UserResource::collection(User::all());
 
         return JsonHelper::success(['users' => $users]);
     }
