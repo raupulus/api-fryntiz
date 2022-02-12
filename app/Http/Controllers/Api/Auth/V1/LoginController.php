@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\Auth\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Auth\LoginRequest;
+use App\Http\Requests\Api\Auth\LogoutRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use JsonHelper;
 use function response;
 
 /**
@@ -12,9 +15,16 @@ use function response;
  */
 class LoginController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * Loguea un usuario.
+     *
+     * @param \App\Http\Requests\Api\Auth\LoginRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login(LoginRequest $request)
     {
-        $this->validateLogin($request);
+        $request->validated();
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
@@ -29,12 +39,17 @@ class LoginController extends Controller
         ]);
     }
 
-    public function validateLogin(Request $request)
+    /**
+     * Desloguea un usuario.
+     *
+     * @param \App\Http\Requests\Api\Auth\LogoutRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(LogoutRequest $request)
     {
-        return $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            //'device' => 'required'
-        ]);
+        $request->user()->currentAccessToken()->delete();
+
+        return JsonHelper::success(['message' => 'Successfully logged out']);
     }
 }

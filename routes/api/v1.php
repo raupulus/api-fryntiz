@@ -17,34 +17,36 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/*
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-*/
-
 ######################################################
 ##                   Autenticación
 ######################################################
-
 Route::group(['prefix' => 'v1/auth'], function () {
-    Route::post('/login', [LoginController::class, 'login'])->middleware(\Illuminate\Session\Middleware\StartSession::class);
-    Route::post('signup', [RegisterController::class, 'register']);
+    ## Ruta para hacer login.
+    Route::post('/login', [LoginController::class, 'login'])
+        ->middleware(\Illuminate\Session\Middleware\StartSession::class)
+        ->name('api.v1.auth.login');
 
-    //Route::post('/register', [AuthController::class, 'register']);
-    //Route::post('/login', [AuthController::class, 'login']);
+    ## Ruta para crear un nuevo registro de usuario.
+    Route::post('/signup', [RegisterController::class, 'create'])
+        //->middleware(\Illuminate\Session\Middleware\StartSession::class)
+        ->name('api.v1.auth.signup');
+
+    ## Grupo de rutas protegidos por token de autenticación.
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        ## Cierra la sesión de un usuario e invalida su token actual.
+        Route::post('/logout', [LoginController::class, 'logout'])
+            ->name('api.v1.auth.logout');
+
+        ## Cierra la sesión de un usuario e invalida su token actual.
+        Route::post('/delete-account', [RegisterController::class, 'destroy'])
+            ->name('api.v1.auth.delete_account');
+    });
 
     /*
     Route::post('/tokens/create', function (Request $request) {
         $token = $request->user()->createToken($request->token_name);
 
         return ['token' => $token->plainTextToken];
-    });
-    */
-
-    /*
-    Route::group(['middleware' => 'auth:sanctum'], function () {
-        Route::get('/logout', 'AuthController@logout');
     });
     */
 });
@@ -56,15 +58,15 @@ Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
 () {
     ## Devuelve todos los usuarios.
     Route::get('/index', [UserController::class, 'index'])
-        ->name('api.user.index');
+        ->name('api.v1.user.index');
 
     ## Datos del perfil para el usuario logueado.
     Route::get('/profile', [UserProfileController::class, 'myProfile'])
-        ->name('api.user.profile');
+        ->name('api.v1.user.profile');
 
     ## Datos del perfil de un usuario.
     Route::get('/profile/{user_id}', [UserProfileController::class, 'show'])
-        ->name('api.user.profile.show');
+        ->name('api.v1.user.profile');
 });
 
 
