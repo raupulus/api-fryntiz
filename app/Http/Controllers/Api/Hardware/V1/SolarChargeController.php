@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\SolarCharge;
 use Illuminate\Http\Request;
+use JsonHelper;
 use function auth;
 use function response;
 
@@ -73,20 +74,16 @@ class SolarChargeController extends Controller
  */
     public function store(Request $request)
     {
-        dd('asd');
         $dataRequest = $request->all();
         $device_id = $request->json('device_id');
 
         ## Usuario logueado.
         $user = auth()->user();
 
-        dd($user);
 
         ## Compruebo que exista usuario logueado.
         if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized.',
-            ], 401);
+            return JsonHelper::forbidden('Unauthorized', 401);
         }
 
         ## Dispositivo sobre el que se guardan los registros.
@@ -97,11 +94,17 @@ class SolarChargeController extends Controller
 
         ## No existe ese dispositivo
         if (!$device) {
-            return response()->json([
-                'message' => 'Device not found',
-                'status' => 'error'
-            ], 404);
+            return JsonHelper::notFound('Device not found');
         }
+
+
+
+
+        return response()->json(['data' => $dataRequest, 'device_id' =>
+            $device_id, $device]);
+
+
+// TODO → Crear validación de request y guardar todos los datos en db
 
         $generator = $device->powerGenerator;
         $generatorToday = $device->powerGeneratorToday;

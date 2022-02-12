@@ -84,6 +84,7 @@ class JsonHelper
                 'full_url' => request()->fullUrl(),
                 'path' => request()->path(),
                 'parameters' => request()->all(),
+                'headers' => request()->headers->all(),
             ],
 
             /*
@@ -109,7 +110,7 @@ class JsonHelper
     {
         return array_merge(
             self::$success,
-            self::siteData(),
+            //self::siteData(),
             [
                 'data' => $data,
             ],
@@ -238,11 +239,10 @@ class JsonHelper
     }
 
     /**
-     * Acceso Prohibido, 403.
+     * Acceso Prohibido, 401|403.
      */
-    public static function forbidden($msg = '403 Forbidden Access')
+    public static function forbidden($msg = '403 Forbidden Access', $code = 403)
     {
-        $code = 403;
         $exception = new AccessDeniedHttpException($msg);
 
         return response()->json(self::prepareError($msg, $code, $exception), $code);
