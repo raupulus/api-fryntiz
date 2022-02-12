@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\User\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,20 +42,28 @@ Route::group(['prefix' => 'auth'], function () {
     });
     */
 
+    /*
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/logout', 'AuthController@logout');
     });
+    */
 });
 
 ######################################################
 ##                   Usuarios
 ######################################################
 Route::group(['prefix' => 'user','middleware' => 'auth:sanctum'], function () {
+    ## Devuelve todos los usuarios.
+    Route::get('/index', [UserController::class, 'index'])
+        ->name('api.user.index');
+
     ## Datos del perfil para el usuario logueado.
-    Route::get('/profile', [UserProfileController::class, 'myProfile']);
+    Route::get('/profile', [UserProfileController::class, 'myProfile'])
+        ->name('api.user.profile');
 
     ## Datos del perfil de un usuario.
-    Route::get('/profile/{user_id}', [UserProfileController::class, 'show']);
+    Route::get('/profile/{user_id}', [UserProfileController::class, 'show'])
+        ->name('api.user.profile.show');
 });
 
 
