@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\User\UserController;
-use App\Http\Controllers\Api\User\UserProfileController;
+use App\Http\Controllers\Api\User\V1\UserController;
+use App\Http\Controllers\Api\User\V1\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
