@@ -28,7 +28,8 @@ class StoreSolarChargeRequest extends BaseFormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'created_at' => $this->created_at ?? Carbon::now(),
+            'created_at' => $this->created_at,
+            'date' => $this->date ?? Carbon::create($this->created_at)->format('Y-m-d'),
 
             ## HardwareDevice
             'device_id' => (int)$this->device_id,
@@ -62,20 +63,24 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'historical_cumulative_power_generation' => (int)$this->historical_cumulative_power_generation,
             'historical_cumulative_power_consumption' => (int)$this->historical_cumulative_power_consumption,
 
+
+            ## HardwarePowerGeneratorToday
+            'battery_max_voltage'=> (float)$this->today_battery_max_voltage,
+            'battery_min_voltage'=> (float)$this->today_battery_min_voltage,
+            'max_charging_power'=> (int)$this->today_max_charging_power,
+            'max_charging_current'=> (float)$this->today_max_charging_current,
+            'max_discharging_current'=> (float)$this->today_max_discharging_current,
+            'charging_amp_hours'=> (float)$this->today_charging_amp_hours,
+            'discharging_amp_hours'=> (float)$this->today_discharging_amp_hours,
+            'power_generation'=> (int)$this->today_power_generation,
+            'power_consumption'=> (int)$this->today_power_consumption,
+
+
             ##
             /*
             'controller_temperature'=> 19,
             'system_voltage_current'=> 24,
             'system_intensity_current'=> 20,
-            'today_battery_max_voltage'=> 14.6,
-            'today_battery_min_voltage'=> 12.1,
-            'today_max_charging_current'=> 10.12,
-            'today_max_charging_power'=> 1012,
-            'today_charging_amp_hours'=> 32,
-            'today_discharging_amp_hours'=> 10,
-            'today_power_generation'=> 435,
-            'today_power_consumition'=> 120,
-
             */
         ]);
     }
@@ -94,6 +99,8 @@ class StoreSolarChargeRequest extends BaseFormRequest
     {
         return [
             'created_at' => 'required|date',
+            'date' => 'required|date',
+
             'device_id' => 'required|integer|exists:hardware_devices,id',
             'hardware' => 'nullable|string|max:255',
             'version' => 'nullable|string|max:255',
@@ -122,6 +129,17 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'historical_total_discharging_amp_hours' => 'nullable|integer',
             'historical_cumulative_power_generation' => 'nullable|integer',
             'historical_cumulative_power_consumption' => 'nullable|integer',
+
+            'battey_max_voltage' => 'nullable|numeric',
+            'battery_min_voltage' => 'nullable|numeric',
+            'max_charging_power' => 'nullable|integer',
+            'max_charging_current' => 'nullable|numeric',
+            'max_discharging_current' => 'nullable|numeric',
+            'charging_amp_hours' => 'nullable|numeric',
+            'discharging_amp_hours' => 'nullable|numeric',
+            'power_generation' => 'nullable|integer',
+            'power_consumption' => 'nullable|integer',
+
 
         ];
     }

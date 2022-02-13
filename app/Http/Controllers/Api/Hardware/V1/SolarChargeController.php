@@ -7,6 +7,7 @@ use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
+use App\Models\Hardware\HardwarePowerGeneratorToday;
 use App\Models\Hardware\SolarCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -65,7 +66,7 @@ class SolarChargeController extends Controller
    "today_charging_amp_hours":32,
    "today_discharging_amp_hours":10,
    "today_power_generation":435,
-   "today_power_consumition":120,
+   "today_power_consumption":120,
    "historical_total_days_operating":62,
    "historical_total_number_battery_over_discharges":4,
    "historical_total_number_battery_full_charges":68,
@@ -93,9 +94,32 @@ class SolarChargeController extends Controller
         $device = $device->updateModel($request);
         $device->save();
 
+
         ## Guardo los datos para la carga de energía.
         $hardwarePowerGenerator = HardwarePowerGenerator::createModel($device, $request);
         $hardwarePowerGenerator->save();
+
+
+        ## Actualizo el histórico diario
+        $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::where('hardware_device_id', $device->id)
+            ->where('date', $request->date)
+            ->first();
+
+        if ($hardwarePowerGeneratorToday) {
+            if ($request->created_at > $hardwarePowerGeneratorToday->created_at) {
+                $hardwarePowerGeneratorToday->updateModel($request);
+                $hardwarePowerGeneratorToday->created_at = $request->created_at;
+            }
+        } else {
+            $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::createModel($device, $request);
+            $hardwarePowerGeneratorToday->save();
+            $hardwarePowerGeneratorToday->created_at = $request->created_at;
+            $hardwarePowerGeneratorToday->date = $request->date ??
+                Carbon::create($request->created_at)->format('Y-m-d');
+        }
+
+        $hardwarePowerGeneratorToday->save();
+
 
         ## Guardo los datos para el Historial de carga de energía.
         $hardwarePowerGeneratorHistorical =
@@ -118,24 +142,10 @@ class SolarChargeController extends Controller
 
 
 
-
-
-        return response()->json([
-            'device_id' => $device_id,
-            'hardwarePowerGeneratorHistorical' => $hardwarePowerGeneratorHistorical,
-            'device' => $device,
-            'request' => $dataRequest,
+        return JsonHelper::created([
+            'message' => 'Carga de energía registrada correctamente.',
         ]);
 
-
-// TODO → Crear validación de request y guardar todos los datos en db
-
-        $generator = $device->powerGenerator;
-        $generatorToday = $device->powerGeneratorToday;
-        $generatorHistorical = $device->powerGeneratorHistorical;
-        $loads = $device->loads;
-        $loadsToday = $device->loadToday;
-        $loadsHistorical = $device->loadHistorical;
     }
 
     /**

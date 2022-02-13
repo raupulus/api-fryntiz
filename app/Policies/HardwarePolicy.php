@@ -31,9 +31,9 @@ class HardwarePolicy
      */
     public function storeSolarCharge(User $user, HardwareDevice $model)
     {
-        Log::info('Entrando a storeSolarCharge');
-        Log::info('El usuario es: ' . $user->id);
-        Log::info('El modelo es: ' . $model->id);
+        //Log::info('Entrando a storeSolarCharge');
+        //Log::info('El usuario es: ' . $user->id);
+        //Log::info('El modelo es: ' . $model->id);
 
         /*
         if ($user->role_id == 1) {

@@ -42,34 +42,38 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
                 ->nullable()
                 ->default(0.0)
                 ->comment('Voltaje de la batería máximo en el día');
-            $table->integer('max_charging_current')
+            $table->integer('max_charging_power')
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('discharging_current')
+                ->comment('Potencia máxima de carga en el día actual');
+            $table->decimal('max_charging_current', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('charging_power')
+                ->comment('Intensidad máxima de carga en el día actual');
+            $table->decimal('max_discharging_current', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('charging_amp_hours')
+                ->comment('Devuelve la intensidad máxima de descarga en el día actual');
+            $table->decimal('charging_amp_hours', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('discharging_amp_hours')
+                ->comment('Devuelve la carga en Ah para el día actual');
+            $table->decimal('discharging_amp_hours', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Devuelve la descarga en Ah para el día actual');
             $table->integer('power_generation')
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('power_consumition')
+                ->comment('Potencia generada en el día actual');
+            $table->integer('power_consumption')
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Potencia consumida en el día actual');
+            $table->date('date')
+                ->nullable()
+                //->default(Today())
+                ->comment('Fecha en del registro');
 
             $table->timestamps();
         });
