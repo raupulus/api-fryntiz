@@ -9,6 +9,7 @@ use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorToday;
 use App\Models\Hardware\HardwarePowerLoad;
+use App\Models\Hardware\HardwarePowerLoadToday;
 use App\Models\Hardware\SolarCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -146,9 +147,34 @@ class SolarChargeController extends Controller
         $hardwarePowerLoad = HardwarePowerLoad::createModel($device, $request);
         $hardwarePowerLoad->save();
 
+        ## HardwarePowerLoadToday
+        $hardwarePowerLoadToday = HardwarePowerLoadToday::where('hardware_device_id', $device->id)
+            ->where('date', $request->date)
+            ->first();
+
+        if ($hardwarePowerLoadToday) {
+            $hardwarePowerLoadToday->updateModel($request);
+
+            if ($request->created_at > $hardwarePowerLoadToday->created_at) {
+                $hardwarePowerLoadToday->created_at = $request->created_at;
+            }
+        } else {
+            $hardwarePowerLoadToday = HardwarePowerLoadToday::createModel($device, $request);
+            $hardwarePowerLoadToday->save();
+            $hardwarePowerLoadToday->created_at = $request->created_at;
+            $hardwarePowerLoadToday->date = $request->date ??
+                Carbon::create($request->created_at)->format('Y-m-d');
+        }
+
+        $hardwarePowerLoadToday->save();
+
+
+        // TODO → Falta histórico de carga de energía.
+        ## HardwarePowerLoadHistorical
+
         return JsonHelper::created([
             'message' => 'Carga de energía registrada correctamente.',
-            'hardwarePowerLoad' => $hardwarePowerLoad,
+            'hardwarePowerLoadToday' => $hardwarePowerLoadToday,
         ]);
 
     }
