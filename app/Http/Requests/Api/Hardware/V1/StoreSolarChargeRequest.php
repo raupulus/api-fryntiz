@@ -76,12 +76,10 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'power_consumption'=> (int)$this->today_power_consumption,
 
 
-            ##
-            /*
-            'controller_temperature'=> 19,
-            'system_voltage_current'=> 24,
-            'system_intensity_current'=> 20,
-            */
+            ## HardwarePowerLoad
+            'controller_temperature'=> (float)$this->controller_temperature,
+            'system_voltage_current'=> (float)$this->system_voltage_current,
+            'system_intensity_current'=> (float)$this->system_intensity_current,
         ]);
     }
 
@@ -140,7 +138,9 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'power_generation' => 'nullable|integer',
             'power_consumption' => 'nullable|integer',
 
-
+            'controller_temperature' => 'nullable|numeric',
+            'system_voltage_current' => 'nullable|numeric',
+            'system_intensity_current' => 'nullable|numeric',
         ];
     }
 

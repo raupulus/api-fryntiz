@@ -8,6 +8,7 @@ use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorToday;
+use App\Models\Hardware\HardwarePowerLoad;
 use App\Models\Hardware\SolarCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -141,9 +142,13 @@ class SolarChargeController extends Controller
         $hardwarePowerGeneratorHistorical->save();
 
 
+        ## HardwarePowerLoad
+        $hardwarePowerLoad = HardwarePowerLoad::createModel($device, $request);
+        $hardwarePowerLoad->save();
 
         return JsonHelper::created([
             'message' => 'Carga de energía registrada correctamente.',
+            'hardwarePowerLoad' => $hardwarePowerLoad,
         ]);
 
     }
