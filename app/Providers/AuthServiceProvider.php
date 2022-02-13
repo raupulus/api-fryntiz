@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Policies\HardwarePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
         User::class => UserPolicy::class,
+        HardwareDevice::class => HardwarePolicy::class,
     ];
 
     /**

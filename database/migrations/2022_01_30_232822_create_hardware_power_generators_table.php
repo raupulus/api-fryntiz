@@ -34,60 +34,61 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->integer('load_current')
+            $table->decimal('load_current', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('load_voltage')
+                ->comment('Intensidad de la carga actual');
+            $table->decimal('load_voltage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Voltaje de la carga actual');
             $table->integer('load_power')
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('battery_voltage')
+                ->comment('Potencia de la carga actual');
+            $table->decimal('battery_voltage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('battery_temperature')
+                ->comment('Voltaje de la batería');
+            $table->decimal('battery_temperature', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Temperatura de la batería en su exterior (sensor externo a la batería)');
             $table->integer('battery_percentage')
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Porcentaje de carga en la batería (0-100)');
             $table->integer('charging_status')
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('charging_status_label')
+                ->comment('El modo de cargar batería en el momento, código interno del fabricante (1,2,3...).');
+            $table->string('charging_status_label', 255)
+                ->nullable()
+                ->default('deactivated')
+                ->comment('El modo de cargar batería en el momento. (deactivated, activated, mppt, equalizing, boost, floating, current limiting)');
+            $table->decimal('origin_current', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('(mppt, absortion...)');
-            $table->integer('origin_current')
+                ->comment('La intensidad de carga que está generando el generador.');
+            $table->decimal('origin_voltage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Fuente del generador, por ejemplo solar');
-            $table->integer('origin_voltage')
-                ->nullable()
-                ->default(0)
-                ->comment('');
+                ->comment('El voltaje de carga que está generando el generador.');
             $table->integer('origin_power')
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('La potencia de carga que está generando el generador.');
             $table->boolean('light_status')
                 ->nullable()
                 ->default(false)
-                ->comment('');
+                ->comment('Estado de la luz de calle en booleano 0|1.');
             $table->integer('light_brightness')
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Devuelve el brillo de la luz de calle.');
 
             $table->timestamps();
+            $table->softDeletes();
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

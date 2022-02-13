@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\Hardware\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Models\Hardware\HardwareDevice;
+use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\SolarCharge;
 use Illuminate\Http\Request;
 use JsonHelper;
@@ -30,7 +32,6 @@ class SolarChargeController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\Response
      */
     /*
 {
@@ -72,7 +73,7 @@ class SolarChargeController extends Controller
    "historical_cumulative_power_consumption":"None"
 }
  */
-    public function store(Request $request)
+    public function store(StoreSolarChargeRequest $request)
     {
         $dataRequest = $request->all();
         $device_id = $request->json('device_id');
@@ -80,28 +81,32 @@ class SolarChargeController extends Controller
         ## Usuario logueado.
         $user = auth()->user();
 
-
-        ## Compruebo que exista usuario logueado.
-        if (!$user) {
-            return JsonHelper::forbidden('Unauthorized', 401);
-        }
-
         ## Dispositivo sobre el que se guardan los registros.
         $device = HardwareDevice::where('id', $device_id)
             ->where('user_id', $user->id)
             ->first();
 
 
-        ## No existe ese dispositivo
-        if (!$device) {
-            return JsonHelper::notFound('Device not found');
-        }
+        ## Actualizo los datos del dispositivo (HardwareDevice).
+        $device = $device->updateModel($request);
+        $device->save();
 
+        ## Guardo los datos para la carga de energía.
+        $hardwarePowerGenerator = HardwarePowerGenerator::createModel($device, $request);
+        $hardwarePowerGenerator->save();
 
+        /*
+        $hardwarePowerGenerator = new HardwarePowerGenerator();
+        $hardwarePowerGenerator = $hardwarePowerGenerator->updateModel($request);
+        $hardwarePowerGenerator->save();
+    */
 
-
-        return response()->json(['data' => $dataRequest, 'device_id' =>
-            $device_id, $device]);
+        return response()->json([
+            'device_id' => $device_id,
+            'hardwarePowerGenerator' => $hardwarePowerGenerator,
+            'device' => $device,
+            'request' => $dataRequest,
+        ]);
 
 
 // TODO → Crear validación de request y guardar todos los datos en db
