@@ -36,7 +36,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'hardware' => $this->prepareStr($this->hardware),
             'version' => $this->prepareStr($this->version),
             'serial_number' => $this->prepareStr($this->serial_number),
-            'battery_type' => $this->prepareStr($this->serial_number),
+            'battery_type' => $this->prepareStr($this->battery_type),
             'nominal_battery_capacity' => (int)$this->nominal_battery_capacity,
 
             ## HardwarePowerGenerator
@@ -51,8 +51,8 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'solar_current' => (float) $this->solar_current,
             'solar_voltage' => (float) $this->solar_voltage,
             'solar_power' => (int) $this->solar_power,
-            'street_light_status',
-            'street_light_brightness',
+            'street_light_status' => (bool) $this->street_light_status,
+            'street_light_brightness' => (int) $this->street_light_brightness,
 
 
             ##
@@ -93,6 +93,20 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'serial_number' => 'nullable|string|max:255',
             'battery_type' => 'nullable|string|max:255',
             'nominal_battery_capacity' => 'nullable|integer',
+
+            'load_current' => 'nullable|numeric',
+            'load_voltage' => 'nullable|numeric',
+            'load_power' => 'nullable|integer',
+            'battery_voltage' => 'nullable|numeric',
+            'battery_temperature' => 'nullable|numeric',
+            'battery_percentage' => 'nullable|integer',
+            'charging_status' => 'nullable|integer',
+            'charging_status_label' => 'nullable|string|max:255',
+            'solar_current' => 'nullable|numeric',
+            'solar_voltage' => 'nullable|numeric',
+            'solar_power' => 'nullable|integer',
+            'street_light_status' => 'required|boolean',
+            'street_light_brightness' => 'nullable|integer',
         ];
     }
 }

@@ -81,11 +81,11 @@ class CreateHardwarePowerGeneratorsTable extends Migration
             $table->boolean('light_status')
                 ->nullable()
                 ->default(false)
-                ->comment('Estado de la luz de calle en booleano 0|1.');
+                ->comment('Indica si hay luz de calle mediante booleano 0|1.');
             $table->integer('light_brightness')
                 ->nullable()
                 ->default(0)
-                ->comment('Devuelve el brillo de la luz de calle.');
+                ->comment('Devuelve el porcentaje brillo de la luz de calle (0-100%).');
 
             $table->timestamps();
             $table->softDeletes();
