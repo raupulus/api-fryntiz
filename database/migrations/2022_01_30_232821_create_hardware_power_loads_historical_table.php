@@ -37,51 +37,51 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
             $table->integer('fan_min')
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('fan_average')
+                ->comment('Ventilador mínima del ventilador (rpm)');
+            $table->integer('fan_avg')
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Velocidad promedio del ventilador (rpm)');
             $table->integer('fan_max')
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('temperature_min')
+                ->comment('Velocidad máxima del ventilador (rpm)');
+            $table->decimal('temperature_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('temperature_average')
+                ->comment('Temperatura mínima del dispositivo (°C)');
+            $table->decimal('temperature_avg', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('temperature_max')
+                ->comment('Temperatura promedio del dispositivo (°C)');
+            $table->decimal('temperature_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('voltage_min')
+                ->comment('Temperatura máxima del dispositivo (°C)');
+            $table->decimal('voltage_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('voltage_average')
+                ->comment('Voltaje mínimo del dispositivo (V)');
+            $table->decimal('voltage_avg', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('voltage_max')
+                ->comment('Voltaje promedio del dispositivo (V)');
+            $table->decimal('voltage_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('amperage_min')
+                ->comment('Voltaje máximo del dispositivo (V)');
+            $table->decimal('amperage_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('amperage_average')
+                ->comment('Amperaje mínimo del dispositivo (A)');
+            $table->decimal('amperage_avg', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
-            $table->integer('amperage_max')
+                ->comment('Amperaje promedio del dispositivo (A)');
+            $table->decimal('amperage_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('');
+                ->comment('Amperaje máximo del dispositivo (A)');
 
             $table->timestamps();
 
