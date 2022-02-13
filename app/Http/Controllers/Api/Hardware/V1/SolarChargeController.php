@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwarePowerGenerator;
+use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\SolarCharge;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use JsonHelper;
 use function auth;
@@ -95,15 +97,32 @@ class SolarChargeController extends Controller
         $hardwarePowerGenerator = HardwarePowerGenerator::createModel($device, $request);
         $hardwarePowerGenerator->save();
 
-        /*
-        $hardwarePowerGenerator = new HardwarePowerGenerator();
-        $hardwarePowerGenerator = $hardwarePowerGenerator->updateModel($request);
-        $hardwarePowerGenerator->save();
-    */
+        ## Guardo los datos para el Historial de carga de energía.
+        $hardwarePowerGeneratorHistorical =
+            HardwarePowerGeneratorHistorical::where('hardware_device_id',
+                $device->id)->first();
+
+        ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
+        if ($hardwarePowerGeneratorHistorical) {
+            if ($request->created_at > $hardwarePowerGeneratorHistorical->created_at) {
+                $hardwarePowerGeneratorHistorical->updateModel($request);
+                $hardwarePowerGeneratorHistorical->created_at = $request->created_at;
+            }
+        } else {
+            $hardwarePowerGeneratorHistorical = HardwarePowerGeneratorHistorical::createModel($device, $request);
+            $hardwarePowerGeneratorHistorical->save();
+            $hardwarePowerGeneratorHistorical->created_at = $request->created_at;
+        }
+
+        $hardwarePowerGeneratorHistorical->save();
+
+
+
+
 
         return response()->json([
             'device_id' => $device_id,
-            'hardwarePowerGenerator' => $hardwarePowerGenerator,
+            'hardwarePowerGeneratorHistorical' => $hardwarePowerGeneratorHistorical,
             'device' => $device,
             'request' => $dataRequest,
         ]);

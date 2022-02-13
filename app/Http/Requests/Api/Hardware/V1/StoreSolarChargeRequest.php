@@ -4,7 +4,9 @@ namespace App\Http\Requests\Api\Hardware\V1;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Models\Hardware\HardwareDevice;
+use Carbon\Carbon;
 use function auth;
+use function trim;
 
 /**
  * Class StoreSolarChargeRequest
@@ -23,14 +25,11 @@ class StoreSolarChargeRequest extends BaseFormRequest
         return auth()->user()->can('storeSolarCharge', $device);
     }
 
-    private function prepareStr($str)
-    {
-        return trim($str);
-    }
-
     protected function prepareForValidation()
     {
         $this->merge([
+            'created_at' => $this->created_at ?? Carbon::now(),
+
             ## HardwareDevice
             'device_id' => (int)$this->device_id,
             'hardware' => $this->prepareStr($this->hardware),
@@ -40,20 +39,28 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'nominal_battery_capacity' => (int)$this->nominal_battery_capacity,
 
             ## HardwarePowerGenerator
-            'load_current' => (float) $this->load_current,
-            'load_voltage' => (float) $this->load_voltage,
-            'load_power' => (int) $this->load_power,
-            'battery_voltage' => (float) $this->battery_voltage,
-            'battery_temperature' => (float) $this->battery_temperature,
-            'battery_percentage' => (int) $this->battery_percentage,
-            'charging_status' => (int) $this->charging_status,
-            'charging_status_label'=> $this->prepareStr($this->charging_status_label),
-            'solar_current' => (float) $this->solar_current,
-            'solar_voltage' => (float) $this->solar_voltage,
-            'solar_power' => (int) $this->solar_power,
-            'street_light_status' => (bool) $this->street_light_status,
-            'street_light_brightness' => (int) $this->street_light_brightness,
+            'load_current' => (float)$this->load_current,
+            'load_voltage' => (float)$this->load_voltage,
+            'load_power' => (int)$this->load_power,
+            'battery_voltage' => (float)$this->battery_voltage,
+            'battery_temperature' => (float)$this->battery_temperature,
+            'battery_percentage' => (int)$this->battery_percentage,
+            'charging_status' => (int)$this->charging_status,
+            'charging_status_label' => $this->prepareStr($this->charging_status_label),
+            'solar_current' => (float)$this->solar_current,
+            'solar_voltage' => (float)$this->solar_voltage,
+            'solar_power' => (int)$this->solar_power,
+            'street_light_status' => (bool)$this->street_light_status,
+            'street_light_brightness' => (int)$this->street_light_brightness,
 
+            ## HardwarePowerGeneratorHistorical
+            'historical_total_days_operating' => (int)$this->historical_total_days_operating,
+            'historical_total_number_battery_over_discharges' => (int)$this->historical_total_number_battery_over_discharges,
+            'historical_total_number_battery_full_charges' => (int)$this->historical_total_number_battery_full_charges,
+            'historical_total_charging_amp_hours' => (int)$this->historical_total_charging_amp_hours,
+            'historical_total_discharging_amp_hours' => (int)$this->historical_total_discharging_amp_hours,
+            'historical_cumulative_power_generation' => (int)$this->historical_cumulative_power_generation,
+            'historical_cumulative_power_consumption' => (int)$this->historical_cumulative_power_consumption,
 
             ##
             /*
@@ -68,15 +75,14 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'today_discharging_amp_hours'=> 10,
             'today_power_generation'=> 435,
             'today_power_consumition'=> 120,
-            'historical_total_days_operating'=> 62,
-            'historical_total_number_battery_over_discharges'=> 4,
-            'historical_total_number_battery_full_charges'=> 68,
-            'historical_total_charging_amp_hours'=> 0,
-            'historical_total_discharging_amp_hours'=> 0,
-            'historical_cumulative_power_generation'=> null,
-            'historical_cumulative_power_consumption'=> null
+
             */
         ]);
+    }
+
+    private function prepareStr($str)
+    {
+        return trim($str);
     }
 
     /**
@@ -87,6 +93,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
     public function rules()
     {
         return [
+            'created_at' => 'required|date',
             'device_id' => 'required|integer|exists:hardware_devices,id',
             'hardware' => 'nullable|string|max:255',
             'version' => 'nullable|string|max:255',
@@ -105,8 +112,19 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'solar_current' => 'nullable|numeric',
             'solar_voltage' => 'nullable|numeric',
             'solar_power' => 'nullable|integer',
-            'street_light_status' => 'required|boolean',
+            'street_light_status' => 'nullable|boolean',
             'street_light_brightness' => 'nullable|integer',
+
+            'historical_total_days_operating' => 'nullable|integer',
+            'historical_total_number_battery_over_discharges' => 'nullable|integer',
+            'historical_total_number_battery_full_charges' => 'nullable|integer',
+            'historical_total_charging_amp_hours' => 'nullable|integer',
+            'historical_total_discharging_amp_hours' => 'nullable|integer',
+            'historical_cumulative_power_generation' => 'nullable|integer',
+            'historical_cumulative_power_consumption' => 'nullable|integer',
+
         ];
     }
+
+
 }

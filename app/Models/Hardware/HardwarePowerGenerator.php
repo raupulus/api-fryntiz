@@ -23,6 +23,15 @@ class HardwarePowerGenerator extends BaseModel
         'origin_power', 'light_status', 'light_brightness'];
 
 
+    /**
+     * Prepara el modelo para ser guardado a partir de los datos de una
+     * request.
+     *
+     * @param \App\Models\Hardware\HardwareDevice $device
+     * @param                                     $request
+     *
+     * @return \App\Models\Hardware\HardwarePowerGenerator
+     */
     public static function createModel(HardwareDevice $device, $request)
     {
         $data = [
@@ -45,6 +54,14 @@ class HardwarePowerGenerator extends BaseModel
         return new self(array_filter($data, 'strlen'));
     }
 
+    /**
+     * Prepara el modelo para ser actualizado a partir de los datos de una
+     * request.
+     *
+     * @param $request
+     *
+     * @return $this
+     */
     public function updateModel($request)
     {
         $data = [
