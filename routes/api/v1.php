@@ -70,6 +70,10 @@ Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
     ## Actualizar un usuario.
     Route::put('/update', [UserController::class, 'update'])
         ->name('api.v1.user.update');
+
+    ## Eliminar un usuario.
+    Route::delete('/delete', [UserController::class, 'destroy'])
+        ->name('api.v1.user.delete');
 });
 
 

@@ -147,6 +147,13 @@ class User extends Authenticatable
         return $this->delete();
     }
 
+    /**
+     * Rellena los datos en el modelo de usuario y lo devuelve.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return mixed
+     */
     public function createModel(Request $request)
     {
         $user = $this->create($request->only([
@@ -160,6 +167,13 @@ class User extends Authenticatable
         return $user;
     }
 
+    /**
+     * Actualiza los datos para en el modelo de usuario y lo devuelve.
+     *
+     * @param $request
+     *
+     * @return $this
+     */
     public function updateModel($request)
     {
         $this->update($request->only([

@@ -84,4 +84,28 @@ class UserPolicy
 
         return false;
     }
+
+    /**
+     * Permisos para eliminar usuario.
+     *
+     * @return bool
+     */
+    public function delete(User $user, User $model)
+    {
+        // TODO → Crear sistema de permisos
+
+        //return $user->hasPermissionTo('delete-user');
+
+        ## Es el propio usuario
+        if ($user->id === $model->id) {
+            return true;
+        }
+
+        ## Es el admin
+        if ($user->role_id === 1) {
+            return true;
+        }
+
+        return false;
+    }
 }

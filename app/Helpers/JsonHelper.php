@@ -206,6 +206,18 @@ class JsonHelper
     }
 
     /**
+     * Respuesta indicando que se ha eliminado correctamente.
+     *
+     * @param array $data
+     *
+     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     */
+    public static function deleted(Array $data = [])
+    {
+        return response()->json(self::prepareSuccess($data), 200);
+    }
+
+    /**
      * Respuesta indicando que la petición ha sido aceptada.
      *
      * @param array $data Datos de la respuesta.

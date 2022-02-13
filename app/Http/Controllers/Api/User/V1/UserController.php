@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\User\CreateRequest;
+use App\Http\Requests\Api\User\DeleteRequest;
 use App\Http\Requests\Api\User\IndexRequest;
 use App\Http\Requests\Api\User\ShowRequest;
 use App\Http\Resources\UserResource;
@@ -96,11 +97,18 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Api\User\DeleteRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(User $user)
+    public function destroy(DeleteRequest $request)
     {
-        //
+        $user = User::findOrFail($request->user_id);
+
+        if ($user->safeDelete()) {
+            return JsonHelper::deleted(['message' => 'User deleted successfully']);
+        }
+
+        return JsonHelper::failed('User could not be deleted');
     }
 }
