@@ -82,6 +82,18 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo del dispositivo (A)');
+            $table->decimal('power_min', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia mínima del dispositivo (W)');
+            $table->decimal('power_avg', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia promedio del dispositivo (W)');
+            $table->decimal('power_max', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia máxima del dispositivo (W)');
 
             $table->timestamps();
 

@@ -40,18 +40,22 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Velocidad del ventilador en RPM, EJ:3812. Será 0 por defecto');
-            $table->integer('temperature')
+            $table->decimal('temperature', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Temperatura del dispositivo en grados centígrados, EJ:38. Será 0 por defecto');
-            $table->integer('voltage')
+                ->comment('Temperatura del dispositivo en grados centígrados, EJ:38.31. Será 0 por defecto');
+            $table->decimal('voltage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Voltaje de la batería en milivoltios, EJ:3812. Será 0 por defecto');
-            $table->integer('amperage')
+                ->comment('Voltaje de la batería en voltios, EJ:12.37. Será 0 por defecto');
+            $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Intensidad de la batería en milivoltios, EJ:3812. Será 0 por defecto');
+                ->comment('Intensidad de la batería en ah, EJ:1.54. Será 0 por defecto');
+            $table->decimal('power', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia de la batería en watios, EJ:13.81. Será 0 por defecto');
 
             $table->timestamps();
 

@@ -75,9 +75,10 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'power_generation'=> (int)$this->today_power_generation,
             'power_consumption'=> (int)$this->today_power_consumption,
 
-
             ## HardwarePowerLoad
             'controller_temperature'=> (float)$this->controller_temperature,
+
+            ## System config
             'system_voltage_current'=> (float)$this->system_voltage_current,
             'system_intensity_current'=> (float)$this->system_intensity_current,
         ]);

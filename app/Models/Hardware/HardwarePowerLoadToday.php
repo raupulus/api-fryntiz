@@ -23,7 +23,7 @@ class HardwarePowerLoadToday extends BaseModel
     protected $fillable = ['hardware_device_id', 'fan_min', 'fan_max', 'fan_avg',
         'temperature_min', 'temperature_max', 'temperature_avg', 'voltage_min',
         'voltage_max', 'voltage_avg', 'amperage_min', 'amperage_max', 'amperage_avg',
-        'date', 'created_at'];
+        'power_min', 'power_max', 'power_avg', 'date', 'created_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
@@ -38,8 +38,21 @@ class HardwarePowerLoadToday extends BaseModel
     {
         $fan = $request->get('fan');
         $temperature = $request->get('temperature') ?? $request->get('controller_temperature');
-        $voltage = $request->get('voltage') ?? $request->get('controller_voltage');
-        $amperage = $request->get('amperage') ?? $request->get('controller_amperage');
+        $voltage = $request->get('voltage') ?? $request->get('load_voltage');
+        $amperage = $request->get('amperage') ?? $request->get('load_amperage');
+        $power = $request->get('power') ?? $request->get('load_power');
+
+        if (! $amperage) {
+            $amperage = $power / $voltage;
+        }
+
+        if (! $voltage) {
+            $voltage = $power / $amperage;
+        }
+
+        if (! $power) {
+            $power = $amperage * $voltage;
+        }
 
         $data = [
             'hardware_device_id' => $device->id,
@@ -56,6 +69,9 @@ class HardwarePowerLoadToday extends BaseModel
             'amperage_min' => $amperage,
             'amperage_max' => $amperage,
             'amperage_avg' => $amperage,
+            'power_min' => $power,
+            'power_max' => $power,
+            'power_avg' => $power,
             'created_at' => $request->get('created_at') ?? Carbon::now(),
         ];
 
@@ -74,8 +90,21 @@ class HardwarePowerLoadToday extends BaseModel
     {
         $fan = $request->get('fan');
         $temperature = $request->get('temperature') ?? $request->get('controller_temperature');
-        $voltage = $request->get('voltage') ?? $request->get('system_voltage_current');
-        $amperage = $request->get('amperage') ?? $request->get('system_intensity_current');
+        $voltage = $request->get('voltage') ?? $request->get('load_voltage');
+        $amperage = $request->get('amperage') ?? $request->get('load_amperage');
+        $power = $request->get('power') ?? $request->get('load_power');
+
+        if (! $amperage) {
+            $amperage = $power / $voltage;
+        }
+
+        if (! $voltage) {
+            $voltage = $power / $amperage;
+        }
+
+        if (! $power) {
+            $power = $amperage * $voltage;
+        }
 
         $fanMin = $fan < $this->fan_min ? $fan : $this->fan_min;
         $fanMax = $fan > $this->fan_max ? $fan : $this->fan_max;
@@ -85,6 +114,8 @@ class HardwarePowerLoadToday extends BaseModel
         $voltageMax = $voltage > $this->voltage_max ? $voltage : $this->voltage_max;
         $amperageMin = $amperage < $this->amperage_min ? $amperage : $this->amperage_min;
         $amperageMax = $amperage > $this->amperage_max ? $amperage : $this->amperage_max;
+        $powerMin = $power < $this->power_min ? $power : $this->power_min;
+        $powerMax = $power > $this->power_max ? $power : $this->power_max;
 
         $data = [
             'fan_min' => $fanMin,
@@ -99,6 +130,9 @@ class HardwarePowerLoadToday extends BaseModel
             'amperage_min' => $amperageMin,
             'amperage_max' => $amperageMax,
             'amperage_avg' => ($amperageMin + $amperageMax) / 2,
+            'power_min' => $powerMin,
+            'power_max' => $powerMax,
+            'power_avg' => ($powerMin + $powerMax) / 2,
             'created_at' => $request->get('created_at') ?? Carbon::now(),
         ];
 

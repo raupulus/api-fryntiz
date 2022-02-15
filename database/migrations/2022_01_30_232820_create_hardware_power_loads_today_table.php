@@ -82,6 +82,18 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo (A)');
+            $table->decimal('power_min', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia mínima (W)');
+            $table->decimal('power_avg', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia promedio (W)');
+            $table->decimal('power_max', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia máxima (W)');
             $table->date('date')
                 ->nullable()
                 ->comment('Fecha de medición');
