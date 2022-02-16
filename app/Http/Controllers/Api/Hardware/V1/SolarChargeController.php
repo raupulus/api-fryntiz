@@ -13,8 +13,10 @@ use App\Models\Hardware\HardwarePowerLoadToday;
 use App\Models\Hardware\SolarCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use JsonHelper;
 use function auth;
+use function request;
 use function response;
 
 /**
@@ -48,7 +50,6 @@ class SolarChargeController extends Controller
      */
     public function store(StoreSolarChargeRequest $request)
     {
-        $dataRequest = $request->all();
         $device_id = $request->json('device_id');
 
         ## Usuario logueado.
