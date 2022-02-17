@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -9,6 +10,9 @@ use Illuminate\Database\Migrations\Migration;
  */
 class CreateAirFlightAirplanesTable extends Migration
 {
+    private $tableName = 'airflight_airplanes';
+    private $tableComment = 'Almacena los aviones.';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateAirFlightAirplanesTable extends Migration
      */
     public function up()
     {
-        Schema::create('airflight_airplanes', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
            $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -58,6 +62,8 @@ class CreateAirFlightAirplanesTable extends Migration
 
             $table->timestamps();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -67,7 +73,7 @@ class CreateAirFlightAirplanesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('airflight_airplanes', function (Blueprint
+        Schema::dropIfExists($this->tableName, function (Blueprint
                                                               $table) {
             $table->dropForeign(['user_id']);
         });

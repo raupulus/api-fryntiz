@@ -1,14 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateKeycounterKeyboardTable
  */
 class CreateKeycounterKeyboardTable extends Migration
 {
+    private $tableName = 'keycounter_keyboard';
+    private $tableComment = 'Pulsaciones de teclado';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateKeycounterKeyboardTable extends Migration
      */
     public function up()
     {
-        Schema::create('keycounter_keyboard', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -45,7 +49,7 @@ class CreateKeycounterKeyboardTable extends Migration
                 ->comment('Cantidad de pulsaciones total de la racha');
             $table->bigInteger('pulsations_special_keys')
                 ->comment('Cantidad de pulsaciones para teclas especiales total de la racha');
-            $table->decimal('pulsation_average', 15, 5)
+            $table->decimal('pulsation_average', 14, 4)
                 ->comment('Velocidad media de pulsaciones para la racha');
             $table->bigInteger('score')
                 ->comment('Puntuación conseguida en esta racha');
@@ -57,6 +61,8 @@ class CreateKeycounterKeyboardTable extends Migration
                 ->comment('Nombre del dispositivo asociado');
             $table->timestamps();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -66,7 +72,7 @@ class CreateKeycounterKeyboardTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('keycounter_keyboard', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['hardware_device_id']);
         });

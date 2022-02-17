@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -9,6 +10,9 @@ use Illuminate\Database\Migrations\Migration;
  */
 class CreateSmartbonsaiPlantsTable extends Migration
 {
+    private $tableName = 'smartplant_plants';
+    private $tableComment = 'Cada tipo de planta sobre la que se tomarán registros con sensores.';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateSmartbonsaiPlantsTable extends Migration
      */
     public function up()
     {
-        Schema::create('smartplant_plants', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -45,6 +49,8 @@ class CreateSmartbonsaiPlantsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -54,7 +60,7 @@ class CreateSmartbonsaiPlantsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smartplant_plants', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['user_id']);
         });
     }

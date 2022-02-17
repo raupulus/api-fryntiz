@@ -7,9 +7,9 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class CurriculumAvailableRepositoryTypeSeeder
+ * Class PrinterAvailableTypesSeeder
  */
-class CurriculumAvailableRepositoryTypeSeeder extends Seeder
+class PrinterAvailableTypesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,38 +20,39 @@ class CurriculumAvailableRepositoryTypeSeeder extends Seeder
     {
         $repositories = [
             [
-                'title' => 'Gitlab',
-                'slug' => 'gitlab',
-                'url' => 'https://gitlab.com',
-                'name' => 'Gitlab',
+                'name' => '2D',
+                'slug' => '2d',
+                'description' => 'Impresora 2D común',
             ],
             [
-                'title' => 'Github',
-                'slug' => 'github',
-                'url' => 'https://github.com',
-                'name' => 'Github',
+                'name' => '3D',
+                'slug' => '3d',
+                'description' => 'Impresora 3D',
             ],
             [
-                'title' => 'Bitbucket',
-                'slug' => 'bitbucket',
-                'url' => 'https://bitbucket.org',
-                'name' => 'Bitbucket',
+                'name' => 'Térmica',
+                'slug' => 'thermal',
+                'description' => 'Impresora térmica',
+            ],
+            [
+                'name' => 'Tickets',
+                'slug' => 'ticket',
+                'description' => 'Impresora de tiques',
             ],
         ];
 
         $now = Carbon::now();
 
         foreach ($repositories as $repository) {
-            $exist = DB::table('cv_available_repository_types')
+            $exist = DB::table('printer_available_types')
                 ->where('slug', $repository['slug'])
                 ->first();
 
             if (! $exist) {
                 DB::table('cv_available_repository_types')->insert([
-                    'title' => $repository['title'],
-                    'slug' => $repository['slug'],
-                    'url' => $repository['url'],
                     'name' => $repository['name'],
+                    'slug' => $repository['slug'],
+                    'description' => $repository['description'],
                     'created_at' => $now,
                     'updated_at' => $now
                 ]);

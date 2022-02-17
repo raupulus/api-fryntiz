@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -9,6 +10,9 @@ use Illuminate\Database\Migrations\Migration;
  */
 class CreateKeycounterMouseTable extends Migration
 {
+    private $tableName = 'keycounter_mouse';
+    private $tableComment = 'Pulsaciones de ratón';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateKeycounterMouseTable extends Migration
      */
     public function up()
     {
-        Schema::create('keycounter_mouse', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -49,7 +53,7 @@ class CreateKeycounterMouseTable extends Migration
                 ->comment('Cantidad de clicks centrales');
             $table->bigInteger('total_clicks')
                 ->comment('Cantidad de clicks total de la racha');
-            $table->decimal('clicks_average', 10, 5)
+            $table->decimal('clicks_average', 14, 4)
                 ->comment('Cantidad de cliks medio de la racha');
             $table->bigInteger('weekday')
                 ->comment('Día de la semana (0 es domingo)');
@@ -59,6 +63,8 @@ class CreateKeycounterMouseTable extends Migration
                 ->comment('Nombre del dispositivo asociado');
             $table->timestamps();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -68,7 +74,7 @@ class CreateKeycounterMouseTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('keycounter_mouse', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['hardware_device_id']);
         });

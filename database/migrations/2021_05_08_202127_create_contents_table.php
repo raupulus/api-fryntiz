@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateContentsTable extends Migration
 {
+    private $tableName = 'contents';
+    private $tableComment = 'Contenido';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateContentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('contents', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -84,6 +88,8 @@ class CreateContentsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -93,7 +99,7 @@ class CreateContentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('contents', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['author_id']);
             $table->dropForeign(['status_id']);
             $table->dropForeign(['content_type_id']);

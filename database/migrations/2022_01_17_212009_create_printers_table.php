@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreatePrintersTable extends Migration
 {
+    private $tableName = 'printers';
+    private $tableComment = 'Impresoras';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreatePrintersTable extends Migration
      */
     public function up()
     {
-        Schema::create('printers', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -30,7 +34,7 @@ class CreatePrintersTable extends Migration
             $table->unsignedBigInteger('printer_type_id')
                 ->comment('Relación el tipo de impresora');
             $table->foreign('printer_type_id')
-                ->references('id')->on('printer_types')
+                ->references('id')->on('printer_available_types')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->string('name', 511)
@@ -43,6 +47,8 @@ class CreatePrintersTable extends Migration
                 ->comment('Descripción');
             $table->timestamps();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -52,7 +58,7 @@ class CreatePrintersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('printers', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['printer_type_id']);
         });

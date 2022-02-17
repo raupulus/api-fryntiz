@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -9,6 +10,9 @@ use Illuminate\Database\Migrations\Migration;
  */
 class CreateContentAvailableCategoriesTable extends Migration
 {
+    private $tableName = 'content_available_categories';
+    private $tableComment = 'Categorías disponibles para el contenido.';
+
     /**
      * Run the migrations.
      *
@@ -16,12 +20,27 @@ class CreateContentAvailableCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('content_available_categories', function (Blueprint
+        Schema::create($this->tableName, function (Blueprint
                                                               $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->bigInteger('user_id')
+                ->nullable()
+                ->comment('FK a la tabla users');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->bigInteger('section_id')
+                ->index()
+                ->nullable()
+                ->comment('FK a la sección que se asocia la categoría con el tipo de plataforma');
+            $table->foreign('section_id')
+                ->references('id')->on('sections')
+                ->onUpdate('cascade')
+                ->onDelete('SET NULL');
             $table->bigInteger('file_id')
                 ->nullable()
                 ->comment('FK a la imagen en la tabla files');
@@ -47,6 +66,8 @@ class CreateContentAvailableCategoriesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -56,6 +77,6 @@ class CreateContentAvailableCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_available_categories');
+        Schema::dropIfExists($this->tableName);
     }
 }

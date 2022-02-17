@@ -2,13 +2,19 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreatePrinterStackTable
+ *
+ * Cola de trabajo para impresoras
  */
 class CreatePrinterStackTable extends Migration
 {
+    private $tableName = 'printer_stack';
+    private $tableComment = 'Cola de impresión';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +22,7 @@ class CreatePrinterStackTable extends Migration
      */
     public function up()
     {
-        Schema::create('printer_stack', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -41,6 +47,8 @@ class CreatePrinterStackTable extends Migration
                 ->comment('content');
             $table->timestamps();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -50,7 +58,7 @@ class CreatePrinterStackTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('printer_stack', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['printer_id']);
         });
