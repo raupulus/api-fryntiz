@@ -33,12 +33,12 @@ class CreateContentsTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('SET NULL');
-            $table->bigInteger('section_id')
+            $table->bigInteger('platform_id')
                 ->index()
                 ->nullable()
-                ->comment('FK a la sección que se asocia este contenido');
-            $table->foreign('section_id')
-                ->references('id')->on('sections')
+                ->comment('FK a la plataforma que se asocia este contenido');
+            $table->foreign('platform_id')
+                ->references('id')->on('platforms')
                 ->onUpdate('cascade')
                 ->onDelete('SET NULL');
             $table->bigInteger('status_id')

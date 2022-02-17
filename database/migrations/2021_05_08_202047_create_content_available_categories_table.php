@@ -33,13 +33,13 @@ class CreateContentAvailableCategoriesTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->bigInteger('section_id')
+            $table->bigInteger('platform_id')
                 ->index()
                 ->nullable()
                 ->comment('FK a la sección que se asocia la categoría con el tipo de plataforma');
-            $table->foreign('section_id')
-                ->references('id')->on('sections')
-                ->onUpdate('cascade')
+            $table->foreign('platform_id')
+                ->references('id')->on('platforms')
+                ->onUpdate('CASCADE')
                 ->onDelete('SET NULL');
             $table->bigInteger('file_id')
                 ->nullable()

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -12,8 +13,11 @@ use Illuminate\Database\Migrations\Migration;
  * para la estación meteorológica...
  *
  */
-class CreateSectionsTable extends Migration
+class CreatePlatformsTable extends Migration
 {
+    private $tableName = 'platforms';
+    private $tableComment = 'Almacena las distintas plataformas en las que se agruparán los contenidos';
+
     /**
      * Run the migrations.
      *
@@ -21,12 +25,24 @@ class CreateSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-
+            $table->unsignedBigInteger('user_id')
+                ->comment('Relación con el usuario');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen asociada');
+            $table->foreign('image_id')
+                ->references('id')->on('files')
+                ->onUpdate('CASCADE')
+                ->onDelete('SET NULL');
             $table->string('title', 511)
                 ->index()
                 ->comment('Título de la sección');
@@ -40,6 +56,8 @@ class CreateSectionsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -49,6 +67,6 @@ class CreateSectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists($this->tableName);
     }
 }
