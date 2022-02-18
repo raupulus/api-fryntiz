@@ -5,12 +5,15 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use function array_merge;
 
 /**
  * Class CurriculumAvailableRepositoryTypeSeeder
  */
 class CurriculumAvailableRepositoryTypeSeeder extends Seeder
 {
+    private $tableName = 'cv_available_repository_types';
+
     /**
      * Run the database seeds.
      *
@@ -18,7 +21,7 @@ class CurriculumAvailableRepositoryTypeSeeder extends Seeder
      */
     public function run()
     {
-        $repositories = [
+        $datas = [
             [
                 'title' => 'Gitlab',
                 'slug' => 'gitlab',
@@ -41,20 +44,18 @@ class CurriculumAvailableRepositoryTypeSeeder extends Seeder
 
         $now = Carbon::now();
 
-        foreach ($repositories as $repository) {
-            $exist = DB::table('cv_available_repository_types')
-                ->where('slug', $repository['slug'])
+        foreach ($datas as $data) {
+            $exist = DB::table($this->tableName)
+                ->where('slug', $data['slug'])
                 ->first();
 
             if (! $exist) {
-                DB::table('cv_available_repository_types')->insert([
-                    'title' => $repository['title'],
-                    'slug' => $repository['slug'],
-                    'url' => $repository['url'],
-                    'name' => $repository['name'],
-                    'created_at' => $now,
-                    'updated_at' => $now
-                ]);
+                DB::table($this->tableName)->insert(
+                    array_merge($data, [
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ])
+                );
             }
         }
     }

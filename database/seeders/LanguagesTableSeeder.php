@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use function array_merge;
 
 /**
  * Class LanguagesTableSeeder
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\DB;
  */
 class LanguagesTableSeeder extends Seeder
 {
+    private $tableName = 'languages';
+
     /**
      * Run the database seeds.
      *
@@ -20,7 +23,7 @@ class LanguagesTableSeeder extends Seeder
      */
     public function run()
     {
-        $languages = [
+        $datas = [
             [
                 'locale' => 'es_ES',
                 'iso_locale' => 'es-ES',
@@ -47,14 +50,20 @@ class LanguagesTableSeeder extends Seeder
             ]
         ];
 
+        $now = Carbon::now();
+
         ## Recorre idiomas y los inserta solo cuando no existen.
-        foreach ($languages as $lang) {
-            $exist = DB::table('languages')
-                ->where('iso2', $lang['iso2'])
+        foreach ($datas as $data) {
+            $exist = DB::table($this->tableName)
+                ->where('iso2', $data['iso2'])
                 ->first();
 
-            if (!$exist) {
-                DB::table('languages')->insert($lang);
+            if (! $exist) {
+                DB::table($this->tableName)->insert(
+                    array_merge($data, [
+                        'created_at' => $now,
+                    ])
+                );
             }
         }
     }

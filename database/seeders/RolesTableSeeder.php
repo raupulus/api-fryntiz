@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
  */
 class RolesTableSeeder extends Seeder
 {
+    private $tableName = 'user_roles';
+
     /**
      * Run the database seeds.
      *

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use function array_merge;
 use function bcrypt;
 
 /**
@@ -15,6 +16,8 @@ use function bcrypt;
  */
 class HardwareAvailableComponentsTableSeeder extends Seeder
 {
+    private $tableName = 'hardware_available_components';
+
     /**
      * Run the database seeds.
      *
@@ -22,7 +25,7 @@ class HardwareAvailableComponentsTableSeeder extends Seeder
      */
     public function run()
     {
-        $componentsAvailable = [
+        $datas = [
             [
                 'type' => 'motherboard',
                 'slug' => 'motherboard',
@@ -87,19 +90,18 @@ class HardwareAvailableComponentsTableSeeder extends Seeder
 
         $now = Carbon::now();
 
-        foreach ($componentsAvailable as $ca) {
-            $exist = DB::table('hardware_available_components')
-                ->where('slug', $ca['slug'])
+        foreach ($datas as $data) {
+            $exist = DB::table($this->tableName)
+                ->where('slug', $data['slug'])
                 ->first();
 
             if (! $exist) {
-                DB::table('hardware_available_components')->insert([
-                    'type' => $ca['type'],
-                    'slug' => $ca['slug'],
-                    'name' => $ca['name'],
-                    'created_at' => $now,
-                    'updated_at' => $now
-                ]);
+                DB::table($this->tableName)->insert(
+                    array_merge($data, [
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ])
+                );
             }
         }
     }

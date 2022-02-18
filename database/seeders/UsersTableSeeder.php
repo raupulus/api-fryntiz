@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use function bcrypt;
+use function config;
 
 /**
  * Class UsersTableSeeder
@@ -13,6 +14,8 @@ use function bcrypt;
  */
 class UsersTableSeeder extends Seeder
 {
+    private $tableName = 'users';
+
     /**
      * Run the database seeds.
      *
@@ -31,7 +34,10 @@ class UsersTableSeeder extends Seeder
         ]);
 
         $t = $superadmin->createToken('general');
-        echo "\n\nToken → $t->plainTextToken\n\n";
+
+        if (config('app.debug')) {
+            echo "\n\nToken Admin → $t->plainTextToken\n\n";
+        }
 
         $admin = User::firstOrCreate([
             'email' => 'admin@domain.es',
