@@ -31,6 +31,13 @@ class CreatePrintersTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->unsignedBigInteger('hardware_device_id')
+                ->nullable()
+                ->comment('Dispositivo asociado');
+            $table->foreign('hardware_device_id')
+                ->references('id')->on('hardware_devices')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->unsignedBigInteger('printer_type_id')
                 ->comment('Relación el tipo de impresora');
             $table->foreign('printer_type_id')

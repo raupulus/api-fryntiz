@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
  */
 class PrinterAvailableTypesSeeder extends Seeder
 {
+    private $tableName = 'printer_available_types';
+
     /**
      * Run the database seeds.
      *
@@ -18,7 +20,7 @@ class PrinterAvailableTypesSeeder extends Seeder
      */
     public function run()
     {
-        $repositories = [
+        $datas = [
             [
                 'name' => '2D',
                 'slug' => '2d',
@@ -43,16 +45,16 @@ class PrinterAvailableTypesSeeder extends Seeder
 
         $now = Carbon::now();
 
-        foreach ($repositories as $repository) {
-            $exist = DB::table('printer_available_types')
-                ->where('slug', $repository['slug'])
+        foreach ($datas as $data) {
+            $exist = DB::table($this->tableName)
+                ->where('slug', $data['slug'])
                 ->first();
 
             if (! $exist) {
-                DB::table('cv_available_repository_types')->insert([
-                    'name' => $repository['name'],
-                    'slug' => $repository['slug'],
-                    'description' => $repository['description'],
+                DB::table($this->tableName)->insert([
+                    'name' => $data['name'],
+                    'slug' => $data['slug'],
+                    'description' => $data['description'],
                     'created_at' => $now,
                     'updated_at' => $now
                 ]);
