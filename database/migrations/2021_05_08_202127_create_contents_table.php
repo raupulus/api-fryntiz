@@ -75,10 +75,49 @@ class CreateContentsTable extends Migration
                 ->nullable()
                 ->comment('Descripción breve del contenido');
 
-
             $table->boolean('is_copyright_valid')
                 ->default(null)
                 ->comment('Indica si se ha comprobado que el contenido no contiene copyright. Si es null, no se ha comprobado');
+            $table->boolean('is_visible')
+                ->default(false)
+                ->comment('Indica si el contenido está visible');
+            $table->boolean('is_comment_enabled')
+                ->default(false)
+                ->comment('Indica si los comentarios están habilitados');
+            $table->boolean('is_comment_anonymous')
+                ->default(false)
+                ->comment('Indica si se permiten comentarios anónimos');
+            $table->boolean('is_featured')
+                ->default(false)
+                ->comment('Indica si el contenido es destacado');
+            $table->boolean('is_visible_on_home')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en la página principal');
+            $table->boolean('is_visible_on_menu')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el menú');
+            $table->boolean('is_visible_on_footer')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el footer');
+            $table->boolean('is_visible_on_sidebar')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el sidebar');
+            $table->boolean('is_visible_on_search')
+                ->default(true)
+                ->comment('Indica si el contenido está visible en la búsqueda');
+            $table->boolean('is_visible_on_archive')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el archivo');
+            $table->boolean('is_visible_on_rss')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el RSS');
+            $table->boolean('is_visible_on_sitemap')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el sitemap');
+            $table->boolean('is_visible_on_sitemap_news')
+                ->default(false)
+                ->comment('Indica si el contenido está visible en el sitemap de noticias');
+
             $table->timestamp('processed_at')
                 ->nullable()
                 ->comment('Fecha de procesado del contenido, verificaciones, etc Por ejemplo para revisar autoría del contenido o revisar si hay actualizaciones en la nube.');
@@ -88,9 +127,6 @@ class CreateContentsTable extends Migration
             $table->timestamp('programated_at')
                 ->nullable()
                 ->comment('Fecha en la que está programada la programación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento');
-            $table->boolean('is_visible')
-                ->default(false)
-                ->comment('Indica si el contenido está visible');
 
             $table->timestamps();
             $table->softDeletes();

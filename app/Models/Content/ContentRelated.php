@@ -11,4 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContentRelated extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'content_related';
+
+    protected $fillable = [
+        'content_id',
+        'content_related_id'
+    ];
 }
