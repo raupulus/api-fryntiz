@@ -74,17 +74,24 @@ class CreateContentsTable extends Migration
             $table->string('excerpt', 1023)
                 ->nullable()
                 ->comment('Descripción breve del contenido');
-            $table->longText('body')
-                ->nullable()
-                ->comment('Contenido ya en html puro');
 
-            $table->longText('body_structure')
+
+            $table->boolean('is_copyright_valid')
+                ->default(null)
+                ->comment('Indica si se ha comprobado que el contenido no contiene copyright. Si es null, no se ha comprobado');
+            $table->timestamp('processed_at')
                 ->nullable()
-                ->comment('Estructura del contenido sin procesar');
-            $table->longText('body_structure_type')
-                ->default('md')
+                ->comment('Fecha de procesado del contenido, verificaciones, etc Por ejemplo para revisar autoría del contenido o revisar si hay actualizaciones en la nube.');
+            $table->timestamp('published_at')
                 ->nullable()
-                ->comment('Tipo de estructura para el body antes de ser procesado (json, markdown..)');
+                ->comment('Fecha de publicación del contenido');
+            $table->timestamp('programated_at')
+                ->nullable()
+                ->comment('Fecha en la que está programada la programación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento');
+            $table->boolean('is_visible')
+                ->default(false)
+                ->comment('Indica si el contenido está visible');
+
             $table->timestamps();
             $table->softDeletes();
         });
@@ -101,9 +108,10 @@ class CreateContentsTable extends Migration
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['author_id']);
+            $table->dropForeign(['platform_id']);
             $table->dropForeign(['status_id']);
-            $table->dropForeign(['content_type_id']);
-            $table->dropForeign(['file_id']);
+            $table->dropForeign(['type_id']);
+            $table->dropForeign(['image_id']);
         });
     }
 }

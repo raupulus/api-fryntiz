@@ -6,7 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateContentCategoriesAvailabeTable
+ * Class CreateContentAvailableCategoriesTable
  */
 class CreateContentAvailableCategoriesTable extends Migration
 {

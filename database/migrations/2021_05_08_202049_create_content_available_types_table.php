@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateContentTypesTable
+ * Class CreateContentAvailableTypesTable
  */
 class CreateContentAvailableTypesTable extends Migration
 {
