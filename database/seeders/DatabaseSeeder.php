@@ -25,6 +25,9 @@ class DatabaseSeeder extends Seeder
         $this->call(HardwareAvailableComponentsTableSeeder::class);
         $this->call(CurriculumAvailableRepositoryTypeSeeder::class);
         $this->call(ContentAvailableTypesSeeder::class);
+        $this->call(ContentAvailableStatusSeeder::class);
+        $this->call(ContentAvailablePageRawSeeder::class);
+        $this->call(ContentAvailableCategoriesSeeder::class);
         $this->call(PrinterAvailableTypesSeeder::class);
     }
 }
