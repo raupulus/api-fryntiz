@@ -48,6 +48,9 @@ class CreateReferredPlatformsTable extends Migration
             $table->string('url_panel')
                 ->nullable()
                 ->comment('Enlace al panel de control para referidos.');
+            $table->string('url_register')
+                ->nullable()
+                ->comment('Enlace a la página de registro.');
             $table->timestamps();
             $table->softDeletes();
         });

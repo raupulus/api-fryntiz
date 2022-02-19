@@ -29,5 +29,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ContentAvailablePageRawSeeder::class);
         $this->call(ContentAvailableCategoriesSeeder::class);
         $this->call(PrinterAvailableTypesSeeder::class);
+        $this->call(ReferredPlatformsSeeder::class);
     }
 }
