@@ -30,6 +30,13 @@ class CreateSmartbonsaiRegistersTable extends Migration
                 ->references('id')->on('smartplant_plants')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->unsignedBigInteger('hardware_device_id')
+                ->nullable()
+                ->comment('Dispositivo asociado');
+            $table->foreign('hardware_device_id')
+                ->references('id')->on('hardware_devices')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->integer('uv')
                 ->nullable()
                 ->comment('Cantidad rayos UV en el ambiente');

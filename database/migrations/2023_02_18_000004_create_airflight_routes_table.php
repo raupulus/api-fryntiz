@@ -37,6 +37,13 @@ class CreateAirFlightRoutesTable extends Migration
                 ->references('id')->on('airflight_airplanes')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->unsignedBigInteger('hardware_device_id')
+                ->nullable()
+                ->comment('Dispositivo asociado');
+            $table->foreign('hardware_device_id')
+                ->references('id')->on('hardware_devices')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->string('squawk')
                 ->nullable()
                 ->comment('Código de transpondedor seleccionado (Señal squawk en representación octal)');
