@@ -271,6 +271,11 @@ return [
             'icon' => 'far fa-fw fa-file',
         ],
         [
+            'text' => 'Nuevo',
+            'route' => 'dashboard.content.create',
+            'icon' => 'far fa-fw fa-plus',
+        ],
+        [
             'text' => 'Categorías',
             'url' => '#',
             'icon' => 'far fa-fw fa-file',
@@ -311,100 +316,11 @@ return [
                     'icon' => 'far fa-fw fa-file',
                     'route' => 'dashboard.cv.create',
                 ],
-                    /*
-                [
-                    'text' => 'Curriculums',
-                    'icon' => 'far fa-fw fa-file',
-                    'route' => 'dashboard.cv.index',
-                ],
-                [
-                    'text' => 'Repositorios',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Servicios',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Colaboraciones',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Hobbies',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Trabajos',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Projectos',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Formación Académica',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Formación Complementaria',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Formación Online',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Experiencia Acreditada',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Experiencia No Acreditada',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Experiencia Autoempleado',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Experiencia Adicional',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Experiencia Otros',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                [
-                    'text' => 'Habilidades',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-                */
                 [
                     'text' => 'Gestionar Repositorios',
                     'route' => 'dashboard.cv.repository_available_type.index',
                     'icon' => 'far fa-fw fa-file',
                 ],
-
-                [
-                    'text' => 'Gestionar Habilidades',
-                    'url' => '#',
-                    'icon' => 'far fa-fw fa-file',
-                ],
-
             ],
         ],
 

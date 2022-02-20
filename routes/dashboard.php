@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\Content\ContentController;
 use App\Http\Controllers\Dashboard\CurriculumController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryOnlineController;
@@ -29,6 +30,25 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
     })->name('dashboard.index');
 });
 
+
+############################################################
+##                     Curriculum                         ##
+############################################################
+Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [ContentController::class, 'index'])
+            ->name('dashboard.content.index');
+        Route::get('/create', [ContentController::class, 'create'])
+            ->name('dashboard.content.create');
+        Route::post('/store', [ContentController::class, 'store'])
+            ->name('dashboard.content.store');
+        Route::get('/{id}/edit', [ContentController::class, 'edit'])
+            ->name('dashboard.content.edit');
+        Route::match(['put', 'patch'], '/update/{id}', [ContentController::class, 'update'])
+            ->name('dashboard.content.update');
+        Route::post('/destroy', [ContentController::class, 'destroy'])
+            ->name('dashboard.content.destroy');
+    });
 ############################################################
 ##                       Idiomas                          ##
 ############################################################
