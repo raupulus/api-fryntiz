@@ -53,8 +53,7 @@ Route::group(['prefix' => 'v1/auth'], function () {
 ######################################################
 ##                   Usuarios
 ######################################################
-Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
-() {
+Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function () {
     ## Devuelve todos los usuarios.
     Route::get('/index', [UserController::class, 'index'])
         ->name('api.v1.user.index');
@@ -76,10 +75,44 @@ Route::group(['prefix' => 'v1/user','middleware' => 'auth:sanctum'], function
         ->name('api.v1.user.delete');
 });
 
+######################################################
+##                   Plataformas
+######################################################
+Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function
+() {
+    Route::post('/info', function () {
+        return response()->json([
+            'platforms' => [
+                [
+                    'name' => 'My Api',
+                    'url' => 'https://api.fryntiz.dev',
+                    'icon' => ''
+
+                ]
+            ],
+            'technologies' => [
+                'vue',
+                'tailwind'
+            ],
+            'resources' => [
+
+                [
+                    'name' => 'Gitlab',
+                    'url' => 'https://gitlab.com/fryntiz/www.fryntiz.es',
+                    'icon' => ''
+
+                ],
+            ],
+            'name' => 'Laravel',
+            'version' => '8.x',
+            'author' => 'Taylor Otwell',
+        ]);
+    });
+});
 
 /**
  * Ruta por defecto cuando no se encuentra una petición.
  */
-Route::fallback(function(){
+Route::fallback(function () {
     return response()->json(['message' => 'Page Not Found'], 404);
 });
