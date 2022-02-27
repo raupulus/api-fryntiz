@@ -78,8 +78,7 @@ Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function (
 ######################################################
 ##                   Plataformas
 ######################################################
-Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function
-() {
+Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () {
     Route::post('/info', function () {
         return response()->json([
             'platforms' => [
@@ -88,7 +87,19 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function
                     'url' => 'https://api.fryntiz.dev',
                     'icon' => ''
 
-                ]
+                ],
+                [
+                    'name' => 'Curriculum',
+                    'url' => 'https://curriculum.fryntiz.dev',
+                    'icon' => ''
+
+                ],
+                [
+                    'name' => 'La Guía Linux',
+                    'url' => 'https://laguialinux.es',
+                    'icon' => ''
+
+                ],
             ],
             'technologies' => [
                 'vue',
@@ -102,7 +113,24 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function
                     'icon' => ''
 
                 ],
+                [
+                    'name' => 'Github',
+                    'url' => 'https://github.com/fryntiz/www.fryntiz.es',
+                    'icon' => ''
+
+                ],
             ],
+            'pages' => [
+                [
+                    'title' => 'Link1',
+                    'url' => 'https://www.fryntiz.es',
+                ],
+                [
+                    'title' => 'Link2',
+                    'url' => 'https://www.fryntiz.es',
+                ],
+            ],
+            'message' => 'Hola soy un mensaje de prueba',
             'name' => 'Laravel',
             'version' => '8.x',
             'author' => 'Taylor Otwell',
