@@ -49,10 +49,11 @@ class CreateSmartbonsaiRegistersTable extends Migration
             $table->decimal('humidity', 13, 2)
                 ->nullable()
                 ->comment('Cantidad de humedad en el ambiente');
-            $table->decimal('soil_humidity', 13, 2)
-                ->comment('Humedad del suelo');
-            $table->decimal('soil_humidity', 13, 2)
-                ->comment('Humedad del suelo');
+            $table->integer('soil_humidity')
+                ->comment('Humedad del suelo en porcentaje, rango 1-100');
+            $table->integer('soil_humidity_raw')
+                ->nullable()
+                ->comment('Humedad del suelo en valor bruto de resistencia al medir.');
             $table->boolean('full_water_tank')
                 ->default(false)
                 ->comment('Indica si hay agua en el tanque de agua');
