@@ -1,27 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Api\SmartPlant;
+namespace App\Http\Controllers\Api\SmartPlant\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\SmartPlant\V1\StoreRegisterRequest;
+use App\Models\SmartPlant\SmartPlantRegister;
 use App\Models\SmartPlant\SmartPlantPlant;
-use App\Models\SmartPlant\SmartPlanRegister;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use function auth;
+use JsonHelper;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
 use function is_array;
 use function response;
-use function view;
 
 /**
  * Class SmartPlantController
  *
  * @package App\Http\Controllers\SmartPlant
  */
-class SmartPlantController extends Controller
+class SmartPlantRegisterController extends Controller
 {
     /**
      * Devuelve todos los elementos del modelo.
@@ -29,7 +28,7 @@ class SmartPlantController extends Controller
      */
     public function all()
     {
-        $model = SmartPlanRegister::whereNotNull('soil_humidity')
+        $model = SmartPlantRegister::whereNotNull('soil_humidity')
             ->orderBy('start_at', 'DESC')
             ->orderBy('created_at', 'DESC')
             ->whereNull('deleted_at')
@@ -37,39 +36,27 @@ class SmartPlantController extends Controller
         return response()->json($model);
     }
 
-    /**
-     * Añade una nueva entrada de la medición desde el sensor.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse|void
-     */
-    public function add(Request $request)
+    public function store(StoreRegisterRequest $request)
     {
-        Log::info('Entra en controlador para guardar registro de planta json');
+        $plant = SmartPlantPlant::find($request->plant_id);
 
-        $requestValidate = $this->addValidate($request->all());
-
-        try {
-            $model = new SmartPlanRegister();
-            $model->fill($requestValidate);
-
-            $model->user_id = auth()->id();
-
-            ## Respuesta cuando se ha guardado el modelo correctamente
-            if ($model->save()) {
-                // response bien
-
-                // TODO → Crear sistema de respuestas habituales 200,201,404,419...
-
-                return response()->json('Guardado Correctamente', 201);
-            }
-        } catch (Exception $e) {
-            Log::error('Error en controlador SmartPlantController método add');
+        if (!$plant) {
+            return JsonHelper::notFound();
         }
 
-        // response mal
-        return response()->json('No se ha guardado nada', 500);
+        $model = SmartPlantRegister::create($request->validated());
+
+
+
+
+
+
+
+        return response()->json([
+            'message' => 'test',
+            'request' => $request->all(),
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -91,7 +78,7 @@ class SmartPlantController extends Controller
         ## Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
             try {
-                $model = new SmartPlanRegister();
+                $model = new SmartPlantRegister();
 
                 ## Obtengo atributos y los validos para excluir posible basura.
                 //$attributes = $this->addValidate(get_object_vars($d));
@@ -138,26 +125,5 @@ class SmartPlantController extends Controller
         }
 
         return response()->json('No se ha guardado nada', 500);
-    }
-
-    /**
-     * Reglas de validación a la hora de insertar datos.
-     *
-     * @param $request
-     *
-     * @return mixed
-     */
-    public function addValidate($data)
-    {
-        return Validator::make($data, [
-            'plant_id' => 'required|numeric',
-            'uv' => 'nullable|numeric',
-            'temperature' => 'nullable|numeric',
-            'humidity' => 'nullable|numeric',
-            'soil_humidity' => 'required|numeric',
-            'full_water_tank' => 'nullable|boolean',
-            'waterpump_enabled' => 'nullable|boolean',
-            'vaporizer_enabled' => 'nullable|boolean',
-        ])->validate();
     }
 }

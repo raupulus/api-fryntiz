@@ -4,6 +4,8 @@
  * condiciones con él sufijo /api/smartplant/v1/*
  */
 
+use App\Http\Controllers\Api\SmartPlant\V1\SmartPlantController;
+use App\Http\Controllers\Api\SmartPlant\V1\SmartPlantRegisterController;
 use Illuminate\Support\Facades\Route;
 
 ######################################################
@@ -16,16 +18,14 @@ use Illuminate\Support\Facades\Route;
 ######################################################
 ##
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    ##
-    Route::post('/register/add', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@add');
-
-    ##
-    Route::post('/register/add-json', 'App\Http\Controllers\Api\SmartPlant\SmartPlantController@addJson');
+    ## Guarda un registro de planta
+    Route::post('/register/store', [SmartPlantRegisterController::class, 'store'])
+        ->name('api.smartplant.v1.register.store');
 });
 
 /**
  * Ruta por defecto cuando no se encuentra una petición.
  */
-Route::fallback(function(){
+Route::fallback(function() {
     return response()->json(['message' => 'Page Not Found'], 404);
 });

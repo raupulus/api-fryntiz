@@ -23,6 +23,13 @@ class UserPolicy
         //
     }
 
+    /**
+     * Permisos para crear usuarios.
+     *
+     * @param \App\Models\User $user
+     *
+     * @return bool
+     */
     public function create(User $user)
     {
         // TODO → Crear sistema de permisos

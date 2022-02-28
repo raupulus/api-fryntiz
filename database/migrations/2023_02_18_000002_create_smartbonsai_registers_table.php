@@ -43,9 +43,14 @@ class CreateSmartbonsaiRegistersTable extends Migration
             $table->decimal('temperature', 13, 2)
                 ->nullable()
                 ->comment('Cantidad de temperatura en el ambiente');
+            $table->decimal('pressure', 13, 2)
+                ->nullable()
+                ->comment('Cantidad de temperatura en el ambiente');
             $table->decimal('humidity', 13, 2)
                 ->nullable()
                 ->comment('Cantidad de humedad en el ambiente');
+            $table->decimal('soil_humidity', 13, 2)
+                ->comment('Humedad del suelo');
             $table->decimal('soil_humidity', 13, 2)
                 ->comment('Humedad del suelo');
             $table->boolean('full_water_tank')

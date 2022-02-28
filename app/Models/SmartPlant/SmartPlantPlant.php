@@ -2,6 +2,7 @@
 
 namespace App\Models\SmartPlant;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,9 +13,20 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\SmartPlant
  */
-class SmartPlantPlant extends Model
+class SmartPlantPlant extends BaseModel
 {
     protected $table = 'smartplant_plants';
+
+    protected $fillable = [
+        'user_id',
+        'hardware_device_id',
+        'name',
+        'name_scientific',
+        'description',
+        'details',
+        'image',
+        'start_at',
+    ];
 
     /**
      * Relación con todos los registros de lecturas asociados a una planta.
@@ -22,7 +34,7 @@ class SmartPlantPlant extends Model
      */
     public function registers()
     {
-        return $this->hasMany(SmartPlanRegister::class, 'plant_id', 'id');
+        return $this->hasMany(SmartPlantRegister::class, 'plant_id', 'id');
     }
 
     /**
@@ -44,7 +56,7 @@ class SmartPlantPlant extends Model
      */
     public function last100registers()
     {
-        return SmartPlanRegister::where('plant_id', $this->id)
+        return SmartPlantRegister::where('plant_id', $this->id)
             ->whereNotNull('soil_humidity')
             ->orderBy('created_at', 'DESC')
             ->limit(100)
