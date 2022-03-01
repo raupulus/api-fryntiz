@@ -4,6 +4,8 @@
  * sufijo /api/keycounter/v1/*
  */
 
+use App\Http\Controllers\Api\KeyCounter\V1\KeyboardController;
+use App\Http\Controllers\Api\KeyCounter\V1\MouseController;
 use Illuminate\Support\Facades\Route;
 
 ######################################################
@@ -16,16 +18,10 @@ use Illuminate\Support\Facades\Route;
 ######################################################
 Route::group(['middleware' => ['auth:sanctum']], function () {
     ## Añadir nuevo registro de pulsaciones para el teclado.
-    Route::post('/keyboard/add', 'App\Http\Controllers\Api\KeyCounter\KeyboardController@add');
-
-    ## Añadir nuevos registros de pulsaciones para el teclado  por lotes JSON
-    Route::post('/keyboard/add-json', 'App\Http\Controllers\Api\KeyCounter\KeyboardController@addJson');
+    Route::post('/keyboard/store', [KeyboardController::class, 'store'] );
 
     ## Añadir nuevo registro de pulsaciones para el teclado.
-    Route::post('/mouse/add', 'App\Http\Controllers\Api\KeyCounter\MouseController@add');
-
-    ## Añadir nuevos registros de pulsaciones para el teclado  por lotes JSON
-    Route::post('/mouse/add-json', 'App\Http\Controllers\Api\KeyCounter\MouseController@addJson');
+    Route::post('/mouse/store', [MouseController::class, 'store'] );
 });
 
 

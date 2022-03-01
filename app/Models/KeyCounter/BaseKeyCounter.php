@@ -20,6 +20,8 @@ use function json_encode;
 class BaseKeyCounter extends Model
 {
     protected $fillable = [
+        'user_id',
+        'hardware_id',
         'start_at',
         'end_at',
         'duration',

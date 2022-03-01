@@ -3,10 +3,14 @@
 namespace App\Providers;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Models\KeyCounter\Keyboard;
+use App\Models\KeyCounter\Mouse;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use App\Models\User;
 use App\Policies\HardwarePolicy;
+use App\Policies\KeyCounterKeyboardPolicy;
+use App\Policies\KeyCounterMousePolicy;
 use App\Policies\SmartPlantPolicy;
 use App\Policies\SmartPlantRegisterPolicy;
 use App\Policies\UserPolicy;
@@ -29,6 +33,8 @@ class AuthServiceProvider extends ServiceProvider
         HardwareDevice::class => HardwarePolicy::class,
         SmartPlantRegister::class => SmartPlantRegisterPolicy::class,
         SmartPlantPlant::class => SmartPlantPolicy::class,
+        Keyboard::class => KeyCounterKeyboardPolicy::class,
+        Mouse::class => KeyCounterMousePolicy::class,
     ];
 
     /**

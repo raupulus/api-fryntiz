@@ -12,6 +12,8 @@ class Mouse extends Keyboard
     protected $table = 'keycounter_mouse';
 
     protected $fillable = [
+        'user_id',
+        'hardware_device_id',
         'start_at',
         'end_at',
         'duration',
@@ -21,9 +23,6 @@ class Mouse extends Keyboard
         'total_clicks',
         'clicks_average',
         'weekday',
-        'device_id',
-        'device_name',
-        'created_at'
     ];
 
     /**
