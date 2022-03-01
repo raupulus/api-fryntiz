@@ -2,6 +2,7 @@
 
 namespace App\Models\Hardware;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * que tendrá tanto consumo, batería y generación de energía.
  *
  */
-class SolarCharge extends Model
+class SolarCharge extends BaseModel
 {
 
 }

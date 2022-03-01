@@ -20,7 +20,7 @@ class HardwarePowerGenerator extends BaseModel
     protected $fillable = ['hardware_device_id', 'load_current', 'load_voltage',
         'load_power', 'battery_voltage', 'battery_temperature', 'battery_percentage',
         'charging_status', 'charging_status_label', 'origin_current', 'origin_voltage',
-        'origin_power', 'light_status', 'light_brightness'];
+        'origin_power', 'light_status', 'light_brightness', 'created_at'];
 
 
     /**

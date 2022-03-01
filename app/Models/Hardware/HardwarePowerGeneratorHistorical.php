@@ -18,7 +18,7 @@ class HardwarePowerGeneratorHistorical extends BaseModel
     protected $fillable = ['hardware_device_id', 'total_days_operating',
         'total_number_battery_over_discharges', 'total_number_battery_full_charges',
         'total_charging_amp_hours', 'total_discharging_amp_hours',
-        'cumulative_power_generation', 'cumulative_power_consumption'];
+        'cumulative_power_generation', 'cumulative_power_consumption', 'created_at'];
 
 
     /**

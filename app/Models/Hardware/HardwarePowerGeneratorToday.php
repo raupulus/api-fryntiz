@@ -18,7 +18,7 @@ class HardwarePowerGeneratorToday extends BaseModel
     protected $fillable = ['hardware_device_id', 'battery_min_voltage',
         'battery_max_voltage', 'max_charging_power', 'max_charging_current',
         'max_discharging_current', 'charging_amp_hours', 'discharging_amp_hours',
-        'power_generation', 'power_consumption', 'date'];
+        'power_generation', 'power_consumption', 'date', 'created_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
