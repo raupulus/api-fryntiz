@@ -21,7 +21,7 @@ class BaseKeyCounter extends Model
 {
     protected $fillable = [
         'user_id',
-        'hardware_id',
+        'hardware_device_id',
         'start_at',
         'end_at',
         'duration',
@@ -30,9 +30,6 @@ class BaseKeyCounter extends Model
         'pulsation_average',
         'score',
         'weekday',
-        'device_id',
-        'device_name',
-        'created_at'
     ];
 
     /**
@@ -192,16 +189,15 @@ class BaseKeyCounter extends Model
                 DB::Raw('sum(pulsations_special_keys) as total_pulsations_special_keys'),
                 DB::Raw('sum(pulsation_average) as total_pulsation_average'),
                 DB::Raw('sum(score) as total_score'),
-                'device_id',
-                'device_name'
+                'hardware_device_id',
             ])
             ->whereBetween('created_at', [$start, $end])
-            ->groupBy('device_id', 'day', 'device_name')
+            ->groupBy('hardware_device_id', 'day')
             ->orderBy('day')
             ->get();
 
         ## Extraigo el id de todos los dispositivos para este mes.
-        $devices_ids = array_unique($data->pluck('device_id')->toArray());
+        $devices_ids = array_unique($data->pluck('hardware_device_id')->toArray());
 
         $total_puntuations = $data->sum('total_pulsations');
 
@@ -241,7 +237,7 @@ class BaseKeyCounter extends Model
                 // FIXME → Esto no puede quedar haciendo consultas así
                 // TODO → Mejorar forma de preparar los datos y usar REDIS/CACHE
 
-                $s = $stats->where('day', $day)->where('device_id', $device)->first();
+                $s = $stats->where('day', $day)->where('hardware_device_id', $device)->first();
 
                 ## Compruebo que haya registro para este dispositivo este día o seteo 0.
                 if ($s && isset($datasetTMP[$device])) {
@@ -250,7 +246,7 @@ class BaseKeyCounter extends Model
                     }
 
                     if (!isset($datasetTMP[$device]['borderColor'])) {
-                        $datasetTMP[$device]['borderColor'] = $colors[$s->device_id];
+                        $datasetTMP[$device]['borderColor'] = $colors[$s->hardware_device_id];
                     }
 
                     if (!isset($datasetTMP[$device]['fill'])) {
@@ -262,7 +258,7 @@ class BaseKeyCounter extends Model
                     $datasetTMP[$device] = [
                         'data' => [$s->total_pulsations],
                         'label' => $s->device_name,
-                        'borderColor' => $colors[$s->device_id],
+                        'borderColor' => $colors[$s->hardware_device_id],
                         'fill' => 'false'
                     ];
                 } else {

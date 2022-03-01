@@ -4,6 +4,7 @@
  * sufijo /keycounter/*
  */
 
+use App\Http\Controllers\KeyCounter\KeyCounterController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', 'App\Http\Controllers\KeyCounter\KeyCounterController@index')->name('keycounter.index');
+Route::get('/', [KeyCounterController::class, 'index'])->name('keycounter.index');

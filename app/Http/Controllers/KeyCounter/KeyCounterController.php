@@ -92,7 +92,7 @@ class KeyCounterController extends Controller
             'keyboard_statistics' => $keyboard_statistics,
         ];
 
-        $response = JsonHelper::prepareSuccess($data);
+        $response = JsonHelper::success($data);
 
         return response()->json($response);
     }
