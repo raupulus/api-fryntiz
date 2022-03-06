@@ -418,8 +418,8 @@
                             <td class="px-1 py-2 items-center text-center">{{$reg->pulsation_average}}</td>
                             <td class="px-1 py-2 items-center text-center">{{$reg->score}}</td>
                             <td class="px-1 py-2 items-center text-center">{{$reg->weekday}}</td>
-                            <td class="px-1 py-2 items-center text-center">{{$reg->device_id}}</td>
-                            <td class="px-1 py-2 items-center text-center">{{$reg->device_name}}</td>
+                            <td class="px-1 py-2 items-center text-center">{{$reg->hardware_device_id}}</td>
+                            <td class="px-1 py-2 items-center text-center">{{$reg->hardware->name}}</td>
                             <td class="px-1 py-2 items-center text-center">{{$reg->created_at}}</td>
                         </tr>
                     @endforeach

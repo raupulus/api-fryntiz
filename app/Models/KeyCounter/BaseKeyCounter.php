@@ -2,6 +2,7 @@
 
 namespace App\Models\KeyCounter;
 
+use App\Models\Hardware\HardwareDevice;
 use Carbon\Carbon;
 use Carbon\Traits\Creator;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,16 @@ class BaseKeyCounter extends Model
         'score',
         'weekday',
     ];
+
+    /**
+     * Relación con el hardware asociado.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function hardware()
+    {
+        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
+    }
 
     /**
      * Sobreescribo la actualización del updated_at para no hacerle nada.
@@ -242,7 +253,7 @@ class BaseKeyCounter extends Model
                 ## Compruebo que haya registro para este dispositivo este día o seteo 0.
                 if ($s && isset($datasetTMP[$device])) {
                     if (!isset($datasetTMP[$device]['label'])) {
-                        $datasetTMP[$device]['label'] = $s->device_name;
+                        $datasetTMP[$device]['label'] = $s->hardware->name;
                     }
 
                     if (!isset($datasetTMP[$device]['borderColor'])) {
@@ -257,7 +268,7 @@ class BaseKeyCounter extends Model
                 } else if ($s) {
                     $datasetTMP[$device] = [
                         'data' => [$s->total_pulsations],
-                        'label' => $s->device_name,
+                        'label' => $s->hardware->name,
                         'borderColor' => $colors[$s->hardware_device_id],
                         'fill' => 'false'
                     ];
