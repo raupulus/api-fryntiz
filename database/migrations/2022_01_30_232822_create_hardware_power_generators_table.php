@@ -87,6 +87,10 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->default(0)
                 ->comment('Devuelve el porcentaje brillo de la luz de calle (0-100%).');
 
+            $table->timestamp('read_at')
+                ->nullable()
+                ->comment('Fecha y hora de lectura');
+
             $table->timestamps();
             $table->softDeletes();
         });

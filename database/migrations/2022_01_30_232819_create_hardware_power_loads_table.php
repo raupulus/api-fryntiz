@@ -57,6 +57,10 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->default(0)
                 ->comment('Potencia de la batería en watios, EJ:13.81. Será 0 por defecto');
 
+            $table->timestamp('read_at')
+                ->nullable()
+                ->comment('Fecha y hora de lectura');
+
             $table->timestamps();
 
         });
