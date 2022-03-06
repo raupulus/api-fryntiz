@@ -27,9 +27,12 @@ class StoreSolarChargeRequest extends BaseFormRequest
 
     protected function prepareForValidation()
     {
+        $created_at = Carbon::create($this->read_at ?? $this->created_at);
+
         $this->merge([
             'created_at' => $this->created_at,
-            'date' => $this->date ?? Carbon::create($this->created_at)->format('Y-m-d'),
+            'date' => $this->date ?? $created_at->format('Y-m-d'),
+            'read_at' => $created_at,
 
             ## HardwareDevice
             'device_id' => (int)$this->device_id,
@@ -99,6 +102,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
         return [
             'created_at' => 'required|date',
             'date' => 'required|date',
+            'read_at' => 'required|date:Y-m-d H:i:s',
 
             'device_id' => 'required|integer|exists:hardware_devices,id',
             'hardware' => 'nullable|string|max:255',

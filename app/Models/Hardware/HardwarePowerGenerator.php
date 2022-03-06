@@ -4,6 +4,7 @@ namespace App\Models\Hardware;
 
 use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Models\BaseModels\BaseModel;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Request;
 use function array_filter;
@@ -20,7 +21,7 @@ class HardwarePowerGenerator extends BaseModel
     protected $fillable = ['hardware_device_id', 'load_current', 'load_voltage',
         'load_power', 'battery_voltage', 'battery_temperature', 'battery_percentage',
         'charging_status', 'charging_status_label', 'origin_current', 'origin_voltage',
-        'origin_power', 'light_status', 'light_brightness', 'created_at'];
+        'origin_power', 'light_status', 'light_brightness', 'read_at'];
 
 
     /**
@@ -49,6 +50,7 @@ class HardwarePowerGenerator extends BaseModel
             'origin_power' => $request->get('origin_power') ?? $request->get('solar_power'),
             'light_status' => $request->get('light_status') ?? $request->get('street_light_status'),
             'light_brightness' => $request->get('light_brightness') ?? $request->get('street_light_brightness'),
+            'read_at' => $request->read_at ?? Carbon::now(),
         ];
 
         return new self(array_filter($data, 'strlen'));

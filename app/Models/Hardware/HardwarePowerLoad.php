@@ -17,7 +17,7 @@ class HardwarePowerLoad extends BaseModel
     protected $table = 'hardware_power_loads';
 
     protected $fillable = ['hardware_device_id', 'fan', 'temperature', 'voltage', 'amperage',
-        'power', 'created_at'];
+        'power', 'read_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
@@ -55,7 +55,7 @@ class HardwarePowerLoad extends BaseModel
             'voltage' => $voltage,
             'amperage' => $amperage,
             'power' => $power,
-            'created_at' => $request->get('created_at') ?? Carbon::now(),
+            'read_at' => $request->read_at ?? Carbon::now(),
         ];
 
         return new self(array_filter($data, 'strlen'));
