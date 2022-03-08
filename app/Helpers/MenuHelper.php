@@ -39,6 +39,11 @@ class MenuHelper
                 'name' => 'Smart Plant',
                 'selected' => $path == 'smartplant',
             ],
+            'energy' => [
+                'route' => route('hardware.energy.index'),
+                'name' => 'Energy',
+                'selected' => $path == 'hardware/energy',
+            ],
         ];
     }
 
