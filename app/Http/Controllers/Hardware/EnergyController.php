@@ -8,6 +8,7 @@ use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerLoadHistorical;
 use App\Models\Hardware\HardwarePowerLoadToday;
 use Illuminate\Http\Request;
+use function number_format;
 
 /**
  * Class EnergyController
@@ -31,12 +32,19 @@ class EnergyController extends Controller
         $hardwareLoadHistorical = HardwarePowerLoadHistorical::whereIn
         ('hardware_device_id', $hardware_ids)->get();
 
+
+        $generatorToday = number_format($hardwareGeneratorToday->sum('cumulative_power_generation')/1000, 2);
+        $generatorHistorical = number_format($hardwareGeneratorHistorical->sum('cumulative_power_generation')/1000, 2);
+        $loadToday = number_format($hardwareLoadToday->sum('cumulative_power_consumption')/1000, 2);
+        $loadHistorical = number_format($hardwareLoadHistorical->sum('cumulative_power_consumption')/1000, 2);
+
+
         return view('hardware.energy.index', [
             'hardwares' => $hardwares,
-            'hardwareGeneratorToday' => $hardwareGeneratorToday,
-            'hardwareGeneratorHistorical' => $hardwareGeneratorHistorical,
-            'hardwareLoadToday' => $hardwareLoadToday,
-            'hardwareLoadHistorical' => $hardwareLoadHistorical,
+            'generatorToday' => $generatorToday,
+            'generatorHistorical' => $generatorHistorical,
+            'loadToday' => $loadToday,
+            'loadHistorical' => $loadHistorical,
         ]);
     }
 }
