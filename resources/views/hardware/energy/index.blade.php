@@ -114,7 +114,7 @@
                             </h6>
                             <span class="text-xl font-semibold">
                                 {{$generatorToday}}
-                                kwh
+                                wh
                             </span>
                             <span
                                 class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
@@ -141,7 +141,7 @@
                             </h6>
                             <span class="text-xl font-semibold">
                                 {{$loadToday}}
-                                kwh
+                                wh
                             </span>
                             <span
                                 class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
