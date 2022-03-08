@@ -34,11 +34,13 @@ class StoreRegisterRequest extends BaseFormRequest
 
     public function prepareForValidation()
     {
+        $uv = (float)($this->uv > 11 ? 11 : $this->uv);
+
         $this->merge([
             'user_id' => auth()->id(),
             'plant_id' => (int)$this->plant_id,
             'hardware_device_id' => (int)$this->hardware_device_id,
-            'uv' => (float)$this->uv,
+            'uv' => $uv,
             'pressure' => (float)$this->pressure,
             'temperature' => (float)$this->temperature,
             'humidity' => (int)$this->humidity,
