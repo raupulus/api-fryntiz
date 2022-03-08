@@ -2,10 +2,15 @@
 
 namespace App\Models\Hardware;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class HardwarePowerLoadHistorical extends Model
+/**
+ * Class HardwarePowerLoadHistorical
+ */
+class HardwarePowerLoadHistorical extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'hardware_power_loads_historical';
 }
