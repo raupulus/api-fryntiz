@@ -45,7 +45,7 @@ class StoreRegisterRequest extends BaseFormRequest
             'temperature' => (float)$this->temperature,
             'humidity' => (int)$this->humidity,
             'soil_humidity' => (float)$this->soil_humidity,
-            'soil_humidity_raw' => (int)$this->soil_humidity,
+            'soil_humidity_raw' => (int)$this->soil_humidity_raw,
             'full_water_tank' => (bool)$this->full_water_tank,
             'waterpump_enabled' => (bool)$this->waterpump_enabled,
             'vaporizer_enabled' => (bool)$this->vaporizer_enabled,
