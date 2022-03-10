@@ -110,7 +110,7 @@
                             <h6
                                 class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light"
                             >
-                                Actual
+                                Generado Hoy
                             </h6>
                             <span class="text-xl font-semibold">
                                 {{$generatorToday}}
@@ -137,7 +137,7 @@
                             <h6
                                 class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light"
                             >
-                                Hoy
+                                Consumido Hoy
                             </h6>
                             <span class="text-xl font-semibold">
                                 {{$loadToday}}
