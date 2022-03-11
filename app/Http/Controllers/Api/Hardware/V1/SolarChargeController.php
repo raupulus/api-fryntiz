@@ -73,7 +73,7 @@ class SolarChargeController extends Controller
 
         ## Actualizo el histórico diario
         $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::where('hardware_device_id', $device->id)
-            ->where('date', $request->date)
+            ->where('date', $request->date ?? Carbon::create($request->created_at)->format('Y-m-d'))
             ->first();
 
         if ($hardwarePowerGeneratorToday) {
@@ -118,7 +118,8 @@ class SolarChargeController extends Controller
 
         ## HardwarePowerLoadToday
         $hardwarePowerLoadToday = HardwarePowerLoadToday::where('hardware_device_id', $device->id)
-            ->where('date', $request->date)
+            ->where('date', $request->date ??
+                Carbon::create($request->created_at)->format('Y-m-d'))
             ->first();
 
         if ($hardwarePowerLoadToday) {
