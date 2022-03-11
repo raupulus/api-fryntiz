@@ -38,19 +38,19 @@ class EnergyController extends Controller
         $hardwareLoadHistorical = HardwarePowerLoadHistorical::whereIn('hardware_device_id', $hardware_ids)->get();
 
 
-
-
-
         $generatorToday = $hardwareGeneratorToday->sum('power_generation');
         $generatorHistorical = number_format($hardwareGeneratorHistorical->sum('cumulative_power_generation')/1000, 2);
 
 
-        // TODO → Sumar generado para solar con el historical generado en loads
+        ## Preparo carga histórica contemplando la de generador y consumo general.
+        $loadHistoricalFromGenerator = $hardwareGeneratorHistorical->sum('cumulative_power_generation');
+        $loadHistoricalGeneral = $hardwareLoadHistorical->sum('power_avg');
+        $loadHistorical = number_format(($loadHistoricalFromGenerator + $loadHistoricalGeneral)/1000, 2);
 
-        //$loadHistorical = number_format($hardwareLoadHistorical->sum('power_avg')/1000, 2);
-        //$loadToday = $hardwareLoadToday->sum('power_avg');
-        $loadHistorical = number_format($hardwareGeneratorHistorical->sum('cumulative_power_consumption')/1000, 2);
-        $loadToday = number_format($hardwareLoadToday->sum('cumulative_power_consumption')/1000, 2);
+        ## Preparo carga diaria contemplando la de generador y consumo general.
+        $loadTodayFromGenerator = $hardwareGeneratorToday->sum('power_generation');
+        $loadTodayGeneral = $hardwareLoadToday->sum('power_avg');
+        $loadToday = number_format(($loadTodayFromGenerator + $loadTodayGeneral)/1000, 2);
 
         return view('hardware.energy.index', [
             'hardwares' => $hardwares,

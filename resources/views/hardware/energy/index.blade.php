@@ -46,8 +46,8 @@
         <section class="bg-white border-b">
             <div class="container max-w-5xl mx-auto m-4">
                 <!-- State cards -->
-                <div
-                    class="grid grid-cols-1 gap-8 p-4 lg:grid-cols-2 xl:grid-cols-4">
+                <div class="grid grid-cols-2 gap-8 p-4 md:grid-cols-4
+                    xl:grid-cols-4">
                     <!-- Value card -->
                     <div
                         class="flex items-center justify-between p-4 bg-white rounded-md dark:bg-darker">
@@ -66,6 +66,7 @@
                       +0.0%
                     </span>
                         </div>
+
                         <div>
                     <span>
                         <img src="{{asset('images/icons/energy-green.svg')}}"
