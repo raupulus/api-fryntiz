@@ -37,63 +37,65 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
             $table->integer('fan_min')
                 ->nullable()
                 ->default(0)
-                ->comment('Ventilador mínima del ventilador (rpm)');
-            $table->integer('fan_avg')
-                ->nullable()
-                ->default(0)
-                ->comment('Velocidad promedio del ventilador (rpm)');
+                ->comment('Velocidad mínima de ventilador (rpm)');
             $table->integer('fan_max')
                 ->nullable()
                 ->default(0)
-                ->comment('Velocidad máxima del ventilador (rpm)');
+                ->comment('Velocidad máxima de ventilador (rpm)');
             $table->decimal('temperature_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Temperatura mínima del dispositivo (°C)');
-            $table->decimal('temperature_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Temperatura promedio del dispositivo (°C)');
+                ->comment('Temperatura mínima (°C)');
             $table->decimal('temperature_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Temperatura máxima del dispositivo (°C)');
+                ->comment('Temperatura máxima (°C)');
             $table->decimal('voltage_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Voltaje mínimo del dispositivo (V)');
-            $table->decimal('voltage_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Voltaje promedio del dispositivo (V)');
+                ->comment('Volts mínimo (V)');
             $table->decimal('voltage_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Voltaje máximo del dispositivo (V)');
+                ->comment('Voltaje máximo (V)');
+            $table->decimal('battery_min', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Voltaje mínimo de batería (V)');
+            $table->decimal('battery_max', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Voltaje máximo de batería (V)');
             $table->decimal('amperage_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Amperaje mínimo del dispositivo (A)');
-            $table->decimal('amperage_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Amperaje promedio del dispositivo (A)');
+                ->comment('Amperaje mínimo (A)');
             $table->decimal('amperage_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Amperaje máximo del dispositivo (A)');
+                ->comment('Amperaje máximo (A)');
+            $table->decimal('amperage_total', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Amperaje total (A)');
             $table->decimal('power_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Potencia mínima del dispositivo (W)');
-            $table->decimal('power_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Potencia promedio del dispositivo (W)');
+                ->comment('Potencia mínima (W)');
             $table->decimal('power_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Potencia máxima del dispositivo (W)');
+                ->comment('Potencia máxima (W)');
+            $table->decimal('power_total', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia total (W)');
+            $table->date('date')
+                ->nullable()
+                ->comment('Fecha de medición');
+            $table->timestamp('read_at')
+                ->nullable()
+                ->comment('Fecha y hora de la última lectura');
 
             $table->timestamps();
 

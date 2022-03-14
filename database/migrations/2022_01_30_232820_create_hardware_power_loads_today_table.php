@@ -38,10 +38,6 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Velocidad mínima de ventilador (rpm)');
-            $table->integer('fan_avg')
-                ->nullable()
-                ->default(0)
-                ->comment('Velocidad promedio de ventilador (rpm)');
             $table->integer('fan_max')
                 ->nullable()
                 ->default(0)
@@ -50,10 +46,6 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Temperatura mínima (°C)');
-            $table->decimal('temperature_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Temperalta promedio (°C)');
             $table->decimal('temperature_max', 10, 2)
                 ->nullable()
                 ->default(0)
@@ -62,41 +54,48 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Volts mínimo (V)');
-            $table->decimal('voltage_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Voltaje promedio (V)');
             $table->decimal('voltage_max', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje máximo (V)');
+            $table->decimal('battery_min', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Voltaje mínimo de batería (V)');
+            $table->decimal('battery_max', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Voltaje máximo de batería (V)');
             $table->decimal('amperage_min', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje mínimo (A)');
-            $table->decimal('amperage_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Amperaje promedio (A)');
             $table->decimal('amperage_max', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo (A)');
+            $table->decimal('amperage_total', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Amperaje total (A)');
             $table->decimal('power_min', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia mínima (W)');
-            $table->decimal('power_avg', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Potencia promedio (W)');
             $table->decimal('power_max', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia máxima (W)');
+            $table->decimal('power_total', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia total (W)');
             $table->date('date')
                 ->nullable()
                 ->comment('Fecha de medición');
+            $table->timestamp('read_at')
+                ->nullable()
+                ->comment('Fecha y hora de la última lectura');
 
             $table->timestamps();
 

@@ -34,18 +34,6 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->decimal('load_current', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Intensidad de la carga actual');
-            $table->decimal('load_voltage', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Voltaje de la carga actual');
-            $table->integer('load_power')
-                ->nullable()
-                ->default(0)
-                ->comment('Potencia de la carga actual');
             $table->decimal('battery_voltage', 10, 2)
                 ->nullable()
                 ->default(0)
@@ -66,15 +54,15 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->nullable()
                 ->default('deactivated')
                 ->comment('El modo de cargar batería en el momento. (deactivated, activated, mppt, equalizing, boost, floating, current limiting)');
-            $table->decimal('origin_current', 10, 2)
+            $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('La intensidad de carga que está generando el generador.');
-            $table->decimal('origin_voltage', 10, 2)
+            $table->decimal('voltage', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('El voltaje de carga que está generando el generador.');
-            $table->integer('origin_power')
+            $table->integer('power')
                 ->nullable()
                 ->default(0)
                 ->comment('La potencia de carga que está generando el generador.');

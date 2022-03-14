@@ -50,19 +50,10 @@ class CreateHardwarePowerGeneratorsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Carga total en Ah que ha sido almacenado en la batería');
-            $table->integer('total_discharging_amp_hours')
-                ->nullable()
-                ->default(0)
-                ->comment('Descarga total en Ah que ha sido descargado en la batería');
             $table->integer('cumulative_power_generation')
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia (W) generada acumulada en el tiempo');
-            $table->integer('cumulative_power_consumption')
-                ->nullable()
-                ->default(0)
-                ->comment('Ppotencia (W) consumida acumulada en el tiempo');
-
             $table->timestamps();
         });
 

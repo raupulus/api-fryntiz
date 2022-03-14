@@ -56,7 +56,14 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia de la batería en watios, EJ:13.81. Será 0 por defecto');
-
+            $table->decimal('battery_voltage', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Voltaje de la batería. Será 0 por defecto');
+            $table->integer('battery_percentage')
+                ->nullable()
+                ->default(0)
+                ->comment('Porcentaje de carga en la batería (0-100)');
             $table->timestamp('read_at')
                 ->nullable()
                 ->comment('Fecha y hora de lectura');

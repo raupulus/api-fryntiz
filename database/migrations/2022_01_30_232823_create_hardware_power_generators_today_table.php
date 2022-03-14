@@ -34,46 +34,60 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->decimal('battery_min_voltage', 10, 2)
-                ->nullable()
-                ->default(0.0)
-                ->comment('Voltaje de la batería mínimo en el día');
-            $table->decimal('battery_max_voltage', 10, 2)
-                ->nullable()
-                ->default(0.0)
-                ->comment('Voltaje de la batería máximo en el día');
-            $table->integer('max_charging_power')
+            $table->decimal('temperature_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Potencia máxima de carga en el día actual');
-            $table->decimal('max_charging_current', 10, 2)
+                ->comment('Temperatura mínima (°C)');
+            $table->decimal('temperature_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Intensidad máxima de carga en el día actual');
-            $table->decimal('max_discharging_current', 10, 2)
+                ->comment('Temperatura máxima (°C)');
+            $table->decimal('voltage_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Devuelve la intensidad máxima de descarga en el día actual');
-            $table->decimal('charging_amp_hours', 10, 2)
+                ->comment('Volts mínimo (V)');
+            $table->decimal('voltage_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Devuelve la carga en Ah para el día actual');
-            $table->decimal('discharging_amp_hours', 10, 2)
+                ->comment('Voltaje máximo (V)');
+            $table->decimal('battery_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Devuelve la descarga en Ah para el día actual');
-            $table->integer('power_generation')
+                ->comment('Voltaje mínimo de batería (V)');
+            $table->decimal('battery_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Potencia generada en el día actual');
-            $table->integer('power_consumption')
+                ->comment('Voltaje máximo de batería (V)');
+            $table->decimal('amperage_min', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Potencia consumida en el día actual');
+                ->comment('Amperaje mínimo (A)');
+            $table->decimal('amperage_max', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Amperaje máximo (A)');
+            $table->decimal('amperage_total', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Amperaje total (A)');
+            $table->decimal('power_min', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia mínima (W)');
+            $table->decimal('power_max', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia máxima (W)');
+            $table->decimal('power_total', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia total (W)');
             $table->date('date')
                 ->nullable()
-                //->default(Today())
-                ->comment('Fecha en del registro');
+                ->comment('Fecha de medición');
+            $table->timestamp('read_at')
+                ->nullable()
+                ->comment('Fecha y hora de la última lectura');
 
             $table->timestamps();
         });
