@@ -15,10 +15,9 @@ class HardwarePowerGeneratorHistorical extends BaseModel
 
     protected $table = 'hardware_power_generators_historical';
 
-    protected $fillable = ['hardware_device_id', 'total_days_operating',
-        'total_number_battery_over_discharges', 'total_number_battery_full_charges',
-        'total_charging_amp_hours', 'total_discharging_amp_hours',
-        'cumulative_power_generation', 'cumulative_power_consumption', 'created_at'];
+    protected $fillable = ['hardware_device_id', 'days_operating',
+        'number_battery_over_discharges', 'number_battery_full_charges',
+        'amperage', 'power', 'read_at'];
 
 
     /**
@@ -34,13 +33,12 @@ class HardwarePowerGeneratorHistorical extends BaseModel
     {
         $data = [
             'hardware_device_id' => $device->id,
-            'total_days_operating' => $request->get('total_days_operating') ?? $request->get('historical_total_days_operating'),
-            'total_number_battery_over_discharges' => $request->get('total_number_battery_over_discharges') ?? $request->get('historical_total_number_battery_over_discharges'),
-            'total_number_battery_full_charges' => $request->get('total_number_battery_full_charges') ?? $request->get('historical_total_number_battery_full_charges'),
-            'total_charging_amp_hours' => $request->get('total_charging_amp_hours') ?? $request->get('historical_total_charging_amp_hours'),
-            'total_discharging_amp_hours' => $request->get('total_discharging_amp_hours') ?? $request->get('historical_total_discharging_amp_hours'),
-            'cumulative_power_generation' => $request->get('cumulative_power_generation') ?? $request->get('historical_cumulative_power_generation'),
-            'cumulative_power_consumption' => $request->get('cumulative_power_consumption') ?? $request->get('historical_cumulative_power_consumption'),
+            'days_operating' => $request->get('days_operating'),
+            'number_battery_over_discharges' => $request->get('number_battery_over_discharges'),
+            'number_battery_full_charges' => $request->get('number_battery_full_charges'),
+            'amperage' => $request->get('historical_energy_amperage'),
+            'power' => $request->get('historical_energy_power'),
+            'read_at' => $request->get('read_at'),
         ];
 
         return new self(array_filter($data, 'strlen'));
@@ -57,13 +55,12 @@ class HardwarePowerGeneratorHistorical extends BaseModel
     public function updateModel($request)
     {
         $data = [
-            'total_days_operating' => $request->get('total_days_operating') ?? $request->get('historical_total_days_operating'),
-            'total_number_battery_over_discharges' => $request->get('total_number_battery_over_discharges') ?? $request->get('historical_total_number_battery_over_discharges'),
-            'total_number_battery_full_charges' => $request->get('total_number_battery_full_charges') ?? $request->get('historical_total_number_battery_full_charges'),
-            'total_charging_amp_hours' => $request->get('total_charging_amp_hours') ?? $request->get('historical_total_charging_amp_hours'),
-            'total_discharging_amp_hours' => $request->get('total_discharging_amp_hours') ?? $request->get('historical_total_discharging_amp_hours'),
-            'cumulative_power_generation' => $request->get('cumulative_power_generation') ?? $request->get('historical_cumulative_power_generation'),
-            'cumulative_power_consumption' => $request->get('cumulative_power_consumption') ?? $request->get('historical_cumulative_power_consumption'),
+            'days_operating' => $request->get('days_operating'),
+            'number_battery_over_discharges' => $request->get('number_battery_over_discharges'),
+            'number_battery_full_charges' => $request->get('number_battery_full_charges'),
+            'amperage' => $request->get('historical_energy_amperage') ?? $this->amperage,
+            'power' => $request->get('historical_energy_power') ?? $this->power,
+            'read_at' => $request->get('read_at'),
         ];
 
         $this->fill(array_filter($data, 'strlen'));

@@ -15,10 +15,10 @@ class HardwarePowerGeneratorToday extends BaseModel
 
     protected $table = 'hardware_power_generators_today';
 
-    protected $fillable = ['hardware_device_id', 'battery_min_voltage',
-        'battery_max_voltage', 'max_charging_power', 'max_charging_current',
-        'max_discharging_current', 'charging_amp_hours', 'discharging_amp_hours',
-        'power_generation', 'power_consumption', 'date', 'created_at'];
+    protected $fillable = ['hardware_device_id', 'temperature_min', 'temperature_max',
+        'voltage_min', 'voltage_max', 'battery_min', 'battery_max',
+        'amperage_max', 'amperage', 'power_max',
+        'power', 'date', 'read_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
@@ -31,18 +31,25 @@ class HardwarePowerGeneratorToday extends BaseModel
      */
     public static function createModel(HardwareDevice $device, $request)
     {
+        $temperature = $request->get('temperature');
+        $voltage = $request->get('energy_voltage');
+        $batteryMin = $request->get('battery_min_voltage') ?? $request->get('battery_voltage');
+        $batteryMax = $request->get('battery_max_voltage') ?? $request->get('battery_voltage');
+
         $data = [
             'hardware_device_id' => $device->id,
             'date' => $request->get('date'),
-            'battery_min_voltage' => $request->get('battery_min_voltage') ?? $request->get('today_battery_min_voltage'),
-            'battery_max_voltage' => $request->get('battery_max_voltage') ?? $request->get('today_battery_max_voltage'),
-            'max_charging_power' => $request->get('max_charging_power') ?? $request->get('today_max_charging_power'),
-            'max_charging_current' => $request->get('max_charging_current') ?? $request->get('today_max_charging_current'),
-            'max_discharging_current' => $request->get('max_discharging_current') ?? $request->get('today_max_discharging_current'),
-            'charging_amp_hours' => $request->get('charging_amp_hours') ?? $request->get('today_charging_amp_hours'),
-            'discharging_amp_hours' => $request->get('discharging_amp_hours') ?? $request->get('today_discharging_amp_hours'),
-            'power_generation' => $request->get('power_generation') ?? $request->get('today_power_generation'),
-            'power_consumption' => $request->get('power_consumption') ?? $request->get('today_power_consumption'),
+            'read_at' => $request->get('read_at'),
+            'temperature_min' => $temperature,
+            'temperature_max' => $temperature,
+            'voltage_min' => $voltage,
+            'voltage_max' => $voltage,
+            'battery_min' => $batteryMin,
+            'battery_max' => $batteryMax,
+            'amperage' => $request->get('today_energy_amperage'),
+            'amperage_max' => $request->get('today_energy_amperage_max'),
+            'power' => $request->get('today_energy_power'),
+            'power_max' => $request->get('today_energy_power_max'),
         ];
 
         return new self(array_filter($data, 'strlen'));
@@ -58,16 +65,24 @@ class HardwarePowerGeneratorToday extends BaseModel
      */
     public function updateModel($request)
     {
+        $temperature = $request->get('temperature');
+        $voltage = $request->get('energy_voltage');
+        $batteryMin = $request->get('battery_min_voltage') ?? $request->get('battery_voltage');
+        $batteryMax = $request->get('battery_max_voltage') ?? $request->get('battery_voltage');
+
         $data = [
-            'battery_min_voltage' => $request->get('battery_min_voltage') ?? $request->get('today_battery_min_voltage'),
-            'battery_max_voltage' => $request->get('battery_max_voltage') ?? $request->get('today_battery_max_voltage'),
-            'max_charging_power' => $request->get('max_charging_power') ?? $request->get('today_max_charging_power'),
-            'max_charging_current' => $request->get('max_charging_current') ?? $request->get('today_max_charging_current'),
-            'max_discharging_current' => $request->get('max_discharging_current') ?? $request->get('today_max_discharging_current'),
-            'charging_amp_hours' => $request->get('charging_amp_hours') ?? $request->get('today_charging_amp_hours'),
-            'discharging_amp_hours' => $request->get('discharging_amp_hours') ?? $request->get('today_discharging_amp_hours'),
-            'power_generation' => $request->get('power_generation') ?? $request->get('today_power_generation'),
-            'power_consumption' => $request->get('power_consumption') ?? $request->get('today_power_consumption'),
+            'date' => $request->get('date'),
+            'read_at' => $request->get('read_at'),
+            'temperature_min' => $temperature,
+            'temperature_max' => $temperature,
+            'voltage_min' => $voltage <= $this->voltage_min ? $voltage : $this->voltage_min,
+            'voltage_max' => $voltage >= $this->voltage_max ? $voltage : $this->voltage_max,
+            'battery_min' => $batteryMin <= $this->battery_min ? $batteryMin : $this->battery_min,
+            'battery_max' => $batteryMax >= $this->battery_max ? $batteryMax : $this->battery_max,
+            'amperage' => $request->get('today_energy_amperage'),
+            'amperage_max' => $request->get('today_energy_amperage_max'),
+            'power' => $request->get('today_energy_power'),
+            'power_max' => $request->get('today_energy_power_max'),
         ];
 
         $this->fill(array_filter($data, 'strlen'));

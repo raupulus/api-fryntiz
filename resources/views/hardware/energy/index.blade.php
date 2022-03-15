@@ -34,7 +34,7 @@
 
                     <div class="container px-1 py-5 mx-auto flex flex-wrap">
                         <h2 class="sm:text-5xl text-4xl text-gray-900
-                        font-medium title-font mb-2 w-full text-center">
+                        font-medium title-font w-full text-center">
                             Energía (Generadores y Consumo)
                         </h2>
                     </div>
@@ -44,120 +44,30 @@
 
         {{-- Resumen --}}
         <section class="bg-white border-b">
-            <div class="container max-w-5xl mx-auto m-4">
-                <!-- State cards -->
-                <div class="grid grid-cols-2 gap-8 p-4 md:grid-cols-4
-                    xl:grid-cols-4">
-                    <!-- Value card -->
-                    <div
-                        class="flex items-center justify-between p-4 bg-white rounded-md dark:bg-darker">
-                        <div>
-                            <h6 class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light">
-                                Generado
-                            </h6>
-
-                            <span class="text-xl font-semibold">
-                                {{$generatorHistorical}}
-                                kwh
-                            </span>
-
-                            <span
-                                class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
-                      +0.0%
+            <div class="container max-w-5xl mx-auto m-1">
+                <div class="row">
+                    <span class="text-2xl subpixel-antialiased">
+                        Histórico
                     </span>
-                        </div>
-
-                        <div>
-                    <span>
-                        <img src="{{asset('images/icons/energy-green.svg')}}"
-                             alt="Energía"
-                             class="w-20 h-20">
-                    </span>
-                        </div>
-                    </div>
-
-                    <!-- Users card -->
-                    <div
-                        class="flex items-center justify-between p-4 bg-white rounded-md dark:bg-darker">
-                        <div>
-                            <h6
-                                class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light"
-                            >
-                                Consumido
-                            </h6>
-                            <span class="text-xl font-semibold">
-                                {{$loadHistorical}}
-                                kwh
-                            </span>
-
-                            <span
-                                class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
-                      +0.0%
-                    </span>
-                        </div>
-                        <div>
-                    <span>
-                      <img src="{{asset('images/icons/energy-green.svg')}}"
-                           alt="Energía"
-                           class="w-20 h-20">
-                    </span>
-                        </div>
-                    </div>
-
-                    <!-- Orders card -->
-                    <div
-                        class="flex items-center justify-between p-4 bg-white rounded-md dark:bg-darker">
-                        <div>
-                            <h6
-                                class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light"
-                            >
-                                Generado Hoy
-                            </h6>
-                            <span class="text-xl font-semibold">
-                                {{$generatorToday}}
-                                wh
-                            </span>
-                            <span
-                                class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
-                      +0.0%
-                    </span>
-                        </div>
-                        <div>
-                    <span>
-                      <img src="{{asset('images/icons/energy-green.svg')}}"
-                           alt="Energía"
-                           class="w-20 h-20">
-                    </span>
-                        </div>
-                    </div>
-
-                    <!-- Tickets card -->
-                    <div
-                        class="flex items-center justify-between p-4 bg-white rounded-md dark:bg-darker">
-                        <div>
-                            <h6
-                                class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light"
-                            >
-                                Consumido Hoy
-                            </h6>
-                            <span class="text-xl font-semibold">
-                                {{$loadToday}}
-                                wh
-                            </span>
-                            <span
-                                class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
-                      +0.0%
-                    </span>
-                        </div>
-                        <div>
-                    <span>
-                      <img src="{{asset('images/icons/energy-green.svg')}}"
-                           alt="Energía"
-                           class="w-20 h-20">
-                    </span>
-                        </div>
-                    </div>
                 </div>
+
+                @include('components.block-4-stats', ['stats' => $historicalStats])
+
+                <div class="row">
+                    <span class="text-2xl subpixel-antialiased">
+                        Hoy
+                    </span>
+                </div>
+
+                @include('components.block-4-stats', ['stats' => $todayStats])
+
+                <div class="row">
+                    <span class="text-2xl subpixel-antialiased">
+                        Ahora
+                    </span>
+                </div>
+
+                @include('components.block-4-stats', ['stats' => $currentStats])
             </div>
         </section>
 

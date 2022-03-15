@@ -17,7 +17,7 @@ class HardwarePowerLoad extends BaseModel
     protected $table = 'hardware_power_loads';
 
     protected $fillable = ['hardware_device_id', 'fan', 'temperature', 'voltage', 'amperage',
-        'power', 'read_at'];
+        'power', 'battery_voltage', 'battery_percentage', 'read_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
@@ -30,10 +30,10 @@ class HardwarePowerLoad extends BaseModel
      */
     public static function createModel(HardwareDevice $device, $request)
     {
+        $fan = $request->get('fan') ?? $request->get('load_fan');
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');
         $amperage = $request->get('amperage') ?? $request->get('load_amperage');
         $power = $request->get('power') ?? $request->get('load_power');
-
 
         if (! $amperage) {
             $amperage = $power / $voltage;
@@ -49,13 +49,14 @@ class HardwarePowerLoad extends BaseModel
 
         $data = [
             'hardware_device_id' => $device->id,
-            'date' => $request->get('date'),
-            'fan' => $request->get('fan'),
-            'temperature' => $request->get('temperature') ?? $request->get('controller_temperature'),
+            'fan' => $fan,
+            'temperature' => $request->get('temperature'),
             'voltage' => $voltage,
             'amperage' => $amperage,
             'power' => $power,
-            'read_at' => $request->read_at ?? Carbon::now(),
+            'battery_voltage' => $request->get('battery_voltage'),
+            'battery_percentage' => $request->get('battery_percentage'),
+            'read_at' => $request->get('read_at') ?? Carbon::now(),
         ];
 
         return new self(array_filter($data, 'strlen'));
@@ -71,6 +72,7 @@ class HardwarePowerLoad extends BaseModel
      */
     public function updateModel($request)
     {
+        $fan = $request->get('fan') ?? $request->get('load_fan');
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');
         $amperage = $request->get('amperage') ?? $request->get('load_amperage');
         $power = $request->get('power') ?? $request->get('load_power');
@@ -88,12 +90,14 @@ class HardwarePowerLoad extends BaseModel
         }
 
         $data = [
-            'fan' => $request->get('fan'),
-            'temperature' => $request->get('temperature') ?? $request->get('controller_temperature'),
+            'fan' => $fan,
+            'temperature' => $request->get('temperature'),
             'voltage' => $voltage,
             'amperage' => $amperage,
             'power' => $power,
-            'created_at' => $request->get('created_at') ?? Carbon::now(),
+            'battery_voltage' => $request->get('battery_voltage'),
+            'battery_percentage' => $request->get('battery_percentage'),
+            'read_at' => $request->get('read_at') ?? Carbon::now(),
         ];
 
         $this->fill(array_filter($data, 'strlen'));

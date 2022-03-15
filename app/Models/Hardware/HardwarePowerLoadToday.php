@@ -20,10 +20,10 @@ class HardwarePowerLoadToday extends BaseModel
 
     protected $table = 'hardware_power_loads_today';
 
-    protected $fillable = ['hardware_device_id', 'fan_min', 'fan_max', 'fan_avg',
-        'temperature_min', 'temperature_max', 'temperature_avg', 'voltage_min',
-        'voltage_max', 'voltage_avg', 'amperage_min', 'amperage_max', 'amperage_avg',
-        'power_min', 'power_max', 'power_avg', 'date', 'created_at'];
+    protected $fillable = ['hardware_device_id', 'fan_min', 'fan_max',
+        'temperature_min', 'temperature_max', 'voltage_min', 'voltage_max',
+        'amperage_min', 'amperage_max', 'amperage', 'power_min', 'power_max',
+        'power', 'battery_min', 'battery_max', 'date', 'read_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
@@ -36,43 +36,31 @@ class HardwarePowerLoadToday extends BaseModel
      */
     public static function createModel(HardwareDevice $device, $request)
     {
-        $fan = $request->get('fan');
-        $temperature = $request->get('temperature') ?? $request->get('controller_temperature');
+        $fan = $request->get('load_fan');
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');
         $amperage = $request->get('amperage') ?? $request->get('load_amperage');
         $power = $request->get('power') ?? $request->get('load_power');
-
-        if (! $amperage) {
-            $amperage = $power / $voltage;
-        }
-
-        if (! $voltage) {
-            $voltage = $power / $amperage;
-        }
-
-        if (! $power) {
-            $power = $amperage * $voltage;
-        }
+        $temperature = $request->get('temperature');
+        $battery = $request->get('battery_voltage');
 
         $data = [
             'hardware_device_id' => $device->id,
-            'date' => $request->get('date'),
+            'date' => $request->get('date') ?? Carbon::now()->format('Y-m-d'),
+            'read_at' => $request->get('read_at') ?? Carbon::now(),
             'fan_min' => $fan,
             'fan_max' => $fan,
-            'fan_avg' => $fan,
             'temperature_min' => $temperature,
             'temperature_max' => $temperature,
-            'temperature_avg' => $temperature,
             'voltage_min' => $voltage,
             'voltage_max' => $voltage,
-            'voltage_avg' => $voltage,
+            'battery_min' => $request->get('battery_min_voltage') ?? $battery,
+            'battery_max' => $request->get('battery_max_voltage') ?? $battery,
             'amperage_min' => $amperage,
-            'amperage_max' => $amperage,
-            'amperage_avg' => $amperage,
+            'amperage_max' => $request->get('today_load_amperage_max') ?? $amperage,
+            'amperage' => $request->get('today_load_amperage'),
             'power_min' => $power,
             'power_max' => $power,
-            'power_avg' => $power,
-            'created_at' => $request->get('created_at') ?? Carbon::now(),
+            'power' => $request->get('today_load_power'),
         ];
 
         return new self(array_filter($data, 'strlen'));
@@ -88,52 +76,63 @@ class HardwarePowerLoadToday extends BaseModel
      */
     public function updateModel($request)
     {
-        $fan = $request->get('fan');
-        $temperature = $request->get('temperature') ?? $request->get('controller_temperature');
+        $fan = $request->get('load_fan');
+        $fanMin = $fan < $this->fan_min ? $fan : $this->fan_min;
+        $fanMax = $fan > $this->fan_max ? $fan : $this->fan_max;
+        $temperature = $request->get('temperature');
+        $temperatureMin = $temperature < $this->temperature_min ? $temperature : $this->temperature_min;
+        $temperatureMax = $temperature > $this->temperature_max ? $temperature : $this->temperature_max;
+
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');
         $amperage = $request->get('amperage') ?? $request->get('load_amperage');
         $power = $request->get('power') ?? $request->get('load_power');
+        $battery = $request->get('battery_voltage');
 
-        if (! $amperage) {
+        if (! $amperage && $power && $voltage) {
             $amperage = $power / $voltage;
         }
 
-        if (! $voltage) {
+        if (! $voltage && $power && $amperage) {
             $voltage = $power / $amperage;
         }
 
-        if (! $power) {
+        if (! $power && $amperage && $voltage) {
             $power = $amperage * $voltage;
         }
 
-        $fanMin = $fan < $this->fan_min ? $fan : $this->fan_min;
-        $fanMax = $fan > $this->fan_max ? $fan : $this->fan_max;
-        $temperatureMin = $temperature < $this->temperature_min ? $temperature : $this->temperature_min;
-        $temperatureMax = $temperature > $this->temperature_max ? $temperature : $this->temperature_max;
-        $voltageMin = $voltage < $this->voltage_min ? $voltage : $this->voltage_min;
-        $voltageMax = $voltage > $this->voltage_max ? $voltage : $this->voltage_max;
+        $amperageTotal = $request->get('today_load_amperage') ?? $this->amperage;
         $amperageMin = $amperage < $this->amperage_min ? $amperage : $this->amperage_min;
-        $amperageMax = $amperage > $this->amperage_max ? $amperage : $this->amperage_max;
+        $amperageMaxCheck = $request->get('today_load_amperage_max') ?? $amperage;
+        $amperageMax = $amperageMaxCheck > $this->amperage_max ? $amperageMaxCheck : $this->amperage_max;
+
+        $powerTotal = $request->get('today_load_power') ?? $this->power;
         $powerMin = $power < $this->power_min ? $power : $this->power_min;
         $powerMax = $power > $this->power_max ? $power : $this->power_max;
 
+        $voltageMin = $voltage < $this->voltage_min ? $voltage : $this->voltage_min;
+        $voltageMax = $voltage > $this->voltage_max ? $voltage : $this->voltage_max;
+
+        $batteryMinCheck = $request->get('battery_min_voltage') ?? $battery;
+        $batteryMin = $batteryMinCheck < $this->battery_min_voltage ? $batteryMinCheck : $this->battery_min_voltage;
+        $batteryMaxCheck = $request->get('battery_max_voltage') ?? $battery;
+        $batteryMax = $batteryMaxCheck > $this->battery_max_voltage ? $batteryMaxCheck : $this->battery_max_voltage;
+
         $data = [
+            'read_at' => $request->get('read_at') ?? Carbon::now(),
             'fan_min' => $fanMin,
             'fan_max' => $fanMax,
-            'fan_avg' => ($fanMin + $fanMax) / 2,
             'temperature_min' => $temperatureMin,
             'temperature_max' => $temperatureMax,
-            'temperature_avg' => ($temperatureMin + $temperatureMax) / 2,
             'voltage_min' => $voltageMin,
             'voltage_max' => $voltageMax,
-            'voltage_avg' => ($voltageMin + $voltageMax) / 2,
+            'battery_min' => $batteryMin,
+            'battery_max' => $batteryMax,
             'amperage_min' => $amperageMin,
             'amperage_max' => $amperageMax,
-            'amperage_avg' => ($amperageMin + $amperageMax) / 2,
+            'amperage' => $amperageTotal,
             'power_min' => $powerMin,
             'power_max' => $powerMax,
-            'power_avg' => ($powerMin + $powerMax) / 2,
-            'created_at' => $request->get('created_at') ?? Carbon::now(),
+            'power' => $powerTotal,
         ];
 
         $this->fill(array_filter($data, 'strlen'));

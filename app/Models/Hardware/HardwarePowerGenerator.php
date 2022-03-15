@@ -18,10 +18,9 @@ class HardwarePowerGenerator extends BaseModel
 
     protected $table = 'hardware_power_generators';
 
-    protected $fillable = ['hardware_device_id', 'load_current', 'load_voltage',
-        'load_power', 'battery_voltage', 'battery_temperature', 'battery_percentage',
-        'charging_status', 'charging_status_label', 'origin_current', 'origin_voltage',
-        'origin_power', 'light_status', 'light_brightness', 'read_at'];
+    protected $fillable = ['hardware_device_id', 'battery_voltage', 'battery_temperature',
+        'battery_percentage', 'charging_status', 'charging_status_label', 'amperage',
+        'voltage', 'power', 'light_status', 'light_brightness', 'read_at'];
 
 
     /**
@@ -37,20 +36,17 @@ class HardwarePowerGenerator extends BaseModel
     {
         $data = [
             'hardware_device_id' => $device->id,
-            'load_current' => $request->get('load_current'),
-            'load_voltage' => $request->get('load_voltage'),
-            'load_power' => $request->get('load_power'),
             'battery_voltage' => $request->get('battery_voltage'),
             'battery_temperature' => $request->get('battery_temperature'),
             'battery_percentage' => $request->get('battery_percentage'),
-            'charging_status' => $request->get('charging_status'),
-            'charging_status_label' => $request->get('charging_status_label'),
-            'origin_current' => $request->get('origin_current') ?? $request->get('solar_current'),
-            'origin_voltage' => $request->get('origin_voltage') ?? $request->get('solar_voltage'),
-            'origin_power' => $request->get('origin_power') ?? $request->get('solar_power'),
-            'light_status' => $request->get('light_status') ?? $request->get('street_light_status'),
-            'light_brightness' => $request->get('light_brightness') ?? $request->get('street_light_brightness'),
-            'read_at' => $request->read_at ?? Carbon::now(),
+            'charging_status' => $request->get('energy_charging_status'),
+            'charging_status_label' => $request->get('energy_charging_status_label'),
+            'amperage' => $request->get('energy_amperage'),
+            'voltage' => $request->get('energy_voltage'),
+            'power' => $request->get('energy_power'),
+            'light_status' => $request->get('street_light_status'),
+            'light_brightness' => $request->get('street_light_brightness'),
+            'read_at' => $request->get('read_at'),
         ];
 
         return new self(array_filter($data, 'strlen'));
@@ -67,20 +63,17 @@ class HardwarePowerGenerator extends BaseModel
     public function updateModel($request)
     {
         $data = [
-            'hardware_device_id' => $request->get('device_id'),
-            'load_current' => $request->get('load_current'),
-            'load_voltage' => $request->get('load_voltage'),
-            'load_power' => $request->get('load_power'),
             'battery_voltage' => $request->get('battery_voltage'),
             'battery_temperature' => $request->get('battery_temperature'),
             'battery_percentage' => $request->get('battery_percentage'),
-            'charging_status' => $request->get('charging_status'),
-            'charging_status_label' => $request->get('charging_status_label'),
-            'origin_current' => $request->get('origin_current') ?? $request->get('solar_current'),
-            'origin_voltage' => $request->get('origin_voltage') ?? $request->get('solar_voltage'),
-            'origin_power' => $request->get('origin_power') ?? $request->get('solar_power'),
-            'light_status' => $request->get('light_status') ?? $request->get('street_light_status'),
-            'light_brightness' => $request->get('light_brightness') ?? $request->get('street_light_brightness'),
+            'charging_status' => $request->get('energy_charging_status'),
+            'charging_status_label' => $request->get('energy_charging_status_label'),
+            'amperage' => $request->get('energy_amperage'),
+            'voltage' => $request->get('energy_voltage'),
+            'power' => $request->get('energy_power'),
+            'light_status' => $request->get('street_light_status'),
+            'light_brightness' => $request->get('street_light_brightness'),
+            'read_at' => $request->get('read_at'),
         ];
 
         $this->fill(array_filter($data, 'strlen'));

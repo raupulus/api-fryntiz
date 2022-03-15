@@ -9,12 +9,14 @@ use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorToday;
 use App\Models\Hardware\HardwarePowerLoad;
+use App\Models\Hardware\HardwarePowerLoadHistorical;
 use App\Models\Hardware\HardwarePowerLoadToday;
 use App\Models\Hardware\SolarCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use JsonHelper;
+use function array_keys;
 use function auth;
 use function request;
 use function response;
@@ -50,7 +52,11 @@ class SolarChargeController extends Controller
      */
     public function store(StoreSolarChargeRequest $request)
     {
-        $device_id = $request->json('device_id');
+        $requestValidated = collect($request->validated());
+        $date = $requestValidated->get('date');
+        $readAt = $requestValidated->get('read_at');
+
+        $device_id = $request->get('device_id');
 
         ## Usuario logueado.
         $user = auth()->user();
@@ -60,90 +66,92 @@ class SolarChargeController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-
         ## Actualizo los datos del dispositivo (HardwareDevice).
         $device = $device->updateModel($request);
         $device->save();
 
-
         ## Guardo los datos para la carga de energía.
-        $hardwarePowerGenerator = HardwarePowerGenerator::createModel($device, $request);
+        $hardwarePowerGenerator = HardwarePowerGenerator::createModel($device, $requestValidated);
         $hardwarePowerGenerator->save();
-
 
         ## Actualizo el histórico diario
         $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::where('hardware_device_id', $device->id)
-            ->where('date', $request->date ?? Carbon::create($request->created_at)->format('Y-m-d'))
+            ->where('date', $date)
             ->first();
 
         if ($hardwarePowerGeneratorToday) {
-            if ($request->created_at > $hardwarePowerGeneratorToday->created_at) {
-                $hardwarePowerGeneratorToday->updateModel($request);
-                $hardwarePowerGeneratorToday->created_at = $request->created_at;
+            if ($readAt > $hardwarePowerGeneratorToday->read_at) {
+                $hardwarePowerGeneratorToday->updateModel($requestValidated);
             }
         } else {
-            $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::createModel($device, $request);
-            $hardwarePowerGeneratorToday->save();
-            $hardwarePowerGeneratorToday->created_at = $request->created_at;
-            $hardwarePowerGeneratorToday->date = $request->date ??
-                Carbon::create($request->created_at)->format('Y-m-d');
+            $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::createModel($device, $requestValidated);
         }
 
         $hardwarePowerGeneratorToday->save();
 
 
-        ## Guardo los datos para el Historial de carga de energía.
+        ## Guardo los datos para el Historial de generar de energía.
         $hardwarePowerGeneratorHistorical =
             HardwarePowerGeneratorHistorical::where('hardware_device_id',
-                $device->id)->first();
+                $device->id)
+                ->orderByDesc('read_at')
+                ->first();
 
         ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
-        if ($hardwarePowerGeneratorHistorical) {
-            if ($request->created_at > $hardwarePowerGeneratorHistorical->created_at) {
-                $hardwarePowerGeneratorHistorical->updateModel($request);
-                $hardwarePowerGeneratorHistorical->created_at = $request->created_at;
+        if ($hardwarePowerGeneratorHistorical &&
+            $requestValidated->get('days_operating') >=
+            $hardwarePowerGeneratorHistorical->days_operating) {
+
+            if ($readAt > $hardwarePowerGeneratorHistorical->read_at) {
+                $hardwarePowerGeneratorHistorical->updateModel($requestValidated);
             }
         } else {
-            $hardwarePowerGeneratorHistorical = HardwarePowerGeneratorHistorical::createModel($device, $request);
-            $hardwarePowerGeneratorHistorical->save();
-            $hardwarePowerGeneratorHistorical->created_at = $request->created_at;
+            $hardwarePowerGeneratorHistorical = HardwarePowerGeneratorHistorical::createModel($device, $requestValidated);
         }
 
         $hardwarePowerGeneratorHistorical->save();
 
-
         ## HardwarePowerLoad
-        $hardwarePowerLoad = HardwarePowerLoad::createModel($device, $request);
+        $hardwarePowerLoad = HardwarePowerLoad::createModel($device, $requestValidated);
         $hardwarePowerLoad->save();
 
         ## HardwarePowerLoadToday
         $hardwarePowerLoadToday = HardwarePowerLoadToday::where('hardware_device_id', $device->id)
-            ->where('date', $request->date ??
-                Carbon::create($request->created_at)->format('Y-m-d'))
+            ->where('date', $date)
             ->first();
 
         if ($hardwarePowerLoadToday) {
-            $hardwarePowerLoadToday->updateModel($request);
-
-            if ($request->created_at > $hardwarePowerLoadToday->created_at) {
-                $hardwarePowerLoadToday->created_at = $request->created_at;
-            }
+            $hardwarePowerLoadToday->updateModel($requestValidated);
         } else {
-            $hardwarePowerLoadToday = HardwarePowerLoadToday::createModel($device, $request);
-            $hardwarePowerLoadToday->save();
-            $hardwarePowerLoadToday->created_at = $request->created_at;
-            $hardwarePowerLoadToday->date = $request->date ??
-                Carbon::create($request->created_at)->format('Y-m-d');
+            $hardwarePowerLoadToday = HardwarePowerLoadToday::createModel($device, $requestValidated);
         }
 
         $hardwarePowerLoadToday->save();
 
+        ## HardwarePowerLoadHistorical datos para el Historial de consumo.
+        $hardwarePowerLoadHistorical =
+            HardwarePowerLoadHistorical::where('hardware_device_id',
+                $device->id)
+                ->orderByDesc('read_at')
+                ->first();
 
-        // TODO → Falta histórico de carga de energía.
-        ## HardwarePowerLoadHistorical
+        ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
+        if ($hardwarePowerLoadHistorical &&
+            $requestValidated->get('days_operating') >=
+            $hardwarePowerLoadHistorical->days_operating) {
+
+            if ($readAt > $hardwarePowerLoadHistorical->read_at) {
+                $hardwarePowerLoadHistorical->updateModel($requestValidated);
+            }
+        } else {
+            $hardwarePowerLoadHistorical = HardwarePowerLoadHistorical::createModel($device, $requestValidated);
+        }
+
+        $hardwarePowerLoadHistorical->save();
 
         return JsonHelper::created([
             'message' => 'Carga de energía registrada correctamente.',
+            'request' => $request->validated()
         ]);
 
     }
