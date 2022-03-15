@@ -80,7 +80,7 @@ class EnergyController extends Controller
             'battery_full_charge' => number_format($hardwareGeneratorHistorical->sum('number_battery_full_charges')),
             'battery_percentage' => number_format($hardwareGeneratorCurrent->avg('battery_percentage')),
             'max_light' => number_format($hardwareGeneratorCurrent->max('light_brightness')),
-            'max_temp' => number_format($hardwareGeneratorCurrent->max('temperature'), 1),
+            'max_temp' => number_format($hardwareGeneratorCurrent->max('battery_temperature'), 1),
         ];
 
         ## Objeto con los cálculos de consumo.
@@ -186,7 +186,7 @@ class EnergyController extends Controller
                 'unit' => 'lm'
             ], [
                 'title' => 'Max. Temp',
-                'value' => $load->max_temp > $generator->max_temp ? $load->max_temp : $generator->max_temp,
+                'value' => ($load->max_temp > $generator->max_temp) ? $load->max_temp : $generator->max_temp,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'ºC'
             ],
