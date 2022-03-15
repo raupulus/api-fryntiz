@@ -74,10 +74,10 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo (A)');
-            $table->decimal('amperage_total', 10, 2)
+            $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Amperaje total (A)');
+                ->comment('Amperaje total (Ah)');
             $table->decimal('power_min', 10, 2)
                 ->nullable()
                 ->default(0)
@@ -86,7 +86,7 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia máxima (W)');
-            $table->decimal('power_total', 10, 2)
+            $table->decimal('power', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia total (W)');

@@ -58,30 +58,22 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje máximo de batería (V)');
-            $table->decimal('amperage_min', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Amperaje mínimo (A)');
-            $table->decimal('amperage_max', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Amperaje máximo (A)');
-            $table->decimal('amperage_total', 10, 2)
+            $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje total (A)');
-            $table->decimal('power_min', 10, 2)
+            $table->decimal('amperage_max', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Potencia mínima (W)');
+                ->comment('Máxima carga en amperios (Ah)');
+            $table->decimal('power', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Potencia total (W)');
             $table->decimal('power_max', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia máxima (W)');
-            $table->decimal('power_total', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Potencia total (W)');
             $table->date('date')
                 ->nullable()
                 ->comment('Fecha de medición');

@@ -74,7 +74,7 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo (A)');
-            $table->decimal('amperage_total', 10, 2)
+            $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje total (A)');
@@ -86,13 +86,14 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia máxima (W)');
-            $table->decimal('power_total', 10, 2)
+            $table->decimal('power', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia total (W)');
-            $table->date('date')
+            $table->integer('days_operating')
                 ->nullable()
-                ->comment('Fecha de medición');
+                ->default(0)
+                ->comment('Número de días que el dispositivo ha estado operativo');
             $table->timestamp('read_at')
                 ->nullable()
                 ->comment('Fecha y hora de la última lectura');

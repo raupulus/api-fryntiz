@@ -62,7 +62,7 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('El voltaje de carga que está generando el generador.');
-            $table->integer('power')
+            $table->decimal('power', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('La potencia de carga que está generando el generador.');

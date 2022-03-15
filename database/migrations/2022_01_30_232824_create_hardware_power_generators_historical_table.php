@@ -34,26 +34,29 @@ class CreateHardwarePowerGeneratorsHistoricalTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->integer('total_days_operating')
+            $table->integer('days_operating')
                 ->nullable()
                 ->default(0)
                 ->comment('Número de días que el dispositivo ha estado operativo');
-            $table->integer('total_number_battery_over_discharges')
+            $table->integer('number_battery_over_discharges')
                 ->nullable()
                 ->default(0)
                 ->comment('Número de veces que se ha vaciado la batería por completo');
-            $table->integer('total_number_battery_full_charges')
+            $table->integer('number_battery_full_charges')
                 ->nullable()
                 ->default(0)
                 ->comment('Número de veces que se ha cargado la batería por completo');
-            $table->integer('total_charging_amp_hours')
+            $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Carga total en Ah que ha sido almacenado en la batería');
-            $table->integer('cumulative_power_generation')
+            $table->decimal('power', 10, 2)
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia (W) generada acumulada en el tiempo');
+            $table->timestamp('read_at')
+                ->nullable()
+                ->comment('Fecha y hora de lectura');
             $table->timestamps();
         });
 
