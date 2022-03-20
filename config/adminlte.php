@@ -323,6 +323,22 @@ return [
                 ],
             ],
         ],
+        [
+            'text' => 'Hardware',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'far fa-fw fa-file',
+                    //'route' => 'dashboard.cv.index',
+                ],
+                [
+                    'text' => 'Nuevo',
+                    'icon' => 'far fa-fw fa-file',
+                    //'route' => 'dashboard.cv.create',
+                ],
+            ],
+        ],
 
         ['header' => 'Usuarios'],
         [
