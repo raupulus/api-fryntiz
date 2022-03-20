@@ -146,22 +146,22 @@ class EnergyController extends Controller
 
         $currentStats = [
             [
-                'title' => 'Generado',
+                'title' => 'Generando',
                 'value' => $generator->current,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'W'
             ], [
-                'title' => 'Consumido',
+                'title' => 'Consumiendo',
                 'value' => $load->current,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'W'
             ], [
-                'title' => 'Generado',
+                'title' => 'Generando',
                 'value' => $generator->current_amperage,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'ah'
             ], [
-                'title' => 'Consumido',
+                'title' => 'Consumiendo',
                 'value' => $load->current_amperage,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'ah'
@@ -173,7 +173,8 @@ class EnergyController extends Controller
                 'title' => 'Bat. Charge',
                 'value' => $generator->battery_percentage ?? 0,
                 'image' => asset('images/icons/energy-green.svg'),
-                'unit' => '%'
+                'unit' => '%',
+                'list' => ''
             ], [
                 'title' => 'Bat. Load',
                 'value' => $load->battery_percentage ?? 0,
