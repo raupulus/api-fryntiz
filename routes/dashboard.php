@@ -20,7 +20,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
 use App\Http\Controllers\Dashboard\LanguageController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Dashboard\Hardware\HardwareDeviceController;
 ############################################################
 ##                      Dashboard                         ##
 ############################################################
@@ -30,6 +30,21 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
     })->name('dashboard.index');
 });
 
+Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [HardwareDeviceController::class, 'index'])
+            ->name('dashboard.content.index');
+        Route::get('/create', [HardwareDeviceController::class, 'create'])
+            ->name('dashboard.content.create');
+        Route::post('/store', [HardwareDeviceController::class, 'store'])
+            ->name('dashboard.content.store');
+        Route::get('/{id}/edit', [HardwareDeviceController::class, 'edit'])
+            ->name('dashboard.content.edit');
+        Route::match(['put', 'patch'], '/update/{id}', [HardwareDeviceController::class, 'update'])
+            ->name('dashboard.content.update');
+        Route::post('/destroy', [HardwareDeviceController::class, 'destroy'])
+            ->name('dashboard.content.destroy');
+    });
 
 ############################################################
 ##                     Curriculum                         ##

@@ -34,7 +34,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'date' => $this->date ?? $created_at->format('Y-m-d'),
             'read_at' => $created_at,
 
-            ## HardwareDevice
+            ## HardwareDeviceController
             'device_id' => (int)$this->device_id,
             'hardware' => $this->prepareStr($this->hardware),
             'version' => $this->prepareStr($this->version),

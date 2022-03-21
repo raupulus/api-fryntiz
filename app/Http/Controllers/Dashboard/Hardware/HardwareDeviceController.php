@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dashboard\Hardware;
 
 use App\Http\Controllers\Controller;
-use App\Models\Hardware\HardwareAvailableComponent;
+use App\Models\Hardware\HardwareDevice;
 use Illuminate\Http\Request;
 
-class HardwareAvailableComponent extends Controller
+class HardwareDeviceController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -42,10 +42,10 @@ class HardwareAvailableComponent extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareAvailableComponent  $hardwareAvailableComponent
+     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
      * @return \Illuminate\Http\Response
      */
-    public function show(HardwareAvailableComponent $hardwareAvailableComponent)
+    public function show(HardwareDeviceController $hardwareDevice)
     {
         //
     }
@@ -53,10 +53,10 @@ class HardwareAvailableComponent extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareAvailableComponent  $hardwareAvailableComponent
+     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
      * @return \Illuminate\Http\Response
      */
-    public function edit(HardwareAvailableComponent $hardwareAvailableComponent)
+    public function edit(HardwareDeviceController $hardwareDevice)
     {
         //
     }
@@ -65,10 +65,10 @@ class HardwareAvailableComponent extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Hardware\HardwareAvailableComponent  $hardwareAvailableComponent
+     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, HardwareAvailableComponent $hardwareAvailableComponent)
+    public function update(Request $request, HardwareDeviceController $hardwareDevice)
     {
         //
     }
@@ -76,10 +76,10 @@ class HardwareAvailableComponent extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Hardware\HardwareAvailableComponent  $hardwareAvailableComponent
+     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
      * @return \Illuminate\Http\Response
      */
-    public function destroy(HardwareAvailableComponent $hardwareAvailableComponent)
+    public function destroy(HardwareDeviceController $hardwareDevice)
     {
         //
     }

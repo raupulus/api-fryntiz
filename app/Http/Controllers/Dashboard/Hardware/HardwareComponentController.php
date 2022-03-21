@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dashboard\Hardware;
 
 use App\Http\Controllers\Controller;
-use App\Models\Hardware\HardwareType;
+use App\Models\Hardware\HardwareComponent;
 use Illuminate\Http\Request;
 
-class HardwareType extends Controller
+class HardwareComponentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -42,10 +42,10 @@ class HardwareType extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
+     * @param  \App\Models\Hardware\HardwareComponent  $hardwareComponent
      * @return \Illuminate\Http\Response
      */
-    public function show(HardwareType $hardwareType)
+    public function show(HardwareComponentController $hardwareComponent)
     {
         //
     }
@@ -53,10 +53,10 @@ class HardwareType extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
+     * @param  \App\Models\Hardware\HardwareComponent  $hardwareComponent
      * @return \Illuminate\Http\Response
      */
-    public function edit(HardwareType $hardwareType)
+    public function edit(HardwareComponentController $hardwareComponent)
     {
         //
     }
@@ -65,10 +65,10 @@ class HardwareType extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
+     * @param  \App\Models\Hardware\HardwareComponent  $hardwareComponent
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, HardwareType $hardwareType)
+    public function update(Request $request, HardwareComponentController $hardwareComponent)
     {
         //
     }
@@ -76,10 +76,10 @@ class HardwareType extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
+     * @param  \App\Models\Hardware\HardwareComponent  $hardwareComponent
      * @return \Illuminate\Http\Response
      */
-    public function destroy(HardwareType $hardwareType)
+    public function destroy(HardwareComponentController $hardwareComponent)
     {
         //
     }

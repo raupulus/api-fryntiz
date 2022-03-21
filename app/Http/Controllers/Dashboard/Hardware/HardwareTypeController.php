@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dashboard\Hardware;
 
 use App\Http\Controllers\Controller;
-use App\Models\Hardware\HardwareDevice;
+use App\Models\Hardware\HardwareType;
 use Illuminate\Http\Request;
 
-class HardwareDevice extends Controller
+class HardwareTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -42,10 +42,10 @@ class HardwareDevice extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
+     * @param  \App\Models\Hardware\HardwareType  $hardwareType
      * @return \Illuminate\Http\Response
      */
-    public function show(HardwareDevice $hardwareDevice)
+    public function show(HardwareTypeController $hardwareType)
     {
         //
     }
@@ -53,10 +53,10 @@ class HardwareDevice extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
+     * @param  \App\Models\Hardware\HardwareType  $hardwareType
      * @return \Illuminate\Http\Response
      */
-    public function edit(HardwareDevice $hardwareDevice)
+    public function edit(HardwareTypeController $hardwareType)
     {
         //
     }
@@ -65,10 +65,10 @@ class HardwareDevice extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
+     * @param  \App\Models\Hardware\HardwareType  $hardwareType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, HardwareDevice $hardwareDevice)
+    public function update(Request $request, HardwareTypeController $hardwareType)
     {
         //
     }
@@ -76,10 +76,10 @@ class HardwareDevice extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
+     * @param  \App\Models\Hardware\HardwareType  $hardwareType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(HardwareDevice $hardwareDevice)
+    public function destroy(HardwareTypeController $hardwareType)
     {
         //
     }

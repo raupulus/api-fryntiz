@@ -66,7 +66,7 @@ class SolarChargeController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-        ## Actualizo los datos del dispositivo (HardwareDevice).
+        ## Actualizo los datos del dispositivo (HardwareDeviceController).
         $device = $device->updateModel($request);
         $device->save();
 

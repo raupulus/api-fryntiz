@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Request;
 use function array_filter;
 
 /**
- * Class HardwareDevice
+ * Class HardwareDeviceController
  *
  * @package App\Models\Hardware
  */
