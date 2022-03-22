@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard\Hardware;
 use App\Http\Controllers\Controller;
 use App\Models\Hardware\HardwareDevice;
 use Illuminate\Http\Request;
+use function view;
 
 class HardwareDeviceController extends Controller
 {
@@ -15,7 +16,11 @@ class HardwareDeviceController extends Controller
      */
     public function index()
     {
-        //
+        $devices = HardwareDevice::where('user_id', auth()->user()->id)->get();
+
+        return view('dashboard.hardware.index', [
+            'devices' => $devices,
+        ]);
     }
 
     /**
@@ -25,7 +30,11 @@ class HardwareDeviceController extends Controller
      */
     public function create()
     {
-        //
+        $device = new HardwareDevice();
+
+        return view('dashboard.hardware.add-edit', [
+            'device' => $device,
+        ]);
     }
 
     /**
@@ -56,9 +65,11 @@ class HardwareDeviceController extends Controller
      * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
      * @return \Illuminate\Http\Response
      */
-    public function edit(HardwareDeviceController $hardwareDevice)
+    public function edit(HardwareDeviceController $device)
     {
-        //
+        return view('dashboard.hardware.add-edit', [
+            'device' => $device,
+        ]);
     }
 
     /**

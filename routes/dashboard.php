@@ -32,18 +32,21 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
 
 Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
     function () {
-        Route::get('/index', [HardwareDeviceController::class, 'index'])
-            ->name('dashboard.content.index');
-        Route::get('/create', [HardwareDeviceController::class, 'create'])
-            ->name('dashboard.content.create');
-        Route::post('/store', [HardwareDeviceController::class, 'store'])
-            ->name('dashboard.content.store');
-        Route::get('/{id}/edit', [HardwareDeviceController::class, 'edit'])
-            ->name('dashboard.content.edit');
-        Route::match(['put', 'patch'], '/update/{id}', [HardwareDeviceController::class, 'update'])
-            ->name('dashboard.content.update');
-        Route::post('/destroy', [HardwareDeviceController::class, 'destroy'])
-            ->name('dashboard.content.destroy');
+        Route::group(['prefix' => '/device  ', 'middleware' => ['auth', 'verified']],
+            function () {
+                Route::get('/index', [HardwareDeviceController::class, 'index'])
+                    ->name('dashboard.hardware.device.index');
+                Route::get('/create', [HardwareDeviceController::class, 'create'])
+                    ->name('dashboard.hardware.device.create');
+                Route::post('/store', [HardwareDeviceController::class, 'store'])
+                    ->name('dashboard.hardware.device.store');
+                Route::get('/{id}/edit', [HardwareDeviceController::class, 'edit'])
+                    ->name('dashboard.hardware.device.edit');
+                Route::match(['put', 'patch'], '/update/{id}', [HardwareDeviceController::class, 'update'])
+                    ->name('dashboard.hardware.device.update');
+                Route::post('/destroy', [HardwareDeviceController::class, 'destroy'])
+                    ->name('dashboard.hardware.device.destroy');
+            });
     });
 
 ############################################################

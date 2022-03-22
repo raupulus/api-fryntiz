@@ -26,19 +26,19 @@
 
         <div class="col-12">
             <form
-                action="{{$content && $content->id ? route('dashboard.content.update', $content->id) : route('dashboard.content.store')}}"
+                action="{{$device && $device->id ? route('dashboard.content.update', $device->id) : route('dashboard.content.store')}}"
                 enctype="multipart/form-data"
                 method="POST">
 
                 @csrf
 
-                <input type="hidden" name="id" value="{{$content->id}}">
+                <input type="hidden" name="id" value="{{$device->id}}">
 
                 <div class="row">
                     <div class="col-12">
                         <h2 style="display: inline-block;">
-                            {{(isset($content) && $content && $content->id) ? 'Editar ' .
-                            $content->title : 'Creando nuevo Contenido'}}
+                            {{(isset($device) && $device && $device->id) ? 'Editar ' .
+                            $device->title : 'Creando nuevo Contenido'}}
 
 
                         </h2>
@@ -147,7 +147,7 @@
                                     <div class="input-group">
                                         <img
                                             src="{{
-                                            $content->urlThumbnail('small')
+                                            $device->urlThumbnail('small')
                                              }}"
                                             alt="Curriculum Image"
                                             id="cv-image-preview"
@@ -165,8 +165,8 @@
                                                    id="cv-image-label"
                                                    for="cv-image-input">
 
-                                                @if ($content->image)
-                                                    {{$content->image->original_name}}
+                                                @if ($device->image)
+                                                    {{$device->image->original_name}}
                                                 @else
                                                     Añadir archivo
                                                 @endif

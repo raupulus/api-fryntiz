@@ -330,12 +330,12 @@ return [
                 [
                     'text' => 'Listado',
                     'icon' => 'far fa-fw fa-file',
-                    //'route' => 'dashboard.cv.index',
+                    'route' => 'dashboard.hardware.device.index',
                 ],
                 [
                     'text' => 'Nuevo',
                     'icon' => 'far fa-fw fa-file',
-                    //'route' => 'dashboard.cv.create',
+                    'route' => 'dashboard.hardware.device.create',
                 ],
             ],
         ],

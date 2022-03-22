@@ -3,7 +3,9 @@
 namespace App\Models\Hardware;
 
 use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
+use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\File;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Request;
 use function array_filter;
@@ -15,13 +17,23 @@ use function array_filter;
  */
 class HardwareDevice extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, ImageTrait;
 
     protected $table = 'hardware_devices';
 
     protected $fillable = ['name', 'name_friend', 'ref', 'model', 'software_version',
         'hardware_version', 'serial_number', 'battery_type', 'battery_nominal_capacity',
         'description', 'buy_at'];
+
+    /**
+     * Relación con la imagen asociada al curriculum.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function image()
+    {
+        return $this->hasOne(File::class, 'id', 'image_id');
+    }
 
 
     public static function createModel(HardwareDevice $device, $request)
