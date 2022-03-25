@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use stdClass;
 use function asset;
+use function dd;
 use function number_format;
 use function round;
 
@@ -38,7 +39,7 @@ class EnergyController extends Controller
         ## Obtengo el último registro por cada dispositivo en la última hora.
         $hardwareGeneratorCurrentIds = HardwarePowerGenerator::whereIn('hardware_device_id', $hardware_ids)
             ->where('read_at', '>=', $lastHour)
-            ->whereRaw('id in (select max(id) from hardware_power_generators where hardware_device_id = hardware_power_generators.hardware_device_id group by hardware_device_id)')
+            ->whereRaw('id in (select max(id) from hardware_power_generators group by hardware_device_id)')
             ->pluck('id')
             ->toArray();
         $hardwareGeneratorCurrent = HardwarePowerGenerator::whereIn('id', $hardwareGeneratorCurrentIds)->get();
@@ -55,10 +56,11 @@ class EnergyController extends Controller
         ## Registro de energía consumida por dispositivo en la última hora.
         $hardwareLoadCurrentIds = HardwarePowerLoad::whereIn('hardware_device_id', $hardware_ids)
             ->where('read_at', '>=', $lastHour)
-            ->whereRaw('id in (select max(id) from hardware_power_loads where hardware_device_id = hardware_power_loads.hardware_device_id group by hardware_device_id)')
+            ->whereRaw('id in (select max(id) from hardware_power_loads group by hardware_device_id)')
             ->pluck('id')
             ->toArray();
-        $hardwareLoadCurrent = HardwarePowerGenerator::whereIn('id', $hardwareLoadCurrentIds)->get();
+
+        $hardwareLoadCurrent = HardwarePowerLoad::whereIn('id', $hardwareLoadCurrentIds)->get();
 
         ## Registros de carga de energía por día.
         $hardwareLoadToday = HardwarePowerLoadToday::whereIn('hardware_device_id', $hardware_ids)
