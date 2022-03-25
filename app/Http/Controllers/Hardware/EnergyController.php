@@ -186,7 +186,7 @@ class EnergyController extends Controller
                 'title' => 'Luz',
                 'value' => $generator->max_light,
                 'image' => asset('images/icons/energy-green.svg'),
-                'unit' => 'lm'
+                'unit' => '%'
             ], [
                 'title' => 'Max. Temp',
                 'value' => ($load->max_temp > $generator->max_temp) ? $load->max_temp : $generator->max_temp,
