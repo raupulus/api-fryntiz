@@ -92,15 +92,17 @@ class SolarChargeController extends Controller
 
         ## Guardo los datos para el Historial de generar de energía.
         $hardwarePowerGeneratorHistorical =
-            HardwarePowerGeneratorHistorical::where('hardware_device_id',
-                $device->id)
+            HardwarePowerGeneratorHistorical::where('hardware_device_id', $device->id)
                 ->orderByDesc('read_at')
                 ->first();
 
         ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
-        if ($hardwarePowerGeneratorHistorical &&
-            $requestValidated->get('days_operating') >=
-            $hardwarePowerGeneratorHistorical->days_operating) {
+        if (
+            $hardwarePowerGeneratorHistorical && (
+                $requestValidated->get('days_operating') >=
+                $hardwarePowerGeneratorHistorical->days_operating
+            )
+        ) {
 
             if ($readAt > $hardwarePowerGeneratorHistorical->read_at) {
                 $hardwarePowerGeneratorHistorical->updateModel($requestValidated);
@@ -121,7 +123,9 @@ class SolarChargeController extends Controller
             ->first();
 
         if ($hardwarePowerLoadToday) {
-            $hardwarePowerLoadToday->updateModel($requestValidated);
+            if ($readAt > $hardwarePowerLoadToday->read_at) {
+                $hardwarePowerLoadToday->updateModel($requestValidated);
+            }
         } else {
             $hardwarePowerLoadToday = HardwarePowerLoadToday::createModel($device, $requestValidated);
         }
@@ -136,10 +140,12 @@ class SolarChargeController extends Controller
                 ->first();
 
         ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
-        if ($hardwarePowerLoadHistorical &&
-            $requestValidated->get('days_operating') >=
-            $hardwarePowerLoadHistorical->days_operating) {
-
+        if (
+            $hardwarePowerLoadHistorical && (
+                $requestValidated->get('days_operating') >=
+                $hardwarePowerLoadHistorical->days_operating
+            )
+        ) {
             if ($readAt > $hardwarePowerLoadHistorical->read_at) {
                 $hardwarePowerLoadHistorical->updateModel($requestValidated);
             }
