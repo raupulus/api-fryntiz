@@ -16,7 +16,10 @@ class HardwareDeviceController extends Controller
      */
     public function index()
     {
-        $devices = HardwareDevice::where('user_id', auth()->user()->id)->get();
+        //$devices = HardwareDevice::where('user_id', auth()->user()->id)
+        //->get();
+        $devices = HardwareDevice::all();
+
 
         return view('dashboard.hardware.index', [
             'devices' => $devices,

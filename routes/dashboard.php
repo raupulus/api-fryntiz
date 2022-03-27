@@ -32,7 +32,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
 
 Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
     function () {
-        Route::group(['prefix' => '/device  ', 'middleware' => ['auth', 'verified']],
+        Route::group(['prefix' => '/device', 'middleware' => ['auth', 'verified']],
             function () {
                 Route::get('/index', [HardwareDeviceController::class, 'index'])
                     ->name('dashboard.hardware.device.index');

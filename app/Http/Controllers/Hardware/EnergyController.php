@@ -183,7 +183,7 @@ class EnergyController extends Controller
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => '%'
             ], [
-                'title' => 'Luz',
+                'title' => 'Luz Calle',
                 'value' => $generator->max_light,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => '%'
