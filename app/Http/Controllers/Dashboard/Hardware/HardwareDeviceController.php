@@ -16,6 +16,7 @@ class HardwareDeviceController extends Controller
      */
     public function index()
     {
+        // TODO → Quitar antes de publicar!!! Esto muestra lo del usuario logueado
         //$devices = HardwareDevice::where('user_id', auth()->user()->id)
         //->get();
         $devices = HardwareDevice::all();
