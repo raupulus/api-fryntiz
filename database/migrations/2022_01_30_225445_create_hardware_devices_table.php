@@ -62,12 +62,15 @@ class CreateHardwareDevicesTable extends Migration
             $table->string('name', 255)
                 ->nullable()
                 ->comment('Nombre real del dispositivo, EJ: Raspberry Pi 4b+');
-            $table->string('name_friend', 255)
+            $table->string('name_friendly', 255)
                 ->nullable()
                 ->comment('Nombre amistoso para reconocerlo EJ: Raspberry en azotea');
             $table->string('ref', 255)
                 ->nullable()
                 ->comment('Referencia del dispositivo');
+            $table->string('brand', 255)
+                ->nullable()
+                ->comment('Marca del fabricante, EJ: Apple');
             $table->string('model', 255)
                 ->nullable()
                 ->comment('Modelo del dispositivo, EJ: 4b+');
