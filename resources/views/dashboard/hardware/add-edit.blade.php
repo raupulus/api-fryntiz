@@ -124,8 +124,7 @@
 
                                 <div class="form-group">
                                     <label for="name_friendly">
-                                        Nombre Amigable (CAMBIAR EN DB A
-                                        name_friendly)
+                                        Nombre Amigable
 
                                         <br/>
 
@@ -157,7 +156,7 @@
 
                                 <div class="form-group">
                                     <label for="brand">
-                                        Marca (NO EN DB, CREAR CAMPO)
+                                         Marca
                                     </label>
 
                                     <input id="brand"
