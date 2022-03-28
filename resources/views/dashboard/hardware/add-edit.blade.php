@@ -353,16 +353,16 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Fecha de compra (AÑADIR
-                                        DATEPICKER)</label>
+                                    <label>Fecha de compra</label>
                                     <div class="input-group date"
-                                         id="buy_at"
+                                         id="buy_at_calendar"
                                          data-target-input="nearest">
                                         <input type="text"
+                                               id="buy_at"
                                                class="form-control datetimepicker-input"
-                                               data-target="#reservationdate">
+                                               data-target="#buy_at_calendar">
                                         <div class="input-group-append"
-                                             data-target="#reservationdate"
+                                             data-target="#buy_at_calendar"
                                              data-toggle="datetimepicker">
                                             <div class="input-group-text">
                                                 <i class="fa fa-calendar"></i>
@@ -374,7 +374,7 @@
                                 {{-- TODO → Implementar sistema para asociar con productos referidos --}}
                                 <div class="form-group">
                                     <label for="referred_thing_id">
-                                        Asociar producto referido
+                                        Asociar producto referido (TODO)
                                     </label>
 
                                     <input id="referred_thing_id"
@@ -598,6 +598,9 @@
 
 @section('js')
     <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />>
 
     <script>
         window.document.addEventListener('click', () => {
@@ -624,6 +627,25 @@
                 };
             }
 
+        });
+
+
+
+        // Selector para fecha de compra
+        //$('#buy_at').datepicker()
+
+        $(function() {
+
+
+            $('#buy_at_calendar').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                minYear: 2000,
+                autoApply: true,
+            }, function(start, end, label) {
+                let input = document.getElementById('buy_at');
+                input.value = start.format('YYYY-MM-DD');
+            });
         });
     </script>
 @stop
