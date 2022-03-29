@@ -118,6 +118,7 @@
                                            type="text"
                                            class="form-control"
                                            name="name"
+                                           required
                                            value="{{ old('name', $device->name) }}"
                                            placeholder="Nombre del dispositivo">
                                 </div>
@@ -126,15 +127,14 @@
                                     <label for="name_friendly">
                                         Nombre Amigable
 
-                                        <br/>
-
                                         <small class="text-muted">
-                                            Nombre corto y descriptivo
+                                            (Nombre corto y descriptivo)
                                         </small>
                                     </label>
 
                                     <input id="name_friendly"
                                            type="text"
+                                           required
                                            class="form-control"
                                            name="name_friendly"
                                            value="{{ old('name_friendly', $device->name_friendly) }}"
@@ -255,8 +255,8 @@
                                         </option>
 
                                         @foreach (\App\Models\Hardware\HardwareType::all() as $hardwareType)
-                                            <option
-                                                value="{{$hardwareType->id}}">
+                                            <option value="{{$hardwareType->id}}"
+                                                    {{$hardwareType->id === old('hardware_type_id', $device->hardware_type_id) ? 'selected' : ''}}>
                                                 {{$hardwareType->name}}
                                             </option>
                                         @endforeach
@@ -279,35 +279,43 @@
                                             No tiene batería
                                         </option>
 
-                                        <option value="GEL">
+                                        <option value="GEL"
+                                            {{'GEL' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             GEL
                                         </option>
 
-                                        <option value="NI-MH">
+                                        <option value="NI-MH"
+                                            {{'NI-MH' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             NI-MH
                                         </option>
 
-                                        <option value="LI-ION">
+                                        <option value="LI-ION"
+                                            {{'LI-ION' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             LI-ION
                                         </option>
 
-                                        <option value="LIPO">
+                                        <option value="LIPO"
+                                            {{'LIPO' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             LIPO
                                         </option>
 
-                                        <option value="AGM">
+                                        <option value="AGM"
+                                            {{'AGM' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             AGM
                                         </option>
 
-                                        <option value="VRLA">
+                                        <option value="VRLA"
+                                            {{'VRLA' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             VRLA (Plomo ácido sellada)
                                         </option>
 
-                                        <option value="NI-FE">
+                                        <option value="NI-FE"
+                                            {{'' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             NI-FE
                                         </option>
 
-                                        <option value="NI-CD">
+                                        <option value="NI-CD"
+                                            {{'NI-CD' === old('battery_type', $device->battery_type) ? 'selected' : ''}}>
                                             NI-CD
                                         </option>
                                     </select>
@@ -359,6 +367,7 @@
                                          data-target-input="nearest">
                                         <input type="text"
                                                id="buy_at"
+                                               value="{{ old('buy_at', $device->buy_at) }}"
                                                class="form-control datetimepicker-input"
                                                data-target="#buy_at_calendar">
                                         <div class="input-group-append"
@@ -406,6 +415,7 @@
                                     <textarea id="description"
                                               class="form-control"
                                               rows="5"
+                                              required
                                               name="description"
                                               placeholder="Añade tu Resumen...">{{ old('description', $device->description) }}</textarea>
                                 </div>
@@ -418,181 +428,6 @@
             </form>
         </div>
 
-
-        @if (isset($device) && $device && $device->id)
-            <div class="col-6">
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            General
-                        </h3>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="btn-group">
-                            <a href="{{route('dashboard.hardware.device.repository.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Repositorios
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.service.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Servicios
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6">
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            Formación
-                        </h3>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="btn-group">
-                            <a href="{{route('dashboard.hardware.device.academic_complementary.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Complementaria
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.academic_complementary_online.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Online
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.academic_training.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Académica
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6">
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            Experiencia Laboral
-                        </h3>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="btn-group">
-                            <a href="{{route('dashboard.hardware.device.experience_accredited.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Acreditada
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.experience_additional.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Adicional
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.experience_no_accredited.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                No Acreditada
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.experience_other.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Otros
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.experience_selfemployed.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Autoempleado
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6">
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            Personal
-                        </h3>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="btn-group">
-                            <a href="{{route('dashboard.hardware.device.collaboration.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Colaboraciones
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.hobby.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Aficciones
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.job.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Trabajos
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.project.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Proyectos
-                            </a>
-
-                            &nbsp;
-
-                            <a href="{{route('dashboard.hardware.device.skill.index', $device->id)}}"
-                               class="btn btn-info">
-                                <i class="fas fa-folder-open"></i>
-                                Habilidades
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        @endif
     </div>
 @stop
 

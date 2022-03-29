@@ -40,9 +40,9 @@ Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
                     ->name('dashboard.hardware.device.create');
                 Route::post('/store', [HardwareDeviceController::class, 'store'])
                     ->name('dashboard.hardware.device.store');
-                Route::get('/{id}/edit', [HardwareDeviceController::class, 'edit'])
+                Route::get('/{device}/edit', [HardwareDeviceController::class, 'edit'])
                     ->name('dashboard.hardware.device.edit');
-                Route::match(['put', 'patch'], '/update/{id}', [HardwareDeviceController::class, 'update'])
+                Route::match(['put', 'patch'], '/update/{device}', [HardwareDeviceController::class, 'update'])
                     ->name('dashboard.hardware.device.update');
                 Route::post('/destroy', [HardwareDeviceController::class, 'destroy'])
                     ->name('dashboard.hardware.device.destroy');

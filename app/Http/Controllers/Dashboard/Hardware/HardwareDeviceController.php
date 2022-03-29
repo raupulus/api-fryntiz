@@ -66,11 +66,13 @@ class HardwareDeviceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Hardware\HardwareDevice $device
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(HardwareDeviceController $device)
+    public function edit(HardwareDevice $device)
     {
+
         return view('dashboard.hardware.add-edit', [
             'device' => $device,
         ]);
