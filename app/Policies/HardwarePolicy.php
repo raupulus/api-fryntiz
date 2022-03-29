@@ -24,6 +24,37 @@ class HardwarePolicy
         //
     }
 
+    public function index(User $user)
+    {
+        return true;
+    }
+
+    public function create(User $user)
+    {
+        return true;
+    }
+
+    public function store(User $user, HardwareDevice $hardwareDevice)
+    {
+        return true;
+    }
+
+    public function delete(User $user, HardwareDevice $hardwareDevice)
+    {
+        return true;
+    }
+
+    public function show(User $user, HardwareDevice $hardwareDevice)
+    {
+        return true;
+    }
+
+    public function update(User $user, HardwareDevice $hardwareDevice)
+    {
+        return true;
+    }
+
+
     /**
      * Permisos para guardar datos de dispositivos solares.
      *

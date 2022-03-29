@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Dashboard\Hardware;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\Hardware\DeviceCreateRequest;
+use App\Http\Requests\Dashboard\Hardware\DeviceIndexRequest;
+use App\Http\Requests\Dashboard\Hardware\DeviceStoreRequest;
 use App\Models\Hardware\HardwareDevice;
 use Illuminate\Http\Request;
 use function view;
@@ -12,15 +15,13 @@ class HardwareDeviceController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Dashboard\Hardware\DeviceIndexRequest $request
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(DeviceIndexRequest $request)
     {
-        // TODO → Quitar antes de publicar!!! Esto muestra lo del usuario logueado
-        //$devices = HardwareDevice::where('user_id', auth()->user()->id)
-        //->get();
-        $devices = HardwareDevice::all();
-
+        $devices = HardwareDevice::where('user_id', auth()->user()->id)->get();
 
         return view('dashboard.hardware.index', [
             'devices' => $devices,
@@ -30,12 +31,13 @@ class HardwareDeviceController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Dashboard\Hardware\DeviceCreateRequest $request
+     * @param \App\Models\Hardware\HardwareDevice                       $device
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function create()
+    public function create(DeviceCreateRequest $request, HardwareDevice $device)
     {
-        $device = new HardwareDevice();
-
         return view('dashboard.hardware.add-edit', [
             'device' => $device,
         ]);
@@ -44,12 +46,22 @@ class HardwareDeviceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Dashboard\Hardware\DeviceStoreRequest $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(DeviceStoreRequest $request)
     {
-        //
+        dd($request->validated(), $request->all());
+
+
+        $device = HardwareDevice::create($request->validated());
+
+        //TODO → guardar imagen
+        if ($request->hasFile('image')) {
+        }
+
+        return redirect()->route('dashboard.hardware.device.index');
     }
 
     /**

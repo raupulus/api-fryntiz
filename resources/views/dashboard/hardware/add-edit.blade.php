@@ -367,6 +367,7 @@
                                          data-target-input="nearest">
                                         <input type="text"
                                                id="buy_at"
+                                               name="buy_at"
                                                value="{{ old('buy_at', $device->buy_at) }}"
                                                class="form-control datetimepicker-input"
                                                data-target="#buy_at_calendar">
