@@ -44,7 +44,7 @@ Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
                     ->name('dashboard.hardware.device.edit');
                 Route::match(['put', 'patch'], '/update/{device}', [HardwareDeviceController::class, 'update'])
                     ->name('dashboard.hardware.device.update');
-                Route::post('/destroy', [HardwareDeviceController::class, 'destroy'])
+                Route::post('/destroy/{device}', [HardwareDeviceController::class, 'destroy'])
                     ->name('dashboard.hardware.device.destroy');
             });
     });

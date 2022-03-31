@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Dashboard\Hardware;
 
 use Illuminate\Foundation\Http\FormRequest;
+use function auth;
 
 class DeviceDeleteRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class DeviceDeleteRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return auth()->id() && auth()->user()->can('update', $this->device);
     }
 
     /**

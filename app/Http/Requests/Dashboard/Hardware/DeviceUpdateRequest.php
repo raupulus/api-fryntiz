@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests\Dashboard\Hardware;
 
+use App\Models\Hardware\HardwareDevice;
 use Illuminate\Foundation\Http\FormRequest;
+use function auth;
+use function dd;
+use function trim;
 
 class DeviceUpdateRequest extends FormRequest
 {
@@ -13,7 +17,14 @@ class DeviceUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return auth()->id() && auth()->user()->can('update', $this->device);
+    }
+
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'description' => trim($this->get('description')),
+        ]);
     }
 
     /**
@@ -24,7 +35,21 @@ class DeviceUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'hardware_type_id' => 'required|integer|exists:hardware_types,id',
+            'referred_thing_id' => 'nullable|integer|exists:referred_things,id',
+            'name' => 'required|string|max:255',
+            'name_friendly' => 'required|string|max:255',
+            'description' => 'required|string|max:1024',
+            'ref' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'model' => 'nullable|string|max:255',
+            'software_version' => 'nullable|string|max:255',
+            'hardware_version' => 'nullable|string|max:255',
+            'serial_number' => 'nullable|string|max:255',
+            'battery_type' => 'nullable|string|max:255',
+            'battery_nominal_capacity' => 'nullable|integer',
+            'url_company' => 'nullable|string|max:255',
+            'buy_at' => 'nullable|date',
         ];
     }
 }

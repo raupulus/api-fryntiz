@@ -30,9 +30,15 @@
                 enctype="multipart/form-data"
                 method="POST">
 
+                @if ($device && $device->id)
+                    @method('PUT')
+                @endif
+
                 @csrf
 
-                <input type="hidden" name="cv_id" value="{{$device->id}}">
+                {{--
+                <input type="hidden" name="device_id" value="{{$device->id}}">
+                --}}
 
                 <div class="row">
                     <div class="col-12">
@@ -156,7 +162,7 @@
 
                                 <div class="form-group">
                                     <label for="brand">
-                                         Marca
+                                        Marca
                                     </label>
 
                                     <input id="brand"
@@ -213,8 +219,6 @@
                                 </div>
 
 
-
-
                                 <div class="form-group">
                                     <label for="serial_number">
                                         Número de serie
@@ -255,8 +259,9 @@
                                         </option>
 
                                         @foreach (\App\Models\Hardware\HardwareType::all() as $hardwareType)
-                                            <option value="{{$hardwareType->id}}"
-                                                    {{$hardwareType->id === old('hardware_type_id', $device->hardware_type_id) ? 'selected' : ''}}>
+                                            <option
+                                                value="{{$hardwareType->id}}"
+                                                {{$hardwareType->id === old('hardware_type_id', $device->hardware_type_id) ? 'selected' : ''}}>
                                                 {{$hardwareType->name}}
                                             </option>
                                         @endforeach
@@ -340,7 +345,7 @@
                                     </label>
 
                                     <input id="url_company"
-                                           type="text"
+                                           type="url"
                                            class="form-control"
                                            name="url_company"
                                            value="{{ old('url_company', $device->url_company) }}"
@@ -353,7 +358,7 @@
                                     </label>
 
                                     <input id="url_company"
-                                           type="text"
+                                           type="url"
                                            class="form-control"
                                            name="url_company"
                                            value="{{ old('url_company', $device->url_company) }}"
@@ -434,9 +439,12 @@
 
 @section('js')
     <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>>
 
     <script>
         window.document.addEventListener('click', () => {
@@ -466,7 +474,6 @@
         });
 
 
-
         // Selector para fecha de compra
         //$('#buy_at').datepicker()
 
@@ -474,10 +481,10 @@
 
 
             $('#buy_at_calendar').daterangepicker({
-                singleDatePicker: true,
-                showDropdowns: true,
-                minYear: 2000,
-                autoApply: true,
+                singleDatePicker:true,
+                showDropdowns:true,
+                minYear:2000,
+                autoApply:true,
             }, function(start, end, label) {
                 let input = document.getElementById('buy_at');
                 input.value = start.format('YYYY-MM-DD');

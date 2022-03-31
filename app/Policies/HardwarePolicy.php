@@ -34,14 +34,14 @@ class HardwarePolicy
         return true;
     }
 
-    public function store(User $user, HardwareDevice $hardwareDevice)
+    public function store(User $user)
     {
         return true;
     }
 
     public function delete(User $user, HardwareDevice $hardwareDevice)
     {
-        return true;
+        return $hardwareDevice->user_id == $user->id;
     }
 
     public function show(User $user, HardwareDevice $hardwareDevice)
@@ -51,7 +51,7 @@ class HardwarePolicy
 
     public function update(User $user, HardwareDevice $hardwareDevice)
     {
-        return true;
+        return $hardwareDevice->user_id == $user->id;
     }
 
 

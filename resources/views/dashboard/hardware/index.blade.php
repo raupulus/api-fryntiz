@@ -82,9 +82,8 @@
                                     @if ($device->buy_at)
                                         <br>
                                         <small>
-                                            Comprado
-                                            {{$curriculum->buy_at->format('d/m/Y
-                                            H:i')}}
+                                            Compra:
+                                            {{$device->buy_at->format('d/m/Y')}}
                                         </small>
                                     @endif
                                 </td>
@@ -113,7 +112,7 @@
                                     &nbsp;
 
                                     <form
-                                        action="{{route('dashboard.hardware.device.destroy')}}"
+                                        action="{{route('dashboard.hardware.device.destroy', $device->id)}}"
                                         method="POST"
                                         style="display: inline-block;">
 

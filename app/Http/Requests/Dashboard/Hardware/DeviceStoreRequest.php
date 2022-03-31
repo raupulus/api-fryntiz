@@ -15,7 +15,7 @@ class DeviceStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->id() && auth()->user()->can('create', \App\Models\Hardware\HardwareDevice::class);
+        return auth()->id() && auth()->user()->can('store', \App\Models\Hardware\HardwareDevice::class);
     }
 
     public function prepareForValidation()
