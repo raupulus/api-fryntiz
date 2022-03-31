@@ -29,6 +29,66 @@ class HardwareDevice extends BaseModel
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'buy_at'];
 
     /**
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function powerGenerators()
+    {
+        return $this->hasMany(HardwarePowerGenerator::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function powerGeneratorToday()
+    {
+        return $this->hasMany(HardwarePowerGeneratorToday::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function powerGeneratorsHistorical()
+    {
+        return $this->hasMany(HardwarePowerGeneratorHistorical::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function powerLoads()
+    {
+        return $this->hasMany(HardwarePowerLoad::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function powerLoadsToday()
+    {
+        return $this->hasMany(HardwarePowerLoadToday::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function powerLoadsHistorical()
+    {
+        return $this->hasMany(HardwarePowerLoadHistorical::class, 'hardware_device_id', 'id');
+    }
+
+    /**
      * Relación con la imagen asociada al curriculum.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
