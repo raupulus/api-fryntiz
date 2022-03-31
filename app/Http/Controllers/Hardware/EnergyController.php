@@ -12,6 +12,7 @@ use App\Models\Hardware\HardwarePowerLoadHistorical;
 use App\Models\Hardware\HardwarePowerLoadToday;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use stdClass;
 use function asset;
 use function dd;
@@ -31,7 +32,15 @@ class EnergyController extends Controller
     {
         $dateToday = date('Y-m-d');
 
-        $hardwares = HardwareDevice::where('user_id', 2)->get();
+        $hardwares = HardwareDevice::with('powerLoadsHistorical', 'powerGeneratorsHistorical')
+            ->leftJoin('hardware_power_loads_historical', 'hardware_power_loads_historical.hardware_device_id', '=', 'hardware_devices.id')
+            ->leftJoin('hardware_power_generators_historical', 'hardware_power_generators_historical.hardware_device_id', '=', 'hardware_devices.id')
+            ->where('user_id', 2)
+            ->where(function ($query) {
+                $query->whereNotNull('hardware_power_loads_historical.power')
+                    ->orWhereNotNull('hardware_power_generators_historical.power');
+            })
+            ->get();
         $hardware_ids = $hardwares->pluck('id')->toArray();
 
         $lastHour = Carbon::now()->subHour();
