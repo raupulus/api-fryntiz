@@ -105,46 +105,45 @@
                         ];
                         @endphp
 
-                        <div class="p-4 lg:w-1/2">
+                        <div class="w-full sm:w-full md:w-1/2 2xl:w-1/3
+                        px-2
+                        md:pl-5 md:pr-5
+                        lg:pl-10
+                        lg:pr-10">
                             <div
-                                class="h-full flex sm:flex-row flex-col items-center sm:justify-start justify-center text-center sm:text-left">
+                                class="items-center justify-items-center text-center">
 
-                                <img alt="{{$hardware->name}}"
-                                     class="flex-shrink-0 rounded-lg w-48 h-48 object-cover object-center sm:mb-0 mb-4"
-                                     src="{{$hardware->urlThumbnail('normal') }}">
+                                <div class="flex-grow justify-items-center">
+                                    <img alt="{{$hardware->name}}"
+                                         class="text-center rounded-lg w-48 h-48
+                                         object-cover object-center m-auto"
+                                         src="{{$hardware->urlThumbnail('normal') }}">
 
-                                <div class="flex-grow sm:pl-8">
-                                    <h2 class="title-font font-medium text-lg text-gray-900">
+                                    <h2 class="title-font font-medium text-lg text-gray-900 text-center">
                                         {{$hardware->name}}
                                     </h2>
-                                    <h3 class="text-gray-500 mb-3">
+                                    <h3 class="text-gray-500 mb-3 text-center">
                                         {{$hardware->software_version}}
                                     </h3>
 
                                     <div class="text-center">
-                                        <span class="text-center text-sm text-green-500">
-                                            <i class="pi pi-upload"></i>:
+                                        <span
+                                            class="text-center text-sm text-green-500">
+                                            <i class="pi pi-download font-bold"></i>:
                                             {{$hardwareStatistics->loadsHistorical ? $hardwareStatistics->loadsHistorical->sum('power')/1000
 : 0}}KW
 
                                         </span>
 
-                                        <span class="text-center text-sm text-yellow-500">
-                                            <i class="pi pi-download"></i>:
+                                        <span
+                                            class="text-center text-sm text-yellow-500">
+                                            <i class="pi pi-upload font-bold"></i>:
                                             {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('power')/1000
 : 0}}KW
                                         </span>
 
 
-
                                     </div>
-
-
-
-
-
-
-
 
 
                                     <div class="mb-4 border-b border-gray-200">
@@ -194,9 +193,12 @@
 
                                         </ul>
                                     </div>
-                                    <div id="hardwareTabContent-{{$hardware->id}}">
+                                    <div
+                                        id="hardwareTabContent-{{$hardware->id}}"
+                                        style="min-height: 190px;"
+                                    >
                                         <div
-                                            class="hidden p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            class="p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
                                             id="energy-{{$hardware->id}}"
                                             role="tabpanel"
                                             aria-labelledby="energy-tab-{{$hardware->id}}">
@@ -239,21 +241,26 @@
                                                    }"
                                             />
                                         </div>
+
                                         <div
-                                            class="p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            class="hidden w-full p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
                                             id="info-{{$hardware->id}}"
                                             role="tabpanel"
                                             aria-labelledby="info-tab-{{$hardware->id}}">
-                                            TEST
+                                            <p class="text-left text-sm text-gray-500 dark:text-gray-400">
+                                                TEST
+                                                {{Str::limit($hardware->description, 250)}}
+                                            </p>
                                         </div>
 
                                         <div
-                                            class="hidden p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            class="hidden w-full p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
                                             id="resume-{{$hardware->id}}"
                                             role="tabpanel"
                                             aria-labelledby="resume-tab-{{$hardware->id}}">
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{Str::limit($hardware->description, 250)}}
+                                            <p class="text-left text-sm text-gray-500 dark:text-gray-400">
+                                                {{Str::limit
+                                                ($hardware->description, 400)}}
                                             </p>
                                         </div>
 
