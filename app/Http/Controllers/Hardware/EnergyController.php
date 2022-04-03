@@ -32,7 +32,8 @@ class EnergyController extends Controller
     {
         $dateToday = date('Y-m-d');
 
-        $hardwares = HardwareDevice::with('powerLoadsHistorical', 'powerGeneratorsHistorical')
+        $hardwares = HardwareDevice::select('hardware_devices.*')
+            ->with('powerLoadsHistorical', 'powerGeneratorsHistorical')
             ->leftJoin('hardware_power_loads_historical', 'hardware_power_loads_historical.hardware_device_id', '=', 'hardware_devices.id')
             ->leftJoin('hardware_power_generators_historical', 'hardware_power_generators_historical.hardware_device_id', '=', 'hardware_devices.id')
             ->where('user_id', 2)

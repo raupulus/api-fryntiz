@@ -17,8 +17,6 @@
 
 @section('content')
 
-
-
     <div class="leading-normal tracking-normal"
          style="font-family: 'Source Sans Pro', sans-serif;">
 
@@ -90,6 +88,23 @@
 
                     @foreach($hardwares as $hardware)
 
+                        @php
+                            $hardwareStatistics = $hardware->currentEnergyStatistics;
+
+                            $generator = [
+                                $hardwareStatistics->generatorCurrent ? $hardwareStatistics->generatorCurrent->power : 0,
+                                $hardwareStatistics->generatorToday ? $hardwareStatistics->generatorToday->power : 0,
+                        ];
+                            $load = [
+                                $hardwareStatistics->loadCurrent ? $hardwareStatistics->loadCurrent->power : 0,
+                                $hardwareStatistics->loadToday ? $hardwareStatistics->loadToday->power : 0,
+                        ];
+                            $battery = [
+                                $hardwareStatistics->generatorCurrent ? $hardwareStatistics->generatorCurrent->battery_max : 0,
+                                $hardwareStatistics->generatorToday ? $hardwareStatistics->generatorToday->battery_max : 0,
+                        ];
+                        @endphp
+
                         <div class="p-4 lg:w-1/2">
                             <div
                                 class="h-full flex sm:flex-row flex-col items-center sm:justify-start justify-center text-center sm:text-left">
@@ -103,8 +118,33 @@
                                         {{$hardware->name}}
                                     </h2>
                                     <h3 class="text-gray-500 mb-3">
-                                        {{$hardware->version}}
+                                        {{$hardware->software_version}}
                                     </h3>
+
+                                    <div class="text-center">
+                                        <span class="text-center text-sm text-green-500">
+                                            <i class="pi pi-upload"></i>:
+                                            {{$hardwareStatistics->loadsHistorical ? $hardwareStatistics->loadsHistorical->sum('power')/1000
+: 0}}KW
+
+                                        </span>
+
+                                        <span class="text-center text-sm text-yellow-500">
+                                            <i class="pi pi-download"></i>:
+                                            {{$hardwareStatistics->loadsHistorical ? $hardwareStatistics->loadsHistorical->sum('power')/1000
+: 0}}KW
+                                        </span>
+
+
+
+                                    </div>
+
+
+
+
+
+
+
 
 
                                     <div class="mb-4 border-b border-gray-200">
@@ -112,6 +152,18 @@
                                             id="hardwareTab-{{$hardware->id}}"
                                             data-tabs-toggle="#hardwareTabContent-{{$hardware->id}}"
                                             role="tablist">
+                                            <li class="mr-2"
+                                                role="presentation">
+                                                <button
+                                                    class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700"
+                                                    id="energy-tab-{{$hardware->id}}"
+                                                    data-tabs-target="#energy-{{$hardware->id}}"
+                                                    type="button" role="tab"
+                                                    aria-controls="energy-{{$hardware->id}}"
+                                                    aria-selected="true">
+                                                    Energía
+                                                </button>
+                                            </li>
                                             <li class="mr-2"
                                                 role="presentation">
                                                 <button class="inline-block
@@ -123,7 +175,7 @@
                                                         data-tabs-target="#info-{{$hardware->id}}"
                                                         type="button" role="tab"
                                                         aria-controls="info-{{$hardware->id}}"
-                                                        aria-selected="true">
+                                                        aria-selected="false">
                                                     Info
                                                 </button>
                                             </li>
@@ -139,21 +191,54 @@
                                                     Resumen
                                                 </button>
                                             </li>
-                                            <li class="mr-2"
-                                                role="presentation">
-                                                <button
-                                                    class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700"
-                                                    id="today-tab-{{$hardware->id}}"
-                                                    data-tabs-target="#today-{{$hardware->id}}"
-                                                    type="button" role="tab"
-                                                    aria-controls="today-{{$hardware->id}}"
-                                                    aria-selected="false">
-                                                    Hoy
-                                                </button>
-                                            </li>
+
                                         </ul>
                                     </div>
                                     <div id="hardwareTabContent-{{$hardware->id}}">
+                                        <div
+                                            class="hidden p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            id="energy-{{$hardware->id}}"
+                                            role="tabpanel"
+                                            aria-labelledby="energy-tab-{{$hardware->id}}">
+
+                                            <Chart type="bar"
+                                                   :data="{
+                                                       labels: ['Actual', 'Hoy'],
+                                                       datasets: [
+                                                       {
+                                                       label: 'Generado (W)',
+                                                       backgroundColor: '#42A5F5',
+                                                       data: {{json_encode($generator)}}
+                                                       },
+                                                       {
+                                                       label: 'Consumido (W)',
+                                                       backgroundColor: '#FFA726',
+                                                       data: {{json_encode($load)}}
+                                                       },
+                                                       {
+                                                       label: 'Batería (%)',
+                                                       backgroundColor: '#AF0026',
+                                                       data: {{json_encode($battery)}}
+                                                       }
+                                                       ]
+                                                       }"
+                                                   :options="{
+                                                       responsive: true,
+                                                       maintainAspectRatio: false,
+                                                       legend: {
+                                                       display: false,
+                                                       padding: 1
+                                                       },
+                                                       scales: {
+                                                       yAxes: [{
+                                                       ticks: {
+                                                       beginAtZero: true
+                                                       }
+                                                       }]
+                                                       }
+                                                   }"
+                                            />
+                                        </div>
                                         <div
                                             class="p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
                                             id="info-{{$hardware->id}}"
@@ -171,15 +256,7 @@
                                                 {{Str::limit($hardware->description, 250)}}
                                             </p>
                                         </div>
-                                        <div
-                                            class="hidden p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
-                                            id="today-{{$hardware->id}}"
-                                            role="tabpanel"
-                                            aria-labelledby="today-tab-{{$hardware->id}}">
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                TEST3
-                                            </p>
-                                        </div>
+
                                     </div>
 
                                     <span class="inline-flex">

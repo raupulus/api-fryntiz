@@ -13,6 +13,10 @@ import { createApp } from 'vue'
 
 import VueAxios from 'vue-axios';
 
+// PrimeVue
+import PrimeVue from 'primevue/config';
+import Chart from 'primevue/chart';
+
 /*
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
@@ -37,8 +41,14 @@ const router = createRouter({
 
 
 const app = createApp({
+    use: [
+        PrimeVue,
+        VueAxios,
+    ],
     components: {
         VueAxios,
+        PrimeVue: {ripple: true},
+        Chart,
         //router
     }
 });

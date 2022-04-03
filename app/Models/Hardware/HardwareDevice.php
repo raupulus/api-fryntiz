@@ -6,6 +6,7 @@ use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Request;
 use function array_filter;
@@ -121,4 +122,64 @@ class HardwareDevice extends BaseModel
 
         return $this;
     }
+
+    public function getEnergyStatisticsAttribute()
+    {
+        $powerGenerators = $this->powerGenerators()->get();
+        $powerLoads = $this->powerLoads()->get();
+
+        $powerGeneratorsToday = $this->powerGeneratorToday()->get();
+        $powerLoadsToday = $this->powerLoadsToday()->get();
+
+        $powerGeneratorsHistorical = $this->powerGeneratorsHistorical()->get();
+        $powerLoadsHistorical = $this->powerLoadsHistorical()->get();
+
+        return [
+            'powerGenerators' => $powerGenerators,
+            'powerLoads' => $powerLoads,
+            'powerGeneratorsToday' => $powerGeneratorsToday,
+            'powerLoadsToday' => $powerLoadsToday,
+            'powerGeneratorsHistorical' => $powerGeneratorsHistorical,
+            'powerLoadsHistorical' => $powerLoadsHistorical,
+        ];
+    }
+
+
+    public function getCurrentEnergyStatisticsAttribute()
+    {
+        $now = Carbon::now();
+        $lastHour = $now->copy()->subHour();
+        $day = $now->format('Y-m-d');
+
+        $generatorCurrent = $this->powerGenerators()
+            ->where('read_at', '>=', $lastHour)
+            ->orderByDesc('read_at')
+            ->first();
+        $loadCurrent = $this->powerLoads()
+            ->where('read_at', '>=', $lastHour)
+            ->orderByDesc('read_at')
+            ->first();
+
+        $generatorToday = $this->powerGeneratorToday()
+            ->where('read_at', '>=', $day)
+            ->orderByDesc('read_at')
+            ->first();
+        $loadToday = $this->powerLoadsToday()
+            ->where('read_at', '>=', $day)
+            ->orderByDesc('read_at')
+            ->first();
+
+        $generatorsHistorical = $this->powerGeneratorsHistorical()->get();
+        $loadsHistorical = $this->powerLoadsHistorical()->get();
+
+        return (object)[
+            'generatorCurrent' => $generatorCurrent,
+            'loadCurrent' => $loadCurrent,
+            'generatorToday' => $generatorToday,
+            'loadToday' => $loadToday,
+            'generatorsHistorical' => $generatorsHistorical,
+            'loadsHistorical' => $loadsHistorical,
+        ];
+    }
+
 }

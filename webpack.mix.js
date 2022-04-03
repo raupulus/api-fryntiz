@@ -25,6 +25,7 @@ mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/styles.scss', 'public/css/')
     .sass('resources/sass/bootstrap.scss', 'public/css/')
     .sass('resources/sass/dashboard.scss', 'public/dashboard/css/')
+    .sass('resources/sass/primevue.scss', 'public/css/primevue.css')
     .postCss('resources/css/assets/tailwind.css', 'public/css', [
         require('postcss-import'),
         //require('postcss-nested'),
