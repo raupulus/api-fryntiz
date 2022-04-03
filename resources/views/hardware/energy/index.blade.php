@@ -131,7 +131,7 @@
 
                                         <span class="text-center text-sm text-yellow-500">
                                             <i class="pi pi-download"></i>:
-                                            {{$hardwareStatistics->loadsHistorical ? $hardwareStatistics->loadsHistorical->sum('power')/1000
+                                            {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('power')/1000
 : 0}}KW
                                         </span>
 
