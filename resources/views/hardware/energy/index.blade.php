@@ -100,7 +100,7 @@
                                 $hardwareStatistics->loadToday ? $hardwareStatistics->loadToday->power : 0,
                         ];
                             $battery = [
-                                $hardwareStatistics->generatorCurrent ? $hardwareStatistics->generatorCurrent->battery_max : 0,
+                                $hardwareStatistics->generatorCurrent ? $hardwareStatistics->generatorCurrent->battery_percentage : 0,
                                 $hardwareStatistics->generatorToday ? $hardwareStatistics->generatorToday->battery_max : 0,
                         ];
                         @endphp
