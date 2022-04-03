@@ -85,6 +85,7 @@
                     </p>
                 </div>
 
+
                 <div class="flex flex-wrap -m-4">
 
                     @foreach($hardwares as $hardware)
@@ -93,9 +94,9 @@
                             <div
                                 class="h-full flex sm:flex-row flex-col items-center sm:justify-start justify-center text-center sm:text-left">
 
-                                <img alt="team"
+                                <img alt="{{$hardware->name}}"
                                      class="flex-shrink-0 rounded-lg w-48 h-48 object-cover object-center sm:mb-0 mb-4"
-                                     src="https://dummyimage.com/200x200">
+                                     src="{{$hardware->urlThumbnail('normal') }}">
 
                                 <div class="flex-grow sm:pl-8">
                                     <h2 class="title-font font-medium text-lg text-gray-900">
@@ -105,13 +106,81 @@
                                         {{$hardware->version}}
                                     </h3>
 
-                                    <p class="mb-4">
-                                        {{$hardware->description}}
-                                    </p>
 
-                                    <p class="mb-4">
-                                        !Gráfico consumo-generación!
-                                    </p>
+                                    <div class="mb-4 border-b border-gray-200">
+                                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center"
+                                            id="hardwareTab-{{$hardware->id}}"
+                                            data-tabs-toggle="#hardwareTabContent-{{$hardware->id}}"
+                                            role="tablist">
+                                            <li class="mr-2"
+                                                role="presentation">
+                                                <button class="inline-block
+                                                p-4 rounded-t-lg border-b-2
+                                                text-blue-600
+                                                hover:text-blue-600
+                                                dark:text-blue-500 dark:hover:text-blue-400 border-blue-600 dark:border-blue-500"
+                                                        id="info-tab-{{$hardware->id}}"
+                                                        data-tabs-target="#info-{{$hardware->id}}"
+                                                        type="button" role="tab"
+                                                        aria-controls="info-{{$hardware->id}}"
+                                                        aria-selected="true">
+                                                    Info
+                                                </button>
+                                            </li>
+                                            <li class="mr-2"
+                                                role="presentation">
+                                                <button
+                                                    class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700"
+                                                    id="resume-tab-{{$hardware->id}}"
+                                                    data-tabs-target="#resume-{{$hardware->id}}"
+                                                    type="button" role="tab"
+                                                    aria-controls="resume-{{$hardware->id}}"
+                                                    aria-selected="false">
+                                                    Resumen
+                                                </button>
+                                            </li>
+                                            <li class="mr-2"
+                                                role="presentation">
+                                                <button
+                                                    class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700"
+                                                    id="today-tab-{{$hardware->id}}"
+                                                    data-tabs-target="#today-{{$hardware->id}}"
+                                                    type="button" role="tab"
+                                                    aria-controls="today-{{$hardware->id}}"
+                                                    aria-selected="false">
+                                                    Hoy
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div id="hardwareTabContent-{{$hardware->id}}">
+                                        <div
+                                            class="p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            id="info-{{$hardware->id}}"
+                                            role="tabpanel"
+                                            aria-labelledby="info-tab-{{$hardware->id}}">
+                                            TEST
+                                        </div>
+
+                                        <div
+                                            class="hidden p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            id="resume-{{$hardware->id}}"
+                                            role="tabpanel"
+                                            aria-labelledby="resume-tab-{{$hardware->id}}">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{Str::limit($hardware->description, 250)}}
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="hidden p-4 bg-gray-50 rounded-lg dark:bg-gray-800"
+                                            id="today-{{$hardware->id}}"
+                                            role="tabpanel"
+                                            aria-labelledby="today-tab-{{$hardware->id}}">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                TEST3
+                                            </p>
+                                        </div>
+                                    </div>
 
                                     <span class="inline-flex">
 

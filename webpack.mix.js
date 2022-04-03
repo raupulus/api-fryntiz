@@ -27,8 +27,11 @@ mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/dashboard.scss', 'public/dashboard/css/')
     .postCss('resources/css/assets/tailwind.css', 'public/css', [
         require('postcss-import'),
+        //require('postcss-nested'),
+        //require('tailwindcss/nesting'),
         require('tailwindcss'),
     ])
+    .copy('node_modules/flowbite/dist/flowbite.js', 'public/vendor/flowbite/flowbite.js')
     .copy('node_modules/inputmask/dist/inputmask.min.js', 'public/vendor/inputmask/inputmask.js')
 
     .sourceMaps();
