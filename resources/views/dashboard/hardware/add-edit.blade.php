@@ -353,19 +353,6 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="url_company">
-                                        Url al fabricante
-                                    </label>
-
-                                    <input id="url_company"
-                                           type="url"
-                                           class="form-control"
-                                           name="url_company"
-                                           value="{{ old('url_company', $device->url_company) }}"
-                                           placeholder="Enlace a la web del fabricante">
-                                </div>
-
-                                <div class="form-group">
                                     <label>Fecha de compra</label>
                                     <div class="input-group date"
                                          id="buy_at_calendar"
