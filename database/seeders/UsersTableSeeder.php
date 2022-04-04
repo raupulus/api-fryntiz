@@ -28,6 +28,7 @@ class UsersTableSeeder extends Seeder
             ],[
             'name' => 'Administrador Principal',
             'role_id' => 1,
+            'nickname' => 'superadmin',
             'email' => 'superadmin@domain.es',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
@@ -44,6 +45,7 @@ class UsersTableSeeder extends Seeder
         ],[
             'name' => 'Administrador',
             'role_id' => 2,
+            'nickname' => 'admin',
             'email' => 'admin@domain.es',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
@@ -54,6 +56,7 @@ class UsersTableSeeder extends Seeder
             ],[
             'name' => 'Usuario Normal',
             'role_id' => 3,
+            'nickname' => 'user',
             'email' => 'user@domain.es',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
