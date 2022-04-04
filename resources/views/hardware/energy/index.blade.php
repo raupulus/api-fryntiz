@@ -115,7 +115,7 @@
 
                                 <div class="flex-grow justify-items-center">
                                     <img alt="{{$hardware->name}}"
-                                         class="text-center rounded-lg w-48 h-48
+                                         class="text-center rounded-lg h-48
                                          object-cover object-center m-auto"
                                          src="{{$hardware->urlThumbnail('normal') }}">
 
