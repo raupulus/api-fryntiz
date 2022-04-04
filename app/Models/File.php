@@ -13,6 +13,7 @@ use function explode;
 use function file_exists;
 use function getimagesize;
 use function in_array;
+use function preg_replace;
 use function route;
 use function storage_path;
 
@@ -228,7 +229,7 @@ class File extends Model
             return $thumbnails;
         }
 
-        $img = Image::make($file->storagePathFile);
+        $imgOriginal = Image::make($file->storagePathFile);
 
 
         ## Genero las nuevas miniaturas.
@@ -238,6 +239,8 @@ class File extends Model
 
                 $newPath = storage_path('app/' . $file->storage_path . '/' . $size);
 
+                $img = clone($imgOriginal);
+
                 $img->resize($size, null, function ($constraint) {
                     $constraint->aspectRatio();
                 });
@@ -246,18 +249,47 @@ class File extends Model
                     \File::makeDirectory($newPath, 493, true);
                 }
 
-                // TODO → Convertir siempre a webp y asociar a este file_type_id
+                // TODO → Añadir metadatos EXIF
 
-                $img->save($newPath . '/' . $file->name, 60);
-                //$img->save($newPath . '/' . $file->name, 70, 'webp');
+                $extension = $file->fileType->extension;
+
+                if ($file->fileType->mime === 'image/jpeg') {
+                    $newName = preg_replace('/\.jpeg$/i', '.webp', $file->name);
+                    $newName = preg_replace('/\.jpg$/i', '.webp', $file->name);
+                    $img->save($newPath . '/' . $newName, 80, 'webp');
+                    $extension = 'webp';
+                } elseif ($file->fileType->mime === 'image/png') {
+                    $newName = preg_replace('/\.png$/i', '.webp', $file->name);
+                    $img->save($newPath . '/' . $newName, 80, 'webp');
+                    $extension = 'webp';
+                } else {
+                    $newName = $file->name;
+                    $img->save($newPath . '/' . $newName, 80);
+                }
+
+                ## Busco de nuevo el tipo mime, por si hubiera cambiado a webp.
+                $mime = $img->mime();
+
+                if ($mime) {
+                    ## Obtengo el tipo de archivo o lo creo si no existe.
+                    $fileType = FileType::updateOrCreate([
+                        'mime' => $mime,
+                        'extension' => $extension,
+                    ], [
+                        'user_id' => $file->user_id,
+                        'type' => $mime ? explode('/', $mime)[0] : '',
+                    ]);
+                } else {
+                    $fileType = $file->fileType;
+                }
 
                 $thumbnails[] = FileThumbnail::create([
                     'file_id' => $file->id,
-                    'file_type_id' => $file->file_type_id,
+                    'file_type_id' => $fileType->id,
                     'module' => $module,
                     'path' => $file->path . '/' . $size,
                     'storage_path' => $file->storage_path . '/' . $size,
-                    'name' => $file->name,
+                    'name' => $newName,
                     'key' => $key,
                     'width' => $img->width(),
                     'height' => $img->height(),
