@@ -130,21 +130,25 @@
                                         <span
                                             class="text-center text-sm text-green-500">
                                             <i class="pi pi-download font-bold"></i>:
-                                            {{$hardwareStatistics->loadsHistorical ? $hardwareStatistics->loadsHistorical->sum('power')/1000
-: 0}}KW
+                                            {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('power')/1000 : 0}}KW
 
                                         </span>
 
                                         <span
                                             class="text-center text-sm text-yellow-500">
                                             <i class="pi pi-upload font-bold"></i>:
-                                            {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('power')/1000
-: 0}}KW
+                                            {{$hardwareStatistics->loadsHistorical ? $hardwareStatistics->loadsHistorical->sum('power')/1000 : 0}}KW
                                         </span>
 
-
+                                        <span
+                                            class="text-center text-sm text-red-500">
+                                            <img
+                                                src="{{asset('images/icons/battery-status.svg')}}"
+                                                class="w-3 h-3 inline"
+                                                alt="Battery Charge"/>
+                                            {{$hardwareStatistics->generatorCurrent ? $hardwareStatistics->generatorCurrent->battery_percentage : 0}}%
+                                        </span>
                                     </div>
-
 
                                     <div class="mb-4 border-b border-gray-200">
                                         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center"
@@ -205,11 +209,11 @@
 
                                             <Chart type="bar"
                                                    :data="{
-                                                       labels: ['Actual', 'Hoy'],
+                                                       labels: ['Ahora', 'Hoy'],
                                                        datasets: [
                                                        {
                                                        label: 'Generado (W)',
-                                                       backgroundColor: '#42A5F5',
+                                                       backgroundColor: '#2ecc71',
                                                        data: {{json_encode($generator)}}
                                                        },
                                                        {
@@ -217,11 +221,6 @@
                                                        backgroundColor: '#FFA726',
                                                        data: {{json_encode($load)}}
                                                        },
-                                                       {
-                                                       label: 'Batería (%)',
-                                                       backgroundColor: '#AF0026',
-                                                       data: {{json_encode($battery)}}
-                                                       }
                                                        ]
                                                        }"
                                                    :options="{
@@ -248,8 +247,22 @@
                                             role="tabpanel"
                                             aria-labelledby="info-tab-{{$hardware->id}}">
                                             <p class="text-left text-sm text-gray-500 dark:text-gray-400">
-                                                TEST
-                                                {{Str::limit($hardware->description, 250)}}
+                                                Días Activo:
+                                                {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('days_operating') : 0}}
+                                            </p>
+                                            <p class="text-left text-sm text-gray-500 dark:text-gray-400">
+                                                Potencia Total:
+                                                {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('power')/1000 : 0}}KW
+                                            </p>
+
+                                            <p class="text-left text-sm text-gray-500 dark:text-gray-400">
+                                                Intensidad Total:
+                                                {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('amperage')/1000 : 0}}A
+                                            </p>
+
+                                            <p class="text-left text-sm text-gray-500 dark:text-gray-400">
+                                                Temperatura Máxima:
+                                                {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('temperature_max') : 0}}ºC
                                             </p>
                                         </div>
 
