@@ -97,15 +97,14 @@ class SolarChargeController extends Controller
                 ->first();
 
         ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
-        if (
-            $hardwarePowerGeneratorHistorical && (
-                $requestValidated->get('days_operating') >=
-                $hardwarePowerGeneratorHistorical->days_operating
-            )
-        ) {
+        if ($hardwarePowerGeneratorHistorical) {
+            $generatorContinueDays = $requestValidated->get('days_operating') >=  $hardwarePowerGeneratorHistorical->days_operating;
+            $generatorNewRead = $readAt > $hardwarePowerGeneratorHistorical->read_at;
 
-            if ($readAt > $hardwarePowerGeneratorHistorical->read_at) {
+            if ($generatorContinueDays && $generatorNewRead) {
                 $hardwarePowerGeneratorHistorical->updateModel($requestValidated);
+            } else if (! $generatorContinueDays && $generatorNewRead) {
+                $hardwarePowerGeneratorHistorical = HardwarePowerGeneratorHistorical::createModel($device, $requestValidated);
             }
         } else {
             $hardwarePowerGeneratorHistorical = HardwarePowerGeneratorHistorical::createModel($device, $requestValidated);
@@ -140,14 +139,14 @@ class SolarChargeController extends Controller
                 ->first();
 
         ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
-        if (
-            $hardwarePowerLoadHistorical && (
-                $requestValidated->get('days_operating') >=
-                $hardwarePowerLoadHistorical->days_operating
-            )
-        ) {
-            if ($readAt > $hardwarePowerLoadHistorical->read_at) {
+        if ($hardwarePowerLoadHistorical) {
+            $loadContinueDays = $requestValidated->get('days_operating') >=  $hardwarePowerLoadHistorical->days_operating;
+            $loadNewRead = $readAt > $hardwarePowerLoadHistorical->read_at;
+
+            if ($loadContinueDays && $loadNewRead) {
                 $hardwarePowerLoadHistorical->updateModel($requestValidated);
+            } else if (! $loadContinueDays && $loadNewRead) {
+                $hardwarePowerLoadHistorical = HardwarePowerLoadHistorical::createModel($device, $requestValidated);
             }
         } else {
             $hardwarePowerLoadHistorical = HardwarePowerLoadHistorical::createModel($device, $requestValidated);
