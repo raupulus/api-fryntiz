@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Añadir Nuevo Dispositivo')
+@section('title', (isset($device) && $device && $device->id) ? 'Editar ' . $device->title : 'Añadir Nuevo Dispositivo')
 
 @section('content_header')
     <h1>
@@ -45,8 +45,6 @@
                         <h2 style="display: inline-block;">
                             {{(isset($device) && $device && $device->id) ? 'Editar ' .
                             $device->title : 'Creando nuevo Dispositivo'}}
-
-
                         </h2>
 
                         <div class="float-right">
@@ -76,7 +74,7 @@
                                     <div class="input-group">
                                         <img
                                             src="{{ $device->urlThumbnail('small') }}"
-                                            alt="Curriculum Image"
+                                            alt="Hardware Image"
                                             id="cv-image-preview"
                                             style="width: 80px; margin-right: 10px;"/>
 
