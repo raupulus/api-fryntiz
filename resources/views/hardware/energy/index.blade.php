@@ -123,6 +123,11 @@
                                         {{$hardware->name}}
                                     </h2>
                                     <h3 class="text-gray-500 mb-3 text-center">
+                                        {{$hardwareStatistics->generatorsHistorical ? $hardwareStatistics->generatorsHistorical->sum('days_operating') : 0}}
+                                        días
+
+                                        -
+
                                         {{$hardware->software_version}}
                                     </h3>
 
