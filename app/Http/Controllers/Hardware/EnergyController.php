@@ -88,7 +88,7 @@ class EnergyController extends Controller
             'today' => round($hardwareGeneratorToday->sum('power')),
             'today_amperage' => round($hardwareGeneratorToday->sum('amperage')),
             'historical' => number_format($hardwareGeneratorHistorical->sum('power')/1000, 1),
-            'days_operating' => number_format($hardwareGeneratorHistorical->sum('days_operating')),
+            'days_operating' => $hardwareGeneratorHistorical->sum('days_operating'),
             'battery_full_charge' => number_format($hardwareGeneratorHistorical->sum('number_battery_full_charges')),
             'battery_percentage' => number_format($hardwareGeneratorCurrent->avg('battery_percentage')),
             'max_light' => number_format($hardwareGeneratorCurrent->max('light_brightness')),
