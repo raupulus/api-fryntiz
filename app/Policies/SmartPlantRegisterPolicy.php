@@ -29,8 +29,6 @@ class SmartPlantRegisterPolicy
                            SmartPlantPlant $smartPlantPlant)
     {
 
-        Log::info($user);
-        Log::info($smartPlantPlant);
         // TODO → Crear sistema de permisos
 
         return $user->id === $smartPlantPlant->user_id;
