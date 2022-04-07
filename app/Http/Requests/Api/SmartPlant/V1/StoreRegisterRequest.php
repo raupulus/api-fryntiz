@@ -25,11 +25,7 @@ class StoreRegisterRequest extends BaseFormRequest
     {
         $smartPlantPlant = SmartPlantPlant::findOrFail($this->plant_id);
 
-        Log::info($smartPlantPlant);
-
-        return auth()->id() && auth()->user()->can('create',
-                [SmartPlantRegister::class,
-                $smartPlantPlant]);
+        return auth()->id() && auth()->user()->can('create', [SmartPlantRegister::class, $smartPlantPlant]);
     }
 
     public function prepareForValidation()

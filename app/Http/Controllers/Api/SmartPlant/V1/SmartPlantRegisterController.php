@@ -27,6 +27,7 @@ class SmartPlantRegisterController extends Controller
             ->orderBy('created_at', 'DESC')
             ->whereNull('deleted_at')
             ->get();
+
         return response()->json($model);
     }
 
