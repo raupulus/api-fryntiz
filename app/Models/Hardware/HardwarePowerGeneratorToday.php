@@ -16,8 +16,8 @@ class HardwarePowerGeneratorToday extends BaseModel
     protected $table = 'hardware_power_generators_today';
 
     protected $fillable = ['hardware_device_id', 'temperature_min', 'temperature_max',
-        'voltage_min', 'voltage_max', 'battery_min', 'battery_max',
-        'amperage_max', 'amperage', 'power_max',
+        'voltage_min', 'voltage_max', 'battery_min', 'battery_max', 'battery_percentage_min',
+        'battery_percentage_max', 'amperage_max', 'amperage', 'power_max',
         'power', 'date', 'read_at'];
 
     /**
@@ -50,6 +50,8 @@ class HardwarePowerGeneratorToday extends BaseModel
             'amperage_max' => $request->get('today_energy_amperage_max'),
             'power' => $request->get('today_energy_power'),
             'power_max' => $request->get('today_energy_power_max'),
+            'battery_percentage_min' => $request->get('battery_percentage'),
+            'battery_percentage_max' => $request->get('battery_percentage'),
         ];
 
         return new self(array_filter($data, 'strlen'));
@@ -69,6 +71,7 @@ class HardwarePowerGeneratorToday extends BaseModel
         $voltage = $request->get('energy_voltage');
         $batteryMin = $request->get('battery_min_voltage') ?? $request->get('battery_voltage');
         $batteryMax = $request->get('battery_max_voltage') ?? $request->get('battery_voltage');
+        $batteryPercentage = $request->get('battery_percentage');
 
         $data = [
             'date' => $request->get('date'),
@@ -79,6 +82,8 @@ class HardwarePowerGeneratorToday extends BaseModel
             'voltage_max' => $voltage >= $this->voltage_max ? $voltage : $this->voltage_max,
             'battery_min' => $batteryMin <= $this->battery_min ? $batteryMin : $this->battery_min,
             'battery_max' => $batteryMax >= $this->battery_max ? $batteryMax : $this->battery_max,
+            'battery_percentage_min' => $batteryPercentage <= $this->battery_percentage_min ? $batteryPercentage : $this->battery_percentage_min,
+            'battery_percentage_max' => $batteryPercentage >= $this->battery_percentage_max ? $batteryPercentage : $this->battery_percentage_max,
             'amperage' => $request->get('today_energy_amperage'),
             'amperage_max' => $request->get('today_energy_amperage_max'),
             'power' => $request->get('today_energy_power'),

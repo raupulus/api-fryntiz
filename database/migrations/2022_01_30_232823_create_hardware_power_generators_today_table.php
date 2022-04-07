@@ -58,6 +58,14 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje máximo de batería (V)');
+            $table->integer('battery_percentage_min')
+                ->nullable()
+                ->default(0)
+                ->comment('Porcentaje de batería mínimo (%)');
+            $table->integer('battery_percentage_max')
+                ->nullable()
+                ->default(0)
+                ->comment('Porcentaje de batería máximo (%)');
             $table->decimal('amperage', 10, 2)
                 ->nullable()
                 ->default(0)

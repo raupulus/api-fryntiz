@@ -23,7 +23,8 @@ class HardwarePowerLoadToday extends BaseModel
     protected $fillable = ['hardware_device_id', 'fan_min', 'fan_max',
         'temperature_min', 'temperature_max', 'voltage_min', 'voltage_max',
         'amperage_min', 'amperage_max', 'amperage', 'power_min', 'power_max',
-        'power', 'battery_min', 'battery_max', 'date', 'read_at'];
+        'power', 'battery_min', 'battery_max', 'battery_percentage_min',
+        'battery_percentage_max', 'date', 'read_at'];
 
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
@@ -55,6 +56,8 @@ class HardwarePowerLoadToday extends BaseModel
             'voltage_max' => $voltage,
             'battery_min' => $request->get('battery_min_voltage') ?? $battery,
             'battery_max' => $request->get('battery_max_voltage') ?? $battery,
+            'battery_percentage_min' => $request->get('battery_percentage'),
+            'battery_percentage_max' => $request->get('battery_percentage'),
             'amperage_min' => $amperage,
             'amperage_max' => $request->get('today_load_amperage_max') ?? $amperage,
             'amperage' => $request->get('today_load_amperage'),
@@ -116,6 +119,7 @@ class HardwarePowerLoadToday extends BaseModel
         $batteryMin = $batteryMinCheck < $this->battery_min_voltage ? $batteryMinCheck : $this->battery_min_voltage;
         $batteryMaxCheck = $request->get('battery_max_voltage') ?? $battery;
         $batteryMax = $batteryMaxCheck > $this->battery_max_voltage ? $batteryMaxCheck : $this->battery_max_voltage;
+        $batteryPercentage = $request->get('battery_percentage');
 
         $data = [
             'read_at' => $request->get('read_at') ?? Carbon::now(),
@@ -127,6 +131,8 @@ class HardwarePowerLoadToday extends BaseModel
             'voltage_max' => $voltageMax,
             'battery_min' => $batteryMin,
             'battery_max' => $batteryMax,
+            'battery_percentage_min' => $batteryPercentage <= $this->battery_percentage_min ? $batteryPercentage : $this->battery_percentage_min,
+            'battery_percentage_max' => $batteryPercentage >= $this->battery_percentage_max ? $batteryPercentage : $this->battery_percentage_max,
             'amperage_min' => $amperageMin,
             'amperage_max' => $amperageMax,
             'amperage' => $amperageTotal,
