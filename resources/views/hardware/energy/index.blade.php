@@ -277,8 +277,7 @@
                                             role="tabpanel"
                                             aria-labelledby="resume-tab-{{$hardware->id}}">
                                             <p class="text-left text-sm text-gray-500 dark:text-gray-400">
-                                                {{Str::limit
-                                                ($hardware->description, 400)}}
+                                                {{Str::limit($hardware->description, 400)}}
                                             </p>
                                         </div>
 

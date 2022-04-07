@@ -55,9 +55,9 @@ class HardwarePowerGeneratorHistorical extends BaseModel
     public function updateModel($request)
     {
         $data = [
-            'days_operating' => $request->get('days_operating'),
-            'number_battery_over_discharges' => $request->get('number_battery_over_discharges'),
-            'number_battery_full_charges' => $request->get('number_battery_full_charges'),
+            'days_operating' => $request->get('days_operating') ?? $this->days_operating,
+            'number_battery_over_discharges' => $request->get('number_battery_over_discharges') ?? $this->number_battery_over_discharges,
+            'number_battery_full_charges' => $request->get('number_battery_full_charges') ?? $this->number_battery_full_charges,
             'amperage' => $request->get('historical_energy_amperage') ?? $this->amperage,
             'power' => $request->get('historical_energy_power') ?? $this->power,
             'read_at' => $request->get('read_at'),

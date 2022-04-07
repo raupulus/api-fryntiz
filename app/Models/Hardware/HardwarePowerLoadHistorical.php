@@ -130,6 +130,7 @@ class HardwarePowerLoadHistorical extends BaseModel
             'power_min' => $powerMin,
             'power_max' => $powerMax,
             'power' => $powerTotal,
+            'days_operating' => $request->get('days_operating') ?? $this->days_operating,
         ];
 
         $this->fill(array_filter($data, 'strlen'));
