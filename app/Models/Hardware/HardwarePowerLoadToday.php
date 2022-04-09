@@ -80,11 +80,11 @@ class HardwarePowerLoadToday extends BaseModel
     public function updateModel($request)
     {
         $fan = $request->get('load_fan');
-        $fanMin = $fan < $this->fan_min ? $fan : $this->fan_min;
-        $fanMax = $fan > $this->fan_max ? $fan : $this->fan_max;
+        $fanMin = ($fan < $this->fan_min) ? $fan : $this->fan_min;
+        $fanMax = ($fan > $this->fan_max) ? $fan : $this->fan_max;
         $temperature = $request->get('temperature');
-        $temperatureMin = $temperature < $this->temperature_min ? $temperature : $this->temperature_min;
-        $temperatureMax = $temperature > $this->temperature_max ? $temperature : $this->temperature_max;
+        $temperatureMin = ($temperature < $this->temperature_min) ? $temperature : $this->temperature_min;
+        $temperatureMax = ($temperature > $this->temperature_max) ? $temperature : $this->temperature_max;
 
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');
         $amperage = $request->get('amperage') ?? $request->get('load_amperage');
@@ -104,21 +104,21 @@ class HardwarePowerLoadToday extends BaseModel
         }
 
         $amperageTotal = $request->get('today_load_amperage') ?? $this->amperage;
-        $amperageMin = $amperage < $this->amperage_min ? $amperage : $this->amperage_min;
+        $amperageMin = ($amperage < $this->amperage_min) ? $amperage : $this->amperage_min;
         $amperageMaxCheck = $request->get('today_load_amperage_max') ?? $amperage;
-        $amperageMax = $amperageMaxCheck > $this->amperage_max ? $amperageMaxCheck : $this->amperage_max;
+        $amperageMax = ($amperageMaxCheck > $this->amperage_max) ? $amperageMaxCheck : $this->amperage_max;
 
         $powerTotal = $request->get('today_load_power') ?? $this->power;
-        $powerMin = $power < $this->power_min ? $power : $this->power_min;
-        $powerMax = $power > $this->power_max ? $power : $this->power_max;
+        $powerMin = ($power < $this->power_min) ? $power : $this->power_min;
+        $powerMax = ($power > $this->power_max) ? $power : $this->power_max;
 
-        $voltageMin = $voltage < $this->voltage_min ? $voltage : $this->voltage_min;
-        $voltageMax = $voltage > $this->voltage_max ? $voltage : $this->voltage_max;
+        $voltageMin = ($voltage < $this->voltage_min) ? $voltage : $this->voltage_min;
+        $voltageMax = ($voltage > $this->voltage_max) ? $voltage : $this->voltage_max;
 
         $batteryMinCheck = $request->get('battery_min_voltage') ?? $battery;
-        $batteryMin = $batteryMinCheck < $this->battery_min_voltage ? $batteryMinCheck : $this->battery_min_voltage;
+        $batteryMin = ($batteryMinCheck < $this->battery_min_voltage) ? $batteryMinCheck : $this->battery_min_voltage;
         $batteryMaxCheck = $request->get('battery_max_voltage') ?? $battery;
-        $batteryMax = $batteryMaxCheck > $this->battery_max_voltage ? $batteryMaxCheck : $this->battery_max_voltage;
+        $batteryMax = ($batteryMaxCheck > $this->battery_max_voltage) ? $batteryMaxCheck : $this->battery_max_voltage;
         $batteryPercentage = $request->get('battery_percentage');
 
         $data = [
@@ -131,8 +131,8 @@ class HardwarePowerLoadToday extends BaseModel
             'voltage_max' => $voltageMax,
             'battery_min' => $batteryMin,
             'battery_max' => $batteryMax,
-            'battery_percentage_min' => $batteryPercentage <= $this->battery_percentage_min ? $batteryPercentage : $this->battery_percentage_min,
-            'battery_percentage_max' => $batteryPercentage >= $this->battery_percentage_max ? $batteryPercentage : $this->battery_percentage_max,
+            'battery_percentage_min' => ($batteryPercentage <= $this->battery_percentage_min) ? $batteryPercentage : $this->battery_percentage_min,
+            'battery_percentage_max' => ($batteryPercentage >= $this->battery_percentage_max) ? $batteryPercentage : $this->battery_percentage_max,
             'amperage_min' => $amperageMin,
             'amperage_max' => $amperageMax,
             'amperage' => $amperageTotal,
