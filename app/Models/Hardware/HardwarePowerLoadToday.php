@@ -135,10 +135,10 @@ class HardwarePowerLoadToday extends BaseModel
             'battery_percentage_max' => ($batteryPercentage >= $this->battery_percentage_max) ? $batteryPercentage : $this->battery_percentage_max,
             'amperage_min' => $amperageMin,
             'amperage_max' => $amperageMax,
-            'amperage' => $amperageTotal,
+            'amperage' => ($amperageTotal > $this->amperage) ? $amperageTotal : $this->amperage,
             'power_min' => $powerMin,
             'power_max' => $powerMax,
-            'power' => $powerTotal,
+            'power' => ($powerTotal > $this->power) ? $powerTotal : $this->power,
         ];
 
         $this->fill(array_filter($data, 'strlen'));
