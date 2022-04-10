@@ -18,9 +18,11 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumProjectController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
-use App\Http\Controllers\Dashboard\LanguageController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\Hardware\HardwareDeviceController;
+use App\Http\Controllers\Dashboard\LanguageController;
+use App\Http\Controllers\Dashboard\Users\UserController;
+use Illuminate\Support\Facades\Route;
+
 ############################################################
 ##                      Dashboard                         ##
 ############################################################
@@ -30,6 +32,18 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
     })->name('dashboard.index');
 });
 
+############################################################
+##                      Usuarios                          ##
+############################################################
+Route::group(['prefix' => '/users', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [UserController::class, 'index'])
+            ->name('dashboard.users.index');
+    });
+
+############################################################
+##                      Hardware                          ##
+############################################################
 Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
     function () {
         Route::group(['prefix' => '/device', 'middleware' => ['auth', 'verified']],
@@ -71,20 +85,20 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
 ##                       Idiomas                          ##
 ############################################################
 Route::group(['prefix' => '/language', 'middleware' => ['auth', 'verified']],
-function () {
-    Route::get('/index', [LanguageController::class, 'index'])
-        ->name('dashboard.language.index');
-    Route::get('/create', [LanguageController::class, 'create'])
-        ->name('dashboard.language.create');
-    Route::post('/store', [LanguageController::class, 'store'])
-        ->name('dashboard.language.store');
-    Route::get('/edit/{id}', [LanguageController::class, 'edit'])
-        ->name('dashboard.language.edit');
-    Route::post('/update/{id}', [LanguageController::class, 'update'])
-        ->name('dashboard.language.update');
-    Route::post('/destroy', [LanguageController::class, 'destroy'])
-        ->name('dashboard.language.destroy');
-});
+    function () {
+        Route::get('/index', [LanguageController::class, 'index'])
+            ->name('dashboard.language.index');
+        Route::get('/create', [LanguageController::class, 'create'])
+            ->name('dashboard.language.create');
+        Route::post('/store', [LanguageController::class, 'store'])
+            ->name('dashboard.language.store');
+        Route::get('/edit/{id}', [LanguageController::class, 'edit'])
+            ->name('dashboard.language.edit');
+        Route::post('/update/{id}', [LanguageController::class, 'update'])
+            ->name('dashboard.language.update');
+        Route::post('/destroy', [LanguageController::class, 'destroy'])
+            ->name('dashboard.language.destroy');
+    });
 
 ############################################################
 ##                     Curriculum                         ##
@@ -107,7 +121,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.cv.destroy');
 
         ## Tipos de repositorios disponibles.
-        Route::group(['prefix' => '/repository-available-type'],  function () {
+        Route::group(['prefix' => '/repository-available-type'], function () {
             Route::get('/index',
                 [CurriculumAvailableRepositoryTypeController::class, 'index'])
                 ->name('dashboard.cv.repository_available_type.index');
@@ -126,8 +140,8 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Repositorios
-        Route::group(['prefix' => '/repository'],  function () {
-            Route::get('/index/{id}',  [CurriculumRepositoryController::class, 'index'])
+        Route::group(['prefix' => '/repository'], function () {
+            Route::get('/index/{id}', [CurriculumRepositoryController::class, 'index'])
                 ->name('dashboard.cv.repository.index');
             Route::get('/create', [CurriculumRepositoryController::class, 'create'])
                 ->name('dashboard.cv.repository.create');
@@ -142,8 +156,8 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Servicios
-        Route::group(['prefix' => '/service'],  function () {
-            Route::get('/index/{id}',  [CurriculumServiceController::class, 'index'])
+        Route::group(['prefix' => '/service'], function () {
+            Route::get('/index/{id}', [CurriculumServiceController::class, 'index'])
                 ->name('dashboard.cv.service.index');
             Route::get('/create', [CurriculumServiceController::class, 'create'])
                 ->name('dashboard.cv.service.create');
@@ -158,7 +172,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Formación Académica Complementaria
-        Route::group(['prefix' => '/academic-complementary'],  function () {
+        Route::group(['prefix' => '/academic-complementary'], function () {
             Route::get('/index/{id}', [CurriculumAcademicComplementaryController::class, 'index'])
                 ->name('dashboard.cv.academic_complementary.index');
             Route::get('/create', [CurriculumAcademicComplementaryController::class, 'create'])
@@ -174,8 +188,8 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Formación Académica Online
-        Route::group(['prefix' => '/academic-complementary-online'],  function () {
-            Route::get('/index/{id}',  [CurriculumAcademicComplementaryOnlineController::class, 'index'])
+        Route::group(['prefix' => '/academic-complementary-online'], function () {
+            Route::get('/index/{id}', [CurriculumAcademicComplementaryOnlineController::class, 'index'])
                 ->name('dashboard.cv.academic_complementary_online.index');
             Route::get('/create', [CurriculumAcademicComplementaryOnlineController::class, 'create'])
                 ->name('dashboard.cv.academic_complementary_online.create');
@@ -190,8 +204,8 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Formación Académica
-        Route::group(['prefix' => '/academic-training'],  function () {
-            Route::get('/index/{id}',  [CurriculumAcademicTrainingController::class,
+        Route::group(['prefix' => '/academic-training'], function () {
+            Route::get('/index/{id}', [CurriculumAcademicTrainingController::class,
                 'index'])
                 ->name('dashboard.cv.academic_training.index');
             Route::get('/create', [CurriculumAcademicTrainingController::class, 'create'])
@@ -207,8 +221,8 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Colaboraciones
-        Route::group(['prefix' => '/collaboration'],  function () {
-            Route::get('/index/{id}',  [CurriculumCollaborationController::class, 'index'])
+        Route::group(['prefix' => '/collaboration'], function () {
+            Route::get('/index/{id}', [CurriculumCollaborationController::class, 'index'])
                 ->name('dashboard.cv.collaboration.index');
             Route::get('/create', [CurriculumCollaborationController::class, 'create'])
                 ->name('dashboard.cv.collaboration.create');
@@ -223,8 +237,8 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Experiencia Laboral Acreditada
-        Route::group(['prefix' => '/experience-accredited'],  function () {
-            Route::get('/index/{id}',  [CurriculumExperienceAccreditedController::class, 'index'])
+        Route::group(['prefix' => '/experience-accredited'], function () {
+            Route::get('/index/{id}', [CurriculumExperienceAccreditedController::class, 'index'])
                 ->name('dashboard.cv.experience_accredited.index');
             Route::get('/create', [CurriculumExperienceAccreditedController::class, 'create'])
                 ->name('dashboard.cv.experience_accredited.create');
@@ -239,7 +253,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Experiencia Laboral Adicional
-        Route::group(['prefix' => '/experience-additional'],  function () {
+        Route::group(['prefix' => '/experience-additional'], function () {
             Route::get('/index/{id}', [CurriculumExperienceAdditionalController::class, 'index'])
                 ->name('dashboard.cv.experience_additional.index');
             Route::get('/create', [CurriculumExperienceAdditionalController::class, 'create'])
@@ -255,7 +269,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Experiencia Laboral No Acreditada
-        Route::group(['prefix' => '/experience-no-accredited'],  function () {
+        Route::group(['prefix' => '/experience-no-accredited'], function () {
             Route::get('/index/{id}', [CurriculumExperienceNoAccreditedController::class, 'index'])
                 ->name('dashboard.cv.experience_no_accredited.index');
             Route::get('/create', [CurriculumExperienceNoAccreditedController::class, 'create'])
@@ -271,7 +285,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Experiencia Laboral Otros
-        Route::group(['prefix' => '/experience-other'],  function () {
+        Route::group(['prefix' => '/experience-other'], function () {
             Route::get('/index/{id}', [CurriculumExperienceOtherController::class, 'index'])
                 ->name('dashboard.cv.experience_other.index');
             Route::get('/create', [CurriculumExperienceOtherController::class, 'create'])
@@ -287,7 +301,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Experiencia Laboral Autoempleado (Autónomo o freelance)
-        Route::group(['prefix' => '/experience-selfemployed'],  function () {
+        Route::group(['prefix' => '/experience-selfemployed'], function () {
             Route::get('/index/{id}', [CurriculumExperienceSelfEmployedController::class, 'index'])
                 ->name('dashboard.cv.experience_selfemployed.index');
             Route::get('/create', [CurriculumExperienceSelfEmployedController::class, 'create'])
@@ -303,7 +317,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Aficciones
-        Route::group(['prefix' => '/hobby'],  function () {
+        Route::group(['prefix' => '/hobby'], function () {
             Route::get('/index/{id}', [CurriculumHobbyController::class, 'index'])
                 ->name('dashboard.cv.hobby.index');
             Route::get('/create', [CurriculumHobbyController::class, 'create'])
@@ -319,7 +333,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Trabajos
-        Route::group(['prefix' => '/job'],  function () {
+        Route::group(['prefix' => '/job'], function () {
             Route::get('/index/{id}', [CurriculumJobController::class, 'index'])
                 ->name('dashboard.cv.job.index');
             Route::get('/create', [CurriculumJobController::class, 'create'])
@@ -335,7 +349,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Proyectos
-        Route::group(['prefix' => '/project'],  function () {
+        Route::group(['prefix' => '/project'], function () {
             Route::get('/index/{id}', [CurriculumProjectController::class, 'index'])
                 ->name('dashboard.cv.project.index');
             Route::get('/create', [CurriculumProjectController::class, 'create'])
@@ -351,7 +365,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         });
 
         ## Habilidades
-        Route::group(['prefix' => '/skill'],  function () {
+        Route::group(['prefix' => '/skill'], function () {
             Route::get('/index/{id}', [CurriculumSkillController::class, 'index'])
                 ->name('dashboard.cv.skill.index');
             Route::get('/create', [CurriculumSkillController::class, 'create'])

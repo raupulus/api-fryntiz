@@ -347,7 +347,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Ver Usuarios',
-                    'url' => '#',
+                    'route' => 'dashboard.users.index',
                 ],
                 [
                     'text' => 'Añadir Usuario',
