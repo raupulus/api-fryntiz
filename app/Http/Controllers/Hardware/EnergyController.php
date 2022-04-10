@@ -111,7 +111,7 @@ class EnergyController extends Controller
             [
                 'title' => 'Generado',
                 'value' => $generator->historical,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'kw'
             ], [
                 'title' => 'Consumido',
@@ -121,12 +121,12 @@ class EnergyController extends Controller
             ], [
                 'title' => 'Días Operando',
                 'value' => $generator->days_operating,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/binary-code-numbers-on-monitor-screen.svg'),
                 'unit' => 'd'
             ], [
                 'title' => 'Cargas',
                 'value' => $generator->battery_full_charge,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/battery-status.svg'),
                 'unit' => ''
             ],
 
@@ -136,7 +136,7 @@ class EnergyController extends Controller
             [
                 'title' => 'Generado',
                 'value' => $generator->today,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'W'
             ], [
                 'title' => 'Consumido',
@@ -146,7 +146,7 @@ class EnergyController extends Controller
             ], [
                 'title' => 'Generado',
                 'value' => $generator->today_amperage,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'ah'
             ], [
                 'title' => 'Consumido',
@@ -160,7 +160,7 @@ class EnergyController extends Controller
             [
                 'title' => 'Generando',
                 'value' => $generator->current,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'W'
             ], [
                 'title' => 'Consumiendo',
@@ -170,7 +170,7 @@ class EnergyController extends Controller
             ], [
                 'title' => 'Generando',
                 'value' => $generator->current_amperage,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'ah'
             ], [
                 'title' => 'Consumiendo',
@@ -184,23 +184,23 @@ class EnergyController extends Controller
             [
                 'title' => 'Bat. Charge',
                 'value' => $generator->battery_percentage ?? 0,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/battery-status.svg'),
                 'unit' => '%',
                 'list' => ''
             ], [
                 'title' => 'Bat. Load',
                 'value' => $load->battery_percentage ?? 0,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/battery-status.svg'),
                 'unit' => '%'
             ], [
                 'title' => 'Luz Calle',
                 'value' => $generator->max_light,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/day-moon.svg'),
                 'unit' => '%'
             ], [
                 'title' => 'Max. Temp',
                 'value' => ($load->max_temp > $generator->max_temp) ? $load->max_temp : $generator->max_temp,
-                'image' => asset('images/icons/energy-green.svg'),
+                'image' => asset('images/icons/temperature.svg'),
                 'unit' => 'ºC'
             ],
         ];
