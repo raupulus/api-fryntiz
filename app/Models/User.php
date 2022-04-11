@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Traits\ImageTrait;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use RoleHelper;
 use function asset;
 
 /**
@@ -23,6 +26,7 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use ImageTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -192,4 +196,96 @@ class User extends Authenticatable
         return $this;
     }
 
+    /**
+     * Marca al usuario actual como activo o inactivo según el estado actual.
+     *
+     * @return bool|null
+     */
+    public function toggleActive()
+    {
+        ## Controlo que exista usuario y además sea distinto al role superadmin.
+        if ($this->role_id == 1) {
+            return null;
+        }
+
+        $this->deleted_at = $this->deleted_at ? null : Carbon::now();
+
+        return $this->save();
+    }
+
+    /**
+     * Obtiene todos los modelos de la base de datos filtrando por roles.
+     *
+     * @param  array|mixed  $columns
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\App\Models\User[]
+     */
+    public static function all($columns = ['*'])
+    {
+        $users = parent::all();
+
+        ## Usuarios Activos que según el role del actual puede ver.
+        if (RoleHelper::isSuperAdmin()) {
+            return $users;
+        } else if (RoleHelper::isAdmin()) {
+            return $users->whereNotIn('role_id', [1]);
+        }
+
+        return $users->whereNotIn('role_id', [1, 2]);
+    }
+
+    /**
+     * Devuelve todos los usuarios activos de la plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Foundation\Auth\User[]
+     */
+    public static function getAllActive()
+    {
+        return self::whereNull('deleted_at')->get();
+    }
+
+    /**
+     * Devuelve la cantidad de usuarios activos de la plataforma.
+     *
+     * @return int
+     */
+    public static function countActive()
+    {
+        return self::whereNull('deleted_at')->count() ?? 0;
+    }
+
+    /**
+     * Devuelve todos los usuarios inactivos de la plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Foundation\Auth\User[]
+     */
+    public static function getAllInactive()
+    {
+        return self::where('deleted_at')->get();
+    }
+
+    /**
+     * Devuelve la cantidad de usuarios activos de la plataforma.
+     *
+     * @return int
+     */
+    public static function countInactive()
+    {
+        return self::where('deleted_at')->count() ?? 0;
+    }
+
+    /**
+     * Devuelve la cantidad de usuarios nuevos este mes.
+     *
+     * @return int
+     */
+    public static function countNewInThisMonth()
+    {
+        return self::whereBetween('created_at',
+            [
+                Carbon::now()->subMonth()->format('Y-m-d H:i:s'),
+                Carbon::now()->format('Y-m-d H:i:s'),
+            ]
+        )->count();
+    }
 }
