@@ -27,9 +27,11 @@
                     {{ $stat['value'] }}{{ $stat['unit'] }}
                 </span>
 
+                {{--
                 <span class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
                     +0.0%
                 </span>
+                --}}
             </div>
 
             <div>
