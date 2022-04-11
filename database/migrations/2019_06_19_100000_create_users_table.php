@@ -53,6 +53,7 @@ class CreateUsersTable extends Migration
             $table->text('two_factor_recovery_codes')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
