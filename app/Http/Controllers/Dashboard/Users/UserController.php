@@ -33,4 +33,37 @@ class UserController extends Controller
             'n_users_this_month' => $n_users_this_month,
         ]);
     }
+
+    public function show(User $user)
+    {
+        return view('dashboard.users.show')->with([
+            'user' => $user,
+        ]);
+    }
+
+    public function create()
+    {
+        return view('dashboard.users.add-edit');
+    }
+
+    public function edit(User $user)
+    {
+        return view('dashboard.users.add-edit')->with([
+            'user' => $user,
+        ]);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $user->update($request->all());
+
+        return redirect()->route('dashboard.users.show', $user);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return redirect()->route('dashboard.users.index');
+    }
 }

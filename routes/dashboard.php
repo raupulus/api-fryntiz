@@ -39,6 +39,18 @@ Route::group(['prefix' => '/users', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [UserController::class, 'index'])
             ->name('dashboard.users.index');
+        Route::get('/show', [UserController::class, 'show'])
+            ->name('dashboard.users.show');
+        Route::get('/create', [UserController::class, 'create'])
+            ->name('dashboard.users.create');
+        Route::post('/store', [UserController::class, 'store'])
+            ->name('dashboard.users.store');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])
+            ->name('dashboard.users.edit');
+        Route::match(['put', 'patch'], '/update/{device}', [UserController::class, 'update'])
+            ->name('dashboard.users.update');
+        Route::post('/destroy/{user}', [UserController::class, 'destroy'])
+            ->name('dashboard.users.destroy');
     });
 
 ############################################################
