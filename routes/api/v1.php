@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\Auth\V1\LoginController;
 use App\Http\Controllers\Api\Auth\V1\RegisterController;
 use App\Http\Controllers\Api\User\V1\UserController;
+use App\Models\CV\CurriculumProject;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,46 +81,56 @@ Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function (
 ##                   Plataformas
 ######################################################
 Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () {
-    Route::post('/info', function () {
+    Route::post('{slug}/info', function () {
         return response()->json([
             'platforms' => [
-                [
-                    'name' => 'My Api',
-                    'url' => 'https://api.fryntiz.dev',
-                    'icon' => ''
+                'title' => 'Mis Plataformas',
+                'description' => 'Listado de plataformas',
+                'elements' => [
+                    [
+                        'slug' => 'api-fryntiz',
+                        'name' => 'My Api',
+                        'url' => 'https://api.fryntiz.dev',
+                        'icon' => ''
 
-                ],
-                [
-                    'name' => 'Curriculum',
-                    'url' => 'https://curriculum.fryntiz.dev',
-                    'icon' => ''
+                    ],
+                    [
+                        'slug' => 'curriculum-vitae',
+                        'name' => 'Curriculum',
+                        'url' => 'https://curriculum.fryntiz.es',
+                        'icon' => ''
 
-                ],
-                [
-                    'name' => 'La Guía Linux',
-                    'url' => 'https://laguialinux.es',
-                    'icon' => ''
+                    ],
+                    [
+                        'slug' => 'la-guia-linux',
+                        'name' => 'La Guía Linux',
+                        'url' => 'https://laguialinux.es',
+                        'icon' => ''
 
-                ],
+                    ],
+                ]
             ],
             'technologies' => [
                 'vue',
                 'tailwind'
             ],
             'resources' => [
+                'title' => 'Recursos',
+                'description' => 'Listado de recursos',
+                'elements' => [
+                    [
+                        'name' => 'Gitlab',
+                        'url' => 'https://gitlab.com/fryntiz/www.fryntiz.es',
+                        'icon' => ''
 
-                [
-                    'name' => 'Gitlab',
-                    'url' => 'https://gitlab.com/fryntiz/www.fryntiz.es',
-                    'icon' => ''
+                    ],
+                    [
+                        'name' => 'Github',
+                        'url' => 'https://github.com/fryntiz/www.fryntiz.es',
+                        'icon' => ''
 
-                ],
-                [
-                    'name' => 'Github',
-                    'url' => 'https://github.com/fryntiz/www.fryntiz.es',
-                    'icon' => ''
-
-                ],
+                    ],
+                ]
             ],
             'pages' => [
                 [
@@ -131,11 +143,13 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () 
                 ],
             ],
             'message' => 'Hola soy un mensaje de prueba',
-            'name' => 'Laravel',
-            'version' => '8.x',
-            'author' => 'Taylor Otwell',
+            'name' => 'Fryntiz',
+            'version' => 1.0,
+            'author' => 'Raúl Caro Pastorino',
         ]);
     });
+
+
 });
 
 /**
