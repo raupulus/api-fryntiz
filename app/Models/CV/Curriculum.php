@@ -18,6 +18,16 @@ class Curriculum extends Model
     ];
 
     /**
+     * Relación con todos los proyectos asociados al curriculum.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    /**
      * Relación con la imagen asociada al curriculum.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
