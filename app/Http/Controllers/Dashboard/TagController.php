@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use function view;
 
 class TagController extends Controller
 {
@@ -14,7 +16,11 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        $tags = Tag::all();
+
+        return view('dashboard.tags.index')->with([
+            'tags' => $tags,
+        ]);
     }
 
     /**
@@ -24,7 +30,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.tags.add-edit');
     }
 
     /**
@@ -57,7 +63,7 @@ class TagController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('dashboard.tags.add-edit');
     }
 
     /**
