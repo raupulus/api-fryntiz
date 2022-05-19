@@ -264,6 +264,28 @@ return [
             'label' => 'test',
             'label_color' => 'danger'
         ],
+        ['header' => 'Categorías'],
+        [
+            'text' => 'Ver',
+            'route' => 'dashboard.category.index',
+            'icon' => 'far fa-fw fa-file',
+        ],
+        [
+            'text' => 'Nueva',
+            'route' => 'dashboard.category.create',
+            'icon' => 'far fa-fw fa-plus',
+        ],
+        ['header' => 'Etiquetas'],
+        [
+            'text' => 'Ver',
+            'route' => 'dashboard.tag.index',
+            'icon' => 'far fa-fw fa-file',
+        ],
+        [
+            'text' => 'Nueva',
+            'route' => 'dashboard.tag.create',
+            'icon' => 'far fa-fw fa-plus',
+        ],
         ['header' => 'Contenido'],
         [
             'text' => 'Todos',

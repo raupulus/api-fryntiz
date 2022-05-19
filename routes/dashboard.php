@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\Content\ContentController;
 use App\Http\Controllers\Dashboard\CurriculumController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryController;
@@ -31,6 +32,25 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
         return view('dashboard.index');
     })->name('dashboard.index');
 });
+
+############################################################
+##                     Categorías                         ##
+############################################################
+Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [CategoryController::class, 'index'])
+            ->name('dashboard.category.index');
+        Route::get('/create', [CategoryController::class, 'create'])
+            ->name('dashboard.category.create');
+        Route::post('/store', [CategoryController::class, 'store'])
+            ->name('dashboard.category.store');
+        Route::get('/{category}/edit', [CategoryController::class, 'edit'])
+            ->name('dashboard.users.edit');
+        Route::match(['put', 'patch'], '/update/{category}', [CategoryController::class, 'update'])
+            ->name('dashboard.category.update');
+        Route::post('/destroy/{category}', [CategoryController::class, 'destroy'])
+            ->name('dashboard.category.destroy');
+    });
 
 ############################################################
 ##                      Usuarios                          ##
