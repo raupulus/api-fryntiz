@@ -162,7 +162,8 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () 
                     'title' => "Título? Poner sobre imagen?",
                     'description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis porta dui. Ut eu iaculis massa. Sed ornare ligula lacus, quis iaculis dui porta volutpat. In sit amet posuere magna..",
                     'image' => "https://source.unsplash.com/collection/1346951/1000x500?sig=1",
-                    'tags' => ["Laravel", "PHP"],
+                    'tags' => ["smart plant", "solar"],
+                    'categories' => ['Laravel', 'PHP'],
                     'links' => [
                         [
                             'type' => "twitter",
@@ -189,7 +190,8 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () 
                     'title' => "Título2? Poner sobre imagen?",
                     'description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis porta dui. Ut eu iaculis massa. Sed ornare ligula lacus, quis iaculis dui porta volutpat. In sit amet posuere magna..",
                     'image' => "https://source.unsplash.com/collection/1346951/1000x500?sig=1",
-                    'tags' => ["Laravel", "PHP"],
+                    'tags' => ["smart plant", "solar"],
+                    'categories' => ['Laravel', 'PHP'],
                     'links' => [
                         [
                             'type' => "twitter",
@@ -265,6 +267,7 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () 
             $projects->where('category', $category);
         }
 
+        // TODO → Buscar también por cadena en tags y descripción
         if ($search) {
             $projects->where('name', 'like', "%$search%");
         }
