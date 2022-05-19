@@ -21,6 +21,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
 use App\Http\Controllers\Dashboard\Hardware\HardwareDeviceController;
 use App\Http\Controllers\Dashboard\LanguageController;
+use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,25 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
 });
 
 ############################################################
+##                     Etiquetas                          ##
+############################################################
+Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [TagController::class, 'index'])
+            ->name('dashboard.tag.index');
+        Route::get('/create', [TagController::class, 'create'])
+            ->name('dashboard.tag.create');
+        Route::post('/store', [TagController::class, 'store'])
+            ->name('dashboard.tag.store');
+        Route::get('/{tag}/edit', [TagController::class, 'edit'])
+            ->name('dashboard.tag.edit');
+        Route::match(['put', 'patch'], '/update/{tag}', [TagController::class, 'update'])
+            ->name('dashboard.tag.update');
+        Route::post('/destroy/{tag}', [TagController::class, 'destroy'])
+            ->name('dashboard.tag.destroy');
+    });
+
+############################################################
 ##                     Categorías                         ##
 ############################################################
 Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
@@ -45,7 +65,7 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
         Route::post('/store', [CategoryController::class, 'store'])
             ->name('dashboard.category.store');
         Route::get('/{category}/edit', [CategoryController::class, 'edit'])
-            ->name('dashboard.users.edit');
+            ->name('dashboard.category.edit');
         Route::match(['put', 'patch'], '/update/{category}', [CategoryController::class, 'update'])
             ->name('dashboard.category.update');
         Route::post('/destroy/{category}', [CategoryController::class, 'destroy'])
