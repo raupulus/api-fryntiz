@@ -268,23 +268,23 @@ return [
         [
             'text' => 'Ver',
             'route' => 'dashboard.category.index',
-            'icon' => 'far fa-fw fa-file',
+            'icon' => 'far fa-eye',
         ],
         [
             'text' => 'Nueva',
             'route' => 'dashboard.category.create',
-            'icon' => 'far fa-fw fa-plus',
+            'icon' => 'fa fa-plus',
         ],
         ['header' => 'Etiquetas'],
         [
             'text' => 'Ver',
             'route' => 'dashboard.tag.index',
-            'icon' => 'far fa-fw fa-file',
+            'icon' => 'far fa-eye',
         ],
         [
             'text' => 'Nueva',
             'route' => 'dashboard.tag.create',
-            'icon' => 'far fa-fw fa-plus',
+            'icon' => 'fa fa-plus',
         ],
         ['header' => 'Contenido'],
         [
@@ -295,7 +295,7 @@ return [
         [
             'text' => 'Nuevo',
             'route' => 'dashboard.content.create',
-            'icon' => 'far fa-fw fa-plus',
+            'icon' => 'fa fa-plus',
         ],
         [
             'text' => 'Categorías',
@@ -335,7 +335,7 @@ return [
                 ],
                 [
                     'text' => 'Nuevo',
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-plus',
                     'route' => 'dashboard.cv.create',
                 ],
                 [
@@ -356,7 +356,7 @@ return [
                 ],
                 [
                     'text' => 'Nuevo',
-                    'icon' => 'far fa-fw fa-file',
+                    'icon' => 'fa fa-plus',
                     'route' => 'dashboard.hardware.device.create',
                 ],
             ],
@@ -369,10 +369,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Ver Usuarios',
+                    'icon' => 'fa fa-eye',
                     'route' => 'dashboard.users.index',
                 ],
                 [
                     'text' => 'Añadir Usuario',
+                    'icon' => 'fa fa-plus',
                     'url' => '#',
                 ],
             ],
@@ -383,10 +385,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Ver Usuarios',
+                    'icon' => 'fa fa-eye',
                     'url' => '#',
                 ],
                 [
                     'text' => 'Añadir Usuario',
+                    'icon' => 'fa fa-plus',
                     'url' => '#',
                 ],
             ],
