@@ -51,7 +51,22 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.tag.update');
         Route::post('/destroy/{tag}', [TagController::class, 'destroy'])
             ->name('dashboard.tag.destroy');
-    });
+
+        Route::group(['prefix' => '/ajax'],
+            function () {
+                Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
+                    ->name('dashboard.tag.ajax.get.all');
+
+
+                Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
+                    ->name('dashboard.tag.ajax.table.get');
+
+                ## Actualiza campo en tabla
+                Route::match(['put', 'patch', 'post'], '/table/update',
+                    [TagController::class, 'ajaxTableActions'])
+                    ->name('dashboard.tag.ajax.table.update');
+            });
+});
 
 ############################################################
 ##                     Categorías                         ##
