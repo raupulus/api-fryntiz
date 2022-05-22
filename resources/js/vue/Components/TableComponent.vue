@@ -1,4 +1,4 @@
-<template>
+ <template>
     <div class="box-vue-table-component">
         <div>
             <table class="v-table">
@@ -9,13 +9,25 @@
                     <th scope="col" v-for="(head, key) of heads">
                         {{ head }}
                     </th>
+
+                    <th scope="col" v-if="actions && actions.length">
+                        Acciones
+                    </th>
                 </tr>
                 </thead>
 
                 <tbody>
-                <tr v-for="row in rows">
+                <tr v-for="row in rows" :data-id="row.id">
                     <td v-for="( cell, key ) of row"
                         v-html="getCellContent( cell, key )">
+                    </td>
+
+                    <td v-if="actions && actions.length">
+                        <span v-for="info of actions">
+                            <span :class="getClassByActionType(info.type)">
+                                {{info.name}}
+                            </span>
+                        </span>
                     </td>
                 </tr>
                 </tbody>
@@ -85,15 +97,37 @@ export default {
             type: String,
             required: true
         },
+        showId: { // Indica si muestra el ID en la tabla
+            type: Boolean,
+            default: false,
+            required: false
+        },
 
         elements: {
             type: Number,
             default: 10,
             required: false
+        },
+        editable: {
+            type: Boolean,
+            default: false,
+            required: false
+        },
+        actions: {
+            type: Array,
+            default: [],
+            required: false
+
         }
     },
 
     setup(props) {
+        // TODO → Cuando viene un id del servidor, usar
+
+
+
+        console.log(props.actions);
+
         const rows = ref([]);  // Columnas con los datos
         const heads = ref([]);  // Títulos para columnas
         const totalPages = ref(0);  // Cantidad total de páginas
@@ -104,6 +138,12 @@ export default {
         const showPages = ref([]);  // Lista con las páginas a mostrar
         const cellsInfo = ref([]);  // Información de las celdas
 
+        /**
+         * Obtiene la consulta para la página recibida.
+         *
+         * @param page
+         * @returns {Promise<any>}
+         */
         const getQuery = async (page) => {
 
             let csrfToken = document.head.querySelector('meta[name="csrf-token"]')
@@ -126,6 +166,20 @@ export default {
             }
             ).then((response) => response.json());
         };
+
+        /**
+         * Ejecuta una acción (eliminar, actualizar...)
+         *
+         * @param action Nombre de la acción
+         * @returns {Promise<void>}
+         */
+        /*
+        const executeAction = async (action) => {
+            if (props.actions && props.actions.length) {
+                let info = props.actions.find(ele => ele.name == action)
+            }
+        }
+        */
 
         /**
          * Procesa el cambio de página.
@@ -274,14 +328,14 @@ export default {
             });
  */
 
-            console.log(cellsInfo.value);
-            console.log(info, info ? info.type : null);
+            //console.log(cellsInfo.value);
+            //console.log(info, info ? info.type : null);
 
             //console.log(cellsInfo.value.keys);
 
 
-            console.log(field);
-            console.log(info ? info.type == 'icon' : null);
+            //console.log(field);
+            //console.log(info ? info.type == 'icon' : null);
 
                 if (info) {
                     switch (info.type) {
@@ -308,6 +362,19 @@ export default {
             console.log('Component mounted.');
         });
 
+        const getClassByActionType = (action) => {
+            switch(action) {
+                case 'delete':
+                    return 'btn-font btn-red';
+                case 'update':
+                    return 'btn-font btn-blue';
+                case 'show':
+                    return 'btn-font btn-yellow';
+                default:
+                    return 'btn-font btn-blue';
+            }
+        };
+
         return {
             rows: rows,
             heads: heads,
@@ -321,6 +388,7 @@ export default {
             cellsInfo: cellsInfo,
 
             changePage: changePage,
+            getClassByActionType: getClassByActionType,
         }
     }
 
@@ -489,6 +557,86 @@ export default {
     .v-table td:last-child {
         border-bottom: 0;
     }
+}
+
+
+
+/* Botones */
+
+
+.btn-blue {
+    margin: 2px;
+    box-shadow: 0px 10px 14px -7px #403c40;
+    background:linear-gradient(to bottom, #00056b 5%, #00044a 100%);
+    background-color:#00056b;
+    border-radius:8px;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+
+    padding:5px 12px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #3d768a;
+}
+.btn-blue:hover {
+    background:linear-gradient(to bottom, #00044a 5%, #00056b 100%);
+    background-color:#00044a;
+}
+.btn-blue:active {
+    position:relative;
+    top:1px;
+}
+
+.btn-red {
+    margin: 2px;
+    box-shadow: 0px 10px 14px -7px #403c40;
+    background:linear-gradient(to bottom, #ed2828 5%, #820000 100%);
+    background-color:#ed2828;
+    border-radius:8px;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+
+    padding:5px 12px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #3d768a;
+}
+.btn-red:hover {
+    background:linear-gradient(to bottom, #820000 5%, #ed2828 100%);
+    background-color:#820000;
+}
+.btn-red:active {
+    position:relative;
+    top:1px;
+}
+
+.btn-yellow {
+    margin: 2px;
+    box-shadow: 0px 10px 14px -7px #403c40;
+    background:linear-gradient(to bottom, #e6d461 5%, #b59126 100%);
+    background-color:#e6d461;
+    border-radius:8px;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+
+    padding:5px 12px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #3d768a;
+}
+.btn-yellow:hover {
+    background:linear-gradient(to bottom, #b59126 5%, #e6d461 100%);
+    background-color:#b59126;
+}
+.btn-yellow:active {
+    position:relative;
+    top:1px;
+}
+
+.btn-font {
+    font-family:Arial;
+    font-size:12px;
+    font-weight:bold;
 }
 
 </style>
