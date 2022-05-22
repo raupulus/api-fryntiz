@@ -25,11 +25,10 @@
 
         <div class="col-12">
 
-
-            {{--
-            <v-table-component title="titulo de la tabla"
-                               url="{{route('language.ajax.get.languages')}}" />
-                               --}}
+            <v-table-component title="Listado de Categorías"
+                               :editable="true"
+                               :actions='{!!\App\Models\Tag::getTableActionsInfo()->toJson(JSON_UNESCAPED_UNICODE)!!}'
+                               url="{{route('dashboard.tag.ajax.table.get')}}" />
 
 
             <div class="card">
