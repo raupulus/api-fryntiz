@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use JsonHelper;
+use function array_keys;
 use function view;
 
 class TagController extends Controller
@@ -87,5 +89,46 @@ class TagController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    ############################################################
+    ##                       AJAX                             ##
+    ############################################################
+
+    /**
+     * Devuelve todas las etiquetas.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function ajaxGetTags()
+    {
+        return JsonHelper::success(Tag::all());
+    }
+
+    /**
+     * Devuelve todas las etiquetas preparadas para mostrarlas en una tabla.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function ajaxTableGetQuery(Request $request)
+    {
+        $page = $request->json('page');
+        $size = $request->json('size');
+        $orderBy = $request->json('orderBy');
+        $orderDirection = $request->json('orderDirection');
+
+        $data = Tag::getTableQuery($page, $size, $orderBy, $orderDirection);
+
+        return JsonHelper::success([
+            'data' => $data,
+        ]);
+    }
+
+    public function ajaxTableActions(Request $request)
+    {
+
     }
 }
