@@ -390,13 +390,13 @@ export default {
         const getClassByActionType = (action) => {
             switch(action) {
                 case 'delete':
-                    return 'btn-font btn-red';
+                    return 'btn btn-red';
                 case 'update':
-                    return 'btn-font btn-blue';
+                    return 'btn btn-blue';
                 case 'show':
-                    return 'btn-font btn-yellow';
+                    return 'btn btn-green';
                 default:
-                    return 'btn-font btn-blue';
+                    return 'btn btn-orange';
             }
         };
 
@@ -651,86 +651,108 @@ export default {
 
 /* Botones */
 
-
-.btn-blue {
-    margin: 2px;
-    box-shadow: 0px 10px 14px -7px #403c40;
-    background: linear-gradient(to bottom, #00056b 5%, #00044a 100%);
-    background-color: #00056b;
-    border-radius: 8px;
-    display: inline-block;
-    cursor: pointer;
-    color: #ffffff;
-
-    padding: 5px 12px;
-    text-decoration: none;
-    text-shadow: 0px 1px 0px #3d768a;
-}
-
-.btn-blue:hover {
-    background: linear-gradient(to bottom, #00044a 5%, #00056b 100%);
-    background-color: #00044a;
-}
-
-.btn-blue:active {
+.btn {
     position: relative;
-    top: 1px;
-}
 
-.btn-red {
-    margin: 2px;
-    box-shadow: 0px 10px 14px -7px #403c40;
-    background: linear-gradient(to bottom, #ed2828 5%, #820000 100%);
-    background-color: #ed2828;
-    border-radius: 8px;
-    display: inline-block;
-    cursor: pointer;
-    color: #ffffff;
+    margin: 5px 3px;
+    padding: 3px 5px;
 
-    padding: 5px 12px;
-    text-decoration: none;
-    text-shadow: 0px 1px 0px #3d768a;
-}
-
-.btn-red:hover {
-    background: linear-gradient(to bottom, #820000 5%, #ed2828 100%);
-    background-color: #820000;
-}
-
-.btn-red:active {
-    position: relative;
-    top: 1px;
-}
-
-.btn-yellow {
-    margin: 2px;
-    box-shadow: 0px 10px 14px -7px #403c40;
-    background: linear-gradient(to bottom, #e6d461 5%, #b59126 100%);
-    background-color: #e6d461;
-    border-radius: 8px;
-    display: inline-block;
-    cursor: pointer;
-    color: #ffffff;
-
-    padding: 5px 12px;
-    text-decoration: none;
-    text-shadow: 0px 1px 0px #3d768a;
-}
-
-.btn-yellow:hover {
-    background: linear-gradient(to bottom, #b59126 5%, #e6d461 100%);
-    background-color: #b59126;
-}
-
-.btn-yellow:active {
-    position: relative;
-    top: 1px;
-}
-
-.btn-font {
     font-family: Arial;
     font-size: 12px;
     font-weight: bold;
+
+    overflow: hidden;
+
+    border-width: 0;
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+
+    color: #ecf0f1;
+
+    transition: background-color .3s;
 }
 
+.btn > * {
+    position: relative;
+}
+
+.btn span {
+    display: block;
+    padding: 12px 24px;
+}
+
+.btn:before {
+    content: "";
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: block;
+    width: 0;
+    padding-top: 0;
+
+    border-radius: 100%;
+
+    background-color: rgba(236, 240, 241, .3);
+
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.btn:active:before {
+    padding-top: 120%;
+
+    transition: width .2s ease-out, padding-top .2s ease-out;
+}
+
+
+.btn-orange {
+    color: #ecf0f1;
+    background-color: #e67e22;
+}
+
+.btn-orange:hover, .btn-orange:focus {
+    background-color: #d35400;
+}
+
+.btn-red {
+    color: #ecf0f1;
+    background-color: #DC3545;
+}
+
+.btn-red:hover, .btn-red:focus {
+    background-color: #c0392b;
+}
+
+.btn-blue {
+    color: #ecf0f1;
+    background-color: #0056B3;
+}
+
+.btn-blue:hover, .btn-blue:focus {
+    background-color: #00056b;
+}
+
+.btn-green {
+    color: #ecf0f1;
+    background-color: #2ecc71;
+}
+
+.btn-green:hover, .btn-green:focus {
+    background-color: #27ae60;
+}
+
+.btn-yellow {
+    color: #ecf0f1;
+    background-color: #e6d461;
+}
+
+.btn-yellow:hover, .btn-yellow:focus {
+    background-color: #b59126;
+}
 </style>
