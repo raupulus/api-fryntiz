@@ -49,7 +49,7 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.tag.edit');
         Route::match(['put', 'patch'], '/update/{tag}', [TagController::class, 'update'])
             ->name('dashboard.tag.update');
-        Route::post('/destroy/{tag}', [TagController::class, 'destroy'])
+        Route::match(['POST', 'DELETE'], '/destroy/{tag?}', [TagController::class, 'destroy'])
             ->name('dashboard.tag.destroy');
 
         Route::group(['prefix' => '/ajax'],
