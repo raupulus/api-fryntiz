@@ -7,6 +7,7 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use JsonHelper;
 use function array_keys;
+use function redirect;
 use function view;
 
 class TagController extends Controller
@@ -83,12 +84,26 @@ class TagController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param                          $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id = null)
     {
         //
+        $id = $request->get('id');
+        $tag = Tag::find($id);
+
+        if ($tag) {
+            $tag->safeDelete();
+        }
+
+        if ($request->isJson()) {
+            return JsonHelper::success(['test' => true]);
+        }
+
+        return redirect()->back();
     }
 
 
