@@ -1,8 +1,12 @@
 <template>
     <div class="box-vue-table-component">
         <div>
+            <h3 v-if="title">{{ title }}</h3>
+        </div>
+
+        <div>
             <table class="v-table">
-                <caption v-if="title">{{ title }}</caption>
+                <caption v-if="caption">{{ caption }}</caption>
 
                 <thead v-if="heads">
                 <tr>
@@ -120,33 +124,52 @@ import {onBeforeMount, onMounted, ref} from 'vue';
 export default {
     name:'VTableComponent',
     props:{
-        title:{
+        title:{ // Título sobre la tabla.
+            type:String,
+            default:'',
+            required:false
+        },
+        caption:{ // Caption de la tabla.
             type:String,
             default:'',
             required:false
         },
 
-        url:{
+        url:{ // Url para obtener los datos de la tabla.
             type:String,
             required:true
         },
-        showId:{ // Indica si muestra el ID en la tabla
+        showId:{ // Indica si muestra el ID en la tabla.
             type:Boolean,
             default:false,
             required:false
         },
 
-        elements:{
+        elements:{ // Cantidad de elementos por página.
             type:Number,
             default:10,
             required:false
         },
-        editable:{
+        editable: { // Indica si se habilita el editar.
             type:Boolean,
             default:false,
             required:false
         },
-        actions:{
+        hotEditUrl: {  // Url para editar campos en al pulsarlos.
+            type:String,
+            required:true
+        },
+        searchable:{  // Indica si tiene input de búsqueda.
+            type:Boolean,
+            default:false,
+            required:false
+        },
+        shortable:{  // Indica si permite ordenar por campos
+            type:Boolean,
+            default:false,
+            required:false
+        },
+        actions:{  // JSON con las acciones para añadir botones
             type:Array,
             default:[],
             required:false
@@ -158,9 +181,8 @@ export default {
             required:false
 
         },
-        csrf:{
+        csrf:{  // Token csrf para la seguridad del formulario
             required:true
-
         }
     },
 
@@ -174,6 +196,10 @@ export default {
         const hasNextPage = ref(false);  // Indica si tiene próxima página
         const showPages = ref([]);  // Lista con las páginas a mostrar
         const cellsInfo = ref([]);  // Información de las celdas
+
+        const search = ref('');  // Cadena de búsqueda
+        const orderDirection = ref('DESC');  // Modo de ordenar
+        const orderBy = ref('created_at');  // Campo por el que ordenar
 
         // Headers para las peticiones ajax, dinamizado con prop headers
         const fetchHeaders = {
@@ -253,7 +279,13 @@ export default {
                 return null;
             }
 
-            fetchPage(page).then((response) => {
+            let filter = {
+                orderBy: orderBy,
+                orderDirection: orderDirection,
+                search: search
+            }
+
+            fetchPage(page, filter).then((response) => {
                 const data = response.data;
 
                 if(!data) {
@@ -476,6 +508,27 @@ export default {
             handleOnFinishLoadData();
         };
 
+        /**
+         * Maneja el evento para cambiar un filtro y recarga la tabla.
+         *
+         * @param e
+         */
+        const handleChangeFilter = async (e) => {
+            // Pongo la tabla en modo de cargar datos.
+            handleOnLoadData();
+
+            // TODO → obtener desde data- lo que se está filtrando
+            //orderBy
+            //orderDirection
+            //search
+
+            // Actualizo la misma página para renovar datos.
+            await changePage(currentPage.value, true);
+
+            // Quita la tabla del modo cargar datos.
+            handleOnFinishLoadData();
+        };
+
         return {
             rows:rows,
             heads:heads,
@@ -493,6 +546,7 @@ export default {
 
             // Eventos
             handleOnDelete,
+            handleChangeFilter
         }
     }
 
