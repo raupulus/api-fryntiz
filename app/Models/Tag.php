@@ -16,6 +16,18 @@ class Tag extends BaseModel
     use HasFactory;
 
 
+    protected $fillable = ['name', 'slug', 'description'];
+
+    /**
+     * Elimina de forma segura la instancia actual.
+     *
+     * @return bool
+     */
+    public function safeDelete()
+    {
+        return (bool) $this->delete();
+    }
+
     /**
      * Devuelve un array con todos los títulos de una tabla.
      *
@@ -126,8 +138,8 @@ class Tag extends BaseModel
             [
                 'type' => 'delete',
                 'name' => 'Eliminar',
-                'url' => '#',
-                'method' => 'PUT'
+                'url' => route('dashboard.tag.destroy'),
+                'method' => 'DELETE'
             ]
         ]);
     }
