@@ -72,19 +72,30 @@ class Tag extends BaseModel
     /**
      * Devuelve los resultados para una página.
      *
-     * @param number $size Tamaño de cada página
-     * @param number $page Página a la que buscar.
+     * @param $columns
+     * @param $orderBy
+     * @param $orderDirection
+     * @param $search
      *
-     * @return array
+     * @return mixed
      */
-    public static function getTableRowsByPage($size, $page, $columns,
-                                              $orderBy, $orderDirection = 'ASC')
+    public static function prepareQueryFiltered($columns,
+                                              $orderBy, $orderDirection = 'DESC',
+                                              $search = '')
     {
-        return self::select($columns)
-            ->offset(($page * $size) - $size)
-            ->limit($size)
-            ->orderBy($orderBy, $orderDirection)
-            ->get();
+        $query = self::select($columns)->orderBy($orderBy, $orderDirection);
+
+        if ($search) {
+            $query->where(function ($q) use ($columns, $search){
+                foreach ($columns as $column) {
+                    if ($column !== 'id') {
+                        $q->orWhere($column, 'LIKE', '%' . $search . '%');
+                    }
+                }
+            });
+        }
+
+        return $query;
     }
 
 
@@ -93,20 +104,23 @@ class Tag extends BaseModel
      *
      * @param int    $page La página a devolver.
      * @param int    $size Cantidad de elementos por página.
-     * @param string $orderBy Campo sobre el que se ordena.
-     * @param string $orderDirection Dirección al ordenar (ASC|DESC)
+     * @param string|null $orderBy Campo sobre el que se ordena.
+     * @param string|null $orderDirection Dirección al ordenar (ASC|DESC)
      *
      * @return array
      */
     public static function getTableQuery(int $page = 1,
                                          int $size = 10,
-                                         string $orderBy = 'created_at',
-                                         string $orderDirection = 'DESC')
+                                         string|null $orderBy = 'created_at',
+                                         string|null $orderDirection = 'DESC',
+                                         string|null $search = '')
     {
         $tableHeads = self::getTableHeads($page);
         $columns = array_keys($tableHeads);
-        $tableRows = self::getTableRowsByPage($size, $page, $columns, $orderBy, $orderDirection);
-        $totalElements = self::count();
+
+        $query = self::prepareQueryFiltered($columns, $orderBy, $orderDirection, $search);
+        $totalElements = $query->count();
+        $tableRows = $query->offset(($page * $size) - $size)->limit($size)->get();
 
         $cellsInfo = self::getTableCellsInfo();
 
@@ -132,14 +146,20 @@ class Tag extends BaseModel
             [
                 'type' => 'update',
                 'name' => 'Editar',
-                'url' => route('dashboard.tag.ajax.table.get'),
-                'method' => 'PUT'
+                'url' => route('dashboard.tag.edit', 0),
+                'method' => 'GET',
+                /*
+                'params' => [
+
+                ]
+                */
             ],
             [
                 'type' => 'delete',
                 'name' => 'Eliminar',
                 'url' => route('dashboard.tag.destroy'),
-                'method' => 'DELETE'
+                'method' => 'DELETE',
+                'ajax' => true
             ]
         ]);
     }

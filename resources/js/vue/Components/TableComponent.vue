@@ -4,6 +4,21 @@
             <h3 v-if="title">{{ title }}</h3>
         </div>
 
+        <div v-if="searchable" class="v-table-box-search">
+            <input type="search"
+                   @keyup="handleOnWriteSearchKeyboardUp"
+                   v-model="search">
+
+            <span class="svg-icon"
+                  @click="(e) => handleChangeFilter(e, 'search')">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 512 512">
+                <path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"/>
+            </svg>
+            </span>
+
+        </div>
+
         <div>
             <table class="v-table">
                 <caption v-if="caption">{{ caption }}</caption>
@@ -156,8 +171,9 @@ export default {
             required:false
         },
         hotEditUrl: {  // Url para editar campos en al pulsarlos.
-            type:String,
-            required:true
+            type:String|null,
+            default:null,
+            required:false
         },
         searchable:{  // Indica si tiene input de búsqueda.
             type:Boolean,
@@ -197,6 +213,9 @@ export default {
         const showPages = ref([]);  // Lista con las páginas a mostrar
         const cellsInfo = ref([]);  // Información de las celdas
 
+        // Almacena timeout para buscar por ajax, así evito consultar al escribir seguido.
+        const searchTimer = ref(null);
+
         const search = ref('');  // Cadena de búsqueda
         const orderDirection = ref('DESC');  // Modo de ordenar
         const orderBy = ref('created_at');  // Campo por el que ordenar
@@ -234,21 +253,16 @@ export default {
         /**
          * Obtiene los registros para una página concreta.
          *
-         * @param page
-         * @param filter Opciones de filtrado y condiciones para ordenar
-         * @returns {Promise<void>}
+         * @param page Página a descargar.
+         * @returns {Promise<*>}
          */
-        const fetchPage = async(page, filter = {
-            orderBy:'created_at',
-            orderDirection:'DESC',
-            search:''
-        }) => {
+        const fetchPage = async(page) => {
             let params = {
                 page:page,
                 size:props.elements,
-                orderBy:'created_at', // Mantenido por compatibilidad, borrar en futuro
-                orderDirection:'DESC', // Mantenido por compatibilidad, borrar en futuro
-                filter:filter,
+                orderBy:orderBy.value,
+                orderDirection:orderDirection.value,
+                search:search.value,
             };
 
             return getQuery(props.url, 'POST', params);
@@ -279,13 +293,7 @@ export default {
                 return null;
             }
 
-            let filter = {
-                orderBy: orderBy,
-                orderDirection: orderDirection,
-                search: search
-            }
-
-            fetchPage(page, filter).then((response) => {
+            fetchPage(page).then( response => {
                 const data = response.data;
 
                 if(!data) {
@@ -306,7 +314,8 @@ export default {
                     ((totalElements.value % props.elements) == 0)) {
                     totalPages.value = Math.floor(totalElements.value / props.elements) - 1;
                 } else {
-                    totalPages.value = Math.floor(totalElements.value / props.elements);
+                    totalPages.value = Math.floor(totalElements.value /
+                        props.elements) +1;
                 }
 
                 hasBackPage.value = (totalPages.value > 1) && (currentPage.value > 1);
@@ -511,23 +520,62 @@ export default {
         /**
          * Maneja el evento para cambiar un filtro y recarga la tabla.
          *
+         * TODO → terminar ordenar por columna
+         *
          * @param e
          */
-        const handleChangeFilter = async (e) => {
+        const handleChangeFilter = async (e, type) => {
             // Pongo la tabla en modo de cargar datos.
             handleOnLoadData();
+            console.log('e: ' + e);
+            console.log('type: ' + type);
+            console.log('valor: ' + search.value);
 
-            // TODO → obtener desde data- lo que se está filtrando
-            //orderBy
-            //orderDirection
-            //search
+            switch(type) {
+                case 'orderBy':
+                    // TODO
+                    break
+                case 'orderDirection':
+                    // TODO
+                    break
+                default:
+                    console.log('No coincide');
+            }
 
-            // Actualizo la misma página para renovar datos.
-            await changePage(currentPage.value, true);
+            // Actualizo la página para renovar datos.
+            await changePage(1, true);
 
             // Quita la tabla del modo cargar datos.
             handleOnFinishLoadData();
         };
+
+        /**
+         * Evento que se lanza al dejar un instante de escribir en el campo
+         * de búsqueda que hay sobre la tabla.
+         *
+         * @param e
+         */
+        const handleOnWriteSearchKeyboardUp = async (e) => {
+
+            // Si ya hay una consulta programada, la elimino
+            if (searchTimer.value) {
+                clearTimeout(searchTimer.value);
+                searchTimer.value = null;
+            }
+
+            // Añado intervalo a la cola para ejecutarse.
+            searchTimer.value = setTimeout(async () => {
+                // Pongo la tabla en modo de cargar datos.
+                handleOnLoadData();
+
+                // Actualizo la página para renovar datos.
+                await changePage(1, true);
+
+                // Quita la tabla del modo cargar datos.
+                handleOnFinishLoadData();
+            }, 800);
+
+        }
 
         return {
             rows:rows,
@@ -544,9 +592,13 @@ export default {
             changePage:changePage,
             getClassByActionType:getClassByActionType,
 
+            // Filtro
+            search,
+
             // Eventos
             handleOnDelete,
-            handleChangeFilter
+            handleChangeFilter,
+            handleOnWriteSearchKeyboardUp
         }
     }
 
@@ -555,6 +607,24 @@ export default {
 
 
 <style lang="scss" scoped>
+.v-table-box-search {
+    width: 100%;
+    text-align: center;
+}
+.v-table-box-search input {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+    border-radius: 2px;
+}
+
+.v-table-box-search svg {
+    margin-left: 2px;
+    padding: 1px;
+    width: 20px;
+    cursor: pointer;
+}
+
 .v-table {
     border: 1px solid #ccc;
     border-collapse: collapse;

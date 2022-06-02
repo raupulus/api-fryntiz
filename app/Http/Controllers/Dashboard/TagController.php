@@ -100,7 +100,7 @@ class TagController extends Controller
         }
 
         if ($request->isJson()) {
-            return JsonHelper::success(['deleted' => true]);
+            return JsonHelper::success(['deleted' => $deleted]);
         }
 
         return redirect()->back();
@@ -134,8 +134,9 @@ class TagController extends Controller
         $size = $request->json('size');
         $orderBy = $request->json('orderBy');
         $orderDirection = $request->json('orderDirection');
+        $search = $request->json('search');
 
-        $data = Tag::getTableQuery($page, $size, $orderBy, $orderDirection);
+        $data = Tag::getTableQuery($page, $size, $orderBy, $orderDirection, $search);
 
         return JsonHelper::success([
             'data' => $data,
