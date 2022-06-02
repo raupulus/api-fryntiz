@@ -154,11 +154,8 @@ export default {
     },
 
     setup(props) {
-        // TODO → Cuando viene un id del servidor, usar
-
 
         console.log(props.actions);
-        console.log(props.csrf);
 
         const rows = ref([]);  // Columnas con los datos
         const heads = ref([]);  // Títulos para columnas
@@ -181,31 +178,6 @@ export default {
                 props.csrf
             },
             ...props.headers
-        };
-
-
-        /**
-         * Obtiene la consulta para la página recibida.
-         *
-         * @param page
-         * @returns {Promise<any>}
-         */
-        const getQueryOld = async(page) => {
-            return fetch(props.url, {
-                    headers:{
-                        'Accept':'application/json',
-                        'Content-Type':'application/json',
-                        'X-CSRF-TOKEN':props.csrf
-                    },
-                    method:"POST",
-                    body:JSON.stringify({
-                        page:page,
-                        size:props.elements,
-                        orderBy:'created_at',
-                        orderDirection:'DESC'
-                    })
-                }
-            ).then((response) => response.json());
         };
 
         /**
@@ -384,43 +356,6 @@ export default {
             //let info = cellsInfo.value.find(ele => ele.key == field);
             let info = cellsInfo.value ? cellsInfo.value[field] : null;
 
-            //console.log(cell, field);
-
-            /*
-             console.log('s:', cellsInfo.value ?
-             cellsInfo.value[field] : '');
-
-             Object.keys(cellsInfo.value).forEach(key => {
-             const item = cellsInfo.value[key]
-             console.log('i:', item.value);
-
-             if (item == field) {
-             info = item
-
-             }
-             })
-             */
-
-            /*
-
-             Object.keys(cellsInfo.value).forEach(key => {
-             console.log('k:', cellsInfo.value[key].key);
-
-             if (key == field) {
-             info == key;
-             }
-             });
-             */
-
-            //console.log(cellsInfo.value);
-            //console.log(info, info ? info.type : null);
-
-            //console.log(cellsInfo.value.keys);
-
-
-            //console.log(field);
-            //console.log(info ? info.type == 'icon' : null);
-
             if(info) {
                 switch(info.type) {
                     case 'button':
@@ -485,6 +420,7 @@ export default {
          */
         const showPopupMessage = async (msg, type = 'success') => {
             // TODO
+            console.log('showPopupMessage() ' + type + ': ' + msg);
         }
 
         //
@@ -512,7 +448,11 @@ export default {
             let result = await getQuery(url, method, {...params, id:id})
 
             // TODO → Comprobar respuesta antes de mostrar mensaje popup
-            showPopupMessage('Se ha eliminado correctamente', 'success')
+            if (result && result.deleted) {
+                showPopupMessage('Se ha eliminado el registro correctamente', 'success')
+            } else {
+                showPopupMessage('Ha ocurrido un error al eliminar el registro', 'error')
+            }
 
             // Actualizo la misma página para renovar datos.
             await changePage(currentPage.value, true);
