@@ -22,8 +22,19 @@
                     <td v-for="( cell, key ) of row"
                         :data-attribute="key"
                         :data-id="row.id"
-                        v-html="getCellContent( cell, key )"
+
                         v-show="(key !== 'id') || showId">
+
+                        <div>
+                            <div class="headTitleInTd">
+                                {{heads[key]}}
+                            </div>
+
+                            <div v-html="getCellContent( cell, key )">
+
+                            </div>
+                        </div>
+
                     </td>
 
                     <td v-if="actions && actions.length">
@@ -154,9 +165,6 @@ export default {
     },
 
     setup(props) {
-
-        console.log(props.actions);
-
         const rows = ref([]);  // Columnas con los datos
         const heads = ref([]);  // Títulos para columnas
         const totalPages = ref(0);  // Cantidad total de páginas
@@ -357,21 +365,28 @@ export default {
             let info = cellsInfo.value ? cellsInfo.value[field] : null;
 
             if(info) {
+                let html = '';
+
                 switch(info.type) {
                     case 'button':
-                        return '<button class="btn btn-primary">' + cell + '</button>';
+                        html = '<button class="btn btn-primary">' + cell + '</button>';
+                        break;
                     case 'image':
-                        return '<img src="' + cell + '" alt=""/>';
+                        html = '<img src="' + cell + '" alt=""/>';
+                        break;
                     case 'icon':
                         // TODO → preparar iconos
-                        return '<img src="' + cell + '" alt=""/>';
+                        html = '<img src="' + cell + '" alt=""/>';
+                        break;
                     default:
-                        return cell;
+                        html =  cell;
                 }
+
+                return html;
             }
 
 
-            return field == 'created_at' ? (new Date(cell)).toLocaleString() : cell;
+            return field === 'created_at' ? (new Date(cell)).toLocaleString() : cell;
         }
 
         onBeforeMount(() => {
@@ -599,6 +614,13 @@ export default {
     color: #0056b3;
 }
 
+/* Título de la tabla dentro del propio <td>, oculto en grandes pantallas */
+.v-table .headTitleInTd {
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: none;
+}
+
 @media screen and (max-width: 600px) {
     .v-table {
         border: 0;
@@ -633,10 +655,6 @@ export default {
     }
 
     .v-table td::before {
-        /*
-        * aria-label has no advantage, it won't be read inside a table
-        content: attr(aria-label);
-        */
         content: attr(data-label);
         float: left;
         font-weight: bold;
@@ -645,6 +663,11 @@ export default {
 
     .v-table td:last-child {
         border-bottom: 0;
+    }
+
+    .v-table .headTitleInTd {
+        display: block;
+        text-align: left;
     }
 }
 
