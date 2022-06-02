@@ -91,16 +91,16 @@ class TagController extends Controller
      */
     public function destroy(Request $request, $id = null)
     {
-        //
-        $id = $request->get('id');
-        $tag = Tag::find($id);
+        $deleted = false;
+        $tag_id = $request->get('id');
+        $tag = Tag::find($tag_id);
 
         if ($tag) {
-            $tag->safeDelete();
+            $deleted = $tag->safeDelete();
         }
 
         if ($request->isJson()) {
-            return JsonHelper::success(['test' => true]);
+            return JsonHelper::success(['deleted' => true]);
         }
 
         return redirect()->back();
