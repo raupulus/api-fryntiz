@@ -1,4 +1,4 @@
- <template>
+<template>
     <div class="box-vue-table-component">
         <div>
             <table class="v-table">
@@ -6,7 +6,8 @@
 
                 <thead v-if="heads">
                 <tr>
-                    <th scope="col" v-for="(head, key) of heads">
+                    <th scope="col" v-for="(head, key) of heads"
+                        v-show="(key !== 'id') || showId">
                         {{ head }}
                     </th>
 
@@ -19,15 +20,33 @@
                 <tbody>
                 <tr v-for="row in rows" :data-id="row.id">
                     <td v-for="( cell, key ) of row"
-                        v-html="getCellContent( cell, key )">
+                        :data-attribute="key"
+                        :data-id="row.id"
+                        v-html="getCellContent( cell, key )"
+                        v-show="(key !== 'id') || showId">
                     </td>
 
                     <td v-if="actions && actions.length">
-                        <span v-for="info of actions">
-                            <span :class="getClassByActionType(info.type)">
-                                {{info.name}}
-                            </span>
-                        </span>
+                        <div v-for="info of actions"
+                             :class="getClassByActionType(info.type)">
+
+                            <div v-if="info.type === 'delete'"
+                                 :data-id="row.id"
+                                 :data-url="info.url"
+                                 :data-params="info.params"
+                                 :data-method="info.method"
+                                 @click="handleOnDelete">
+                                {{ info.name }}
+                            </div>
+
+                            <div v-else-if="info.type === 'update'">
+                                {{ info.name }}
+                            </div>
+
+                            <div v-else>
+                                {{ info.name }}
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -35,7 +54,8 @@
                 <tfoot>
                 <tr>
                     <td :colspan="Object.keys(heads).length ?? Object.keys(rows[0]).length">
-                        Mostrando página {{ currentPage ?? 0 }} de {{ totalPages ?? 0 }}
+                        Mostrando página {{ currentPage ?? 0 }} de
+                        {{ totalPages ?? 0 }}
                         ({{ totalElements ?? 0 }} resultados)
                     </td>
                 </tr>
@@ -45,8 +65,9 @@
 
         <div class="v-table-paginator">
 
-            <span @click="(currentPage > 1) ? changePage(currentPage - 1) : null"
-                  :class="!hasBackPage ? 'disabled' : 'pointer'">
+            <span
+                @click="(currentPage > 1) ? changePage(currentPage - 1) : null"
+                :class="!hasBackPage ? 'disabled' : 'pointer'">
                 <svg :class="'page-back' +  (!hasBackPage ? ' disabled' : '')"
                      fill="currentColor"
                      viewBox="0 0 20 20">
@@ -59,12 +80,13 @@
 
             <span v-for="page in showPages"
                   @click="(page != '...') ? changePage(page) : null"
-               :class="'page' + ((page == currentPage) ? ' current-page' : '') +  ((page == '...') ? ' page-points' : '')">
-                {{page}}
+                  :class="'page' + ((page == currentPage) ? ' current-page' : '') +  ((page == '...') ? ' page-points' : '')">
+                {{ page }}
             </span>
 
-            <span @click="(currentPage < totalPages) ? changePage(currentPage + 1) : null"
-               :class="!hasNextPage ? 'disabled' : 'pointer'">
+            <span
+                @click="(currentPage < totalPages) ? changePage(currentPage + 1) : null"
+                :class="!hasNextPage ? 'disabled' : 'pointer'">
                 <svg :class="'page-next' +  (!hasNextPage ? ' disabled' : '')"
                      fill="currentColor"
                      viewBox="0 0 20 20">
@@ -85,38 +107,48 @@
 import {onBeforeMount, onMounted, ref} from 'vue';
 
 export default {
-    name: 'VTableComponent',
-    props: {
-        title: {
-            type: String,
-            default: '',
-            required: false
+    name:'VTableComponent',
+    props:{
+        title:{
+            type:String,
+            default:'',
+            required:false
         },
 
-        url: {
-            type: String,
-            required: true
+        url:{
+            type:String,
+            required:true
         },
-        showId: { // Indica si muestra el ID en la tabla
-            type: Boolean,
-            default: false,
-            required: false
+        showId:{ // Indica si muestra el ID en la tabla
+            type:Boolean,
+            default:false,
+            required:false
         },
 
-        elements: {
-            type: Number,
-            default: 10,
-            required: false
+        elements:{
+            type:Number,
+            default:10,
+            required:false
         },
-        editable: {
-            type: Boolean,
-            default: false,
-            required: false
+        editable:{
+            type:Boolean,
+            default:false,
+            required:false
         },
-        actions: {
-            type: Array,
-            default: [],
-            required: false
+        actions:{
+            type:Array,
+            default:[],
+            required:false
+
+        },
+        headers:{  // Cabeceras para peticiones ajax
+            type:Object,
+            default:{},
+            required:false
+
+        },
+        csrf:{
+            required:true
 
         }
     },
@@ -125,8 +157,8 @@ export default {
         // TODO → Cuando viene un id del servidor, usar
 
 
-
         console.log(props.actions);
+        console.log(props.csrf);
 
         const rows = ref([]);  // Columnas con los datos
         const heads = ref([]);  // Títulos para columnas
@@ -138,34 +170,83 @@ export default {
         const showPages = ref([]);  // Lista con las páginas a mostrar
         const cellsInfo = ref([]);  // Información de las celdas
 
+        // Headers para las peticiones ajax, dinamizado con prop headers
+        const fetchHeaders = {
+            ... {
+                'Accept':
+                    'application/json',
+                'Content-Type':
+                    'application/json',
+                'X-CSRF-TOKEN':
+                props.csrf
+            },
+            ...props.headers
+        };
+
+
         /**
          * Obtiene la consulta para la página recibida.
          *
          * @param page
          * @returns {Promise<any>}
          */
-        const getQuery = async (page) => {
-
-            let csrfToken = document.head.querySelector('meta[name="csrf-token"]')
-                ? document.head.querySelector('meta[name="csrf-token"]').content : '';
-
-
-            return await fetch(props.url, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                method: "POST",
-                body: JSON.stringify({
-                    page: page,
-                    size: props.elements,
-                    orderBy: 'created_at',
-                    orderDirection: 'DESC'
-                })
-            }
+        const getQueryOld = async(page) => {
+            return fetch(props.url, {
+                    headers:{
+                        'Accept':'application/json',
+                        'Content-Type':'application/json',
+                        'X-CSRF-TOKEN':props.csrf
+                    },
+                    method:"POST",
+                    body:JSON.stringify({
+                        page:page,
+                        size:props.elements,
+                        orderBy:'created_at',
+                        orderDirection:'DESC'
+                    })
+                }
             ).then((response) => response.json());
         };
+
+        /**
+         * Realiza una petición ajax.
+         *
+         * @param url
+         * @param method
+         * @param params
+         * @returns {Promise<any>}
+         */
+        const getQuery = async(url, method, params) => {
+            return fetch(url, {
+                    headers:fetchHeaders,
+                    method:method,
+                    body:JSON.stringify(params)
+                }
+            ).then((response) => response.json());
+        };
+
+        /**
+         * Obtiene los registros para una página concreta.
+         *
+         * @param page
+         * @param filter Opciones de filtrado y condiciones para ordenar
+         * @returns {Promise<void>}
+         */
+        const fetchPage = async(page, filter = {
+            orderBy:'created_at',
+            orderDirection:'DESC',
+            search:''
+        }) => {
+            let params = {
+                page:page,
+                size:props.elements,
+                orderBy:'created_at', // Mantenido por compatibilidad, borrar en futuro
+                orderDirection:'DESC', // Mantenido por compatibilidad, borrar en futuro
+                filter:filter,
+            };
+
+            return getQuery(props.url, 'POST', params);
+        }
 
         /**
          * Ejecuta una acción (eliminar, actualizar...)
@@ -174,27 +255,28 @@ export default {
          * @returns {Promise<void>}
          */
         /*
-        const executeAction = async (action) => {
-            if (props.actions && props.actions.length) {
-                let info = props.actions.find(ele => ele.name == action)
-            }
-        }
-        */
+         const executeAction = async (action) => {
+         if (props.actions && props.actions.length) {
+         let info = props.actions.find(ele => ele.name == action)
+         }
+         }
+         */
 
         /**
          * Procesa el cambio de página.
          * @param {number} page La página a la que se está cambiando.
+         * @param {boolean} reload Indica si fuerza la recarga de la página.
          */
-        const changePage = (page) => {
+        const changePage = (page, reload = false) => {
             // Descarto si intenta cargar la página actual.
-            if (page == currentPage.value) {
+            if(!reload && (page === currentPage.value)) {
                 return null;
             }
 
-            getQuery(page).then((response) => {
+            fetchPage(page).then((response) => {
                 const data = response.data;
 
-                if (! data) {
+                if(!data) {
                     console.log('No hay respuesta del servidor');
                     return null;
                 }
@@ -202,12 +284,12 @@ export default {
                 currentPage.value = data.currentPage;
                 totalElements.value = data.totalElements;
 
-                if (
+                if(
                     (totalElements.value && (totalElements.value > 0)) &&
                     (totalElements.value <= props.elements)
                 ) {
                     totalPages.value = 1;
-                } else if (
+                } else if(
                     ((totalElements.value / props.elements) > 1) &&
                     ((totalElements.value % props.elements) == 0)) {
                     totalPages.value = Math.floor(totalElements.value / props.elements) - 1;
@@ -218,7 +300,7 @@ export default {
                 hasBackPage.value = (totalPages.value > 1) && (currentPage.value > 1);
                 hasNextPage.value = (totalPages.value > 1) && (currentPage.value < totalPages.value);
 
-                switch (true) {
+                switch(true) {
                     // No hay páginas → OK
                     case 0 == totalPages.value:
                         showPages.value = ['...'];
@@ -234,7 +316,7 @@ export default {
 
                         showPages.value = [1, '...'];
 
-                        for (let i = 5; i >= 1; i--) {
+                        for(let i = 5; i >= 1; i--) {
                             showPages.value.push(totalPages.value - i);
                         }
 
@@ -246,7 +328,7 @@ export default {
                     case (8 < totalPages.value) && (currentPage.value == 1):
                         showPages.value = [];
 
-                        for (let i = 1; i <= 6; i++) {
+                        for(let i = 1; i <= 6; i++) {
                             showPages.value.push(i);
                         }
 
@@ -259,24 +341,24 @@ export default {
                     case (8 >= totalPages.value):
                         showPages.value = [];
 
-                        for (let i = 1; i <= totalPages.value; i++) {
+                        for(let i = 1; i <= totalPages.value; i++) {
                             showPages.value.push(i);
                         }
                         break;
                     default:
-                        if (currentPage.value == 2) {
+                        if(currentPage.value == 2) {
                             showPages.value = [1, currentPage.value, currentPage.value + 1];
-                        } else if (currentPage.value == 3) {
+                        } else if(currentPage.value == 3) {
                             showPages.value = [1, currentPage.value - 1, currentPage.value, currentPage.value + 1];
                         } else {
                             showPages.value = [1, '...', currentPage.value - 1, currentPage.value, currentPage.value + 1];
                         }
 
-                        if ((currentPage.value + 2) < totalPages.value) {
+                        if((currentPage.value + 2) < totalPages.value) {
                             showPages.value.push(currentPage.value + 2);
                             showPages.value.push('...');
                             showPages.value.push(totalPages.value);
-                        } else if ((currentPage.value + 2) == totalPages.value) {
+                        } else if((currentPage.value + 2) == totalPages.value) {
                             showPages.value.push(totalPages.value);
                         }
 
@@ -299,34 +381,36 @@ export default {
         const getCellContent = (cell, field) => {
 
             // TODO → obtener de controlador tipos y mirar si hay metadatos en él (button, image, etc) para saber como mostrarlo
-                //let info = cellsInfo.value.find(ele => ele.key == field);
-                let info = cellsInfo.value ? cellsInfo.value[field] : null;
+            //let info = cellsInfo.value.find(ele => ele.key == field);
+            let info = cellsInfo.value ? cellsInfo.value[field] : null;
 
-                /*
-                console.log('s:', cellsInfo.value ?
-                    cellsInfo.value[field] : '');
+            //console.log(cell, field);
 
-            Object.keys(cellsInfo.value).forEach(key => {
-                const item = cellsInfo.value[key]
-                console.log('i:', item.value);
+            /*
+             console.log('s:', cellsInfo.value ?
+             cellsInfo.value[field] : '');
 
-                if (item == field) {
-                    info = item
+             Object.keys(cellsInfo.value).forEach(key => {
+             const item = cellsInfo.value[key]
+             console.log('i:', item.value);
 
-                }
-            })
-*/
+             if (item == field) {
+             info = item
 
-/*
+             }
+             })
+             */
 
-            Object.keys(cellsInfo.value).forEach(key => {
-                console.log('k:', cellsInfo.value[key].key);
+            /*
 
-                if (key == field) {
-                    info == key;
-                }
-            });
- */
+             Object.keys(cellsInfo.value).forEach(key => {
+             console.log('k:', cellsInfo.value[key].key);
+
+             if (key == field) {
+             info == key;
+             }
+             });
+             */
 
             //console.log(cellsInfo.value);
             //console.log(info, info ? info.type : null);
@@ -337,22 +421,22 @@ export default {
             //console.log(field);
             //console.log(info ? info.type == 'icon' : null);
 
-                if (info) {
-                    switch (info.type) {
-                        case 'button':
-                            return '<button class="btn btn-primary">' + cell + '</button>';
-                        case 'image':
-                            return '<img src="' + cell +  '" alt=""/>';
-                        case 'icon':
-                            // TODO → preparar iconos
-                            return '<img src="' + cell +  '" alt=""/>';
-                        default:
-                            return cell;
-                    }
+            if(info) {
+                switch(info.type) {
+                    case 'button':
+                        return '<button class="btn btn-primary">' + cell + '</button>';
+                    case 'image':
+                        return '<img src="' + cell + '" alt=""/>';
+                    case 'icon':
+                        // TODO → preparar iconos
+                        return '<img src="' + cell + '" alt=""/>';
+                    default:
+                        return cell;
                 }
+            }
 
 
-            return field  == 'created_at' ? (new Date(cell)).toLocaleString() : cell;
+            return field == 'created_at' ? (new Date(cell)).toLocaleString() : cell;
         }
 
         onBeforeMount(() => {
@@ -362,6 +446,12 @@ export default {
             console.log('Component mounted.');
         });
 
+
+        /**
+         * Devuelve la clase para el tipo de acción.
+         * @param action
+         * @returns {string}
+         */
         const getClassByActionType = (action) => {
             switch(action) {
                 case 'delete':
@@ -375,20 +465,79 @@ export default {
             }
         };
 
-        return {
-            rows: rows,
-            heads: heads,
-            totalPages: totalPages,
-            totalElements: totalElements,
-            currentPage: currentPage,
-            hasBackPage: hasBackPage,
-            hasNextPage: hasNextPage,
-            showPages: showPages,
-            getCellContent: getCellContent,
-            cellsInfo: cellsInfo,
 
-            changePage: changePage,
-            getClassByActionType: getClassByActionType,
+        // Al obtener datos del backend, poner spinner de carga.
+        const handleOnLoadData = async() => {
+            // TODO
+        }
+
+        // Cuando ha terminado de obtener datos, quito spinner de carga.
+        const handleOnFinishLoadData = async() => {
+            // TODO
+        }
+
+        /**
+         * Muestra un mensaje en la tabla indicando lo que ha ocurrido.
+         *
+         * @param msg El mensaje a mostrar.
+         * @param type El tipo del mensaje: success|error|warning
+         * @returns {Promise<void>}
+         */
+        const showPopupMessage = async (msg, type = 'success') => {
+            // TODO
+        }
+
+        //
+        /**
+         * Maneja el evento al pulsar botón para eliminar
+         *
+         * @param e Recibe el evento
+         * @returns {Promise<null>}
+         */
+        const handleOnDelete = async(e) => {
+            if(!confirm('¿Estás seguro de eliminar este registro?')) {
+                return null;
+            }
+
+            let btn = e.target;
+            let id = btn.getAttribute('data-id');
+            let url = btn.getAttribute('data-url');
+            let method = btn.getAttribute('data-method');
+            let params = btn.getAttribute('data-params');
+
+            // Pongo la tabla en modo de cargar datos.
+            handleOnLoadData();
+
+            // Envío datos por AJAX al servidor
+            let result = await getQuery(url, method, {...params, id:id})
+
+            // TODO → Comprobar respuesta antes de mostrar mensaje popup
+            showPopupMessage('Se ha eliminado correctamente', 'success')
+
+            // Actualizo la misma página para renovar datos.
+            await changePage(currentPage.value, true);
+
+            // Quita la tabla del modo cargar datos.
+            handleOnFinishLoadData();
+        };
+
+        return {
+            rows:rows,
+            heads:heads,
+            totalPages:totalPages,
+            totalElements:totalElements,
+            currentPage:currentPage,
+            hasBackPage:hasBackPage,
+            hasNextPage:hasNextPage,
+            showPages:showPages,
+            getCellContent:getCellContent,
+            cellsInfo:cellsInfo,
+
+            changePage:changePage,
+            getClassByActionType:getClassByActionType,
+
+            // Eventos
+            handleOnDelete,
         }
     }
 
@@ -560,83 +709,88 @@ export default {
 }
 
 
-
 /* Botones */
 
 
 .btn-blue {
     margin: 2px;
     box-shadow: 0px 10px 14px -7px #403c40;
-    background:linear-gradient(to bottom, #00056b 5%, #00044a 100%);
-    background-color:#00056b;
-    border-radius:8px;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
+    background: linear-gradient(to bottom, #00056b 5%, #00044a 100%);
+    background-color: #00056b;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
 
-    padding:5px 12px;
-    text-decoration:none;
-    text-shadow:0px 1px 0px #3d768a;
+    padding: 5px 12px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #3d768a;
 }
+
 .btn-blue:hover {
-    background:linear-gradient(to bottom, #00044a 5%, #00056b 100%);
-    background-color:#00044a;
+    background: linear-gradient(to bottom, #00044a 5%, #00056b 100%);
+    background-color: #00044a;
 }
+
 .btn-blue:active {
-    position:relative;
-    top:1px;
+    position: relative;
+    top: 1px;
 }
 
 .btn-red {
     margin: 2px;
     box-shadow: 0px 10px 14px -7px #403c40;
-    background:linear-gradient(to bottom, #ed2828 5%, #820000 100%);
-    background-color:#ed2828;
-    border-radius:8px;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
+    background: linear-gradient(to bottom, #ed2828 5%, #820000 100%);
+    background-color: #ed2828;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
 
-    padding:5px 12px;
-    text-decoration:none;
-    text-shadow:0px 1px 0px #3d768a;
+    padding: 5px 12px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #3d768a;
 }
+
 .btn-red:hover {
-    background:linear-gradient(to bottom, #820000 5%, #ed2828 100%);
-    background-color:#820000;
+    background: linear-gradient(to bottom, #820000 5%, #ed2828 100%);
+    background-color: #820000;
 }
+
 .btn-red:active {
-    position:relative;
-    top:1px;
+    position: relative;
+    top: 1px;
 }
 
 .btn-yellow {
     margin: 2px;
     box-shadow: 0px 10px 14px -7px #403c40;
-    background:linear-gradient(to bottom, #e6d461 5%, #b59126 100%);
-    background-color:#e6d461;
-    border-radius:8px;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
+    background: linear-gradient(to bottom, #e6d461 5%, #b59126 100%);
+    background-color: #e6d461;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
 
-    padding:5px 12px;
-    text-decoration:none;
-    text-shadow:0px 1px 0px #3d768a;
+    padding: 5px 12px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #3d768a;
 }
+
 .btn-yellow:hover {
-    background:linear-gradient(to bottom, #b59126 5%, #e6d461 100%);
-    background-color:#b59126;
+    background: linear-gradient(to bottom, #b59126 5%, #e6d461 100%);
+    background-color: #b59126;
 }
+
 .btn-yellow:active {
-    position:relative;
-    top:1px;
+    position: relative;
+    top: 1px;
 }
 
 .btn-font {
-    font-family:Arial;
-    font-size:12px;
-    font-weight:bold;
+    font-family: Arial;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 </style>

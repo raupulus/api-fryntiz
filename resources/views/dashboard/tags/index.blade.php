@@ -27,6 +27,8 @@
 
             <v-table-component title="Listado de Categorías"
                                :editable="true"
+                               :show-id="false"
+                               csrf="{{csrf_token()}}"
                                :actions='{!!\App\Models\Tag::getTableActionsInfo()->toJson(JSON_UNESCAPED_UNICODE)!!}'
                                url="{{route('dashboard.tag.ajax.table.get')}}" />
 
