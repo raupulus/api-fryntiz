@@ -1,5 +1,5 @@
 <template>
-    <div class="box-vue-table-component">
+    <div class="box-vue-table-component" ref="table">
         <div>
             <h3 v-if="title">{{ title }}</h3>
         </div>
@@ -26,6 +26,7 @@
                 <thead v-if="heads">
                 <tr>
                     <th scope="col" v-for="(head, key) of heads"
+                        :data-key="key"
                         v-show="(key !== 'id') || showId">
                         {{ head }}
                     </th>
@@ -41,7 +42,9 @@
                     <td v-for="( cell, key ) of row"
                         :data-attribute="key"
                         :data-id="row.id"
-
+                        :class="'td-' + key + '-' + row.id"
+                        @dblclick="(e) => handleOnClickCellEditable(e, 'td-' + key + '-' + row.id)"
+                        @focusout="handleOnFocusoutCellEditable"
                         v-show="(key !== 'id') || showId">
 
                         <div>
@@ -49,8 +52,13 @@
                                 {{heads[key]}}
                             </div>
 
-                            <div v-html="getCellContent( cell, key )">
+                            <div class="td-cell-content"
+                                 v-html="getCellContent( cell, key )">
 
+                            </div>
+
+                            <div class="td-cell-editable-hidden">
+                                <input type="text" :value="cell"/>
                             </div>
                         </div>
 
@@ -588,7 +596,74 @@ export default {
             }
         }
 
+        /**
+         * Maneja el evento al pulsar sobre los inputs de la tabla que están
+         * como editables.
+         *
+         * @param e
+         * @param nodeUniqueClass Selector de clase única para el <td>
+         * @returns {Promise<void>}
+         */
+        const handleOnClickCellEditable = async (e, nodeUniqueClass) => {
+            const target = e.target;
+            const td = target.closest('.box-vue-table-component').querySelector('.' + nodeUniqueClass);
+            const id = td.getAttribute('data-id');
 
+            const boxCellContent = td.querySelector('.td-cell-content');
+            const boxCellEditable = td.querySelector('.td-cell-editable-hidden');
+
+            if (!boxCellContent || !boxCellEditable) {
+                return null;
+            }
+
+            boxCellContent.classList.remove('td-cell-content');
+            boxCellContent.classList.add('td-cell-content-hidden');
+
+            boxCellEditable.classList.remove('td-cell-editable-hidden');
+            boxCellEditable.classList.add('td-cell-editable');
+
+            let input = boxCellEditable.querySelector('input');
+
+            if (input) {
+                input.focus();
+            }
+
+            console.log(td, id);
+        };
+
+        /**
+         * Maneja la perdida de focus de una celda editable.
+         *
+         * @param e
+         * @returns {Promise<void>}
+         */
+        const handleOnFocusoutCellEditable = async (e) => {
+            const input = e.target;
+            const td = input.closest('td');
+            let confirm = window.confirm('¿Quieres guardar los cambios?')
+
+            const boxCellContent = td.querySelector('.td-cell-content-hidden');
+            const boxCellEditable = td.querySelector('.td-cell-editable');
+
+            boxCellContent.classList.remove('td-cell-content-hidden');
+            boxCellContent.classList.add('td-cell-content');
+
+            boxCellEditable.classList.remove('td-cell-editable');
+            boxCellEditable.classList.add('td-cell-editable-hidden');
+
+            if (confirm) {
+                let newValue = input.value;
+                let attribute = td.getAttribute('data-attribute');
+
+                boxCellContent.textContent = getCellContent( newValue, attribute );
+            } else {
+                input.focus();
+            }
+
+
+
+            console.log(input, td, confirm);
+        }
 
         return {
             rows:rows,
@@ -611,7 +686,9 @@ export default {
             // Eventos
             handleOnDelete,
             handleChangeFilter,
-            handleOnWriteSearchKeyboardUp
+            handleOnWriteSearchKeyboardUp,
+            handleOnClickCellEditable,
+            handleOnFocusoutCellEditable,
         }
     }
 
@@ -620,6 +697,33 @@ export default {
 
 
 <style lang="scss" scoped>
+
+
+
+
+
+.td-cell-content {
+
+}
+
+.td-cell-content-hidden {
+    display: none;
+}
+
+.td-cell-editable {
+
+}
+
+.td-cell-editable-hidden {
+    display: none;
+}
+
+
+
+
+
+
+
 .v-table-box-search {
     width: 100%;
     text-align: center;
