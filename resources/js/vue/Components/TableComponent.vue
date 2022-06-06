@@ -57,7 +57,8 @@
 
                             </div>
 
-                            <div class="td-cell-editable-hidden">
+                            <div class="td-cell-editable-hidden"
+                                v-if="editable && ['float', 'integer', 'text'].includes(cellsInfo[key].type) ">
                                 <input type="text" :value="cell"/>
                             </div>
                         </div>
