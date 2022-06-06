@@ -146,7 +146,7 @@ class Tag extends BaseModel
             [
                 'type' => 'update',
                 'name' => 'Editar',
-                'url' => route('dashboard.tag.edit', 0),
+                'url' => route('dashboard.tag.edit', '[id]'),
                 'method' => 'GET',
                 /*
                 'params' => [

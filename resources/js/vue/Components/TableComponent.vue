@@ -78,7 +78,8 @@
                                 {{ info.name }}
                             </div>
 
-                            <div v-else-if="info.type === 'update'">
+                            <div v-else-if="info.type === 'update'"
+                                 @click="(e) => handleOnUpdate(e, info.url, row.id, row.slug)">
                                 {{ info.name }}
                             </div>
 
@@ -440,10 +441,12 @@ export default {
         }
 
         onBeforeMount(() => {
+            handleOnLoadData();
             changePage(1);
         });
         onMounted(() => {
             console.log('Component mounted.');
+            handleOnFinishLoadData();
         });
 
 
@@ -468,12 +471,12 @@ export default {
 
         // Al obtener datos del backend, poner spinner de carga.
         const handleOnLoadData = async() => {
-            // TODO
+            // TODO preparar spinner y señales de carga.
         }
 
         // Cuando ha terminado de obtener datos, quito spinner de carga.
         const handleOnFinishLoadData = async() => {
-            // TODO
+            // TODO limpiar señales de carga.
         }
 
         /**
@@ -657,13 +660,30 @@ export default {
                 let attribute = td.getAttribute('data-attribute');
 
                 boxCellContent.textContent = getCellContent( newValue, attribute );
+
+                // TODO → Realizar ajax a la url para actualizar en caliente "hotEditUrl"
             } else {
                 input.focus();
             }
 
-
-
             console.log(input, td, confirm);
+        }
+
+        /**
+         * Manejador para pulsaciones sobre el botón de actualizar.
+         * @param e
+         * @param url
+         * @param id
+         * @param slug
+         */
+        const handleOnUpdate = (e, url, id, slug) => {
+            let urlDecoded = decodeURI(url);
+            console.log(urlDecoded);
+
+            let urlClean = urlDecoded.replace(/\[id\]/ig, id)
+                                .replace(/\[slug\]/ig, slug);
+
+            window.location.href = urlClean;
         }
 
         return {
@@ -690,6 +710,7 @@ export default {
             handleOnWriteSearchKeyboardUp,
             handleOnClickCellEditable,
             handleOnFocusoutCellEditable,
+            handleOnUpdate,
         }
     }
 

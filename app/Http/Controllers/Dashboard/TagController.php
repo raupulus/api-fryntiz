@@ -61,12 +61,16 @@ class TagController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $string
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($slug)
     {
-        return view('dashboard.tags.add-edit');
+        $tag = Tag::where('slug', $slug)->first();
+
+        return view('dashboard.tags.add-edit')->with([
+            'tag' => $tag
+        ]);
     }
 
     /**
