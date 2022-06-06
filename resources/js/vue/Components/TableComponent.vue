@@ -563,6 +563,11 @@ export default {
                 searchTimer.value = null;
             }
 
+            /**
+             * Solicita la primera página con los cambios del buscador.
+             *
+             * @returns {Promise<void>}
+             */
             async function startSearch() {
                 // Pongo la tabla en modo de cargar datos.
                 handleOnLoadData();
@@ -574,6 +579,7 @@ export default {
                 handleOnFinishLoadData();
             }
 
+            // Si se ha pulsado Enter, se envía de momento la consulta.
             if (event.which == 13 || event.keyCode == 13) {
                 startSearch();
             } else {
