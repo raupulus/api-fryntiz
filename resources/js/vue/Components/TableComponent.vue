@@ -563,8 +563,7 @@ export default {
                 searchTimer.value = null;
             }
 
-            // Añado intervalo a la cola para ejecutarse.
-            searchTimer.value = setTimeout(async () => {
+            async function startSearch() {
                 // Pongo la tabla en modo de cargar datos.
                 handleOnLoadData();
 
@@ -573,9 +572,17 @@ export default {
 
                 // Quita la tabla del modo cargar datos.
                 handleOnFinishLoadData();
-            }, 800);
+            }
 
+            if (event.which == 13 || event.keyCode == 13) {
+                startSearch();
+            } else {
+                // Añado intervalo a la cola para ejecutarse.
+                searchTimer.value = setTimeout(startSearch, 800);
+            }
         }
+
+
 
         return {
             rows:rows,
