@@ -2,20 +2,32 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseWithTableCrudController;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use JsonHelper;
-use function array_keys;
 use function redirect;
 use function view;
 
-class TagController extends Controller
+/**
+ * Controlador para Tags
+ */
+class TagController extends BaseWithTableCrudController
 {
+    protected function getModel() : string {
+        return Tag::class;
+    }
+
+    protected function getPolicy(): string
+    {
+        return 'FALTA CREARLA!!!';
+    }
+
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -29,7 +41,7 @@ class TagController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function create()
     {
@@ -61,10 +73,11 @@ class TagController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  string  $string
-     * @return \Illuminate\Http\Response
+     * @param  string  $slug
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit($slug)
+    public function edit(string $slug)
     {
         $tag = Tag::where('slug', $slug)->first();
 
@@ -89,11 +102,11 @@ class TagController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param                          $id
+     * @param int|null                 $id
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request, $id = null)
+    public function destroy(Request $request, int $id = null)
     {
         $deleted = false;
         $tag_id = $request->get('id');

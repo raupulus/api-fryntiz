@@ -25,9 +25,9 @@
 
     <div class="row">
         <div class="col-md-4">
-            a
+
             <i class="fa fa-edit"></i>
-            b
+            Tag Add Edit
         </div>
     </div>
 

@@ -659,9 +659,21 @@ export default {
                 let newValue = input.value;
                 let attribute = td.getAttribute('data-attribute');
 
-                boxCellContent.textContent = getCellContent( newValue, attribute );
+                let params = {
+                    value:newValue,
+                    attribute:attribute,
+                    orderBy:orderBy.value,
+                    orderDirection:orderDirection.value,
+                    search:search.value,
+                };
 
-                // TODO → Realizar ajax a la url para actualizar en caliente "hotEditUrl"
+                getQuery(props.hotEditUrl, 'POST', params).then(response => {
+
+                    // TODO → Comprobar si se ha guardado correctamente para mostrar mensaje o poner en rojo
+
+                    boxCellContent.textContent = getCellContent( newValue, attribute );
+
+                });
             } else {
                 input.focus();
             }
@@ -671,6 +683,7 @@ export default {
 
         /**
          * Manejador para pulsaciones sobre el botón de actualizar.
+         *
          * @param e
          * @param url
          * @param id
@@ -678,7 +691,6 @@ export default {
          */
         const handleOnUpdate = (e, url, id, slug) => {
             let urlDecoded = decodeURI(url);
-            console.log(urlDecoded);
 
             let urlClean = urlDecoded.replace(/\[id\]/ig, id)
                                 .replace(/\[slug\]/ig, slug);
@@ -740,6 +752,9 @@ export default {
     display: none;
 }
 
+.td-cell-editable input {
+    text-align: center;
+}
 
 
 
