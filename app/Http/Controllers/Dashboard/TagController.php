@@ -14,15 +14,9 @@ use function view;
  */
 class TagController extends BaseWithTableCrudController
 {
-    protected function getModel() : string {
+    protected static function getModel() : string {
         return Tag::class;
     }
-
-    protected function getPolicy(): string
-    {
-        return 'FALTA CREARLA!!!';
-    }
-
 
     /**
      * Display a listing of the resource.
@@ -136,32 +130,5 @@ class TagController extends BaseWithTableCrudController
     public function ajaxGetTags()
     {
         return JsonHelper::success(Tag::all());
-    }
-
-    /**
-     * Devuelve todas las etiquetas preparadas para mostrarlas en una tabla.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function ajaxTableGetQuery(Request $request)
-    {
-        $page = $request->json('page');
-        $size = $request->json('size');
-        $orderBy = $request->json('orderBy');
-        $orderDirection = $request->json('orderDirection');
-        $search = $request->json('search');
-
-        $data = Tag::getTableQuery($page, $size, $orderBy, $orderDirection, $search);
-
-        return JsonHelper::success([
-            'data' => $data,
-        ]);
-    }
-
-    public function ajaxTableActions(Request $request)
-    {
-
     }
 }

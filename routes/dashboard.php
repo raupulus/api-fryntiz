@@ -54,8 +54,11 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
 
         Route::group(['prefix' => '/ajax'],
             function () {
+
+                /*
                 Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
                     ->name('dashboard.tag.ajax.get.all');
+                */
 
 
                 Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
