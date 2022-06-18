@@ -34,8 +34,8 @@
                                :searchable="true"
                                :sortable="true"
                                csrf="{{csrf_token()}}"
-                               hotEditUrl="#"
-                               :actions='{!!\App\Models\Tag::getTableActionsInfo()->toJson(JSON_UNESCAPED_UNICODE)!!}'
+                               url-edit-hot='{{route('dashboard.tag.ajax.table.actions')}}'
+                               :actions='{!!\App\Models\Tag::getTableActionsInfoJson() !!}'
                                url="{{route('dashboard.tag.ajax.table.get')}}" />
         </div>
     </div>

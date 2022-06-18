@@ -21,10 +21,7 @@ class Tag extends BaseAbstractModelWithTableCrud
 
     protected $fillable = ['name', 'slug', 'description'];
 
-    protected static function getPolicy(): string
-    {
-        return 'App\Policies\TagPolicy';  // TODO → CREAR!!!!!!
-    }
+
 
     /**
      * Elimina de forma segura la instancia actual.
@@ -40,6 +37,31 @@ class Tag extends BaseAbstractModelWithTableCrud
 
     /****************** Métodos para tablas dinámicas ******************/
 
+    /**
+     * Devuelve el modelo de la política asociada.
+     *
+     * @return string|null
+     */
+    protected static function getPolicy(): string|null
+    {
+        //return 'App\Policies\TagPolicy';  // TODO → CREAR!!!!!!
+
+        return null;
+    }
+
+    /**
+     * Devuelve un array con el nombre del atributo y la validación aplicada.
+     *
+     * @return array
+     */
+    public static function getFieldsValidation(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:tags,slug,{id}',
+            'description' => 'nullable|string|max:255',
+        ];
+    }
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
@@ -81,8 +103,6 @@ class Tag extends BaseAbstractModelWithTableCrud
 
         ];
     }
-
-
 
     /**
      * Devuelve las rutas de acciones

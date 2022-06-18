@@ -64,10 +64,10 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
                 Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
                     ->name('dashboard.tag.ajax.table.get');
 
-                ## Actualiza campo en tabla
-                Route::match(['put', 'patch', 'post'], '/table/update',
+                ## Acciones sobre datos de la tabla [update, create...]
+                Route::match(['put', 'patch', 'post'], '/table/action',
                     [TagController::class, 'ajaxTableActions'])
-                    ->name('dashboard.tag.ajax.table.update');
+                    ->name('dashboard.tag.ajax.table.actions');
             });
 });
 

@@ -149,28 +149,28 @@ import {onBeforeMount, onMounted, ref} from 'vue';
 export default {
     name:'VTableComponent',
     props:{
-        title:{ // Título sobre la tabla.
+        title: { // Título sobre la tabla.
             type:String,
             default:'',
             required:false
         },
-        caption:{ // Caption de la tabla.
+        caption: { // Caption de la tabla.
             type:String,
             default:'',
             required:false
         },
 
-        url:{ // Url para obtener los datos de la tabla.
+        url: { // Url para obtener los datos de la tabla.
             type:String,
             required:true
         },
-        showId:{ // Indica si muestra el ID en la tabla.
+        showId: { // Indica si muestra el ID en la tabla.
             type:Boolean,
             default:false,
             required:false
         },
 
-        elements:{ // Cantidad de elementos por página.
+        elements: { // Cantidad de elementos por página.
             type:Number,
             default:10,
             required:false
@@ -180,9 +180,9 @@ export default {
             default:false,
             required:false
         },
-        hotEditUrl: {  // Url para editar campos en al pulsarlos.
-            type:String|null,
-            default:null,
+        urlEditHot: {  // Url para editar campos en al pulsarlos.
+            //type:String|null, // Falla, pero no encuentro la solución.
+            default:'http:://test',
             required:false
         },
         searchable:{  // Indica si tiene input de búsqueda.
@@ -631,19 +631,19 @@ export default {
             if (input) {
                 input.focus();
             }
-
-            console.log(td, id);
         };
 
         /**
          * Maneja la perdida de focus de una celda editable.
          *
-         * @param e
+         * @param e Evento sobre la celda pulsada.
          * @returns {Promise<void>}
          */
         const handleOnFocusoutCellEditable = async (e) => {
             const input = e.target;
             const td = input.closest('td');
+            const id = td.getAttribute('data-id');
+
             let confirm = window.confirm('¿Quieres guardar los cambios?')
 
             const boxCellContent = td.querySelector('.td-cell-content-hidden');
@@ -660,6 +660,8 @@ export default {
                 let attribute = td.getAttribute('data-attribute');
 
                 let params = {
+                    action:'update',
+                    id: id,
                     value:newValue,
                     attribute:attribute,
                     orderBy:orderBy.value,
@@ -667,7 +669,9 @@ export default {
                     search:search.value,
                 };
 
-                getQuery(props.hotEditUrl, 'POST', params).then(response => {
+                console.log(props.urlEditHot);
+
+                getQuery(props.urlEditHot, 'POST', params).then(response => {
 
                     // TODO → Comprobar si se ha guardado correctamente para mostrar mensaje o poner en rojo
 
@@ -684,10 +688,10 @@ export default {
         /**
          * Manejador para pulsaciones sobre el botón de actualizar.
          *
-         * @param e
-         * @param url
-         * @param id
-         * @param slug
+         * @param e Evento
+         * @param url Ruta con los parámetros sin dinamizar
+         * @param id Id del elemento
+         * @param slug Slug del elemento
          */
         const handleOnUpdate = (e, url, id, slug) => {
             let urlDecoded = decodeURI(url);
