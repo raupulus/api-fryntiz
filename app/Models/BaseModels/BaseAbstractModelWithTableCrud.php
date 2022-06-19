@@ -4,7 +4,12 @@ namespace App\Models\BaseModels;
 
 use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Str;
+use Validator;
+use function array_key_exists;
 use function array_keys;
+use function preg_replace;
+use function trim;
 
 /**
  * Class BaseAbstractModelWithTableCrud
@@ -68,7 +73,74 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
      */
     public static function getAttributesFillable(): array
     {
-        return (new (self::getModel())())->fillable ?? [];
+        return (new (self::getModel())())->getFillable() ?? [];
+    }
+
+    public static function prepareValue(string|int|float|null $value,
+                                        string $attribute,
+                                        string|null $action): string
+    {
+        $value = trim($value);
+
+        if ($attribute === 'slug') {
+            $value = Str::slug($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Comprueba si puede editar un atributo concreto o en general.
+     *
+     * @param string|null $attribute
+     *
+     * @return bool
+     */
+    protected static function checkCanEdit(string $attribute = null): bool {
+        $model = self::getModel()::getModel();
+        $policy = self::getModel()::getPolicy();
+        $attributes = self::getAttributesFillable();
+
+
+        // Todo comprobar si en policy hay un método para comprobar si puede editar el atributo
+        // Tal vez crear un sistema de roles para los usuarios y usar slug de
+        // clave de para comprobar si puede editar el atributo
+
+
+        // TOFIX → Por ahora devuelvo siempre true hasta completar esté método
+        return true;
+    }
+
+
+    /**
+     * Comprueba si un atributo recibido cumple las reglas de validación.
+     *
+     * @param string $field Nombre del atributo.
+     * @param string|null $value Nuevo valor del atributo.
+     * @param int|null $id Id del elemento cuando se actualiza.
+     *
+     * @return array
+     */
+    protected static function checkFieldValidation(string $field, string|null $value, int|null $id): array
+    {
+        $validations = self::getModel()::getFieldsValidation();
+
+        if (array_key_exists($field, $validations)) {
+            $prepareRules = preg_replace('/\{id\}/', $id, $validations[$field]);
+
+            $validator = Validator::make([$field => $value], [
+                $field => $prepareRules,
+            ]);
+
+            //dd($validator->errors()->messages(), $value, $prepareRules, $field, $id);
+            $errors = $validator->errors()->messages();
+
+            return isset($errors[$field]) ? $errors[$field] : [];
+        }
+
+        return [
+            ['No existe'],
+        ];
     }
 
     /**
@@ -88,6 +160,9 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
                                                 string|null $search = ''): Builder
     {
         $query = self::select($columns);
+
+        // TODO → ¿SECURIZAR? para evitar SQL Injection eliminando código
+        $search = trim($search);
 
         if ($search) {
             $query->where(function ($q) use ($columns, $search) {

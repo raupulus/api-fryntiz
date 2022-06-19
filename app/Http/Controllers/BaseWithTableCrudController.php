@@ -6,8 +6,10 @@ use App\Http\Interfaces\TableCrudControllerInterface;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use JsonHelper;
+use Validator;
 use function count;
 use function in_array;
+use function is_array;
 
 /**
  * Class Controller
@@ -31,33 +33,6 @@ abstract class BaseWithTableCrudController extends Controller
     protected function getPolicy(): string|null
     {
         return $this::getModel()::getPolicy();
-    }
-
-
-
-
-
-
-    /**
-     * Comprueba si puede editar un atributo concreto o en general.
-     *
-     * @param string|null $attribute
-     *
-     * @return bool
-     */
-    protected function checkCanEdit(string $attribute = null): bool {
-        $model = $this::getModel();
-        $policy = $this::getPolicy();
-        $attributes = $model::getAttributesFillable();
-
-
-        // Todo comprobar si en policy hay un método para comprobar si puede editar el atributo
-        // Tal vez crear un sistema de roles para los usuarios y usar slug de
-        // clave de para comprobar si puede editar el atributo
-
-
-        // TOFIX → Por ahora devuelvo siempre true hasta completar esté método
-        return true;
     }
 
 
@@ -106,29 +81,37 @@ abstract class BaseWithTableCrudController extends Controller
     public function ajaxTableActions(Request $request)
     {
         $action = $request->get('action');
-        $id = $request->get('id');
-        $value = $request->get('value');
+        $id = (int) $request->get('id');
         $attribute = $request->get('attribute');
+        $value = $this::getModel()::prepareValue($request->get('value'), $attribute, $action);
 
         $success = false;
         $modelString = $this::getModel();
-        $fillable = (new $modelString())->fillable ?? [];
-        $can = $this::checkCanEdit($action);
+        $fillable = (new $modelString())->getFillable() ?? [];
+        $can = $this::getModel()::checkCanEdit($action);
 
-        switch ($action) {
-            case 'update':
+        ## Comprueba si el campo pasa la validación u obtiene errores.
+        $fieldErrors = $this::getModel()::checkFieldValidation($attribute, $value, $id);
 
-                if ($can && $id && (!count($fillable) || in_array($attribute, $fillable))) {
-                    $model = $modelString::find($id);
+        if (!$fieldErrors || (is_array($fieldErrors) && !count($fieldErrors))) {
+            switch ($action) {
+                case 'update':
 
-                    $success = $model && ($model->{$attribute} = $value) && $model->save();
-                }
-                break;
+                    if ($can && $id && (!count($fillable) || in_array($attribute, $fillable))) {
+                        $model = $modelString::find($id);
+
+                        $success = $model && ($model->{$attribute} = $value) && $model->save();
+                    }
+                    break;
+            }
         }
+
 
 
         return JsonHelper::success([
             'success' => $success,
+            'errors' => $fieldErrors,
+            'can' => $can,
             'action' => $action,
             'id' => $id,
             'value' => $value,
@@ -139,7 +122,6 @@ abstract class BaseWithTableCrudController extends Controller
         ]);
 
 
-        // TODO → Obtener datos, validando los fillable!!!
         // TODO → Plantear si usar políticas
         // TODO → Usar validación de request para update
 
