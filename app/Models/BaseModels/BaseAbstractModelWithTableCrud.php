@@ -76,9 +76,20 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
         return (new (self::getModel())())->getFillable() ?? [];
     }
 
+    /**
+     * Prepara un valor para ser guardado en la base de datos.
+     * Limpia los espacios en blanco de los atributos.
+     * TODO → Previene injection de SQL.
+     *
+     * @param string|int|float|null $value
+     * @param string                $attribute
+     * @param string|null           $action
+     *
+     * @return string|null
+     */
     public static function prepareValue(string|int|float|null $value,
                                         string $attribute,
-                                        string|null $action): string
+                                        string|null $action): string|null
     {
         $value = trim($value);
 
@@ -86,7 +97,7 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
             $value = Str::slug($value);
         }
 
-        return $value;
+        return $value ?? null;
     }
 
     /**

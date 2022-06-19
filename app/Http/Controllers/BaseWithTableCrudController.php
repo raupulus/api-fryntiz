@@ -94,14 +94,27 @@ abstract class BaseWithTableCrudController extends Controller
         $fieldErrors = $this::getModel()::checkFieldValidation($attribute, $value, $id);
 
         if (!$fieldErrors || (is_array($fieldErrors) && !count($fieldErrors))) {
+            $model = $modelString::find($id);
+
             switch ($action) {
                 case 'update':
 
                     if ($can && $id && (!count($fillable) || in_array($attribute, $fillable))) {
-                        $model = $modelString::find($id);
-
-                        $success = $model && ($model->{$attribute} = $value) && $model->save();
+                        if ($model && $value) {
+                            $success = ($model->{$attribute} = $value) && $model->save();
+                        } else if ($model && !$value){
+                            $success = true;
+                            $model->{$attribute} = null;
+                            $model->save();
+                        }
                     }
+                    break;
+
+                case 'delete':
+                    // Comprueba si se puede eliminar el registro.
+                    //$success = $model && $model->delete(); ->safeDelete();
+                    break;
+                default:
                     break;
             }
         }

@@ -1,5 +1,12 @@
 <template>
-    <div class="box-vue-table-component" ref="table">
+    <div :id="tableId" class="box-vue-table-component" ref="table">
+
+        <div class="box-popup-message-info hidden">
+            <div class="popup-message-info">
+
+            </div>
+        </div>
+
         <div>
             <h3 v-if="title">{{ title }}</h3>
         </div>
@@ -214,6 +221,7 @@ export default {
     },
 
     setup(props) {
+        const tableId = ref('table-random');  // Prepara un ID aleatorio para la tabla.
         const rows = ref([]);  // Columnas con los datos
         const heads = ref([]);  // Títulos para columnas
         const totalPages = ref(0);  // Cantidad total de páginas
@@ -230,6 +238,17 @@ export default {
         const search = ref('');  // Cadena de búsqueda
         const orderDirection = ref('DESC');  // Modo de ordenar
         const orderBy = ref('created_at');  // Campo por el que ordenar
+
+        /**
+         * Genera un id aleatorio compuesto pro carácteres alfanuméricos.
+         *
+         * @returns {string} Devuelve un id aleatorio.
+         */
+        const makeId = () => {
+            return 'table-' + Math.random().toString(36).substr(2, 9);
+        };
+
+        tableId.value = makeId();
 
         // Headers para las peticiones ajax, dinamizado con prop headers
         const fetchHeaders = {
@@ -488,7 +507,28 @@ export default {
          * @returns {Promise<void>}
          */
         const showPopupMessage = async (msg, type = 'success') => {
-            // TODO
+            const component = document.getElementById(tableId.value);
+            const boxPopup = component.querySelector('.box-popup-message-info');
+            const popupMessage = boxPopup.querySelector('.popup-message-info');
+
+            // TODO → Mostrar progresivamente el contendor flotante
+            popupMessage.classList.add(type);
+            boxPopup.classList.remove('hidden');
+
+            popupMessage.textContent = msg;
+
+            // TODO → Ocultar progresivamente el contendor flotante
+
+
+
+            setTimeout(() => {
+                boxPopup.classList.add('hidden');
+                popupMessage.classList.remove(type);
+
+                popupMessage.textContent = '';
+            }, type === 'success' ? 3000 : 8000);
+
+
             console.log('showPopupMessage() ' + type + ': ' + msg);
         }
 
@@ -735,6 +775,7 @@ export default {
         }
 
         return {
+            tableId,
             rows:rows,
             heads:heads,
             totalPages:totalPages,
@@ -769,8 +810,47 @@ export default {
 
 <style lang="scss" scoped>
 
+/* Modal messages popup */
 
+.box-popup-message-info {
+    position: absolute;
+    min-width: 120px;
+    max-width: 800px;
+    min-height: 50px;
+    top: 120px;
+    left: 15px;
+    margin: auto;
+    border-radius: 10px;
+    opacity: 0.8;
+}
 
+.box-popup-message-info.hidden {
+    display: none;
+}
+
+.popup-message-info {
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    text-align: center;
+    background-color: yellow;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+}
+.popup-message-info.success {
+    background-color: #2ecc71;
+}
+.popup-message-info.error {
+    background-color: #DC3545;
+}
+.popup-message-info.warning {
+    background-color: #e6d461;
+}
+.popup-message-info.primary {
+    background-color: #0056b3;
+}
 
 
 .td-cell-content {
