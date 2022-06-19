@@ -669,20 +669,28 @@ export default {
                     search:search.value,
                 };
 
-                console.log(props.urlEditHot);
-
                 getQuery(props.urlEditHot, 'POST', params).then(response => {
 
-                    // TODO → Comprobar si se ha guardado correctamente para mostrar mensaje o poner en rojo
+                    if(response && response.errors && response.errors.length) {
 
-                    boxCellContent.textContent = getCellContent( newValue, attribute );
+                        response.errors.forEach(error => {
+                            showPopupMessage(error, 'error');
+                        });
+
+                    } else if (response && response.success && (!response.errors || !response.errors.length)) {
+
+                        boxCellContent.textContent = getCellContent( response.value, attribute );
+                        input.value = response.value;
+
+                        showPopupMessage('Se ha modificado correctamente', 'success');
+
+                    }
 
                 });
             } else {
                 input.focus();
             }
 
-            console.log(input, td, confirm);
         }
 
         /**
