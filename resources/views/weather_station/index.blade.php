@@ -138,6 +138,7 @@
                     <section id="{{$title}}" class="bg-white border-b">
                         <div class="container max-w-5xl mx-auto m-4">
                             <v-table-component title="{{$title}}"
+                                               csrf="{{csrf_token()}}"
                                                url="{{$url}}" />
                         </div>
                     </section>
