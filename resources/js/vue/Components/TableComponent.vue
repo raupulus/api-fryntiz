@@ -45,7 +45,8 @@
                         :class="'td-' + key + '-' + row.id"
                         @dblclick="(e) => handleOnClickCellEditable(e, 'td-' + key + '-' + row.id)"
                         @focusout="handleOnFocusoutCellEditable"
-                        v-show="(key !== 'id') || showId">
+                        v-show="(key !== 'id') || showId"
+                        @keyup="handleOnKeyUpCellEditable">
 
                         <div>
                             <div class="headTitleInTd">
@@ -694,6 +695,29 @@ export default {
         }
 
         /**
+         * Manejador del evento que ocurre cuando se pulsa una tecla en una
+         * celda editable, principalmente para controlar teclas ESC y ENTER.
+         * @param e
+         * @returns {Promise<void>}
+         */
+        const handleOnKeyUpCellEditable = async (e) => {
+            const input = e.target;
+
+            const component = input.closest('.box-vue-table-component');
+            const inputSearch = component.querySelector('input[type="search"]');
+
+            // TODO → Al pulsar ESC, cancela edición sin mostrar el cartelito.
+
+            if (e.which == 13 || e.keyCode == 13) {
+                console.log('Se ha pulsado INTRO dentro del input');
+                inputSearch.focus();
+            } else if (e.which == 27 || e.keyCode == 27) {
+                console.log('Se ha pulsado ESC dentro del input');
+                inputSearch.focus();
+            }
+        }
+
+        /**
          * Manejador para pulsaciones sobre el botón de actualizar.
          *
          * @param e Evento
@@ -734,6 +758,7 @@ export default {
             handleOnWriteSearchKeyboardUp,
             handleOnClickCellEditable,
             handleOnFocusoutCellEditable,
+            handleOnKeyUpCellEditable,
             handleOnUpdate,
         }
     }
