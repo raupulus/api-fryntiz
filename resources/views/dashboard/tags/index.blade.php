@@ -13,7 +13,6 @@
 
     <div class="row" id="app">
 
-        {{--
         <div class="col-12">
             <h2>
                 Listado de Etiquetas
@@ -24,7 +23,6 @@
                 </a>
             </h2>
         </div>
-        --}}
 
         <div class="col-12">
 
@@ -37,6 +35,7 @@
                                url-edit-hot='{{route('dashboard.tag.ajax.table.actions')}}'
                                :actions='{!!\App\Models\Tag::getTableActionsInfoJson() !!}'
                                url="{{route('dashboard.tag.ajax.table.get')}}" />
+
         </div>
     </div>
 

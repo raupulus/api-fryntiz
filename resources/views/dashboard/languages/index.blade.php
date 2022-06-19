@@ -25,6 +25,7 @@
 
         <div class="col-12">
             <v-table-component title="titulo de la tabla"
+                               csrf="{{csrf_token()}}"
                                url="{{route('language.ajax.get.languages')}}" />
         </div>
     </div>

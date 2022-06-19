@@ -220,6 +220,7 @@ export default {
         }
     },
 
+    // TODO → Implementar autoreload de la tabla, por defecto off.
     setup(props) {
         const tableId = ref('table-random');  // Prepara un ID aleatorio para la tabla.
         const rows = ref([]);  // Columnas con los datos
