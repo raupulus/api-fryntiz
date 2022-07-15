@@ -14,7 +14,8 @@ use function view;
  */
 class TagController extends BaseWithTableCrudController
 {
-    protected static function getModel() : string {
+    protected static function getModel(): string
+    {
         return Tag::class;
     }
 
@@ -25,10 +26,10 @@ class TagController extends BaseWithTableCrudController
      */
     public function index()
     {
-        $tags = Tag::all();
+        //$tags = Tag::all();
 
         return view('dashboard.tags.index')->with([
-            'tags' => $tags,
+            //'tags' => $tags,
         ]);
     }
 
@@ -39,24 +40,62 @@ class TagController extends BaseWithTableCrudController
      */
     public function create()
     {
-        return view('dashboard.tags.add-edit');
+        $model = new (self::getModel())();
+
+        return view('dashboard.tags.add-edit')->with([
+            'model' => $model,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+
+        $id = $request->get('id');
+        $modelString = $this::getModel();
+        $model = $modelString::find($id);
+
+
+
+
+
+        //TODO → Crear política y request para update/store en tags y copiar a categorías
+
+
+
+
+
+        // TODO → Crear validación de request
+
+        if ($model) {
+            $model->fill([
+                'name' => $request->get('name'),
+                'slug' => $request->get('slug'),
+                'description' => $request->get('description'),
+            ]);
+            $model->save();
+        } else {
+            $modelString::create([
+                'name' => $request->get('name'),
+                'slug' => $request->get('slug'),
+                'description' => $request->get('description'),
+            ]);
+        }
+
+        return redirect()->route('dashboard.tag.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -67,29 +106,30 @@ class TagController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  string  $slug
+     * @param string $slug
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(string $slug)
+    public function edit(Tag $tag)
     {
-        $tag = Tag::where('slug', $slug)->first();
-
         return view('dashboard.tags.add-edit')->with([
-            'tag' => $tag
+            'model' => $tag,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int|null                      $id
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id = null)
     {
-        //
+        // TOFIX → no funciona, no terminado de preparar
+
+        return $this->store($request);
     }
 
     /**

@@ -15,7 +15,6 @@
 
         <div class="col-12">
             <h2>
-                Listado de Etiquetas
                 <a href="{{ route('dashboard.tag.create') }}"
                    class="btn btn-primary float-right">
                     <i class="fas fa-plus"></i>

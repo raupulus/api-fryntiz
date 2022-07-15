@@ -47,7 +47,7 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.tag.store');
         Route::get('/{tag}/edit', [TagController::class, 'edit'])
             ->name('dashboard.tag.edit');
-        Route::match(['put', 'patch'], '/update/{tag}', [TagController::class, 'update'])
+        Route::match(['post', 'put', 'patch'], '/update/{tag?}', [TagController::class, 'update'])
             ->name('dashboard.tag.update');
         Route::match(['POST', 'DELETE'], '/destroy/{tag?}', [TagController::class, 'destroy'])
             ->name('dashboard.tag.destroy');
