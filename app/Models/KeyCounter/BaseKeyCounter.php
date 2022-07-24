@@ -244,6 +244,8 @@ class BaseKeyCounter extends Model
             $labels[] = (new Carbon($day))->format('d');
 
             foreach ($devices as $device) {
+                $idxColor = rand(0, count($colors) - 1);
+                $color = $colors[$idxColor];
 
                 // FIXME → Esto no puede quedar haciendo consultas así
                 // TODO → Mejorar forma de preparar los datos y usar REDIS/CACHE
@@ -257,7 +259,7 @@ class BaseKeyCounter extends Model
                     }
 
                     if (!isset($datasetTMP[$device]['borderColor'])) {
-                        $datasetTMP[$device]['borderColor'] = $colors[$s->hardware_device_id];
+                        $datasetTMP[$device]['borderColor'] = $color;
                     }
 
                     if (!isset($datasetTMP[$device]['fill'])) {
@@ -269,7 +271,7 @@ class BaseKeyCounter extends Model
                     $datasetTMP[$device] = [
                         'data' => [$s->total_pulsations],
                         'label' => $s->hardware->name,
-                        'borderColor' => $colors[$s->hardware_device_id],
+                        'borderColor' => $color,
                         'fill' => 'false'
                     ];
                 } else {
