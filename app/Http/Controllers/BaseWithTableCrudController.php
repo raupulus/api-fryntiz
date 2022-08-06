@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Interfaces\TableCrudControllerInterface;
-use App\Models\Tag;
 use Illuminate\Http\Request;
 use JsonHelper;
-use Validator;
 use function count;
 use function in_array;
 use function is_array;
@@ -86,16 +83,15 @@ abstract class BaseWithTableCrudController extends Controller
         $value = $this::getModel()::prepareValue($request->get('value'), $attribute, $action);
 
         $success = false;
+        $can = false;
         $modelString = $this::getModel();
         $model = $modelString::find($id);
         $fillable = (new $modelString())->getFillable() ?? [];
 
-
-
         ## Comprueba si el campo pasa la validación u obtiene errores.
         $fieldErrors = $this::getModel()::checkFieldValidation($attribute, $value, $id);
 
-        if (!$fieldErrors || (is_array($fieldErrors) && !count($fieldErrors))) {
+        if (!$fieldErrors || (is_array($fieldErrors) && !count ($fieldErrors))) {
 
             switch ($action) {
                 case 'update':
@@ -127,8 +123,6 @@ abstract class BaseWithTableCrudController extends Controller
             }
         }
 
-
-
         return JsonHelper::success([
             'success' => $success,
             'errors' => $fieldErrors,
@@ -141,10 +135,5 @@ abstract class BaseWithTableCrudController extends Controller
             'modelString' => $modelString,
             'request' => $request->all(),
         ]);
-
-
-        // TODO → Plantear si usar políticas
-        // TODO → Usar validación de request para update
-
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Tag\TagDeleteRequest;
 use App\Http\Requests\Dashboard\Tag\TagStoreRequest;
 use App\Http\Requests\Dashboard\Tag\TagUpdateRequest;
+use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use JsonHelper;
@@ -121,11 +122,11 @@ class TagController extends BaseWithTableCrudController
     public function destroy(TagDeleteRequest $request, int|null $id = null)
     {
         $deleted = false;
-        $tag_id = $request->get('id');
-        $tag = Tag::find($tag_id);
+        $idRequest = $request->get('id');
+        $model = Category::find($idRequest);
 
-        if ($tag) {
-            $deleted = $tag->safeDelete();
+        if ($model) {
+            $deleted = $model->safeDelete();
         }
 
         if ($request->isJson()) {

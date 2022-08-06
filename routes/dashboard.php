@@ -52,21 +52,18 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
         Route::match(['POST', 'DELETE'], '/destroy/{tag?}', [TagController::class, 'destroy'])
             ->name('dashboard.tag.destroy');
 
-        Route::group(['prefix' => '/ajax'],
-            function () {
+        Route::group(['prefix' => '/ajax'], function () {
 
                 /*
                 Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
                     ->name('dashboard.tag.ajax.get.all');
                 */
 
-
                 Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
                     ->name('dashboard.tag.ajax.table.get');
 
                 ## Acciones sobre datos de la tabla [update, create...]
-                Route::match(['put', 'patch', 'post'], '/table/action',
-                    [TagController::class, 'ajaxTableActions'])
+                Route::match(['put', 'patch', 'post'], '/table/action', [TagController::class, 'ajaxTableActions'])
                     ->name('dashboard.tag.ajax.table.actions');
             });
 });
@@ -84,10 +81,25 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.category.store');
         Route::get('/{category}/edit', [CategoryController::class, 'edit'])
             ->name('dashboard.category.edit');
-        Route::match(['put', 'patch'], '/update/{category}', [CategoryController::class, 'update'])
+        Route::match(['post', 'put', 'patch'], '/update/{category?}', [CategoryController::class, 'update'])
             ->name('dashboard.category.update');
-        Route::post('/destroy/{category}', [CategoryController::class, 'destroy'])
+        Route::match(['POST', 'DELETE'], '/destroy/{category?}', [CategoryController::class, 'destroy'])
             ->name('dashboard.category.destroy');
+
+        Route::group(['prefix' => '/ajax'], function () {
+
+                /*
+                Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
+                    ->name('dashboard.tag.ajax.get.all');
+                */
+
+                Route::post('/table/get', [CategoryController::class, 'ajaxTableGetQuery'])
+                    ->name('dashboard.category.ajax.table.get');
+
+                ## Acciones sobre datos de la tabla [update, create...]
+                Route::match(['put', 'patch', 'post'], '/table/action', [CategoryController::class, 'ajaxTableActions'])
+                    ->name('dashboard.category.ajax.table.actions');
+            });
     });
 
 ############################################################

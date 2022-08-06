@@ -29,7 +29,7 @@ class CategoryStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|max:255|unique:category,slug',
+            'slug' => 'required|max:255|unique:categories,slug',
             'description' => 'nullable|string|max:255',
         ];
     }

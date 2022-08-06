@@ -2,7 +2,6 @@
 
 namespace App\Models\BaseModels;
 
-use App\Models\Tag;
 use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Str;
