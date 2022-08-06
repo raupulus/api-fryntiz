@@ -42,14 +42,6 @@ Route::group(['prefix' => 'v1/auth'], function () {
         Route::post('/delete-account', [RegisterController::class, 'destroy'])
             ->name('api.v1.auth.delete_account');
     });
-
-    /*
-    Route::post('/tokens/create', function (Request $request) {
-        $token = $request->user()->createToken($request->token_name);
-
-        return ['token' => $token->plainTextToken];
-    });
-    */
 });
 
 ######################################################
