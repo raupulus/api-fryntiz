@@ -36,7 +36,7 @@ class UserPolicy
 
         //return $user->hasPermissionTo('create-user');
 
-        // TOFIX → Temparlmente solo permito crear usuarios al admin.
+        // TOFIX → Temporalmente solo permito crear usuarios al admin.
         return $user->role_id === 1;
     }
 
