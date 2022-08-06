@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Dashboard\Category;
 
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use function auth;
 
 /**
- * Request para crear una nueva categoría.
+ * Request para eliminar una categoría.
  */
-class CategoryStoreRequest extends FormRequest
+class CategoryDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +18,7 @@ class CategoryStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->id() && auth()->user()->can('store', \App\Models\Category::class);
+        return auth()->id() && auth()->user()->can('delete', Category::find($this->get('id')));
     }
 
     /**
@@ -28,9 +29,7 @@ class CategoryStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|max:255|unique:category,slug',
-            'description' => 'nullable|string|max:255',
+            'id' => 'required|exists:categories,id',
         ];
     }
 }
