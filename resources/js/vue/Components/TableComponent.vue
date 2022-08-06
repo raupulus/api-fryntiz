@@ -343,10 +343,9 @@ export default {
                 } else if(
                     ((totalElements.value / props.elements) > 1) &&
                     ((totalElements.value % props.elements) == 0)) {
-                    totalPages.value = Math.floor(totalElements.value / props.elements) - 1;
+                    totalPages.value = Math.floor(totalElements.value / props.elements);
                 } else {
-                    totalPages.value = Math.floor(totalElements.value /
-                        props.elements) +1;
+                    totalPages.value = Math.floor(totalElements.value / props.elements) +1;
                 }
 
                 hasBackPage.value = (totalPages.value > 1) && (currentPage.value > 1);
