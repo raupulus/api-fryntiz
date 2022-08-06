@@ -87,17 +87,21 @@ abstract class BaseWithTableCrudController extends Controller
 
         $success = false;
         $modelString = $this::getModel();
+        $model = $modelString::find($id);
         $fillable = (new $modelString())->getFillable() ?? [];
-        $can = $this::getModel()::checkCanEdit($action);
+
+
 
         ## Comprueba si el campo pasa la validación u obtiene errores.
         $fieldErrors = $this::getModel()::checkFieldValidation($attribute, $value, $id);
 
         if (!$fieldErrors || (is_array($fieldErrors) && !count($fieldErrors))) {
-            $model = $modelString::find($id);
 
             switch ($action) {
                 case 'update':
+
+                    ## Comprueba si puede editar ese atributo.
+                    $can = $this::getModel()::checkCanEdit($id, $attribute);
 
                     if ($can && $id && (!count($fillable) || in_array($attribute, $fillable))) {
                         if ($model && $value) {
@@ -111,6 +115,10 @@ abstract class BaseWithTableCrudController extends Controller
                     break;
 
                 case 'delete':
+
+                    ## Comprueba si puede editar ese atributo.
+                    $can = $this::getModel()::checkCanDelete($id);
+
                     // Comprueba si se puede eliminar el registro.
                     //$success = $model && $model->delete(); ->safeDelete();
                     break;

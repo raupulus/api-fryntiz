@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
@@ -44,9 +45,7 @@ class Tag extends BaseAbstractModelWithTableCrud
      */
     protected static function getPolicy(): string|null
     {
-        //return 'App\Policies\TagPolicy';  // TODO → CREAR!!!!!!
-
-        return null;
+        return App\Policies\TagPolicy::class;
     }
 
     /**

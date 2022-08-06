@@ -2,12 +2,14 @@
 
 namespace App\Models\BaseModels;
 
+use App\Models\Tag;
 use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Str;
 use Validator;
 use function array_key_exists;
 use function array_keys;
+use function auth;
 use function preg_replace;
 use function trim;
 
@@ -102,23 +104,47 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
 
     /**
      * Comprueba si puede editar un atributo concreto o en general.
-     *
-     * @param string|null $attribute
+
+     * @param int         $id
+     * @param string|null $attribute Campo que se quiere editar.
      *
      * @return bool
      */
-    protected static function checkCanEdit(string $attribute = null): bool {
-        $model = self::getModel()::getModel();
+    protected static function checkCanEdit(int $id, string|null $attribute = null): bool {
+        $model = self::getModel()::find($id);
         $policy = self::getModel()::getPolicy();
         $attributes = self::getAttributesFillable();
 
+        if ($policy) {
 
-        // Todo comprobar si en policy hay un método para comprobar si puede editar el atributo
-        // Tal vez crear un sistema de roles para los usuarios y usar slug de
-        // clave de para comprobar si puede editar el atributo
+            // TODO → Lo interesante es validar solo el atributo que se quiere editar
+            // Para eso se planteaba "checkFieldValidation()"
 
+            $policy = new $policy();
+            return auth()->id() && auth()->user()->can('update', $model);
+        }
 
-        // TOFIX → Por ahora devuelvo siempre true hasta completar esté método
+        return true;
+    }
+
+    /**
+     * Comprueba si puede eliminar un atributo concreto o en general.
+     *
+     * @param int $id
+     *
+     * @return bool
+     */
+    protected static function checkCanDelete(int $id): bool
+    {
+
+        $model = self::getModel()::find($id);
+        $policy = self::getModel()::getPolicy();
+
+        if ($policy) {
+            $policy = new $policy();
+            return auth()->id() && auth()->user()->can('update', $model);
+        }
+
         return true;
     }
 
