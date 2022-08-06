@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\BaseWithTableCrudController;
+use App\Http\Requests\Dashboard\Tag\TagDeleteRequest;
+use App\Http\Requests\Dashboard\Tag\TagStoreRequest;
+use App\Http\Requests\Dashboard\Tag\TagUpdateRequest;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use JsonHelper;
@@ -50,43 +53,14 @@ class TagController extends BaseWithTableCrudController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \App\Http\Requests\Dashboard\Tag\TagStoreRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(TagStoreRequest $request)
     {
-
-        $id = $request->get('id');
         $modelString = $this::getModel();
-        $model = $modelString::find($id);
-
-
-
-
-
-        //TODO → Crear política y request para update/store en tags y copiar a categorías
-
-
-
-
-
-        // TODO → Crear validación de request
-
-        if ($model) {
-            $model->fill([
-                'name' => $request->get('name'),
-                'slug' => $request->get('slug'),
-                'description' => $request->get('description'),
-            ]);
-            $model->save();
-        } else {
-            $modelString::create([
-                'name' => $request->get('name'),
-                'slug' => $request->get('slug'),
-                'description' => $request->get('description'),
-            ]);
-        }
+        $modelString::create($request->validated());
 
         return redirect()->route('dashboard.tag.index');
     }
@@ -106,7 +80,7 @@ class TagController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param string $slug
+     * @param \App\Models\Tag $tag
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
@@ -120,27 +94,31 @@ class TagController extends BaseWithTableCrudController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int|null                      $id
+     * @param \App\Http\Requests\Dashboard\Tag\TagUpdateRequest $request
+     * @param int|null                                          $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id = null)
+    public function update(TagUpdateRequest $request, int|null $id = null)
     {
-        // TOFIX → no funciona, no terminado de preparar
+        $modelString = $this::getModel();
+        $model = $modelString::find($id);
 
-        return $this->store($request);
+        $model->fill($request->validated());
+        $model->save();
+
+        return redirect()->route('dashboard.tag.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int|null                 $id
+     * @param \App\Http\Requests\Dashboard\Tag\TagDeleteRequest $request
+     * @param int|null                                          $id
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request, int $id = null)
+    public function destroy(TagDeleteRequest $request, int|null $id = null)
     {
         $deleted = false;
         $tag_id = $request->get('id');
