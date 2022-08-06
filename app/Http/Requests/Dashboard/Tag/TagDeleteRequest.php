@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Dashboard\Tag;
 
+use App\Models\Tag;
 use Illuminate\Foundation\Http\FormRequest;
 use function auth;
 
 /**
- * Request para crear un nuevo tag.
+ * Request para eliminar un tag.
  */
-class TagStoreRequest extends FormRequest
+class TagDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +18,7 @@ class TagStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->id() && auth()->user()->can('store', \App\Models\Tag::class);
+        return auth()->id() && auth()->user()->can('delete', Tag::find($this->get('id')));
     }
 
     /**
@@ -28,9 +29,7 @@ class TagStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|max:255|unique:tags,slug',
-            'description' => 'nullable|string|max:255',
+            'id' => 'required|exists:tags,id',
         ];
     }
 }

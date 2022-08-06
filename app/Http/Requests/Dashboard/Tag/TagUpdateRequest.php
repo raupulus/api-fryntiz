@@ -2,8 +2,14 @@
 
 namespace App\Http\Requests\Dashboard\Tag;
 
+use App\Models\Tag;
 use Illuminate\Foundation\Http\FormRequest;
+use function auth;
+use function trim;
 
+/**
+ * Request para actualizar tag.
+ */
 class TagUpdateRequest extends FormRequest
 {
     /**
@@ -13,7 +19,20 @@ class TagUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return auth()->id() && auth()->user()->can('update', Tag::find($this->get('id')));
+    }
+
+    public function prepareForValidation()
+    {
+        $model = Tag::find($this->get('id'));
+
+        if ($model) {
+            $this->merge([
+                'name' => trim($this->get('name')) ?? $model->name,
+                'slug' => trim($this->get('slug')) ?? $model->slug,
+                'description' => trim($this->get('description')),
+            ]);
+        }
     }
 
     /**
@@ -24,7 +43,9 @@ class TagUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'slug' => 'required|max:255|unique:tags,slug',
+            'description' => 'nullable|string|max:255',
         ];
     }
 }
