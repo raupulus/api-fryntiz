@@ -44,7 +44,7 @@ class CategoryUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|max:255|unique:category,slug',
+            'slug' => 'required|max:255|unique:category,slug,' . $this->get('id'),
             'description' => 'nullable|string|max:255',
         ];
     }
