@@ -34,7 +34,8 @@ var Default = {
   activeClasses: 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white',
   inactiveClasses: 'text-gray-500 dark:text-gray-400',
   onOpen: function onOpen() {},
-  onClose: function onClose() {}
+  onClose: function onClose() {},
+  onToggle: function onToggle() {}
 };
 
 var Accordion = /*#__PURE__*/function () {
@@ -118,7 +119,7 @@ var Accordion = /*#__PURE__*/function () {
       } // callback function
 
 
-      this._options.onOpen(item);
+      this._options.onOpen(this, item);
     }
   }, {
     key: "toggle",
@@ -132,7 +133,7 @@ var Accordion = /*#__PURE__*/function () {
       } // callback function
 
 
-      this._options.onToggle(item);
+      this._options.onToggle(this, item);
     }
   }, {
     key: "close",
@@ -154,7 +155,7 @@ var Accordion = /*#__PURE__*/function () {
       } // callback function
 
 
-      this._options.onClose(item);
+      this._options.onClose(this, item);
     }
   }]);
 
@@ -162,7 +163,8 @@ var Accordion = /*#__PURE__*/function () {
 }();
 
 window.Accordion = Accordion;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initAccordion() {
   document.querySelectorAll('[data-accordion]').forEach(function (accordionEl) {
     var alwaysOpen = accordionEl.getAttribute('data-accordion');
     var activeClasses = accordionEl.getAttribute('data-active-classes');
@@ -184,7 +186,16 @@ document.addEventListener('DOMContentLoaded', function () {
       inactiveClasses: inactiveClasses ? inactiveClasses : Default.inactiveClasses
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initAccordion();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initAccordion);
+}
+
 /* harmony default export */ const accordion = (Accordion);
 ;// CONCATENATED MODULE: ./src/components/collapse.js
 function collapse_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -250,7 +261,7 @@ var Collapse = /*#__PURE__*/function () {
 
       this._visible = false; // callback function
 
-      this._options.onCollapse();
+      this._options.onCollapse(this);
     }
   }, {
     key: "expand",
@@ -263,7 +274,7 @@ var Collapse = /*#__PURE__*/function () {
 
       this._visible = true; // callback function
 
-      this._options.onExpand();
+      this._options.onExpand(this);
     }
   }, {
     key: "toggle",
@@ -280,14 +291,24 @@ var Collapse = /*#__PURE__*/function () {
 }();
 
 window.Collapse = Collapse;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initCollapse() {
   document.querySelectorAll('[data-collapse-toggle]').forEach(function (triggerEl) {
     var targetEl = document.getElementById(triggerEl.getAttribute('data-collapse-toggle'));
     new Collapse(targetEl, {
       triggerEl: triggerEl
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initCollapse();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initCollapse);
+}
+
 /* harmony default export */ const collapse = (Collapse);
 ;// CONCATENATED MODULE: ./src/components/carousel.js
 function carousel_toConsumableArray(arr) { return carousel_arrayWithoutHoles(arr) || carousel_iterableToArray(arr) || carousel_unsupportedIterableToArray(arr) || carousel_nonIterableSpread(); }
@@ -400,7 +421,7 @@ var Carousel = /*#__PURE__*/function () {
         this.cycle();
       }
 
-      this._options.onChange();
+      this._options.onChange(this);
     }
     /**
      * Based on the currently active item it will go to the next position
@@ -421,7 +442,7 @@ var Carousel = /*#__PURE__*/function () {
 
       this.slideTo(nextItem.position); // callback function
 
-      this._options.onNext();
+      this._options.onNext(this);
     }
     /**
      * Based on the currently active item it will go to the previous position
@@ -442,7 +463,7 @@ var Carousel = /*#__PURE__*/function () {
 
       this.slideTo(prevItem.position); // callback function
 
-      this._options.onPrev();
+      this._options.onPrev(this);
     }
     /**
      * This method applies the transform classes based on the left, middle, and right rotation carousel items
@@ -536,7 +557,8 @@ var Carousel = /*#__PURE__*/function () {
 }();
 
 window.Carousel = Carousel;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initCarousel() {
   document.querySelectorAll('[data-carousel]').forEach(function (carouselEl) {
     var interval = carouselEl.getAttribute('data-carousel-interval');
     var slide = carouselEl.getAttribute('data-carousel') === 'slide' ? true : false;
@@ -595,7 +617,16 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initCarousel();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initCarousel);
+}
+
 /* harmony default export */ const carousel = (Carousel);
 ;// CONCATENATED MODULE: ./src/components/dismiss.js
 function dismiss_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -654,7 +685,7 @@ var Dismiss = /*#__PURE__*/function () {
         _this2._targetEl.classList.add('hidden');
       }, this._options.duration); // callback function
 
-      this._options.onHide(this._targetEl);
+      this._options.onHide(this, this._targetEl);
     }
   }]);
 
@@ -662,14 +693,24 @@ var Dismiss = /*#__PURE__*/function () {
 }();
 
 window.Dismiss = Dismiss;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initDismiss() {
   document.querySelectorAll('[data-dismiss-target]').forEach(function (triggerEl) {
     var targetEl = document.querySelector(triggerEl.getAttribute('data-dismiss-target'));
     new Dismiss(targetEl, {
       triggerEl: triggerEl
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initDismiss();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initDismiss);
+}
+
 /* harmony default export */ const dismiss = (Dismiss);
 ;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getWindow.js
 function getWindow(node) {
@@ -2772,7 +2813,7 @@ var Dropdown = /*#__PURE__*/function () {
 
       this._visible = true; // callback function
 
-      this._options.onShow();
+      this._options.onShow(this);
     }
   }, {
     key: "hide",
@@ -2793,7 +2834,7 @@ var Dropdown = /*#__PURE__*/function () {
 
       this._visible = false; // callback function
 
-      this._options.onHide();
+      this._options.onHide(this);
     }
   }]);
 
@@ -2801,7 +2842,8 @@ var Dropdown = /*#__PURE__*/function () {
 }();
 
 window.Dropdown = Dropdown;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initDropdown() {
   document.querySelectorAll('[data-dropdown-toggle]').forEach(function (triggerEl) {
     var targetEl = document.getElementById(triggerEl.getAttribute('data-dropdown-toggle'));
     var placement = triggerEl.getAttribute('data-dropdown-placement');
@@ -2809,7 +2851,16 @@ document.addEventListener('DOMContentLoaded', function () {
       placement: placement ? placement : dropdown_Default.placement
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initDropdown();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initDropdown);
+}
+
 /* harmony default export */ const dropdown = (Dropdown);
 ;// CONCATENATED MODULE: ./src/components/modal.js
 function modal_toConsumableArray(arr) { return modal_arrayWithoutHoles(arr) || modal_iterableToArray(arr) || modal_unsupportedIterableToArray(arr) || modal_nonIterableSpread(); }
@@ -2936,7 +2987,7 @@ var Modal = /*#__PURE__*/function () {
       } // callback function
 
 
-      this._options.onToggle();
+      this._options.onToggle(this);
     }
   }, {
     key: "show",
@@ -2955,7 +3006,7 @@ var Modal = /*#__PURE__*/function () {
 
       this._isHidden = false; // callback function
 
-      this._options.onShow();
+      this._options.onShow(this);
     }
   }, {
     key: "hide",
@@ -2974,7 +3025,7 @@ var Modal = /*#__PURE__*/function () {
 
       this._isHidden = true; // callback function
 
-      this._options.onHide();
+      this._options.onHide(this);
     }
   }]);
 
@@ -2995,7 +3046,7 @@ var getModalInstance = function getModalInstance(id, instances) {
   return false;
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+function initModal() {
   var modalInstances = [];
   document.querySelectorAll('[data-modal-toggle]').forEach(function (el) {
     var modalId = el.getAttribute('data-modal-toggle');
@@ -3023,12 +3074,361 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    if (modalEl.hasAttribute('data-modal-show') && modalEl.getAttribute('data-modal-show') === 'true') {
+      modal.show();
+    }
+
     el.addEventListener('click', function () {
       modal.toggle();
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initModal();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initModal);
+}
+
 /* harmony default export */ const modal = (Modal);
+;// CONCATENATED MODULE: ./src/components/drawer.js
+function drawer_toConsumableArray(arr) { return drawer_arrayWithoutHoles(arr) || drawer_iterableToArray(arr) || drawer_unsupportedIterableToArray(arr) || drawer_nonIterableSpread(); }
+
+function drawer_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function drawer_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return drawer_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return drawer_arrayLikeToArray(o, minLen); }
+
+function drawer_iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function drawer_arrayWithoutHoles(arr) { if (Array.isArray(arr)) return drawer_arrayLikeToArray(arr); }
+
+function drawer_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function drawer_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function drawer_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? drawer_ownKeys(Object(source), !0).forEach(function (key) { drawer_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : drawer_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function drawer_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function drawer_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function drawer_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function drawer_createClass(Constructor, protoProps, staticProps) { if (protoProps) drawer_defineProperties(Constructor.prototype, protoProps); if (staticProps) drawer_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var drawer_Default = {
+  placement: 'left',
+  bodyScrolling: false,
+  backdrop: true,
+  edge: false,
+  edgeOffset: 'bottom-[60px]',
+  backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-30',
+  onShow: function onShow() {},
+  onHide: function onHide() {},
+  onToggle: function onToggle() {}
+};
+
+var Drawer = /*#__PURE__*/function () {
+  function Drawer() {
+    var targetEl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var options = arguments.length > 1 ? arguments[1] : undefined;
+
+    drawer_classCallCheck(this, Drawer);
+
+    this._targetEl = targetEl;
+    this._options = drawer_objectSpread(drawer_objectSpread({}, drawer_Default), options);
+    this._visible = false;
+
+    this._init();
+  }
+
+  drawer_createClass(Drawer, [{
+    key: "_init",
+    value: function _init() {
+      var _this = this;
+
+      // set initial accessibility attributes
+      if (this._targetEl) {
+        this._targetEl.setAttribute('aria-hidden', 'true');
+
+        this._targetEl.classList.add('transition-transform');
+      } // set base placement classes
+
+
+      this._getPlacementClasses(this._options.placement).base.map(function (c) {
+        _this._targetEl.classList.add(c);
+      }); // hide by default
+
+
+      this.hide();
+    }
+  }, {
+    key: "isVisible",
+    value: function isVisible() {
+      return this._visible;
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      var _this2 = this;
+
+      // based on the edge option show placement classes
+      if (this._options.edge) {
+        this._getPlacementClasses(this._options.placement + '-edge').active.map(function (c) {
+          _this2._targetEl.classList.remove(c);
+        });
+
+        this._getPlacementClasses(this._options.placement + '-edge').inactive.map(function (c) {
+          _this2._targetEl.classList.add(c);
+        });
+      } else {
+        this._getPlacementClasses(this._options.placement).active.map(function (c) {
+          _this2._targetEl.classList.remove(c);
+        });
+
+        this._getPlacementClasses(this._options.placement).inactive.map(function (c) {
+          _this2._targetEl.classList.add(c);
+        });
+      } // set accessibility attributes
+
+
+      this._targetEl.setAttribute('aria-hidden', 'true');
+
+      this._targetEl.removeAttribute('aria-modal');
+
+      this._targetEl.removeAttribute('role'); // enable body scroll
+
+
+      if (!this._options.bodyScrolling) {
+        document.body.classList.remove('overflow-hidden');
+      } // destroy backdrop
+
+
+      if (this._options.backdrop) {
+        this._destroyBackdropEl();
+      }
+
+      this._visible = false; // callback function
+
+      this._options.onHide(this);
+    }
+  }, {
+    key: "show",
+    value: function show() {
+      var _this3 = this;
+
+      if (this._options.edge) {
+        this._getPlacementClasses(this._options.placement + '-edge').active.map(function (c) {
+          _this3._targetEl.classList.add(c);
+        });
+
+        this._getPlacementClasses(this._options.placement + '-edge').inactive.map(function (c) {
+          _this3._targetEl.classList.remove(c);
+        });
+      } else {
+        this._getPlacementClasses(this._options.placement).active.map(function (c) {
+          _this3._targetEl.classList.add(c);
+        });
+
+        this._getPlacementClasses(this._options.placement).inactive.map(function (c) {
+          _this3._targetEl.classList.remove(c);
+        });
+      } // set accessibility attributes
+
+
+      this._targetEl.setAttribute('aria-modal', 'true');
+
+      this._targetEl.setAttribute('role', 'dialog');
+
+      this._targetEl.removeAttribute('aria-hidden'); // disable body scroll
+
+
+      if (!this._options.bodyScrolling) {
+        document.body.classList.add('overflow-hidden');
+      } // show backdrop
+
+
+      if (this._options.backdrop) {
+        this._createBackdrop();
+      }
+
+      this._visible = true; // callback function
+
+      this._options.onShow(this);
+    }
+  }, {
+    key: "toggle",
+    value: function toggle() {
+      if (this.isVisible()) {
+        this.hide();
+      } else {
+        this.show();
+      }
+    }
+  }, {
+    key: "_createBackdrop",
+    value: function _createBackdrop() {
+      var _this4 = this;
+
+      if (!this._visible) {
+        var _backdropEl$classList;
+
+        var backdropEl = document.createElement('div');
+        backdropEl.setAttribute('drawer-backdrop', '');
+
+        (_backdropEl$classList = backdropEl.classList).add.apply(_backdropEl$classList, drawer_toConsumableArray(this._options.backdropClasses.split(" ")));
+
+        document.querySelector('body').append(backdropEl);
+        backdropEl.addEventListener('click', function () {
+          _this4.hide();
+        });
+      }
+    }
+  }, {
+    key: "_destroyBackdropEl",
+    value: function _destroyBackdropEl() {
+      if (this._visible) {
+        document.querySelector('[drawer-backdrop]').remove();
+      }
+    }
+  }, {
+    key: "_getPlacementClasses",
+    value: function _getPlacementClasses(placement) {
+      switch (placement) {
+        case 'top':
+          return {
+            base: ['top-0', 'left-0', 'right-0'],
+            active: ['transform-none'],
+            inactive: ['-translate-y-full']
+          };
+
+        case 'right':
+          return {
+            base: ['right-0', 'top-0'],
+            active: ['transform-none'],
+            inactive: ['translate-x-full']
+          };
+
+        case 'bottom':
+          return {
+            base: ['bottom-0', 'left-0', 'right-0'],
+            active: ['transform-none'],
+            inactive: ['translate-y-full']
+          };
+
+        case 'left':
+          return {
+            base: ['left-0', 'top-0'],
+            active: ['transform-none'],
+            inactive: ['-translate-x-full']
+          };
+
+        case 'bottom-edge':
+          return {
+            base: ['left-0', 'top-0'],
+            active: ['transform-none'],
+            inactive: ['translate-y-full', this._options.edgeOffset]
+          };
+
+        default:
+          return {
+            base: ['left-0', 'top-0'],
+            active: ['transform-none'],
+            inactive: ['-translate-x-full']
+          };
+      }
+    }
+  }]);
+
+  return Drawer;
+}();
+
+window.Drawer = Drawer;
+
+var getDrawerInstance = function getDrawerInstance(id, instances) {
+  if (instances.some(function (drawerInstance) {
+    return drawerInstance.id === id;
+  })) {
+    return instances.find(function (drawerInstance) {
+      return drawerInstance.id === id;
+    });
+  }
+
+  return false;
+};
+
+function initDrawer() {
+  var drawerInstances = [];
+  document.querySelectorAll('[data-drawer-target]').forEach(function (triggerEl) {
+    // mandatory
+    var targetEl = document.getElementById(triggerEl.getAttribute('data-drawer-target'));
+    var drawerId = targetEl.id; // optional
+
+    var placement = triggerEl.getAttribute('data-drawer-placement');
+    var bodyScrolling = triggerEl.getAttribute('data-drawer-body-scrolling');
+    var backdrop = triggerEl.getAttribute('data-drawer-backdrop');
+    var edge = triggerEl.getAttribute('data-drawer-edge');
+    var edgeOffset = triggerEl.getAttribute('data-drawer-edge-offset');
+    var drawer = null;
+
+    if (getDrawerInstance(drawerId, drawerInstances)) {
+      drawer = getDrawerInstance(drawerId, drawerInstances);
+      drawer = drawer.object;
+    } else {
+      drawer = new Drawer(targetEl, {
+        placement: placement ? placement : drawer_Default.placement,
+        bodyScrolling: bodyScrolling ? bodyScrolling === 'true' ? true : false : drawer_Default.bodyScrolling,
+        backdrop: backdrop ? backdrop === 'true' ? true : false : drawer_Default.backdrop,
+        edge: edge ? edge === 'true' ? true : false : drawer_Default.edge,
+        edgeOffset: edgeOffset ? edgeOffset : drawer_Default.edgeOffset
+      });
+      drawerInstances.push({
+        id: drawerId,
+        object: drawer
+      });
+    }
+  });
+  document.querySelectorAll('[data-drawer-toggle]').forEach(function (triggerEl) {
+    var targetEl = document.getElementById(triggerEl.getAttribute('data-drawer-toggle'));
+    var drawerId = targetEl.id;
+    var drawer = getDrawerInstance(drawerId, drawerInstances);
+    triggerEl.addEventListener('click', function () {
+      if (drawer.object.isVisible()) {
+        drawer.object.hide();
+      } else {
+        drawer.object.show();
+      }
+    });
+  });
+  document.querySelectorAll('[data-drawer-dismiss]').forEach(function (triggerEl) {
+    var targetEl = document.getElementById(triggerEl.getAttribute('data-drawer-dismiss'));
+    var drawerId = targetEl.id;
+    var drawer = getDrawerInstance(drawerId, drawerInstances);
+    triggerEl.addEventListener('click', function () {
+      drawer.object.hide();
+    });
+  });
+  document.querySelectorAll('[data-drawer-show]').forEach(function (triggerEl) {
+    var targetEl = document.getElementById(triggerEl.getAttribute('data-drawer-show'));
+    var drawerId = targetEl.id;
+    var drawer = getDrawerInstance(drawerId, drawerInstances);
+    triggerEl.addEventListener('click', function () {
+      drawer.object.show();
+    });
+  });
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initDrawer();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initDrawer);
+}
+
+/* harmony default export */ const drawer = (Drawer);
 ;// CONCATENATED MODULE: ./src/components/tabs.js
 function tabs_toConsumableArray(arr) { return tabs_arrayWithoutHoles(arr) || tabs_iterableToArray(arr) || tabs_unsupportedIterableToArray(arr) || tabs_nonIterableSpread(); }
 
@@ -3056,8 +3456,8 @@ function tabs_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 var tabs_Default = {
   defaultTabId: null,
-  activeClasses: 'text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-400 border-blue-600 dark:border-blue-500',
-  inactiveClasses: 'text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300',
+  activeClasses: 'text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500',
+  inactiveClasses: 'dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300',
   onShow: function onShow() {}
 };
 
@@ -3152,7 +3552,7 @@ var Tabs = /*#__PURE__*/function () {
       this._setActiveTab(tab); // callback function
 
 
-      this._options.onShow();
+      this._options.onShow(this, tab);
     }
   }]);
 
@@ -3160,7 +3560,8 @@ var Tabs = /*#__PURE__*/function () {
 }();
 
 window.Tabs = Tabs;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initTabs() {
   document.querySelectorAll('[data-tabs-toggle]').forEach(function (triggerEl) {
     var tabElements = [];
     var defaultTabId = null;
@@ -3181,7 +3582,16 @@ document.addEventListener('DOMContentLoaded', function () {
       defaultTabId: defaultTabId
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initTabs();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initTabs);
+}
+
 /* harmony default export */ const tabs = (Tabs);
 ;// CONCATENATED MODULE: ./src/components/tooltip.js
 function tooltip_toConsumableArray(arr) { return tooltip_arrayWithoutHoles(arr) || tooltip_iterableToArray(arr) || tooltip_unsupportedIterableToArray(arr) || tooltip_nonIterableSpread(); }
@@ -3309,7 +3719,7 @@ var Tooltip = /*#__PURE__*/function () {
       this._popperInstance.update(); // callback function
 
 
-      this._options.onShow();
+      this._options.onShow(this);
     }
   }, {
     key: "hide",
@@ -3329,7 +3739,7 @@ var Tooltip = /*#__PURE__*/function () {
       }); // callback function
 
 
-      this._options.onHide();
+      this._options.onHide(this);
     }
   }]);
 
@@ -3337,7 +3747,8 @@ var Tooltip = /*#__PURE__*/function () {
 }();
 
 window.Tooltip = Tooltip;
-document.addEventListener('DOMContentLoaded', function () {
+
+function initTooltip() {
   document.querySelectorAll('[data-tooltip-target]').forEach(function (triggerEl) {
     var targetEl = document.getElementById(triggerEl.getAttribute('data-tooltip-target'));
     var triggerType = triggerEl.getAttribute('data-tooltip-trigger');
@@ -3347,10 +3758,216 @@ document.addEventListener('DOMContentLoaded', function () {
       triggerType: triggerType ? triggerType : tooltip_Default.triggerType
     });
   });
-});
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initTooltip();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initTooltip);
+}
+
 /* harmony default export */ const tooltip = (Tooltip);
+;// CONCATENATED MODULE: ./src/components/popover.js
+function popover_toConsumableArray(arr) { return popover_arrayWithoutHoles(arr) || popover_iterableToArray(arr) || popover_unsupportedIterableToArray(arr) || popover_nonIterableSpread(); }
+
+function popover_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function popover_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return popover_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return popover_arrayLikeToArray(o, minLen); }
+
+function popover_iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function popover_arrayWithoutHoles(arr) { if (Array.isArray(arr)) return popover_arrayLikeToArray(arr); }
+
+function popover_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function popover_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function popover_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? popover_ownKeys(Object(source), !0).forEach(function (key) { popover_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : popover_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function popover_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function popover_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function popover_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function popover_createClass(Constructor, protoProps, staticProps) { if (protoProps) popover_defineProperties(Constructor.prototype, protoProps); if (staticProps) popover_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+var popover_Default = {
+  placement: 'top',
+  offset: 10,
+  triggerType: 'hover',
+  onShow: function onShow() {},
+  onHide: function onHide() {}
+};
+
+var Popover = /*#__PURE__*/function () {
+  function Popover() {
+    var targetEl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var triggerEl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    popover_classCallCheck(this, Popover);
+
+    this._targetEl = targetEl;
+    this._triggerEl = triggerEl;
+    this._options = popover_objectSpread(popover_objectSpread({}, popover_Default), options);
+    this._popperInstance = this._createPopperInstace();
+
+    this._init();
+  }
+
+  popover_createClass(Popover, [{
+    key: "_init",
+    value: function _init() {
+      var _this = this;
+
+      if (this._triggerEl) {
+        var triggerEvents = this._getTriggerEvents();
+
+        triggerEvents.showEvents.forEach(function (ev) {
+          _this._triggerEl.addEventListener(ev, function () {
+            _this.show();
+          });
+
+          _this._targetEl.addEventListener(ev, function () {
+            _this.show();
+          });
+        });
+        triggerEvents.hideEvents.forEach(function (ev) {
+          _this._triggerEl.addEventListener(ev, function () {
+            setTimeout(function () {
+              if (!_this._targetEl.matches(':hover')) {
+                _this.hide();
+              }
+            }, 100);
+          });
+
+          _this._targetEl.addEventListener(ev, function () {
+            setTimeout(function () {
+              if (!_this._triggerEl.matches(':hover')) {
+                _this.hide();
+              }
+            }, 100);
+          });
+        });
+      }
+    }
+  }, {
+    key: "_createPopperInstace",
+    value: function _createPopperInstace() {
+      return popper_createPopper(this._triggerEl, this._targetEl, {
+        placement: this._options.placement,
+        modifiers: [{
+          name: 'offset',
+          options: {
+            offset: [0, this._options.offset]
+          }
+        }]
+      });
+    }
+  }, {
+    key: "_getTriggerEvents",
+    value: function _getTriggerEvents() {
+      switch (this._options.triggerType) {
+        case 'hover':
+          return {
+            showEvents: ['mouseenter', 'focus'],
+            hideEvents: ['mouseleave', 'blur']
+          };
+
+        case 'click':
+          return {
+            showEvents: ['click', 'focus'],
+            hideEvents: ['focusout', 'blur']
+          };
+
+        default:
+          return {
+            showEvents: ['mouseenter', 'focus'],
+            hideEvents: ['mouseleave', 'blur']
+          };
+      }
+    }
+  }, {
+    key: "show",
+    value: function show() {
+      this._targetEl.classList.remove('opacity-0', 'invisible');
+
+      this._targetEl.classList.add('opacity-100', 'visible'); // Enable the event listeners
+
+
+      this._popperInstance.setOptions(function (options) {
+        return popover_objectSpread(popover_objectSpread({}, options), {}, {
+          modifiers: [].concat(popover_toConsumableArray(options.modifiers), [{
+            name: 'eventListeners',
+            enabled: true
+          }])
+        });
+      }); // Update its position
+
+
+      this._popperInstance.update(); // callback function
+
+
+      this._options.onShow(this);
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      this._targetEl.classList.remove('opacity-100', 'visible');
+
+      this._targetEl.classList.add('opacity-0', 'invisible'); // Disable the event listeners
+
+
+      this._popperInstance.setOptions(function (options) {
+        return popover_objectSpread(popover_objectSpread({}, options), {}, {
+          modifiers: [].concat(popover_toConsumableArray(options.modifiers), [{
+            name: 'eventListeners',
+            enabled: false
+          }])
+        });
+      }); // callback function
+
+
+      this._options.onHide(this);
+    }
+  }]);
+
+  return Popover;
+}();
+
+window.Popover = Popover;
+
+function initPopover() {
+  document.querySelectorAll('[data-popover-target]').forEach(function (triggerEl) {
+    var targetEl = document.getElementById(triggerEl.getAttribute('data-popover-target'));
+    var triggerType = triggerEl.getAttribute('data-popover-trigger');
+    var placement = triggerEl.getAttribute('data-popover-placement');
+    var offset = triggerEl.getAttribute('data-popover-offset');
+    new Popover(targetEl, triggerEl, {
+      placement: placement ? placement : popover_Default.placement,
+      offset: offset ? parseInt(offset) : popover_Default.offset,
+      triggerType: triggerType ? triggerType : popover_Default.triggerType
+    });
+  });
+}
+
+if (document.readyState !== 'loading') {
+  // DOMContentLoaded event were already fired. Perform explicit initialization now
+  initPopover();
+} else {
+  // DOMContentLoaded event not yet fired, attach initialization process to it
+  document.addEventListener('DOMContentLoaded', initPopover);
+}
+
+/* harmony default export */ const popover = (Popover);
 ;// CONCATENATED MODULE: ./src/flowbite.js
  // core components
+
+
 
 
 
@@ -3367,8 +3984,10 @@ document.addEventListener('DOMContentLoaded', function () {
   Dismiss: dismiss,
   Dropdown: dropdown,
   Modal: modal,
+  Drawer: drawer,
   Tabs: tabs,
-  Tooltip: tooltip
+  Tooltip: tooltip,
+  Popover: popover
 });
 /******/ })()
 ;
