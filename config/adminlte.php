@@ -264,32 +264,11 @@ return [
             'label' => 'test',
             'label_color' => 'danger'
         ],
-        ['header' => 'Categorías'],
-        [
-            'text' => 'Ver',
-            'route' => 'dashboard.category.index',
-            'icon' => 'far fa-eye',
-        ],
-        [
-            'text' => 'Nueva',
-            'route' => 'dashboard.category.create',
-            'icon' => 'fa fa-plus',
-        ],
-        ['header' => 'Etiquetas'],
-        [
-            'text' => 'Ver',
-            'route' => 'dashboard.tag.index',
-            'icon' => 'far fa-eye',
-        ],
-        [
-            'text' => 'Nueva',
-            'route' => 'dashboard.tag.create',
-            'icon' => 'fa fa-plus',
-        ],
+
         ['header' => 'Contenido'],
         [
             'text' => 'Todos',
-            'url' => '#',
+            'route' => 'dashboard.content.index',
             'icon' => 'far fa-fw fa-file',
         ],
         [
@@ -323,6 +302,56 @@ return [
             'label' => 4,
             'label_color' => 'success',
         ],
+        ['header' => 'Gestión'],
+        [
+            'text' => 'Plataformas',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Nueva',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Categorías',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'route' => 'dashboard.category.index',
+                    'icon' => 'far fa-eye',
+                ],
+                [
+                    'text' => 'Nueva',
+                    'route' => 'dashboard.category.create',
+                    'icon' => 'fa fa-plus',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Etiquetas',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'route' => 'dashboard.tag.index',
+                    'icon' => 'far fa-eye',
+                ],
+                [
+                    'text' => 'Nueva',
+                    'route' => 'dashboard.tag.create',
+                    'icon' => 'fa fa-plus',
+                ],
+            ],
+        ],
+
         ['header' => 'Módulos'],
         [
             'text' => 'Curriculum Vitae',
@@ -358,6 +387,106 @@ return [
                     'text' => 'Nuevo',
                     'icon' => 'fa fa-plus',
                     'route' => 'dashboard.hardware.device.create',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Nubes',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Pcloud',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Synology',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Dropbox',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Google Drive',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'iCloud',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Keycounter',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Airflights',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Aviones',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Smart Plant',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Energy',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
                 ],
             ],
         ],
