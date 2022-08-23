@@ -22,6 +22,7 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
 use App\Http\Controllers\Dashboard\Hardware\HardwareDeviceController;
 use App\Http\Controllers\Dashboard\LanguageController;
 use App\Http\Controllers\Dashboard\TagController;
+use App\Http\Controllers\Dashboard\PlatformController;
 use App\Http\Controllers\Dashboard\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,34 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
         return view('dashboard.index');
     })->name('dashboard.index');
 });
+
+############################################################
+##                    Plataformas                         ##
+############################################################
+Route::group(['prefix' => '/platform', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [PlatformController::class, 'index'])
+            ->name('dashboard.platform.index');
+        Route::get('/create', [PlatformController::class, 'create'])
+            ->name('dashboard.platform.create');
+        Route::post('/store', [PlatformController::class, 'store'])
+            ->name('dashboard.platform.store');
+        Route::get('/{model}/edit', [PlatformController::class, 'edit'])
+            ->name('dashboard.platform.edit');
+        Route::match(['post', 'put', 'patch'], '/update/{model?}', [PlatformController::class, 'update'])
+            ->name('dashboard.platform.update');
+        Route::match(['POST', 'DELETE'], '/destroy/{model?}', [PlatformController::class, 'destroy'])
+            ->name('dashboard.platform.destroy');
+
+        Route::group(['prefix' => '/ajax'], function () {
+            Route::post('/table/get', [PlatformController::class, 'ajaxTableGetQuery'])
+                ->name('dashboard.platform.ajax.table.get');
+
+            ## Acciones sobre datos de la tabla [update, create...]
+            Route::match(['put', 'patch', 'post'], '/table/action', [PlatformController::class, 'ajaxTableActions'])
+                ->name('dashboard.platform.ajax.table.actions');
+        });
+    });
 
 ############################################################
 ##                     Etiquetas                          ##

@@ -3,23 +3,23 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\BaseWithTableCrudController;
-use App\Http\Requests\Dashboard\Tag\TagDeleteRequest;
-use App\Http\Requests\Dashboard\Tag\TagStoreRequest;
-use App\Http\Requests\Dashboard\Tag\TagUpdateRequest;
-use App\Models\Tag;
+use App\Http\Requests\Dashboard\Platform\PlatformDeleteRequest;
+use App\Http\Requests\Dashboard\Platform\PlatformStoreRequest;
+use App\Http\Requests\Dashboard\Platform\PlatformUpdateRequest;
+use App\Models\Platform;
 use Illuminate\Http\Request;
 use JsonHelper;
 use function redirect;
 use function view;
 
 /**
- * Controlador para Tags
+ * Controlador para Plataformas.
  */
-class TagController extends BaseWithTableCrudController
+class PlatformController extends BaseWithTableCrudController
 {
     protected static function getModel(): string
     {
-        return Tag::class;
+        return Platform::class;
     }
 
     /**
@@ -29,10 +29,8 @@ class TagController extends BaseWithTableCrudController
      */
     public function index()
     {
-        //$tags = Tag::all();
-
-        return view('dashboard.tags.index')->with([
-            //'tags' => $tags,
+        return view('dashboard.' . self::getModel()::MODULE_NAME . '.index')->with([
+            'model' => self::getModel(),
         ]);
     }
 
@@ -45,7 +43,7 @@ class TagController extends BaseWithTableCrudController
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.tags.add-edit')->with([
+        return view('dashboard.' . $model::MODULE_NAME . '.add-edit')->with([
             'model' => $model,
         ]);
     }
@@ -53,16 +51,21 @@ class TagController extends BaseWithTableCrudController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Tag\TagStoreRequest $request
+     * @param \App\Http\Requests\Dashboard\Platform\PlatformStoreRequest $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(TagStoreRequest $request)
+    public function store(PlatformStoreRequest $request)
     {
         $modelString = $this::getModel();
         $modelString::create($request->validated());
 
-        return redirect()->route('dashboard.tag.index');
+
+
+        // TODO: Crear trait? Para imágenes y dinamizar?
+
+
+        return redirect()->route($modelString::CRUD_ROUTES['index']);
     }
 
     /**
@@ -80,26 +83,26 @@ class TagController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Tag $tag
+     * @param \App\Models\Platform $model
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(Tag $tag)
+    public function edit(Platform $model)
     {
-        return view('dashboard.tags.add-edit')->with([
-            'model' => $tag,
+        return view('dashboard.' . self::getModel()::MODULE_NAME . '.add-edit')->with([
+            'model' => $model,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Tag\TagUpdateRequest $request
-     * @param int|null                                          $id
+     * @param \App\Http\Requests\Dashboard\Platform\PlatformUpdateRequest $request
+     * @param int|null                                               $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(TagUpdateRequest $request, int|null $id = null)
+    public function update(PlatformUpdateRequest $request, int|null $id = null)
     {
         $modelString = $this::getModel();
         $model = $modelString::find($id);
@@ -107,22 +110,22 @@ class TagController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
-        return redirect()->route('dashboard.tag.index');
+        return redirect()->route($modelString::CRUD_ROUTES['index']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Http\Requests\Dashboard\Tag\TagDeleteRequest $request
-     * @param int|null                                          $id
+     * @param \App\Http\Requests\Dashboard\Platform\PlatformDeleteRequest $request
+     * @param int|null                                               $id
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function destroy(TagDeleteRequest $request, int|null $id = null)
+    public function destroy(PlatformDeleteRequest $request, int|null $id = null)
     {
         $deleted = false;
         $idRequest = $request->get('id');
-        $model = Tag::find($idRequest);
+        $model = self::getModel()::find($idRequest);
 
         if ($model) {
             $deleted = $model->safeDelete();
@@ -140,13 +143,4 @@ class TagController extends BaseWithTableCrudController
     ##                       AJAX                             ##
     ############################################################
 
-    /**
-     * Devuelve todas las etiquetas.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function ajaxGetTags()
-    {
-        return JsonHelper::success(Tag::all());
-    }
 }

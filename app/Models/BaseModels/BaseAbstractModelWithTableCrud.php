@@ -22,6 +22,38 @@ use function trim;
 abstract class BaseAbstractModelWithTableCrud extends BaseModel
 {
     /**
+     * Nombre del módulo, se usará para referenciar y crear dinámicamente
+     * recursos sobre este modelo como rutas.
+     */
+    public const MODULE_NAME = 'module';
+
+    /**
+     * Títulos de los modelos, se usará para crear dinámicamente recursos sobre
+     * este modelo en las vistas.
+     */
+    public const MODEL_TITLES = [
+        'singular' => 'Modulo',
+        'plural' => 'Modulos',
+        'add' => 'Agregar modulo',
+        'edit' => 'Editar modulo',
+        'delete' => 'Eliminar modulo',
+    ];
+
+    public const CRUD_ROUTES = [
+        'index' => 'dashboard.' . self::MODULE_NAME . '.index',
+        'create' => 'dashboard.' . self::MODULE_NAME . '.create',
+        'store' => 'dashboard.' . self::MODULE_NAME . '.store',
+        'edit' => 'dashboard.' . self::MODULE_NAME . '.edit',
+        'update' => 'dashboard.' . self::MODULE_NAME . '.update',
+        'destroy' => 'dashboard.' . self::MODULE_NAME . '.destroy',
+    ];
+
+    public const TABLE_AJAX_ROUTES = [
+        'get' => 'dashboard.' . self::MODULE_NAME . '.ajax.table.get',
+        'actions' => 'dashboard.' . self::MODULE_NAME . '.ajax.table.actions',
+    ];
+
+    /**
      * Devuelve el modelo de la política asociada.
      *
      * @return string|null

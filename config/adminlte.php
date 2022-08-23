@@ -310,12 +310,12 @@ return [
                 [
                     'text' => 'Listado',
                     'icon' => 'far fa-fw fa-file',
-                    'url' => '#',
+                    'route' => 'dashboard.platform.index',
                 ],
                 [
                     'text' => 'Nueva',
                     'icon' => 'fa fa-plus',
-                    'url' => '#',
+                    'route' => 'dashboard.platform.create',
                 ],
             ],
         ],
