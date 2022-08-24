@@ -13,4 +13,18 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
 
+    /**
+     * Elimina de forma segura este elemento y sus datos asociados.
+     *
+     * @return bool
+     */
+    public function safeDelete()
+    {
+        ## Elimino la imagen asociada y todas las miniaturas.
+        if ($this->image) {
+            $this->image->safeDelete();
+        }
+
+        return $this->delete();
+    }
 }
