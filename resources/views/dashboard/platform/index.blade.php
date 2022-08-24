@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Etiquetas')
+@section('title', $model::getModelTitles()['plural'])
 
 @section('content_header')
     <h1>
@@ -18,14 +18,14 @@
                 <a href="{{ route($model::getCrudRoutes()['create']) }}"
                    class="btn btn-primary float-right">
                     <i class="fas fa-plus"></i>
-                    Nueva
+                    Crear
                 </a>
             </h2>
         </div>
 
         <div class="col-12">
 
-            <v-table-component title="Listado de Plataformas"
+            <v-table-component title="Listado de {{$model::getModelTitles()['plural']}}"
                                :editable="true"
                                :show-id="false"
                                :searchable="true"
