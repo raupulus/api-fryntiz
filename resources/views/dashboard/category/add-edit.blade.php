@@ -1,11 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Categorías')
+@section('title', 'Añadir ' . $model::getModelTitles()['singular'])
 
 @section('content_header')
     <h1>
         <i class="fas fa-globe"></i>
-        Categorías
+        {{\Illuminate\Support\Str::ucfirst($model::getModelTitles()['singular'])}}
     </h1>
 @stop
 
@@ -26,7 +26,7 @@
 
         <div class="col-12">
             <form
-                    action="{{$model && $model->id ? route('dashboard.category.update', $model->id) : route('dashboard.category.store')}}"
+                    action="{{$model && $model->id ? route($model::getCrudRoutes()['update'], $model->id) : route($model::getCrudRoutes()['store'])}}"
                     enctype="multipart/form-data"
                     method="POST">
 
@@ -37,10 +37,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h2 style="display: inline-block;">
-                            {{(isset($model) && $model && $model->id) ? 'Editar ' .
-                            $model->title : 'Creando nueva categoría'}}
-
-
+                            {{(isset($model) && $model && $model->id) ? 'Editar ' . $model::getModelTitles()['singular'] : 'Creando ' . $model::getModelTitles()['singular']}}
                         </h2>
 
                         <div class="float-right">

@@ -127,7 +127,7 @@ class Category extends BaseAbstractModelWithTableCrud
             [
                 'type' => 'update',
                 'name' => 'Editar',
-                'url' => route('dashboard.category.edit', '[id]'),
+                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
                 'method' => 'GET',
                 /*
                 'params' => [
@@ -138,7 +138,7 @@ class Category extends BaseAbstractModelWithTableCrud
             [
                 'type' => 'delete',
                 'name' => 'Eliminar',
-                'url' => route('dashboard.category.destroy'),
+                'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
                 'ajax' => true
             ]

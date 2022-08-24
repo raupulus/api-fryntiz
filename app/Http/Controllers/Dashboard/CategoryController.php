@@ -28,10 +28,8 @@ class CategoryController extends BaseWithTableCrudController
      */
     public function index()
     {
-        //$categories = Category::all();
-
-        return view('dashboard.categories.index')->with([
-            //'$categories' => $categories,
+        return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
+            'model' => self::getModel(),
         ]);
     }
 
@@ -44,7 +42,7 @@ class CategoryController extends BaseWithTableCrudController
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.categories.add-edit')->with([
+        return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
         ]);
     }
@@ -61,7 +59,7 @@ class CategoryController extends BaseWithTableCrudController
         $modelString = $this::getModel();
         $modelString::create($request->validated());
 
-        return redirect()->route('dashboard.category.index');
+        return redirect()->route($modelString::getCrudRoutes()['index']);
     }
 
     /**
@@ -79,14 +77,14 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Category $category
+     * @param \App\Models\Category $model
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(Category $category)
+    public function edit(Category $model)
     {
-        return view('dashboard.categories.add-edit')->with([
-            'model' => $category,
+        return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
+            'model' => $model,
         ]);
     }
 
@@ -106,7 +104,7 @@ class CategoryController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
-        return redirect()->route('dashboard.category.index');
+        return redirect()->route($modelString::getCrudRoutes()['index']);
     }
 
     /**
@@ -121,7 +119,7 @@ class CategoryController extends BaseWithTableCrudController
     {
         $deleted = false;
         $idRequest = $request->get('id');
-        $model = Category::find($idRequest);
+        $model = self::getModel()::find($idRequest);
 
         if ($model) {
             $deleted = $model->safeDelete();
@@ -138,14 +136,4 @@ class CategoryController extends BaseWithTableCrudController
     ############################################################
     ##                       AJAX                             ##
     ############################################################
-
-    /**
-     * Devuelve todas las etiquetas.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function ajaxGetCategories()
-    {
-        return JsonHelper::success(Category::all());
-    }
 }
