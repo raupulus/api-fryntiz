@@ -20,30 +20,21 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     protected $fillable = ['user_id', 'title', 'slug', 'description'];
 
-    public const MODULE_NAME = 'platform';
+    public static function  getModuleName(): string
+    {
+        return 'platform';
+    }
 
-    public const MODEL_TITLES = [
-        'singular' => 'Plataforma',
-        'plural' => 'Plataformas',
-        'add' => 'Agregar plataforma',
-        'edit' => 'Editar plataforma',
-        'delete' => 'Eliminar plataforma',
-    ];
-
-    public const CRUD_ROUTES = [
-        'index' => 'dashboard.' . self::MODULE_NAME . '.index',
-        'create' => 'dashboard.' . self::MODULE_NAME . '.create',
-        'store' => 'dashboard.' . self::MODULE_NAME . '.store',
-        'edit' => 'dashboard.' . self::MODULE_NAME . '.edit',
-        'update' => 'dashboard.' . self::MODULE_NAME . '.update',
-        'destroy' => 'dashboard.' . self::MODULE_NAME . '.destroy',
-    ];
-
-    public const TABLE_AJAX_ROUTES = [
-        'get' => 'dashboard.' . self::MODULE_NAME . '.ajax.table.get',
-        'actions' => 'dashboard.' . self::MODULE_NAME . '.ajax.table.actions',
-    ];
-
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Plataforma',
+            'plural' => 'Plataformas',
+            'add' => 'Agregar plataforma',
+            'edit' => 'Editar plataforma',
+            'delete' => 'Eliminar plataforma',
+        ];
+    }
 
     /**
      * Asocia con el usuario al que pertenece la plataforma.
@@ -147,7 +138,7 @@ class Platform extends BaseAbstractModelWithTableCrud
             [
                 'type' => 'update',
                 'name' => 'Editar',
-                'url' => route(self::CRUD_ROUTES['edit'], '[id]'),
+                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
                 'method' => 'GET',
                 /*
                 'params' => [
@@ -158,7 +149,7 @@ class Platform extends BaseAbstractModelWithTableCrud
             [
                 'type' => 'delete',
                 'name' => 'Eliminar',
-                'url' => route(self::CRUD_ROUTES['destroy']),
+                'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
                 'ajax' => true
             ]

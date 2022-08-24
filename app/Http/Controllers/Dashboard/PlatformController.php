@@ -29,7 +29,7 @@ class PlatformController extends BaseWithTableCrudController
      */
     public function index()
     {
-        return view('dashboard.' . self::getModel()::MODULE_NAME . '.index')->with([
+        return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
             'model' => self::getModel(),
         ]);
     }
@@ -43,7 +43,7 @@ class PlatformController extends BaseWithTableCrudController
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.' . $model::MODULE_NAME . '.add-edit')->with([
+        return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
         ]);
     }
@@ -65,7 +65,7 @@ class PlatformController extends BaseWithTableCrudController
         // TODO: Crear trait? Para imágenes y dinamizar?
 
 
-        return redirect()->route($modelString::CRUD_ROUTES['index']);
+        return redirect()->route($modelString::getCrudRoutes()['index']);
     }
 
     /**
@@ -89,7 +89,7 @@ class PlatformController extends BaseWithTableCrudController
      */
     public function edit(Platform $model)
     {
-        return view('dashboard.' . self::getModel()::MODULE_NAME . '.add-edit')->with([
+        return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
         ]);
     }
@@ -110,7 +110,7 @@ class PlatformController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
-        return redirect()->route($modelString::CRUD_ROUTES['index']);
+        return redirect()->route($modelString::getCrudRoutes()['index']);
     }
 
     /**

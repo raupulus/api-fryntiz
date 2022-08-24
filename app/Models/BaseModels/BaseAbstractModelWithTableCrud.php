@@ -25,33 +25,35 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
      * Nombre del módulo, se usará para referenciar y crear dinámicamente
      * recursos sobre este modelo como rutas.
      */
-    public const MODULE_NAME = 'module';
+    abstract public static function getModuleName(): string;
 
     /**
      * Títulos de los modelos, se usará para crear dinámicamente recursos sobre
      * este modelo en las vistas.
      */
-    public const MODEL_TITLES = [
-        'singular' => 'Modulo',
-        'plural' => 'Modulos',
-        'add' => 'Agregar modulo',
-        'edit' => 'Editar modulo',
-        'delete' => 'Eliminar modulo',
-    ];
+    abstract public static function getModelTitles(): array;
 
-    public const CRUD_ROUTES = [
-        'index' => 'dashboard.' . self::MODULE_NAME . '.index',
-        'create' => 'dashboard.' . self::MODULE_NAME . '.create',
-        'store' => 'dashboard.' . self::MODULE_NAME . '.store',
-        'edit' => 'dashboard.' . self::MODULE_NAME . '.edit',
-        'update' => 'dashboard.' . self::MODULE_NAME . '.update',
-        'destroy' => 'dashboard.' . self::MODULE_NAME . '.destroy',
-    ];
 
-    public const TABLE_AJAX_ROUTES = [
-        'get' => 'dashboard.' . self::MODULE_NAME . '.ajax.table.get',
-        'actions' => 'dashboard.' . self::MODULE_NAME . '.ajax.table.actions',
-    ];
+    public static function getCrudRoutes(): array
+    {
+        return [
+            'index' => 'dashboard.' . self::getModel()::getModuleName() . '.index',
+            'create' => 'dashboard.' . self::getModel()::getModuleName() . '.create',
+            'store' => 'dashboard.' . self::getModel()::getModuleName() . '.store',
+            'edit' => 'dashboard.' . self::getModel()::getModuleName() . '.edit',
+            'update' => 'dashboard.' . self::getModel()::getModuleName() . '.update',
+            'destroy' => 'dashboard.' . self::getModel()::getModuleName() . '.destroy',
+        ];
+    }
+
+    public static function getTableAjaxRoutes(): array
+    {
+        return [
+            'get' => 'dashboard.' . self::getModel()::getModuleName() . '.ajax.table.get',
+            'actions' => 'dashboard.' . self::getModel()::getModuleName() . '.ajax.table.actions',
+        ];
+    }
+
 
     /**
      * Devuelve el modelo de la política asociada.

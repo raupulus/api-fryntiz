@@ -5,7 +5,7 @@
 @section('content_header')
     <h1>
         <i class="fas fa-file-pdf"></i>
-        Plataformas
+        {{$model::getModelTitles()['plural']}}
     </h1>
 @stop
 
@@ -15,7 +15,7 @@
 
         <div class="col-12">
             <h2>
-                <a href="{{ route($model::CRUD_ROUTES['create']) }}"
+                <a href="{{ route($model::getCrudRoutes()['create']) }}"
                    class="btn btn-primary float-right">
                     <i class="fas fa-plus"></i>
                     Nueva
@@ -31,9 +31,9 @@
                                :searchable="true"
                                :sortable="true"
                                csrf="{{csrf_token()}}"
-                               url-edit-hot='{{ route($model::TABLE_AJAX_ROUTES['actions']) }}'
+                               url-edit-hot='{{ route($model::getTableAjaxRoutes()['actions']) }}'
                                :actions='{!! $model::getTableActionsInfoJson() !!}'
-                               url="{{ route($model::TABLE_AJAX_ROUTES['get']) }}" />
+                               url="{{ route($model::getTableAjaxRoutes()['get']) }}" />
 
         </div>
     </div>

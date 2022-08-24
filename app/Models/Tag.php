@@ -23,6 +23,21 @@ class Tag extends BaseAbstractModelWithTableCrud
     protected $fillable = ['name', 'slug', 'description'];
 
 
+    public static function  getModuleName(): string
+    {
+        return 'tag';
+    }
+
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Etiqueta',
+            'plural' => 'Etiquetas',
+            'add' => 'Agregar Etiqueta',
+            'edit' => 'Editar Etiqueta',
+            'delete' => 'Eliminar Etiqueta',
+        ];
+    }
 
     /**
      * Elimina de forma segura la instancia actual.

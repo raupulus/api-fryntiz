@@ -20,7 +20,21 @@ class Category extends BaseAbstractModelWithTableCrud
 
     protected $fillable = ['name', 'slug', 'description'];
 
+    public static function  getModuleName(): string
+    {
+        return 'category';
+    }
 
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Categoría',
+            'plural' => 'Categorías',
+            'add' => 'Agregar Categoría',
+            'edit' => 'Editar Categoría',
+            'delete' => 'Eliminar Categoría',
+        ];
+    }
 
     /**
      * Elimina de forma segura la instancia actual.
