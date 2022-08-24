@@ -175,7 +175,7 @@ Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
     });
 
 ############################################################
-##                     Curriculum                         ##
+##                      Contenido                         ##
 ############################################################
 Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
     function () {
@@ -191,6 +191,15 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.content.update');
         Route::post('/destroy', [ContentController::class, 'destroy'])
             ->name('dashboard.content.destroy');
+
+        Route::group(['prefix' => '/ajax'], function () {
+            Route::post('/table/get', [ContentController::class, 'ajaxTableGetQuery'])
+                ->name('dashboard.content.ajax.table.get');
+
+            ## Acciones sobre datos de la tabla [update, create...]
+            Route::match(['put', 'patch', 'post'], '/table/action', [ContentController::class, 'ajaxTableActions'])
+                ->name('dashboard.content.ajax.table.actions');
+        });
     });
 ############################################################
 ##                       Idiomas                          ##

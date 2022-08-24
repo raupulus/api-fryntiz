@@ -196,7 +196,7 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve la url para la previsualización del contenido
-     * editándose, en base al útimo guardado.
+     * editándose, basándose en el útimo guardado.
      * Útil para previsualizar borradores principalmente.
      */
     public function getUrlPreviewAttribute()
