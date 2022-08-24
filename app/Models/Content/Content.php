@@ -2,10 +2,12 @@
 
 namespace App\Models\Content;
 
+use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Models\File;
-use App\Models\BaseModels\BaseModel;
 use App\Models\User;
+use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Collection;
 use function route;
 use function url;
 
@@ -14,7 +16,7 @@ use function url;
  *
  * @package App\Models\Content
  */
-class Content extends BaseModel
+class Content extends BaseAbstractModelWithTableCrud
 {
     use HasFactory;
 
@@ -49,6 +51,22 @@ class Content extends BaseModel
         'published_at',
         'programmated_at',
     ];
+
+    public static function  getModuleName(): string
+    {
+        return 'content';
+    }
+
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Contenido',
+            'plural' => 'Contenidos',
+            'add' => 'Agregar Contenido',
+            'edit' => 'Editar Contenido',
+            'delete' => 'Eliminar Contenido',
+        ];
+    }
 
     /**
      * Devuelve la relación con el autor/usuario que ha creado el contenido.
@@ -207,18 +225,101 @@ class Content extends BaseModel
         return route('panel.content.edit', ['content' => $this->id]);
     }
 
-    /**
-     * Elimina de forma segura este elemento y sus datos asociados.
-     *
-     * @return bool
-     */
-    public function safeDelete()
-    {
-        ## Elimino la imagen asociada y todas las miniaturas.
-        if ($this->image) {
-            $this->image->safeDelete();
-        }
+    /****************** Métodos para tablas dinámicas ******************/
 
-        return $this->delete();
+    /**
+     * Devuelve el modelo de la política asociada.
+     *
+     * @return string|null
+     */
+    protected static function getPolicy(): string|null
+    {
+        return ContentPolicy::class;
+    }
+
+    /**
+     * Devuelve un array con el nombre del atributo y la validación aplicada.
+     * Esto está pensado para usarlo en el frontend
+     *
+     * @return array
+     */
+    public static function getFieldsValidation(): array
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:tags,slug,{id}',
+            'excerpt' => 'nullable|string|max:255',
+        ];
+    }
+
+    /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads(): array
+    {
+        return [
+            'id' => 'ID',
+            'title' => 'Título',
+            'slug' => 'Slug',
+            'excerpt' => 'Resumen',
+        ];
+    }
+
+    /**
+     * Devuelve un array con información sobre los atributos de la tabla.
+     *
+     * @return \string[][]
+     */
+    public static function getTableCellsInfo():array
+    {
+        return [
+            'id' => [
+                'type' => 'integer',
+            ],
+            'title' => [
+                'type' => 'text',
+                'wrapper' => 'span',
+                'class' => 'text-weight-bold',
+            ],
+            'slug' => [
+                'type' => 'text',
+            ],
+            'excerpt' => [
+                'type' => 'text',
+            ],
+
+        ];
+    }
+
+    /**
+     * Devuelve las rutas de acciones
+     *
+     */
+    public static function getTableActionsInfo():Collection
+    {
+        // TODO Crear policies para devolver solo acciones permitidas ahora.
+
+        return collect([
+            [
+                'type' => 'update',
+                'name' => 'Editar',
+                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
+                'method' => 'GET',
+                /*
+                'params' => [
+
+                ]
+                */
+            ],
+            [
+                'type' => 'delete',
+                'name' => 'Eliminar',
+                'url' => route(self::getCrudRoutes()['destroy']),
+                'method' => 'DELETE',
+                'ajax' => true
+            ]
+        ]);
     }
 }
