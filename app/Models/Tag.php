@@ -130,7 +130,7 @@ class Tag extends BaseAbstractModelWithTableCrud
             [
                 'type' => 'update',
                 'name' => 'Editar',
-                'url' => route('dashboard.tag.edit', '[id]'),
+                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
                 'method' => 'GET',
                 /*
                 'params' => [
@@ -141,7 +141,7 @@ class Tag extends BaseAbstractModelWithTableCrud
             [
                 'type' => 'delete',
                 'name' => 'Eliminar',
-                'url' => route('dashboard.tag.destroy'),
+                'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
                 'ajax' => true
             ]

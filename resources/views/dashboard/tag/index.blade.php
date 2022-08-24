@@ -1,11 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Etiquetas')
+@section('title', $model::getModelTitles()['plural'])
 
 @section('content_header')
     <h1>
         <i class="fas fa-file-pdf"></i>
-        Etiquetas
+        {{$model::getModelTitles()['plural']}}
     </h1>
 @stop
 
@@ -15,25 +15,25 @@
 
         <div class="col-12">
             <h2>
-                <a href="{{ route('dashboard.tag.create') }}"
+                <a href="{{ route($model::getCrudRoutes()['create']) }}"
                    class="btn btn-primary float-right">
                     <i class="fas fa-plus"></i>
-                    Nueva
+                    Crear
                 </a>
             </h2>
         </div>
 
         <div class="col-12">
 
-            <v-table-component title="Listado de Etiquetas"
+            <v-table-component title="Listado de {{$model::getModelTitles()['plural']}}"
                                :editable="true"
                                :show-id="false"
                                :searchable="true"
                                :sortable="true"
                                csrf="{{csrf_token()}}"
-                               url-edit-hot='{{route('dashboard.tag.ajax.table.actions')}}'
-                               :actions='{!!\App\Models\Tag::getTableActionsInfoJson() !!}'
-                               url="{{route('dashboard.tag.ajax.table.get')}}" />
+                               url-edit-hot='{{ route($model::getTableAjaxRoutes()['actions']) }}'
+                               :actions='{!! $model::getTableActionsInfoJson() !!}'
+                               url="{{ route($model::getTableAjaxRoutes()['get']) }}" />
 
         </div>
     </div>
