@@ -46,17 +46,6 @@ class Platform extends BaseAbstractModelWithTableCrud
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * Elimina de forma segura la instancia actual.
-     *
-     * @return bool
-     */
-    public function safeDelete(): bool
-    {
-        return (bool) $this->delete();
-    }
-
-
 
     /****************** Métodos para tablas dinámicas ******************/
 
