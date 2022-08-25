@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard\Content;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
@@ -13,7 +13,7 @@ use JsonHelper;
  * Class ContentAvailableCategoryController
  * @package App\Http\Controllers\Dashboard\Content
  */
-class ContentController extends Controller
+class ContentController extends BaseWithTableCrudController
 {
     protected static function getModel(): string
     {
