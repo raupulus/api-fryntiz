@@ -52,6 +52,16 @@ class Content extends BaseAbstractModelWithTableCrud
         'programmated_at',
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'processed_at',
+        'published_at',
+        'programmated_at',
+    ];
+
+
     public static function  getModuleName(): string
     {
         return 'content';

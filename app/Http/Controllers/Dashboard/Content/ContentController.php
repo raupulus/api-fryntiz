@@ -7,6 +7,9 @@ use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Content\Content;
+use App\Models\Content\ContentAvailableType;
+use App\Models\Platform;
+use App\Models\User;
 use JsonHelper;
 
 /**
@@ -43,6 +46,9 @@ class ContentController extends BaseWithTableCrudController
 
         return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
+            'users' => User::all(),
+            'platforms' => Platform::all(),
+            'contentTypes' => ContentAvailableType::all(),
         ]);
     }
 
@@ -91,6 +97,9 @@ class ContentController extends BaseWithTableCrudController
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
+            'users' => User::all(),
+            'platforms' => Platform::all(),
+            'contentTypes' => ContentAvailableType::all(),
         ]);
     }
 

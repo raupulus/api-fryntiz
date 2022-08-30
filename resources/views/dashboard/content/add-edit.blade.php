@@ -83,99 +83,36 @@
                             </a>
                         </div>
                     </nav>
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-home"
-                             role="tabpanel" aria-labelledby="nav-home-tab">...
-                        </div>
-                        <div class="tab-pane fade" id="nav-profile"
-                             role="tabpanel" aria-labelledby="nav-profile-tab">
-                            ...
-                        </div>
-                        <div class="tab-pane fade" id="nav-contact"
-                             role="tabpanel" aria-labelledby="nav-contact-tab">
-                            ...
-                        </div>
-                        <div class="tab-pane fade" id="nav-o"
-                             role="tabpanel" aria-labelledby="nav-o-tab">
-                            ...
-                        </div>
-                    </div>
+
 
                 </div>
 
-                {{-- Sección con datos principales --}}
                 <div class="row">
-                    <div class="col-6">
-                        <div class="card card-info">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    Datos Principales
-                                </h3>
+                    <div class="col-12">
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-home"
+                                 role="tabpanel" aria-labelledby="nav-home-tab">
+
+                                {{-- Sección con datos principales --}}
+                                @include('dashboard.content.layouts._main')
                             </div>
-
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="image">
-                                        Título
-                                    </label>
-
-                                    <input type="text" name="title"/>
-                                </div>
+                            <div class="tab-pane fade" id="nav-profile"
+                                 role="tabpanel" aria-labelledby="nav-profile-tab">
+                                @include('dashboard.content.layouts._pages')
                             </div>
-
-                        </div>
-                    </div>
-
-                    {{-- Imagen --}}
-                    <div class="col-6">
-                        <div class="card card-info">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    Imagen Adjunta
-                                </h3>
+                            <div class="tab-pane fade" id="nav-contact"
+                                 role="tabpanel" aria-labelledby="nav-contact-tab">
+                                ...
                             </div>
-
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="image">
-                                        Imagen
-                                    </label>
-
-                                    <div class="input-group">
-                                        <img
-                                            src="{{
-                                            $model->urlThumbnail('small')
-                                             }}"
-                                            alt="Curriculum Image"
-                                            id="cv-image-preview"
-                                            style="width: 80px; margin-right: 10px;"/>
-
-                                        <div class="custom-file">
-
-                                            <input type="file"
-                                                   name="image"
-                                                   id="cv-image-input"
-                                                   accept="image/*"
-                                                   class="form-control-file">
-
-                                            <label class="custom-file-label"
-                                                   id="cv-image-label"
-                                                   for="cv-image-input">
-
-                                                @if ($model->image)
-                                                    {{$model->image->original_name}}
-                                                @else
-                                                    Añadir archivo
-                                                @endif
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="tab-pane fade" id="nav-o"
+                                 role="tabpanel" aria-labelledby="nav-o-tab">
+                                ...
                             </div>
-
                         </div>
                     </div>
                 </div>
+
+
 
 
                 {{--test editor --}}
