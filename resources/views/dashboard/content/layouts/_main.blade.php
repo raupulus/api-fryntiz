@@ -99,14 +99,13 @@
                     </select>
                 </div>
 
-
                 {{-- Tipo de Contenido --}}
                 <div class="form-group">
-                    <label for="platform">
+                    <label for="type_id">
                         Tipo de Contenido
                     </label>
 
-                    <select id="platform" name="platform"
+                    <select id="type_id" name="type_id"
                             class="custom-select rounded-0">
                         @foreach($contentTypes as $contentType)
                             <option value="{{ $contentType->id }}"
@@ -131,6 +130,7 @@
                 <div class="form-group">
                     <div class="custom-control custom-switch custom-switch-off custom-switch-on-success">
                         <input type="checkbox" class="custom-control-input"
+                               {{$model->id && $model->is_copyright_valid ? 'checked' : ''}}
                                disabled
                                id="is_copyright_valid">
                         <label class="custom-control-label"
@@ -141,14 +141,16 @@
 
                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                         <input type="checkbox" class="custom-control-input"
-                               id="is_visible">
-                        <label class="custom-control-label" for="is_visible">
-                            Contenido Visible
+                              {{$model->is_active ? 'checked' : ''}}
+                               id="is_active">
+                        <label class="custom-control-label" for="is_active">
+                            Contenido Activo
                         </label>
                     </div>
 
                     <div class="custom-control custom-switch  custom-switch-off custom-switch-on-primary">
                         <input type="checkbox" class="custom-control-input"
+                               {{$model->is_featured ? 'checked' : ''}}
                                id="is_featured">
                         <label class="custom-control-label" for="is_featured">
                             Destacar
@@ -173,7 +175,7 @@
                                type="checkbox"
                                id="is_comment_enabled"
                                name="is_comment_enabled"
-                               value="{{ $model->is_comment_enabled ? 'checked' : '' }}">
+                               {{!$model->id || $model->is_comment_enabled ? 'checked' : ''}}>
                         <label for="is_comment_enabled"
                                class="custom-control-label">
                             Permitir Comentarios
@@ -185,7 +187,7 @@
                                type="checkbox"
                                id="is_comment_anonymous"
                                name="is_comment_anonymous"
-                               value="{{ $model->is_comment_anonymous ? 'checked' : '' }}">
+                               {{ $model->is_comment_anonymous ? 'checked' : '' }}>
                         <label for="is_comment_anonymous"
                                class="custom-control-label">
                             Permitir Comentarios Anónimos
@@ -197,7 +199,7 @@
                                type="checkbox"
                                id="is_visible_on_archive"
                                name="is_visible_on_archive"
-                               value="{{ $model->is_visible_on_archive ? 'checked' : '' }}">
+                               {{ $model->is_visible_on_archive ? 'checked' : '' }}>
                         <label for="is_visible_on_archive"
                                class="custom-control-label">
                             Contenido Archivado (obsoleto)
@@ -299,6 +301,8 @@
 
 
                 <div class="form-group">
+                    TODO: CREAR SELECTOR PARA PROGRAMAR PUBLICACION
+                    <br />
                     programated_at	timestamp(0) NULL	Fecha en la que está programada la programación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento
                 </div>
             </div>
@@ -319,13 +323,13 @@
             <div class="card-body">
                 <div class="form-group">
                     <label for="image">
-                        Imagen
+                        Imagen (TODO: Añadir cropper)
                     </label>
 
                     <div class="input-group">
                         <img
                                 src="{{ $model->urlThumbnail('small') }}"
-                                alt="Curriculum Image"
+                                alt="Imagen de Portada"
                                 id="cv-image-preview"
                                 style="width: 80px; margin-right: 10px;"/>
 
@@ -350,23 +354,7 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Excerpt --}}
-                <div class="form-group">
-                    <label for="excerpt">
-                        Resumen
-                    </label>
-
-                    <textarea id="excerpt"
-                              type="text"
-                              class="form-control"
-                              name="excerpt"
-                              rows="3"
-                              style="height: 104px; resize: none;"
-                              placeholder="Descipción de la entrada">{{ old('excerpt', $model->excerpt) }}</textarea>
-                </div>
             </div>
-
         </div>
 
         {{-- Detalles --}}
@@ -391,6 +379,82 @@
                               rows="3"
                               style="height: 104px; resize: none;"
                               placeholder="Descipción de la entrada">{{ old('excerpt', $model->excerpt) }}</textarea>
+                </div>
+
+                {{-- Contribuidores --}}
+                <div class="form-group">
+                    <label for="contributors">
+                        Contribuidores
+                        <br>
+                        <small>
+                            Podrán editar las páginas del contenido (TODO)
+                        </small>
+                    </label>
+
+                </div>
+
+                {{-- Galerías --}}
+                <div class="form-group">
+                    <label for="contributors">
+                        Galerías
+                        <br>
+                        <small>
+                            Galería de imágenes para slides (TODO)
+                        </small>
+                    </label>
+
+                </div>
+
+                {{-- Contenido relacionado --}}
+                <div class="form-group">
+                    <label for="contributors">
+                        Contenido relacionado
+                        <br>
+                        <small>
+                            Asociar contenido relacionado para enlazar al
+                            finalizar la entrada hacia ellos (TODO)
+                        </small>
+                    </label>
+
+                </div>
+
+                {{-- Etiquetas --}}
+                <div class="form-group">
+                    <label for="contributors">
+                        Etiquetas
+                        <br>
+                        <small>
+                            Adjetivos que identifiquen este contenido, se
+                            sacarán las sugerencias del contenido en el texto
+                            de las páginas y quizás plantearé de las
+                            relacionadas (TODO)
+                        </small>
+                    </label>
+
+                </div>
+
+                {{-- Categorías --}}
+                <div class="form-group">
+                    <label for="contributors">
+                        Categorías
+
+                        <br>
+
+                        <small>
+                            Para agrupar contenidos, por ejemplo:
+                            programación, software, tecnología...
+                            Como las etiquetas pero más concretos.
+                            Se podrá seleccionar existente o añadir nuevas,
+                            quizás con dos selectores select2 y un botón para
+                            abrir un modal desde el que añadir nuevas.
+                            Plantear crear CRUD para estas categorías y que
+                            en este pueda reasignar las que ya existan si se
+                            van a eliminar. Es decir, antes de eliminar dar
+                            la posibilidad de reasignar a otra categoría.
+                            (TODO)
+                        </small>
+                    </label>
+
                 </div>
             </div>
         </div>
