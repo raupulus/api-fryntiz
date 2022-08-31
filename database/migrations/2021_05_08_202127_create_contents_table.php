@@ -77,10 +77,11 @@ class CreateContentsTable extends Migration
 
             $table->boolean('is_copyright_valid')
                 ->default(null)
+                ->nullable()
                 ->comment('Indica si se ha comprobado que el contenido no contiene copyright. Si es null, no se ha comprobado');
-            $table->boolean('is_visible')
+            $table->boolean('is_active')
                 ->default(false)
-                ->comment('Indica si el contenido está visible');
+                ->comment('Indica si el contenido está activo');
             $table->boolean('is_comment_enabled')
                 ->default(false)
                 ->comment('Indica si los comentarios están habilitados');
