@@ -209,8 +209,8 @@ return [
     */
 
     'enabled_laravel_mix' => false,
-    'laravel_mix_css_path' => 'dashboard/css/styles.css',
-    'laravel_mix_js_path' => 'dashboard/js/scripts.js',
+    'laravel_mix_css_path' => 'dashboard/css/dashboard.css',
+    'laravel_mix_js_path' => 'dashboard/js/dashboard.js',
 
     /*
     |--------------------------------------------------------------------------
@@ -626,7 +626,28 @@ return [
     */
 
     'plugins' => [
-
+        'dashboard' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/dashboard/css/dashboard.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/dashboard/js/dashboard.js',
+                ],
+                /*
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/js/functions.js',
+                ],
+                */
+            ],
+        ],
         'Datatables' => [
             'active' => false,
             'files' => [
@@ -724,8 +745,15 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '/vendor/inputmask/inputmask.js',
+                    'location' => '/vendor/inputmask/inputmask.min.js',
                 ],
+                /*
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/inputmask/jquery.inputmask.min.js',
+                ],
+                */
             ],
         ],
 
@@ -839,6 +867,33 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '/vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
+                ],
+            ],
+        ],
+
+        // Editor Quill - https://github.com/quilljs/quill - https://quilljs.com/docs/
+        'quill' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/quill.core.css',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/quill.snow.css',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/quill.bubble.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/js/quill.js',
                 ],
             ],
         ],

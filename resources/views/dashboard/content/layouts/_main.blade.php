@@ -1,5 +1,18 @@
 <div class="row">
 
+    <div class="col-12">
+        <h2 style="display: inline-block;">
+            {{(isset($model) && $model && $model->id) ? 'Editar ' . $model::getModelTitles()['singular'] : 'Creando ' . $model::getModelTitles()['singular']}}
+        </h2>
+
+        <div class="float-right">
+            <button type="submit"
+                    class="btn btn-success float-right">
+                <i class="fas fa-save"></i>
+                Guardar
+            </button>
+        </div>
+    </div>
 
     {{-- Columna Izquierda --}}
     <div class="col-12 col-md-6">
@@ -346,23 +359,23 @@
                     </label>
 
                     <div class="input-group">
-                        <img
+                        <img class="cursor-pointer"
                                 src="{{ $model->urlThumbnail('small') }}"
                                 alt="Imagen de Portada"
-                                id="cv-image-preview"
+                                id="main-image-preview"
                                 style="width: 80px; margin-right: 10px;"/>
 
                         <div class="custom-file">
 
                             <input type="file"
                                    name="image"
-                                   id="cv-image-input"
+                                   id="main-image-input"
                                    accept="image/*"
-                                   class="form-control-file">
+                                   class="cursor-pointer form-control-file">
 
-                            <label class="custom-file-label"
-                                   id="cv-image-label"
-                                   for="cv-image-input">
+                            <label class="custom-file-label cursor-pointer"
+                                   id="main-image-label"
+                                   for="main-image-input">
 
                                 @if ($model->image)
                                     {{$model->image->original_name}}

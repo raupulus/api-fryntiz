@@ -23,3 +23,5 @@
 {{--
 <link href="{{ mix('assets/css/datatables.css') }}" rel="stylesheet" />
 --}}
+
+<link href="{{ mix('dashboard/css/dashboard.css') }}" rel="stylesheet" />

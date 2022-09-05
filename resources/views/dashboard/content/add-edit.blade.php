@@ -1,5 +1,12 @@
 @extends('adminlte::page')
 
+@section('plugins.momentjs', true)
+@section('plugins.tempusdominusBootstrap', true)
+@section('plugins.select2', true)
+@section('plugins.bootstrapDualListbox', true)
+@section('plugins.quill', true)
+@section('plugins.summernote', true)
+
 @section('title', 'Añadir ' . $model::getModelTitles()['singular'])
 
 @section('content_header')
@@ -34,25 +41,6 @@
 
                 <input type="hidden" name="id" value="{{$model->id}}">
 
-                <div class="row">
-                    <div class="col-12">
-                        <h2 style="display: inline-block;">
-                            {{(isset($model) && $model && $model->id) ? 'Editar ' . $model::getModelTitles()['singular'] : 'Creando ' . $model::getModelTitles()['singular']}}
-                        </h2>
-
-                        <div class="float-right">
-                            <button type="submit"
-                                    class="btn btn-success float-right">
-                                <i class="fas fa-save"></i>
-                                Guardar
-                            </button>
-                        </div>
-                    </div>
-
-
-                </div>
-
-
                 {{-- Selector de secciones para el contenido --}}
                 <div class="row">
                     <nav>
@@ -83,8 +71,6 @@
                             </a>
                         </div>
                     </nav>
-
-
                 </div>
 
                 <div class="row">
@@ -120,14 +106,6 @@
 @stop
 
 @section('js')
-    <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
-
-    @section('plugins.momentjs', true)
-    @section('plugins.tempusdominusBootstrap', true)
-    @section('plugins.select2', true)
-    @section('plugins.bootstrapDualListbox', true)
-
-
 
     <script>
 
@@ -142,131 +120,26 @@
             });
 
             //Bootstrap Duallistbox
-            $('.duallistbox').bootstrapDualListbox({
-                nonSelectedListLabel:'No seleccionados',
-                selectedListLabel:'Seleccionados',
-                preserveSelectionOnMove:'moved',
-                moveOnSelect:false,
-                nonSelectedFilter:'',
-                infoText:'Mostrando todos {0}',
-                infoTextFiltered:'<span class="badge badge-warning">Filtrado</span> {0} de {1}',
-                infoTextEmpty:'Lista vacía',
-                filterPlaceHolder:'Filtrar',
-                filterTextClear:'Mostrar todos',
-                moveSelectedLabel:'Mover seleccionados',
-                moveAllLabel:'Mover todos',
-                removeSelectedLabel:'Eliminar seleccionados',
-                removeAllLabel:'Eliminar todos',
-                selectorMinimalHeight:160,
-                moveOnDoubleClick:true,
-                showFilterInputs:true,
-                showMoveAll:false,
-                showRemoveAll:false,
-                showSelectedList:true,
-                showNonSelectedList:true,
-                showAvailableOptions:true,
-                showSelectedOptions:true,
-            });
-        });
+            $('.duallistbox').bootstrapDualListbox(bootstrapDualListboxOptions);
 
-        window.document.addEventListener('click', () => {
-
-            /********** Cambiar Imagen al subirla **********/
-            const avatarInput = document.getElementById('cv-image-input');
-            const imageView = document.getElementById('cv-image-preview');
-            const imageLabel = document.getElementById('cv-image-label');
-
-            if(avatarInput) {
-                avatarInput.onchange = () => {
-                    const reader = new FileReader();
-
-                    reader.onload = () => {
-                        imageView.src = reader.result;
-                    }
-
-                    if(avatarInput.files && avatarInput.files[0]) {
-                        reader.readAsDataURL(avatarInput.files[0]);
-
-                        if(imageLabel) {
-                            imageLabel.textContent = avatarInput.files[0].name;
-                        }
-                    }
-                };
-            }
-
+            // Previsualización de imagen para apartado principal.
+            preparePreviewImage('#main-image-input', '#main-image-preview', '#main-image-label');
         });
     </script>
 
 
 
 
-    {{-- Editor, cambiar a librería con npm --}}
-    {{-- https://github.com/quilljs/quill --}}
-    {{-- https://quilljs.com/docs/ --}}
-
-    <!-- Theme included stylesheets -->
-    <link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet"/>
-    <link href="//cdn.quilljs.com/1.0.0/quill.bubble.css" rel="stylesheet"/>
-
-    <!-- Core build with no theme, formatting, non-essential modules -->
-    <link href="//cdn.quilljs.com/1.0.0/quill.core.css" rel="stylesheet"/>
-    <script src="//cdn.quilljs.com/1.0.0/quill.core.js"></script>
-
-    <!-- Main Quill library -->
-    <script src="//cdn.quilljs.com/1.0.0/quill.min.js"></script>
-
     <!-- Initialize Quill editor -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
 
-            /*
-             var editor = new Quill('#editor', {
-             //modules: { toolbar: '#toolbar' },
-             theme: 'snow',
-             });
 
-             */
-            var Delta = Quill.import('delta');
-            var quill = new Quill('#editor', {
-                modules:{
-                    toolbar:true
-                },
-                placeholder:'Compose an epic...',
-                theme:'snow'
-            });
 
-// Store accumulated changes
-            var change = new Delta();
-            quill.on('text-change', function(delta) {
-                change = change.compose(delta);
-            });
+            initQuillEditor('#editor', '#form', '#textarea');
 
-// Save periodically
-            setInterval(function() {
-                if(change.length() > 0) {
-                    console.log('Saving changes', change);
-                    /*
-                     Send partial changes
-                     $.post('/your-endpoint', {
-                     partial: JSON.stringify(change)
-                     });
 
-                     Send entire document
-                     $.post('/your-endpoint', {
-                     doc: JSON.stringify(quill.getContents())
-                     });
-                     */
-                    change = new Delta();
-                }
-            }, 5 * 1000);
-
-// Check for unsaved data
-            window.onbeforeunload = function() {
-                if(change.length() > 0) {
-                    return 'There are unsaved changes. Are you sure you want to leave?';
-                }
-            }
         });
     </script>
 @stop

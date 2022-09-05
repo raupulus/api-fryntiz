@@ -44,90 +44,13 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div class="form-group">
-                                    <label for="title">Título</label>
-                                    <input type="text" class="form-control"
-                                           id="title" name="title"
-                                           placeholder="Título de la página">
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                <div class="form-group">
-                                    <label for="slug">Slug</label>
-                                    <input type="text" class="form-control"
-                                           id="slug" name="slug"
-                                           placeholder="Slug de la página">
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="image">Imagen</label>
-                                    <input type="file" class="form-control"
-                                           id="image" name="image"
-                                           alt="Imagen para la página">
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12"
-                         style="min-width: 100%; float: none; text-align: center;">
-                        <h3 style="position: relative; width: 100%;">
-                            <div class="btn-group" role="group"
-                                 aria-label="Basic example"
-                                 style="">
-                                <button type="button"
-                                        class="btn btn-secondary disabled btn-success"
-                                        style="opacity: 0.4; text-align: center;">
-                                    Quilljs
-                                </button>
-
-                                <button type="button"
-                                        class="btn btn-secondary btn-info">
-                                    Summernote
-                                </button>
-
-                                <button type="button"
-                                        class="btn btn-secondary btn-info">
-                                    CodeMirror
-                                </button>
-
-                                <button type="button"
-                                        class="btn btn-secondary btn-info">
-                                    GrapesJS
-                                </button>
-                            </div>
-                            <br></h3>
-                    </div>
-                </div>
+                @include('dashboard.content.layouts._page')
 
                 <p>
                     111111111111111111
                 </p>
-
-
-                <!-- Create the toolbar container -->
-                {{--
-                <div id="toolbar">
-                    <button class="ql-bold">Bold</button>
-                    <button class="ql-italic">Italic</button>
-                </div>
-                --}}
-
-                <!-- Create the editor container -->
-                <div id="editor">
-                    <p>Hello World!</p>
-                </div>
             </div>
+
             <div class="tab-pane fade" id="v-pills-profile"
                  role="tabpanel"
                  aria-labelledby="v-pills-profile-tab">
@@ -142,6 +65,9 @@
                         </button>
                     </div>
                 </div>
+
+                @include('dashboard.content.layouts._page')
+
                 2222222222222222222
             </div>
             <div class="tab-pane fade" id="v-pills-messages"
@@ -158,6 +84,9 @@
                         </button>
                     </div>
                 </div>
+
+                @include('dashboard.content.layouts._page')
+
                 3333333333333333333
             </div>
             <div class="tab-pane fade" id="v-pills-settings"
@@ -174,6 +103,9 @@
                         </button>
                     </div>
                 </div>
+
+                @include('dashboard.content.layouts._page')
+
                 4444444444444444444
             </div>
 
