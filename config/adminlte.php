@@ -647,6 +647,8 @@ return [
                 ],
             ],
         ],
+
+        /*
         'Select2' => [
             'active' => false,
             'files' => [
@@ -662,6 +664,24 @@ return [
                 ],
             ],
         ],
+        */
+
+        'select2' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/select2/css/select2.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/select2/js/select2.full.min.js',
+                ],
+            ],
+        ],
+
         'Chartjs' => [
             'active' => false,
             'files' => [
@@ -708,6 +728,121 @@ return [
                 ],
             ],
         ],
+
+        'bootstrapDualListbox' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap4-duallistbox/bootstrap-duallistbox.min.css',
+                ],
+            ],
+        ],
+
+        'bootstrapColorpicker' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css',
+                ],
+            ],
+        ],
+
+        'datarangepicker' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/daterangepicker/daterangepicker.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/daterangepicker/daterangepicker.css',
+                ],
+            ],
+        ],
+
+        'fullcalendar' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/fullcalendar/main.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/fullcalendar/main.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/fullcalendar/locale-all.min.js',
+                ],
+
+            ],
+        ],
+
+        'summernote' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/summernote/summernote-bs4.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/summernote/summernote-bs4.min.js',
+                ],
+            ],
+        ],
+
+        'momentjs' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
+                ],
+            ],
+        ],
+
+        // Incluye datetimepicker para bootstrap
+        'tempusdominusBootstrap' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
+                ],
+            ],
+        ],
+
     ],
 
     /*

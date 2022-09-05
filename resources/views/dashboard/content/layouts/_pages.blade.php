@@ -1,6 +1,185 @@
-<div class="row" style="border: 1px dashed rgb(66, 133, 244);"><div class="col-sm-4" style="min-width: 100%; float: none; text-align: center;"><h3 style="position: relative; width: 100%;"><div class="btn-group" role="group" aria-label="Basic example" style=""><button type="button" class="btn btn-secondary disabled btn-success" style="opacity: 0.4; text-align: center;">Página 1</button> <button type="button" class="btn btn-secondary btn-info">Página 2</button><button type="button" class="btn btn-secondary btn-info">Página 3</button><button type="button" class="btn btn-secondary btn-info">Página 4</button><button type="button" class="btn btn-secondary btn-info">Página 5</button><button type="button" class="btn btn-secondary btn-dark" style="padding-right: 16px; text-align: center; float: left;">+</button></div><br></h3></div></div><div class="btn-group" role="group" aria-label="Basic example" style=""> </div><div class="row" style=""><div class="col-sm-4"><h3>Editor<br></h3><div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="">		  <div class="btn-group mr-2" role="group" aria-label="First group">			<button type="button" class="btn btn-secondary">1</button>			<button type="button" class="btn btn-secondary">2</button>			<button type="button" class="btn btn-secondary">3</button>			<button type="button" class="btn btn-secondary">4</button>		  </div>		  <div class="btn-group mr-2" role="group" aria-label="Second group">											  </div>		  <div class="btn-group" role="group" aria-label="Third group">					  </div>		</div></div><div class="col-sm-4 col-5"><h3>Información de la página<br><input type="text" class="form-control" placeholder="slug" value="slug-de-la-pagina"></h3><span class="badge badge-primary" style="">Destacada</span><span class="badge badge-warning" style="">Prioridad</span><span class="badge badge-warning" style="">Prioridad</span><div class="form-group" style=""></div></div><div class="col-sm-4" spellcheckker="false" contenteditable="true"><h3>Datos adicionales</h3><div><br></div><div>- Imagen de portada</div><div>- ??<br></div><div class="form-group" style=""><input type="file" class="form-control">			</div></div></div>
+<div class="row">
+    <div class="col-12 col-md-3 col-xl-2 mt-3">
 
-<!-- /container -->
+        <div class="nav flex-column nav-pills" id="v-pills-tab"
+             role="tablist" aria-orientation="vertical">
+            <a class="nav-link active" id="v-pills-home-tab"
+               data-toggle="pill" href="#v-pills-home" role="tab"
+               aria-controls="v-pills-home"
+               aria-selected="true">Página 1</a>
+            <a class="nav-link" id="v-pills-profile-tab"
+               data-toggle="pill" href="#v-pills-profile" role="tab"
+               aria-controls="v-pills-profile"
+               aria-selected="false">Página 2</a>
+            <a class="nav-link" id="v-pills-messages-tab"
+               data-toggle="pill" href="#v-pills-messages"
+               role="tab" aria-controls="v-pills-messages"
+               aria-selected="false">Página 3</a>
+            <a class="nav-link" id="v-pills-settings-tab"
+               data-toggle="pill" href="#v-pills-settings"
+               role="tab" aria-controls="v-pills-settings"
+               aria-selected="false">Página 4</a>
+
+            <a class="btn btn-dark">
+                +
+            </a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-9 col-xl-10 mt-3">
+
+        <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade show active"
+                 id="v-pills-home" role="tabpanel"
+                 aria-labelledby="v-pills-home-tab">
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Página 1</h3>
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <button class="btn btn-success">
+                            Guardar Página
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label for="title">Título</label>
+                                    <input type="text" class="form-control"
+                                           id="title" name="title"
+                                           placeholder="Título de la página">
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label for="slug">Slug</label>
+                                    <input type="text" class="form-control"
+                                           id="slug" name="slug"
+                                           placeholder="Slug de la página">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="image">Imagen</label>
+                                    <input type="file" class="form-control"
+                                           id="image" name="image"
+                                           alt="Imagen para la página">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12"
+                         style="min-width: 100%; float: none; text-align: center;">
+                        <h3 style="position: relative; width: 100%;">
+                            <div class="btn-group" role="group"
+                                 aria-label="Basic example"
+                                 style="">
+                                <button type="button"
+                                        class="btn btn-secondary disabled btn-success"
+                                        style="opacity: 0.4; text-align: center;">
+                                    Quilljs
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-secondary btn-info">
+                                    Summernote
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-secondary btn-info">
+                                    CodeMirror
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-secondary btn-info">
+                                    GrapesJS
+                                </button>
+                            </div>
+                            <br></h3>
+                    </div>
+                </div>
+
+                <p>
+                    111111111111111111
+                </p>
 
 
-<hr style="">
+                <!-- Create the toolbar container -->
+                {{--
+                <div id="toolbar">
+                    <button class="ql-bold">Bold</button>
+                    <button class="ql-italic">Italic</button>
+                </div>
+                --}}
+
+                <!-- Create the editor container -->
+                <div id="editor">
+                    <p>Hello World!</p>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-profile"
+                 role="tabpanel"
+                 aria-labelledby="v-pills-profile-tab">
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Página 2</h3>
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <button class="btn btn-success">
+                            Guardar Página
+                        </button>
+                    </div>
+                </div>
+                2222222222222222222
+            </div>
+            <div class="tab-pane fade" id="v-pills-messages"
+                 role="tabpanel"
+                 aria-labelledby="v-pills-messages-tab">
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Página 3</h3>
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <button class="btn btn-success">
+                            Guardar Página
+                        </button>
+                    </div>
+                </div>
+                3333333333333333333
+            </div>
+            <div class="tab-pane fade" id="v-pills-settings"
+                 role="tabpanel"
+                 aria-labelledby="v-pills-settings-tab">
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Página 4</h3>
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <button class="btn btn-success">
+                            Guardar Página
+                        </button>
+                    </div>
+                </div>
+                4444444444444444444
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+

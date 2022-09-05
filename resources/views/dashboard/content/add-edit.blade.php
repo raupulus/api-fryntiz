@@ -97,86 +97,19 @@
                                 @include('dashboard.content.layouts._main')
                             </div>
                             <div class="tab-pane fade" id="nav-profile"
-                                 role="tabpanel" aria-labelledby="nav-profile-tab">
+                                 role="tabpanel"
+                                 aria-labelledby="nav-profile-tab">
                                 @include('dashboard.content.layouts._pages')
                             </div>
                             <div class="tab-pane fade" id="nav-contact"
-                                 role="tabpanel" aria-labelledby="nav-contact-tab">
+                                 role="tabpanel"
+                                 aria-labelledby="nav-contact-tab">
                                 ...
                             </div>
                             <div class="tab-pane fade" id="nav-o"
                                  role="tabpanel" aria-labelledby="nav-o-tab">
                                 ...
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-                {{--test editor --}}
-                <div class="row">
-                    <div class="col-12">
-                        <span class="btn btn-success">
-                            Añadir Página
-                        </span>
-                    </div>
-                    <div class="nav flex-column nav-pills" id="v-pills-tab"
-                         role="tablist" aria-orientation="vertical">
-                        <a class="nav-link active" id="v-pills-home-tab"
-                           data-toggle="pill" href="#v-pills-home" role="tab"
-                           aria-controls="v-pills-home"
-                           aria-selected="true">Página 1</a>
-                        <a class="nav-link" id="v-pills-profile-tab"
-                           data-toggle="pill" href="#v-pills-profile" role="tab"
-                           aria-controls="v-pills-profile"
-                           aria-selected="false">Página 2</a>
-                        <a class="nav-link" id="v-pills-messages-tab"
-                           data-toggle="pill" href="#v-pills-messages"
-                           role="tab" aria-controls="v-pills-messages"
-                           aria-selected="false">Página 3</a>
-                        <a class="nav-link" id="v-pills-settings-tab"
-                           data-toggle="pill" href="#v-pills-settings"
-                           role="tab" aria-controls="v-pills-settings"
-                           aria-selected="false">Página 4</a>
-                    </div>
-                    <div class="tab-content" id="v-pills-tabContent">
-                        <div class="tab-pane fade show active"
-                             id="v-pills-home" role="tabpanel"
-                             aria-labelledby="v-pills-home-tab">
-                            <p>
-                                111111111111111111
-                            </p>
-
-
-                            <!-- Create the toolbar container -->
-                        {{--
-                        <div id="toolbar">
-                            <button class="ql-bold">Bold</button>
-                            <button class="ql-italic">Italic</button>
-                        </div>
-                        --}}
-
-                        <!-- Create the editor container -->
-                            <div id="editor">
-                                <p>Hello World!</p>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="v-pills-profile"
-                             role="tabpanel"
-                             aria-labelledby="v-pills-profile-tab">
-                            2222222222222222222
-                        </div>
-                        <div class="tab-pane fade" id="v-pills-messages"
-                             role="tabpanel"
-                             aria-labelledby="v-pills-messages-tab">
-                            3333333333333333333
-                        </div>
-                        <div class="tab-pane fade" id="v-pills-settings"
-                             role="tabpanel"
-                             aria-labelledby="v-pills-settings-tab">
-                            4444444444444444444
                         </div>
                     </div>
                 </div>
@@ -189,8 +122,55 @@
 @section('js')
     <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
 
+    @section('plugins.momentjs', true)
+    @section('plugins.tempusdominusBootstrap', true)
+    @section('plugins.select2', true)
+    @section('plugins.bootstrapDualListbox', true)
+
+
+
     <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /*** Selector datetimepicker programar publicación ***/
+            $('#programated_at').datetimepicker({icons:{time:'far fa-clock'}});
+
+            /*** Select 2 ***/
+            $('.select2').select2();
+            $('.select2bs4').select2({
+                theme:'bootstrap4'
+            });
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox({
+                nonSelectedListLabel:'No seleccionados',
+                selectedListLabel:'Seleccionados',
+                preserveSelectionOnMove:'moved',
+                moveOnSelect:false,
+                nonSelectedFilter:'',
+                infoText:'Mostrando todos {0}',
+                infoTextFiltered:'<span class="badge badge-warning">Filtrado</span> {0} de {1}',
+                infoTextEmpty:'Lista vacía',
+                filterPlaceHolder:'Filtrar',
+                filterTextClear:'Mostrar todos',
+                moveSelectedLabel:'Mover seleccionados',
+                moveAllLabel:'Mover todos',
+                removeSelectedLabel:'Eliminar seleccionados',
+                removeAllLabel:'Eliminar todos',
+                selectorMinimalHeight:160,
+                moveOnDoubleClick:true,
+                showFilterInputs:true,
+                showMoveAll:false,
+                showRemoveAll:false,
+                showSelectedList:true,
+                showNonSelectedList:true,
+                showAvailableOptions:true,
+                showSelectedOptions:true,
+            });
+        });
+
         window.document.addEventListener('click', () => {
+
             /********** Cambiar Imagen al subirla **********/
             const avatarInput = document.getElementById('cv-image-input');
             const imageView = document.getElementById('cv-image-preview');
@@ -233,12 +213,12 @@
     <script src="//cdn.quilljs.com/1.0.0/quill.core.js"></script>
 
     <!-- Main Quill library -->
-    <script src="//cdn.quilljs.com/1.0.0/quill.js"></script>
     <script src="//cdn.quilljs.com/1.0.0/quill.min.js"></script>
 
     <!-- Initialize Quill editor -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
 
             /*
              var editor = new Quill('#editor', {

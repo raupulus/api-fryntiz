@@ -141,7 +141,7 @@
 
                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                         <input type="checkbox" class="custom-control-input"
-                              {{$model->is_active ? 'checked' : ''}}
+                               {{$model->is_active ? 'checked' : ''}}
                                id="is_active">
                         <label class="custom-control-label" for="is_active">
                             Contenido Activo
@@ -175,7 +175,7 @@
                                type="checkbox"
                                id="is_comment_enabled"
                                name="is_comment_enabled"
-                               {{!$model->id || $model->is_comment_enabled ? 'checked' : ''}}>
+                                {{!$model->id || $model->is_comment_enabled ? 'checked' : ''}}>
                         <label for="is_comment_enabled"
                                class="custom-control-label">
                             Permitir Comentarios
@@ -187,7 +187,7 @@
                                type="checkbox"
                                id="is_comment_anonymous"
                                name="is_comment_anonymous"
-                               {{ $model->is_comment_anonymous ? 'checked' : '' }}>
+                                {{ $model->is_comment_anonymous ? 'checked' : '' }}>
                         <label for="is_comment_anonymous"
                                class="custom-control-label">
                             Permitir Comentarios Anónimos
@@ -199,7 +199,7 @@
                                type="checkbox"
                                id="is_visible_on_archive"
                                name="is_visible_on_archive"
-                               {{ $model->is_visible_on_archive ? 'checked' : '' }}>
+                                {{ $model->is_visible_on_archive ? 'checked' : '' }}>
                         <label for="is_visible_on_archive"
                                class="custom-control-label">
                             Contenido Archivado (obsoleto)
@@ -301,10 +301,29 @@
 
 
                 <div class="form-group">
-                    TODO: CREAR SELECTOR PARA PROGRAMAR PUBLICACION
-                    <br />
-                    programated_at	timestamp(0) NULL	Fecha en la que está programada la programación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento
+                    <label>
+                        Programar Publicación:
+                    </label>
+
+                    <div class="input-group date"
+                         id="programated_at"
+                         data-target-input="nearest">
+                        <input type="text"
+                               value="{{old('programated_at', $model->programated_at)}}"
+                               name="programated_at"
+                               class="form-control datetimepicker-input"
+                               data-target="#programated_at">
+                        <div class="input-group-append"
+                             data-target="#programated_at"
+                             data-toggle="datetimepicker">
+
+                            <div class="input-group-text">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -378,7 +397,7 @@
                               name="excerpt"
                               rows="3"
                               style="height: 104px; resize: none;"
-                              placeholder="Descipción de la entrada">{{ old('excerpt', $model->excerpt) }}</textarea>
+                              placeholder="Descripción de la entrada">{{ old('excerpt', $model->excerpt) }}</textarea>
                 </div>
 
                 {{-- Contribuidores --}}
@@ -391,10 +410,22 @@
                         </small>
                     </label>
 
+                    <select id="contributors"
+                            name="contributors[]"
+                            class="duallistbox"
+                            multiple="multiple">
+                        <option selected="">Contribuidor 1</option>
+                        <option>Contribuidor 2</option>
+                        <option>Contribuidor 3</option>
+                        <option>Contribuidor 4</option>
+                        <option>Contribuidor 5</option>
+                        <option selected>Contribuidor 6</option>
+                        <option selected>Contribuidor 7</option>
+                    </select>
                 </div>
 
-                {{-- Galerías --}}
                 <div class="form-group">
+                {{-- Galerías --}}
                     <label for="contributors">
                         Galerías
                         <br>
@@ -407,35 +438,75 @@
 
                 {{-- Contenido relacionado --}}
                 <div class="form-group">
-                    <label for="contributors">
+                    <label for="contentRelated">
                         Contenido relacionado
                         <br>
                         <small>
                             Asociar contenido relacionado para enlazar al
-                            finalizar la entrada hacia ellos (TODO)
+                            finalizar la entrada hacia ellos, permitir
+                            asociar todos los tipos de contenidos incluyendo
+                            con estados como borradores. Luego esto será
+                            filtrado al mostrar contenido relacionado pero
+                            así queda preparado para una vez sea publicado
+                            (TODO)
                         </small>
                     </label>
 
+                    <select id="contentRelated"
+                            name="contentRelated[]"
+                            class="duallistbox"
+                            multiple="multiple">
+                        <option selected="">Título de la página 1</option>
+                        <option>Título de la página 2</option>
+                        <option>Título de la página 3</option>
+                        <option>Título de la página 4</option>
+                        <option selected>Título de la página 5</option>
+                        <option>Título de la página 6</option>
+                        <option>Título de la página 7</option>
+                    </select>
+
                 </div>
+
 
                 {{-- Etiquetas --}}
                 <div class="form-group">
-                    <label for="contributors">
+                    <label for="tags">
                         Etiquetas
-                        <br>
-                        <small>
-                            Adjetivos que identifiquen este contenido, se
-                            sacarán las sugerencias del contenido en el texto
-                            de las páginas y quizás plantearé de las
-                            relacionadas (TODO)
-                        </small>
                     </label>
-
+                    <br>
+                    <small>
+                        Adjetivos que identifiquen este contenido, se
+                        sacarán las sugerencias del contenido en el texto
+                        de las páginas y quizás plantearé de las
+                        relacionadas (TODO)
+                    </small>
+                    <br/>
+                    <div class="select2-purple">
+                        <select id="tags" name="tags[]"
+                                class="select2 select2-hidden-accessible"
+                                multiple=""
+                                data-placeholder="Selecciona las etiquetas"
+                                data-dropdown-css-class="select2-purple"
+                                style="width: 100%;"
+                                tabindex="-1"
+                                aria-hidden="true">
+                            <option value="1" selected>
+                                Etiqueta1
+                            </option>
+                            <option value="2">Etiqueta2</option>
+                            <option value="3">Etiqueta3</option>
+                            <option value="4">Etiqueta4</option>
+                            <option value="5" selected>Etiqueta5</option>
+                            <option value="6">Etiqueta6</option>
+                            <option value="7">Etiqueta7</option>
+                        </select>
+                    </div>
                 </div>
+
 
                 {{-- Categorías --}}
                 <div class="form-group">
-                    <label for="contributors">
+                    <label for="categories">
                         Categorías
 
                         <br>
@@ -454,6 +525,25 @@
                             (TODO)
                         </small>
                     </label>
+
+                    <div class="select2-info">
+                        <select id="categories" name="categories[]"
+                                class="select2 select2-hidden-accessible"
+                                multiple=""
+                                data-placeholder="Selecciona las categorías"
+                                data-dropdown-css-class="select2-info"
+                                style="width: 100%;"
+                                tabindex="-1"
+                                aria-hidden="true">
+                            <option value="1" selected>Categoría1</option>
+                            <option value="2">Categoría2</option>
+                            <option value="3">Categoría3</option>
+                            <option value="4" selected>Categoría4</option>
+                            <option value="5">Categoría5</option>
+                            <option value="6">Categoría6</option>
+                            <option value="7" selected>Categoría7</option>
+                        </select>
+                    </div>
 
                 </div>
             </div>
