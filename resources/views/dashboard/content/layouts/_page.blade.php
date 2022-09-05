@@ -51,11 +51,6 @@
 
                 <button type="button"
                         class="btn btn-secondary btn-info">
-                    CodeMirror
-                </button>
-
-                <button type="button"
-                        class="btn btn-secondary btn-info">
                     GrapesJS
                 </button>
             </div>
@@ -64,3 +59,5 @@
 </div>
 
 @include('dashboard.content.layouts._editor_quill')
+@include('dashboard.content.layouts._editor_summernote')
+@include('dashboard.content.layouts._editor_grapesjs')

@@ -74,7 +74,7 @@ function initQuillEditor(editorSelector, formSelector,
                          textareaSelector) {
 
     const Delta = Quill.import('delta');
-    const quill = new Quill('#editor', editorQuillOptions);
+    const quill = new Quill(editorSelector, editorQuillOptions);
 
 
     // TODO: Cuando implemente creación de páginas, añadir el cuerpo
@@ -92,4 +92,21 @@ function initQuillEditor(editorSelector, formSelector,
      return false;
      };
      */
+
+    return quill;
+}
+
+function initSummernoteEditor(editorSelector, formSelector,
+                              textareaSelector) {
+
+}
+
+function initCodeMirrorEditor(editorSelector, formSelector,
+                              textareaSelector) {
+
+}
+
+function initGrapejsEditor(editorSelector, formSelector,
+                              textareaSelector) {
+
 }

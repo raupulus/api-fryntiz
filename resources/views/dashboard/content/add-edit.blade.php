@@ -124,22 +124,21 @@
 
             // Previsualización de imagen para apartado principal.
             preparePreviewImage('#main-image-input', '#main-image-preview', '#main-image-label');
-        });
-    </script>
 
 
 
 
-    <!-- Initialize Quill editor -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
 
 
 
 
+            // Inicializo editor Quill
             initQuillEditor('#editor', '#form', '#textarea');
 
 
+            // Inicializo editor summernote
+            $('#summernote').summernote({lang: 'es-ES'});
         });
     </script>
+
 @stop
