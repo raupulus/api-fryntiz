@@ -130,14 +130,15 @@
 
 
 
-
+            // TODO: Dinamizar por cada página que exista, externalizar a una
+            // función en un archivo JS y realizar aquí las llamadas en bucle.
 
             // Inicializo editor Quill
             initQuillEditor('#editor', '#form', '#textarea');
 
 
             // Inicializo editor summernote
-            $('#summernote').summernote({lang: 'es-ES'});
+            $('#summernote').summernote(editorSummernoteOptions);
         });
     </script>
 

@@ -33,3 +33,15 @@ const editorQuillOptions = {
     placeholder:'Compose an epic...',
     theme:'snow'
 };
+
+const editorSummernoteOptions = {
+    lang: 'es-ES',
+}
+
+const editorGutenbergOptions = {
+
+}
+
+const editorGrapesJSOptions = {
+
+}
