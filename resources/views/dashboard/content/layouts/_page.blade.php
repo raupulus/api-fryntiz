@@ -34,6 +34,7 @@
 
 <div class="row">
     <div class="col-12 text-center">
+
         <h3>
             <div class="btn-group" role="group"
                  aria-label="Basic example"
@@ -53,11 +54,18 @@
                         class="btn btn-secondary btn-info">
                     GrapesJS
                 </button>
+
+                <button type="button"
+                        class="btn btn-secondary btn-info">
+                    Gutenberg
+                </button>
             </div>
-            <br></h3>
+        </h3>
+
     </div>
 </div>
 
 @include('dashboard.content.layouts._editor_quill')
 @include('dashboard.content.layouts._editor_summernote')
 @include('dashboard.content.layouts._editor_grapesjs')
+@include('dashboard.content.layouts._editor_gutenberg')

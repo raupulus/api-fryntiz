@@ -1,2 +1,2 @@
-<h3>GrapesJS</h3>
+<h3>Gutenberg</h3>
 <textarea>Texto...</textarea>
