@@ -639,13 +639,11 @@ return [
                     'asset' => false,
                     'location' => '/dashboard/js/dashboard.js',
                 ],
-                /*
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '/js/functions.js',
+                    'location' => '/js/vue.js',
                 ],
-                */
             ],
         ],
         'Datatables' => [

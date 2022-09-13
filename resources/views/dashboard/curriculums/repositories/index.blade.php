@@ -475,8 +475,6 @@
 @stop
 
 @section('js')
-    <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
-
 
     <script>
         window.document.addEventListener('click', () => {

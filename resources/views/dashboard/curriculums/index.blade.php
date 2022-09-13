@@ -149,7 +149,3 @@
     </div>
 
 @stop
-
-@section('js')
-    <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
-@stop

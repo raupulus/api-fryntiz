@@ -423,7 +423,6 @@
 @stop
 
 @section('js')
-    <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
     <script type="text/javascript"
             src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript"

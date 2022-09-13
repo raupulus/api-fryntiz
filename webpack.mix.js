@@ -13,6 +13,7 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()
+    .js('resources/js/vue.js', 'public/js')
     .js('resources/js/alpine.js', 'public/js')
     .js('resources/js/footer.js', 'public/js')
     .js('resources/js/global_vars.js', 'public/js')

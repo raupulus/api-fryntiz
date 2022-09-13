@@ -185,11 +185,12 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.content.create');
         Route::post('/store', [ContentController::class, 'store'])
             ->name('dashboard.content.store');
-        Route::get('/{id}/edit', [ContentController::class, 'edit'])
+        Route::get('/{model}/edit', [ContentController::class, 'edit'])
+            ->middleware('can:edit,model')
             ->name('dashboard.content.edit');
-        Route::match(['put', 'patch'], '/update/{id}', [ContentController::class, 'update'])
+        Route::match(['put', 'patch'], '/update/{model}', [ContentController::class, 'update'])
             ->name('dashboard.content.update');
-        Route::post('/destroy', [ContentController::class, 'destroy'])
+        Route::match(['post', 'delete'], '/destroy', [ContentController::class, 'destroy'])
             ->name('dashboard.content.destroy');
 
         Route::group(['prefix' => '/ajax'], function () {

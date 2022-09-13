@@ -17,28 +17,9 @@
     <h1>
         TERMINAR PLATAFORMAS, AÑADIR SELECTOR POR PLATAFORMA y CARGAR
         SOLO EL COMPONENTE PARA ESA PLATAFORMA
-
-        <br />
-        <br />
-
-
-        OOOOOOO BIEN....
-
-        <br />
-        <br />
-
-
-        Añadir una entrada al menú por cada tipo de plataforma
     </h1>
 
 
-    <br />
-    <br />
-
-    <h2>
-        La siguiente tabla es de categorías, para basarme en ella pero no es
-        definitiva.
-    </h2>
 
 
     <div class="row" id="app">
@@ -70,6 +51,3 @@
 
 @stop
 
-@section('js')
-    <script src="{{ mix('dashboard/js/dashboard.js') }}"></script>
-@stop

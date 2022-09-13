@@ -11,6 +11,7 @@ use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use App\Models\User;
+use Illuminate\Support\Facades\Request;
 use JsonHelper;
 
 /**
@@ -98,11 +99,11 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Content\Content $model
+     * @param \App\Models\Content\Content         $model
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(ContentEditRequest $request, Content $model)
+    public function edit(Content $model)
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
