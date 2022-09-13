@@ -34,6 +34,12 @@ class ContentPolicy
         return RoleHelper::isAdmin($user->role_id);
     }
 
+    public function edit(User $user, Content $content)
+    {
+        return RoleHelper::isAdmin($user->role_id) ?? $user->id === $content->user_id;
+        return RoleHelper::isAdmin($user->role_id);
+    }
+
     public function store(User $user)
     {
         return RoleHelper::isAdmin($user->role_id);

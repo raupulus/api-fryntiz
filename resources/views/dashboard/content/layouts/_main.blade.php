@@ -44,12 +44,16 @@
                                type="text"
                                class="form-control"
                                name="title"
+                               minlength="5"
+                               maxlength="255"
+                               required
                                value="{{ old('title', $model->title) }}"
                                placeholder="Título">
                     </div>
                 </div>
 
-                {{-- Slug --}}
+                {{-- Slug TODO:check en tiempo real, poner título si está vacío al perder focus del campo título--}}
+                {{-- Slug TODO:comprobar si está bien formado en tiempo real--}}
                 <div class="form-group">
                     <label for="slug">
                         Slug
@@ -66,6 +70,9 @@
                                type="text"
                                class="form-control"
                                name="slug"
+                               required
+                               minlength="3"
+                               maxlength="255"
                                value="{{ old('slug', $model->slug) }}"
                                placeholder="slug-para-el-contenido">
                     </div>
@@ -73,11 +80,11 @@
 
                 {{-- Autor --}}
                 <div class="form-group">
-                    <label for="author">
+                    <label for="author_id">
                         Autor
                     </label>
 
-                    <select id="author" name="author"
+                    <select id="author_id" name="author_id"
                             class="custom-select rounded-0">
                         @if (auth()->user()->role_id === 2)
                             @foreach($users as $user)
@@ -97,11 +104,11 @@
 
                 {{-- Plataforma --}}
                 <div class="form-group">
-                    <label for="platform">
+                    <label for="platform_id">
                         Plataforma
                     </label>
 
-                    <select id="platform" name="platform"
+                    <select id="platform_id" name="platform_id"
                             class="custom-select rounded-0">
                         @foreach($platforms as $platform)
                             <option value="{{ $platform->id }}"
@@ -155,6 +162,7 @@
                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                         <input type="checkbox" class="custom-control-input"
                                {{$model->is_active ? 'checked' : ''}}
+                               name="is_active"
                                id="is_active">
                         <label class="custom-control-label" for="is_active">
                             Contenido Activo
@@ -164,7 +172,8 @@
                     <div class="custom-control custom-switch  custom-switch-off custom-switch-on-primary">
                         <input type="checkbox" class="custom-control-input"
                                {{$model->is_featured ? 'checked' : ''}}
-                               id="is_featured">
+                               id="is_featured"
+                               name="is_featured">
                         <label class="custom-control-label" for="is_featured">
                             Destacar
                         </label>
@@ -313,29 +322,32 @@
                 </div>
 
 
-                <div class="form-group">
-                    <label>
-                        Programar Publicación:
-                    </label>
+                {{-- Solo se muestra programar cuando aún no está publicado --}}
+                @if(!$model->published_at)
+                    <div class="form-group">
+                        <label>
+                            Programar Publicación:
+                        </label>
 
-                    <div class="input-group date"
-                         id="programated_at"
-                         data-target-input="nearest">
-                        <input type="text"
-                               value="{{old('programated_at', $model->programated_at)}}"
-                               name="programated_at"
-                               class="form-control datetimepicker-input"
-                               data-target="#programated_at">
-                        <div class="input-group-append"
-                             data-target="#programated_at"
-                             data-toggle="datetimepicker">
+                        <div class="input-group date"
+                             id="programated_at"
+                             data-target-input="nearest">
+                            <input type="text"
+                                   value="{{old('programated_at', $model->programated_at)}}"
+                                   name="programated_at"
+                                   class="form-control datetimepicker-input"
+                                   data-target="#programated_at">
+                            <div class="input-group-append"
+                                 data-target="#programated_at"
+                                 data-toggle="datetimepicker">
 
-                            <div class="input-group-text">
-                                <i class="fa fa-calendar"></i>
+                                <div class="input-group-text">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endif
 
             </div>
         </div>
@@ -360,10 +372,10 @@
 
                     <div class="input-group">
                         <img class="cursor-pointer"
-                                src="{{ $model->urlThumbnail('small') }}"
-                                alt="Imagen de Portada"
-                                id="main-image-preview"
-                                style="width: 80px; margin-right: 10px;"/>
+                             src="{{ $model->urlThumbnail('small') }}"
+                             alt="Imagen de Portada"
+                             id="main-image-preview"
+                             style="width: 80px; margin-right: 10px;"/>
 
                         <div class="custom-file">
 
@@ -438,7 +450,7 @@
                 </div>
 
                 <div class="form-group">
-                {{-- Galerías --}}
+                    {{-- Galerías --}}
                     <label for="contributors">
                         Galerías
                         <br>

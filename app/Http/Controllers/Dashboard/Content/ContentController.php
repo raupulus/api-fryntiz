@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard\Content;
 
 use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
+use App\Http\Requests\Dashboard\Content\ContentEditRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Content\Content;
@@ -64,6 +65,14 @@ class ContentController extends BaseWithTableCrudController
         $modelString = $this::getModel();
         $modelString::create($request->validated());
 
+        //'processed_at' => 'nullable|date', // Se comprueba en el controlador
+        //'published_at' => 'nullable|date', // Se comprueba en el controlador
+
+        //'contributors' => 'nullable|array', //Check ids
+        //'contentRelated' => 'nullable|array', //Check ids
+        //'tags' => 'nullable|array', //Check ids
+        //'categories' => 'nullable|array', //Check ids
+
 
 
         // TODO: Crear trait? Para imágenes y dinamizar?
@@ -93,11 +102,11 @@ class ContentController extends BaseWithTableCrudController
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(Content $model)
+    public function edit(ContentEditRequest $request, Content $model)
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
-            'users' => User::all(),
+            'users' => User::all(), // TODO: Pasar a ajax desde el frontend
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
         ]);
