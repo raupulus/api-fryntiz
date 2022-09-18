@@ -133,7 +133,17 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function collaborators()
+    public function contributors()
+    {
+        return $this->belongsToMany(User::class, 'content_contributors', 'content_id', 'user_id');
+    }
+
+    /**
+     * Relación con los colaboradores asociados al contenido.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contributorsJoin()
     {
         return $this->hasMany(ContentContributor::class, 'content_id', 'id');
     }
@@ -233,6 +243,21 @@ class Content extends BaseAbstractModelWithTableCrud
     public function getUrlEditAttribute()
     {
         return route('panel.content.edit', ['content' => $this->id]);
+    }
+
+    public function saveContributors(Array $contributors)
+    {
+
+        $contributors = array_unique(array_filter($contributors));
+
+        $this->contributorsJoin()->delete();
+
+        foreach ($contributors as $contributor) {
+            $this->contributorsJoin()->create([
+                'user_id' => $contributor,
+                'content_id' => $this->id,
+            ]);
+        }
     }
 
     /****************** Métodos para tablas dinámicas ******************/

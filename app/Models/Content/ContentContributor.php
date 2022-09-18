@@ -13,4 +13,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContentContributor extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'content_contributors';
+
+    protected $fillable = [
+        'content_id',
+        'user_id',
+    ];
 }

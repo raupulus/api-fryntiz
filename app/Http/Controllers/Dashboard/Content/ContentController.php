@@ -46,11 +46,15 @@ class ContentController extends BaseWithTableCrudController
     {
         $model = new (self::getModel())();
 
+
+        $contributorsIds = $model->contributors->pluck('id')->toArray();
+
         return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
             'users' => User::all(),
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
+            'contributorsIds' => $contributorsIds,
         ]);
     }
 
@@ -63,20 +67,29 @@ class ContentController extends BaseWithTableCrudController
      */
     public function store(ContentStoreRequest $request)
     {
+        //dd($request->all(), $request->validated());
         $modelString = $this::getModel();
-        $modelString::create($request->validated());
+        $requestValidated = $request->validated();
+        $model = $modelString::create($requestValidated);
 
         //'processed_at' => 'nullable|date', // Se comprueba en el controlador
         //'published_at' => 'nullable|date', // Se comprueba en el controlador
 
-        //'contributors' => 'nullable|array', //Check ids
         //'contentRelated' => 'nullable|array', //Check ids
         //'tags' => 'nullable|array', //Check ids
         //'categories' => 'nullable|array', //Check ids
 
 
 
+        if (isset($requestValidated['contributors'])) {
+            $model->saveContributors($requestValidated['contributors']);
+        }
+
+
+
         // TODO: Crear trait? Para imágenes y dinamizar?
+
+        //dd($model);
 
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
@@ -105,11 +118,14 @@ class ContentController extends BaseWithTableCrudController
      */
     public function edit(Content $model)
     {
+        $contributorsIds = $model->contributors->pluck('id')->toArray();
+
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
             'users' => User::all(), // TODO: Pasar a ajax desde el frontend
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
+            'contributorsIds' => $contributorsIds,
         ]);
     }
 

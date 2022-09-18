@@ -23,6 +23,8 @@ class ContentStoreRequest extends FormRequest
 
     public function prepareForValidation()
     {
+        //dd($this->all());
+
         $this->merge([
             'title' => trim($this->get('title')),
             'slug' => trim($this->get('slug')),
@@ -77,10 +79,7 @@ class ContentStoreRequest extends FormRequest
             //'processed_at' => 'nullable|date', // Se comprueba en el controlador
             //'published_at' => 'nullable|date', // Se comprueba en el controlador
             'programated_at' => 'nullable|date',
-            //'contributors' => 'nullable|array', //Check ids
-            //'contentRelated' => 'nullable|array', //Check ids
-            //'tags' => 'nullable|array', //Check ids
-            //'categories' => 'nullable|array', //Check ids
+
             'is_visible_on_home' => 'required|boolean',
             'is_visible_on_menu' => 'required|boolean',
             'is_visible_on_footer' => 'required|boolean',
@@ -89,6 +88,13 @@ class ContentStoreRequest extends FormRequest
             'is_visible_on_rss' => 'required|boolean',
             'is_visible_on_sitemap' => 'required|boolean',
             'is_visible_on_sitemap_news' => 'required|boolean',
+
+
+            // Relaciones
+            'contributors.*' => 'nullable|exists:users,id', //Check ids
+            //'contentRelated' => 'nullable|array', //Check ids
+            //'tags' => 'nullable|array', //Check ids
+            //'categories' => 'nullable|array', //Check ids
 
         ];
     }

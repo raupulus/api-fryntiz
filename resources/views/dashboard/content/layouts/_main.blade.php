@@ -439,19 +439,22 @@
                             name="contributors[]"
                             class="duallistbox"
                             multiple="multiple">
-                        <option selected="">Contribuidor 1</option>
-                        <option>Contribuidor 2</option>
-                        <option>Contribuidor 3</option>
-                        <option>Contribuidor 4</option>
-                        <option>Contribuidor 5</option>
-                        <option selected>Contribuidor 6</option>
-                        <option selected>Contribuidor 7</option>
+
+                        @foreach($users as $user)
+                            @if ($user->id != auth()->id())
+                                <option {{$contributorsIds && in_array($user->id, $contributorsIds) ? 'selected' : ''}}
+                                        value="{{$user->id}}">
+                                    {{$user->name}}
+                                </option>
+                            @endif
+                        @endforeach
+
                     </select>
                 </div>
 
                 <div class="form-group">
                     {{-- Galerías --}}
-                    <label for="contributors">
+                    <label for="galleries">
                         Galerías
                         <br>
                         <small>
