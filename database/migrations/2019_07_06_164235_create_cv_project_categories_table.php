@@ -27,6 +27,12 @@ class CreateCvProjectCategoriesTable extends Migration
                 ->references('id')->on('cv_projects')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->unsignedBigInteger('category_id')
+                ->comment('Relación con la categoría');
+            $table->foreign('category_id')
+                ->references('id')->on('categories')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
 
             // TODO → Agregar tabla de categories y relacionar con ella
 
@@ -43,6 +49,7 @@ class CreateCvProjectCategoriesTable extends Migration
     {
         Schema::dropIfExists('cv_project_categories', function (Blueprint $table) {
             $table->dropForeign(['project_id']);
+            $table->dropForeign(['category_id']);
         });
     }
 }
