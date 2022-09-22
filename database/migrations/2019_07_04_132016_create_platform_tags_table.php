@@ -65,6 +65,7 @@ class CreatePlatformTagsTable extends Migration
 
 
             $table->dropUnique('platform_tag_unique');
+            $table->dropIndex('platform_tag_index');
         });
     }
 }
