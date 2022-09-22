@@ -28,7 +28,7 @@ class CreateCvProjectTagsTable extends Migration
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->unsignedBigInteger('tag_id')
-                ->comment('Relación con la categoría');
+                ->comment('Relación con la etiqueta');
             $table->foreign('tag_id')
                 ->references('id')->on('tags')
                 ->onUpdate('CASCADE')

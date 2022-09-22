@@ -34,8 +34,6 @@ class CreateCvProjectCategoriesTable extends Migration
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
 
-            // TODO → Agregar tabla de categories y relacionar con ella
-
             $table->timestamps();
         });
     }
