@@ -67,6 +67,9 @@ class CreatePlatformsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists($this->tableName);
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['image_id']);
+        });
     }
 }
