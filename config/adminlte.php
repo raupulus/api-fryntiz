@@ -1,0 +1,947 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Title
+    |--------------------------------------------------------------------------
+    |
+    | Here you can change the default title of your admin panel.
+    |
+    | For detailed instructions you can look the title section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
+    |
+    */
+
+    'title' => 'Api Fryntiz',
+    'title_prefix' => '',
+    'title_postfix' => '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Favicon
+    |--------------------------------------------------------------------------
+    |
+    | Here you can activate the favicon.
+    |
+    | For detailed instructions you can look the favicon section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
+    |
+    */
+
+    'use_ico_only' => false,
+    'use_full_favicon' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logo
+    |--------------------------------------------------------------------------
+    |
+    | Here you can change the logo of your admin panel.
+    |
+    | For detailed instructions you can look the logo section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
+    |
+    */
+
+    'logo' => '<b>API</b>Fryntiz',
+    'logo_img' => 'images/logo.png',
+    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_xl' => null,
+    'logo_img_xl_class' => 'brand-image-xs',
+    'logo_img_alt' => 'Api Fryntiz',
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Menu
+    |--------------------------------------------------------------------------
+    |
+    | Here you can activate and change the user menu.
+    |
+    | For detailed instructions you can look the user menu section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
+    |
+    */
+
+    'usermenu_enabled' => true,
+    'usermenu_header' => true,
+    'usermenu_header_class' => 'bg-primary',
+    'usermenu_image' => true,
+    'usermenu_desc' => true,
+    'usermenu_profile_url' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layout
+    |--------------------------------------------------------------------------
+    |
+    | Here we change the layout of your admin panel.
+    |
+    | For detailed instructions you can look the layout section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
+    |
+    */
+
+    'layout_topnav' => null,
+    'layout_boxed' => null,
+    'layout_fixed_sidebar' => true,
+    'layout_fixed_navbar' => null,
+    'layout_fixed_footer' => null,
+    'layout_dark_mode' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Views Classes
+    |--------------------------------------------------------------------------
+    |
+    | Here you can change the look and behavior of the authentication views.
+    |
+    | For detailed instructions you can look the auth classes section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
+    |
+    */
+
+    'classes_auth_card' => 'card-outline card-primary',
+    'classes_auth_header' => '',
+    'classes_auth_body' => '',
+    'classes_auth_footer' => '',
+    'classes_auth_icon' => '',
+    'classes_auth_btn' => 'btn-flat btn-primary',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Panel Classes
+    |--------------------------------------------------------------------------
+    |
+    | Here you can change the look and behavior of the admin panel.
+    |
+    | For detailed instructions you can look the admin panel classes here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
+    |
+    */
+
+    'classes_body' => '',
+    'classes_brand' => '',
+    'classes_brand_text' => '',
+    'classes_content_wrapper' => '',
+    'classes_content_header' => '',
+    'classes_content' => '',
+    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar_nav' => '',
+    'classes_topnav' => 'navbar-white navbar-light',
+    'classes_topnav_nav' => 'navbar-expand',
+    'classes_topnav_container' => 'container',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sidebar
+    |--------------------------------------------------------------------------
+    |
+    | Here we can modify the sidebar of the admin panel.
+    |
+    | For detailed instructions you can look the sidebar section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
+    |
+    */
+
+    'sidebar_mini' => 'lg',
+    'sidebar_collapse' => false,
+    'sidebar_collapse_auto_size' => false,
+    'sidebar_collapse_remember' => false,
+    'sidebar_collapse_remember_no_transition' => true,
+    'sidebar_scrollbar_theme' => 'os-theme-light',
+    'sidebar_scrollbar_auto_hide' => 'l',
+    'sidebar_nav_accordion' => true,
+    'sidebar_nav_animation_speed' => 300,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Control Sidebar (Right Sidebar)
+    |--------------------------------------------------------------------------
+    |
+    | Here we can modify the right sidebar aka control sidebar of the admin panel.
+    |
+    | For detailed instructions you can look the right sidebar section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Layout-and-Styling-Configuration
+    |
+    */
+
+    'right_sidebar' => false,
+    'right_sidebar_icon' => 'fas fa-cogs',
+    'right_sidebar_theme' => 'dark',
+    'right_sidebar_slide' => true,
+    'right_sidebar_push' => false,
+    'right_sidebar_scrollbar_theme' => 'os-theme-light',
+    'right_sidebar_scrollbar_auto_hide' => 'l',
+
+    /*
+    |--------------------------------------------------------------------------
+    | URLs
+    |--------------------------------------------------------------------------
+    |
+    | Here we can modify the url settings of the admin panel.
+    |
+    | For detailed instructions you can look the urls section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Basic-Configuration
+    |
+    */
+
+    'use_route_url' => false,
+    'dashboard_url' => 'panel',
+    'logout_url' => 'logout',
+    'login_url' => 'login',
+    'register_url' => 'register',
+    'password_reset_url' => 'password/reset',
+    'password_email_url' => 'password/email',
+    'profile_url' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel Mix
+    |--------------------------------------------------------------------------
+    |
+    | Here we can enable the Laravel Mix option for the admin panel.
+    |
+    | For detailed instructions you can look the laravel mix section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Other-Configuration
+    |
+    */
+
+    'enabled_laravel_mix' => false,
+    'laravel_mix_css_path' => 'dashboard/css/dashboard.css',
+    'laravel_mix_js_path' => 'dashboard/js/dashboard.js',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Menu Items
+    |--------------------------------------------------------------------------
+    |
+    | Here we can modify the sidebar/top navigation of the admin panel.
+    |
+    | For detailed instructions you can look here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Menu-Configuration
+    |
+    */
+
+    'menu' => [
+        // Navbar items:
+        [
+            'type' => 'navbar-search',
+            'text' => 'Búsqueda',
+            'search' => true,
+            'topnav_right' => true,
+            //'method' => 'POST',
+            //'route' => 'dashboard.search'
+        ],
+        [
+            'text' => 'test-link-navbar',
+            'url' => '#',
+            'topnav' => true,
+        ],
+        [
+            'type' => 'fullscreen-widget',
+            'topnav_right' => true,
+        ],
+
+        // Menú User
+
+        [
+            'text' => 'Link 1',
+            'url' => '#',
+            'topnav_user' => 'true'
+        ],
+
+        // Sidebar items:
+        [
+            'type' => 'sidebar-menu-search',
+            'text' => 'search',
+        ],
+        [
+            'text' => 'Dashboard',
+            'route' => 'dashboard.index',
+            'icon' => 'fas fa-w fa-home',
+            'label' => 'test',
+            'label_color' => 'danger'
+        ],
+
+        ['header' => 'Contenido'],
+        [
+            'text' => 'Todos',
+            'route' => 'dashboard.content.index',
+            'icon' => 'far fa-fw fa-file',
+        ],
+        [
+            'text' => 'Nuevo',
+            'route' => 'dashboard.content.create',
+            'icon' => 'fa fa-plus',
+        ],
+        [
+            'text' => 'Categorías',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
+        ],
+
+        // TODO → Dinamizar por tipo de contenido
+        [
+            'text' => 'blog',
+            'url' => 'admin/blog',
+            'can' => 'manage-blog', // Esto asigna permiso para ver la opción
+        ],
+        [
+            'text' => 'pages',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
+            'label' => 4,
+            'label_color' => 'success',
+        ],
+        [
+            'text' => 'noticias',
+            'url' => '#',
+            'icon' => 'far fa-fw fa-file',
+            'label' => 4,
+            'label_color' => 'success',
+        ],
+        ['header' => 'Gestión'],
+        [
+            'text' => 'Plataformas',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'far fa-fw fa-file',
+                    'route' => 'dashboard.platform.index',
+                ],
+                [
+                    'text' => 'Nueva',
+                    'icon' => 'fa fa-plus',
+                    'route' => 'dashboard.platform.create',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Categorías',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'route' => 'dashboard.category.index',
+                    'icon' => 'far fa-eye',
+                ],
+                [
+                    'text' => 'Nueva',
+                    'route' => 'dashboard.category.create',
+                    'icon' => 'fa fa-plus',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Etiquetas',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'route' => 'dashboard.tag.index',
+                    'icon' => 'far fa-eye',
+                ],
+                [
+                    'text' => 'Nueva',
+                    'route' => 'dashboard.tag.create',
+                    'icon' => 'fa fa-plus',
+                ],
+            ],
+        ],
+
+        ['header' => 'Módulos'],
+        [
+            'text' => 'Curriculum Vitae',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'far fa-fw fa-file',
+                    'route' => 'dashboard.cv.index',
+                ],
+                [
+                    'text' => 'Nuevo',
+                    'icon' => 'fa fa-plus',
+                    'route' => 'dashboard.cv.create',
+                ],
+                [
+                    'text' => 'Gestionar Repositorios',
+                    'route' => 'dashboard.cv.repository_available_type.index',
+                    'icon' => 'far fa-fw fa-file',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Hardware',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'far fa-fw fa-file',
+                    'route' => 'dashboard.hardware.device.index',
+                ],
+                [
+                    'text' => 'Nuevo',
+                    'icon' => 'fa fa-plus',
+                    'route' => 'dashboard.hardware.device.create',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Nubes',
+            'icon' => 'fas fa-fw fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Pcloud',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Synology',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Dropbox',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Google Drive',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'iCloud',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Keycounter',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Airflights',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Aviones',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Smart Plant',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Energy',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Estadísticas',
+                    'icon' => 'far fa-fw fa-file',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Mantenimiento',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+
+        ['header' => 'Usuarios'],
+        [
+            'text' => 'Perfiles',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Ver Usuarios',
+                    'icon' => 'fa fa-eye',
+                    'route' => 'dashboard.users.index',
+                ],
+                [
+                    'text' => 'Añadir Usuario',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        [
+            'text' => 'API',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Ver Usuarios',
+                    'icon' => 'fa fa-eye',
+                    'url' => '#',
+                ],
+                [
+                    'text' => 'Añadir Usuario',
+                    'icon' => 'fa fa-plus',
+                    'url' => '#',
+                ],
+            ],
+        ],
+        ['header' => 'account_settings'],
+        [
+            'text' => 'profile',
+            'route' => 'dashboard.users.show',
+            'icon' => 'fas fa-fw fa-user',
+        ],
+        [
+            'text' => 'change_password',
+            'url' => 'admin/settings',
+            'icon' => 'fas fa-fw fa-lock',
+        ],
+        ['header' => 'Traducciones'],
+        [
+            'text' => 'Idiomas',
+            'icon' => 'fas fa-fw fa-globe',
+            'submenu' => [
+                [
+                    'text' => 'Listar',
+                    'icon' => 'fas fa-fw fa-edit',
+                    'route' => 'dashboard.language.index',
+                ],
+                [
+                    'text' => 'Añadir',
+                    'icon' => 'fas fa-fw fa-plus-circle',
+                    'route' => 'dashboard.language.create',
+                ],
+            ],
+        ],
+        ['header' => 'Acciones'],
+        [
+            'text' => 'Home',
+            'icon' => 'fas fa-fw fa-share',
+            'icon_color' => 'cyan',
+            'route' => 'home',
+        ],
+        ['header' => 'labels'],
+        [
+            'text' => 'important',
+            'icon_color' => 'red',
+            'url' => '#',
+        ],
+        [
+            'text' => 'warning',
+            'icon_color' => 'yellow',
+            'url' => '#',
+        ],
+        [
+            'text' => 'information',
+            'icon_color' => 'cyan',
+            'url' => '#',
+        ],
+
+        // Right Sidebar Items
+        [
+            'text' => 'Configuración',
+            'icon_color' => 'cyan',
+            'url' => '#',
+            'rightsidebar' => true
+        ],
+        [
+            'text' => 'API',
+            'icon_color' => 'cyan',
+            'url' => '#',
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Menu Filters
+    |--------------------------------------------------------------------------
+    |
+    | Here we can modify the menu filters of the admin panel.
+    |
+    | For detailed instructions you can look the menu filters section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Menu-Configuration
+    |
+    */
+
+    'filters' => [
+        JeroenNoten\LaravelAdminLte\Menu\Filters\GateFilter::class,
+        JeroenNoten\LaravelAdminLte\Menu\Filters\HrefFilter::class,
+        JeroenNoten\LaravelAdminLte\Menu\Filters\SearchFilter::class,
+        JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter::class,
+        JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
+        JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
+        JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Plugins Initialization
+    |--------------------------------------------------------------------------
+    |
+    | Here we can modify the plugins used inside the admin panel.
+    |
+    | For detailed instructions you can look the plugins section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Plugins-Configuration
+    |
+    */
+
+    'plugins' => [
+        'dashboard' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/dashboard/css/dashboard.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/dashboard/js/dashboard.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/js/vue.js',
+                ],
+            ],
+        ],
+        'Datatables' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css',
+                ],
+            ],
+        ],
+
+        /*
+        'Select2' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css',
+                ],
+            ],
+        ],
+        */
+
+        'select2' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/select2/css/select2.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/select2/js/select2.full.min.js',
+                ],
+            ],
+        ],
+
+        'Chartjs' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js',
+                ],
+            ],
+        ],
+        'Sweetalert2' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@8',
+                ],
+            ],
+        ],
+        'Pace' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-radar.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+
+        'InputMask' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/inputmask/inputmask.min.js',
+                ],
+                /*
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/inputmask/jquery.inputmask.min.js',
+                ],
+                */
+            ],
+        ],
+
+        'bootstrapDualListbox' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap4-duallistbox/bootstrap-duallistbox.min.css',
+                ],
+            ],
+        ],
+
+        'bootstrapColorpicker' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css',
+                ],
+            ],
+        ],
+
+        'datarangepicker' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/daterangepicker/daterangepicker.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/daterangepicker/daterangepicker.css',
+                ],
+            ],
+        ],
+
+        'fullcalendar' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/fullcalendar/main.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/fullcalendar/main.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/fullcalendar/locale-all.min.js',
+                ],
+
+            ],
+        ],
+
+        'summernote' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/summernote/summernote-bs4.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/summernote/summernote-bs4.min.js',
+                ],
+            ],
+        ],
+
+        'momentjs' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
+                ],
+            ],
+        ],
+
+        // Incluye datetimepicker para bootstrap
+        'tempusdominusBootstrap' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
+                ],
+            ],
+        ],
+
+        // Editor Quill - https://github.com/quilljs/quill - https://quilljs.com/docs/
+        'quill' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/quill.core.css',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/quill.snow.css',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/quill.bubble.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/js/quill.js',
+                ],
+            ],
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | IFrame
+    |--------------------------------------------------------------------------
+    |
+    | Here we change the IFrame mode configuration. Note these changes will
+    | only apply to the view that extends and enable the IFrame mode.
+    |
+    | For detailed instructions you can look the iframe mode section here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/IFrame-Mode-Configuration
+    |
+    */
+
+    'iframe' => [
+        'default_tab' => [
+            'url' => null,
+            'title' => null,
+        ],
+        'buttons' => [
+            'close' => true,
+            'close_all' => true,
+            'close_all_other' => true,
+            'scroll_left' => true,
+            'scroll_right' => true,
+            'fullscreen' => true,
+        ],
+        'options' => [
+            'loading_screen' => 1000,
+            'auto_show_new_tab' => true,
+            'use_navbar_items' => true,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Livewire
+    |--------------------------------------------------------------------------
+    |
+    | Here we can enable the Livewire support.
+    |
+    | For detailed instructions you can look the livewire here:
+    | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Other-Configuration
+    |
+    */
+
+    'livewire' => false,
+];

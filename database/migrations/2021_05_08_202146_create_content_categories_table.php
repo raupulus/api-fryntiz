@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -9,6 +10,9 @@ use Illuminate\Database\Migrations\Migration;
  */
 class CreateContentCategoriesTable extends Migration
 {
+    private $tableName = 'content_categories';
+    private $tableComment = 'Categorías asociadas a un contenido';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateContentCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('content_categories', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -44,6 +48,8 @@ class CreateContentCategoriesTable extends Migration
             $table->unique(['content_id', 'category_id']);
             $table->index(['content_id', 'category_id']);
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -53,7 +59,7 @@ class CreateContentCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_categories', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['content_id']);
             $table->dropForeign(['category_id']);
         });

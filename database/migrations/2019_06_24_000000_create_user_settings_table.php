@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateUsersConfigurationTable
+ * Class CreateUserSettingsTable
  */
 class CreateUserSettingsTable extends Migration
 {
@@ -21,6 +21,12 @@ class CreateUserSettingsTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->comment('Relación con el usuario');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->boolean('send_email')
                 ->nullable()
                 ->default(true)
@@ -45,6 +51,8 @@ class CreateUserSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_settings');
+        Schema::dropIfExists('user_settings', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
     }
 }

@@ -32,9 +32,6 @@ var SpecialSquawks = {
 // Get current map settings
 var CenterLat, CenterLon, ZoomLvl, MapType;
 
-var Dump1090Version = "unknown version";
-var RefreshInterval = 30000;
-
 var PlaneRowTemplate = null;
 
 var TrackedAircraft = 0;
@@ -42,8 +39,6 @@ var TrackedAircraftPositions = 0;
 var TrackedHistorySize = 0;
 
 var SitePosition = null;
-
-var ReceiverClock = null;
 
 var LastReceiverTimestamp = 0;
 var StaleReceiverCount = 0;
@@ -69,8 +64,8 @@ function processReceiverUpdate(data) {
 
     // Note the message count in the history
     MessageCountHistory.push({'time':now, 'messages':data.messages});
-    // .. and clean up any old values
-    if((now - MessageCountHistory[0].time) > 30)
+    // .. and clean up any old values 1h
+    if((now - MessageCountHistory[0].time) > historyTimeToDelete)
         MessageCountHistory.shift();
 
     for(var j = 0; j < acs.length; j++) {
@@ -90,17 +85,17 @@ function processReceiverUpdate(data) {
             if(hex[0] === '~') {
                 // Non-ICAO address
                 plane.tr.cells[0].textContent = hex.substring(1);
-                $(plane.tr).css('font-style', 'italic');
+                plane.tr.style['font-style'] = 'italic';
             } else {
                 plane.tr.cells[0].textContent = hex;
             }
 
             // set flag image if available
             if(ShowFlags && plane.icaorange.flag_image !== null) {
-                $('img', plane.tr.cells[1]).attr('src', FlagPath + plane.icaorange.flag_image);
-                $('img', plane.tr.cells[1]).attr('title', plane.icaorange.country);
+                plane.tr.cells[1].querySelector('img').setAttribute('src', FlagPath + plane.icaorange.flag_image);
+                plane.tr.cells[1].querySelector('img').setAttribute('title', plane.icaorange.country);
             } else {
-                $('img', plane.tr.cells[1]).css('display', 'none');
+                plane.tr.cells[1].querySelector('img').style.display = 'none';
             }
 
             plane.tr.addEventListener('click', function(h, evt) {
@@ -129,7 +124,7 @@ function fetchData() {
     }
 
     FetchPending = $.ajax({
-        url:'/airflight/get/aircrafts/json',
+        url:urlAircrafts,
         timeout:5000,
         cache:false,
         dataType:'json'
@@ -149,16 +144,11 @@ function fetchData() {
         refreshTableInfo();
         refreshSelected();
 
-        if(ReceiverClock) {
-            var rcv = new Date(now * 1000);
-            ReceiverClock.render(rcv.getUTCHours(), rcv.getUTCMinutes(), rcv.getUTCSeconds());
-        }
-
         // Check for stale receiver data
         if(LastReceiverTimestamp === now) {
             StaleReceiverCount++;
             if(StaleReceiverCount > 5) {
-                $("#update_error_detail").text("The data from dump1090 hasn't been updated in a while. Maybe dump1090 is no longer running?");
+                $("#update_error_detail").text(messageProblemAjax);
                 $("#update_error").css('display', 'block');
             }
         } else {
@@ -167,39 +157,75 @@ function fetchData() {
             $("#update_error").css('display', 'none');
         }
     });
+
+    FetchPending.fail(function(jqxhr, status, error) {
+        $("#update_error_detail").text(messageProblemAjax);
+        $("#update_error").css('display', 'block');
+    });
 }
 
 var PositionHistorySize = 0;
 
 function initialize() {
-    // Set page basics
-    $("#infoblock_name").text(PageName);
 
     PlaneRowTemplate = document.getElementById("plane_row_template");
 
-    $('#timestamps').css('display', 'none');
+    $("#loader").removeClass("display-hidden");
+    //$('.map-canvas').addClass("hidden");
 
-    $("#loader").removeClass("hidden");
+    // Get receiver metadata, reconfigure using it, then continue
+    // with initialization
+    $.ajax({
+        url:urlReceiver,
+        timeout:5000,
+        cache:false,
+        dataType:'json'
+    })
 
+        .done(function(data) {
+            if(typeof data.lat !== "undefined") {
+                SiteShow = true;
+                SiteLat = data.lat;
+                SiteLon = data.lon;
+                DefaultCenterLat = data.lat;
+                DefaultCenterLon = data.lon;
+            }
 
-    SiteShow = true;
-    SiteLat = 36.73805;
-    SiteLon = -6.43008;
-    DefaultCenterLat = SiteLat;
-    DefaultCenterLon = SiteLon;
+            Dump1090Version = data.version;
+            RefreshInterval = data.refresh;
+            PositionHistorySize = data.history;
+        })
 
-    initialize_map();
+        .always(function() {
+            initialize_map();
+            start_load_history();
+        });
+}
+
+/**
+ * Recarga de nuevo el historial.
+ */
+function reloadHistorial() {
+    $('.map-canvas').addClass("display-hidden");
+    $("#loader").removeClass("display-hidden");
 
     start_load_history();
+
+    //$("#loader").addClass("display-hidden");
+    //$('.map-canvas').removeClass("display-hidden");
 }
 
 var CurrentHistoryFetch = null;
 var PositionHistoryBuffer = []
 
 function start_load_history() {
-    if (PositionHistorySize > 0) {
-        $("#loader_progress").attr('max',PositionHistorySize);
-        console.log("Starting to load history (" + PositionHistorySize + " items)");
+    PositionHistoryBuffer = [];
+
+    if(PositionHistorySize > 0) {
+        $("#loader_progress").attr('max', PositionHistorySize);
+        if(DEBUG) {
+            console.log("Starting to load history (" + PositionHistorySize + " items)");
+        }
         load_history_item(0);
     } else {
         end_load_history();
@@ -207,22 +233,24 @@ function start_load_history() {
 }
 
 function load_history_item(i) {
-    if (i >= PositionHistorySize) {
+    if(i >= PositionHistorySize) {
         end_load_history();
         return;
     }
 
     console.log("Loading history #" + i);
-    $("#loader_progress").attr('value',i);
+    $("#loader_progress").attr('value', i);
 
-    $.ajax({ url: 'data/history_' + i + '.json',
+    $.ajax({
+        url:urlHistory + '?history=' + i,
         timeout: 5000,
         cache: false,
-        dataType: 'json' })
+        dataType: 'json'
+    })
 
         .done(function(data) {
             PositionHistoryBuffer.push(data);
-            load_history_item(i+1);
+            load_history_item(i + 1);
         })
 
         .fail(function(jqxhr, status, error) {
@@ -232,26 +260,31 @@ function load_history_item(i) {
 }
 
 function end_load_history() {
-    $("#loader").addClass("hidden");
+    $('.map-canvas').removeClass("display-hidden");
+    $("#loader").addClass("display-hidden");
 
-    console.log("Done loading history");
+    if(DEBUG) {
+        console.log("Done loading history");
+    }
 
-    if (PositionHistoryBuffer.length > 0) {
-        var now, last=0;
+    if(PositionHistoryBuffer.length > 0) {
+        var now, last = 0;
 
         // Sort history by timestamp
         console.log("Sorting history");
-        PositionHistoryBuffer.sort(function(x,y) { return (x.now - y.now); });
+        PositionHistoryBuffer.sort(function(x, y) {
+            return (x.now - y.now);
+        });
 
         // Process history
-        for (var h = 0; h < PositionHistoryBuffer.length; ++h) {
+        for(var h = 0; h < PositionHistoryBuffer.length; ++h) {
             now = PositionHistoryBuffer[h].now;
             console.log("Applying history " + h + "/" + PositionHistoryBuffer.length + " at: " + now);
             processReceiverUpdate(PositionHistoryBuffer[h]);
 
             // update track
             console.log("Updating tracks at: " + now);
-            for (var i = 0; i < PlanesOrdered.length; ++i) {
+            for(var i = 0; i < PlanesOrdered.length; ++i) {
                 var plane = PlanesOrdered[i];
                 plane.updateTrack((now - last) + 1);
             }
@@ -261,7 +294,7 @@ function end_load_history() {
 
         // Final pass to update all planes to their latest state
         console.log("Final history cleanup pass");
-        for (var i = 0; i < PlanesOrdered.length; ++i) {
+        for(var i = 0; i < PlanesOrdered.length; ++i) {
             var plane = PlanesOrdered[i];
             plane.updateTick(now);
         }
@@ -283,7 +316,6 @@ function end_load_history() {
 
     // And kick off one refresh immediately.
     fetchData();
-
 }
 
 // Make a LineString with 'points'-number points
@@ -313,13 +345,24 @@ function make_geodesic_circle(center, radius, points) {
 // Initalizes the map and starts up our timers to call various functions
 function initialize_map() {
     // Load stored map settings if present
-    CenterLat = DefaultCenterLat;
-    CenterLon = DefaultCenterLon;
-    ZoomLvl = DefaultZoomLvl;
+    CenterLat = Number(localStorage['CenterLat']) || DefaultCenterLat;
+    CenterLon = Number(localStorage['CenterLon']) || DefaultCenterLon;
+    ZoomLvl = Number(localStorage['ZoomLvl']) || DefaultZoomLvl;
     MapType = localStorage['MapType'];
 
-    SitePosition = [SiteLon, SiteLat];
-    sortByDistance();
+    // Set SitePosition, initialize sorting
+    if(SiteShow && (typeof SiteLat !== 'undefined') && (typeof SiteLon !== 'undefined')) {
+        SitePosition = [SiteLon, SiteLat];
+        sortByDistance();
+    } else {
+        SitePosition = null;
+        PlaneRowTemplate.cells[6].style.display = 'none'; // hide distance
+                                                          // column
+        document.getElementById("distance").style.display = 'none'; // hide
+                                                                    // distance
+                                                                    // header
+        sortByAltitude();
+    }
 
     // Maybe hide flag info
     if(!ShowFlags) {
@@ -512,11 +555,12 @@ function initialize_map() {
 function reaper() {
     //console.log("Reaping started..");
 
-    // Look for planes where we have seen no messages for >300 seconds
+    // Look for planes where we have seen no messages for >historyTimeToDelete
+    // seconds
     var newPlanes = [];
     for(var i = 0; i < PlanesOrdered.length; ++i) {
         var plane = PlanesOrdered[i];
-        if(plane.seen > 30000) {
+        if(plane.seen > historyTimeToDelete) {
             // Reap it.
             //console.log("Reaping " + plane.icao);
             //console.log("parent " + plane.tr.parentNode);
@@ -572,7 +616,7 @@ function refreshSelected() {
     $('#dump1090_infoblock').css('display', 'none');
     $('#selected_infoblock').css('display', 'block');
 
-    $('#selected_flightaware_link').attr('href', '//flightaware.com/live/modes/' + selected.icao + '/redirect');
+    $('#selected_flightaware_link').attr('href', 'https://flightaware.com/live/modes/' + selected.icao + '/redirect');
 
     if(selected.flight !== null && selected.flight !== "") {
         $('#selected_callsign').text(selected.flight);
@@ -602,7 +646,7 @@ function refreshSelected() {
         emerg.className = SpecialSquawks[selected.squawk].cssClass;
         emerg.textContent = NBSP + 'Squawking: ' + SpecialSquawks[selected.squawk].text + NBSP;
     } else {
-        emerg.className = 'hidden';
+        emerg.className = 'display-hidden';
     }
 
     $("#selected_altitude").text(format_altitude_long(selected.altitude, selected.vert_rate));
@@ -626,7 +670,7 @@ function refreshSelected() {
 
     $('#selected_country').text(selected.icaorange.country);
     if(ShowFlags && selected.icaorange.flag_image !== null) {
-        $('#selected_flag').removeClass('hidden');
+        $('#selected_flag').removeClass('display-hidden');
         $('#selected_flag img').attr('src', FlagPath + selected.icaorange.flag_image);
         $('#selected_flag img').attr('title', selected.icaorange.country);
     } else {
@@ -635,7 +679,7 @@ function refreshSelected() {
 
     if(selected.position === null) {
         $('#selected_position').text('n/a');
-        $('#selected_follow').addClass('hidden');
+        $('#selected_follow').addClass('display-hidden');
     } else {
         var mlat_bit = (selected.position_from_mlat ? "MLAT: " : "");
         if(selected.seen_pos > 1) {
@@ -643,7 +687,7 @@ function refreshSelected() {
         } else {
             $('#selected_position').text(mlat_bit + format_latlng(selected.position));
         }
-        $('#selected_follow').removeClass('hidden');
+        $('#selected_follow').removeClass('display-hidden');
         if(FollowSelected) {
             $('#selected_follow').css('font-weight', 'bold');
             OLMap.getView().setCenter(ol.proj.fromLonLat(selected.position));
@@ -673,7 +717,7 @@ function refreshTableInfo() {
             TrackedAircraft++;
             var classes = "plane_table_row";
 
-            if(tableplane.position !== null && tableplane.seen_pos < 60) {
+            if(tableplane.position !== null && tableplane.seen_pos < historyTimeToDelete) {
                 ++TrackedAircraftPositions;
                 if(tableplane.position_from_mlat)
                     classes += " mlat";

@@ -3,7 +3,16 @@
 ## Secciones
 
 - Estación Meteorológica
+- Contador de pulsaciones para teclado/ratón
+- SmartPlant para control y monitorización de plantas
+- Radar de vuelos para aviones en las proximidades
 
+## Pendiente
+
+- [ ] Crear comando artisan para primera instalación
+- [ ] Crear comando artisan para reparar instalaciones (segundas
+  instalaciones o corregir migración)
+  
 ## Instalación
 
 git clone https://gitlab.com/fryntiz/api-fryntiz.git
@@ -37,22 +46,21 @@ sudo a2ensite api-fryntiz.conf
 
 echo '127.0.0.1       fryntiz.dev' | sudo tee -a /etc/hosts
 echo '127.0.0.1       api.fryntiz.dev' | sudo tee -a /etc/hosts
-echo '127.0.0.1       vidar.fryntiz.dev' | sudo tee -a /etc/hosts
 
 sudo systemctl reload apache2
 
 sudo certbot --authenticator webroot --installer apache \
-    -w /var/www/web/api-fryntiz/public \
-    -d www.api.fryntiz.dev -d api.fryntiz.dev
+-w /var/www/web/api-fryntiz/public \
+-d www.api.fryntiz.dev -d api.fryntiz.dev
 
 
 sudo certbot certonly --webroot -w /var/www/web/api-fryntiz/public \
-    -d www.api.fryntiz.dev -d api.fryntiz.dev
+-d www.api.fryntiz.dev -d api.fryntiz.dev
 
 
 ## API Estación meteorológica
 
-Ruta de acceso: /ws
+Ruta de acceso: /weatherstation
 
 ## API Contador de teclas (Keycounter)
 
@@ -60,4 +68,8 @@ Ruta de acceso: /keycounter
 
 ## API Smart Plant
 
-Ruta de acceso: /sp
+Ruta de acceso: /smartplant
+
+## API Airflight
+
+Ruta de acceso: /airflight

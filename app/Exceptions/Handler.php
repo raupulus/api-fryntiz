@@ -2,9 +2,19 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Route;
+use JsonHelper;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
+use function response;
 
+/**
+ * Class Handler
+ *
+ * @package App\Exceptions
+ */
 class Handler extends ExceptionHandler
 {
     /**
@@ -13,7 +23,8 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        JsonAuthorizationException::class,
+        JsonValidationException::class,
     ];
 
     /**
@@ -22,30 +33,77 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontFlash = [
+        'current_password',
         'password',
         'password_confirmation',
     ];
 
     /**
-     * Report or log an exception.
+     * Register the exception handling callbacks for the application.
      *
-     * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function register()
     {
-        parent::report($exception);
+        $this->reportable(function (Throwable $e) {
+            //
+        });
     }
 
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
-     * @return \Illuminate\Http\Response
-     */
-    public function render($request, Exception $exception)
+
+    public function render($request, Throwable $e)
     {
-        return parent::render($request, $exception);
+        /*
+        if ($request->wantsJson()) {
+            return response()->json(['message' => '1 Found!'], 404);
+
+            switch (class_basename($e)) {
+                case 'NotFoundHttpException':
+                    return response()->json(['message' => 'Not Found!'], 404);
+                    break;
+                case 'ModelNotFoundException':
+                    return response()->json(['message' => 'Not Found!'], 404);
+                    break;
+            }
+        }
+
+        */
+
+        /*
+        if ($e instanceof ModelNotFoundException && $request->wantsJson()) {
+            return response()->json(['message' => 'Not Found!'], 404);
+        }
+        */
+
+
+        if ($request->isJson()) {
+
+            if ($e instanceof ModelNotFoundException) {
+
+                return JsonHelper::notFound();
+
+            } else if($e instanceof NotFoundHttpException) {
+
+                return JsonHelper::notFound();
+
+            }
+        }
+
+        /*
+        if ($request->is('api/*')) {
+            return response()->json(['message' => 'Not Found!'], 404);
+        }
+
+        if ($e instanceof NotFoundHttpException) {
+            return Route::respondWithRoute('fallback');
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            return Route::respondWithRoute('fallback');
+        }
+
+        */
+
+        return parent::render($request, $e);
     }
 }

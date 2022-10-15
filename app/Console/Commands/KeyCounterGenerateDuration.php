@@ -2,10 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\Keycounter\Keyboard;
+use App\Models\KeyCounter\Keyboard;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
+/**
+ * Class KeyCounterGenerateDuration
+ *
+ * @package App\Console\Commands
+ */
 class KeyCounterGenerateDuration extends Command
 {
     /**

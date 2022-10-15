@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateContentContributorsTable extends Migration
 {
+    private $tableName = 'content_contributors';
+    private $tableComment = 'Contribuidores participantes en el contenido';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateContentContributorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('content_contributors', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -41,6 +45,8 @@ class CreateContentContributorsTable extends Migration
             $table->unique(['content_id', 'user_id']);
             $table->index(['content_id', 'user_id']);
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -50,7 +56,7 @@ class CreateContentContributorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_contributors', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['content_id']);
             $table->dropForeign(['user_id']);
         });

@@ -21,6 +21,13 @@ class CreateFileTypesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario asociado');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
             $table->string('type', 127)
                 ->comment('Tipo de archivo');
             $table->string('mime', 127)

@@ -21,7 +21,9 @@ class CreateEmailsTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('user_id')
+                ->nullable()
+                ->comment('Usuario al que se le envía el mensaje');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('cascade')

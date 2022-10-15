@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\FileThumbnailController;
+use App\Http\Controllers\LanguageController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,48 +17,55 @@
 |
 */
 
-use Illuminate\Support\Facades\Route;
-
 Route::get('/', function () {
-    return view('index');
+    return view('home');
+})->name('home');
+
+## Documentación
+Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
+    return view('documentation');
+})->name('documentation');
+
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::group(['prefix' => '/languages'], function () {
+    Route::group(['prefix' => '/ajax'], function () {
+        Route::match(['get', 'post'], '/get/languages', [LanguageController::class, 'ajaxGetLanguages'])
+            ->name('language.ajax.get.languages');
+    });
 });
 
-/******************************************
- *            PANEL DE GESTIÓN
- ******************************************/
-Route::group(['prefix' => 'panel'], function() {
-    Route::get('/', function() {
-        return view('panel.index');
-    })->name('panel-index');
+Route::group(['prefix' => '/file'], function () {
 
-    Route::get('/login', function() {
-        return view('panel.login');
-    })->name('panel-login');
-
-    Route::get('/forgot-password', function() {
-        return view('panel.forgot-password');
-    })->name('panel-forgot-password');
-
-    Route::get('/register', function() {
-        return view('panel.register');
-    })->name('panel-register');
-
-    Route::get('/404', function() {
-        return view('panel.404');
-    })->name('panel-404');
-
-    Route::get('/blank', function() {
-        return view('panel.blank');
-    })->name('panel-blank');
-
-    ## DEMOS
-    Route::group(['prefix' => 'demos'], function() {
-        Route::get('/charts', function () {
-            return view('panel.demos.charts');
-        })->name('panel-demo-charts');
-
-        Route::get('/tables', function () {
-            return view('panel.demos.tables');
-        })->name('panel-demo-tables');
+    Route::group(['prefix' => '/thumbnail'], function () {
+        Route::get('/get/{module}/{id}/{slug?}', [FileThumbnailController::class, 'get'])
+            ->name('file.thumbnail.get');
     });
+
+
+    Route::get('/get/{module}/{id}/{slug?}', [FileController::class, 'get'])
+        ->name('file.get');
+
+    Route::post('/upload', [FileController::class, 'upload'])
+        ->name('file.upload');
+
+    Route::get('/download/{module}/{id}/{slug?}', [FileController::class, 'download'])
+        ->name('file.download');
+
+    Route::get('/resize/{module}/{id}/{width}/{slug?}', [FileController::class, 'resizeAndGet'])
+        ->name('file.resize');
+
+    Route::post('/delete/{id}', [FileController::class, 'delete'])
+        ->name('file.delete');
+
+});
+
+Auth::routes();
+
+
+/**
+ * Ruta por defecto cuando no se encuentra una petición.
+ */
+Route::fallback(function () {
+    return abort(404); //default 404
 });

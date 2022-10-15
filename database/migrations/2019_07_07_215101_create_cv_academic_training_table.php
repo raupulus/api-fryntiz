@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * Class CreateCvAcademicTrainingTable
+ */
 class CreateCvAcademicTrainingTable extends Migration
 {
     /**
@@ -13,46 +16,65 @@ class CreateCvAcademicTrainingTable extends Migration
      */
     public function up()
     {
-        /**
-         * id - image_id - translation_name_token - translation_rank_token -
-         * translation_description_token - entity - date_obtaining - date_start
-         * - date_end
-         */
         Schema::create('cv_academic_training', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('curriculum_id')
+                ->comment('Relación con el curriculum');
+            $table->foreign('curriculum_id')
+                ->references('id')->on('cv')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->unsignedBigInteger('translation_name_token');
-            /*
-            $table->foreign('translation_name_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_rank_token');
-            /*
-            $table->foreign('translation_rank_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->unsignedBigInteger('translation_description_token');
-            /*
-            $table->foreign('translation_description_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->string('entity', 511);
-            $table->dateTime('date_obtaining');
-            $table->dateTime('date_start');
-            $table->dateTime('date_end');
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->string('title', 511)
+                ->comment('Título obtenido');
+            $table->string('entity', 511)
+                ->nullable()
+                ->comment('Entidad o empresa emisora');
+            $table->string('credential_id', 511)
+                ->nullable()
+                ->comment('Identificador de la Credencial obtenida');
+            $table->string('credential_url', 511)
+                ->nullable()
+                ->comment('Url hacia la Credencial obtenida');
+            $table->string('learned', 511)
+                ->nullable()
+                ->comment('Conocimientos adquiridos');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción');
+            $table->text('note')
+                ->nullable()
+                ->comment('Notas');
+            $table->integer('hours')
+                ->nullable()
+                ->comment('Horas de formación');
+            $table->string('instructor', 511)
+                ->nullable()
+                ->comment('Instructor de la formación');
+            $table->boolean('expires')
+                ->default(false)
+                ->comment('¿Expira la validez?');
+            $table->dateTime('expires_at')
+                ->nullable()
+                ->comment('Fecha de expiración');
+            $table->dateTime('expedition_at')
+                ->nullable()
+                ->comment('Fecha de expedición');
+            $table->dateTime('start_at')
+                ->nullable()
+                ->comment('Fecha de inicio');
+            $table->dateTime('end_at')
+                ->nullable()
+                ->comment('Fecha de fin');
             $table->timestamps();
         });
     }
@@ -66,9 +88,7 @@ class CreateCvAcademicTrainingTable extends Migration
     {
         Schema::dropIfExists('cv_academic_training', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_name_token']);
-            $table->dropForeign(['translation_rank_token']);
-            $table->dropForeign(['translation_description_token']);
+            $table->dropForeign(['curriculum_id']);
         });
     }
 }

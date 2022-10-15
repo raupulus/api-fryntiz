@@ -21,14 +21,20 @@ class CreateLanguagesTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->char('code', 8)
+            $table->char('locale', 8)
                 ->unique()
                 ->comment('Código del país e idioma: es_ES');
-            $table->char('code_short', 2)
+            $table->char('iso_locale', 8)
+                ->unique()
+                ->comment('Código del país e idioma: es-ES');
+            $table->char('iso2', 2)
                 ->unique()
                 ->comment('Código del país con longitud 2: es');
+            $table->char('iso3', 3)
+                ->unique()
+                ->comment('Código del país con longitud 3: esp');
             $table->string('name', 255)->comment('Nombre del idioma en su propio idioma');
-            $table->string('name_english', 255)->comment('Nombre del idioma en inglés');
+            $table->string('iso_language', 255)->comment('Nombre del idioma en inglés: spanish');
             $table->string('icon16', 511)
                 ->nullable()
                 ->comment('Icono a 16x16 píxeles');

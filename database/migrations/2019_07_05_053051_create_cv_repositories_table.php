@@ -13,28 +13,40 @@ class CreateCvRepositoriesTable extends Migration
      */
     public function up()
     {
-        // id - image_id - url - translation_token (fg languages) - title - description - name - perfil - alt
         Schema::create('cv_repositories', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('image_id');
+            $table->unsignedBigInteger('curriculum_id')
+                ->comment('Relación con el curriculum');
+            $table->foreign('curriculum_id')
+                ->references('id')->on('cv')
+                ->onUpdate('CASCADE')
+                ->onDelete('CASCADE');
+            $table->unsignedBigInteger('image_id')
+                ->nullable()
+                ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
+                ->onUpdate('CASCADE')
+                ->onDelete('SET NULL');
+            $table->unsignedBigInteger('repository_type_id')
+                ->nullable()
+                ->comment('Relación con el tipo de repositorios');
+            $table->foreign('repository_type_id')
+                ->references('id')->on('cv_available_repository_types')
                 ->onUpdate('cascade')
-                ->onDelete('no action');
-            $table->text('url');
-            $table->unsignedBigInteger('translation_token');
-            /*
-            $table->foreign('translation_token')
-                ->references('token')->on('translations')
-                ->onUpdate('cascade')
-                ->onDelete('no action');
-            */
-            $table->string('title', 511);
-            $table->string('name', 255);
-            $table->string('perfil', 255);
+                ->onDelete('SET NULL');
+            $table->text('url')
+                ->comment('Dirección al repositorio');
+            $table->string('title', 511)
+                ->comment('Título para el repositorio');
+            $table->text('description')
+                ->nullable()
+                ->comment('Descripción del repositorio');
+            $table->string('name', 255)
+                ->comment('Nombre del repositorio');
             $table->timestamps();
         });
     }
@@ -48,7 +60,7 @@ class CreateCvRepositoriesTable extends Migration
     {
         Schema::dropIfExists('cv_repositories', function (Blueprint $table) {
             $table->dropForeign(['image_id']);
-            $table->dropForeign(['translation_token']);
+            $table->dropForeign(['curriculum_id']);
         });
     }
 }

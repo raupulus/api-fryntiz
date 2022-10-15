@@ -2,13 +2,17 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateContentTypesTable
+ * Class CreateContentAvailableTypesTable
  */
 class CreateContentAvailableTypesTable extends Migration
 {
+    private $tableName = 'content_available_types';
+    private $tableComment = 'Tipo de contenido (página, noticia, bloque..';
+
     /**
      * Run the migrations.
      *
@@ -16,7 +20,7 @@ class CreateContentAvailableTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('content_available_types', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -48,6 +52,8 @@ class CreateContentAvailableTypesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
     /**
@@ -57,7 +63,7 @@ class CreateContentAvailableTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('content_available_types', function (Blueprint $table) {
+        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['file_id']);
         });
     }

@@ -1,0 +1,24 @@
+.navbar-main {
+  background-color: $background-secondary;
+  background-image: url("/images/backgrounds/mosaic-1.png");
+  z-index: 1;
+}
+
+.navbar-menu-element {
+  background: $blue;
+  color: $white;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+  text-shadow: 1px 1px 2px $black;
+}
+
+.navbar-menu-element-current {
+  border-bottom: 3px solid $orange;
+}
+
+.navbar-site-title {
+  font-size: 1.9rem;
+  font-weight: bold;
+  text-shadow: 2px 0 0 $blue, -2px 0 0 $blue, 0 2px 0 $blue, 0 -2px 0 $blue, 1px 1px $blue, -1px -1px 0 $blue, 1px -1px 0 $blue, -1px 1px 0 $blue;
+}

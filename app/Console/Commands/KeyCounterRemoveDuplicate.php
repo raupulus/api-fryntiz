@@ -2,10 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\Keycounter\Keyboard;
+use App\Models\KeyCounter\Keyboard;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class KeyCounterRemoveDuplicate
+ *
+ * @package App\Console\Commands
+ */
 class KeyCounterRemoveDuplicate extends Command
 {
     /**
