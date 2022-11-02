@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Dashboard\Content;
 
 use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
-use App\Http\Requests\Dashboard\Content\ContentEditRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
+use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use JsonHelper;
 
 /**
@@ -126,6 +126,14 @@ class ContentController extends BaseWithTableCrudController
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
             'contributorsIds' => $contributorsIds,
+            'tags' => $model->platform->tags,
+            'categories' => $model->platform->categories,
+            'modelCategoriesIds' => $model->categories->pluck('id')->toArray(),
+            'modelTagsIds' => $model->tags->pluck('id')->toArray(),
+
+
+            // TODO tabla "Tabla: content_available_categories" se quita,
+            // usar content_categories asociando a la categoría de la plataforma
         ]);
     }
 
@@ -177,4 +185,29 @@ class ContentController extends BaseWithTableCrudController
     ############################################################
     ##                       AJAX                             ##
     ############################################################
+
+    public function ajaxGetSelectInfoFromPlataform(Request $request,
+                                                      Platform $platform)
+    {
+
+        $contents = $platform->contents()->select(['id', 'title'])->get();
+        $tags = $platform->tags()->select(['id', 'name'])->get();
+        $categories = $platform->categories()->select(['id', 'name'])->get();
+
+        // TODO: los tags están bien así, asociados al contenido o mejor a la
+        // plataforma y a su vez también el contenido?
+
+        // Tal vez sería interesante crear "platforms_tags" y
+        // "platforms_categories" para asociar a estos y que existan en todas
+        // las entidades, desde contenidos hasta galerías por ejemplo.
+
+        // Ya hay una tabla llamada "tags y otra categories.
+        // Modificarlas para añadirles "platform_id" y crear relación.
+
+        return JsonHelper::accepted([
+            'contents' => $platform->contents,
+            'tags' => $tags,
+            'categories' => $categories,
+        ]);
+    }
 }

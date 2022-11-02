@@ -429,9 +429,9 @@
                 <div class="form-group">
                     <label for="contributors">
                         Contribuidores
-                        <br>
+                        <br />
                         <small>
-                            Podrán editar las páginas del contenido (TODO)
+                            Podrán editar las páginas del contenido
                         </small>
                     </label>
 
@@ -452,18 +452,6 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    {{-- Galerías --}}
-                    <label for="galleries">
-                        Galerías
-                        <br>
-                        <small>
-                            Galería de imágenes para slides (TODO)
-                        </small>
-                    </label>
-
-                </div>
-
                 {{-- Contenido relacionado --}}
                 <div class="form-group">
                     <label for="contentRelated">
@@ -477,6 +465,8 @@
                             filtrado al mostrar contenido relacionado pero
                             así queda preparado para una vez sea publicado
                             (TODO)
+
+                            TODO: Cambiar los resultados por plataforma
                         </small>
                     </label>
 
@@ -484,13 +474,6 @@
                             name="contentRelated[]"
                             class="duallistbox"
                             multiple="multiple">
-                        <option selected="">Título de la página 1</option>
-                        <option>Título de la página 2</option>
-                        <option>Título de la página 3</option>
-                        <option>Título de la página 4</option>
-                        <option selected>Título de la página 5</option>
-                        <option>Título de la página 6</option>
-                        <option>Título de la página 7</option>
                     </select>
 
                 </div>
@@ -501,14 +484,18 @@
                     <label for="tags">
                         Etiquetas
                     </label>
+
                     <br>
+
                     <small>
                         Adjetivos que identifiquen este contenido, se
                         sacarán las sugerencias del contenido en el texto
                         de las páginas y quizás plantearé de las
                         relacionadas (TODO)
                     </small>
+
                     <br/>
+
                     <div class="select2-purple">
                         <select id="tags" name="tags[]"
                                 class="select2 select2-hidden-accessible"
@@ -518,16 +505,24 @@
                                 style="width: 100%;"
                                 tabindex="-1"
                                 aria-hidden="true">
-                            <option value="1" selected>
-                                Etiqueta1
-                            </option>
-                            <option value="2">Etiqueta2</option>
-                            <option value="3">Etiqueta3</option>
-                            <option value="4">Etiqueta4</option>
-                            <option value="5" selected>Etiqueta5</option>
-                            <option value="6">Etiqueta6</option>
-                            <option value="7">Etiqueta7</option>
+
+                            @foreach($tags as $tag)
+                                @php($checked = $modelTagsIds && in_array($tag->id, $modelTagsIds))
+
+                                <option {{$checked ? 'selected' : ''}}
+                                        value="{{$tag->id}}">
+                                    {{$tag->name}}
+                                </option>
+
+                            @endforeach
                         </select>
+
+                        <div class="mt-3 text-center">
+                            <span class="btn btn-sm btn-primary">
+                                <i class="fa fa-plus"></i>
+                                Crear etiqueta
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -563,14 +558,27 @@
                                 style="width: 100%;"
                                 tabindex="-1"
                                 aria-hidden="true">
-                            <option value="1" selected>Categoría1</option>
-                            <option value="2">Categoría2</option>
-                            <option value="3">Categoría3</option>
-                            <option value="4" selected>Categoría4</option>
-                            <option value="5">Categoría5</option>
-                            <option value="6">Categoría6</option>
-                            <option value="7" selected>Categoría7</option>
+
+                            @foreach($categories as $category)
+                                @php($checked = $modelCategoriesIds && in_array($category->id, $modelCategoriesIds))
+
+
+                                <option {{$checked ? 'selected' : ''}}
+                                        value="{{$category->id}}">
+                                    {{$category->name}}
+                                </option>
+
+                            @endforeach
+
                         </select>
+
+                        <div class="mt-3 text-center">
+                            <span class="btn btn-sm btn-primary">
+                                <i class="fa fa-plus"></i>
+                                Crear etiqueta
+                            </span>
+                        </div>
+
                     </div>
 
                 </div>

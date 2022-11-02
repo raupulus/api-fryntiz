@@ -26,27 +26,27 @@ class CreateContentCategoriesTable extends Migration
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id');
             $table->bigInteger('content_id')
+                ->index()
                 ->nullable()
                 ->comment('FK al contenido asociado');
             $table->foreign('content_id')
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->bigInteger('category_id')
+            $table->bigInteger('platform_category_id')
+                ->index()
                 ->nullable()
-                ->comment('FK a la subcategoría');
-            $table->foreign('category_id')
-                ->references('id')->on('content_available_categories')
+                ->comment('FK a la plataforma asociada');
+            $table->foreign('platform_category_id')
+                ->references('id')->on('platform_categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->integer('priority')
-                ->nullable()
-                ->comment('Orden de prioridad de la categoría sobre otras, esto crea una ruta por ejemplo: /terminal/editores/vim');
+
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['content_id', 'category_id']);
-            $table->index(['content_id', 'category_id']);
+            $table->unique(['content_id', 'platform_category_id']);
+            //$table->index(['content_id', 'platform_category_id']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
@@ -61,7 +61,7 @@ class CreateContentCategoriesTable extends Migration
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['content_id']);
-            $table->dropForeign(['category_id']);
+            $table->dropForeign(['platform_category_id']);
         });
     }
 }

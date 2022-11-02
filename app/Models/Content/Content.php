@@ -4,6 +4,7 @@ namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Models\File;
+use App\Models\Platform;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,7 +63,7 @@ class Content extends BaseAbstractModelWithTableCrud
     ];
 
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'content';
     }
@@ -189,6 +190,16 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
+     * Relación con la plataforma asociada al contenido
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function platform()
+    {
+        return $this->belongsTo(Platform::class, 'platform_id', 'id');
+    }
+
+    /**
      * Devuelve la ruta hacia la imagen asociada.
      *
      * @return string
@@ -218,6 +229,7 @@ class Content extends BaseAbstractModelWithTableCrud
      * Devuelve la url para la previsualización del contenido
      * editándose, basándose en el útimo guardado.
      * Útil para previsualizar borradores principalmente.
+     * TODO: Por implementar una vez se llegue a esta parte.
      */
     public function getUrlPreviewAttribute()
     {
@@ -228,6 +240,7 @@ class Content extends BaseAbstractModelWithTableCrud
      * Devuelve la url para ver un contenido publicado.
      * Los administradores, propietario y colaboradores también pueden ver
      * borradores.
+     * TODO: Por implementar una vez se llegue a esta parte.
      */
     public function getUrlAttribute()
     {
@@ -245,6 +258,14 @@ class Content extends BaseAbstractModelWithTableCrud
         return route('panel.content.edit', ['content' => $this->id]);
     }
 
+    /**
+     * Almacena los contribuidores del contenido, previamente borrará los
+     * existentes si los hubiera.
+     *
+     * @param array $contributors Es un array con los ids de los usuarios.
+     *
+     * @return void
+     */
     public function saveContributors(Array $contributors)
     {
 

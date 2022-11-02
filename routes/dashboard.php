@@ -194,6 +194,12 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.content.destroy');
 
         Route::group(['prefix' => '/ajax'], function () {
+
+            ## Devuelve información del contenido por plataforma (etiquetas, categorías, contenidos...)
+            Route::get('/get/select/info/from/{platform}/platform', [ContentController::class, 'ajaxGetSelectInfoFromPlataform'])
+                ->name('dashboard.content.ajax.get.select.info.from.platform');
+
+
             Route::post('/table/get', [ContentController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.content.ajax.table.get');
 

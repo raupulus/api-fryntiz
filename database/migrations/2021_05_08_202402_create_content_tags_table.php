@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentTagsTable extends Migration
 {
     private $tableName = 'content_tags';
-    private $tableComment = 'Etiquetas asociadas al contenido';
+    private $tableComment = 'Etiquetas de la plataforma asociadas al contenido';
 
     /**
      * Run the migrations.
@@ -32,11 +32,22 @@ class CreateContentTagsTable extends Migration
             $table->foreign('content_id')
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
-                ->onDelete('set null');
+                ->onDelete('cascade');
+            $table->bigInteger('platform_tag_id')
+                ->index()
+                ->nullable()
+                ->comment('FK a la plataforma asociada');
+            $table->foreign('platform_tag_id')
+                ->references('id')->on('platform_tags')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->string('name', 255)->index();
             $table->string('description', 511)->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['content_id', 'platform_tag_id']);
+            //$table->index(['content_id', 'platform_category_id']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
@@ -51,6 +62,7 @@ class CreateContentTagsTable extends Migration
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['content_id']);
+            $table->dropForeign(['platform_tag_id']);
         });
     }
 }
