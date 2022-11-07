@@ -429,7 +429,7 @@
                 <div class="form-group">
                     <label for="contributors">
                         Contribuidores
-                        <br />
+                        <br/>
                         <small>
                             Podrán editar las páginas del contenido
                         </small>
@@ -441,8 +441,11 @@
                             multiple="multiple">
 
                         @foreach($users as $user)
-                            @if ($user->id != auth()->id())
-                                <option {{$contributorsIds && in_array($user->id, $contributorsIds) ? 'selected' : ''}}
+                            @php($checked = $contributorsIds && in_array($user->id, $contributorsIds))
+                            @php($checked = $checked || (old('contributors') && in_array($user->id, old('contributors'))))
+
+                        @if ($user->id != auth()->id())
+                                <option {{$checked ? 'selected' : ''}}
                                         value="{{$user->id}}">
                                     {{$user->name}}
                                 </option>
@@ -508,6 +511,7 @@
 
                             @foreach($tags as $tag)
                                 @php($checked = $modelTagsIds && in_array($tag->id, $modelTagsIds))
+                                @php($checked = $checked || (old('tags') && in_array($tag->id, old('tags'))))
 
                                 <option {{$checked ? 'selected' : ''}}
                                         value="{{$tag->id}}">
@@ -561,7 +565,7 @@
 
                             @foreach($categories as $category)
                                 @php($checked = $modelCategoriesIds && in_array($category->id, $modelCategoriesIds))
-
+                                @php($checked = $checked || (old('categories') && in_array($category->id, old('categories'))))
 
                                 <option {{$checked ? 'selected' : ''}}
                                         value="{{$category->id}}">

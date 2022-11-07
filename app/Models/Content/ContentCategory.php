@@ -11,4 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContentCategory extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'content_categories';
+
+    protected $fillable = [
+        'content_id',
+        'platform_category_id',
+    ];
 }

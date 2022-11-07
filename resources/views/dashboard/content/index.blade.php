@@ -11,17 +11,6 @@
 
 @section('content')
 
-    {{-- TODO: Crear un listado por cada tipo de "plataforma" y crear selector para buscar entre ellas --}}
-
-
-    <h1>
-        TERMINAR PLATAFORMAS, AÑADIR SELECTOR POR PLATAFORMA y CARGAR
-        SOLO EL COMPONENTE PARA ESA PLATAFORMA
-    </h1>
-
-
-
-
     <div class="row" id="app">
 
         <div class="col-12">

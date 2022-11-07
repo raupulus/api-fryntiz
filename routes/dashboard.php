@@ -181,7 +181,7 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [ContentController::class, 'index'])
             ->name('dashboard.content.index');
-        Route::get('/create', [ContentController::class, 'create'])
+        Route::get('/{platform?}/create', [ContentController::class, 'create'])
             ->name('dashboard.content.create');
         Route::post('/store', [ContentController::class, 'store'])
             ->name('dashboard.content.store');

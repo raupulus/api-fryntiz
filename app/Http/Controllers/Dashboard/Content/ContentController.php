@@ -42,12 +42,13 @@ class ContentController extends BaseWithTableCrudController
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function create()
+    public function create(Request $request, Platform $platform)
     {
         $model = new (self::getModel())();
-
+        $model->platform_id = $platform->id;
 
         $contributorsIds = $model->contributors->pluck('id')->toArray();
+
 
         return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
@@ -55,6 +56,11 @@ class ContentController extends BaseWithTableCrudController
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
             'contributorsIds' => $contributorsIds,
+            'tags' => $model->platform->tags,
+            'categories' => $model->platform->categories,
+            'modelCategoriesIds' => $model->categories->pluck('id')->toArray(),
+            'modelTagsIds' => $model->tags->pluck('id')->toArray(),
+            //'platform' => $platform,
         ]);
     }
 
@@ -70,14 +76,16 @@ class ContentController extends BaseWithTableCrudController
         //dd($request->all(), $request->validated());
         $modelString = $this::getModel();
         $requestValidated = $request->validated();
+
+
+
+
         $model = $modelString::create($requestValidated);
 
         //'processed_at' => 'nullable|date', // Se comprueba en el controlador
         //'published_at' => 'nullable|date', // Se comprueba en el controlador
 
         //'contentRelated' => 'nullable|array', //Check ids
-        //'tags' => 'nullable|array', //Check ids
-        //'categories' => 'nullable|array', //Check ids
 
 
 
@@ -85,11 +93,19 @@ class ContentController extends BaseWithTableCrudController
             $model->saveContributors($requestValidated['contributors']);
         }
 
+        if (isset($requestValidated['tags'])) {
+            $model->saveTags($requestValidated['tags']);
+        }
+
+        if (isset($requestValidated['categories'])) {
+            $model->saveCategories($requestValidated['categories']);
+        }
+
 
 
         // TODO: Crear trait? Para imágenes y dinamizar?
 
-        //dd($model);
+        dd($model);
 
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
@@ -189,20 +205,9 @@ class ContentController extends BaseWithTableCrudController
     public function ajaxGetSelectInfoFromPlataform(Request $request,
                                                       Platform $platform)
     {
-
         $contents = $platform->contents()->select(['id', 'title'])->get();
         $tags = $platform->tags()->select(['id', 'name'])->get();
         $categories = $platform->categories()->select(['id', 'name'])->get();
-
-        // TODO: los tags están bien así, asociados al contenido o mejor a la
-        // plataforma y a su vez también el contenido?
-
-        // Tal vez sería interesante crear "platforms_tags" y
-        // "platforms_categories" para asociar a estos y que existan en todas
-        // las entidades, desde contenidos hasta galerías por ejemplo.
-
-        // Ya hay una tabla llamada "tags y otra categories.
-        // Modificarlas para añadirles "platform_id" y crear relación.
 
         return JsonHelper::accepted([
             'contents' => $platform->contents,

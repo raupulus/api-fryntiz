@@ -84,6 +84,9 @@
                                 <input type="hidden" name="id"
                                        value="{{$model->id}}">
 
+                                <input type="hidden" name="plaform_id"
+                                       value="{{$model->plaform_id}}">
+
                                 {{-- Sección con datos principales --}}
                                 @include('dashboard.content.layouts._main')
 
@@ -209,6 +212,8 @@
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
+
+                            console.log(data);
 
                             if (data.contents) {
                                 changePlatformRelatedContent(data.contents);

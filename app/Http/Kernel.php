@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\Cors;
 use App\Http\Middleware\CorsAllowAll;
+use App\Http\Middleware\MenuConfig;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 /**
@@ -43,6 +44,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            MenuConfig::class,
         ],
 
         'api' => [

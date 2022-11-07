@@ -281,6 +281,64 @@ class Content extends BaseAbstractModelWithTableCrud
         }
     }
 
+    /**
+     * Almacena las etiquetas asociadas al contenido.
+     *
+     * @param array $tags Es un array con los ids de las etiquetas.
+     *
+     * @return void
+     */
+    public function saveTags(Array $tags)
+    {
+        $tags = array_unique(array_filter($tags));
+
+        $this->tags()->delete();
+
+        foreach ($tags as $tag) {
+            $platformTagId = $this->platform->tags()
+                ->where('platform_tags.tag_id', $tag)
+                ->pluck('platform_tags.id')
+                ->first();
+
+            if ($platformTagId) {
+                $this->tags()->create([
+                    'content_id' => $this->id,
+                    'platform_tag_id' => $platformTagId,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Almacena las categorías del contenido, previamente borrará los
+     * existentes si los hubiera.
+     *
+     * @param array $categories Es un array con los ids de las categorías.
+     *
+     * @return void
+     */
+    public function saveCategories(Array $categories)
+    {
+
+        $categories = array_unique(array_filter($categories));
+
+        $this->categories()->delete();
+
+        foreach ($categories as $category) {
+            $platformCategoryId = $this->platform->categories()
+                ->where('platform_categories.category_id', $category)
+                ->pluck('platform_categories.id')
+                ->first();
+
+            if ($platformCategoryId) {
+                $this->categories()->create([
+                    'content_id' => $this->id,
+                    'platform_category_id' => $platformCategoryId,
+                ]);
+            }
+        }
+    }
+
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
