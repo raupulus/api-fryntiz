@@ -459,7 +459,9 @@
                 <div class="form-group">
                     <label for="contentRelated">
                         Contenido relacionado
+
                         <br>
+
                         <small>
                             Asociar contenido relacionado para enlazar al
                             finalizar la entrada hacia ellos, permitir

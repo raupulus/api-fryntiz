@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use Closure;
 use Illuminate\Support\Facades\Event;
@@ -29,6 +30,8 @@ class MenuConfig
         ];
 
 
+
+        /**
         foreach (Platform::all() as $platform) {
             $contentCreateSubmenu['submenu'][] = [
                 'text' => Str::limit($platform->title, 22, '...'),
@@ -36,8 +39,49 @@ class MenuConfig
                 'icon' => 'fas fa-plus',
             ];
         }
+         */
 
-        $contentMenu[] = $contentCreateSubmenu;
+
+        // TODO -> Añadir esto a caché de 1 hora
+        // Intentando generar menú dinámico
+
+        $contentTypes = ContentAvailableType::all();
+
+        foreach (Platform::all() as $platform) {
+            $newPlatformMenu = [
+                'text' => Str::limit($platform->title, 22, '...'),
+                'icon' => 'fas fa-fw fa-users',
+                'submenu' => []
+            ];
+
+
+            ## Menú para Crear
+            $createMenu = [
+                'text' => 'Nuevo',
+                'icon' => 'fas fa-plus',
+                'submenu' => []
+            ];
+
+            ## Cada tipo de contenido
+            foreach ($contentTypes as $contentType) {
+                $createMenu['submenu'][] = [
+                    'text' => Str::limit($contentType->name, 22, '...'),
+                    'url' => route('dashboard.content.create', $platform->id),
+                    'icon' => 'fas fa-plus',
+                ];
+            }
+
+            $newPlatformMenu['submenu'][] = $createMenu;
+
+            $contentMenu[] = $newPlatformMenu;
+        }
+
+
+
+
+
+
+        //$contentMenu[] = $contentCreateSubmenu;
 
 
 

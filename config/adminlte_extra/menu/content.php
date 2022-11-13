@@ -8,11 +8,7 @@ return [
         'route' => 'dashboard.content.index',
         'icon' => 'far fa-fw fa-file',
     ],
-    [
-        'text' => 'Nuevo: La Guía Linux',
-        //'route' => 'dashboard.content.create,1',
-        'icon' => 'fa fa-plus',
-    ],
+
     [
         'text' => 'Categorías',
         'url' => '#',
