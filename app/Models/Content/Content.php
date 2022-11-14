@@ -375,7 +375,9 @@ class Content extends BaseAbstractModelWithTableCrud
     {
         return [
             'id' => 'ID',
+            'url_image' => 'Imagen',
             'title' => 'Título',
+            'published_at' => 'Publicado',
             'slug' => 'Slug',
             'excerpt' => 'Resumen',
         ];
@@ -392,10 +394,17 @@ class Content extends BaseAbstractModelWithTableCrud
             'id' => [
                 'type' => 'integer',
             ],
+            'url_image' => [
+                'type' => 'text',
+            ],
             'title' => [
                 'type' => 'text',
                 'wrapper' => 'span',
                 'class' => 'text-weight-bold',
+            ],
+            'published_at' => [
+                'type' => 'datetime',
+                'format' => 'd/m/Y',
             ],
             'slug' => [
                 'type' => 'text',

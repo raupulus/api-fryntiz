@@ -268,12 +268,26 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
     {
         $tableHeads = self::getModel()::getTableHeads($page);
         $columns = array_keys($tableHeads);
+        $columnsFiltered = array_filter($columns, fn($column) => ! in_array
+        ($column, [
+            'url_image',
+        ]));
 
-        $query = self::prepareQueryFiltered($columns, $orderBy, $orderDirection, $search);
+
+        $query = self::prepareQueryFiltered($columnsFiltered, $orderBy, $orderDirection, $search);
         $totalElements = $query->count();
         $tableRows = $query->offset(($page * $size) - $size)->limit($size)->get();
 
         $cellsInfo = self::getModel()::getTableCellsInfo();
+
+
+        if (in_array('urlImage', $columns)) {
+            $tableRows = $tableRows->map(function ($row) use ($cellsInfo) {
+                $row->url_image = $row->urlThumbnail($size = 'small');
+
+                return $row;
+            });
+        }
 
         return [
             'heads' => $tableHeads,
