@@ -59,8 +59,21 @@ abstract class BaseWithTableCrudController extends Controller
         $orderBy = $request->json('orderBy');
         $orderDirection = $request->json('orderDirection');
         $search = $request->json('search');
+        $conditions = $request->json('conditions');
 
-        $data = $this::getModel()::getTableQuery($page, $size, $orderBy, $orderDirection, $search);
+
+        /*
+        $conditions = [
+            [
+                'filter' => 'where',
+                'column' => 'platform_id',
+                'value' => 3.
+           ]];
+        */
+
+
+        $data = $this::getModel()::getTableQuery($page, $size, $orderBy,
+            $orderDirection, $search, $conditions);
 
         return JsonHelper::success([
             'data' => $data,

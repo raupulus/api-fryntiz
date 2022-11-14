@@ -179,7 +179,7 @@ Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
 ############################################################
 Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
     function () {
-        Route::get('/index', [ContentController::class, 'index'])
+        Route::get('/index/{platform?}/{slug?}', [ContentController::class, 'index'])
             ->name('dashboard.content.index');
         Route::get('/{platform?}/create', [ContentController::class, 'create'])
             ->name('dashboard.content.create');

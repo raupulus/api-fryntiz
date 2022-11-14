@@ -35,7 +35,8 @@ class MenuConfig
                     [
                         'text' => 'Listado',
                         'icon' => 'fas fa-eye',
-                        'url' => route('dashboard.content.create', $platform->id),
+                        'url' => route('dashboard.content.index',
+                            [$platform->id, $platform->slug]),
 
                         // TODO: Todas las entradas con errores de validación al comprobar autoría
                         //'label' => 4,

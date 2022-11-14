@@ -217,7 +217,12 @@ export default {
         },
         csrf:{  // Token csrf para la seguridad del formulario
             required:true
-        }
+        },
+        conditions: {
+            type:Object,
+            default:[],
+            required:false
+        },
     },
 
     // TODO → Implementar autoreload de la tabla, por defecto off.
@@ -264,6 +269,8 @@ export default {
             ...props.headers
         };
 
+        console.log(props.conditions);
+
         /**
          * Realiza una petición ajax.
          *
@@ -276,7 +283,8 @@ export default {
             return fetch(url, {
                     headers:fetchHeaders,
                     method:method,
-                    body:JSON.stringify(params)
+                    body:JSON.stringify({...params,
+                        conditions:props.conditions})
                 }
             ).then((response) => response.json());
         };
