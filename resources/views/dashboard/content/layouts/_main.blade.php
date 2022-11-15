@@ -86,11 +86,15 @@
 
                     <select id="author_id" name="author_id"
                             class="custom-select rounded-0">
-                        @if (auth()->user()->role_id === 2)
+                        @if (in_array(auth()->user()->role_id, [1, 2]))
                             @foreach($users as $user)
+                                @php($checked = (int)old('author_id')===  $user->id)
+                                @php($checked = $checked ?? !$model->author_id
+                                 && ($user->id === auth()->id()))
+                                @php($checked = $checked ?? $model->author_id  === $user->id)
+
                                 <option value="{{ $user->id }}"
-                                        {{!$model->author_id && ($user->id === auth()->id()) ? 'selected' : ''}}
-                                        {{$model->author_id === $user->id ? 'selected' : ''}}>
+                                        {{$checked ? 'selected' : ''}}>
                                     {{ $user->name }}
                                 </option>
                             @endforeach
@@ -111,8 +115,11 @@
                     <select id="platform_id" name="platform_id"
                             class="custom-select rounded-0">
                         @foreach($platforms as $platform)
+                            @php($checked = (int)old('platform_id') === $platform->id)
+                            @php($checked = $checked ?? $model->platform_id === $platform->id)
+
                             <option value="{{ $platform->id }}"
-                                    {{$model->platform_id === $platform->id ? 'selected' : ''}}>
+                                    {{$checked ? 'selected' : ''}}>
                                 {{ $platform->title }}
                             </option>
                         @endforeach
@@ -128,8 +135,11 @@
                     <select id="type_id" name="type_id"
                             class="custom-select rounded-0">
                         @foreach($contentTypes as $contentType)
+                            @php($checked = (int)old('type_id') === $contentType->id)
+                            @php($checked = $checked ?? $model->type_id === $contentType->id)
+
                             <option value="{{ $contentType->id }}"
-                                    {{$model->type_id === $contentType->id ? 'selected' : ''}}>
+                                    {{$checked ? 'selected' : ''}}>
                                 {{ $contentType->name }}
                             </option>
                         @endforeach
@@ -161,7 +171,8 @@
 
                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                         <input type="checkbox" class="custom-control-input"
-                               {{$model->is_active ? 'checked' : ''}}
+                               {{old('is_active', $model->is_active) ?
+                               'checked' : ''}}
                                name="is_active"
                                id="is_active">
                         <label class="custom-control-label" for="is_active">
@@ -171,7 +182,7 @@
 
                     <div class="custom-control custom-switch  custom-switch-off custom-switch-on-primary">
                         <input type="checkbox" class="custom-control-input"
-                               {{$model->is_featured ? 'checked' : ''}}
+                               {{old('is_featured', $model->is_featured) ? 'checked' : ''}}
                                id="is_featured"
                                name="is_featured">
                         <label class="custom-control-label" for="is_featured">
@@ -197,7 +208,7 @@
                                type="checkbox"
                                id="is_comment_enabled"
                                name="is_comment_enabled"
-                                {{!$model->id || $model->is_comment_enabled ? 'checked' : ''}}>
+                                {{old('is_comment_enabled', $model->is_comment_enabled) ? 'checked' : ''}}>
                         <label for="is_comment_enabled"
                                class="custom-control-label">
                             Permitir Comentarios
@@ -209,7 +220,7 @@
                                type="checkbox"
                                id="is_comment_anonymous"
                                name="is_comment_anonymous"
-                                {{ $model->is_comment_anonymous ? 'checked' : '' }}>
+                                {{ old('is_comment_anonymous', $model->is_comment_anonymous) ? 'checked' : '' }}>
                         <label for="is_comment_anonymous"
                                class="custom-control-label">
                             Permitir Comentarios Anónimos
@@ -221,7 +232,7 @@
                                type="checkbox"
                                id="is_visible_on_archive"
                                name="is_visible_on_archive"
-                                {{ $model->is_visible_on_archive ? 'checked' : '' }}>
+                                {{ old('is_visible_on_archive', $model->is_visible_on_archive) ? 'checked' : '' }}>
                         <label for="is_visible_on_archive"
                                class="custom-control-label">
                             Contenido Archivado (obsoleto)
