@@ -617,7 +617,7 @@
                                type="checkbox"
                                id="is_visible_on_home"
                                name="is_visible_on_home"
-                               value="{{ $model->is_visible_on_home ? 'checked' : '' }}">
+                               {{ old('is_visible_on_home', $model->is_visible_on_home) ? 'checked' : '' }}>
                         <label for="is_visible_on_home"
                                class="custom-control-label">
                             Visible en la página principal
@@ -629,7 +629,7 @@
                                type="checkbox"
                                id="is_visible_on_menu"
                                name="is_visible_on_menu"
-                               value="{{ $model->is_visible_on_home ? 'checked' : '' }}">
+                               {{ old('is_visible_on_menu', $model->is_visible_on_menu) ? 'checked' : '' }}>
                         <label for="is_visible_on_menu"
                                class="custom-control-label">
                             Visible en el menú
@@ -641,7 +641,7 @@
                                type="checkbox"
                                id="is_visible_on_footer"
                                name="is_visible_on_footer"
-                               value="{{ $model->is_visible_on_footer ? 'checked' : '' }}">
+                               {{ old('is_visible_on_footer', $model->is_visible_on_footer) ? 'checked' : '' }}>
                         <label for="is_visible_on_footer"
                                class="custom-control-label">
                             Visible en el Footer
@@ -653,7 +653,7 @@
                                type="checkbox"
                                id="is_visible_on_sidebar"
                                name="is_visible_on_sidebar"
-                               value="{{ $model->is_visible_on_sidebar ? 'checked' : '' }}">
+                               {{ old('is_visible_on_sidebar', $model->is_visible_on_sidebar) ? 'checked' : '' }}>
                         <label for="is_visible_on_sidebar"
                                class="custom-control-label">
                             Visible en el Sidebar
@@ -665,7 +665,7 @@
                                type="checkbox"
                                id="is_visible_on_search"
                                name="is_visible_on_search"
-                               value="{{ $model->is_visible_on_search ? 'checked' : '' }}">
+                               {{ old('is_visible_on_search', $model->is_visible_on_search) ? 'checked' : '' }}>
                         <label for="is_visible_on_search"
                                class="custom-control-label">
                             Visible en las búsquedas
@@ -677,7 +677,7 @@
                                type="checkbox"
                                id="is_visible_on_rss"
                                name="is_visible_on_rss"
-                               value="{{ $model->is_visible_on_rss ? 'checked' : '' }}">
+                               {{ old('is_visible_on_rss', $model->is_visible_on_rss) ? 'checked' : '' }}>
                         <label for="is_visible_on_rss"
                                class="custom-control-label">
                             Visible en las redes sociales
@@ -689,7 +689,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap"
                                name="is_visible_on_sitemap"
-                               value="{{ $model->is_visible_on_sitemap ? 'checked' : '' }}">
+                               {{ old('is_visible_on_sitemap', $model->is_visible_on_sitemap) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap"
                                class="custom-control-label">
                             Visible para el Sitemap General
@@ -701,7 +701,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap_news"
                                name="is_visible_on_sitemap_news"
-                               value="{{ $model->is_visible_on_sitemap_news ? 'checked' : '' }}">
+                               {{ old('is_visible_on_sitemap_news', $model->is_visible_on_sitemap_news) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap_news"
                                class="custom-control-label">
                             Visible para el Sitemap de Noticias
