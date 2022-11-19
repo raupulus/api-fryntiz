@@ -196,7 +196,7 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::group(['prefix' => '/ajax'], function () {
 
             ## Devuelve información del contenido por plataforma (etiquetas, categorías, contenidos...)
-            Route::get('/get/select/info/from/{platform}/platform', [ContentController::class, 'ajaxGetSelectInfoFromPlataform'])
+            Route::match(['put', 'patch', 'post'], '/get/select/info/from/{platform}/platform', [ContentController::class, 'ajaxGetSelectInfoFromPlataform'])
                 ->name('dashboard.content.ajax.get.select.info.from.platform');
 
 

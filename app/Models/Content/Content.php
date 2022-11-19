@@ -3,8 +3,11 @@
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use App\Models\Category;
 use App\Models\File;
 use App\Models\Platform;
+use App\Models\PlatformTag;
+use App\Models\Tag;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -132,7 +135,16 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con los colaboradores asociados al contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contentsRelated()
+    {
+        return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id');
+    }
+
+    /**
+     * Relación con los colaboradores asociados al contenido.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function contributors()
     {
@@ -170,13 +182,71 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
+     * Creo consulta personalizada para las categorías, NO ES UNA RELACIÓN
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getCategoriesAttribute()
+    {
+        return $this->categoriesQuery()->get();
+    }
+
+    /**
+     * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
+     *
+     * @return mixed
+     */
+    public function categoriesQuery($platformId = null)
+    {
+        $categoriesId = Category::select('categories.id')
+            ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
+            ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
+            //->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
+            ->where('content_categories.content_id', $this->id)
+            ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
+            ->groupBy('categories.id')
+            ->get();
+
+        return Category::whereIn('id', $categoriesId);
+    }
+
+    /**
      * Relación con las categorías asociadas.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function categories()
+    public function categoriesJoin()
     {
         return $this->hasMany(ContentCategory::class, 'content_id', 'id');
+    }
+
+    /**
+     * Creo consulta personalizada para las etiquetas, NO ES UNA RELACIÓN
+     *
+     */
+    public function getTagsAttribute()
+    {
+        return $this->tagsQuery()->get();
+    }
+
+    /**
+     * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
+     *
+     * @return mixed
+     */
+    public function tagsQuery($platformId = null)
+    {
+        $tagsId = Tag::select('tags.id')
+            ->leftJoin('platform_tags', 'platform_tags.tag_id', '=',
+                'tags.id')
+            ->leftJoin('content_tags', 'content_tags.platform_tag_id', '=', 'platform_tags.id')
+            //->leftJoin('contents', 'contents.platform_id', '=', 'content_categories.content_id')
+            ->where('content_tags.content_id', $this->id)
+            ->where('platform_tags.platform_id', $platformId ?? $this->platform_id)
+            ->groupBy('tags.id')
+            ->get();
+
+        return Tag::whereIn('id', $tagsId);
     }
 
     /**
@@ -184,9 +254,19 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function tags()
+    public function tagsJoin()
     {
         return $this->hasMany(ContentTag::class, 'content_id', 'id');
+    }
+
+    /**
+     * Relación con las etiquetas asociadas a través de la tabla de join.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tagsPlatform()
+    {
+        return $this->belongsToMany(PlatformTag::class, 'content_tags', 'content_id', 'platform_tag_id');
     }
 
     /**

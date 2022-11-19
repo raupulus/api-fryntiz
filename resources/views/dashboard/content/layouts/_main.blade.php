@@ -474,20 +474,13 @@
                         <br>
 
                         <small>
-                            Asociar contenido relacionado para enlazar al
-                            finalizar la entrada hacia ellos, permitir
-                            asociar todos los tipos de contenidos incluyendo
-                            con estados como borradores. Luego esto será
-                            filtrado al mostrar contenido relacionado pero
-                            así queda preparado para una vez sea publicado
-                            (TODO)
-
-                            TODO: Cambiar los resultados por plataforma
+                            Contenido vinculado a la entrada, se mostrará como
+                            sugerencia al final de la entrada.
                         </small>
                     </label>
 
                     <select id="contentRelated"
-                            name="contentRelated[]"
+                            name="contents_related[]"
                             class="duallistbox"
                             multiple="multiple">
                     </select>
@@ -505,9 +498,7 @@
 
                     <small>
                         Adjetivos que identifiquen este contenido, se
-                        sacarán las sugerencias del contenido en el texto
-                        de las páginas y quizás plantearé de las
-                        relacionadas (TODO)
+                        sacarán las sugerencias para leer más contenido
                     </small>
 
                     <br/>
@@ -552,21 +543,14 @@
                         <br>
 
                         <small>
-                            Para agrupar contenidos, por ejemplo:
-                            programación, software, tecnología...
-                            Como las etiquetas pero más concretos.
-                            Se podrá seleccionar existente o añadir nuevas,
-                            quizás con dos selectores select2 y un botón para
-                            abrir un modal desde el que añadir nuevas.
-                            Plantear crear CRUD para estas categorías y que
-                            en este pueda reasignar las que ya existan si se
-                            van a eliminar. Es decir, antes de eliminar dar
-                            la posibilidad de reasignar a otra categoría.
-                            (TODO)
+                            Agrupa tipo de contenido relacionado
+                            indirectamente, sobre el mismo tema pero no
+                            exactamente igual.
                         </small>
                     </label>
 
                     <div class="select2-info">
+
                         <select id="categories" name="categories[]"
                                 class="select2 select2-hidden-accessible"
                                 multiple=""
@@ -575,6 +559,7 @@
                                 style="width: 100%;"
                                 tabindex="-1"
                                 aria-hidden="true">
+
 
                             @foreach($categories as $category)
                                 @php($checked = $modelCategoriesIds && in_array($category->id, $modelCategoriesIds))

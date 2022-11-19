@@ -16,6 +16,7 @@ use JsonHelper;
 
 /**
  * Class ContentAvailableCategoryController
+ *
  * @package App\Http\Controllers\Dashboard\Content
  */
 class ContentController extends BaseWithTableCrudController
@@ -79,15 +80,12 @@ class ContentController extends BaseWithTableCrudController
         $requestValidated = $request->validated();
 
 
-
-
         $model = $modelString::create($requestValidated);
 
         //'processed_at' => 'nullable|date', // Se comprueba en el controlador
         //'published_at' => 'nullable|date', // Se comprueba en el controlador
 
         //'contentRelated' => 'nullable|array', //Check ids
-
 
 
         if (isset($requestValidated['contributors'])) {
@@ -101,7 +99,6 @@ class ContentController extends BaseWithTableCrudController
         if (isset($requestValidated['categories'])) {
             $model->saveCategories($requestValidated['categories']);
         }
-
 
 
         // TODO: Crear trait? Para imágenes y dinamizar?
@@ -129,13 +126,16 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Content\Content         $model
+     * @param \App\Models\Content\Content $model
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit(Content $model)
     {
         $contributorsIds = $model->contributors->pluck('id')->toArray();
+
+
+        //dd($model->categoriesQuery(4)->pluck('id')->toArray());
 
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
@@ -145,8 +145,8 @@ class ContentController extends BaseWithTableCrudController
             'contributorsIds' => $contributorsIds,
             'tags' => $model->platform->tags,
             'categories' => $model->platform->categories,
-            'modelCategoriesIds' => $model->categories->pluck('id')->toArray(),
-            'modelTagsIds' => $model->tags->pluck('id')->toArray(),
+            'modelCategoriesIds' => $model->categoriesQuery()->pluck('id')->toArray(),
+            'modelTagsIds' => $model->tagsQuery()->pluck('id')->toArray(),
 
 
             // TODO tabla "Tabla: content_available_categories" se quita,
@@ -158,7 +158,7 @@ class ContentController extends BaseWithTableCrudController
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\Dashboard\Content\ContentUpdateRequest $request
-     * @param int|null                                               $id
+     * @param int|null                                                  $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -177,7 +177,7 @@ class ContentController extends BaseWithTableCrudController
      * Remove the specified resource from storage.
      *
      * @param \App\Http\Requests\Dashboard\Content\ContentDeleteRequest $request
-     * @param int|null                                               $id
+     * @param int|null                                                  $id
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
@@ -203,17 +203,46 @@ class ContentController extends BaseWithTableCrudController
     ##                       AJAX                             ##
     ############################################################
 
-    public function ajaxGetSelectInfoFromPlataform(Request $request,
-                                                      Platform $platform)
+    public function ajaxGetSelectInfoFromPlataform(Request  $request,
+                                                   Platform $platform)
     {
-        $contents = $platform->contents()->select(['id', 'title'])->get();
-        $tags = $platform->tags()->select(['id', 'name'])->get();
-        $categories = $platform->categories()->select(['id', 'name'])->get();
+        $search = $request->get('search');
+        $contentId = $request->get('contentId');
+        $content = Content::find($contentId);
+
+
+        $contentsRelated = $content ? $content->contentsRelated()->select(['content_related.id', 'title'])
+            ->orderByDesc('content_related.updated_at')
+            ->get() : [];
+
+
+
+        $contents = $platform->contents()
+            ->select(['contents.id', 'contents.title'])
+            ->where('title', 'like', '%' . $search . '%');
+
+        if ($contentsRelated && !is_array($contentsRelated)) {
+            $contents->whereNotIn('contents.id', clone($contentsRelated)->pluck
+            ('id'));
+        }
+
+        $contents = $contents->get();
+
+        $tagsSelected = $content->tagsQuery()->select(['tags.id', 'tags.name'])->get();
+        $categoriesSelected = $content->categoriesQuery()->select(['categories.id', 'categories.name'])->get();
+
+        $tags = $platform->tags()->select(['tags.id', 'tags.name'])->get();
+        $categories = $platform->categories()->select(['categories.id', 'categories.name'])->get();
+
+        //dd($categoriesSelected, $categories->toArray());
 
         return JsonHelper::accepted([
-            'contents' => $platform->contents,
+            'contents' => $contents,
+            'contentsRelated' => $contentsRelated,
             'tags' => $tags,
             'categories' => $categories,
+            'tagsSelected' => $tagsSelected,
+            'categoriesSelected' => $categoriesSelected,
         ]);
     }
 }

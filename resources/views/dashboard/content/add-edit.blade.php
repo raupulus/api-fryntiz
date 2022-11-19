@@ -138,100 +138,129 @@
 
             let platformIdNode = document.getElementById('platform_id');
 
-            function changePlatformCategories(categories) {
+            function changePlatformCategories(categories, selectedCategories) {
+                let node = document.getElementById('categories');
+
+                if(node) {
+                    node.innerHTML = '';
+
+                    const selectedIds = selectedCategories.map(ele => ele.id);
+
+                    categories.forEach(category => {
+                        let option = document.createElement('option');
+                        option.value = category.id;
+                        option.innerText = category.name;
+
+                        if(selectedIds.length && (selectedIds.includes(category.id))) {
+                            option.selected = true;
+                        }
+
+                        node.appendChild(option);
+                    });
+                }
+            }
+
+            function changePlatformTags(tags, tagsSelected) {
+                let node = document.getElementById('tags');
+
+                if(node) {
+                    node.innerHTML = '';
+
+                    const selectedIds = tagsSelected.map(ele => ele.id);
+
+
+
+                    tags.forEach(tag => {
+                        let option = document.createElement('option');
+                        option.value = tag.id;
+                        option.innerText = tag.name;
+
+                        if(selectedIds.length && (selectedIds.includes(tag.id))) {
+                            option.selected = true;
+                        }
+
+                        node.appendChild(option);
+                    });
+                }
+            }
+
+            function changePlatformRelatedContent(contents, contentsRelated) {
                 let currentContentId = "{{$model->id}}";
                 let node = document.getElementById('contentRelated');
 
-                if (node) {
+                let contentsRelatedIds = contentsRelated.map(content => content.id);
+
+                if(node) {
                     node.innerHTML = '';
+
+                    contents = contents.filter(content => content.id !== currentContentId);
+
+                    contents = [...contents, ...contentsRelated];
+
+
+                    // TODO: Al cambiar, marcar seleccionados los contenidos
+                    //  que ya estaban seleccionadas antes de cambiar de
+                    //  plataforma
+
 
                     contents.forEach(content => {
                         let option = document.createElement('option');
                         option.value = content.id;
                         option.innerText = content.title;
-                        node.appendChild(option);
-                    });
-                }
 
-                contents.forEach((content) => {
-                    if (content.id != currentContentId) {
-                        dualListBox.append(`<option value="${content.id}">${content.title}</option>`);
-                    }
-                });
-
-                dualListBox.bootstrapDualListbox('refresh');
-            }
-
-            function changePlatformTags(tags) {
-                let node = document.getElementById('tags');
-
-                if (node) {
-                    node.innerHTML = '';
-
-                    contents.forEach(tags => {
-                        let option = document.createElement('option');
-                        option.value = tags.id;
-                        option.innerText = tags.name;
-                        node.appendChild(option);
-                    });
-                }
-
-                dualListBox.bootstrapDualListbox('refresh');
-            }
-
-            function changePlatformRelatedContent(contents) {
-                let currentContentId = "{{$model->id}}";
-                let node = document.getElementById('contentRelated');
-
-                if (node) {
-                    node.innerHTML = '';
-
-                    contents.forEach(content => {
-                        if (content.id != currentContentId) {
-                            let option = document.createElement('option');
-                            option.value = content.id;
-                            option.innerText = content.title;
-                            node.appendChild(option);
+                        if(contentsRelatedIds && (contentsRelatedIds.includes(content.id))) {
+                            option.selected = true;
                         }
 
+                        node.appendChild(option);
+
                     });
                 }
 
                 dualListBox.bootstrapDualListbox('refresh');
             }
 
-            if (platformIdNode) {
+            if(platformIdNode) {
                 platformIdNode.addEventListener('change', (e) => {
-                    let platformId = e.target.value;
+                    let platformId = e.target.value ?? "{{old('platform_id', $model->platform_id)}}";
 
                     let url = '{{route('dashboard.content.ajax.get.select.info.from.platform', ':platform')}}';
 
                     url = url.replace(':platform', platformId);
 
 
-                    fetch(url)
+                    fetch(url,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify({
+                                contentId: "{{$model->id}}"
+                            })
+                        })
                         .then(response => response.json())
                         .then(data => {
 
-                            console.log(data);
+                            console.debug(data);
 
-                            if (data.contents) {
-                                changePlatformRelatedContent(data.contents);
+                            if(data.contents) {
+                                changePlatformRelatedContent(data.contents, data.contentsRelated);
                             }
 
-                            if (data.categories) {
-                                changePlatformCategories(data.categories);
+                            if(data.categories) {
+                                changePlatformCategories(data.categories, data.categoriesSelected);
                             }
 
-                            if (data.tags) {
-                                changePlatformTags(data.tags);
+                            if(data.tags) {
+                                changePlatformTags(data.tags, data.tagsSelected);
                             }
 
                         });
 
                 });
             }
-
 
 
             // Previsualización de imagen para apartado principal.

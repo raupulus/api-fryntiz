@@ -268,7 +268,7 @@ export default {
             let apiUrl = props.api.baseUrl + '/' + props.api.path;
             const configuration = props.apiConfiguration;
 
-            console.log(props);
+            //console.log(props);
 
             fetch(apiUrl, configuration)
                 .then(response => response.json())
