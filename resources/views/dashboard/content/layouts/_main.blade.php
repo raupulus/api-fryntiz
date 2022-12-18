@@ -479,12 +479,15 @@
                         </small>
                     </label>
 
-                    <input class="form-control"
+                    <input class="form-control mb-2"
+                           placeholder="Buscar contenido..."
+                           value=""
                            id="searchContentRelated" />
 
                     <select id="contentRelated"
                             name="contents_related[]"
-                            multiple="multiple">
+                            multiple="multiple"
+                            class="form-control">
 
                         @foreach($contentRelatedAll as $contentRelated)
                             <option value="{{$contentRelated->id}}" selected>

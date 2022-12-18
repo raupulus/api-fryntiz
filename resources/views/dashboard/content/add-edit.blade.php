@@ -145,9 +145,9 @@
             var dualListBox = $('.duallistbox').bootstrapDualListbox(bootstrapDualListboxOptions);
 
             const dualListBoxContentRelated = $('#contentRelated').multiSelect({
-                selectableHeader: "<div class='custom-header'>Disponible</div>",
+                selectableHeader: "<div class='multiselect-header'>Disponible</div>",
                 selectionHeader: "<div " +
-                    "class='custom-header'>Seleccionado</div>",
+                    "class='multiselect-header'>Seleccionado</div>",
                 selectableFooter: "",
                 selectionFooter: "",
                 beforeInit:function(algo){

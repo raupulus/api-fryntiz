@@ -2,6 +2,31 @@
   cursor: pointer;
 }
 
+/** Editor multiselect **/
+.ms-container {
+  width: 100% !important;
+}
+
+.multiselect-header {
+  text-align: center;
+  background-color: #17a2b8;
+  border-bottom: 3px solid #3f879a;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e5e5;
+}
+
+.multiselect-header .multiselect-header-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e5e5e5;
+}
+
+.multiselect-footer {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid #e5e5e5;
+}
 
 /** Editor Quill **/
 .box-editor-quill {
