@@ -120,6 +120,14 @@
 
 @section('js')
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.min.js"
+            integrity="sha512-vSyPWqWsSHFHLnMSwxfmicOgfp0JuENoLwzbR+Hf5diwdYTJraf/m+EKrMb4ulTYmb/Ra75YmckeTQ4sHzg2hg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css"
+          integrity="sha512-3lMc9rpZbcRPiC3OeFM3Xey51i0p5ty5V8jkdlNGZLttjj6tleviLJfHli6p8EpXZkCklkqNt8ddSroB3bvhrQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <script>
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -135,6 +143,155 @@
 
             /*** Selectores Dual Listbox ***/
             var dualListBox = $('.duallistbox').bootstrapDualListbox(bootstrapDualListboxOptions);
+
+            const dualListBoxContentRelated = $('#contentRelated').multiSelect({
+                selectableHeader: "<div class='custom-header'>Disponible</div>",
+                selectionHeader: "<div " +
+                    "class='custom-header'>Seleccionado</div>",
+                selectableFooter: "",
+                selectionFooter: "",
+                beforeInit:function(algo){
+                    console.log(algo);
+                },
+                afterInit:function(container) {
+                    // after init
+                    console.log('Tras iniciar', container);
+                },
+
+                afterSelect:function(values) {
+
+                    if (values && typeof values === 'object') {
+                        Array.from(values).forEach(value => {
+                            console.log('Valor', value);
+                            let option = document.querySelector('#contentRelated option[value="' + value + '"]');
+                            option.setAttribute('selected', 'selected');
+                        });
+                    }
+
+                },
+                afterDeselect:function(values) {
+                    if (values && typeof values === 'object') {
+                        Array.from(values).forEach(value => {
+                            console.log('Valor', value);
+                            let option = document.querySelector('#contentRelated option[value="' + value + '"]');
+                            option.removeAttribute('selected');
+                        });
+                    }
+                }
+            });
+
+
+            // Fuerzo seleccionar todo el contenido que debería estar
+            //  seleccionado
+            if (document.getElementById('contentRelated')) {
+                let nd = document.querySelectorAll('#contentRelated option');
+                if (nd && nd.length) {
+                    Array.from(nd).forEach((ele) => {
+                        ele.setAttribute('selected', 'selected');
+                    });
+                }
+            }
+
+
+            // Evento para que al buscar obtenga los nuevos resultados.
+            var searchContentTimeout = null;
+
+            const searchContentRelated = document.getElementById('searchContentRelated');
+
+            function getContentRelatedFiltered(e) {
+                let search = searchContentRelated.value;
+
+                if(search.length < 2) {
+                    return;
+                }
+
+                let platformIdInput = document.getElementById('platform_id');
+                let platformId = platformIdInput.value ?? "{{old('platform_id', $model->platform_id)}}";
+                let url = '{{route('dashboard.content.ajax.get.content.related.filtered', ':platform')}}';
+                url = url.replace(':platform', platformId);
+
+                let contentId = "{{$model->id}}";
+
+
+
+                fetch(url, {
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body:JSON.stringify({
+                        content_related_search:search,
+                        contentId:contentId
+                    })
+
+                }).then(response => response.json())
+                    .then(data => {
+                        if(data && data.contents.length) {
+                            let node = document.getElementById('contentRelated');
+
+                            /*
+                            while (node.firstChild) {
+                                node.removeChild(node.firstChild);
+                            }
+                            */
+
+                            let nodesNotSelected = node.querySelectorAll('option:not(option[selected="selected"])');
+
+                            console.log(nodesNotSelected);
+
+                            // Limpio nodos no seleccionados
+                            if (nodesNotSelected.length) {
+                                nodesNotSelected.forEach(node => {
+                                    node.remove();
+                                });
+                            }
+
+
+                            data.contents.forEach(content => {
+                                let oldNode = node.querySelector
+                                ('option[value="' + content.id +'"]');
+
+                                console.log('oldNode:', oldNode);
+
+                                if (!oldNode) {
+                                    let option = document.createElement('option');
+                                    option.value = content.id;
+                                    option.innerText = content.title;
+
+                                    node.appendChild(option);
+                                }
+
+                            });
+
+                            /*
+                            data.contentsRelated.forEach(content => {
+                                let option = document.createElement('option');
+                                option.value = content.id;
+                                option.innerText = content.title;
+                                option.selected = true;
+
+                                node.appendChild(option);
+                            });
+
+                             */
+                        }
+
+                        //dualListBoxContentRelated.reload();
+                        dualListBoxContentRelated.multiSelect('refresh');
+
+                    });
+
+
+            }
+
+            searchContentRelated.addEventListener('keyup', (e) => {
+                clearTimeout(searchContentTimeout);
+                searchContentTimeout = null;
+
+                searchContentTimeout = setTimeout((e) => getContentRelatedFiltered(e), 500);
+            });
+
 
             let platformIdNode = document.getElementById('platform_id');
 
@@ -168,8 +325,6 @@
 
                     const selectedIds = tagsSelected.map(ele => ele.id);
 
-
-
                     tags.forEach(tag => {
                         let option = document.createElement('option');
                         option.value = tag.id;
@@ -184,40 +339,37 @@
                 }
             }
 
-            function changePlatformRelatedContent(contents, contentsRelated) {
-                let currentContentId = "{{$model->id}}";
+            /**
+             * Al cambiar de plataforma, borra todo el contenido relacionado
+             * tanto marcado como en búsqueda para añadir los de la plataforma
+             * actual.
+             *
+             * @param contentsRelated
+             */
+            function changePlatformRelatedContent(contentsRelated) {
+                let currentContentId = parseInt("{{$model->id}}");
                 let node = document.getElementById('contentRelated');
+                let searchContentRelated = document.getElementById('searchContentRelated');
 
-                let contentsRelatedIds = contentsRelated.map(content => content.id);
+                // Limpio el campo de búsqueda.
+                searchContentRelated.value = '';
 
                 if(node) {
                     node.innerHTML = '';
 
-                    contents = contents.filter(content => content.id !== currentContentId);
-
-                    contents = [...contents, ...contentsRelated];
-
-
-                    // TODO: Al cambiar, marcar seleccionados los contenidos
-                    //  que ya estaban seleccionadas antes de cambiar de
-                    //  plataforma
-
-
-                    contents.forEach(content => {
-                        let option = document.createElement('option');
-                        option.value = content.id;
-                        option.innerText = content.title;
-
-                        if(contentsRelatedIds && (contentsRelatedIds.includes(content.id))) {
+                    contentsRelated.forEach(content => {
+                        if (parseInt(content.id) !== currentContentId) {
+                            let option = document.createElement('option');
+                            option.value = content.id;
+                            option.innerText = content.title;
                             option.selected = true;
+
+                            node.appendChild(option);
                         }
-
-                        node.appendChild(option);
-
                     });
                 }
 
-                dualListBox.bootstrapDualListbox('refresh');
+                dualListBoxContentRelated.multiSelect('refresh');
             }
 
             if(platformIdNode) {
@@ -228,25 +380,23 @@
 
                     url = url.replace(':platform', platformId);
 
-
                     fetch(url,
                         {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
+                            method:'POST',
+                            headers:{
+                                'Content-Type':'application/json',
                                 'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content,
                             },
-                            body: JSON.stringify({
-                                contentId: "{{$model->id}}"
+                            body:JSON.stringify({
+                                contentId:"{{$model->id}}",
+                                platformId: platformId
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
 
-                            console.debug(data);
-
-                            if(data.contents) {
-                                changePlatformRelatedContent(data.contents, data.contentsRelated);
+                            if(data.contentsRelated) {
+                                changePlatformRelatedContent(data.contentsRelated);
                             }
 
                             if(data.categories) {

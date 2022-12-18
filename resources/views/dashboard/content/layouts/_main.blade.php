@@ -115,7 +115,7 @@
                     <select id="platform_id" name="platform_id"
                             class="custom-select rounded-0">
                         @foreach($platforms as $platform)
-                            @php($checked = (int)old('platform_id') === $platform->id)
+                            @php($checked = (int)old('platform_id', $model->platform_id) === $platform->id)
                             @php($checked = $checked ?? $model->platform_id === $platform->id)
 
                             <option value="{{ $platform->id }}"
@@ -455,7 +455,7 @@
                             @php($checked = $contributorsIds && in_array($user->id, $contributorsIds))
                             @php($checked = $checked || (old('contributors') && in_array($user->id, old('contributors'))))
 
-                        @if ($user->id != auth()->id())
+                            @if ($user->id != auth()->id())
                                 <option {{$checked ? 'selected' : ''}}
                                         value="{{$user->id}}">
                                     {{$user->name}}
@@ -479,10 +479,20 @@
                         </small>
                     </label>
 
+                    <input class="form-control"
+                           id="searchContentRelated" />
+
                     <select id="contentRelated"
                             name="contents_related[]"
-                            class="duallistbox"
                             multiple="multiple">
+
+                        @foreach($contentRelatedAll as $contentRelated)
+                            <option value="{{$contentRelated->id}}" selected>
+                                {{$contentRelated->title}}
+                            </option>
+                        @endforeach
+
+
                     </select>
 
                 </div>
@@ -506,7 +516,7 @@
                     <div class="select2-purple">
                         <select id="tags" name="tags[]"
                                 class="select2 select2-hidden-accessible"
-                                multiple=""
+                                multiple="multiple"
                                 data-placeholder="Selecciona las etiquetas"
                                 data-dropdown-css-class="select2-purple"
                                 style="width: 100%;"
@@ -602,7 +612,7 @@
                                type="checkbox"
                                id="is_visible_on_home"
                                name="is_visible_on_home"
-                               {{ old('is_visible_on_home', $model->is_visible_on_home) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_home', $model->is_visible_on_home) ? 'checked' : '' }}>
                         <label for="is_visible_on_home"
                                class="custom-control-label">
                             Visible en la página principal
@@ -614,7 +624,7 @@
                                type="checkbox"
                                id="is_visible_on_menu"
                                name="is_visible_on_menu"
-                               {{ old('is_visible_on_menu', $model->is_visible_on_menu) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_menu', $model->is_visible_on_menu) ? 'checked' : '' }}>
                         <label for="is_visible_on_menu"
                                class="custom-control-label">
                             Visible en el menú
@@ -626,7 +636,7 @@
                                type="checkbox"
                                id="is_visible_on_footer"
                                name="is_visible_on_footer"
-                               {{ old('is_visible_on_footer', $model->is_visible_on_footer) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_footer', $model->is_visible_on_footer) ? 'checked' : '' }}>
                         <label for="is_visible_on_footer"
                                class="custom-control-label">
                             Visible en el Footer
@@ -638,7 +648,7 @@
                                type="checkbox"
                                id="is_visible_on_sidebar"
                                name="is_visible_on_sidebar"
-                               {{ old('is_visible_on_sidebar', $model->is_visible_on_sidebar) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_sidebar', $model->is_visible_on_sidebar) ? 'checked' : '' }}>
                         <label for="is_visible_on_sidebar"
                                class="custom-control-label">
                             Visible en el Sidebar
@@ -650,7 +660,7 @@
                                type="checkbox"
                                id="is_visible_on_search"
                                name="is_visible_on_search"
-                               {{ old('is_visible_on_search', $model->is_visible_on_search) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_search', $model->is_visible_on_search) ? 'checked' : '' }}>
                         <label for="is_visible_on_search"
                                class="custom-control-label">
                             Visible en las búsquedas
@@ -662,7 +672,7 @@
                                type="checkbox"
                                id="is_visible_on_rss"
                                name="is_visible_on_rss"
-                               {{ old('is_visible_on_rss', $model->is_visible_on_rss) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_rss', $model->is_visible_on_rss) ? 'checked' : '' }}>
                         <label for="is_visible_on_rss"
                                class="custom-control-label">
                             Visible en las redes sociales
@@ -674,7 +684,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap"
                                name="is_visible_on_sitemap"
-                               {{ old('is_visible_on_sitemap', $model->is_visible_on_sitemap) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_sitemap', $model->is_visible_on_sitemap) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap"
                                class="custom-control-label">
                             Visible para el Sitemap General
@@ -686,7 +696,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap_news"
                                name="is_visible_on_sitemap_news"
-                               {{ old('is_visible_on_sitemap_news', $model->is_visible_on_sitemap_news) ? 'checked' : '' }}>
+                                {{ old('is_visible_on_sitemap_news', $model->is_visible_on_sitemap_news) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap_news"
                                class="custom-control-label">
                             Visible para el Sitemap de Noticias

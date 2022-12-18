@@ -133,12 +133,46 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
-     * Relación con los colaboradores asociados al contenido.
+     * Relación con el contenido que el actual asocia a otros.
      *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function contentsRelated()
     {
+        return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id')
+            ->where('contents.platform_id', $this->platform_id);
+    }
+
+    /**
+     * Relación con el contenido actial asociado a otros de cualquier
+     * plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function contentsRelatedAllPlatforms()
+    {
         return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id');
+    }
+
+    /**
+     * Relación con el contenido asociado al actual.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function contentsRelatedMe()
+    {
+        return $this->belongsToMany(Content::class, 'content_related', 'content_related_id', 'content_id')
+            ->where('contents.platform_id', $this->platform_id);
+    }
+
+    /**
+     * Relación con el contenido asociado al actual para cualquier plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function contentsRelatedMeAllPlatforms()
+    {
+        return $this->belongsToMany(Content::class, 'content_related', 'content_related_id', 'content_id');
     }
 
     /**

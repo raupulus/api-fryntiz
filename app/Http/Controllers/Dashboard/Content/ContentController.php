@@ -51,7 +51,6 @@ class ContentController extends BaseWithTableCrudController
 
         $contributorsIds = $model->contributors->pluck('id')->toArray();
 
-
         return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
             'users' => User::all(),
@@ -62,7 +61,7 @@ class ContentController extends BaseWithTableCrudController
             'categories' => $model->platform->categories,
             'modelCategoriesIds' => $model->categories->pluck('id')->toArray(),
             'modelTagsIds' => $model->tags->pluck('id')->toArray(),
-            //'platform' => $platform,
+            'contentRelatedAll' => collect(),
         ]);
     }
 
@@ -134,8 +133,10 @@ class ContentController extends BaseWithTableCrudController
     {
         $contributorsIds = $model->contributors->pluck('id')->toArray();
 
+        $contentRelated = $model->contentsRelated;
+        $contentRelatedMe = $model->contentsRelatedMe;
 
-        //dd($model->categoriesQuery(4)->pluck('id')->toArray());
+        $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
 
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
@@ -147,10 +148,7 @@ class ContentController extends BaseWithTableCrudController
             'categories' => $model->platform->categories,
             'modelCategoriesIds' => $model->categoriesQuery()->pluck('id')->toArray(),
             'modelTagsIds' => $model->tagsQuery()->pluck('id')->toArray(),
-
-
-            // TODO tabla "Tabla: content_available_categories" se quita,
-            // usar content_categories asociando a la categoría de la plataforma
+            'contentRelatedAll' => $contentRelatedAll,
         ]);
     }
 
@@ -206,27 +204,18 @@ class ContentController extends BaseWithTableCrudController
     public function ajaxGetSelectInfoFromPlataform(Request  $request,
                                                    Platform $platform)
     {
-        $search = $request->get('search');
         $contentId = $request->get('contentId');
         $content = Content::find($contentId);
 
+        $contentRelated = $content->contentsRelatedAllPlatforms()
+            ->where('contents.platform_id', $platform->id)
+            ->get();
 
-        $contentsRelated = $content ? $content->contentsRelated()->select(['content_related.id', 'title'])
-            ->orderByDesc('content_related.updated_at')
-            ->get() : [];
+        $contentRelatedMe = $content->contentsRelatedMeAllPlatforms()
+            ->where('contents.platform_id', $platform->id)
+            ->get();
 
-
-
-        $contents = $platform->contents()
-            ->select(['contents.id', 'contents.title'])
-            ->where('title', 'like', '%' . $search . '%');
-
-        if ($contentsRelated && !is_array($contentsRelated)) {
-            $contents->whereNotIn('contents.id', clone($contentsRelated)->pluck
-            ('id'));
-        }
-
-        $contents = $contents->get();
+        $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
 
         $tagsSelected = $content->tagsQuery()->select(['tags.id', 'tags.name'])->get();
         $categoriesSelected = $content->categoriesQuery()->select(['categories.id', 'categories.name'])->get();
@@ -234,15 +223,54 @@ class ContentController extends BaseWithTableCrudController
         $tags = $platform->tags()->select(['tags.id', 'tags.name'])->get();
         $categories = $platform->categories()->select(['categories.id', 'categories.name'])->get();
 
-        //dd($categoriesSelected, $categories->toArray());
-
         return JsonHelper::accepted([
-            'contents' => $contents,
-            'contentsRelated' => $contentsRelated,
+            'contentsRelated' => $contentRelatedAll,
             'tags' => $tags,
             'categories' => $categories,
             'tagsSelected' => $tagsSelected,
             'categoriesSelected' => $categoriesSelected,
+        ]);
+    }
+
+    /**
+     * Devuelve el contenido relacionado a partir del patrón de búsqueda
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Platform     $platform
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function ajaxGetContentRelatedFiltered(Request  $request,
+                                          Platform $platform)
+    {
+        $contentRelatedSearch = $request->get('content_related_search');
+        $contentId = $request->get('contentId');
+        $content = Content::find($contentId);
+
+
+        $contentRelated = $content->contentsRelated;
+        $contentRelatedMe = $content->contentsRelatedMe;
+        $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
+
+
+        $contents = $platform->contents()
+            ->select(['contents.id', 'contents.title']);
+
+        if ($contentRelatedAll && $contentRelatedAll->count()) {
+            $contents->whereNotIn('contents.id', clone($contentRelatedAll)->pluck
+            ('id'));
+        }
+
+        if ($contentRelatedSearch) {
+            $contents->where('contents.title', 'like', '%' .
+                $contentRelatedSearch . '%');
+        }
+
+        $contents = $contents->limit(20)->get();
+
+        return JsonHelper::accepted([
+            'contents' => $contents,
+            'contentsRelated' => $contentRelatedAll,
         ]);
     }
 }

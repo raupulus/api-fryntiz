@@ -199,6 +199,9 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             Route::match(['put', 'patch', 'post'], '/get/select/info/from/{platform}/platform', [ContentController::class, 'ajaxGetSelectInfoFromPlataform'])
                 ->name('dashboard.content.ajax.get.select.info.from.platform');
 
+            Route::match(['put', 'patch', 'post'], '/get/{platform}/content-related/filtered', [ContentController::class, 'ajaxGetContentRelatedFiltered'])
+                ->name('dashboard.content.ajax.get.content.related.filtered');
+
 
             Route::post('/table/get', [ContentController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.content.ajax.table.get');
