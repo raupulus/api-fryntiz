@@ -207,18 +207,24 @@ class ContentController extends BaseWithTableCrudController
         $contentId = $request->get('contentId');
         $content = Content::find($contentId);
 
-        $contentRelated = $content->contentsRelatedAllPlatforms()
-            ->where('contents.platform_id', $platform->id)
-            ->get();
+        if ( $content ) {
+            $contentRelated = $content->contentsRelatedAllPlatforms()
+                ->where('contents.platform_id', $platform->id)
+                ->get();
 
-        $contentRelatedMe = $content->contentsRelatedMeAllPlatforms()
-            ->where('contents.platform_id', $platform->id)
-            ->get();
+            $contentRelatedMe = $content->contentsRelatedMeAllPlatforms()
+                ->where('contents.platform_id', $platform->id)
+                ->get();
+        } else {
+            $contentRelated = collect();
+            $contentRelatedMe = collect();
+        }
 
         $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
 
-        $tagsSelected = $content->tagsQuery()->select(['tags.id', 'tags.name'])->get();
-        $categoriesSelected = $content->categoriesQuery()->select(['categories.id', 'categories.name'])->get();
+        $tagsSelected = $content ? $content->tagsQuery()->select(['tags.id', 'tags.name'])->get() : collect();
+        $categoriesSelected = $content ? $content->categoriesQuery()->select
+        (['categories.id', 'categories.name'])->get() : collect();
 
         $tags = $platform->tags()->select(['tags.id', 'tags.name'])->get();
         $categories = $platform->categories()->select(['categories.id', 'categories.name'])->get();
@@ -248,8 +254,8 @@ class ContentController extends BaseWithTableCrudController
         $content = Content::find($contentId);
 
 
-        $contentRelated = $content->contentsRelated;
-        $contentRelatedMe = $content->contentsRelatedMe;
+        $contentRelated = $content ? $content->contentsRelated : collect();
+        $contentRelatedMe = $content ? $content->contentsRelatedMe : collect();
         $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
 
 

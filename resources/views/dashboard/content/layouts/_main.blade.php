@@ -118,8 +118,8 @@
                     <select id="platform_id" name="platform_id"
                             class="custom-select rounded-0">
                         @foreach($platforms as $platform)
-                            @php($checked = (int)old('platform_id', $model->platform_id) === $platform->id)
-                            @php($checked = $checked ?? $model->platform_id === $platform->id)
+                            @php($checked = (int)old('platform_id', $model->platform_id) ===
+                            $platform->id)
 
                             <option value="{{ $platform->id }}"
                                     {{$checked ? 'selected' : ''}}>

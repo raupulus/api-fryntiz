@@ -225,7 +225,7 @@
                     },
                     body:JSON.stringify({
                         content_related_search:search,
-                        contentId:contentId
+                        contentId:contentId,
                     })
 
                 }).then(response => response.json())
