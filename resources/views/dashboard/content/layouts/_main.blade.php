@@ -35,15 +35,16 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fa fa-heading"></i>
-                        </span>
+                            <span class="input-group-text">
+                                <i class="fa fa-heading"></i>
+                            </span>
                         </div>
 
                         <input id="title"
                                type="text"
                                class="form-control"
                                name="title"
+                               data-slug_provider="title"
                                minlength="5"
                                maxlength="255"
                                required
@@ -53,6 +54,7 @@
                 </div>
 
                 {{-- Slug TODO:check en tiempo real, poner título si está vacío al perder focus del campo título--}}
+
                 {{-- Slug TODO:comprobar si está bien formado en tiempo real--}}
                 <div class="form-group">
                     <label for="slug">
@@ -70,6 +72,7 @@
                                type="text"
                                class="form-control"
                                name="slug"
+                               data-sluggable="title"
                                required
                                minlength="3"
                                maxlength="255"

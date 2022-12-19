@@ -4,3 +4,6 @@
 //require('./functions');
 
 //import * as Functions from './functions';
+
+// Slugify
+

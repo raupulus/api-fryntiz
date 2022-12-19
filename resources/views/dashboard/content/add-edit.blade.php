@@ -181,8 +181,7 @@
             });
 
 
-            // Fuerzo seleccionar todo el contenido que debería estar
-            //  seleccionado
+            // Fuerzo seleccionar todo el contenido que debería estar seleccionado
             if (document.getElementById('contentRelated')) {
                 let nd = document.querySelectorAll('#contentRelated option');
                 if (nd && nd.length) {
@@ -427,6 +426,26 @@
             // Inicializo editor summernote
             $('#summernote').summernote(editorSummernoteOptions);
         });
+
+        // Set title form to slug
+        let title = document.querySelector('input[data-slug_provider="title"]');
+        let slug = document.querySelector('input[data-sluggable="title"]');
+
+        console.log('title:', title, slug);
+
+        if (title && slug) {
+            title.addEventListener('focusout', () => {
+                console.log('event focusout');
+                // TODO check if slug is empty
+
+                if (slug.value == '') {
+                    slug.value = slugify(title.value);
+                }
+
+            });
+        }
     </script>
+
+
 
 @stop

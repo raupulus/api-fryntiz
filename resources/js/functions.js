@@ -17,6 +17,22 @@ function toggle(selector, name = 'hidden') {
 }
 
 /**
+ * Limpia una cadena de texto para que sea válida como slug/path uri.
+ *
+ * @param text
+ * @returns {string}
+ */
+function slugify(text) {
+    return text.toString().toLowerCase().trim()
+        .normalize('NFD') 				 // separate accent from letter
+        .replace(/[\u0300-\u036f]/g, '') // remove all separated accents
+        .replace(/\s+/g, '-')            // replace spaces with -
+        .replace(/&/g, '-and-')          // replace & with 'and'
+        .replace(/[^\w\-]+/g, '')        // remove all non-word chars
+        .replace(/\-\-+/g, '-')          // replace multiple '-' with single '-'
+}
+
+/**
  * Prepara la previsualización de imágenes que se van a subir en
  * campos del formulario.
  *
