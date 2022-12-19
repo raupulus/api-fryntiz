@@ -45,12 +45,14 @@
                             Datos Principales
                         </a>
 
-                        <a class="nav-item nav-link" id="nav-profile-tab"
-                           data-toggle="tab" href="#nav-profile" role="tab"
-                           aria-controls="nav-profile"
-                           aria-selected="false">
-                            Páginas
-                        </a>
+                        @if ($model->id)
+                            <a class="nav-item nav-link" id="nav-profile-tab"
+                               data-toggle="tab" href="#nav-profile" role="tab"
+                               aria-controls="nav-profile"
+                               aria-selected="false">
+                                Páginas
+                            </a>
+                        @endif
 
                         <a class="nav-item nav-link" id="nav-contact-tab"
                            data-toggle="tab" href="#nav-contact" role="tab"
@@ -132,7 +134,10 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             /*** Selector datetimepicker programar publicación ***/
-            $('#programated_at').datetimepicker({icons:{time:'far fa-clock'}});
+            $('#programated_at').datetimepicker({
+                minDate: new Date(),
+                icons:{time:'far fa-clock'}
+            });
 
             /*** Select 2 ***/
             $('.select2').select2();
@@ -145,12 +150,12 @@
             var dualListBox = $('.duallistbox').bootstrapDualListbox(bootstrapDualListboxOptions);
 
             const dualListBoxContentRelated = $('#contentRelated').multiSelect({
-                selectableHeader: "<div class='multiselect-header'>Disponible</div>",
-                selectionHeader: "<div " +
+                selectableHeader:"<div class='multiselect-header'>Disponible</div>",
+                selectionHeader:"<div " +
                     "class='multiselect-header'>Seleccionado</div>",
-                selectableFooter: "",
-                selectionFooter: "",
-                beforeInit:function(algo){
+                selectableFooter:"",
+                selectionFooter:"",
+                beforeInit:function(algo) {
                     console.log(algo);
                 },
                 afterInit:function(container) {
@@ -160,7 +165,7 @@
 
                 afterSelect:function(values) {
 
-                    if (values && typeof values === 'object') {
+                    if(values && typeof values === 'object') {
                         Array.from(values).forEach(value => {
                             console.log('Valor', value);
                             let option = document.querySelector('#contentRelated option[value="' + value + '"]');
@@ -170,7 +175,7 @@
 
                 },
                 afterDeselect:function(values) {
-                    if (values && typeof values === 'object') {
+                    if(values && typeof values === 'object') {
                         Array.from(values).forEach(value => {
                             console.log('Valor', value);
                             let option = document.querySelector('#contentRelated option[value="' + value + '"]');
@@ -182,9 +187,9 @@
 
 
             // Fuerzo seleccionar todo el contenido que debería estar seleccionado
-            if (document.getElementById('contentRelated')) {
+            if(document.getElementById('contentRelated')) {
                 let nd = document.querySelectorAll('#contentRelated option');
-                if (nd && nd.length) {
+                if(nd && nd.length) {
                     Array.from(nd).forEach((ele) => {
                         ele.setAttribute('selected', 'selected');
                     });
@@ -212,7 +217,6 @@
                 let contentId = "{{$model->id}}";
 
 
-
                 fetch(url, {
                     method:'POST',
                     headers:{
@@ -230,17 +234,17 @@
                             let node = document.getElementById('contentRelated');
 
                             /*
-                            while (node.firstChild) {
-                                node.removeChild(node.firstChild);
-                            }
-                            */
+                             while (node.firstChild) {
+                             node.removeChild(node.firstChild);
+                             }
+                             */
 
                             let nodesNotSelected = node.querySelectorAll('option:not(option[selected="selected"])');
 
                             console.log(nodesNotSelected);
 
                             // Limpio nodos no seleccionados
-                            if (nodesNotSelected.length) {
+                            if(nodesNotSelected.length) {
                                 nodesNotSelected.forEach(node => {
                                     node.remove();
                                 });
@@ -249,11 +253,11 @@
 
                             data.contents.forEach(content => {
                                 let oldNode = node.querySelector
-                                ('option[value="' + content.id +'"]');
+                                ('option[value="' + content.id + '"]');
 
                                 console.log('oldNode:', oldNode);
 
-                                if (!oldNode) {
+                                if(!oldNode) {
                                     let option = document.createElement('option');
                                     option.value = content.id;
                                     option.innerText = content.title;
@@ -264,14 +268,14 @@
                             });
 
                             /*
-                            data.contentsRelated.forEach(content => {
-                                let option = document.createElement('option');
-                                option.value = content.id;
-                                option.innerText = content.title;
-                                option.selected = true;
+                             data.contentsRelated.forEach(content => {
+                             let option = document.createElement('option');
+                             option.value = content.id;
+                             option.innerText = content.title;
+                             option.selected = true;
 
-                                node.appendChild(option);
-                            });
+                             node.appendChild(option);
+                             });
 
                              */
                         }
@@ -357,7 +361,7 @@
                     node.innerHTML = '';
 
                     contentsRelated.forEach(content => {
-                        if (parseInt(content.id) !== currentContentId) {
+                        if(parseInt(content.id) !== currentContentId) {
                             let option = document.createElement('option');
                             option.value = content.id;
                             option.innerText = content.title;
@@ -388,7 +392,7 @@
                             },
                             body:JSON.stringify({
                                 contentId:"{{$model->id}}",
-                                platformId: platformId
+                                platformId:platformId
                             })
                         })
                         .then(response => response.json())
@@ -433,19 +437,17 @@
 
         console.log('title:', title, slug);
 
-        if (title && slug) {
+        if(title && slug) {
             title.addEventListener('focusout', () => {
                 console.log('event focusout');
                 // TODO check if slug is empty
 
-                if (slug.value == '') {
+                if(slug.value == '') {
                     slug.value = slugify(title.value);
                 }
 
             });
         }
     </script>
-
-
 
 @stop
