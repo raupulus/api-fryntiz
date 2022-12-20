@@ -10,6 +10,10 @@
 @section('title', 'Añadir ' . $model::getModelTitles()['singular'])
 
 @section('content_header')
+    <script>
+        window.urlContentCreateTag = "{{ route('dashboard.content.ajax.tag.create') }}";
+    </script>
+
     <h1>
         <i class="fas fa-globe"></i>
         {{\Illuminate\Support\Str::ucfirst($model::getModelTitles()['singular'])}}
@@ -284,7 +288,6 @@
                         dualListBoxContentRelated.multiSelect('refresh');
 
                     });
-
 
             }
 

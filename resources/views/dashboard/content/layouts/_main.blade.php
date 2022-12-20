@@ -485,7 +485,7 @@
                     <input class="form-control mb-2"
                            placeholder="Buscar contenido..."
                            value=""
-                           id="searchContentRelated" />
+                           id="searchContentRelated"/>
 
                     <select id="contentRelated"
                             name="contents_related[]"
@@ -542,10 +542,64 @@
                         </select>
 
                         <div class="mt-3 text-center">
-                            <span class="btn btn-sm btn-primary">
+                            <span class="btn btn-sm btn-primary"
+                                  data-toggle="modal"
+                                  data-target=".modal-create-tag"  >
                                 <i class="fa fa-plus"></i>
                                 Crear etiqueta
                             </span>
+
+                            <div id="modal-create-tag"
+                                 class="modal fade modal-create-tag"
+                                 tabindex="-1" role="dialog"
+                                 aria-labelledby="modal-create-tag-label"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="tag-create">
+                                                        Añadir etiquetas
+                                                    </label>
+
+                                                    <p>
+                                                        <small>
+                                                            Las etiquetas se
+                                                            separan por comas
+                                                            para añadir varias
+                                                        </small>
+                                                    </p>
+
+                                                    <input id="create-tag-input"
+                                                           class="form-control m-auto w-75"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <p class="msg-success">
+                                                    Error/Success
+                                                </p>
+                                            </div>
+
+                                            {{-- Añado badges con las
+                                            etiquetas que estoy creando --}}
+                                            <div id="box-tags-created"
+                                                 class="col-12">
+                                            </div>
+
+                                            <div class="col-12">
+                                                <span id="create-tag-button"
+                                                      class="btn btn-sm
+                                                btn-success m-2">
+                                                        Añadir
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

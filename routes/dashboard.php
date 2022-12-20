@@ -209,6 +209,9 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ## Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [ContentController::class, 'ajaxTableActions'])
                 ->name('dashboard.content.ajax.table.actions');
+
+            Route::post('/tag/create', [ContentController::class, 'ajaxTagCreate'])
+                ->name('dashboard.content.ajax.tag.create');
         });
     });
 ############################################################

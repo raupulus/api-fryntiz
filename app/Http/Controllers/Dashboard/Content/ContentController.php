@@ -9,9 +9,11 @@ use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
+use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use JsonHelper;
 
 /**
@@ -278,5 +280,45 @@ class ContentController extends BaseWithTableCrudController
             'contents' => $contents,
             'contentsRelated' => $contentRelatedAll,
         ]);
+    }
+
+    public function ajaxTagCreate(Request $request)
+    {
+        $tagsName = $request->get('tagNames');
+        $platformId = $request->get('platform_id');
+        $platform = Platform::find($platformId);
+
+        if (!$platform) {
+            return JsonHelper::error('Plataforma no encontrada');
+        }
+
+        $tags = [];
+
+        $slugs = $platform->tags()->pluck('slug')->toArray();
+
+        foreach ($tagsName as $tagName) {
+            $name = trim($tagName);
+            $slug = Str::slug($tagName);
+
+            if (!in_array($slug, $slugs)) {
+                $tag = Tag::firstOrCreate([
+                    'slug' => $slug,
+                ], [
+                    'name' => $name,
+                ]);
+
+                $tags[] = $tag;
+
+                PlatformTag::firstOrCreate([
+                    'platform_id' => $platformId,
+                    'tag_id' => $tag->id,
+                ]);
+            }
+        }
+
+        return JsonHelper::accepted([
+            'tags' => $tags,
+        ]);
+
     }
 }

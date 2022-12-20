@@ -9,6 +9,11 @@ class PlatformTag extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'platform_id',
+        'tag_id',
+    ];
+
     /**
      * Relación con la tabla de etiquetas para las plataformas.
      *
