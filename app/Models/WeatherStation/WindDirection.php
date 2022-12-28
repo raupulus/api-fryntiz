@@ -54,7 +54,7 @@ class WindDirection extends BaseWheaterStation
             return 'W';
         } elseif ($grades >= 292.5 && $grades < 337.5) {
             return 'NW';
-        } elseif ($grades >= 337.5 && $grades < 360) {
+        } elseif ($grades >= 337.5 && $grades <= 360) {
             return 'N';
         } else {
            return 'N/A';
