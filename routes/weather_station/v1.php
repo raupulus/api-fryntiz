@@ -71,6 +71,15 @@ Route::group(['prefix' => 'table'], function () {
 ######################################################
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    ## Subida de datos por estación meteorológica. // TODO: Cambiar a POST y
+    # mover a parte privada de la api
+    Route::any('/generic/add/json', [WeatherStation\GenericWSController::class,
+        'add'])
+        ->middleware('cors.allow.all')
+        ->name('api.wheaterstation.v1.generic.add.json');
+
+
+
     ## Añadir nuevo registro de humedad.
     Route::post('/humidity/add', 'App\Http\Controllers\Api\WeatherStation\HumidityController@add');
 
