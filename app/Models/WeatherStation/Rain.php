@@ -3,21 +3,21 @@
 namespace App\Models\WeatherStation;
 
 /**
- * Class Winter
+ * Class Rain
  *
  * @package App\Models\WeatherStation
  */
-class Winter extends BaseWheaterStation
+class Rain extends BaseWheaterStation
 {
     protected $fillable = [
-        'speed',
-        'average',
-        'min',
-        'max',
+        'rain',
+        'rain_intensity',
+        'rain_month',
+        'moisture',
         'created_at'
     ];
 
-    protected $table = 'meteorology_winter';
+    protected $table = 'meteorology_rain';
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
@@ -27,10 +27,10 @@ class Winter extends BaseWheaterStation
     public static function getTableHeads()
     {
         return [
-            'speed' => 'Velocidad',
-            'average' => 'Media',
-            'min' => 'Mínimo',
-            'max' => 'Máximo',
+            'rain' => 'Lluvia (mm)',
+            'rain_intensity' => 'mm/h',
+            'rain_month' => 'Mensual (mm)',
+            'moisture' => 'Humedad (g/m3)',
             'created_at' => 'Instante'
         ];
     }
@@ -41,9 +41,11 @@ class Winter extends BaseWheaterStation
     public static function all($columns = ['*'])
     {
         $query = parent::all();
-        $query::whereNotNull('average')
+
+        $query::whereNotNull('rain')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return $query;
     }
 }

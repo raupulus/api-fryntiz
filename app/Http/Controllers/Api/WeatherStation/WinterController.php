@@ -12,7 +12,7 @@ use function response;
  */
 class WinterController extends BaseWheaterStationController
 {
-    protected $model = '\App\Models\WeatherStation\Winter';
+    protected $model = '\App\Models\WeatherStation\Wind';
 
     /**
      * Reglas de validación a la hora de insertar datos.

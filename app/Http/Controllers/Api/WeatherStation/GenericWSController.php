@@ -7,7 +7,7 @@ use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\WindDirection;
-use App\Models\WeatherStation\Winter;
+use App\Models\WeatherStation\Wind;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -102,7 +102,7 @@ class GenericWSController
             $windMinSpeed = $request->get('wind_min_speed');
             $windMaxSpeed = $request->get('wind_max_speed');
 
-            $stored['winter'] = new Winter([
+            $stored['winter'] = new Wind([
                 'speed' => $windSpeed,
                 'average' => $windAverageSpeed,
                 'min' => $windMinSpeed,
@@ -116,10 +116,27 @@ class GenericWSController
 
         if ($request->has('rain')) {
             $rain = $request->get('rain');
+            $moisture = $request->get('moisture');
 
-            // TODO: Crear modelo Rain
+            // TODO!!! mirar si lo calculo aquí con el registro anterior o si
+            // esto es mejor traerlo desde el dispositivo
+            $rain_intensity = $request->get('rain_intensity');
+            $rain_month = $request->get('rain_month');
 
-            Log::debug('Rain: ' . $rain);
+            $stored['rain'] = new Pressure([
+                'user_id' => auth()->id(),
+                'hardware_device_id' => $hardwareDevice->id,
+                'rain' => $rain,
+                'rain_intensity' => $rain_intensity,
+                'rain_month' => $rain_month,
+                'moisture' => $moisture,
+            ]);
+
+            //Log::debug('Rain: ' . $rain);
+
+            $stored['rain']->hardware_device_id = $hardwareDevice->id;
+            $stored['rain']->user_id = auth()->id();
+            $stored['rain']->save();
         }
 
         if ($request->has('pressure')) {
@@ -137,13 +154,6 @@ class GenericWSController
             $stored['pressure']->save();
         }
 
-        if ($request->has('moisture')) {
-            $moisture = $request->get('moisture');
-
-            // TODO: Crear modelo Moisture
-            Log::debug('moisture: ' . $moisture);
-
-        }
 
         //Log::debug($request->all());
 

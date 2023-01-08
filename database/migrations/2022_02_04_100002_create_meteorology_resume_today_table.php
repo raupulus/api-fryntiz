@@ -96,6 +96,30 @@ class CreateMeteorologyResumeTodayTable extends Migration
                 ->default(0)
                 ->comment('Racha mínima del viento en km/h');
 
+            $table->integer('lightning')
+                ->nullable()
+                ->default(0)
+                ->comment('Cantidad de rayos');
+            $table->decimal('lightning_distance', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Distancia media de los rayos');
+            $table->decimal('lightning_intensity', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Intensidad media de los rayos');
+            $table->decimal('rain', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Lluvia acumulada en mm');
+            $table->decimal('rain_intensity', 10, 2)
+                ->nullable()
+                ->default(0)
+                ->comment('Intensidad de la lluvia en mm/h');
+
+            $table->decimal('rain', 11, 1)
+                ->comment('Agua registrada para el día');
+
             $table->timestamp('created_at')->nullable();
         });
 

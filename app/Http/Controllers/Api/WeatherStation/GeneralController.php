@@ -14,7 +14,7 @@ use App\Models\WeatherStation\Uva;
 use App\Models\WeatherStation\Uvb;
 use App\Models\WeatherStation\UvIndex;
 use App\Models\WeatherStation\WindDirection;
-use App\Models\WeatherStation\Winter;
+use App\Models\WeatherStation\Wind;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -101,17 +101,17 @@ class GeneralController
                 ->limit(1)
                 ->toSql();
 
-            $wind_average = Winter::select('meteorology_winter.average as wind_average')
+            $wind_average = Wind::select('meteorology_winter.average as wind_average')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
 
-            $wind_min = Winter::select('meteorology_winter.min as wind_min')
+            $wind_min = Wind::select('meteorology_winter.min as wind_min')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
 
-            $wind_max = Winter::select('meteorology_winter.max as wind_max')
+            $wind_max = Wind::select('meteorology_winter.max as wind_max')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
