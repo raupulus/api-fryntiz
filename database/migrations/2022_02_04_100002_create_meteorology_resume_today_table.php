@@ -117,9 +117,6 @@ class CreateMeteorologyResumeTodayTable extends Migration
                 ->default(0)
                 ->comment('Intensidad de la lluvia en mm/h');
 
-            $table->decimal('rain', 11, 1)
-                ->comment('Agua registrada para el día');
-
             $table->timestamp('created_at')->nullable();
         });
 
