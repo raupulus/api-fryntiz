@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\WeatherStation;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Pressure;
+use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\WindDirection;
 use App\Models\WeatherStation\Wind;
@@ -123,9 +124,7 @@ class GenericWSController
             $rain_intensity = $request->get('rain_intensity');
             $rain_month = $request->get('rain_month');
 
-            $stored['rain'] = new Pressure([
-                'user_id' => auth()->id(),
-                'hardware_device_id' => $hardwareDevice->id,
+            $stored['rain'] = new Rain([
                 'rain' => $rain,
                 'rain_intensity' => $rain_intensity,
                 'rain_month' => $rain_month,
