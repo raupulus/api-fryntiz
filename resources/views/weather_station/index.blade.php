@@ -18,7 +18,7 @@
 @section('content')
 
     <nav
-        class="flex items-center justify-between flex-wrap bg-white py-4 px-4 shadow border-solid border-t-2 border-blue-700">
+            class="flex items-center justify-between flex-wrap bg-white py-4 px-4 shadow border-solid border-t-2 border-blue-700">
 
         <div class="menu w-full block flex-grow flex items-center w-auto">
             <div class="text-md font-bold text-blue-700 flex-grow text-center">
@@ -32,6 +32,24 @@
             </div>
         </div>
     </nav>
+
+
+    {{--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.14.2/echo.min.js"
+            integrity="sha512-lK5u2zmRy0szod4RvoQ0nON1KBW/w0DZ0/YQB0rc1dEQplBFdFohAmSzyVUFjxj/WwiSdP6gNrZ1tZp+PKLedA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        window.Echo = new Echo({
+            broadcaster:'pusher',
+            key:'abc123',
+            wsHost:window.location.hostname,
+            wsPort:6001,
+            forceTLS:false,
+            disableStats:false,
+        });
+    </script>
+    --}}
 
 
     <div class="leading-normal tracking-normal"
@@ -116,15 +134,15 @@
                 <v-chipiona-weather-component :api="{{json_encode([
                     'baseUrl' => config('app.url'),
                     'path' => 'api/weatherstation/v1/resume'
-                ], true)}}" ></v-chipiona-weather-component>
+                ], true)}}"></v-chipiona-weather-component>
             </div>
 
             <div class="container max-w-5xl mx-auto mt-1 mb-4 text-center">
                 <a href="https://gitlab.com/fryntiz/vue-component-weather-chipiona"
                    class="block inline-block rounded underline text-blue-500
                    text-sm"
-                   target="_blank" >
-                        Ver el desarrollo/código de mi componente Vue
+                   target="_blank">
+                    Ver el desarrollo/código de mi componente Vue
                 </a>
             </div>
         </section>
@@ -139,7 +157,7 @@
                         <div class="container max-w-5xl mx-auto m-4">
                             <v-table-component title="{{$title}}"
                                                csrf="{{csrf_token()}}"
-                                               url="{{$url}}" />
+                                               url="{{$url}}"/>
                         </div>
                     </section>
                 </div>

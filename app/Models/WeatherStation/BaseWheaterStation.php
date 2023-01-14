@@ -2,7 +2,9 @@
 
 namespace App\Models\WeatherStation;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use function array_key_exists;
 use function array_keys;
 use function response;
@@ -92,5 +94,115 @@ class BaseWheaterStation extends Model
             ->orderBy('created_at', 'DESC')
             ->get();
         return $query;
+    }
+
+    /**
+     * Obtiene el valor medio en las horas recibidas, esta consulta se hace en caché.
+     *
+     * El caché es de unos minutos, tiene sentido al ser una consulta
+     * recurrente entre periodos con valores inmutables.
+     *
+     * @param int $hours
+     *
+     * @return mixed
+     */
+    public function averageLast(int $hours)
+    {
+        $slug = $this->slug;
+        $fields = $this->apiFields;
+
+        $now = Carbon::now()
+            ->setMinute(0)
+            ->setSecond(0)
+            ->setMicrosecond(0);
+
+        $lastHours = (clone($now))->subHours($hours);
+        $initialHours = (clone($now))->subHours($hours - 1);
+
+        $nowString = $initialHours->format('Y-m-d-H-i-s');
+        $keyName = 'ws-' . $this->slug . '-hours-' . $hours .'_' . $nowString;
+
+
+        $query = self::where('created_at', '>=', $lastHours)
+            ->where('created_at', '<=', $initialHours);
+
+        foreach ($fields as $field) {
+            $query->addSelect($query->raw('ROUND( AVG(' . $field . ')::numeric, 1 ) as ' . $field));
+        }
+
+        $rest = $query->first();
+
+
+
+
+
+
+
+        \Log::info($rest);
+
+
+
+
+
+
+        return $rest->toArray();
+
+    }
+
+    /**
+     * Preparamos y devolvemos los datos para la respuesta de la api.
+     * Estos datos constan del valor actual para la lectura del registro en
+     * el que estamos y además un histórico de las últimas 4 horas hacia atrás.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function prepareApiResponse()
+    {
+        $generic = [
+            'name' => $this->name,
+            'slug' => $this->slug,
+        ];
+
+        $now = Carbon::now()->setMinute(0)->setSecond(0)->setMicrosecond(0);
+
+        $historical = collect([
+            collect(array_merge($generic,
+                $this->averageLast(1),
+                [
+                    'last_hours' => 1, // 1 - Resumen de la última hora
+                    'created_at' => (clone($now))->subHours(1)->format('Y-m-d H:i:s'),
+                ])),
+            collect(array_merge($generic,
+                $this->averageLast(2),
+
+                [
+                    'last_hours' => 2, // 2 - Resumen de las 2 últimas horas
+                    'created_at' => (clone($now))->subHours(2)->format('Y-m-d H:i:s'),
+                ])),
+            collect(array_merge($generic,
+                $this->averageLast(3),
+                [
+                    'last_hours' => 3, // 3 - Resumen de las 3 últimas horas
+                    'created_at' => (clone($now))->subHours(3)->format('Y-m-d H:i:s'),
+                ])),
+            collect(array_merge($generic,
+                $this->averageLast(4),
+                [
+                    'last_hours' => 4,// 4 - Resumen de las 4 últimas horas
+                    'created_at' => (clone($now))->subHours(4)->format('Y-m-d H:i:s'),
+                ])),
+        ]);
+
+        $datas = [];
+
+        foreach ($this->apiFields as $field)
+        {
+            $datas[$field] = round($this->{$field}, 1);
+        }
+
+        return collect(array_merge($generic, $datas, [
+            'created_at' => $this->created_at,
+            'historical' => $historical,
+        ]));
     }
 }

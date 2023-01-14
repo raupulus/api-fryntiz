@@ -15,8 +15,22 @@ use App\Http\Controllers\Api\WeatherStation;
 Route::match(['get', 'options'], '/resume', 'App\Http\Controllers\Api\WeatherStation\GeneralController@resume')
     ->middleware('cors.allow.all');
 
+Route::match(['get', 'options'], '/temperature',
+    [WeatherStation\TemperatureController::class, 'getPrepareData'])
+    ->middleware('cors.allow.all');
+
+Route::match(['get', 'options'], '/humidity',
+    [WeatherStation\HumidityController::class, 'getPrepareData'])
+    ->middleware('cors.allow.all');
+
+
+
 ## Grupo de rutas para búsquedas de resultados en tablas.
 Route::group(['prefix' => 'table'], function () {
+
+
+
+
     ## Obtengo todos los datos de temperatura.
     Route::match(['post', 'options'],'/temperature', [WeatherStation\TemperatureController::class, 'getTableDataSearchJson'])
         ->name('api.wheaterstation.v1.table.temperature');

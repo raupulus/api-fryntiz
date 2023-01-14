@@ -242,4 +242,23 @@ abstract class BaseWheaterStationController extends Controller
         $valuesNull = array_fill_keys(array_keys($rules), null);
         return array_merge($valuesNull, $validate);
     }
+
+
+    public function getPrepareData()
+    {
+
+        // TODO: Replantear "value" para obtener todos los tipos de datos
+
+        $model = $this->model::whereNotNull('value')
+            ->orderBy('created_at', 'DESC')
+            ->first();
+
+        $datas = null;
+
+        if ($model) {
+            $datas = $model->prepareApiResponse();
+        }
+
+        return \JsonHelper::success(['datas' => $datas]);
+    }
 }
