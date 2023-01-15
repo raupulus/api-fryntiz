@@ -120,33 +120,20 @@ class BaseWheaterStation extends Model
         $initialHours = (clone($now))->subHours($hours - 1);
 
         $nowString = $initialHours->format('Y-m-d-H-i-s');
-        $keyName = 'ws-' . $this->slug . '-hours-' . $hours .'_' . $nowString;
+        $keyName = 'ws-' . $slug . '-hours-' . $hours .'_' . $nowString;
 
+        $rest = Cache::remember($keyName, 600, function () use ($fields, $lastHours, $initialHours) {
+            $query = self::where('created_at', '>=', $lastHours)
+                ->where('created_at', '<=', $initialHours);
 
-        $query = self::where('created_at', '>=', $lastHours)
-            ->where('created_at', '<=', $initialHours);
+            foreach ($fields as $field) {
+                $query->addSelect($query->raw('ROUND( AVG(' . $field . ')::numeric, 1 ) as ' . $field));
+            }
 
-        foreach ($fields as $field) {
-            $query->addSelect($query->raw('ROUND( AVG(' . $field . ')::numeric, 1 ) as ' . $field));
-        }
-
-        $rest = $query->first();
-
-
-
-
-
-
-
-        \Log::info($rest);
-
-
-
-
-
+            return $query->first();
+        });
 
         return $rest->toArray();
-
     }
 
     /**
@@ -200,9 +187,42 @@ class BaseWheaterStation extends Model
             $datas[$field] = round($this->{$field}, 1);
         }
 
-        return collect(array_merge($generic, $datas, [
+        $result = collect(array_merge($generic, $datas, [
             'created_at' => $this->created_at,
             'historical' => $historical,
         ]));
+
+        // TODO: Esto es temporal, para mezclar dirección del viento con su
+        // histórico dentro de la llamada para velocidad del viento.
+        if ($result && $result['slug'] && $result['slug'] === 'wind') {
+            $windDirection = WindDirection::whereNotNull('direction')
+                ->orderBy('created_at', 'DESC')
+                ->first();
+
+            if ($windDirection) {
+                $result['direction'] = $windDirection->direction;
+                $result['direction_grades'] = $windDirection->grades;
+            }
+
+            $windDirectionDatas = $windDirection->prepareApiResponse();
+
+            if ($windDirectionDatas && $windDirectionDatas['historical'] &&
+                count($windDirectionDatas['historical'])) {
+
+                foreach ($windDirectionDatas['historical'] as $key =>  $historical) {
+
+                    if (isset($result['historical'][$key])) {
+
+                        $result['historical'][$key]['direction'] = WindDirection::getDirection($historical['grades']);
+                        $result['historical'][$key]['direction_grades'] = $historical['grades'];
+                    }
+                }
+
+            }
+        }
+
+
+        return $result;
+
     }
 }

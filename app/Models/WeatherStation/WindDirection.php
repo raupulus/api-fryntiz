@@ -2,6 +2,8 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStationUpdateEvent;
+
 /**
  * Class WindDirection
  *
@@ -17,6 +19,34 @@ class WindDirection extends BaseWheaterStation
     ];
 
     protected $table = 'meteorology_wind_direction';
+
+    /**
+     * @var string[] Campos que se pueden devolver por api.
+     */
+    public $apiFields = [
+        'grades',
+    ];
+
+    /**
+     * @var string Nombre de la variable.
+     */
+    public $slug = 'wind_direction';
+
+    /**
+     * Nombre amigable para la representación del modelo.
+     *
+     * @var string
+     */
+    public $name = 'Dirección del viento';
+
+
+    // Esto se realiza dentro del modelo para la velocidad del viento.
+    // Por ahora no se contempla tener un evento para la dirección del viento.
+    /*
+    protected $dispatchesEvents = [
+        'created' => WeatherStationUpdateEvent::class,
+    ];
+    */
 
     /**
      * Devuelve todos los elementos del modelo.

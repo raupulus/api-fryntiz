@@ -2,6 +2,8 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStationUpdateEvent;
+
 /**
  * Class Wind
  *
@@ -18,6 +20,32 @@ class Wind extends BaseWheaterStation
     ];
 
     protected $table = 'meteorology_winter';
+
+    /**
+     * @var string[] Campos que se pueden devolver por api.
+     */
+    public $apiFields = [
+        'speed',
+        'average',
+        'min',
+        'max',
+    ];
+
+    /**
+     * @var string Nombre de la variable.
+     */
+    public $slug = 'wind';
+
+    /**
+     * Nombre amigable para la representación del modelo.
+     *
+     * @var string
+     */
+    public $name = 'Viento';
+
+    protected $dispatchesEvents = [
+        'created' => WeatherStationUpdateEvent::class,
+    ];
 
     /**
      * Devuelve un array con todos los títulos de una tabla.

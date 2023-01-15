@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Http\Controllers\Controller;
+use App\Models\WeatherStation\WindDirection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use function array_keys;
@@ -246,18 +247,29 @@ abstract class BaseWheaterStationController extends Controller
 
     public function getPrepareData()
     {
+        $modelClass = $this->model;
+        $fields = (new $modelClass())->apiFields;
 
-        // TODO: Replantear "value" para obtener todos los tipos de datos
+        $model = $modelClass::orderBy('created_at', 'DESC');
 
-        $model = $this->model::whereNotNull('value')
-            ->orderBy('created_at', 'DESC')
-            ->first();
+        foreach ($fields as $field) {
+            $model->whereNotNull($field);
+        }
+
+        $model = $model->first();
 
         $datas = null;
 
         if ($model) {
             $datas = $model->prepareApiResponse();
         }
+
+
+
+
+
+
+
 
         return \JsonHelper::success(['datas' => $datas]);
     }
