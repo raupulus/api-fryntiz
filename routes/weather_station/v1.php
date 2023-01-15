@@ -23,6 +23,9 @@ Route::match(['get', 'options'], '/humidity',
     [WeatherStation\HumidityController::class, 'getPrepareData'])
     ->middleware('cors.allow.all');
 
+Route::match(['get', 'options'], '/pressure',
+    [WeatherStation\PressureController::class, 'getPrepareData'])
+    ->middleware('cors.allow.all');
 
 
 ## Grupo de rutas para búsquedas de resultados en tablas.
