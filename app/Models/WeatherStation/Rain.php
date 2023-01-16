@@ -2,6 +2,8 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStationUpdateEvent;
+
 /**
  * Class Rain
  *
@@ -18,6 +20,31 @@ class Rain extends BaseWheaterStation
     ];
 
     protected $table = 'meteorology_rain';
+
+    /**
+     * @var string[] Campos que se pueden devolver por api.
+     */
+    public $apiFields = [
+        'rain',
+        'rain_intensity',
+        'rain_month',
+    ];
+
+    /**
+     * @var string Nombre de la variable.
+     */
+    public $slug = 'rain';
+
+    /**
+     * Nombre amigable para la representación del modelo.
+     *
+     * @var string
+     */
+    public $name = 'Lluvia';
+
+    protected $dispatchesEvents = [
+        'created' => WeatherStationUpdateEvent::class,
+    ];
 
     /**
      * Devuelve un array con todos los títulos de una tabla.

@@ -39,6 +39,15 @@ Route::match(['get', 'options'], '/air-quality',
     [WeatherStation\AirQualityController::class, 'getPrepareData'])
     ->middleware('cors.allow.all');
 
+Route::match(['get', 'options'], '/rain',
+    [WeatherStation\RainController::class, 'getPrepareData'])
+    ->middleware('cors.allow.all');
+
+Route::match(['get', 'options'], '/lightning',
+    [WeatherStation\LightningController::class, 'getPrepareData'])
+    ->middleware('cors.allow.all');
+
+
 ## Grupo de rutas para búsquedas de resultados en tablas.
 Route::group(['prefix' => 'table'], function () {
 
@@ -65,6 +74,10 @@ Route::group(['prefix' => 'table'], function () {
     Route::match(['post', 'options'],'/wind-direction',
         [WeatherStation\WindDirectionController::class, 'getTableDataSearchJson'])
         ->name('api.wheaterstation.v1.table.wind_direction');
+
+    Route::match(['post', 'options'],'/rain',
+        [WeatherStation\RainController::class, 'getTableDataSearchJson'])
+        ->name('api.wheaterstation.v1.table.rain');
 
     ## Obtengo todos los datos de CO2.
     Route::match(['post', 'options'],'/eco2', [WeatherStation\Eco2Controller::class, 'getTableDataSearchJson'])

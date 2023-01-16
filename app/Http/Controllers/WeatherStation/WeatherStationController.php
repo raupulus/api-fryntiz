@@ -26,6 +26,7 @@ class WeatherStationController extends Controller
             'Presión' => route('api.wheaterstation.v1.table.pressure'),
             'Viento' => route('api.wheaterstation.v1.table.winter'),
             'Dirección del Viento' => route('api.wheaterstation.v1.table.wind_direction'),
+            'Lluvia' => route('api.wheaterstation.v1.table.rain'),
             'Luz' => route('api.wheaterstation.v1.table.light'),
             'Calidad del Aire' => route('api.wheaterstation.v1.table.air_quality'),
             'CO2-ECO2' => route('api.wheaterstation.v1.table.eco2'),

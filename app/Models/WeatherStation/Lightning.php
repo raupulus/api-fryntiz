@@ -2,6 +2,8 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStationUpdateEvent;
+
 /**
  * Class Lightning
  *
@@ -16,6 +18,30 @@ class Lightning extends BaseWheaterStation
         'energy',
         'noise_floor',
         'created_at'
+    ];
+
+    /**
+     * @var string[] Campos que se pueden devolver por api.
+     */
+    public $apiFields = [
+        'distance',
+        'energy',
+    ];
+
+    /**
+     * @var string Nombre de la variable.
+     */
+    public $slug = 'lightning';
+
+    /**
+     * Nombre amigable para la representación del modelo.
+     *
+     * @var string
+     */
+    public $name = 'Rayos y Relámpagos';
+
+    protected $dispatchesEvents = [
+        'created' => WeatherStationUpdateEvent::class,
     ];
 
     /**

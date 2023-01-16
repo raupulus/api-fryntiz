@@ -7,6 +7,7 @@ use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Light;
+use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
@@ -209,6 +210,22 @@ class GenericWSController
             $stored['air_quality']->hardware_device_id = $hardwareDevice->id;
             $stored['air_quality']->user_id = auth()->id();
             $stored['air_quality']->save();
+        }
+
+        if ($request->has('lightning_distance')) {
+            $lightningDistance = $request->get('lightning_distance');
+            $lightningEnergy = $request->get('lightning_energy');
+            $lightningNoiseFloor = $request->get('lightning_noise_floor');
+
+            $stored['lightning'] = new Lightning([
+                'distance' => $lightningDistance,
+                'energy' => $lightningEnergy,
+                'noise_floor' => $lightningNoiseFloor,
+            ]);
+
+            $stored['lightning']->hardware_device_id = $hardwareDevice->id;
+            $stored['lightning']->user_id = auth()->id();
+            $stored['lightning']->save();
         }
 
 

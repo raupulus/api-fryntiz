@@ -264,13 +264,6 @@ abstract class BaseWheaterStationController extends Controller
             $datas = $model->prepareApiResponse();
         }
 
-
-
-
-
-
-
-
         return \JsonHelper::success(['datas' => $datas]);
     }
 }
