@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\WeatherStation\Humidity;
+use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
@@ -142,17 +143,32 @@ class GenericWSController
             $pressure = $request->get('pressure');
 
             $stored['pressure'] = new Pressure([
-                'user_id' => auth()->id(),
-                'hardware_device_id' => $hardwareDevice->id,
                 'value' => $pressure,
             ]);
-
 
             $stored['pressure']->hardware_device_id = $hardwareDevice->id;
             $stored['pressure']->user_id = auth()->id();
             $stored['pressure']->save();
         }
 
+        if ($request->has('lumens')) {
+            $lumens = $request->get('lumens');
+            $index = $request->get('uv_index');
+            $uva = $request->get('uva');
+            $uvb = $request->get('uvb');
+
+
+            $stored['light'] = new Light([
+                'lumens' => $lumens,
+                'index' => $index,
+                'uva' => $uva,
+                'uvb' => $uvb,
+            ]);
+
+            $stored['light']->hardware_device_id = $hardwareDevice->id;
+            $stored['light']->user_id = auth()->id();
+            $stored['light']->save();
+        }
 
         //Log::debug($request->all());
 

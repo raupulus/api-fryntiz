@@ -39,7 +39,17 @@ class CreateMeteorologyLightTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->decimal('value', 14, 4);
+            $table->decimal('lumens', 10, 2)
+                ->comment('Lumens');
+            $table->decimal('index', 10, 2)
+                ->nullable()
+                ->comment('Índice');
+            $table->decimal('uva', 10, 2)
+                ->nullable()
+                ->comment('Rayos UVA');
+            $table->decimal('uvb', 10, 2)
+                ->nullable()
+                ->comment('Rayos UVB');
             $table->timestamp('created_at')->nullable();
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

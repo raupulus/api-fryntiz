@@ -34,24 +34,6 @@
     </nav>
 
 
-    {{--
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.14.2/echo.min.js"
-            integrity="sha512-lK5u2zmRy0szod4RvoQ0nON1KBW/w0DZ0/YQB0rc1dEQplBFdFohAmSzyVUFjxj/WwiSdP6gNrZ1tZp+PKLedA=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script>
-        window.Echo = new Echo({
-            broadcaster:'pusher',
-            key:'abc123',
-            wsHost:window.location.hostname,
-            wsPort:6001,
-            forceTLS:false,
-            disableStats:false,
-        });
-    </script>
-    --}}
-
-
     <div class="leading-normal tracking-normal"
          style="font-family: 'Source Sans Pro', sans-serif;">
 

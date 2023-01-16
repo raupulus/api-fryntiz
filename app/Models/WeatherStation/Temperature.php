@@ -16,6 +16,7 @@ class Temperature extends BaseWheaterStation
 
     protected $table = 'meteorology_temperature';
 
+
     /**
      * @var string[] Campos que se pueden devolver por api.
      */

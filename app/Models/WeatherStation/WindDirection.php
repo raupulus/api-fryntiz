@@ -49,6 +49,20 @@ class WindDirection extends BaseWheaterStation
     */
 
     /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads()
+    {
+        return [
+            'direction' => 'Dirección',
+            'grades' => 'Grados',
+            'created_at' => 'Instante'
+        ];
+    }
+
+    /**
      * Devuelve todos los elementos del modelo.
      */
     public static function all($columns = ['*'])
@@ -60,12 +74,27 @@ class WindDirection extends BaseWheaterStation
         return $query;
     }
 
+    /**
+     * Calcula la resistencia a 16bits según la dirección del viento.
+     *
+     * @param $grades
+     *
+     * @return float|int
+     */
     public static function getResistance($grades)
     {
         $maxResistance = 65535; // 16bits
+
         return $maxResistance * ($grades / 360);
     }
 
+    /**
+     * Obtengo la dirección del viento según los grados.
+     *
+     * @param $grades
+     *
+     * @return string
+     */
     public static function getDirection($grades)
     {
         if ($grades >= 0 && $grades < 22.5) {
