@@ -35,11 +35,12 @@ Route::match(['get', 'options'], '/light',
     [WeatherStation\LightController::class, 'getPrepareData'])
     ->middleware('cors.allow.all');
 
+Route::match(['get', 'options'], '/air-quality',
+    [WeatherStation\AirQualityController::class, 'getPrepareData'])
+    ->middleware('cors.allow.all');
+
 ## Grupo de rutas para búsquedas de resultados en tablas.
 Route::group(['prefix' => 'table'], function () {
-
-
-
 
     ## Obtengo todos los datos de temperatura.
     Route::match(['post', 'options'],'/temperature', [WeatherStation\TemperatureController::class, 'getTableDataSearchJson'])

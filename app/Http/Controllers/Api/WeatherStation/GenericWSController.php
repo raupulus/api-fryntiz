@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Models\WeatherStation\AirQuality;
+use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
+use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\WindDirection;
 use App\Models\WeatherStation\Wind;
 use Illuminate\Http\Request;
@@ -169,6 +172,46 @@ class GenericWSController
             $stored['light']->user_id = auth()->id();
             $stored['light']->save();
         }
+
+        if ($request->has('tvoc')) {
+            $tvoc = $request->get('tvoc');
+
+            $stored['tvoc'] = new Tvoc([
+                'value' => $tvoc,
+            ]);
+
+            $stored['tvoc']->hardware_device_id = $hardwareDevice->id;
+            $stored['tvoc']->user_id = auth()->id();
+            $stored['tvoc']->save();
+        }
+
+        if ($request->has('eco2')) {
+            $tvoc = $request->get('eco2');
+
+            $stored['eco2'] = new Eco2([
+                'value' => $tvoc,
+            ]);
+
+            $stored['eco2']->hardware_device_id = $hardwareDevice->id;
+            $stored['eco2']->user_id = auth()->id();
+            $stored['eco2']->save();
+        }
+
+        if ($request->has('air_quality')) {
+            $airQuality = $request->get('air_quality');
+            $gasResistance = $request->get('gas_resistance');
+
+            $stored['air_quality'] = new AirQuality([
+                'air_quality' => $airQuality,
+                'gas_resistance' => $gasResistance,
+            ]);
+
+            $stored['air_quality']->hardware_device_id = $hardwareDevice->id;
+            $stored['air_quality']->user_id = auth()->id();
+            $stored['air_quality']->save();
+        }
+
+
 
         //Log::debug($request->all());
 

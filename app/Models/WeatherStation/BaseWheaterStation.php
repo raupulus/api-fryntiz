@@ -221,6 +221,54 @@ class BaseWheaterStation extends Model
             }
         }
 
+        if ($result && $result['slug'] && $result['slug'] === 'air_quality') {
+
+            $airQualityEco2 = Eco2::whereNotNull('value')
+                ->orderByDesc('created_at')
+                ->first();
+
+            $airQualityTvoc = Tvoc::whereNotNull('value')
+                ->orderByDesc('created_at')
+                ->first();
+
+
+
+
+
+            if ($airQualityEco2) {
+                $result['eco2'] = $airQualityEco2->value;
+            }
+
+            if ($airQualityTvoc) {
+                $result['tvoc'] = $airQualityTvoc->value;
+            }
+
+            $airQualityEco2Datas = $airQualityEco2->prepareApiResponse();
+            $airQualityTvocDatas = $airQualityTvoc->prepareApiResponse();
+
+            if ($airQualityEco2Datas && $airQualityEco2Datas['historical'] &&
+                count($airQualityEco2Datas['historical'])) {
+
+                foreach ($airQualityEco2Datas['historical'] as $key =>  $historical) {
+                    if (isset($result['historical'][$key])) {
+                        $result['historical'][$key]['eco2'] = $historical['value'];
+                    }
+                }
+
+            }
+
+            if ($airQualityTvocDatas && $airQualityTvocDatas['historical'] &&
+                count($airQualityTvocDatas['historical'])) {
+
+                foreach ($airQualityTvocDatas['historical'] as $key =>  $historical) {
+                    if (isset($result['historical'][$key])) {
+                        $result['historical'][$key]['tvoc'] = $historical['value'];
+                    }
+                }
+
+            }
+        }
+
 
         return $result;
 
