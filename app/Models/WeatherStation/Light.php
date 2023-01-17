@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\LightUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 
 /**
@@ -44,7 +45,7 @@ class Light extends BaseWheaterStation
     public $name = 'Luz';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => LightUpdateEvent::class,
     ];
 
 

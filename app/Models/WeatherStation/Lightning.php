@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\LightningUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 
 /**
@@ -41,7 +42,7 @@ class Lightning extends BaseWheaterStation
     public $name = 'Rayos y Relámpagos';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => LightningUpdateEvent::class,
     ];
 
     /**

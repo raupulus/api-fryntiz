@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\WindUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 
 /**
@@ -44,7 +45,7 @@ class Wind extends BaseWheaterStation
     public $name = 'Viento';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => WindUpdateEvent::class,
     ];
 
     /**

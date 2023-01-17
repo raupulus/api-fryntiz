@@ -2,6 +2,8 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\AirQualityUpdateEvent;
+use App\Events\WeatherStation\HumidityUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 use Illuminate\Notifications\Notifiable;
 
@@ -36,6 +38,6 @@ class Humidity extends BaseWheaterStation
     public $name = 'Humedad';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => HumidityUpdateEvent::class,
     ];
 }

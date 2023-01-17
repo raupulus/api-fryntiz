@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\AirQualityUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 
 /**
@@ -39,7 +40,7 @@ class AirQuality extends BaseWheaterStation
     public $name = 'Calidad del aire';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => AirQualityUpdateEvent::class,
     ];
 
     /**

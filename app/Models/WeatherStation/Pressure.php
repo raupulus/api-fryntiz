@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\PressureUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 
 /**
@@ -33,6 +34,6 @@ class Pressure extends BaseWheaterStation
     public $name = 'Presión';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => PressureUpdateEvent::class,
     ];
 }

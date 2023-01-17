@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\TemperatureUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 use Illuminate\Notifications\Notifiable;
 
@@ -37,6 +38,6 @@ class Temperature extends BaseWheaterStation
     public $name = 'Temperatura';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => TemperatureUpdateEvent::class,
     ];
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\RainUpdateEvent;
 use App\Events\WeatherStationUpdateEvent;
 
 /**
@@ -43,7 +44,7 @@ class Rain extends BaseWheaterStation
     public $name = 'Lluvia';
 
     protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
+        'created' => RainUpdateEvent::class,
     ];
 
     /**
