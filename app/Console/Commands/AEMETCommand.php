@@ -45,9 +45,30 @@ class AEMETCommand extends Command
         $lastMonth = Carbon::now()->subMonth();
 
 
-        //$response = (new AEMET())->getPredictionCruzDelMarBeach();
-        //$response = (new AEMET())->getPredictionReglaBeach();
-        //NO: $response = (new AEMET())->getPredictionDaily();
+        // Cada 10m
+        //$response = (new AEMET())->getAvisosCap(); //Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
+
+
+
+        // Cada (LO MINIMO QUE PUEDA)
+
+
+        // CADA HORA
+        $response = (new AEMET())->getPredictionDaily();
+
+
+
+        //CADA DIA
+        //$response = (new AEMET())->getPredictionBeachById(1101604); // Playa de regla
+        //$response = (new AEMET())->getPredictionBeachById(1101602); // Cruz del mar
+
+
+
+
+
+
+
+
         //$response = (new AEMET())->getUviInfo();
         //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
         //$response = (new AEMET())->getImageMarTemperature();
@@ -58,7 +79,14 @@ class AEMETCommand extends Command
         //$response = (new AEMET())->getOzono();
         //$response = (new AEMET())->getSunRadiation(); // Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación global, directa, difusa e infrarroja, y datos semihorarios (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Periodicidad: Cada 24h (actualmente en fines de semana, festivos y vacaciones, no se genera por la ausencia de personal en el Centro Radiométrico Nacional).
 
-        $response = (new AEMET())->getAvisosCap();
+
+
+
+
+
+
+
+
         //$response = (new AEMET())->test();
 
         dd(['response' => $response]);
