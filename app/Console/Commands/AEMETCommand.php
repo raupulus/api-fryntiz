@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use AMETHelper;
+use App\Models\WeatherStation\AEMETAdverseEvents;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -45,20 +46,21 @@ class AEMETCommand extends Command
         $lastMonth = Carbon::now()->subMonth();
 
 
-        // Cada 10m
-        $response = AMETHelper::getAvisosCap(); //Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
+        /*********** Cada 10m ***********/
+
+
+        /*********** Cada 30m ***********/
+        // Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
+        AEMETAdverseEvents::saveFromApi(AMETHelper::getAvisosCap());
 
 
 
-        // Cada (LO MINIMO QUE PUEDA)
 
-
-        // CADA HORA
+        /*********** Cada Lo mínimo que pueda ***********/
         //$response = (new AEMET())->getPredictionDaily();
 
 
-
-        //CADA DIA
+        /*********** Cada Hora ***********/
         //$response = (new AEMET())->getPredictionBeachById(1101604); // Playa de regla
         //$response = (new AEMET())->getPredictionBeachById(1101602); // Cruz del mar
 

@@ -98,17 +98,7 @@ class AMETHelper
      * Últimos Avisos de Fenómenos Meteorológicos adversos elaborado para el
      * área seleccionada. (Andalucía)
      *
-     * [
-     * [
-     * 'name' => 'Nombre de la zona'
-     * 'slug' => 'Slug, nombre de la zona con barras bajas "_"'
-     * 'polygon' => 'String con las geoposiciones'
-     * 'created_at' => Fecha que nos devuelve el documento para el envío de los
-     * datos.
-     * 'others_fields_json' => 'Campos no identificados, para observar las
-     * respuestas durante un tiempo.
-     * ]
-     * ]
+     * Model: AEMETAdverseEvents
      *
      * @return array|void
      */
@@ -174,7 +164,6 @@ class AMETHelper
                             continue;
                         }
 
-
                         $sentTimestampRaw = $jsonFromXml['sent'];
 
                         if (!$sentTimestampRaw) {
@@ -238,7 +227,7 @@ class AMETHelper
                                         'slug' => $slug,
                                         'polygon' => $polygon,
                                         'geocode' => $geocode,
-                                        'created_at' => $sentTimestamp,
+                                        'read_at' => $sentTimestamp,
                                         'others_fields_json' => $otherFieldsJson
                                     ];
 
