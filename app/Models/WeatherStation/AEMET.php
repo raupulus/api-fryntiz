@@ -496,6 +496,33 @@ class AEMET extends Model
                     }
 
 
+                    ## Temperatura
+                    $tmpArray['temperature_day']['temperature_max'] = $temperature['maxima'];
+                    $tmpArray['temperature_day']['temperature_min'] = $temperature['minima'];
+
+
+                    if ($temperature['maxima'] && $temperature['minima']) {
+                        $tmpArray['temperature_day'] = array_merge(
+                            $tmpArray['temperature_day'],
+                            extractRange($readAt, '00-24')
+                        );
+                    }
+
+                    foreach ($temperature['dato'] as $registerRange) {
+                        $range = $registerRange['hora'] - 6 . '-' . $registerRange['hora'];
+
+                        $prepareData = extractRange($readAt, $range);
+
+                        if (!$prepareData) {
+                            continue;
+                        }
+
+                        $tmpArray['temperature'][] = array_merge([
+                            'temperature' => $registerRange['value'] ? $registerRange['value'] : null,
+                        ], $prepareData);
+                    }
+
+                    dd($tmpArray);
 
                     ## Sensación térmica
                     $tmpArray['thermal_sensation_day']['thermal_sensation_max'] = $thermalSensation['maxima'];
@@ -548,8 +575,6 @@ class AEMET extends Model
                             'humidity' => $registerRange['value'] ? $registerRange['value'] : null,
                         ], $prepareData);
                     }
-
-
 
                     if ($uvMax) {
                         $tmpArray['uv']['uv_max'] = $uvMax;
