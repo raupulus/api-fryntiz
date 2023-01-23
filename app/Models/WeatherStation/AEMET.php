@@ -40,7 +40,7 @@ class AEMET extends Model
     {
         parent::__construct($attributes);
 
-        $this->API_KEY = env('AEMET_API_KEY');
+        $this->API_KEY = config('aemet.AEMET_API_KEY');
     }
 
     /**
@@ -323,6 +323,21 @@ class AEMET extends Model
                 return $value;
             }
         }
+    }
+
+
+    /**
+     * Devuelve la precicción por horas para la ciudad de Chipiona.
+     *
+     * @return bool|string|null
+     */
+    public function getPredictionHourly()
+    {
+        $url = $this->getUrl('predictionHourly');
+        $curl = $this->getCurl($url);
+
+
+        return $curl;
     }
 
     /**
@@ -1281,232 +1296,15 @@ class AEMET extends Model
     }
 
 
-    /**
-     * Últimos Avisos de Fenómenos Meteorológicos adversos elaborado para el
-     * área seleccionada. (Andalucía)
-     *
-     *
-     * [
-     * [
-     * 'name' => 'Nombre de la zona'
-     * 'slug' => 'Slug, nombre de la zona con barras bajas "_"'
-     * 'polygon' => 'String con las geoposiciones'
-     * 'created_at' => Fecha que nos devuelve el documento para el envío de los
-     * datos.
-     * 'others_fields_json' => 'Campos no identificados, para observar las
-     * respuestas durante un tiempo.
-     * ]
-     * ]
-     *
-     *
-     *
-     *
-     * @return array|void
-     */
-    public function getAvisosCap()
-    {
-        //$tempDir = sys_get_temp_dir();
-        $tempDir = '/tmp/api-fryntiz/weather-station/aemet';
-        $fileName = 'pack_avisos_cap.tar';
-        $tempPath = $tempDir . '/' . $fileName;
-
-        $url = $this->getUrl('avisos_cap');
-        $curl = $this->getCurl($url);
-
-        $zoneValidSlugs = [
-            'estrecho_de_gibraltar',
-            'costa_estrecho',
-            'litoral_de_huelva',
-            'litoral_gaditano',
-            'costa_litoral_gaditano',
-            'campina_gaditana'
-        ];
-
-        $avisos = [];
-
-        if ($curl && isset($curl['datos'])) {
-            if ($curl) {
-
-                $curl2 = file_get_contents($curl['datos']);
-
-                ## Compruebo si existe el directorio temporal para crearlo
-                if (!file_exists($tempDir)) {
-                    if (!mkdir($tempDir, 0777, true)) {
-                        die('Failed to create directories...');
-                    }
-                }
 
 
-                ## Guardo el contenido en un fichero temporal
-                $save = file_put_contents($tempPath, $curl2);
-
-                if ($save && file_exists($tempPath)) {
-                    $tar = new \PharData($tempPath);
-                    $tar->extractTo($tempDir, null, true);
-
-                    $files = scandir($tempDir);
-
-                    ## Recorro cada archivo xml para sacar los datos que necesito.
-                    foreach ($files as $file) {
-                        $jsonFromXml = null;
-
-                        if (str_contains($file, '.xml')) {
-                            $content = file_get_contents($tempDir . '/' . $file);
-
-                            $xml = simplexml_load_string($content);
-                            $json = json_encode($xml);
-                            $jsonFromXml = json_decode($json, true);
-
-                            if (file_exists($tempDir . '/' . $file)) {
-                                unlink($tempDir . '/' . $file);
-                            }
-                        }
-
-                        if (!$jsonFromXml || !count($jsonFromXml)) {
-                            continue;
-                        }
 
 
-                        $sentTimestampRaw = $jsonFromXml['sent'];
-
-                        if (!$sentTimestampRaw) {
-                            continue;
-                        }
-
-                        $sentTimestampParse = strtotime($sentTimestampRaw);
-                        $sentTimestamp = Carbon::parse($sentTimestampParse);
-
-                        if (!$sentTimestamp) {
-                            continue;
-                        }
-
-                        $sentTimestampSlug = $sentTimestamp->format('Y-m-d_H-i-s');
-
-
-                        ##Recorre cada Info
-                        foreach ($jsonFromXml['info'] as $info) {
-
-                            ##Recorre cada área
-                            foreach ($info['area'] as $area) {
-
-
-                                // TODO: comprobar que haya más información de la que se muestra, buscar también en metadatos de la api.
-
-                                $name = isset($area['areaDesc']) ? $area['areaDesc'] : null;
-                                $polygon = isset($area['polygon']) ? $area['polygon'] : null;
-                                $geocode = isset($area['geocode']['value']) ? $area['geocode']['value'] : null;
-
-
-                                if (!$name) {
-                                    continue;
-                                }
-
-
-                                $slug = Str::slug($name, '_');
-
-
-                                $otherFields = [];
-
-                                foreach ($area as $f_idx => $f) {
-                                    if (!in_array($f_idx, ['areaDesc', 'polygon', 'geocode'])) {
-                                        $otherFields[ $f_idx ] = $f;
-                                    }
-                                }
-
-
-                                $otherFieldsJson = null;
-
-                                if ($otherFields && count($otherFields)) {
-                                    $otherFieldsJson = json_encode(array_filter($otherFields), true);
-                                }
-
-                                if (in_array($slug, $zoneValidSlugs)) {
-
-
-                                    // TODO: Comprobar en unas semanas si ha quedado registrando datos que aún no conozco. Faltaría "type" de alerta y grado de peligro.
-
-                                    $avisos[] = [
-                                        'name' => $name,
-                                        'slug' => $slug,
-                                        'polygon' => $polygon,
-                                        'geocode' => $geocode,
-                                        'created_at' => $sentTimestamp,
-                                        'others_fields_json' => $otherFieldsJson
-                                    ];
-
-                                }
-
-                            }
-                        }
-
-                    }
-
-
-                    return $avisos;
-                }
-
-            }
-        }
-
-
-    }
 
     public function test()
     {
 
-
-        // 1 - Obtener el fichero $response['datos']
-        // 2 - almacenar en directorio temporal
-        // 3 - Descomprimir "tar"
-        // 4 - Listar todos los archivos del directorio tar descomprimido
-        // 5 - Recorrer todos los archivos
-        // 6 - Obtener el contenido de cada archivo
-        // 7 - Parsear el contenido de cada archivo, formato:
-
-        /*
-        <alert xmlns = "urn:oasis:names:tc:emergency:cap:1.2">
-  <identifier>2.49.0.0.724.0.ES.20230119225002.61VV61ATTA22231674168602</identifier>
-  <sender>http://www.aemet.es</sender>
-  <sent>2023-01-19T22:50:02-00:00</sent>
-  <status>Actual</status>
-  <msgType>Alert</msgType>
-  <scope>Public</scope>
-  <info>
-    <language>es-ES</language>
-    <category>Met</category>
-    <event>Aviso de temperaturas máximas de nivel verde</event>
-    <responseType>None</responseType>
-    <urgency>Future</urgency>
-    <severity>Minor</severity>
-    <certainty>Likely</certainty>
-    <eventCode>
-      <valueName>AEMET-Meteoalerta fenomeno</valueName>
-      <value>AT;Temperaturas máximas</value>
-    </eventCode>
-    <effective>2023-01-19T23:50:02+01:00</effective>
-    <onset>2023-01-22T00:00:00+01:00</onset>
-    <expires>2023-01-22T23:59:59+01:00</expires>
-    <senderName>AEMET. Agencia Estatal de Meteorología</senderName>
-    <headline>Aviso de temperaturas máximas de nivel verde. CCAA</headline>
-    <web>http://www.aemet.es/es/eltiempo/prediccion/avisos</web>
-    <contact>AEMET</contact>
-    <parameter>
-      <valueName>AEMET-Meteoalerta nivel</valueName>
-      <value>verde</value>
-    </parameter>
-    <area>
-      <areaDesc>Valle del Almanzora y Los Vélez</areaDesc>
-      <polygon>37.92,-2.21 37.89,-2.17 37.9,-2.12 37.88,-2.1 37.88,-2.06 37.87,-2.02 37.87,-1.97 37.84,-1.99 37.78,-2.01 37.73,-1.99 37.67,-2.01 37.59,-1.95 37.46,-1.84 37.43,-1.81 37.39,-1.84 37.36,-1.9 37.3,-1.95 37.27,-1.89 37.22,-1.89 37.19,-1.92 37.21,-1.96 37.23,-1.98 37.19,-2.02 37.16,-2.03 37.18,-2.11 37.21,-2.13 37.24,-2.2 37.21,-2.27 37.25,-2.27 37.27,-2.3 37.26,-2.34 37.26,-2.4 37.23,-2.42 37.21,-2.5 37.22,-2.55 37.24,-2.55 37.24,-2.62 37.23,-2.66 37.29,-2.66 37.34,-2.64 37.39,-2.63 37.43,-2.58 37.45,-2.57 37.51,-2.46 37.52,-2.36 37.61,-2.37 37.62,-2.31 37.7,-2.32 37.78,-2.28 37.81,-2.3 37.89,-2.29 37.92,-2.21</polygon>
-      <geocode>
-        <valueName>AEMET-Meteoalerta zona</valueName>
-        <value>610401</value>
-      </geocode>
-    </area>
-
-         */
-
-
-        $url = 'https://opendata.aemet.es/opendata/api/avisos_cap/ultimoelaborado/area/61';
+        $url = 'https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/horaria/11016';
 
         $response = $this->getCurl($url);
 

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\WeatherStation\AEMET;
+use AMETHelper;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -46,7 +46,7 @@ class AEMETCommand extends Command
 
 
         // Cada 10m
-        //$response = (new AEMET())->getAvisosCap(); //Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
+        $response = AMETHelper::getAvisosCap(); //Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
 
 
 
@@ -54,7 +54,7 @@ class AEMETCommand extends Command
 
 
         // CADA HORA
-        $response = (new AEMET())->getPredictionDaily();
+        //$response = (new AEMET())->getPredictionDaily();
 
 
 
@@ -69,6 +69,7 @@ class AEMETCommand extends Command
 
 
 
+        //$response = (new AEMET())->getPredictionHourly();
         //$response = (new AEMET())->getUviInfo();
         //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
         //$response = (new AEMET())->getImageMarTemperature();
