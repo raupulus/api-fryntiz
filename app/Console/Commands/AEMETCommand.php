@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use AMETHelper;
-use App\Models\WeatherStation\AEMETAdverseEvents;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -46,23 +44,29 @@ class AEMETCommand extends Command
         $lastMonth = Carbon::now()->subMonth();
 
 
+
+        /*********** Cada Lo mínimo que pueda ***********/
+        //$response = (new AEMET())->getPredictionDaily();  // NO PREPARADO MODELO/MIGRACION
+
+
+
         /*********** Cada 10m ***********/
 
 
         /*********** Cada 30m ***********/
         // Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
-        AEMETAdverseEvents::saveFromApi(AMETHelper::getAvisosCap());
-
-
-
-
-        /*********** Cada Lo mínimo que pueda ***********/
-        //$response = (new AEMET())->getPredictionDaily();
+        //AEMETAdverseEvents::saveFromApi(\AMETHelper::getAvisosCap());
 
 
         /*********** Cada Hora ***********/
-        //$response = (new AEMET())->getPredictionBeachById(1101604); // Playa de regla
-        //$response = (new AEMET())->getPredictionBeachById(1101602); // Cruz del mar
+
+
+        /*********** Una vez al día ***********/
+        ## Playa de Regla
+        //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101604));
+
+        ## Playa Cruz del Mar
+        //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101602));
 
 
 
@@ -92,7 +96,7 @@ class AEMETCommand extends Command
 
         //$response = (new AEMET())->test();
 
-        dd(['response' => $response]);
+        //dd(['response' => $response]);
 
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";

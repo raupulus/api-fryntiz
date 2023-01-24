@@ -238,13 +238,208 @@ class AMETHelper
 
                     }
 
-
                     return $avisos;
                 }
 
             }
         }
+    }
+
+    /**
+     * Devuelve la predicción diaria para la playa de Regla en Chipiona.
+     *
+     * La predicción diaria de la playa que se pasa como parámetro. Establece
+     * el estado de nubosidad para unas horas determinadas, las 11 y las 17
+     * hora oficial. Se analiza también si se espera precipitación en el
+     * entorno de esas horas, entre las 08 y las 14 horas y entre las 14 y 20
+     * horas.
+     *
+     * @return array
+     */
+    public static function getPredictionBeachById(int $beachId)
+    {
+        if ($beachId == 1101602) {
+            $url = self::getUrl('playaCruzDelMarChipiona');
+        } else if ($beachId == 1101604) {
+            $url = self::getUrl('playaReglaChipiona');
+        } else {
+            \Log::error('No existe la playa con ID ' . $beachId);
+            return null;
+        }
+
+        $curl1 = self::getCurl($url);
+
+        if ($curl1 && isset($curl1['datos']) && $curl1['datos']) {
+            $url2 = $curl1['datos'];
+            $curl2 = self::getCurl($url2);
+
+            $finalArray = [];
+
+            foreach ($curl2 as $register) {
+                $sendAtRaw = $register['elaborado'];
+                $sendAt = Carbon::parse($sendAtRaw);
+
+                $beachId = $register['id'];
+                $name = $register['nombre'];
+                $slug = Str::slug($name, '_');
+                $cityCode = $register['localidad'];
 
 
+                ## Recorro cada predicción por cada día
+                foreach ($register['prediccion']['dia'] as $prediction) {
+
+                    $predictionDateRaw = $prediction['fecha'];
+
+                    $predictionDate = Carbon::createFromFormat('Ymd', $predictionDateRaw);
+
+                    $skyStatus = [
+                        '100' => [
+                            'description' => 'Despejado',
+                            'code' => 0,
+                        ],
+                        '110' => [
+                            'description' => 'Nuboso',
+                            'code' => 1,
+                        ],
+                        '120' => [
+                            'description' => 'Muy nuboso',
+                            'code' => 2,
+                        ],
+                        '130' => [
+                            'description' => 'Chubascos',
+                            'code' => 3,
+                        ],
+                        '140' => [
+                            'description' => 'Muy nuboso con lluvia',
+                            'code' => 4,
+                        ],
+                    ];
+
+                    $windStatus = [
+                        '210' => [
+                            'description' => 'Flojo',
+                            'code' => 0,
+                        ],
+                        '220' => [
+                            'description' => 'Moderado',
+                            'code' => 1,
+                        ],
+                        '230' => [
+                            'description' => 'Fuerte',
+                            'code' => 2,
+                        ],
+                    ];
+
+                    $waveStatus = [
+                        '310' => [
+                            'description' => 'Débil',
+                            'code' => 0,
+                        ],
+                        '320' => [
+                            'description' => 'Moderado',
+                            'code' => 1,
+                        ],
+                        '330' => [
+                            'description' => 'Fuerte',
+                            'code' => 2,
+                        ],
+                    ];
+
+
+                    $thermalSensationStatus = [
+                        '410' => [
+                            'description' => 'Muy frío',
+                            'code' => 0,
+                        ],
+                        '420' => [
+                            'description' => 'Frío',
+                            'code' => 1,
+                        ],
+                        '430' => [
+                            'description' => 'Muy Fresco',
+                            'code' => 2,
+                        ],
+                        '440' => [
+                            'description' => 'Fresco',
+                            'code' => 3,
+                        ],
+                        '450' => [
+                            'description' => 'Suave',
+                            'code' => 4,
+                        ],
+                        '460' => [
+                            'description' => 'Calor Agradable',
+                            'code' => 5,
+                        ],
+                        '470' => [
+                            'description' => 'Calor Moderado',
+                            'code' => 6,
+                        ],
+                        '480' => [
+                            'description' => 'Calor Fuerte',
+                            'code' => 7,
+                        ],
+                    ];
+
+                    $predictionFinal = [
+                        'beach_id' => $beachId,
+                        'name' => $name,
+                        'slug' => $slug,
+                        'city_code' => $cityCode,
+                        'read_at' => $sendAt,
+
+                        'sky_morning_status_code' => $skyStatus[ $prediction['estadoCielo']['f1'] ]['code'],
+                        'sky_morning_status' => $skyStatus[ $prediction['estadoCielo']['f1'] ]['description'],
+                        'sky_afternoon_status_code' => $skyStatus[ $prediction['estadoCielo']['f2'] ]['code'],
+                        'sky_afternoon_status' => $skyStatus[ $prediction['estadoCielo']['f2'] ]['description'],
+                        'sky_extra_info' => $prediction['estadoCielo']['value'],
+
+                        'wind_morning_status_code' => $windStatus[ $prediction['viento']['f1'] ]['code'],
+                        'wind_morning_status' => $windStatus[ $prediction['viento']['f1'] ]['description'],
+                        'wind_afternoon_status_code' => $windStatus[ $prediction['viento']['f2'] ]['code'],
+                        'wind_afternoon_status' => $windStatus[ $prediction['viento']['f2'] ]['description'],
+                        'wind_extra_info' => $prediction['viento']['value'],
+
+
+                        'wave_morning_status_code' => $waveStatus[ $prediction['oleaje']['f1'] ]['code'],
+                        'wave_morning_status' => $waveStatus[ $prediction['oleaje']['f1'] ]['description'],
+                        'wave_afternoon_status_code' => $waveStatus[ $prediction['oleaje']['f2'] ]['code'],
+                        'wave_afternoon_status' => $waveStatus[ $prediction['oleaje']['f2'] ]['description'],
+                        'wave_extra_info' => $prediction['oleaje']['value'],
+
+
+                        'temperature_max' => $prediction['tMaxima']['valor1'],
+                        'temperature_max_extra_info' => $prediction['tMaxima']['value'],
+
+
+                        'thermal_sensation_status_code' => $thermalSensationStatus[ $prediction['sTermica']['valor1'] ]['code'],
+                        'thermal_sensation_status' => $thermalSensationStatus[ $prediction['sTermica']['valor1'] ]['description'],
+                        'thermal_sensation_extra_info' => $prediction['tMaxima']['value'],
+
+
+                        'water_temperature' => $prediction['tAgua']['valor1'],
+                        'water_temperature_extra_info' => $prediction['tAgua']['value'],
+
+
+                        // Uv máximo para cielo "despejado"
+                        'uv_max' => $prediction['uvMax']['valor1'],
+                        'uv_max_extra_info' => $prediction['uvMax']['value'],
+                    ];
+
+
+                    $predictionDateString = $predictionDate->format('Y-m-d');
+
+                    $predictionFinal['date'] = $predictionDateString;
+
+                    $finalArray[ $predictionDateString ] = $predictionFinal;
+
+                }
+
+            }
+
+            return $finalArray;
+        }
+
+        return null;
     }
 }
