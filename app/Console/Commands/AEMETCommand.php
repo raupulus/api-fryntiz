@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\WeatherStation\AEMET;
+use App\Models\WeatherStation\AEMETHighSea;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -61,6 +63,10 @@ class AEMETCommand extends Command
         /*********** Cada Hora ***********/
 
 
+        /*********** 12:15 (Por la mañana) *******/
+        // Devuelve  UV máximo para la provincia. Por ahora no usado
+        //$response = \AMETHelper::getUviInfo();
+
         /*********** Una vez al día ***********/
         ## Playa de Regla
         //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101604));
@@ -68,20 +74,20 @@ class AEMETCommand extends Command
         ## Playa Cruz del Mar
         //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101602));
 
+        ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
+        AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
 
 
 
 
+        $response = (new AEMET())->getCostaPrediction();
 
 
 
         //$response = (new AEMET())->getPredictionHourly();
-        //$response = (new AEMET())->getUviInfo();
         //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
         //$response = (new AEMET())->getImageMarTemperature();
         //$response = (new AEMET())->getImageVegetation();
-        //$response = (new AEMET())->getAltamarPrediction();
-        //$response = (new AEMET())->getCostaPrediction();
         //$response = (new AEMET())->getContamination(); // Desde doñana, cada 10m
         //$response = (new AEMET())->getOzono();
         //$response = (new AEMET())->getSunRadiation(); // Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación global, directa, difusa e infrarroja, y datos semihorarios (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Periodicidad: Cada 24h (actualmente en fines de semana, festivos y vacaciones, no se genera por la ausencia de personal en el Centro Radiométrico Nacional).
@@ -96,7 +102,7 @@ class AEMETCommand extends Command
 
         //$response = (new AEMET())->test();
 
-        //dd(['response' => $response]);
+        dd(['response' => $response]);
 
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";

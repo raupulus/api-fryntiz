@@ -442,4 +442,123 @@ class AMETHelper
 
         return null;
     }
+
+    public static function getUviInfo()
+    {
+        $url = self::getUrl('predictionUvi');
+        $curl1 = self::getCurl($url);
+
+        try {
+
+            if ($curl1 && isset($curl1['datos']) && $curl1['datos']) {
+                $url2 = $curl1['datos'];
+
+                $rawResponse = self::getCurl($url2, false);
+
+                $arrayMonthsTranslation = [
+                    'enero' => 'january',
+                    'febrero' => 'february',
+                    'marzo' => 'march',
+                    'abril' => 'april',
+                    'mayo' => 'may',
+                    'junio' => 'june',
+                    'julio' => 'july',
+                    'agosto' => 'august',
+                    'septiembre' => 'september',
+                    'octubre' => 'october',
+                    'noviembre' => 'november',
+                    'diciembre' => 'december',
+                ];
+
+                $rawResponseToArray = explode("\n", $rawResponse);
+
+                $cadiz = '';
+                $timestamp = null;
+
+                foreach ($rawResponseToArray as $key => $value) {
+                    if (str_contains($value, 'diz')) {
+                        $cadiz = $value;
+
+                        break;
+                    } else if (str_contains($value, 'Validez')) {
+
+                        $tmpTimestampArray = explode(',', $value);
+
+                        $tmpTimestamp = str_replace(['"', "\r"], '', $tmpTimestampArray[1]);
+                        $tmpTimestamp = trim($tmpTimestamp);
+                        $tmpTimestamp = mb_strtolower($tmpTimestamp);
+                        $tmpTimestampTranslated = str_replace(
+                            array_keys($arrayMonthsTranslation),
+                            array_values($arrayMonthsTranslation),
+                            $tmpTimestamp
+                        );
+
+                        $timestamp = Carbon::parse($tmpTimestampTranslated);
+                    }
+                }
+
+                $cadizClean = explode(',', $cadiz)[1];
+                $cadizClean = str_replace(['"', "\r"], '', $cadizClean);
+
+                if (!$cadizClean || !$timestamp) {
+                    return null;
+                }
+
+                return [
+                    'valid_until_at' => $timestamp,
+                    'province_uv_radiation_max' => $cadizClean,
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener la información de la UV: ' . $e->getMessage());
+
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Predicción para altamar en la zona del Atlántico Norte.
+     *
+     * @return bool|mixed|string|null
+     */
+    public static function getAltamarPrediction()
+    {
+        $url = self::getUrl('altamarPrediction');
+        $curl = self::getCurl($url);
+
+        if ($curl && isset($curl['datos']) && $curl['datos']) {
+            $curl2 = self::getCurl($curl['datos']);
+
+            $cadiz = null;
+
+            $start_at = $curl2[0]['situacion']['inicio'];
+            $end_at = $curl2[0]['situacion']['fin'];
+
+            try {
+                foreach ($curl2[0]['prediccion']['zona'] as $value) {
+
+                    if (isset($value['nombre']) && str_contains($value['nombre'], 'diz')) {
+                        $cadiz = $value;
+
+                        break;
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error al obtener la información de la altamar: ' . $e->getMessage());
+
+                return null;
+            }
+
+            return [
+                'zone_code' => $cadiz['id'],
+                'start_at' => Carbon::parse($start_at),
+                'end_at' => Carbon::parse($end_at),
+                'text' => $cadiz['texto']
+            ];
+        }
+
+        return null;
+    }
 }

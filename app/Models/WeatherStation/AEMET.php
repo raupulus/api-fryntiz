@@ -417,45 +417,6 @@ class AEMET extends Model
         return $finalArray;
     }
 
-    public function getUviInfo()
-    {
-        $url = $this->getUrl('predictionUvi');
-        $curl1 = $this->getCurl($url);
-
-        try {
-
-            if ($curl1 && isset($curl1['datos']) && $curl1['datos']) {
-                $url2 = $curl1['datos'];
-
-                $rawResponse = $this->getCurl($url2, false);
-
-                $rawResponseToArray = explode("\n", $rawResponse);
-
-                $cadiz = '';
-
-                foreach ($rawResponseToArray as $key => $value) {
-                    if (str_contains($value, 'diz')) {
-                        $cadiz = $value;
-
-                        break;
-                    }
-                }
-
-                $cadizClean = explode(',', $cadiz)[1];
-                $cadizClean = str_replace(['"', "\r"], '', $cadizClean);
-
-                return (int)$cadizClean;
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error al obtener la información de la UV: ' . $e->getMessage());
-
-            return null;
-        }
-
-        return null;
-    }
-
-
     /**
      * Devuelve los datos emitidos por la estación convencional de Chipiona.
      * Son datos enviados en las últimas 24 horas.
@@ -579,40 +540,7 @@ class AEMET extends Model
         return null;
     }
 
-    /**
-     * Predicción para altamar en la zona del Atlántico Norte.
-     *
-     * @return bool|mixed|string|null
-     */
-    public function getAltamarPrediction()
-    {
-        $url = $this->getUrl('altamarPrediction');
-        $curl = $this->getCurl($url);
 
-        if ($curl && isset($curl['datos']) && $curl['datos']) {
-            $curl2 = $this->getCurl($curl['datos']);
-
-            $cadiz = null;
-
-            try {
-                foreach ($curl2[0]['prediccion']['zona'] as $value) {
-                    if (isset($value['nombre']) && str_contains($value['nombre'], 'diz')) {
-                        $cadiz = $value;
-
-                        break;
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Error al obtener la información de la altamar: ' . $e->getMessage());
-
-                return null;
-            }
-
-            return $cadiz;
-        }
-
-        return null;
-    }
 
     /**
      * Predicción para la costa en la zona Costa de Andalucía Occidental y
