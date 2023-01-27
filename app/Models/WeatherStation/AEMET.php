@@ -66,6 +66,7 @@ class AEMET extends Model
             //CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_ENCODING => "",
             CURLOPT_HTTPHEADER => [
                 'cache-control: no-cache',
                 'Accept: application/json',
@@ -105,7 +106,6 @@ class AEMET extends Model
     {
         return $this->URL . '/' . $this->PATHS[ $path ];
     }
-
 
 
     /**
@@ -170,18 +170,18 @@ class AEMET extends Model
 
         $finalArray = [];
 
-        function extractRange(Carbon $readAt, string $stringRange) : array|null
+        function extractRange(Carbon $readAt, string $stringRange): array|null
         {
             $stringToArray = explode('-', $stringRange);
 
-            if (! count($stringToArray) === 2) {
+            if (!count($stringToArray) === 2) {
                 return null;
             }
 
             $readAt->setMinute(0)->setSecond(0)->setMicrosecond(0);
 
-            $start = clone($readAt);
-            $end = clone($readAt);
+            $start = clone( $readAt );
+            $end = clone( $readAt );
 
             $start->setHour($stringToArray[0]);
             $end->setHour($stringToArray[1]);
@@ -402,7 +402,7 @@ class AEMET extends Model
                         );
                     }
 
-                    $predictionClean[$readAt->format('Y-m-d')] = $tmpArray;
+                    $predictionClean[ $readAt->format('Y-m-d') ] = $tmpArray;
                 }
 
 
@@ -542,262 +542,6 @@ class AEMET extends Model
 
 
 
-    /**
-     * Predicción para la costa en la zona Costa de Andalucía Occidental y
-     * Ceuta.
-     *
-     * Revisar datos y filtrar solo los de mi zona.
-     *
-     * @return bool|mixed|string|null
-     */
-    public function getCostaPrediction()
-    {
-        $url = $this->getUrl('costaPrediction');
-        $curl = $this->getCurl($url);
-
-        if ($curl && isset($curl['datos']) && $curl['datos']) {
-            return $this->getCurl($curl['datos']);
-        }
-
-        return null;
-    }
-
-    /**
-     * Devuelve Ficheros diarios con datos diezminutales de la estación de la
-     * red de contaminación de fondo EMEP/VAG/CAMP pasada por parámetro, de
-     * temperatura, presión, humedad, viento (dirección y velocidad), radiación
-     * global, precipitación y 4 componentes químicos: O3,SO2,NO,NO2 y PM10.
-     * Los datos se encuentran en formato FINN (propio del Ministerio de Medio
-     * Ambiente). Periodicidad: cada hora.
-     *
-     * Esto se mide en huelva, Doñana
-     *
-     * Se actualiza cada diez minutos
-     *
-     * CUIDADO: Lo que devuelve es un fichero sin formato JSON, locura
-     * parsear...
-     *
-     * @return string|null
-     */
-    public function getContamination()
-    {
-        $url = $this->getUrl('contamination');
-        $curl = $this->getCurl($url);
-
-        //dd($curl['datos']);
-        if ($curl && isset($curl['datos']) && $curl['datos']) {
-            $curl2 = $this->getCurl($curl['datos'], false);
-
-            if (!$curl2) {
-                return;
-            }
-        }
-
-        /*
-        Ficheros diarios con datos diezminutales de la estación de la red de contaminación de fondo EMEP/VAG/CAMP pasada por parámetro, de temperatura, presión, humedad, viento (dirección y velocidad), radiación global, precipitación y 4 componentes químicos: O3,SO2,NO,NO2 y PM10. Los datos se encuentran en formato FINN (propio del Ministerio de Medio Ambiente). Periodicidad: cada hora.
-        */
-
-
-        /*
-         Cadena que viene del documento - api
-
-        18-01-2023 00:10 SO2(001): +00000.42 ug/m3 CV: V FC: 2.66 NO(007):
-        +00000.20 ug/m3 CV: V FC: 1.248 NO2(008): +00000.24 ug/m3 CV: V FC: 1.91 O3(014): +00089.69 ug/m3 CV: V FC: 1.99 VEL(081): +00002.72 m/s CV: V FC: 1 DIR(082): +00275.95 GRA CV: V FC: 1 TEM(083): +00010.82 GC CV: V FC: 1 HUM(086): +00083.67 % CV: V FC: 1 PRE(087): +01016.82 hPa CV: V FC: 1 RAD(088): +00000.93 W/m2 CV: V FC: 1 LLU(089): +00000.00 mm CV: V FC: 1 PM10(010): +00000.00 ug/m3 CV: N FC: 1
-         */
-
-        $fieldNames = ['timestamp' => 'SO2(001)',
-            'temperature', 'pressure', 'humidity', 'wind', 'radiation', 'precipitation', 'o3', 'so2', 'no', 'no2', 'pm10'];
-
-
-        // 1 - Obtener metadatos
-        // 2 - Acceder a "campos" -> "id" -> comprobar "requerido" == true
-        // 3 - Acceder a "campos" -> posicion_txt
-        // 4 - En cada línea, substr de posición_txt y longitud
-
-
-        $positionsValuesRange = [];
-
-        if ($curl && isset($curl['metadatos']) && $curl['metadatos']) {
-            $metadatas = $this->getCurl($curl['metadatos']);
-
-            if ($metadatas && isset($metadatas['campos']) && $metadatas['campos']) {
-                foreach ($metadatas['campos'] as $field) {
-                    if ($field['requerido']) {
-
-                        if (isset($field['posición_txt'])) {
-                            $position = $field['posición_txt'];
-                        } else if (isset($field['posicion_txt'])) {
-                            $position = $field['posicion_txt'];
-                        } else {
-                            $position = null;
-
-                            // Busca cuando hay problemas en la clave, a
-                            // veces viene con tilde "posición_txt" pero no es
-                            // utf8 que se pueda convertir a json.
-                            foreach ($field as $key => $f) {
-                                $contains = str_contains($key, '_txt');
-
-                                if ($contains) {
-                                    $position = $f;
-                                    break;
-                                }
-                            }
-
-                            if (!$position) {
-                                continue;
-                            }
-                        }
-
-                        $range = explode('-', $position);
-
-                        if (count($range) === 2) {
-                            $positionsValuesRange[ trim($field['id']) ] = [
-                                'start' => (int)( $range[0] - 1 ),
-                                'end' => (int)$range[1],
-                                'size' => (int)( $range[1] - $range[0] + 1 ),
-                            ];
-                        } else if (count($range) === 1) {
-
-                            $id = trim($field['id']);
-
-                            // ¡Corrige la chapuza de los ID duplicados!!!!
-                            if ($id === 'Codigo_validacion_O3') {
-                                $checkApiFailName = false;
-
-                                if (isset($field['descripcion'])) {
-                                    $checkApiFailName = str_contains($field['descripcion'], 'medida de PM10');
-                                }
-
-                                if ($checkApiFailName) {
-                                    $id = 'Codigo_validacion_PM';
-                                }
-                            }
-
-                            $positionsValuesRange[ $id ] = [
-                                'start' => (int)( $range[0] - 1 ),
-                                'end' => (int)$range[0],
-                                'size' => 1,
-                            ];
-                        } else {
-                            continue;
-                        }
-
-                    }
-                }
-            }
-        }
-
-
-        // Aquí tendría todas las posiciones para sacar valores por línea
-        if ($positionsValuesRange && count($positionsValuesRange)) {
-
-            $validationArraySuccess = ['V', 'O', 'J'];
-
-            $rangeIdConversion = [
-                'Fecha' => 'date', // Fecha dd-mm-aaaa
-                'Hora' => 'time', // Hora (UTC)  hh:mm
-                'SO2' => 'so2', // Componente químico, SO2 en microgramos/m3
-                'Codigo_validacion_SO2' => 'so2_validation', // V (válido), O (corregido), J (calma).
-                'NO' => 'no', //Componente químico, NO en microgramos/m3
-                'Codigo_validacion_NO' => 'no_validation', // V (válido), O (corregido), J (calma)
-                'NO2' => 'no2', // Componente químico, NO2 en microgramos/m3
-                'Codigo_validacion_NO2' => 'no2_validation', // V (válido), O (corregido), J (calma)
-                'O3' => 'o3', // Componente químico, O3 en microgramos/m3
-                'Codigo_validacion_O3' => 'o3_validation', // V (válido), O (corregido), J (calma)
-                'Velocidad_viento' => 'wind_speed', // Velocidad del viento en m/s
-                'Codigo_validacion_velocidad_viento' => 'wind_speed_validation', //V (válido), O (corregido), J (calma)
-                'Direccion_viento' => 'wind_direction', // Dirección del viento en grados
-                'Codigo_validacion_direccion_viento' => 'wind_direction_validation', // V (válido), O (corregido), J (calma)
-                'Temperatura' => 'temperature', //Temperatura en grados celsius
-                'Codigo_validacion_temperatura' => 'temperature_validation', // V (válido), O (corregido), J (calma)
-                'Humedad' => 'humidity', //Humedad en %
-                'Codigo_validacion_humedad' => 'humidity_validation', //V (válido), O (corregido), J (calma)
-                'Presion' => 'pressure', // Presión en hPa
-                'Codigo_validacion_presion' => 'pressure_validation', // V (válido), O (corregido), J (calma)
-                'Raciacion_global' => 'radiation_global', // Radiación global en W/m2
-                'Codigo_validacion_radiacion' => 'radiation_global_validation', // V (válido), O (corregido), J (calma)
-                'Precipitacion' => 'rain', // Precipitación en mm
-                'Codigo_validacion_precipitacion' => 'rain_validation', // V (válido), O (corregido), J (calma)
-                'PM10' => 'pm10', // M10 en microgramos/m3
-                'Codigo_validacion_PM' => 'pm10_validation', // V (válido), O (corregido), J (calma)
-            ];
-
-
-            $finalResponseArray = [];
-
-            $realDataArray = explode("\n", $curl2);
-
-            if (!$realDataArray) {
-                return null;
-            }
-
-            function getCharsRangeFromString(string $string, int $start,
-                                                    $size)
-            {
-                return substr($string, $start, $size);
-            }
-
-
-            foreach ($realDataArray as $position => $realDataLine) {
-
-                foreach ($positionsValuesRange as $idx => $range) {
-                    $realField = $rangeIdConversion[ $idx ];
-
-                    if (str_contains($realField, '_validation')) {
-                        continue;
-                    }
-
-                    $start = $range['start'];
-                    $end = $range['end'];
-                    $size = $range['size'];
-
-                    $subString = getCharsRangeFromString($realDataLine, $start, $size);
-
-                    if (!$subString) {
-                        continue;
-                    }
-
-                    if ($realField === 'date' || $realField === 'time') {
-                        $finalResponseArray[ $position ][ $realField ] = $subString;
-                        continue;
-                    }
-
-                    $contains = in_array($realField . '_validation',
-                        array_values($rangeIdConversion));
-
-                    if (!$contains) {
-                        return;
-                    }
-
-                    $validationRangeKey = array_search($realField . '_validation',
-                        $rangeIdConversion);
-
-                    $validationRange = $positionsValuesRange[ $validationRangeKey ];
-
-                    if (!$validationRange) {
-                        continue;
-                    }
-
-                    $start2 = $validationRange['start'];
-                    $end2 = $validationRange['end'];
-                    $size2 = $validationRange['size'];
-
-
-                    $subStringValidation = getCharsRangeFromString($realDataLine,
-                        $start2, $size2);
-
-                    $validation = in_array($subStringValidation,
-                        $validationArraySuccess);
-
-                    if ($validation) {
-                        $finalResponseArray[ $position ][ $realField ] = (float)$subString;
-                    }
-                }
-            }
-        }
-
-        return isset($finalResponseArray) ? $finalResponseArray : null;
-    }
 
     /**
      * Devuelve los datos registrados para la capa de ozono.
@@ -1024,11 +768,6 @@ class AEMET extends Model
 
         return null;
     }
-
-
-
-
-
 
 
     public function test()

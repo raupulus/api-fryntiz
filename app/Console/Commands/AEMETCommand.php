@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\WeatherStation\AEMET;
-use App\Models\WeatherStation\AEMETHighSea;
+use App\Models\WeatherStation\AEMETContamination;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -67,6 +66,10 @@ class AEMETCommand extends Command
         // Devuelve  UV máximo para la provincia. Por ahora no usado
         //$response = \AMETHelper::getUviInfo();
 
+        // Obtiene predicciones de costa, zona de Cádiz/huelva (Parece renovar dos veces al día: 12:00 y 20:00)
+        //AEMETCoast::saveFromApi(\AMETHelper::getCostaPrediction());
+
+
         /*********** Una vez al día ***********/
         ## Playa de Regla
         //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101604));
@@ -75,27 +78,25 @@ class AEMETCommand extends Command
         //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101602));
 
         ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
-        AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
+        //AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
 
 
 
 
-        $response = (new AEMET())->getCostaPrediction();
+
+        $response = AEMETContamination::saveFromApi(\AMETHelper::getContamination());// Desde doñana, cada 10m
 
 
 
-        //$response = (new AEMET())->getPredictionHourly();
-        //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
-        //$response = (new AEMET())->getImageMarTemperature();
-        //$response = (new AEMET())->getImageVegetation();
-        //$response = (new AEMET())->getContamination(); // Desde doñana, cada 10m
         //$response = (new AEMET())->getOzono();
         //$response = (new AEMET())->getSunRadiation(); // Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación global, directa, difusa e infrarroja, y datos semihorarios (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Periodicidad: Cada 24h (actualmente en fines de semana, festivos y vacaciones, no se genera por la ausencia de personal en el Centro Radiométrico Nacional).
 
 
 
 
+        //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
 
+        //$response = (new AEMET())->getPredictionHourly();
 
 
 
@@ -103,6 +104,12 @@ class AEMETCommand extends Command
         //$response = (new AEMET())->test();
 
         dd(['response' => $response]);
+
+
+
+        // Imágenes, por si en el futuro las usara
+        //$response = (new AEMET())->getImageMarTemperature();
+        //$response = (new AEMET())->getImageVegetation();
 
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
