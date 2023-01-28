@@ -541,61 +541,6 @@ class AEMET extends Model
     }
 
 
-
-
-    /**
-     * Devuelve los datos registrados para la capa de ozono.
-     *
-     * De la API vuelve un archivo que proceso para devolver un array con los
-     * datos.
-     *
-     * @return null|array
-     */
-    public function getOzono()
-    {
-        $url = $this->getUrl('ozono');
-        $curl = $this->getCurl($url);
-
-        $fieldNames = ['time_min', 'time_s', 'pressure', 'height', 'temperature',
-            'humidity', 'virt_t_c', 'dpd_c', 'l_rate_c_km', 'asc_rate_m_s03',
-            'm_pa', 'tb_c'];
-
-        $nFieldNames = count($fieldNames);
-
-        try {
-            if ($curl && isset($curl['datos']) && $curl['datos']) {
-                $curl2 = $this->getCurl($curl['datos'], false);
-
-                if ($curl2) {
-                    $documentToArray = explode("\r\n", $curl2);
-
-                    $arrayClean = [];
-
-                    foreach ($documentToArray as $idx => $value) {
-                        $lineTmp = trim($value);
-                        $lineTmp = preg_replace('/\s+/', ';', $lineTmp);
-
-                        if ($lineTmp) {
-                            $tmpArray = explode(';', $lineTmp);
-
-                            if (count($tmpArray) === $nFieldNames) {
-                                $arrayClean[] = array_combine($fieldNames, $tmpArray);
-                            }
-                        }
-                    }
-
-                    return $arrayClean;
-                }
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error al obtener la información de la capa de ozono: ' . $e->getMessage());
-
-            return null;
-        }
-
-        return null;
-    }
-
     public function getSunRadiation()
     {
         $url = $this->getUrl('sunradiation');

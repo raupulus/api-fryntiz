@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\WeatherStation\AEMETContamination;
+use App\Models\WeatherStation\AEMET;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -60,7 +60,7 @@ class AEMETCommand extends Command
 
 
         /*********** Cada Hora ***********/
-
+        //AEMETContamination::saveFromApi(\AMETHelper::getContamination());// Desde doñana, cada 10m
 
         /*********** 12:15 (Por la mañana) *******/
         // Devuelve  UV máximo para la provincia. Por ahora no usado
@@ -80,23 +80,28 @@ class AEMETCommand extends Command
         ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
         //AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
 
+        /*********** Una vez a la semana ***********/
+
+        //AEMETOzone::saveFromApi(\AMETHelper::getOzone());
 
 
 
 
-        $response = AEMETContamination::saveFromApi(\AMETHelper::getContamination());// Desde doñana, cada 10m
 
 
 
-        //$response = (new AEMET())->getOzono();
-        //$response = (new AEMET())->getSunRadiation(); // Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación global, directa, difusa e infrarroja, y datos semihorarios (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Periodicidad: Cada 24h (actualmente en fines de semana, festivos y vacaciones, no se genera por la ausencia de personal en el Centro Radiométrico Nacional).
+        
+        $response = (new AEMET())->getSunRadiation(); // Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación global, directa, difusa e infrarroja, y datos semihorarios (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Periodicidad: Cada 24h (actualmente en fines de semana, festivos y vacaciones, no se genera por la ausencia de personal en el Centro Radiométrico Nacional).
 
+
+
+
+        //$response = (new AEMET())->getPredictionHourly();
 
 
 
         //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
 
-        //$response = (new AEMET())->getPredictionHourly();
 
 
 

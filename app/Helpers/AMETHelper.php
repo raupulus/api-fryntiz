@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AMETHelper
@@ -918,4 +919,158 @@ class AMETHelper
 
         return isset($finalResponseArray) ? $finalResponseArray : null;
     }
+
+
+
+    /**
+     * Devuelve los datos registrados para la capa de ozono.
+     *
+     * De la API vuelve un archivo que proceso para devolver un array con los
+     * datos.
+     *
+     * Al parecer, se lanza un globo al cielo cada unos días, este registra
+     * una serie de datos que se devuelven en el archivo.
+     *
+     * Por lo que he deducido, dura aproximadamente 100 minutos en el aire.
+     *
+     * @return null|array
+     */
+    public static function getOzone()
+    {
+        $url = self::getUrl('ozono');
+        $curl = self::getCurl($url);
+
+        $fieldNames = [
+            'time_min', // Minutos desde el lanzamiento del sondeo
+            'time_s', // Segundos desde el lanzamiento del sondeo
+            'pressure', // Presión atmosférica en hPa
+            'height', // Altura en metros alcanzada por el globo en metros geopotenciales.
+            'temperature', // Temperatura en el aire en grados centígrados ºC
+            'humidity', // Humedad relativa en %
+            'temperature_virtual', // Temperatura virtual en ºC
+            'diff_temperature_dew_point', // Diferencia entre la temperatura y el punto de rocío en ºC
+            'diff_temperature_per_height_km', // Temperatura entre 2 puntos a 1 km de diferencia en altura ascendente, unidad de medida ºC/km (grados centígrados por kilómetro subido)
+            'rate_of_elevation', // Velocidad de ascenso en m/s de la ozonosonda
+            'ozone_partial_pressure', // Presión parcial de ozono en mPa, presión de ozono si se eliminaran todos los componentes de la mezcla y sin variación de temperatura
+            'device_internal_temperature', // Temperatura interna del dispositivo en ºC
+        ];
+
+        $nFieldNames = count($fieldNames);
+
+        try {
+            if ($curl && isset($curl['datos']) && $curl['datos']) {
+                $curl2 = self::getCurl($curl['datos'], false);
+
+                if ($curl2) {
+                    $documentToArray = explode("\r\n", $curl2);
+
+                    $arrayClean = [];
+
+                    ## Obtengo fecha del lanzamiento de la ozonosonda
+                    $ozoneProbeLaunchAt = null;
+
+                    ## Ozono integrado (Concentración de ozono medido en Dobson)
+                    $ozoneIntegrated = null;
+
+                    ## Ozono residual (Ozono residual de la columna)
+                    $ozoneResidual = null;
+
+                    ## Extraigo datos generales como inicio, integrated/residual ozono
+                    foreach ($documentToArray as $idx => $line) {
+                        $cleanLine = mb_strtolower(trim($line));
+                        $cleanLine = preg_replace('/\s+/', ' ', $cleanLine);
+
+                        if (str_contains($cleanLine, 'started at')) {
+                            $dateRaw = preg_replace('/started at/', '', $cleanLine);
+
+                            $dateClean = preg_replace('/utc/', '', $dateRaw);
+                            $dateClean = trim($dateClean);
+
+                            $ozoneProbeLaunchAt = Carbon::parse($dateClean);
+                        }
+
+                        if (str_contains($cleanLine, 'integrated ozone')) {
+                            $dataArray = explode(':', $cleanLine);
+
+                            if ($dataArray && is_array($dataArray) && count($dataArray) === 2) {
+                                $ozoneIntegrated = (float)trim($dataArray[1]);
+                            }
+                        }
+
+                        if (str_contains($cleanLine, 'residual ozone')) {
+                            $dataArray = explode(':', $cleanLine);
+
+                            if ($dataArray && is_array($dataArray) && count($dataArray) === 2) {
+                                $ozoneResidual = (float)trim($dataArray[1]);
+                            }
+                        }
+
+                        if ($ozoneProbeLaunchAt instanceof Carbon &&
+                            $ozoneIntegrated &&
+                            $ozoneResidual
+                        ) {
+                            break;
+                        }
+                    }
+
+
+                    if (! ($ozoneProbeLaunchAt instanceof Carbon)) {
+                        Log::error('AEMET getOzone() No se ha podido parsear la fecha de lanzamiento para la ozonosonda');
+
+                        return null;
+                    }
+
+                    foreach ($documentToArray as $value) {
+                        $lineTmp = trim($value);
+                        $lineTmp = preg_replace('/\s+/', ';', $lineTmp);
+
+                        if ($lineTmp) {
+                            $tmpArray = explode(';', $lineTmp);
+
+                            if (count($tmpArray) === $nFieldNames) {
+                                $fArrayClean = array_combine(
+                                    $fieldNames,
+                                    $tmpArray
+                                );
+
+                                $fArrayClean['time_min'] = (int)$fArrayClean['time_min'];
+                                $fArrayClean['time_s'] = (int)$fArrayClean['time_s'];
+                                $fArrayClean['pressure'] = (float)$fArrayClean['pressure'];
+                                $fArrayClean['height'] = (int)$fArrayClean['height'];
+                                $fArrayClean['temperature'] = (float)$fArrayClean['temperature'];
+                                $fArrayClean['humidity'] = (int)$fArrayClean['humidity'];
+                                $fArrayClean['temperature_virtual'] = (float)$fArrayClean['temperature_virtual'];
+                                $fArrayClean['diff_temperature_dew_point'] = (float)$fArrayClean['diff_temperature_dew_point'];
+                                $fArrayClean['diff_temperature_per_height_km'] = (float)$fArrayClean['diff_temperature_per_height_km'];
+                                $fArrayClean['rate_of_elevation'] = (float)$fArrayClean['rate_of_elevation'];
+                                $fArrayClean['ozone_partial_pressure'] = (float)$fArrayClean['ozone_partial_pressure'];
+                                $fArrayClean['device_internal_temperature'] = (float)$fArrayClean['device_internal_temperature'];
+
+                                $ozoneProbeReadAt = clone($ozoneProbeLaunchAt);
+                                $ozoneProbeReadAt->addMinutes($fArrayClean['time_min']);
+                                $ozoneProbeReadAt->addSeconds($fArrayClean['time_s']);
+
+                                $fArrayClean['ozone_probe_launch_at'] = $ozoneProbeLaunchAt;
+                                $fArrayClean['ozone_probe_read_at'] = $ozoneProbeReadAt; // Calculo el momento de la lectura
+                                $fArrayClean['ozone_integrated'] = $ozoneIntegrated;
+                                $fArrayClean['ozone_residual'] = $ozoneResidual;
+
+                                $arrayClean[] = $fArrayClean;
+
+                            }
+                        }
+                    }
+
+                    return $arrayClean;
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener la información de la capa de ozono: ' . $e->getMessage());
+
+            return null;
+        }
+
+        return null;
+    }
+
 }
