@@ -1073,4 +1073,249 @@ class AMETHelper
         return null;
     }
 
+    /**
+     * Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación  global, directa, difusa e infrarroja, y datos semihorarios  (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados  de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Datos sometidos a controles automáticos de calidad en tiempo real, no puede garantizarse ls ausencia de errores.
+     *
+     * Lectura cada 24 horas.
+     *
+     * @return array|void|null
+     */
+    public static function getSunRadiation()
+    {
+        $url = self::getUrl('sunradiation');
+        $curl = self::getCurl($url);
+
+        if ($curl && isset($curl['datos']) && $curl['datos']) {
+            $curl2 = self::getCurl($curl['datos'], false);
+            $curlMetadata = self::getCurl($curl['metadatos']);
+
+            if (!$curl2 || !$curlMetadata || !isset($curlMetadata['campos'])) {
+                return;
+            }
+
+            $arrayRaw = explode("\r\n", $curl2);
+            $targetArray = null;
+
+
+            ## Operación especial, chapuza para obtener fecha y prevenir que pueda estar en otra línea distinta. Compruebo primero línea 1 y después entre las 5 primeras líneas.
+            $subSubLines = array_slice($arrayRaw, 0, 5);
+
+            /**
+             * Intenta comprobar si la línea recibida es un patrón que se
+             * puede convertir a fecha.
+             *
+             * @param $l
+             *
+             * @return array|string|string[]|null
+             */
+            function extractDateFromUnknownLine($l)
+            {
+                // Aquí, de lo que reciba, intento asegurarme que es una fecha
+
+                $strClean = trim($l);
+                $strClean = str_replace('"', '', $strClean);
+
+                $containsDash = str_contains($strClean, '-');
+
+                if (!$containsDash) {
+                    return null;
+                }
+
+                $hasThreePositions = count(explode('-', $strClean)) === 3;
+
+
+                if ($hasThreePositions) {
+                    return $strClean;
+                }
+
+                return null;
+            }
+
+            $dateRead = extractDateFromUnknownLine($arrayRaw[0]);
+
+            ## Si la fecha está en una posición distinta pues directamente la busco entre las primeras 5 líneas del documento.
+            if (!$dateRead) {
+                foreach ($subSubLines as $subSubLine) {
+                    $dateRead = extractDateFromUnknownLine($subSubLine);
+
+                    if ($dateRead) {
+                        break;
+                    }
+                }
+            }
+
+            if (!$dateRead) {
+                Log::error('AEMET getSunRadiation(): Error al obtener la fecha del documento recibido.');
+                return null;
+            }
+
+
+            $timestamp = Carbon::createFromFormat('d-m-y', $dateRead);
+
+            $startAt = (clone($timestamp))->setTime(0,0);
+            $endAt = (clone($timestamp))->setTime(23,59, 59, 999999);
+
+
+            // Estación más cercana "Huelva"
+            foreach ($arrayRaw as $line) {
+                $arrayRawExplode = explode(';', $line);
+
+                $cleanArray = [];
+
+                $isHuelva = false;
+
+                foreach ($arrayRawExplode as $idx => $attribute) {
+                    $attrClean = trim($attribute);
+                    $attrClean = str_replace('"', '', $attrClean);
+
+
+                    if (str_contains($attrClean, 'Huelva')) {
+                        $cleanArray = $arrayRawExplode;
+                        $isHuelva = true;
+                    }
+                }
+
+                if ($isHuelva) {
+                    foreach ($cleanArray as $idx => $huelvaAttr) {
+                        $cleanArray[ $idx ] = trim($huelvaAttr);
+                        $cleanArray[ $idx ] = str_replace('"', '', $cleanArray[ $idx ]);
+                    }
+
+                    $targetArray = $cleanArray;
+
+                    break;
+                }
+            }
+
+            $fieldsRaw = $curlMetadata['campos'];
+            $positionsArray = [];
+
+            ## Sacamos las posiciones del array como otro array parseando cadenas
+            foreach ($fieldsRaw as $field) {
+                if (!isset($field['posicion_csv'])) {
+                    Log::error('AEMET: getSunRadiation() NO EXISTE POSICION_CSV');
+
+                    continue;
+                }
+
+                $postions = [];
+                $positionsRaw = $field['posicion_csv'];
+
+                $postionsTmp = explode(',', $positionsRaw);
+                foreach ($postionsTmp as $position) {
+                    $position = trim($position);
+                    $position = str_replace(' ', '', $position);
+
+                    if (str_contains($position, '-')) {
+                        $tmp = explode('-', $position);
+
+                        if (count($tmp) !== 2) {
+                            Log::error('AEMET: getSunRadiation() ERROR EN POSICION');
+                            continue;
+                        }
+
+                        $newRange = range($tmp[0] - 1, $tmp[1] - 1);
+
+
+                        if ($newRange && count($newRange)) {
+                            $postions[] = $newRange;
+                        }
+                    } else {
+                        $postions[] = ( (float)trim($position) ) - 1;
+                    }
+                }
+
+                $positionsArray[ $field['id'] ]['positions'] = $postions;
+
+                if (isset($field['validacion'])) {
+                    $positionsArray[ $field['id'] ]['validation'] = $field['validacion'];
+                }
+
+            }
+
+            $finalArray = [];
+
+            $namesArray = [
+                "Estación" => [ // Nombre Estación
+                    'station_name',
+                ],
+                'Indicativo' => [ // Indicativo Climatológico Estación
+                    'station_code',
+                ],
+                'Tipo' => [ // Variable Medida
+                    'type_global',
+                    'type_diffuse',
+                    'type_direct',
+                    'type_uv_eritematica',
+                    'type_infrarroja'
+                ],
+                'Hora Solar Verdadera GL/DF/DT' => [ // Radiación horaria acumulada entre: (hora indicada -1) y (hora indicada) entre las 5 y las 20 Hora Solar Verdadera. Variables: Global/Difusa/Directa", "unidad": "10*kJ/m2"
+                    'real_solar_hour_global',
+                    'real_solar_hour_diffuse',
+                    'real_solar_hour_direct',
+                ],
+                'Suma GL/DF/DT' => [ // Hora Solar Verdadera GL/DF/DT "10*kJ/m2"
+                    'sum_global',
+                    'sum_diffuse',
+                    'sum_direct',
+                ],
+                'Hora Solar Verdadera UVER' => [ //Radiación semihoraria acumulada entre: (hora:minutos indicados - 30 minutos y (hora:minutos indicados) entre las 4:30 y las 20 Hora  Solar Verdadera. Variables: Radiación Ultravioleta Eritemática "unidad": "J/m2",
+                    'real_solar_hour_uver'
+                ],
+                'Suma UVER' => [
+                    'sum_uver'
+                ],
+                'Hora Solar Verdadera INFRARROJA' => [ //Radiación horaria acumulada entre (hora indicada -1) y (hora indicada) entre las 1 y las 24 Hora Solar Verdadera. Variables: Radiación Infrarroja. "unidad": "10*kJ/m2",
+                    'real_solar_hour_infrared'
+                ],
+                'Suma IR' => [ // Radiación diaria acumulada. Variables: Radiación Infrarroja. "unidad": "10*kJ/m2",
+                    'sum_infrared'
+                ],
+            ];
+
+
+            if ($targetArray && count($targetArray) && $positionsArray && count($positionsArray)) {
+                foreach ($positionsArray as $id => $positions) {
+
+                    $datas = [];
+
+
+                    if (isset($namesArray[ $id ])) {
+
+                        foreach ($namesArray[ $id ] as $i => $name) {
+
+                            foreach ($positions['positions'] as $idx => $position) {
+                                if (is_array($position)) {
+                                    $tmp = [];
+
+                                    foreach ($position as $p) {
+                                        $tmp[] = $targetArray[ $p ];
+                                    }
+
+                                    $datas[ $idx ] = json_encode($tmp);
+                                } else {
+                                    $datas[ $idx ] = $targetArray[ $position ];
+                                }
+
+                            }
+
+                            if (isset($datas[ $i ])) {
+                                $finalArray[ $name ] = $datas[ $i ];
+                            }
+                        }
+                    }
+
+                }
+
+
+
+                $finalArray['start_at'] = $startAt;
+                $finalArray['end_at'] = $endAt;
+
+                return $finalArray;
+            }
+        }
+
+        return null;
+    }
 }

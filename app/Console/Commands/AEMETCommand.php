@@ -80,6 +80,9 @@ class AEMETCommand extends Command
         ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
         //AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
 
+        //AEMETSunRadiation::saveFromApi(\AMETHelper::getSunRadiation());
+
+
         /*********** Una vez a la semana ***********/
 
         //AEMETOzone::saveFromApi(\AMETHelper::getOzone());
@@ -90,13 +93,9 @@ class AEMETCommand extends Command
 
 
 
-        
-        $response = (new AEMET())->getSunRadiation(); // Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación global, directa, difusa e infrarroja, y datos semihorarios (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Periodicidad: Cada 24h (actualmente en fines de semana, festivos y vacaciones, no se genera por la ausencia de personal en el Centro Radiométrico Nacional).
 
 
-
-
-        //$response = (new AEMET())->getPredictionHourly();
+        $response = (new AEMET())->getPredictionHourly();
 
 
 
