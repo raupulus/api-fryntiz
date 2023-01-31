@@ -26,7 +26,12 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->command('aemet:update')->everyFiveMinutes();
+        $schedule->command('aemet:update-every10m')->everyTenMinutes();
+        $schedule->command('aemet:update-every30m')->everyThirtyMinutes();
+        $schedule->command('aemet:update-every4h')->everyFourHours();
+        $schedule->command('aemet:update-daily8')->dailyAt('08:05');
+        $schedule->command('aemet:update-daily12')->dailyAt('12:05');
+        $schedule->command('aemet:update-daily20')->dailyAt('20:05');
 
     }
 

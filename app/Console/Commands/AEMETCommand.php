@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\WeatherStation\AEMET;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -46,70 +45,9 @@ class AEMETCommand extends Command
 
 
 
-        /*********** Cada Lo mínimo que pueda ***********/
-        //$response = (new AEMET())->getPredictionDaily();  // NO PREPARADO MODELO/MIGRACION
-
-
-
-        /*********** Cada 10m ***********/
-
-
-        /*********** Cada 30m ***********/
-        // Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
-        //AEMETAdverseEvents::saveFromApi(\AMETHelper::getAvisosCap());
-
-
-        /*********** Cada Hora ***********/
-        //AEMETContamination::saveFromApi(\AMETHelper::getContamination());// Desde doñana, cada 10m
-
-        /*********** 12:15 (Por la mañana) *******/
-        // Devuelve  UV máximo para la provincia. Por ahora no usado
-        //$response = \AMETHelper::getUviInfo();
-
-        // Obtiene predicciones de costa, zona de Cádiz/huelva (Parece renovar dos veces al día: 12:00 y 20:00)
-        //AEMETCoast::saveFromApi(\AMETHelper::getCostaPrediction());
-
-
-        /*********** Una vez al día ***********/
-        ## Playa de Regla
-        //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101604));
-
-        ## Playa Cruz del Mar
-        //AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101602));
-
-        ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
-        //AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
-
-        //AEMETSunRadiation::saveFromApi(\AMETHelper::getSunRadiation());
-
-
-        /*********** Una vez a la semana ***********/
-
-        //AEMETOzone::saveFromApi(\AMETHelper::getOzone());
-
-
-
-
-
-
-
-
-
-        $response = (new AEMET())->getPredictionHourly();
-
-
-
+        // Plantear para en el futuro obtener todos los registros entre
+        // 1980-2010
         //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
-
-
-
-
-
-        //$response = (new AEMET())->test();
-
-        dd(['response' => $response]);
-
-
 
         // Imágenes, por si en el futuro las usara
         //$response = (new AEMET())->getImageMarTemperature();

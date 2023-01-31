@@ -87,10 +87,6 @@ class AEMETSunRadiation extends Model
      */
     public static function saveFromApi(array $apiResponse): ?self
     {
-
-        //dd(self::isValid($apiResponse), self::validation($apiResponse)->errors());
-
-
         if (self::isValid($apiResponse)) {
             return self::updateOrCreate(
                 [
