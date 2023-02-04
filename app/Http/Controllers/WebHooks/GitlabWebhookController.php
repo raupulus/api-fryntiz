@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\WebHooks\GitlabWebhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use function response;
 use Symfony\Component\Process\Process;
+use function response;
 
 /**
  * Class GitlabWebhookController
@@ -35,7 +35,7 @@ class GitlabWebhookController extends Controller
      */
     public function apiDeploy(Request $request)
     {
-        Log::info('Entra en apiDeploy');
+        //Log::info('Entra en apiDeploy');
         $gitLabWebHook = new GitlabWebhook();
         $gitLabWebHook->token = $request->header('X-Gitlab-Token');
         $gitLabWebHook->request = $request->all();
