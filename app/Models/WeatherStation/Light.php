@@ -3,7 +3,6 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\LightUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 
 /**
  * Class Light
@@ -15,6 +14,7 @@ class Light extends BaseWheaterStation
     protected $table = 'meteorology_light';
 
     protected $fillable = [
+        'hardware_device_id',
         'lumens',
         'index',
         'uva',

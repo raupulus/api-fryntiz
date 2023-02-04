@@ -3,7 +3,6 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\RainUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 
 /**
  * Class Rain
@@ -13,6 +12,7 @@ use App\Events\WeatherStationUpdateEvent;
 class Rain extends BaseWheaterStation
 {
     protected $fillable = [
+        'hardware_device_id',
         'rain',
         'rain_intensity',
         'rain_month',

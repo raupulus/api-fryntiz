@@ -3,7 +3,6 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\AirQualityUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 
 /**
  * Class AirQuality
@@ -13,6 +12,7 @@ use App\Events\WeatherStationUpdateEvent;
 class AirQuality extends BaseWheaterStation
 {
     protected $fillable = [
+        'hardware_device_id',
         'gas_resistance',
         'air_quality',
         'created_at'

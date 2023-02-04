@@ -2,8 +2,6 @@
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStationUpdateEvent;
-
 /**
  * Class WindDirection
  *
@@ -12,6 +10,7 @@ use App\Events\WeatherStationUpdateEvent;
 class WindDirection extends BaseWheaterStation
 {
     protected $fillable = [
+        'hardware_device_id',
         'resistance',
         'direction',
         'grades',

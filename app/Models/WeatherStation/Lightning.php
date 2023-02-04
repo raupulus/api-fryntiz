@@ -3,7 +3,6 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\LightningUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 
 /**
  * Class Lightning
@@ -15,6 +14,7 @@ class Lightning extends BaseWheaterStation
     protected $table = 'meteorology_lightning';
 
     protected $fillable = [
+        'hardware_device_id',
         'distance',
         'energy',
         'noise_floor',

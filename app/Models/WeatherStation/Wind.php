@@ -3,7 +3,6 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\WindUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 
 /**
  * Class Wind
@@ -13,6 +12,7 @@ use App\Events\WeatherStationUpdateEvent;
 class Wind extends BaseWheaterStation
 {
     protected $fillable = [
+        'hardware_device_id',
         'speed',
         'average',
         'min',

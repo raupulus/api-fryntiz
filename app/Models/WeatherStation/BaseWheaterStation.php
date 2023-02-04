@@ -6,8 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use function array_key_exists;
-use function array_keys;
-use function response;
 
 /**
  * Class BaseWheaterStation
@@ -17,6 +15,7 @@ use function response;
 class BaseWheaterStation extends Model
 {
     protected $fillable = [
+        'hardware_device_id',
         'value',
         'created_at'
     ];
