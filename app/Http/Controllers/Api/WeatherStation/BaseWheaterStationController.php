@@ -214,6 +214,7 @@ abstract class BaseWheaterStationController extends Controller
     public function addValidate($data)
     {
         return Validator::make($data, [
+            'hardware_device_id' => 'nullable',
             'value' => 'required|numeric',
             'created_at' => 'date_format:Y-m-d H:i:s',
         ])->validate();
