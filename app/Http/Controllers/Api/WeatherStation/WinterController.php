@@ -24,6 +24,7 @@ class WinterController extends BaseWheaterStationController
     public function addValidate($data)
     {
         return Validator::make($data, [
+            'hardware_device_id' => 'required|nullable',
             'speed' => 'required|numeric',
             'average' => 'required|numeric',
             'min' => 'required|numeric',

@@ -10,15 +10,11 @@ use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
-use App\Models\WeatherStation\Uva;
-use App\Models\WeatherStation\Uvb;
-use App\Models\WeatherStation\UvIndex;
-use App\Models\WeatherStation\WindDirection;
 use App\Models\WeatherStation\Wind;
+use App\Models\WeatherStation\WindDirection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use function count;
 use function response;
 
 /**
