@@ -12,10 +12,9 @@ use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
-use App\Models\WeatherStation\WindDirection;
 use App\Models\WeatherStation\Wind;
+use App\Models\WeatherStation\WindDirection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class GenericWSController
 {
@@ -156,7 +155,7 @@ class GenericWSController
         }
 
         if ($request->has('lumens')) {
-            $lumens = $request->get('lumens');
+            $lumens = $request->get('lumens') ?? 0;
             $index = $request->get('uv_index');
             $uva = $request->get('uva');
             $uvb = $request->get('uvb');
