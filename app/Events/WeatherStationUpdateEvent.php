@@ -2,11 +2,8 @@
 
 namespace App\Events;
 
-use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -40,7 +37,7 @@ class WeatherStationUpdateEvent implements ShouldBroadcast
     {
         // https://github.com/beyondcode/laravel-websockets-demo/blob/master/app/Events/MessageSent.php
 
-        \Log::info('Evento broadcastOn weather-station');
+        //\Log::info('Evento broadcastOn weather-station');
         return new Channel('weather-station');
         //return new PrivateChannel('weather-station');
         //return new PresenceChannel('weater-station-update');
