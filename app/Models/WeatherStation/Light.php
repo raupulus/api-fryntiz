@@ -17,6 +17,7 @@ class Light extends BaseWheaterStation
         'hardware_device_id',
         'lumens',
         'index',
+        'lux',
         'uva',
         'uvb',
         'created_at'
@@ -28,6 +29,7 @@ class Light extends BaseWheaterStation
     public $apiFields = [
         'lumens',
         'index',
+        'lux',
         'uva',
         'uvb',
     ];
