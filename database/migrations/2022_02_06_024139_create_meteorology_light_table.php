@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateMeteorologyLightTable
@@ -41,6 +41,8 @@ class CreateMeteorologyLightTable extends Migration
                 ->onDelete('CASCADE');
             $table->decimal('lumens', 10, 2)
                 ->comment('Lumens');
+            $table->decimal('lux', 10, 2)
+                ->comment('lux');
             $table->decimal('index', 10, 2)
                 ->nullable()
                 ->comment('Índice');

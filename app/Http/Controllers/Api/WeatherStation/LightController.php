@@ -23,7 +23,9 @@ class LightController extends BaseWheaterStationController
     public function addValidate($data)
     {
         return Validator::make($data, [
-            'hardware_device_id' => 'required|nullable',  'lumens' => 'required|numeric',
+            'hardware_device_id' => 'required|nullable',
+            'lumens' => 'required|numeric',
+            'lux' => 'required|numeric',
             'index' => 'required|numeric',
             'uva' => 'required|numeric',
             'uvb' => 'required|numeric',
