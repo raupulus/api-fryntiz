@@ -76,6 +76,13 @@ Ruta de acceso: /airflight
 
 ## Cronjobs
 
+Añadir tarea cron para ejecutar cada minuto el comando de laravel para ejecutar los cronjobs
+
+```bash
+## Laravel api-fryntiz
+* * * * * fryntiz cd /var/www/public/api-fryntiz && php artisan schedule:run >> /dev/null 2>&1
+```
+
 ## Websockets
 
 Para habilitar los cronjobs se hay que instalar algún gestor de tareas como *supervisor*
@@ -84,11 +91,11 @@ Para habilitar los cronjobs se hay que instalar algún gestor de tareas como *su
 sudo apt install supervisor
 ```
 
-Y crear un archivo de configuración en */etc/supervisor/conf.d/api-fryntiz.conf* con el siguiente contenido:
+Y crear un archivo de configuración en */etc/supervisor/conf.d/api-fryntiz.conf* con el siguiente contenido cambiando ruta y usuario:
 
 ```
 [program:api_fryntiz_websockets]
-command=/usr/bin/php /var/www/public/api-fryntiz/artisan websockets:serve --host 127.0.0.1 --port 6001
+command=/usr/bin/php /var/www/public/api-fryntiz/artisan websockets:serve --port 6001
 numprocs=1
 autostart=true
 autorestart=true
