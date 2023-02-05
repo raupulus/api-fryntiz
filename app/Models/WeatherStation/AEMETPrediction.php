@@ -14,6 +14,7 @@ class AEMETPrediction extends Model
 
     protected $fillable = [
         'sky_status',
+        'sky_status_code',
         'start_at',
         'end_at',
         'rain',
@@ -47,6 +48,7 @@ class AEMETPrediction extends Model
             'city' => 'nullable|string',
             'province' => 'nullable|string',
             'sky_status' => 'nullable|string',
+            'sky_status_code' => 'nullable|string',
             'rain' => 'nullable|numeric',
             'rain_prob' => 'nullable|integer',
             'storm_prob' => 'nullable|integer',
