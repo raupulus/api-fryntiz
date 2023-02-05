@@ -76,16 +76,24 @@ Ruta de acceso: /airflight
 
 ## Cronjobs
 
-Añadir tarea cron para ejecutar cada minuto el comando de laravel para ejecutar los cronjobs
+Añadir tarea cron para ejecutar cada minuto el comando de laravel para ejecutar los cronjobs:
 
 ```bash
 ## Laravel api-fryntiz
 * * * * * fryntiz cd /var/www/public/api-fryntiz && php artisan schedule:run >> /dev/null 2>&1
 ```
 
+Así laravel podrá gestionar las tareas programadas controladas por código internamente.
+
 ## Websockets
 
-Para habilitar los cronjobs se hay que instalar algún gestor de tareas como *supervisor*
+Antes de continuar, todo lo que ves a continuación es para instalar websockets en un servidor con Debian Stable, en caso de usar otro sistema operativo o versión de Debian, puede que no funcione o haya que adaptar los comandos.
+
+De cualquier forma, me salto las partes de configuración para la seguridad por ser de ámbito general y esto es un proyecto de código abierto, no un tutorial de seguridad. Lo mínimo que deberías plantear es tener un certificado SSL válido y que la aplicación no se ejecute como root, si no como un nuevo usuario con permisos limitados al menos para la parte de websockets. También deberías tener un firewall activo y configurado para evitar ataques. En el servidor de nginx/apache o el que uses deberías limitar el acceso a la aplicación por IP o rango de IPs (cualquier mecanismo para evitar accesos no autorizados que consuman recursos y/o puedan escalar acceso).
+
+El ejemplo para la configuración de apache lo puedes encontrar en el archivo *api-fryntiz.conf* en la raíz del proyecto.
+
+Para habilitar los websockets se hay que instalar algún gestor de tareas como *supervisor*
 
 ```bash
 sudo apt install supervisor
@@ -111,3 +119,24 @@ sudo supervisorctl status api_fryntiz_websockets
 ```
 
 Más información en [https://beyondco.de/docs/laravel-websockets/getting-started/installation](https://beyondco.de/docs/laravel-websockets/getting-started/installation)
+
+
+Incrementar límites de conexiones al websockets, esto normalmente es un límite del sistema operativo, en este caso Debian Stable:
+    
+```bash
+sudo nano  /etc/security/limits.d/laravel-echo.conf
+```
+
+Cambia el nombre del archivo y del usuario por el que corresponda, en este caso es laravel-echo como ejemplo.
+
+Dentro deberá tener el siguiente contenido adaptado a tu caso:
+
+```bash
+#<domain>    <type>  <item>    <value>
+
+laravel-echo       soft    nofile        10000
+```
+
+Suele estar limitado a 1024.
+
+Para más seguridad y evitar problemas, es mejor haber utilizado un usuario específico para la aplicación y no el usuario root o cualquier otro administrador.
