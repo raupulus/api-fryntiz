@@ -39,7 +39,7 @@ class LightController extends BaseWheaterStationController
      */
     public function all()
     {
-        $model = $this->model::whereNotNull('gas_resistance')
+        $model = $this->model::whereNotNull('lux')
             ->whereNotNull('lumens')
             ->whereNotNull('index')
             ->whereNotNull('uva')

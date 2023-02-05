@@ -73,3 +73,34 @@ Ruta de acceso: /smartplant
 ## API Airflight
 
 Ruta de acceso: /airflight
+
+## Cronjobs
+
+## Websockets
+
+Para habilitar los cronjobs se hay que instalar algún gestor de tareas como *supervisor*
+
+```bash
+sudo apt install supervisor
+```
+
+Y crear un archivo de configuración en */etc/supervisor/conf.d/api-fryntiz.conf* con el siguiente contenido:
+
+```
+[program:api_fryntiz_websockets]
+command=/usr/bin/php /var/www/public/api-fryntiz/artisan websockets:serve --host 127.0.0.1 --port 6001
+numprocs=1
+autostart=true
+autorestart=true
+user=fryntiz
+```
+
+Y reiniciar el servicio de supervisor
+
+```bash
+sudo supervisorctl update
+sudo supervisorctl restart api_fryntiz_websockets
+sudo supervisorctl status api_fryntiz_websockets
+```
+
+Más información en [https://beyondco.de/docs/laravel-websockets/getting-started/installation](https://beyondco.de/docs/laravel-websockets/getting-started/installation)
