@@ -180,7 +180,7 @@ return [
             [
                 'text' => 'Estadísticas',
                 'icon' => 'far fa-fw fa-file',
-                'url' => '#',
+                'route' => 'dashboard.energy.index',
             ],
             [
                 'text' => 'Mantenimiento',

@@ -26,9 +26,9 @@ class HardwarePowerLoad extends BaseModel
      * @param \App\Models\Hardware\HardwareDevice $device
      * @param                                     $request
      *
-     * @return \App\Models\Hardware\HardwarePowerGeneratorHistorical
+     * @return \App\Models\Hardware\HardwarePowerLoad
      */
-    public static function createModel(HardwareDevice $device, $request)
+    public static function createModel(HardwareDevice $device, $request): HardwarePowerLoad
     {
         $fan = $request->get('fan') ?? $request->get('load_fan');
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');

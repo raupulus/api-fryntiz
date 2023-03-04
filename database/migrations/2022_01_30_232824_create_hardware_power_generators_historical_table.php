@@ -46,7 +46,7 @@ class CreateHardwarePowerGeneratorsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Número de veces que se ha cargado la batería por completo');
-            $table->decimal('amperage', 10, 2)
+            $table->double('amperage')
                 ->nullable()
                 ->default(0)
                 ->comment('Carga total en Ah que ha sido almacenado en la batería');

@@ -5,6 +5,7 @@ namespace App\Models\Hardware;
 use App\Models\BaseModels\BaseModel;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use function array_filter;
 
 /**
@@ -30,9 +31,9 @@ class HardwarePowerLoadHistorical extends BaseModel
      * @param \App\Models\Hardware\HardwareDevice $device
      * @param                                     $request
      *
-     * @return \App\Models\Hardware\HardwarePowerLoadHistorical
+     * @return self
      */
-    public static function createModel(HardwareDevice $device, $request)
+    public static function createModel(HardwareDevice $device, $request): self
     {
         $fan = $request->get('load_fan');
         $voltage = $request->get('voltage') ?? $request->get('load_voltage');
@@ -72,7 +73,7 @@ class HardwarePowerLoadHistorical extends BaseModel
      *
      * @return $this
      */
-    public function updateModel($request)
+    public function updateModel($request): self
     {
         $fan = $request->get('load_fan');
         $fanMin = $fan < $this->fan_min ? $fan : $this->fan_min;
@@ -136,5 +137,58 @@ class HardwarePowerLoadHistorical extends BaseModel
         $this->fill(array_filter($data, 'strlen'));
 
         return $this;
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public static function calculateHistoricalFromTodays(int $hardwareDeviceId): ?self
+    {
+        $historical = self::where('hardware_device_id', $hardwareDeviceId)
+            ->orderByDesc('updated_at')
+            ->first();
+
+        $now = Carbon::now();
+
+        $dataToday = HardwarePowerLoadToday::select([
+            DB::raw('count(id) as days_operating'),
+            DB::raw('min(fan_min) as fan_min'),
+            DB::raw('max(fan_max) as fan_max'),
+            DB::raw('min(temperature_min) as temperature_min'),
+            DB::raw('max(temperature_max) as temperature_max'),
+            DB::raw('min(voltage_min) as voltage_min'),
+            DB::raw('max(voltage_max) as voltage_max'),
+            DB::raw('min(battery_min) as battery_min'),
+            DB::raw('max(battery_max) as battery_max'),
+            DB::raw('min(amperage_min) as amperage_min'),
+            DB::raw('max(amperage_max) as amperage_max'),
+            DB::raw('sum(amperage) as amperage'),
+            DB::raw('min(power_min) as power_min'),
+            DB::raw('max(power_max) as power_max'),
+            DB::raw('sum(power) as power'),
+        ])
+            ->where('hardware_device_id', $hardwareDeviceId)
+            ->first()
+            ->toArray();
+
+        if ($historical) {
+            $historical->update(array_merge([
+                'read_at' => $now,
+            ], $dataToday));
+        } else {
+            $historical = self::create(array_merge([
+                'hardware_device_id' => $hardwareDeviceId,
+                'read_at' => $now,
+            ], $dataToday));
+        }
+
+        return $historical;
     }
 }

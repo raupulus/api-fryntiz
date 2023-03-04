@@ -1,9 +1,10 @@
 <?php
 /*
  * Archivo de rutas para la api de estación meteorológica accesible desde el
- * sufijo /api/weatherstation/v1/*
+ * sufijo /api/hardware/v1/*
  */
 
+use App\Http\Controllers\Api\Hardware\V1\EnergyMonitorController;
 use App\Http\Controllers\Api\Hardware\V1\SolarChargeController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,9 @@ Route::group(['prefix' => '/'], function () {
         return response()->json(['test' => 'Valor']);
     });
     */
+
+    // TODO: preparar middleware, request validator y endpoint entrada datos energía
+    Route::post('/energy-monitor/store', [EnergyMonitorController::class, 'store']);
 });
 
 ######################################################
@@ -28,8 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     ## Añadir Datos Solares
     Route::post('/solarcharge/store', [SolarChargeController::class, 'store']);
 
-    ## Añadir Datos de solo consumo
-    //todo
+
 
 });
 

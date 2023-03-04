@@ -20,9 +20,10 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
 use App\Http\Controllers\Dashboard\Hardware\HardwareDeviceController;
+use App\Http\Controllers\Dashboard\Hardware\HardwareEnergyController;
 use App\Http\Controllers\Dashboard\LanguageController;
-use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\PlatformController;
+use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,31 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
         return view('dashboard.index');
     })->name('dashboard.index');
 });
+
+############################################################
+##                      Energía                           ##
+############################################################
+Route::group(['prefix' => '/energy', 'middleware' => ['auth', 'verified']],
+    function () {
+
+        Route::get('/index', [HardwareEnergyController::class, 'index'])
+            ->name('dashboard.energy.index');
+
+        Route::get('/create', [HardwareEnergyController::class, 'create'])
+            ->name('dashboard.energy.create');
+
+        Route::post('/store', [HardwareEnergyController::class, 'store'])
+            ->name('dashboard.energy.store');
+
+        Route::get('/{model}/edit', [HardwareEnergyController::class, 'edit'])
+            ->name('dashboard.energy.edit');
+
+        Route::match(['post', 'put', 'patch'], '/update/{model?}', [HardwareEnergyController::class, 'update'])
+            ->name('dashboard.energy.update');
+
+        Route::match(['POST', 'DELETE'], '/destroy/{model?}', [HardwareEnergyController::class, 'destroy'])
+            ->name('dashboard.energy.destroy');
+    });
 
 ############################################################
 ##                    Plataformas                         ##
@@ -83,19 +109,19 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
 
         Route::group(['prefix' => '/ajax'], function () {
 
-                /*
-                Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
-                    ->name('dashboard.tag.ajax.get.all');
-                */
+            /*
+            Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
+                ->name('dashboard.tag.ajax.get.all');
+            */
 
-                Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
-                    ->name('dashboard.tag.ajax.table.get');
+            Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
+                ->name('dashboard.tag.ajax.table.get');
 
-                ## Acciones sobre datos de la tabla [update, create...]
-                Route::match(['put', 'patch', 'post'], '/table/action', [TagController::class, 'ajaxTableActions'])
-                    ->name('dashboard.tag.ajax.table.actions');
-            });
-});
+            ## Acciones sobre datos de la tabla [update, create...]
+            Route::match(['put', 'patch', 'post'], '/table/action', [TagController::class, 'ajaxTableActions'])
+                ->name('dashboard.tag.ajax.table.actions');
+        });
+    });
 
 ############################################################
 ##                     Categorías                         ##
@@ -117,18 +143,18 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
 
         Route::group(['prefix' => '/ajax'], function () {
 
-                /*
-                Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
-                    ->name('dashboard.tag.ajax.get.all');
-                */
+            /*
+            Route::get('/get/all', [TagController::class, 'ajaxGetTags'])
+                ->name('dashboard.tag.ajax.get.all');
+            */
 
-                Route::post('/table/get', [CategoryController::class, 'ajaxTableGetQuery'])
-                    ->name('dashboard.category.ajax.table.get');
+            Route::post('/table/get', [CategoryController::class, 'ajaxTableGetQuery'])
+                ->name('dashboard.category.ajax.table.get');
 
-                ## Acciones sobre datos de la tabla [update, create...]
-                Route::match(['put', 'patch', 'post'], '/table/action', [CategoryController::class, 'ajaxTableActions'])
-                    ->name('dashboard.category.ajax.table.actions');
-            });
+            ## Acciones sobre datos de la tabla [update, create...]
+            Route::match(['put', 'patch', 'post'], '/table/action', [CategoryController::class, 'ajaxTableActions'])
+                ->name('dashboard.category.ajax.table.actions');
+        });
     });
 
 ############################################################

@@ -74,7 +74,7 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo (A)');
-            $table->decimal('amperage', 10, 2)
+            $table->double('amperage')
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje total (A)');
