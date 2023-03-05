@@ -383,6 +383,14 @@ class AMETHelper
                         ],
                     ];
 
+                    $skyMorningStatusCode = isset($skyStatus[ $prediction['estadoCielo']['f1']]) ? $skyStatus[ $prediction['estadoCielo']['f1']]['code'] : $prediction['estadoCielo']['f1'];
+
+                    $skyMorningStatus = isset($skyStatus[ $prediction['estadoCielo']['f1']]) ? $skyStatus[ $prediction['estadoCielo']['f1']]['description'] : $prediction['estadoCielo']['f1'];
+
+                    $skyAfternoonStatusCode = isset($skyStatus[ $prediction['estadoCielo']['f2']]) ? $skyStatus[ $prediction['estadoCielo']['f2']]['code'] : $prediction['estadoCielo']['f2'];
+
+                    $skyAfternoonStatus = isset($skyStatus[ $prediction['estadoCielo']['f2']]) ? $skyStatus[ $prediction['estadoCielo']['f2']]['description'] : $prediction['estadoCielo']['f2'];
+
                     $predictionFinal = [
                         'beach_id' => $beachId,
                         'name' => $name,
@@ -390,12 +398,19 @@ class AMETHelper
                         'city_code' => $cityCode,
                         'read_at' => $sendAt,
 
+
+                        'sky_morning_status_code' => $skyMorningStatusCode,
+                        'sky_morning_status' => $skyMorningStatus,
+                        'sky_afternoon_status_code' => $skyAfternoonStatusCode,
+                        'sky_afternoon_status' => $skyAfternoonStatus,
+                        'sky_extra_info' => isset($prediction['estadoCielo']) && isset($prediction['estadoCielo']['value']) ? $prediction['estadoCielo']['value'] : null,
+          /*
                         'sky_morning_status_code' => $skyStatus[ $prediction['estadoCielo']['f1'] ]['code'],
                         'sky_morning_status' => $skyStatus[ $prediction['estadoCielo']['f1'] ]['description'],
                         'sky_afternoon_status_code' => $skyStatus[ $prediction['estadoCielo']['f2'] ]['code'],
                         'sky_afternoon_status' => $skyStatus[ $prediction['estadoCielo']['f2'] ]['description'],
                         'sky_extra_info' => $prediction['estadoCielo']['value'],
-
+        */
                         'wind_morning_status_code' => $windStatus[ $prediction['viento']['f1'] ]['code'],
                         'wind_morning_status' => $windStatus[ $prediction['viento']['f1'] ]['description'],
                         'wind_afternoon_status_code' => $windStatus[ $prediction['viento']['f2'] ]['code'],
