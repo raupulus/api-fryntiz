@@ -39,7 +39,7 @@ class AEMETEvery30mCommand extends Command
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
         // Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
-        AEMETAdverseEvents::saveFromApi(\AMETHelper::getAvisosCap());
+        AEMETAdverseEvents::saveFromApi(\AEMETHelper::getAvisosCap());
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

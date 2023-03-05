@@ -43,16 +43,16 @@ class AEMETDaily8Command extends Command
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
         ## Playa de Regla
-        AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101604));
+        AEMETPredictionBeach::saveFromApi(\AEMETHelper::getPredictionBeachById(1101604));
 
         ## Playa Cruz del Mar
-        AEMETPredictionBeach::saveFromApi(\AMETHelper::getPredictionBeachById(1101602));
+        AEMETPredictionBeach::saveFromApi(\AEMETHelper::getPredictionBeachById(1101602));
 
         ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
-        AEMETHighSea::saveFromApi(\AMETHelper::getAltamarPrediction());
+        AEMETHighSea::saveFromApi(\AEMETHelper::getAltamarPrediction());
 
         ## Obtiene predicciones de radiación solar
-        AEMETSunRadiation::saveFromApi(\AMETHelper::getSunRadiation());
+        AEMETSunRadiation::saveFromApi(\AEMETHelper::getSunRadiation());
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

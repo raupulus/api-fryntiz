@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use function App\Models\WeatherStation\extractRange;
 
-class AMETHelper
+class AEMETHelper
 {
     private static $URL = 'https://opendata.aemet.es/opendata/api';
 

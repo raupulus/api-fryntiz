@@ -38,7 +38,7 @@ class AEMETEvery4hCommand extends Command
     {
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
-        AEMETPrediction::saveFromApi(\AMETHelper::getPredictionHourly()); // Desde doñana, cada 4h
+        AEMETPrediction::saveFromApi(\AEMETHelper::getPredictionHourly()); // Desde doñana, cada 4h
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

@@ -38,7 +38,7 @@ class AEMETEvery10mCommand extends Command
     {
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
-        AEMETContamination::saveFromApi(\AMETHelper::getContamination()); // Desde doñana, cada 10m
+        AEMETContamination::saveFromApi(\AEMETHelper::getContamination()); // Desde doñana, cada 10m
 
         /*********** Cada Lo mínimo que pueda ***********/
         //$response = (new AEMET())->getPredictionDaily();  // NO PREPARADO MODELO/MIGRACION

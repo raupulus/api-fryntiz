@@ -39,7 +39,7 @@ class AEMETDaily20Command extends Command
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
         // Obtiene predicciones de costa, zona de Cádiz/huelva (Parece renovar dos veces al día: 12:00 y 20:00)
-        AEMETCoast::saveFromApi(\AMETHelper::getCostaPrediction());
+        AEMETCoast::saveFromApi(\AEMETHelper::getCostaPrediction());
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }
