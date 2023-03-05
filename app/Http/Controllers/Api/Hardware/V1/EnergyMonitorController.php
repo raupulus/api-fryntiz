@@ -92,11 +92,12 @@ class EnergyMonitorController extends Controller
             $batterPorcentage = isset($sensor['battery_porcentage']) ? $sensor['battery_porcentage'] : null;
 
 
-            ## Amperaje consumido respecto a una hora.
+            ## Amperaje consumido, para ello paso a amperios/segundos y multiplico por la duración para sacar la estimación. No debería llamarse amperios por horas ya que eso es lo que recibe, lo que pretendo sacar es la intensidad consumida en el tiempo de monitorización (1Ah = 18000As, 1As = 0.00027777777777778 Ah).
+            ## Finalmente, lo que realizo es sacar el amperaje proporcional a la hora según la media de consumo, es decir si está consumiendo 5ah durante un periodo de 10 segundos tenemos "0,013888888888889" A consumidos, al multiplicar por 6 tenemos ese consumo de 10 segundos en 1 minuto, volvemos a multiplicar por 60 y debería darnos el amperaje recibido (5). Si cambia la intensidad podemos de esta forma ir sumando en los históricos para estimar el consumo durante esos periodos.
             $duration = $request->get('duration');
 
             if ($duration) {
-                $amperageHour = ( $amperage * $duration ) / 3600;
+                $amperageHour = $amperage * $duration / 3600;
             } else {
                 $amperageHour = 0;
             }
