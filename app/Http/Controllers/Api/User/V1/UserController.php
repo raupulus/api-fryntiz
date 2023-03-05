@@ -12,7 +12,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use JsonHelper;
-use function response;
 
 /**
  * Class UserController
@@ -46,6 +45,9 @@ class UserController extends Controller
      */
     public function create(CreateRequest $request)
     {
+        ## Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
+        return JsonHelper::forbidden();
+
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 
