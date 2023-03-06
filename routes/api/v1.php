@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1/auth'], function () {
     ## Ruta para hacer login.
     Route::post('/login', [LoginController::class, 'login'])
-        ->middleware(\Illuminate\Session\Middleware\StartSession::class)
+        //->middleware(\Illuminate\Session\Middleware\StartSession::class)
         ->name('api.v1.auth.login');
 
     ## Ruta para crear un nuevo registro de usuario.
