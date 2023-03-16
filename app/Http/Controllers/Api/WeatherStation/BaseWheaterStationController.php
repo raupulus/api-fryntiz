@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use function array_keys;
 use function auth;
 use function get_object_vars;
 use function GuzzleHttp\json_decode;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use function response;
 
 /**
@@ -179,7 +179,7 @@ abstract class BaseWheaterStationController extends Controller
                 ## Parseo la fecha
                 $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
 
-                ## Obtengo atributos y los validos para excluir posible basura.
+                ## Obtengo atributos y los válidos para excluir posible basura.
                 $attributes = $this->addValidate(get_object_vars($d));
 
                 $model->fill($attributes);
@@ -214,6 +214,7 @@ abstract class BaseWheaterStationController extends Controller
     public function addValidate($data)
     {
         return Validator::make($data, [
+            'hardware_device_id' => 'nullable',
             'value' => 'required|numeric',
             'created_at' => 'date_format:Y-m-d H:i:s',
         ])->validate();
@@ -229,6 +230,7 @@ abstract class BaseWheaterStationController extends Controller
     public function findValidate($request)
     {
         $rules = [
+            'hardware_device_id' => 'nullable',
             'date_min' => 'nullable|date',
             'date_max' => 'nullable|date',
             'value_min' => 'nullable|numeric',
@@ -241,5 +243,28 @@ abstract class BaseWheaterStationController extends Controller
         ## Saneo los valores que no existan para convertirlos en nulos.
         $valuesNull = array_fill_keys(array_keys($rules), null);
         return array_merge($valuesNull, $validate);
+    }
+
+
+    public function getPrepareData()
+    {
+        $modelClass = $this->model;
+        $fields = (new $modelClass())->apiFields;
+
+        $model = $modelClass::orderBy('created_at', 'DESC');
+
+        foreach ($fields as $field) {
+            $model->whereNotNull($field);
+        }
+
+        $model = $model->first();
+
+        $datas = null;
+
+        if ($model) {
+            $datas = $model->prepareApiResponse();
+        }
+
+        return \JsonHelper::success(['datas' => $datas]);
     }
 }

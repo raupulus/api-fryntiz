@@ -39,12 +39,17 @@ class CreateMeteorologyWinterTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->decimal('speed', 14, 4);
-            $table->decimal('average', 14, 4);
-            $table->decimal('min', 14, 4);
-            $table->decimal('max', 14, 4);
+            $table->decimal('speed', 14, 4)
+                ->comment('Velocidad del viento m/s');
+            $table->decimal('average', 14, 4)
+                ->comment('Velocidad promedio del viento m/s');
+            $table->decimal('min', 14, 4)
+                ->comment('Velocidad mínima del viento m/s');
+            $table->decimal('max', 14, 4)
+                ->comment('Velocidad máxima del viento m/s');
             $table->timestamp('created_at')->nullable();
         });
+
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 

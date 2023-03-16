@@ -35,15 +35,16 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fa fa-heading"></i>
-                        </span>
+                            <span class="input-group-text">
+                                <i class="fa fa-heading"></i>
+                            </span>
                         </div>
 
                         <input id="title"
                                type="text"
                                class="form-control"
                                name="title"
+                               data-slug_provider="title"
                                minlength="5"
                                maxlength="255"
                                required
@@ -53,6 +54,7 @@
                 </div>
 
                 {{-- Slug TODO:check en tiempo real, poner título si está vacío al perder focus del campo título--}}
+
                 {{-- Slug TODO:comprobar si está bien formado en tiempo real--}}
                 <div class="form-group">
                     <label for="slug">
@@ -70,6 +72,7 @@
                                type="text"
                                class="form-control"
                                name="slug"
+                               data-sluggable="title"
                                required
                                minlength="3"
                                maxlength="255"
@@ -86,11 +89,15 @@
 
                     <select id="author_id" name="author_id"
                             class="custom-select rounded-0">
-                        @if (auth()->user()->role_id === 2)
+                        @if (in_array(auth()->user()->role_id, [1, 2]))
                             @foreach($users as $user)
+                                @php($checked = (int)old('author_id')===  $user->id)
+                                @php($checked = $checked ?? !$model->author_id
+                                 && ($user->id === auth()->id()))
+                                @php($checked = $checked ?? $model->author_id  === $user->id)
+
                                 <option value="{{ $user->id }}"
-                                        {{!$model->author_id && ($user->id === auth()->id()) ? 'selected' : ''}}
-                                        {{$model->author_id === $user->id ? 'selected' : ''}}>
+                                        {{$checked ? 'selected' : ''}}>
                                     {{ $user->name }}
                                 </option>
                             @endforeach
@@ -111,8 +118,11 @@
                     <select id="platform_id" name="platform_id"
                             class="custom-select rounded-0">
                         @foreach($platforms as $platform)
+                            @php($checked = (int)old('platform_id', $model->platform_id) ===
+                            $platform->id)
+
                             <option value="{{ $platform->id }}"
-                                    {{$model->platform_id === $platform->id ? 'selected' : ''}}>
+                                    {{$checked ? 'selected' : ''}}>
                                 {{ $platform->title }}
                             </option>
                         @endforeach
@@ -128,8 +138,11 @@
                     <select id="type_id" name="type_id"
                             class="custom-select rounded-0">
                         @foreach($contentTypes as $contentType)
+                            @php($checked = (int)old('type_id') === $contentType->id)
+                            @php($checked = $checked ?? $model->type_id === $contentType->id)
+
                             <option value="{{ $contentType->id }}"
-                                    {{$model->type_id === $contentType->id ? 'selected' : ''}}>
+                                    {{$checked ? 'selected' : ''}}>
                                 {{ $contentType->name }}
                             </option>
                         @endforeach
@@ -161,7 +174,8 @@
 
                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                         <input type="checkbox" class="custom-control-input"
-                               {{$model->is_active ? 'checked' : ''}}
+                               {{old('is_active', $model->is_active) ?
+                               'checked' : ''}}
                                name="is_active"
                                id="is_active">
                         <label class="custom-control-label" for="is_active">
@@ -171,7 +185,7 @@
 
                     <div class="custom-control custom-switch  custom-switch-off custom-switch-on-primary">
                         <input type="checkbox" class="custom-control-input"
-                               {{$model->is_featured ? 'checked' : ''}}
+                               {{old('is_featured', $model->is_featured) ? 'checked' : ''}}
                                id="is_featured"
                                name="is_featured">
                         <label class="custom-control-label" for="is_featured">
@@ -197,7 +211,7 @@
                                type="checkbox"
                                id="is_comment_enabled"
                                name="is_comment_enabled"
-                                {{!$model->id || $model->is_comment_enabled ? 'checked' : ''}}>
+                                {{old('is_comment_enabled', $model->is_comment_enabled) ? 'checked' : ''}}>
                         <label for="is_comment_enabled"
                                class="custom-control-label">
                             Permitir Comentarios
@@ -209,7 +223,7 @@
                                type="checkbox"
                                id="is_comment_anonymous"
                                name="is_comment_anonymous"
-                                {{ $model->is_comment_anonymous ? 'checked' : '' }}>
+                                {{ old('is_comment_anonymous', $model->is_comment_anonymous) ? 'checked' : '' }}>
                         <label for="is_comment_anonymous"
                                class="custom-control-label">
                             Permitir Comentarios Anónimos
@@ -221,7 +235,7 @@
                                type="checkbox"
                                id="is_visible_on_archive"
                                name="is_visible_on_archive"
-                                {{ $model->is_visible_on_archive ? 'checked' : '' }}>
+                                {{ old('is_visible_on_archive', $model->is_visible_on_archive) ? 'checked' : '' }}>
                         <label for="is_visible_on_archive"
                                class="custom-control-label">
                             Contenido Archivado (obsoleto)
@@ -429,9 +443,9 @@
                 <div class="form-group">
                     <label for="contributors">
                         Contribuidores
-                        <br>
+                        <br/>
                         <small>
-                            Podrán editar las páginas del contenido (TODO)
+                            Podrán editar las páginas del contenido
                         </small>
                     </label>
 
@@ -441,8 +455,11 @@
                             multiple="multiple">
 
                         @foreach($users as $user)
+                            @php($checked = $contributorsIds && in_array($user->id, $contributorsIds))
+                            @php($checked = $checked || (old('contributors') && in_array($user->id, old('contributors'))))
+
                             @if ($user->id != auth()->id())
-                                <option {{$contributorsIds && in_array($user->id, $contributorsIds) ? 'selected' : ''}}
+                                <option {{$checked ? 'selected' : ''}}
                                         value="{{$user->id}}">
                                     {{$user->name}}
                                 </option>
@@ -452,45 +469,36 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    {{-- Galerías --}}
-                    <label for="galleries">
-                        Galerías
-                        <br>
-                        <small>
-                            Galería de imágenes para slides (TODO)
-                        </small>
-                    </label>
-
-                </div>
-
                 {{-- Contenido relacionado --}}
                 <div class="form-group">
                     <label for="contentRelated">
                         Contenido relacionado
+
                         <br>
+
                         <small>
-                            Asociar contenido relacionado para enlazar al
-                            finalizar la entrada hacia ellos, permitir
-                            asociar todos los tipos de contenidos incluyendo
-                            con estados como borradores. Luego esto será
-                            filtrado al mostrar contenido relacionado pero
-                            así queda preparado para una vez sea publicado
-                            (TODO)
+                            Contenido vinculado a la entrada, se mostrará como
+                            sugerencia al final de la entrada.
                         </small>
                     </label>
 
+                    <input class="form-control mb-2"
+                           placeholder="Buscar contenido..."
+                           value=""
+                           id="searchContentRelated"/>
+
                     <select id="contentRelated"
-                            name="contentRelated[]"
-                            class="duallistbox"
-                            multiple="multiple">
-                        <option selected="">Título de la página 1</option>
-                        <option>Título de la página 2</option>
-                        <option>Título de la página 3</option>
-                        <option>Título de la página 4</option>
-                        <option selected>Título de la página 5</option>
-                        <option>Título de la página 6</option>
-                        <option>Título de la página 7</option>
+                            name="contents_related[]"
+                            multiple="multiple"
+                            class="form-control">
+
+                        @foreach($contentRelatedAll as $contentRelated)
+                            <option value="{{$contentRelated->id}}" selected>
+                                {{$contentRelated->title}}
+                            </option>
+                        @endforeach
+
+
                     </select>
 
                 </div>
@@ -501,33 +509,98 @@
                     <label for="tags">
                         Etiquetas
                     </label>
+
                     <br>
+
                     <small>
                         Adjetivos que identifiquen este contenido, se
-                        sacarán las sugerencias del contenido en el texto
-                        de las páginas y quizás plantearé de las
-                        relacionadas (TODO)
+                        sacarán las sugerencias para leer más contenido
                     </small>
+
                     <br/>
+
                     <div class="select2-purple">
                         <select id="tags" name="tags[]"
                                 class="select2 select2-hidden-accessible"
-                                multiple=""
+                                multiple="multiple"
                                 data-placeholder="Selecciona las etiquetas"
                                 data-dropdown-css-class="select2-purple"
                                 style="width: 100%;"
                                 tabindex="-1"
                                 aria-hidden="true">
-                            <option value="1" selected>
-                                Etiqueta1
-                            </option>
-                            <option value="2">Etiqueta2</option>
-                            <option value="3">Etiqueta3</option>
-                            <option value="4">Etiqueta4</option>
-                            <option value="5" selected>Etiqueta5</option>
-                            <option value="6">Etiqueta6</option>
-                            <option value="7">Etiqueta7</option>
+
+                            @foreach($tags as $tag)
+                                @php($checked = $modelTagsIds && in_array($tag->id, $modelTagsIds))
+                                @php($checked = $checked || (old('tags') && in_array($tag->id, old('tags'))))
+
+                                <option {{$checked ? 'selected' : ''}}
+                                        value="{{$tag->id}}">
+                                    {{$tag->name}}
+                                </option>
+
+                            @endforeach
                         </select>
+
+                        <div class="mt-3 text-center">
+                            <span class="btn btn-sm btn-primary"
+                                  data-toggle="modal"
+                                  data-target=".modal-create-tag"  >
+                                <i class="fa fa-plus"></i>
+                                Crear etiqueta
+                            </span>
+
+                            <div id="modal-create-tag"
+                                 class="modal fade modal-create-tag"
+                                 tabindex="-1" role="dialog"
+                                 aria-labelledby="modal-create-tag-label"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="tag-create">
+                                                        Añadir etiquetas
+                                                    </label>
+
+                                                    <p>
+                                                        <small>
+                                                            Las etiquetas se
+                                                            separan por comas
+                                                            para añadir varias
+                                                        </small>
+                                                    </p>
+
+                                                    <input id="create-tag-input"
+                                                           class="form-control m-auto w-75"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <p class="msg-success">
+                                                    Error/Success
+                                                </p>
+                                            </div>
+
+                                            {{-- Añado badges con las
+                                            etiquetas que estoy creando --}}
+                                            <div id="box-tags-created"
+                                                 class="col-12">
+                                            </div>
+
+                                            <div class="col-12">
+                                                <span id="create-tag-button"
+                                                      class="btn btn-sm
+                                                btn-success m-2">
+                                                        Añadir
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
@@ -540,21 +613,14 @@
                         <br>
 
                         <small>
-                            Para agrupar contenidos, por ejemplo:
-                            programación, software, tecnología...
-                            Como las etiquetas pero más concretos.
-                            Se podrá seleccionar existente o añadir nuevas,
-                            quizás con dos selectores select2 y un botón para
-                            abrir un modal desde el que añadir nuevas.
-                            Plantear crear CRUD para estas categorías y que
-                            en este pueda reasignar las que ya existan si se
-                            van a eliminar. Es decir, antes de eliminar dar
-                            la posibilidad de reasignar a otra categoría.
-                            (TODO)
+                            Agrupa tipo de contenido relacionado
+                            indirectamente, sobre el mismo tema pero no
+                            exactamente igual.
                         </small>
                     </label>
 
                     <div class="select2-info">
+
                         <select id="categories" name="categories[]"
                                 class="select2 select2-hidden-accessible"
                                 multiple=""
@@ -563,14 +629,28 @@
                                 style="width: 100%;"
                                 tabindex="-1"
                                 aria-hidden="true">
-                            <option value="1" selected>Categoría1</option>
-                            <option value="2">Categoría2</option>
-                            <option value="3">Categoría3</option>
-                            <option value="4" selected>Categoría4</option>
-                            <option value="5">Categoría5</option>
-                            <option value="6">Categoría6</option>
-                            <option value="7" selected>Categoría7</option>
+
+
+                            @foreach($categories as $category)
+                                @php($checked = $modelCategoriesIds && in_array($category->id, $modelCategoriesIds))
+                                @php($checked = $checked || (old('categories') && in_array($category->id, old('categories'))))
+
+                                <option {{$checked ? 'selected' : ''}}
+                                        value="{{$category->id}}">
+                                    {{$category->name}}
+                                </option>
+
+                            @endforeach
+
                         </select>
+
+                        <div class="mt-3 text-center">
+                            <span class="btn btn-sm btn-primary">
+                                <i class="fa fa-plus"></i>
+                                Crear etiqueta
+                            </span>
+                        </div>
+
                     </div>
 
                 </div>
@@ -592,7 +672,7 @@
                                type="checkbox"
                                id="is_visible_on_home"
                                name="is_visible_on_home"
-                               value="{{ $model->is_visible_on_home ? 'checked' : '' }}">
+                                {{ old('is_visible_on_home', $model->is_visible_on_home) ? 'checked' : '' }}>
                         <label for="is_visible_on_home"
                                class="custom-control-label">
                             Visible en la página principal
@@ -604,7 +684,7 @@
                                type="checkbox"
                                id="is_visible_on_menu"
                                name="is_visible_on_menu"
-                               value="{{ $model->is_visible_on_home ? 'checked' : '' }}">
+                                {{ old('is_visible_on_menu', $model->is_visible_on_menu) ? 'checked' : '' }}>
                         <label for="is_visible_on_menu"
                                class="custom-control-label">
                             Visible en el menú
@@ -616,7 +696,7 @@
                                type="checkbox"
                                id="is_visible_on_footer"
                                name="is_visible_on_footer"
-                               value="{{ $model->is_visible_on_footer ? 'checked' : '' }}">
+                                {{ old('is_visible_on_footer', $model->is_visible_on_footer) ? 'checked' : '' }}>
                         <label for="is_visible_on_footer"
                                class="custom-control-label">
                             Visible en el Footer
@@ -628,7 +708,7 @@
                                type="checkbox"
                                id="is_visible_on_sidebar"
                                name="is_visible_on_sidebar"
-                               value="{{ $model->is_visible_on_sidebar ? 'checked' : '' }}">
+                                {{ old('is_visible_on_sidebar', $model->is_visible_on_sidebar) ? 'checked' : '' }}>
                         <label for="is_visible_on_sidebar"
                                class="custom-control-label">
                             Visible en el Sidebar
@@ -640,7 +720,7 @@
                                type="checkbox"
                                id="is_visible_on_search"
                                name="is_visible_on_search"
-                               value="{{ $model->is_visible_on_search ? 'checked' : '' }}">
+                                {{ old('is_visible_on_search', $model->is_visible_on_search) ? 'checked' : '' }}>
                         <label for="is_visible_on_search"
                                class="custom-control-label">
                             Visible en las búsquedas
@@ -652,7 +732,7 @@
                                type="checkbox"
                                id="is_visible_on_rss"
                                name="is_visible_on_rss"
-                               value="{{ $model->is_visible_on_rss ? 'checked' : '' }}">
+                                {{ old('is_visible_on_rss', $model->is_visible_on_rss) ? 'checked' : '' }}>
                         <label for="is_visible_on_rss"
                                class="custom-control-label">
                             Visible en las redes sociales
@@ -664,7 +744,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap"
                                name="is_visible_on_sitemap"
-                               value="{{ $model->is_visible_on_sitemap ? 'checked' : '' }}">
+                                {{ old('is_visible_on_sitemap', $model->is_visible_on_sitemap) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap"
                                class="custom-control-label">
                             Visible para el Sitemap General
@@ -676,7 +756,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap_news"
                                name="is_visible_on_sitemap_news"
-                               value="{{ $model->is_visible_on_sitemap_news ? 'checked' : '' }}">
+                                {{ old('is_visible_on_sitemap_news', $model->is_visible_on_sitemap_news) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap_news"
                                class="custom-control-label">
                             Visible para el Sitemap de Noticias

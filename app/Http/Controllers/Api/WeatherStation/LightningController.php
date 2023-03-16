@@ -29,7 +29,7 @@ class LightningController extends BaseWheaterStationController
     public function addValidate($data)
     {
         return Validator::make($data, [
-            'distance' => 'required|numeric',
+            'hardware_device_id' => 'required|nullable', 'distance' => 'required|numeric',
             'energy' => 'required|numeric',
             'noise_floor' => 'nullable|numeric',
             'created_at' => 'required'
@@ -59,7 +59,7 @@ class LightningController extends BaseWheaterStationController
                 ## Parseo la fecha
                 $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
 
-                ## Obtengo atributos y los validos para excluir posible basura.
+                ## Obtengo atributos y los válidos para excluir posible basura.
                 $attributes = $this->addValidate(get_object_vars($d));
 
                 $model->fill($attributes);

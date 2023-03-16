@@ -46,6 +46,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('viewWebSocketsDashboard', function ($user = null) {
+            return $user && in_array($user->role_id, [
+                1,
+                2,
+            ]);
+        });
     }
 }

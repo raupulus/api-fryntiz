@@ -66,7 +66,7 @@ class CreateHardwarePowerGeneratorsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Porcentaje de batería máximo (%)');
-            $table->decimal('amperage', 10, 2)
+            $table->double('amperage')
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje total (A)');

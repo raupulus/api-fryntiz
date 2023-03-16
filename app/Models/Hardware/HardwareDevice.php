@@ -29,6 +29,17 @@ class HardwareDevice extends BaseModel
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'buy_at'];
 
+
+    /**
+     * Relación con el tipo de hardware.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function type()
+    {
+        return $this->belongsTo(HardwareType::class, 'hardware_type_id', 'id');
+    }
+
     /**
      *
      *
@@ -88,6 +99,44 @@ class HardwareDevice extends BaseModel
     {
         return $this->hasMany(HardwarePowerLoadHistorical::class, 'hardware_device_id', 'id');
     }
+
+    /**
+     * Devuelve todos los dispositivos de energía asociados al dispositivo.
+     * Sin distinguir entre generador y carga (consumo de energía)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function hardwareEnergy()
+    {
+        return $this->hasMany(HardwareEnergy::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     * Devuelve todos los dispositivos de energía asociados al dispositivo.
+     * Filtrando solo por los que son de tipo generador.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function hardwareEnergyGenerator()
+    {
+        return $this->belongsToMany(self::class, 'hardware_energy', 'hardware_device_id', 'hardware_device_monitorized_id')
+            ->whereIn('is_generator', [true])
+            ->orderBy('sensor_position');
+    }
+
+    /**
+     * Devuelve solo los dispositivos de energía que consumen carga (energía).
+     * Se descartan los que son generadores.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function hardwareEnergyLoad()
+    {
+        return $this->belongsToMany(self::class, 'hardware_energy', 'hardware_device_id', 'hardware_device_monitorized_id')
+            ->whereNotIn('is_generator', [true])
+            ->orderBy('sensor_position');
+    }
+
 
     /**
      * Relación con la imagen asociada al curriculum.

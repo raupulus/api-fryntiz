@@ -26,6 +26,9 @@ class RegisterController extends Controller
      */
     public function create(RegisterRequest $request)
     {
+        ## Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
+        return JsonHelper::forbidden();
+        
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 

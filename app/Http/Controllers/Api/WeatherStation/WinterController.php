@@ -12,7 +12,7 @@ use function response;
  */
 class WinterController extends BaseWheaterStationController
 {
-    protected $model = '\App\Models\WeatherStation\Winter';
+    protected $model = '\App\Models\WeatherStation\Wind';
 
     /**
      * Reglas de validación a la hora de insertar datos.
@@ -24,6 +24,7 @@ class WinterController extends BaseWheaterStationController
     public function addValidate($data)
     {
         return Validator::make($data, [
+            'hardware_device_id' => 'required|nullable',
             'speed' => 'required|numeric',
             'average' => 'required|numeric',
             'min' => 'required|numeric',

@@ -72,7 +72,8 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][] ['name' => ['type' => 'text','wrapper' => 'span','class' => 'text-weight-bold']]
+     * @return \string[][] ['name' => ['type' => 'text','wrapper' =>
+     *                     'span','class' => 'text-weight-bold']]
      */
     abstract public static function getTableCellsInfo(): array;
 
@@ -123,8 +124,8 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
      * @return string|null
      */
     public static function prepareValue(string|int|float|null $value,
-                                        string $attribute,
-                                        string|null $action): string|null
+                                        string                $attribute,
+                                        string|null           $action): string|null
     {
         $value = trim($value);
 
@@ -137,13 +138,14 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
 
     /**
      * Comprueba si puede editar un atributo concreto o en general.
-
+     *
      * @param int         $id
      * @param string|null $attribute Campo que se quiere editar.
      *
      * @return bool
      */
-    protected static function checkCanEdit(int $id, string|null $attribute = null): bool {
+    protected static function checkCanEdit(int $id, string|null $attribute = null): bool
+    {
         $model = self::getModel()::find($id);
         $policy = self::getModel()::getPolicy();
         $attributes = self::getAttributesFillable();
@@ -185,9 +187,9 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
     /**
      * Comprueba si un atributo recibido cumple las reglas de validación.
      *
-     * @param string $field Nombre del atributo.
+     * @param string      $field Nombre del atributo.
      * @param string|null $value Nuevo valor del atributo.
-     * @param int|null $id Id del elemento cuando se actualiza.
+     * @param int|null    $id    Id del elemento cuando se actualiza.
      *
      * @return array
      */
@@ -217,17 +219,26 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
      * Devuelve los resultados para una página respetando dirección y campos
      * para ordenar.
      *
-     * @param array  $columns Columnas a mostrar.
-     * @param string $orderBy Columna por la que se realizará el orden.
-     * @param string $orderDirection Ordenación ascendente o descendente.
-     * @param string|null $search Cadena de búsqueda.
+     * @param array       $columns        Columnas a mostrar.
+     * @param string      $orderBy        Columna por la que se realizará el
+     *                                    orden.
+     * @param string      $orderDirection Ordenación ascendente o descendente.
+     * @param string|null $search         Cadena de búsqueda.
+     * @param array|null  $conditions        Condiciones para filtrar, [
+     *                                           [
+     *                                               filter => 'where',
+     *                                               column => 'platform_id',
+     *                                               value => 4.
+     *                                           ]
+     *                                       ];
      *
      * @return mixed
      */
-    public static function prepareQueryFiltered(array $columns,
-                                                string $orderBy = 'created_at',
-                                                string $orderDirection = 'DESC',
-                                                string|null $search = ''): Builder
+    public static function prepareQueryFiltered(array       $columns,
+                                                string      $orderBy = 'created_at',
+                                                string      $orderDirection = 'DESC',
+                                                string|null $search = '',
+                                                array|null  $conditions = null): Builder
     {
         $query = self::select($columns);
 
@@ -244,6 +255,15 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
             });
         }
 
+        ## Aplica condiciones de filtrado
+        if ($conditions && count($conditions)) {
+            foreach ($conditions as $condition) {
+                $query->{$condition['filter']}($condition['column'], $condition['value']);
+            }
+        }
+
+
+
         $query->orderBy($orderBy, $orderDirection);
 
         return $query;
@@ -252,11 +272,18 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
     /**
      * Devuelve los datos preparados para una tabla.
      *
-     * @param int         $page           La página a devolver.
-     * @param int         $size           Cantidad de elementos por página.
-     * @param string|null $orderBy        Campo sobre el que se ordena.
-     * @param string|null $orderDirection Dirección al ordenar (ASC|DESC)
+     * @param int         $page              La página a devolver.
+     * @param int         $size              Cantidad de elementos por página.
+     * @param string|null $orderBy           Campo sobre el que se ordena.
+     * @param string|null $orderDirection    Dirección al ordenar (ASC|DESC)
      * @param string|null $search
+     * @param array|null  $conditions        Condiciones para filtrar, [
+     *                                           [
+     *                                               filter => 'where',
+     *                                               column => 'platform_id',
+     *                                               value => 3.
+     *                                           ]
+     *                                       ];
      *
      * @return array
      */
@@ -264,16 +291,31 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
                                          int         $size = 10,
                                          string|null $orderBy = 'created_at',
                                          string|null $orderDirection = 'DESC',
-                                         string|null $search = ''): array
+                                         string|null $search = '',
+                                         array|null  $conditions = null): array
     {
         $tableHeads = self::getModel()::getTableHeads($page);
         $columns = array_keys($tableHeads);
+        $columnsFiltered = array_filter($columns, fn($column) => !in_array
+        ($column, [
+            'url_image',
+        ]));
 
-        $query = self::prepareQueryFiltered($columns, $orderBy, $orderDirection, $search);
+
+        $query = self::prepareQueryFiltered($columnsFiltered, $orderBy,  $orderDirection, $search, $conditions);
         $totalElements = $query->count();
         $tableRows = $query->offset(($page * $size) - $size)->limit($size)->get();
 
         $cellsInfo = self::getModel()::getTableCellsInfo();
+
+
+        if (in_array('urlImage', $columns)) {
+            $tableRows = $tableRows->map(function ($row) use ($cellsInfo) {
+                $row->url_image = $row->urlThumbnail($size = 'small');
+
+                return $row;
+            });
+        }
 
         return [
             'heads' => $tableHeads,

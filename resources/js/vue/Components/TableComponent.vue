@@ -46,7 +46,7 @@
 
                 <tbody>
                 <tr v-for="row in rows" :data-id="row.id">
-                    <td v-for="( cell, key ) of row"
+                    <td v-for="( title, key ) of heads"
                         :data-attribute="key"
                         :data-id="row.id"
                         :class="'td-' + key + '-' + row.id"
@@ -55,19 +55,19 @@
                         v-show="(key !== 'id') || showId"
                         @keyup="handleOnKeyUpCellEditable">
 
-                        <div>
+                        <div v-if="row[key]">
                             <div class="headTitleInTd">
-                                {{heads[key]}}
+                                {{key}}
                             </div>
 
                             <div class="td-cell-content"
-                                 v-html="getCellContent( cell, key )">
+                                 v-html="getCellContent( row[key], key )">
 
                             </div>
 
                             <div class="td-cell-editable-hidden"
                                 v-if="editable && ['float', 'integer', 'text'].includes(cellsInfo[key].type) ">
-                                <input type="text" :value="cell"/>
+                                <input type="text" :value="row[key]"/>
                             </div>
                         </div>
 
@@ -217,7 +217,12 @@ export default {
         },
         csrf:{  // Token csrf para la seguridad del formulario
             required:true
-        }
+        },
+        conditions: {
+            type:Object,
+            default:[],
+            required:false
+        },
     },
 
     // TODO → Implementar autoreload de la tabla, por defecto off.
@@ -264,6 +269,8 @@ export default {
             ...props.headers
         };
 
+        console.log(props.conditions);
+
         /**
          * Realiza una petición ajax.
          *
@@ -276,7 +283,8 @@ export default {
             return fetch(url, {
                     headers:fetchHeaders,
                     method:method,
-                    body:JSON.stringify(params)
+                    body:JSON.stringify({...params,
+                        conditions:props.conditions})
                 }
             ).then((response) => response.json());
         };
@@ -435,7 +443,7 @@ export default {
             //let info = cellsInfo.value.find(ele => ele.key == field);
             let info = cellsInfo.value ? cellsInfo.value[field] : null;
 
-            if(info) {
+            if(info && info.type) {
                 let html = '';
 
                 switch(info.type) {
@@ -448,6 +456,21 @@ export default {
                     case 'icon':
                         // TODO → preparar iconos
                         html = '<img src="' + cell + '" alt=""/>';
+                        break;
+                    case 'date':
+
+                        if (cell) {
+                            let dateString = new Date(cell).toLocaleDateString();
+                            let dateArray = dateString.split(',');
+
+                            html = dateArray.length ? dateArray[0] : '';
+                        } else {
+                            html = '';
+                        }
+
+                        break;
+                    case 'datetime':
+                        html = cell ? new Date(cell).toLocaleString() : '';
                         break;
                     default:
                         html =  cell;

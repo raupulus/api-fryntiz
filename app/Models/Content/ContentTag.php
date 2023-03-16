@@ -11,4 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContentTag extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'content_tags';
+
+    protected $fillable = [
+        'content_id',
+        'platform_tag_id',
+    ];
 }

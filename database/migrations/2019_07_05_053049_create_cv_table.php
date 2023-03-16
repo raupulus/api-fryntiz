@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvTable
@@ -67,7 +67,7 @@ class CreateCvTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cv_repositories', function (Blueprint $table) {
+        Schema::dropIfExists('cv', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['image_id']);
         });

@@ -39,8 +39,12 @@ class CreateMeteorologyWindDirectionTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->integer('grades')
+                ->comment('Grados según puntos cardinales basados en resistencia, 0 es Norte, 90 es Este, 180 es Sur, 270 es Oeste');
             $table->decimal('resistance', 22, 11)
-                ->comment('Valor de la resistencia usado para calcular la posición del viento');
+                ->comment('Valor de la resistencia usado para calcular la posición del viento, valor entre 0 y 65535')
+                ->nullable();
+
             $table->string('direction', 255)
                 ->comment('Dirección del viento (N, S, E, O, NE, NO, SE, SO)');
             $table->timestamp('created_at')->nullable();

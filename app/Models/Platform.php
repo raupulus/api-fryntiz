@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use function route;
+use App\Models\Content\Content;
 
 /**
  * Class Platform
@@ -45,6 +46,41 @@ class Platform extends BaseAbstractModelWithTableCrud
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    /**
+     * Asocia todos los contenidos creados para la plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contents()
+    {
+        return $this->hasMany(Content::class, 'platform_id', 'id');
+    }
+
+    /**
+     * Asocia todos los tags para la plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'platform_tags', 'platform_id', 'tag_id');
+    }
+
+    /**
+     * Asocia todas las categorías para la plataforma.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'platform_categories', 'platform_id', 'category_id');
+    }
+
+
+
+
+
 
 
     /****************** Métodos para tablas dinámicas ******************/

@@ -10,15 +10,11 @@ use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
-use App\Models\WeatherStation\Uva;
-use App\Models\WeatherStation\Uvb;
-use App\Models\WeatherStation\UvIndex;
+use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
-use App\Models\WeatherStation\Winter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use function count;
 use function response;
 
 /**
@@ -61,10 +57,26 @@ class GeneralController
                 ->limit(1)
                 ->toSql();
 
-            $light = Light::select('meteorology_light.value as light')
+            $light = Light::select('meteorology_light.lumens as light')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
+
+            $uv_index = Light::select('meteorology_light.index as uv_index')
+                ->orderByDesc('created_at')
+                ->limit(1)
+                ->toSql();
+
+            $uva = Light::select('meteorology_light.uva as uva')
+                ->orderByDesc('created_at')
+                ->limit(1)
+                ->toSql();
+
+            $uvb = Light::select('meteorology_light.uvb as uvb')
+                ->orderByDesc('created_at')
+                ->limit(1)
+                ->toSql();
+
 
             $lightning = Lightning::select('meteorology_lightning.created_at as last_lightning_at')
                 ->orderByDesc('created_at')
@@ -81,37 +93,22 @@ class GeneralController
                 ->limit(1)
                 ->toSql();
 
-            $uva = Uva::select('meteorology_uva.value as uva')
-                ->orderByDesc('created_at')
-                ->limit(1)
-                ->toSql();
-
-            $uvb = Uvb::select('meteorology_uvb.value as uvb')
-                ->orderByDesc('created_at')
-                ->limit(1)
-                ->toSql();
-
-            $uv_index = UvIndex::select('meteorology_uv_index.value as uv_index')
-                ->orderByDesc('created_at')
-                ->limit(1)
-                ->toSql();
-
             $wind_direction = WindDirection::select('meteorology_wind_direction.direction as wind_direction')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
 
-            $wind_average = Winter::select('meteorology_winter.average as wind_average')
+            $wind_average = Wind::select('meteorology_winter.average as wind_average')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
 
-            $wind_min = Winter::select('meteorology_winter.min as wind_min')
+            $wind_min = Wind::select('meteorology_winter.min as wind_min')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();
 
-            $wind_max = Winter::select('meteorology_winter.max as wind_max')
+            $wind_max = Wind::select('meteorology_winter.max as wind_max')
                 ->orderByDesc('created_at')
                 ->limit(1)
                 ->toSql();

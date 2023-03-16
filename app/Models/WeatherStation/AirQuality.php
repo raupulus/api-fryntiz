@@ -2,6 +2,8 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Events\WeatherStation\AirQualityUpdateEvent;
+
 /**
  * Class AirQuality
  *
@@ -10,12 +12,36 @@ namespace App\Models\WeatherStation;
 class AirQuality extends BaseWheaterStation
 {
     protected $fillable = [
+        'hardware_device_id',
         'gas_resistance',
         'air_quality',
         'created_at'
     ];
 
     protected $table = 'meteorology_air_quality';
+
+    /**
+     * @var string[] Campos que se pueden devolver por api.
+     */
+    public $apiFields = [
+        'air_quality',
+    ];
+
+    /**
+     * @var string Nombre de la variable.
+     */
+    public $slug = 'air_quality';
+
+    /**
+     * Nombre amigable para la representación del modelo.
+     *
+     * @var string
+     */
+    public $name = 'Calidad del aire';
+
+    protected $dispatchesEvents = [
+        'created' => AirQualityUpdateEvent::class,
+    ];
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
