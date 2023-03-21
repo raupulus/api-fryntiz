@@ -38,31 +38,24 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->onDelete('CASCADE');
             $table->integer('fan')
                 ->nullable()
-                ->default(0)
-                ->comment('Velocidad del ventilador en RPM, EJ:3812. Será 0 por defecto');
-            $table->decimal('temperature', 10, 2)
+                ->comment('Velocidad del ventilador en RPM, EJ:3812. Será null si no hay ventilador');
+            $table->decimal('temperature', 6, 3)
                 ->nullable()
-                ->default(0)
-                ->comment('Temperatura del dispositivo en grados centígrados, EJ:38.31. Será 0 por defecto');
-            $table->decimal('voltage', 10, 2)
+                ->comment('Temperatura del dispositivo en grados centígrados, EJ:38.31.');
+            $table->decimal('voltage', 8,3)
                 ->nullable()
-                ->default(0)
-                ->comment('Voltaje de la batería en voltios, EJ:12.37. Será 0 por defecto');
-            $table->decimal('amperage', 10, 2)
+                ->comment('Voltaje de la batería en voltios, EJ:12.37.');
+            $table->double('amperage')
                 ->nullable()
-                ->default(0)
-                ->comment('Intensidad de la batería en ah, EJ:1.54. Será 0 por defecto');
-            $table->decimal('power', 10, 2)
+                ->comment('Intensidad de la batería en ah, EJ:1.54.');
+            $table->double('power')
                 ->nullable()
-                ->default(0)
-                ->comment('Potencia de la batería en watios, EJ:13.81. Será 0 por defecto');
-            $table->decimal('battery_voltage', 10, 2)
+                ->comment('Potencia de la batería en watios, EJ:13.81.');
+            $table->decimal('battery_voltage', 8, 3)
                 ->nullable()
-                ->default(0)
                 ->comment('Voltaje de la batería. Será 0 por defecto');
             $table->integer('battery_percentage')
                 ->nullable()
-                ->default(0)
                 ->comment('Porcentaje de carga en la batería (0-100)');
             $table->timestamp('read_at')
                 ->nullable()
