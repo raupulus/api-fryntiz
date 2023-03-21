@@ -36,33 +36,31 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->onDelete('CASCADE');
             $table->integer('fan_min')
                 ->nullable()
-                ->default(0)
                 ->comment('Velocidad mínima de ventilador (rpm)');
             $table->integer('fan_max')
                 ->nullable()
-                ->default(0)
                 ->comment('Velocidad máxima de ventilador (rpm)');
-            $table->decimal('temperature_min', 10, 2)
+            $table->decimal('temperature_min', 6, 3)
                 ->nullable()
                 ->default(0)
                 ->comment('Temperatura mínima (°C)');
-            $table->decimal('temperature_max', 10, 2)
+            $table->decimal('temperature_max', 6, 3)
                 ->nullable()
                 ->default(0)
                 ->comment('Temperatura máxima (°C)');
-            $table->decimal('voltage_min', 10, 2)
+            $table->decimal('voltage_min', 8, 3)
                 ->nullable()
                 ->default(0)
                 ->comment('Volts mínimo (V)');
-            $table->decimal('voltage_max', 10, 2)
+            $table->decimal('voltage_max', 8, 3)
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje máximo (V)');
-            $table->decimal('battery_min', 10, 2)
+            $table->decimal('battery_min', 8, 3)
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje mínimo de batería (V)');
-            $table->decimal('battery_max', 10, 2)
+            $table->decimal('battery_max', 8, 3)
                 ->nullable()
                 ->default(0)
                 ->comment('Voltaje máximo de batería (V)');
@@ -72,13 +70,11 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->comment('Porcentaje de batería mínimo (%)');
             $table->integer('battery_percentage_max')
                 ->nullable()
-                ->default(0)
                 ->comment('Porcentaje de batería máximo (%)');
-            $table->decimal('amperage_min', 10, 2)
+            $table->double('amperage_min')
                 ->nullable()
-                ->default(0)
                 ->comment('Amperaje mínimo (A)');
-            $table->decimal('amperage_max', 10, 2)
+            $table->double('amperage_max')
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje máximo (A)');
@@ -86,15 +82,15 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Amperaje total (Ah)');
-            $table->decimal('power_min', 10, 2)
+            $table->double('power_min')
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia mínima (W)');
-            $table->decimal('power_max', 10, 2)
+            $table->double('power_max')
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia máxima (W)');
-            $table->decimal('power', 10, 2)
+            $table->double('power')
                 ->nullable()
                 ->default(0)
                 ->comment('Potencia total (W)');
