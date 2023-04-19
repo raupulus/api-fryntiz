@@ -28,9 +28,6 @@ class CreateEmailsTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->json('attributes')
-                ->nullable()
-                ->comment('Otros datos de interés dentro de un json, por ejemplo: {phone: XXX-XXX-XXX, age: 29}');
             $table->string('email', 511);
             $table->string('subject', 511);
             $table->text('message');
@@ -52,6 +49,34 @@ class CreateEmailsTable extends Migration
             $table->string('app_name', 511)
                 ->nullable()
                 ->comment('Nombre de la aplicación desde la que se envía el mensaje.');
+            $table->string('app_domain', 255)
+                ->nullable()
+                ->comment('Dominio de la aplicación desde la que se envía el mensaje.');
+            $table->json('attributes')
+                ->nullable()
+                ->comment('Otros datos de interés dentro de un json, por ejemplo: {phone: XXX-XXX-XXX, age: 29}');
+            $table->smallInteger('priority')
+                ->default(0)
+                ->comment('Prioridad del mensaje, cuanto más alto más prioridad. Menor a 3 no se envía.');
+            $table->boolean('send')
+                ->default(0)
+                ->comment('Indica si el mensaje se debe enviar o no.');
+            $table->smallInteger('attempts')
+                ->default(0)
+                ->comment('Número de intentos de envío de este mensaje.');
+            $table->timestamp('sent_at')
+                ->nullable()
+                ->comment('Fecha y hora en la que se envió el mensaje.');
+            $table->smallInteger('error_code')
+                ->nullable()
+                ->comment('Código de error en caso de que el mensaje no se haya enviado correctamente.');
+            $table->timestamp('error_at')
+                ->nullable()
+                ->comment('Fecha y hora en la que se produjo el error.');
+            $table->text('error_message')
+                ->nullable()
+                ->comment('Mensaje de error en caso de que el mensaje no se haya enviado correctamente.');
+
             $table->timestamps();
             $table->softDeletes();
         });
