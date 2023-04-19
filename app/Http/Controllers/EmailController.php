@@ -9,6 +9,9 @@ namespace App\Http\Controllers;
 // TODO: Crear configuración para captcha de google v3 en el archivo .env y en el archivo config/app.php
 // permitiendo que se pueda trabajar con un token privado por cada plataforma. Además de la principal para este dominio.
 // Esto quizás se podría dinamizar en el futuro dentro de "plataformas", pero por ahora no es necesario.
+use App\Models\Email;
+use Illuminate\Http\Request;
+
 class EmailController extends Controller
 {
     /**
@@ -29,12 +32,6 @@ class EmailController extends Controller
     private function checkEmail(string $email): bool
     {
         return filter_var($email, FILTER_SANITIZE_EMAIL);
-    }
-
-
-    private function checkCaptcha(string $token): bool
-    {
-
     }
 
     private function checkApp(string $app): bool
@@ -87,21 +84,49 @@ class EmailController extends Controller
     public function checkValidations(array $data): bool
     {
         return $this->checkEmail($data['email'])
-            && $this->checkCaptcha($data['captcha'])
             && $this->checkApp($data['app']);
     }
 
 
 
-    public function send()
+    public function send(Request $request)
     {
-        $data = request()->all();
+        $email = new Email([
+            'user_id' => null,
+            'email' => null,
+            'subject' => null,
+            'message' => null,
+            'privacity' => true,
+            'contactme' => true,
+            'captcha_score' => null,
+            'server_ip' => null,
+            'client_ip' => null,
+            'app_name' => null,
+            'app_domain' => null,
+            'attributes' => null,
+            'priority' => null,
+            //'send' => null, //¿Debería enviarse? según la puntuación del captcha.
+            //'attemps' => null, // Intentos de envío.
+            //'sent_at' => null,
+            //'error_code' => null,
+            //'error_at' => null,
+            //'error_message' => null,
+        ]);
+
+        $token = $request->token;
+        $captchaValid = $this->checkCaptcha($token);
+
+        if ($captchaValid->isSuccess()) {
+            // Verified!
+        } else {
+            $errors = $captchaValid->getErrorCodes();
+        }
 
 
         return \JsonHelper::success(
             [
                 'message' => 'Email enviado correctamente.',
-                'data' => $data,
+                'data' => $email,
             ],
         );
     }
