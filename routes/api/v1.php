@@ -45,10 +45,10 @@ Route::group(['prefix' => 'v1/auth'], function () {
 });
 
 ######################################################
-##                   Autenticación
+##                   Contacto
 ######################################################
 
-Route::group(['prefix' => 'v1/contact', 'middleware' => ['cors']], function () {
+Route::group(['prefix' => 'v1/contact', 'middleware' => ['cors.allow.all']], function () {
     ## Envía un formulario.
     Route::post('/send', [\App\Http\Controllers\EmailController::class, 'send'])
         ->name('api.v1.contact.send');
