@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 // Esto quizás se podría dinamizar en el futuro dentro de "plataformas", pero por ahora no es necesario.
 use App\Helpers\GoogleRecaptchaHelper;
 use App\Models\Email;
+use App\Models\Language;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -120,18 +121,40 @@ class EmailController extends Controller
 
     /**
      * Comprueba si el idioma es válido, además lo busca de la request en caso de no recibirlo.
+     * En la base de datos se busca en este orden: 'locale', 'iso_locale', 'iso2' (es_ES, es-ES, es)
      *
-     * @param Request $request Petición a comprobar.
+     * @param array|null $acceptLanguages Idiomas recibidos por el navegador del cliente en un array.
      * @param string|null $language Idioma a comprobar.
      *
      * @return int|null
      */
-    public function searchLanguage(Request $request, string|null $language): ?int
+    public function searchLanguage(array|null $acceptLanguages, string|null $language): ?int
     {
-        // Buscar en este orden de formatos: 'es_ES', 'es-ES', 'es'
+        if ($language) {
+            foreach (['locale', 'iso_locale', 'iso2'] as $field) {
+                $lang = Language::where($field, $language)->first();
 
-        // TODO: Comprobar si el idioma es válido, si no lo es, buscar el idioma por defecto.
-        // TODO: Buscar el idioma por defecto en la base de datos.
+                if ($lang) {
+                    return $lang->id;
+                }
+            }
+        }
+
+        if (!empty($acceptLanguages)) {
+            foreach ($acceptLanguages as $field) {
+
+                foreach (['locale', 'iso_locale', 'iso2'] as $field) {
+                    $lang = Language::where($field, $language)->first();
+
+                    if ($lang) {
+                        return $lang->id;
+                    }
+                }
+
+            }
+        }
+
+
 
 
         return null;
@@ -212,7 +235,6 @@ class EmailController extends Controller
     {
         $email = new Email([
             'user_id' => auth()->id(),
-            'language_id' => $this->searchLanguage($request, $request->get('language')),
             'email' => $request->get('email'),
             'subject' => $request->get('subject'),
             'message' => $request->get('message'),
@@ -240,6 +262,7 @@ class EmailController extends Controller
             //'error_message' => null,
         ]);
 
+        $email->language_id = $this->searchLanguage($email->client_accept_language, $request->get('language'));
 
         $token = $request->get('token');
         $captchaValid = GoogleRecaptchaHelper::checkCaptcha($token, 'contact', $request->ip());
