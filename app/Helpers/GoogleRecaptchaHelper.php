@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use \ReCaptcha\ReCaptcha;
+use ReCaptcha\Response;
 
 /**
  * Class GoogleRecaptchaHelper
@@ -78,7 +79,7 @@ class GoogleRecaptchaHelper
         return in_array($action, self::ACTIONS);
     }
 
-    public static function checkCaptcha(string $token, string $scope, string $requestIp, float $scoreThreshold = 0.5): bool
+    public static function checkCaptcha(string $token, string $scope, string $requestIp, float $scoreThreshold = 0.5): Response
     {
         $secret = self::getGoogleRecaptchaSecret();
         $recaptcha = new ReCaptcha($secret);

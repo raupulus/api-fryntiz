@@ -28,6 +28,14 @@ class CreateEmailsTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->unsignedBigInteger('language_id')
+                ->default(1)
+                ->nullable()
+                ->comment('Idioma del usuario que envía el mensaje para que se le responda en su idioma');
+            $table->foreign('language_id')
+                ->references('id')->on('languages')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->string('email', 511);
             $table->string('subject', 511);
             $table->text('message');
@@ -46,6 +54,15 @@ class CreateEmailsTable extends Migration
             $table->string('client_ip', 255)
                 ->nullable()
                 ->comment('Ip que se ha obtenido del cliente.');
+            $table->string('client_user_agent', 255)
+                ->nullable()
+                ->comment('Navegador que se ha obtenido del navegador cliente.');
+            $table->string('client_referer', 255)
+                ->nullable()
+                ->comment('Página desde la que se ha obtenido que viene el navegador cliente.');
+            $table->json('client_accept_language')
+                ->nullable()
+                ->comment('Listado de idiomas que acepta el navegador cliente.');
             $table->string('app_name', 511)
                 ->nullable()
                 ->comment('Nombre de la aplicación desde la que se envía el mensaje.');
@@ -91,6 +108,7 @@ class CreateEmailsTable extends Migration
     {
         Schema::dropIfExists('emails', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
+            $table->dropForeign(['language_id']);
         });
     }
 }
