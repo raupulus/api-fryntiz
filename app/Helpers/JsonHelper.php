@@ -8,6 +8,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0-standalone.html
 */
 
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -118,7 +119,7 @@ class JsonHelper
      *
      * @param String|null     $message Mensaje en formato humano.
      * @param Int             $httpCode Código http del error.
-     * @param \Exception|null $exception Excepción de seguimiento.
+     * @param Exception|null $exception Excepción de seguimiento.
      * @param Int|null        $codeError Id del error dentro de la aplicación.
      *
      * @return array
@@ -174,7 +175,7 @@ class JsonHelper
      *
      * @param array $data
      *
-     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     * @return JsonResponse Devuelve la respuesta final.
      */
     public static function success(Array $data = [])
     {
@@ -186,7 +187,7 @@ class JsonHelper
      *
      * @param array $data
      *
-     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     * @return JsonResponse Devuelve la respuesta final.
      */
     public static function created(Array $data = [])
     {
@@ -198,7 +199,7 @@ class JsonHelper
      *
      * @param array $data
      *
-     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     * @return JsonResponse Devuelve la respuesta final.
      */
     public static function updated(Array $data = [])
     {
@@ -210,7 +211,7 @@ class JsonHelper
      *
      * @param array $data
      *
-     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     * @return JsonResponse Devuelve la respuesta final.
      */
     public static function deleted(Array $data = [])
     {
@@ -222,7 +223,7 @@ class JsonHelper
      *
      * @param array $data Datos de la respuesta.
      *
-     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     * @return JsonResponse Devuelve la respuesta final.
      */
     public static function accepted(Array $data = [])
     {
@@ -237,7 +238,7 @@ class JsonHelper
      * @param Int    $httpCode Código http de la respuesta.
      * @param Int    $codeError Código de error interno para la aplicación.
      *
-     * @return \Illuminate\Http\JsonResponse Devuelve la respuesta final.
+     * @return JsonResponse Devuelve la respuesta final.
      */
     public static function failed(String $message = 'The given data was invalid.',
                                   Array $errors = [],
@@ -258,7 +259,7 @@ class JsonHelper
      *
      * @param String $message Mensaje de error.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public static function notFound(String $message = '404 This resource does not exist')
     {
@@ -281,14 +282,14 @@ class JsonHelper
      * @param String          $message Mensaje de error.
      * @param Int             $httpCode Código http de la respuesta.
      * @param Int             $codeError Código de error interno para la aplicación.
-     * @param \Exception|null $exception Excepción.
+     * @param Exception|null $exception Excepción.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public static function forbidden(String $message = '403 Forbidden Access',
                                      Int $httpCode = 403,
                                      Int $codeError = 0,
-                                     Exception $exception = null)
+                                     Exception $exception = null): JsonResponse
     {
         $exception = $exception ?? new AccessDeniedHttpException($message);
 

@@ -12,9 +12,11 @@ use Illuminate\Support\Str;
  *
  * Cuenta las repeticiones de ip en un periodo de tiempo.
  *
+ * Limita a 5 peticiones de contacto por ip en un minuto
+ *
  * @package App\Http\Middleware
  */
-class IpCounter
+class IpCounterStrict
 {
     public function handle($request, Closure $next)
     {
@@ -22,23 +24,17 @@ class IpCounter
         $ipSlug = Str::slug($ip, '_');
 
 
-        $ipCount = Cache::remember('ipCount_' . $ipSlug, 300, function () use ($ip) {
+        $ipCount = Cache::remember('ipCount_' . $ipSlug, 60, function () use ($ip) {
             return 1;
         });
 
 
-        if ($ipCount > 5) {
+        if (!config('app.debug') && $ipCount > 5) {
             return Response::make('Too many requests', 429);
         }
 
-        $ipCount = Cache::put('ipCount_' . $ipSlug, $ipCount + 1, 300);
+        Cache::put('ipCount_' . $ipSlug, $ipCount + 1, 300);
 
-
-        dd($ipCount);
-
-
-
-
-        $response = $next($request);
+        return $next($request);
     }
 }

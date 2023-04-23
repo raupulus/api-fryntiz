@@ -11,8 +11,43 @@ class Email extends Model
 
     protected $table = 'emails';
 
-    // TOFIX: Solo para pruebas, cambiar en cuanto termine el desarrollo!!!!!!!!
-    protected $guarded = [
-        'id',
+    protected $fillable = [
+        'user_id',
+        'language_id',
+        'email',
+        'attributes',
+        'subject',
+        'message',
+        'privacity',
+        'contactme',
+        'server_ip',
+        'client_ip',
+        'app_name',
+        'app_domain',
+        'client_user_agent',
+        'client_referer',
+        'client_accept_language',
     ];
+
+    /**
+     * Relación con el usuario.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * Relación con el idioma del usuario
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function language()
+    {
+        return $this->belongsTo(Language::class, 'language_id', 'id');
+    }
 }
+
+

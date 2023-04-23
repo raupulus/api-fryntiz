@@ -79,6 +79,15 @@ class GoogleRecaptchaHelper
         return in_array($action, self::ACTIONS);
     }
 
+    /**
+     * Devuelve la validación del captcha para el formulario de contacto recibido.
+     *
+     * @param string $token Token de google captcha
+     * @param string $scope Ámbito a validar
+     * @param string $requestIp Ip del cliente
+     * @param float $scoreThreshold úmbral/puntuación de corte para validar
+     * @return Response
+     */
     public static function checkCaptcha(string $token, string $scope, string $requestIp, float $scoreThreshold = 0.5): Response
     {
         $secret = self::getGoogleRecaptchaSecret();
