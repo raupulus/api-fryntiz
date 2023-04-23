@@ -24,16 +24,31 @@ class IpCounterStrict
         $ipSlug = Str::slug($ip, '_');
 
 
-        $ipCount = Cache::remember('ipCount_' . $ipSlug, 60, function () use ($ip) {
-            return 1;
+        $ipCount = Cache::remember('ipCount_' . $ipSlug, 60, function () {
+            return 0;
         });
 
+        Cache::put('ipCount_' . $ipSlug, $ipCount + 1, 60);
 
-        if (!config('app.debug') && $ipCount > 5) {
-            return Response::make('Too many requests', 429);
+        if ($ipCount > 10) {
+            // TODO: Si pasa de 10 peticiones en un minuto, bloquear la ip durante 1 hora? reportar? crear panel
+            // de seguimiento de ip's/actividad sospechosas?.
+            // Guardar todo lo que venga de la request para poder analizarlo.
         }
 
-        Cache::put('ipCount_' . $ipSlug, $ipCount + 1, 300);
+        if (!config('app.debug') && $ipCount > 5) {
+            if ($request->isJson()) {
+                return \response()->json([
+                    'messages' => [
+                        'errors' => [
+                            'Demasiadas peticiones desde tu ip, por favor, espera un minuto antes de volver a intentarlo.'
+                        ]
+                    ],
+                ], 429);
+            }
+
+            return Response::make('Too many requests', 429);
+        }
 
         return $next($request);
     }
