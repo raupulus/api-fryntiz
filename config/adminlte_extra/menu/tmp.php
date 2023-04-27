@@ -53,6 +53,12 @@ return [
 
     ['header' => 'Módulos'],
     [
+        'text' => 'Emails',
+        'route' => 'dashboard.email.index',
+        'icon' => 'fas fa-fw fa-envelope',
+    ],
+
+    [
         'text' => 'Curriculum Vitae',
         'icon' => 'fas fa-fw fa-users',
         'submenu' => [

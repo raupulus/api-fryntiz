@@ -25,6 +25,7 @@ use App\Http\Controllers\Dashboard\LanguageController;
 use App\Http\Controllers\Dashboard\PlatformController;
 use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\Users\UserController;
+use App\Http\Controllers\Dashboard\EmailController;
 use Illuminate\Support\Facades\Route;
 
 ############################################################
@@ -35,6 +36,27 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
         return view('dashboard.index');
     })->name('dashboard.index');
 });
+
+############################################################
+##                      Emails                            ##
+############################################################
+Route::group(['prefix' => '/emails', 'middleware' => ['auth', 'verified']],
+    function () {
+
+        Route::get('/index', [EmailController::class, 'index'])
+            ->name('dashboard.email.index');
+
+
+        Route::group(['prefix' => '/ajax'], function () {
+            Route::post('/table/get', [EmailController::class, 'ajaxTableGetQuery'])
+                ->name('dashboard.email.ajax.table.get');
+
+            ## Acciones sobre datos de la tabla [update, create...]
+            Route::match(['put', 'patch', 'post'], '/table/action', [EmailController::class, 'ajaxTableActions'])
+                ->name('dashboard.email.ajax.table.actions');
+        });
+
+    });
 
 ############################################################
 ##                      Energía                           ##
