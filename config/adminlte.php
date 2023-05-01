@@ -560,11 +560,13 @@ return [
                     'asset' => false,
                     'location' => '/css/quill.snow.css',
                 ],
+                /*
                 [
                     'type' => 'css',
                     'asset' => false,
                     'location' => '/css/quill.bubble.css',
                 ],
+                */
                 [
                     'type' => 'js',
                     'asset' => false,
@@ -572,6 +574,18 @@ return [
                 ],
             ],
         ],
+
+
+        'editors' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/dashboard/js/editors.js',
+                ],
+            ],
+        ]
 
     ],
 

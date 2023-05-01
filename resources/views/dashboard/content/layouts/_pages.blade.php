@@ -1,117 +1,145 @@
 <div class="row">
+
+    {{-- Listado de Páginas creadas --}}
     <div class="col-12 col-md-3 col-xl-2 mt-3">
 
         <div class="nav flex-column nav-pills" id="v-pills-tab"
              role="tablist" aria-orientation="vertical">
-            <a class="nav-link active" id="v-pills-home-tab"
-               data-toggle="pill" href="#v-pills-home" role="tab"
-               aria-controls="v-pills-home"
-               aria-selected="true">Página 1</a>
-            <a class="nav-link" id="v-pills-profile-tab"
-               data-toggle="pill" href="#v-pills-profile" role="tab"
-               aria-controls="v-pills-profile"
-               aria-selected="false">Página 2</a>
-            <a class="nav-link" id="v-pills-messages-tab"
-               data-toggle="pill" href="#v-pills-messages"
-               role="tab" aria-controls="v-pills-messages"
-               aria-selected="false">Página 3</a>
-            <a class="nav-link" id="v-pills-settings-tab"
-               data-toggle="pill" href="#v-pills-settings"
-               role="tab" aria-controls="v-pills-settings"
-               aria-selected="false">Página 4</a>
 
-            <a class="btn btn-dark">
+            @foreach($pages as $page)
+
+                @php($active = $page->order === 1)
+
+                <a class="nav-link {{$active ? 'active' : '' }}" id="ref-page-{{$page->id}}-tab"
+                   data-toggle="pill" href="#ref-page-{{$page->id}}" role="tab"
+                   aria-controls="ref-page-{{$page->id}}"
+                   aria-selected="{{$active ? 'true' : 'false'}}">Página {{$page->order}}</a>
+            @endforeach
+
+            {{-- TODO: Crear página por ajax --}}
+            <span class="btn btn-dark">
                 +
-            </a>
+            </span>
         </div>
+    </div>
+
+
+    {{-- Temporal, para dinamizar la descarga de contenido al cambiar de pághina --}}
+    <div class="d-none">
+            {{--
+            - Al pulsar una nueva página, se descarga "$page->content" y se añade al siguiente textarea más abajo
+            - Detectar el editor y cargar el contenido en el textarea correspondiente
+            - Crear evento para que al pulsar un editor distinto, se aplique al textarea
+            --}}
+
+            <textarea id="textarea-content-editable" name="content">
+                {{$page->first()->content}}
+            </textarea>
     </div>
 
     <div class="col-12 col-md-9 col-xl-10 mt-3">
 
         <div class="tab-content" id="v-pills-tabContent">
-            <div class="tab-pane fade show active"
-                 id="v-pills-home" role="tabpanel"
-                 aria-labelledby="v-pills-home-tab">
-                <div class="row">
-                    <div class="col-12">
-                        <h3>Página 1</h3>
-                    </div>
 
-                    <div class="col-12 text-right">
-                        <button class="btn btn-success">
-                            Guardar Página
-                        </button>
-                    </div>
+            {{-- Selector de editores --}}
+            <div>
+                <div class="btn-group" role="group"
+                     aria-label="Basic example"
+                     style="">
+                    <button type="button"
+                            class="btn btn-secondary disabled btn-success btn-change-editor"
+                            data-editor="quill">
+                        Quilljs
+                    </button>
+
+                    <button type="button"
+                            data-editor="summernote"
+                            class="btn btn-secondary btn-info btn-change-editor">
+                        Summernote
+                    </button>
+
+                    <button type="button"
+                            data-editor="grapesjs"
+                            class="btn btn-secondary btn-info btn-change-editor">
+                        GrapesJS
+                    </button>
+
+                    <button type="button"
+                            data-editor="gutenberg"
+                            class="btn btn-secondary btn-info btn-change-editor">
+                        Gutenberg
+                    </button>
                 </div>
-
-                @include('dashboard.content.layouts._page')
-
-                <p>
-                    111111111111111111
-                </p>
             </div>
 
-            <div class="tab-pane fade" id="v-pills-profile"
-                 role="tabpanel"
-                 aria-labelledby="v-pills-profile-tab">
-                <div class="row">
-                    <div class="col-12">
-                        <h3>Página 2</h3>
+            {{-- Sección por cada página --}}
+            @foreach($pages as $page)
+                @php($active = $page->order === 1)
+
+                <div class="tab-pane fade show {{$active ? 'active' : ''}}"
+                     id="ref-page-{{$page->id}}" role="tabpanel"
+                     aria-labelledby="ref-page-{{$page->id}}-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3>Página {{$page->order}}</h3>
+                        </div>
+
+                        <div class="col-12 text-right">
+                            <button class="btn btn-success">
+                                Guardar Página
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="col-12 text-right">
-                        <button class="btn btn-success">
-                            Guardar Página
-                        </button>
-                    </div>
+                    @include('dashboard.content.layouts._page')
                 </div>
-
-                @include('dashboard.content.layouts._page')
-
-                2222222222222222222
-            </div>
-            <div class="tab-pane fade" id="v-pills-messages"
-                 role="tabpanel"
-                 aria-labelledby="v-pills-messages-tab">
-                <div class="row">
-                    <div class="col-12">
-                        <h3>Página 3</h3>
-                    </div>
-
-                    <div class="col-12 text-right">
-                        <button class="btn btn-success">
-                            Guardar Página
-                        </button>
-                    </div>
-                </div>
-
-                @include('dashboard.content.layouts._page')
-
-                3333333333333333333
-            </div>
-            <div class="tab-pane fade" id="v-pills-settings"
-                 role="tabpanel"
-                 aria-labelledby="v-pills-settings-tab">
-                <div class="row">
-                    <div class="col-12">
-                        <h3>Página 4</h3>
-                    </div>
-
-                    <div class="col-12 text-right">
-                        <button class="btn btn-success">
-                            Guardar Página
-                        </button>
-                    </div>
-                </div>
-
-                @include('dashboard.content.layouts._page')
-
-                4444444444444444444
-            </div>
-
+            @endforeach
 
         </div>
     </div>
 </div>
 
+<div class="row">
+    <div class="col-12">
+        <div id="toolbar"></div>
+        <div id="editor" class="box-editor">
+            <p>Hello World!</p>
+        </div>
+    </div>
+</div>
+
+@section('js')
+
+    <script>
+        window.document.addEventListener('DOMContentLoaded', function () {
+
+            const editorHandler = new EditorHandler('#editor', '#textarea', '#form', 'quill');
+            editorHandler.handleChangeEditor('quill');
+
+
+            const editorButtons = document.querySelectorAll('.btn-change-editor');
+
+            editorButtons.forEach(function (button) {
+
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    editorButtons.forEach(function (btn) {
+                        btn.classList.remove('disabled', 'btn-success');
+                        btn.classList.add('btn-info');
+                    });
+
+                    button.classList.add('disabled', 'btn-success');
+                    button.classList.remove('btn-info');
+
+                    const editor = button.getAttribute('data-editor');
+
+                    //handleChangeEditor(editor);
+                    editorHandler.handleChangeEditor(editor);
+                });
+            });
+
+        });
+    </script>
+@endsection
 

@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Collection;
 use function route;
 use function url;
+use \Illuminate\Database\Eloquent\Relations\BelongsTo;
+use \Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use \Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Content
@@ -85,9 +88,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve la relación con el autor/usuario que ha creado el contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
@@ -95,9 +98,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve la relación con el autor/usuario que ha creado el contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->author();
     }
@@ -105,9 +108,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve la relación con el estado del contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function status()
+    public function status(): BelongsTo
     {
         return $this->belongsTo(ContentAvailableStatus::class, 'status_id', 'id');
     }
@@ -115,9 +118,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve la relación al tipo de contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(ContentAvailableType::class, 'type_id', 'id');
     }
@@ -125,31 +128,41 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con la tabla "files" que contiene la imagen principal.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function image()
+    public function image(): BelongsTo
     {
         return $this->belongsTo(File::class, 'file_id', 'id');
     }
 
     /**
+     * Relación con las páginas asociadas al contenido.
+     *
+     * @return HasMany
+     */
+    public function pages(): HasMany
+    {
+        return $this->hasMany(ContentPage::class, 'content_id', 'id');
+    }
+
+    /**
      * Relación con el contenido que el actual asocia a otros.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function contentsRelated()
+    public function contentsRelated(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id')
             ->where('contents.platform_id', $this->platform_id);
     }
 
     /**
-     * Relación con el contenido actial asociado a otros de cualquier
+     * Relación con el contenido actual asociado a otros de cualquier
      * plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function contentsRelatedAllPlatforms()
+    public function contentsRelatedAllPlatforms(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id');
     }
@@ -157,9 +170,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con el contenido asociado al actual.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function contentsRelatedMe()
+    public function contentsRelatedMe(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'content_related', 'content_related_id', 'content_id')
             ->where('contents.platform_id', $this->platform_id);
@@ -168,9 +181,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con el contenido asociado al actual para cualquier plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function contentsRelatedMeAllPlatforms()
+    public function contentsRelatedMeAllPlatforms(): BelongsToMany
     {
         return $this->belongsToMany(Content::class, 'content_related', 'content_related_id', 'content_id');
     }
@@ -178,9 +191,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con los colaboradores asociados al contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function contributors()
+    public function contributors(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'content_contributors', 'content_id', 'user_id');
     }
@@ -188,9 +201,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con los colaboradores asociados al contenido.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function contributorsJoin()
+    public function contributorsJoin(): HasMany
     {
         return $this->hasMany(ContentContributor::class, 'content_id', 'id');
     }
@@ -198,9 +211,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con las galerías asociadas.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function galleries()
+    public function galleries(): HasMany
     {
         return $this->hasMany(ContentGallery::class, 'content_id', 'id');
     }
@@ -218,7 +231,6 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Creo consulta personalizada para las categorías, NO ES UNA RELACIÓN
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function getCategoriesAttribute()
     {
@@ -228,9 +240,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
-     * @return mixed
+     * @param int|null $platformId Id de la plataforma
      */
-    public function categoriesQuery($platformId = null)
+    public function categoriesQuery(int $platformId = null)
     {
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
@@ -247,9 +259,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con las categorías asociadas.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function categoriesJoin()
+    public function categoriesJoin(): HasMany
     {
         return $this->hasMany(ContentCategory::class, 'content_id', 'id');
     }
@@ -266,9 +278,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
-     * @return mixed
+     * @param int|null $platformId Id de la plataforma
      */
-    public function tagsQuery($platformId = null)
+    public function tagsQuery(int $platformId = null)
     {
         $tagsId = Tag::select('tags.id')
             ->leftJoin('platform_tags', 'platform_tags.tag_id', '=',
@@ -406,6 +418,11 @@ class Content extends BaseAbstractModelWithTableCrud
     {
         $tags = array_unique(array_filter($tags));
 
+
+        // TOFIX: Al cambiar funcionamiento de etiquetas asociadas a plataforma -> contenido -> etiqueta
+        // Esto ha dejado de funcionar tal como se planteaba
+
+        /*
         $this->tags()->delete();
 
         foreach ($tags as $tag) {
@@ -421,6 +438,11 @@ class Content extends BaseAbstractModelWithTableCrud
                 ]);
             }
         }
+        */
+
+
+
+
     }
 
     /**

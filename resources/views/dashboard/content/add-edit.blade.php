@@ -6,6 +6,7 @@
 @section('plugins.bootstrapDualListbox', true)
 @section('plugins.quill', true)
 @section('plugins.summernote', true)
+@section('plugins.editors', true)
 
 @section('title', 'Añadir ' . $model::getModelTitles()['singular'])
 
@@ -36,7 +37,6 @@
         </div>
 
         <div class="col-12">
-
 
             {{-- Selector de secciones para el contenido --}}
             <div class="row">
@@ -78,6 +78,8 @@
             <div class="row">
                 <div class="col-12">
                     <div class="tab-content" id="nav-tabContent">
+
+                        {{-- Sección con datos principales del contenido --}}
                         <div class="tab-pane fade show active" id="nav-home"
                              role="tabpanel" aria-labelledby="nav-home-tab">
 
@@ -100,18 +102,21 @@
 
                         </div>
 
+                        {{-- Páginas con el editor de contenidos --}}
                         <div class="tab-pane fade" id="nav-profile"
                              role="tabpanel"
                              aria-labelledby="nav-profile-tab">
-                            @include('dashboard.content.layouts._pages')
+                            @includeWhen(isset($pages), 'dashboard.content.layouts._pages')
                         </div>
 
+                        {{-- Metadatos --}}
                         <div class="tab-pane fade" id="nav-contact"
                              role="tabpanel"
                              aria-labelledby="nav-contact-tab">
                             ...
                         </div>
 
+                        {{-- Seo --}}
                         <div class="tab-pane fade" id="nav-o"
                              role="tabpanel" aria-labelledby="nav-o-tab">
                             ...
@@ -423,16 +428,40 @@
             preparePreviewImage('#main-image-input', '#main-image-preview', '#main-image-label');
 
 
+
+
+
+
+
+
+
+
+
+
             // TODO: Dinamizar por cada página que exista, externalizar a una
             // función en un archivo JS y realizar aquí las llamadas en bucle.
 
             // Inicializo editor Quill
-            initQuillEditor('#editor', '#form', '#textarea');
+            //initQuillEditor('#editor', '#form', '#textarea');
 
 
             // Inicializo editor summernote
-            $('#summernote').summernote(editorSummernoteOptions);
+            //$('#summernote').summernote(editorSummernoteOptions);
+
+
+
+
+
+
+
+
+
         });
+
+
+
+
+
 
         // Set title form to slug
         let title = document.querySelector('input[data-slug_provider="title"]');

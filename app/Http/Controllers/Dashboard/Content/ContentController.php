@@ -8,6 +8,7 @@ use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
+use App\Models\Content\ContentPage;
 use App\Models\Platform;
 use App\Models\PlatformTag;
 use App\Models\Tag;
@@ -140,8 +141,24 @@ class ContentController extends BaseWithTableCrudController
 
         $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
 
+        $pages = $model->pages;
+
+        if (!$pages || !$pages->count()) {
+            $pages = collect([
+                new ContentPage([
+                    'content_id' => $model->id,
+                    'title' => 'Página Principal',
+                    'slug' => Str::slug($model->title),
+                    'content' => '',
+                    'order' => 1,
+                ])
+            ]);
+        }
+
+
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
+            'pages' => $pages,
             'users' => User::all(), // TODO: Pasar a ajax desde el frontend
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
@@ -158,7 +175,7 @@ class ContentController extends BaseWithTableCrudController
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\Dashboard\Content\ContentUpdateRequest $request
-     * @param int|null                                                  $id
+     * @param int|null $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -177,7 +194,7 @@ class ContentController extends BaseWithTableCrudController
      * Remove the specified resource from storage.
      *
      * @param \App\Http\Requests\Dashboard\Content\ContentDeleteRequest $request
-     * @param int|null                                                  $id
+     * @param int|null $id
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
@@ -209,7 +226,7 @@ class ContentController extends BaseWithTableCrudController
         $contentId = $request->get('contentId');
         $content = Content::find($contentId);
 
-        if ( $content ) {
+        if ($content) {
             $contentRelated = $content->contentsRelatedAllPlatforms()
                 ->where('contents.platform_id', $platform->id)
                 ->get();
@@ -244,12 +261,12 @@ class ContentController extends BaseWithTableCrudController
      * Devuelve el contenido relacionado a partir del patrón de búsqueda
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Platform     $platform
+     * @param \App\Models\Platform $platform
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function ajaxGetContentRelatedFiltered(Request  $request,
-                                          Platform $platform)
+                                                  Platform $platform)
     {
         $contentRelatedSearch = $request->get('content_related_search');
         $contentId = $request->get('contentId');
@@ -265,7 +282,7 @@ class ContentController extends BaseWithTableCrudController
             ->select(['contents.id', 'contents.title']);
 
         if ($contentRelatedAll && $contentRelatedAll->count()) {
-            $contents->whereNotIn('contents.id', clone($contentRelatedAll)->pluck
+            $contents->whereNotIn('contents.id', clone ($contentRelatedAll)->pluck
             ('id'));
         }
 
