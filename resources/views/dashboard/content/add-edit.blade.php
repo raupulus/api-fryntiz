@@ -6,6 +6,7 @@
 @section('plugins.bootstrapDualListbox', true)
 @section('plugins.quill', true)
 @section('plugins.summernote', true)
+@section('plugins.editorjs', true)
 @section('plugins.editors', true)
 
 @section('title', 'Añadir ' . $model::getModelTitles()['singular'])

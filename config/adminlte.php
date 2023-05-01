@@ -576,6 +576,107 @@ return [
         ],
 
 
+        'editorjs' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/editor.js', // Editor y más plugins: https://github.com/editor-js
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/header.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/link.js', // https://github.com/editor-js/link
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/raw.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/simple-image.js', // https://github.com/editor-js/simple-image
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/image.js', // https://github.com/editor-js/image
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/checklist.js', // https://github.com/editor-js/checklist
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/embed.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/list.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/quote.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/text-variant-tune.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/attaches.js', // https://github.com/editor-js/attaches
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/inline-code.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/code.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/paragraph.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/warning.js', // https://github.com/editor-js/warning
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/marker.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/personality.js', // https://github.com/editor-js/personality
+                ],
+            ],
+        ],
+
         'editors' => [
             'active' => false,
             'files' => [

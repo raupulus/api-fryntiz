@@ -108,11 +108,169 @@
     </div>
 </div>
 
+
+<div class="row">
+    <div class="col-12">
+        <h3>Test Editor.js</h3>
+        <div id="toolbar1"></div>
+        <div id="editor1" class="box-editor">
+            <p>Hello World!</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h3>Test Grapes.js</h3>
+        <div id="toolbar2"></div>
+        <div id="editor2" class="box-editor">
+            <p>Hello World!</p>
+        </div>
+    </div>
+</div>
+
 @section('js')
 
     <script>
         window.document.addEventListener('DOMContentLoaded', function () {
 
+            // TEST
+            const editor = new EditorJS({
+                /**
+                 * Id of Element that should contain Editor instance
+                 */
+                holder: 'editor1',
+
+                /**
+                 * Apply to all the blocks
+                 */
+                tunes: ['textVariant'],
+
+                /**
+                 * Available Tools list.
+                 * Pass Tool's class or Settings object for each Tool you want to use
+                 */
+                tools: {
+                    header: Header,
+                    raw: RawTool,
+                    textVariant: TextVariantTune,
+
+                    code: CodeTool,
+
+                    Marker: {
+                        class: Marker,
+                        shortcut: 'CMD+SHIFT+M',
+                    },
+
+                    personality: {
+                        class: Personality,
+                        /*
+                        config: {
+                            endpoint: 'http://localhost:8008/uploadFile'  // Your backend file uploader endpoint
+                        }
+                        */
+                    },
+
+                    warning: {
+                        class: Warning,
+                        inlineToolbar: true,
+                        shortcut: 'CMD+SHIFT+W',
+                        config: {
+                            titlePlaceholder: 'Title',
+                            messagePlaceholder: 'Message',
+                        },
+                    },
+
+                    paragraph: {
+                        class: Paragraph,
+                        inlineToolbar: true,
+                    },
+
+                    inlineCode: {
+                        class: InlineCode,
+                        shortcut: 'CMD+SHIFT+M',
+                    },
+
+                    attaches: {
+                        class: AttachesTool,
+                        /*
+                        config: {
+                            endpoint: 'http://localhost:8008/uploadFile'
+                        }
+                        */
+                    },
+
+                    quote: {
+                        class: Quote,
+                        inlineToolbar: true,
+                        shortcut: 'CMD+SHIFT+O',
+                        config: {
+                            quotePlaceholder: 'Enter a quote',
+                            captionPlaceholder: 'Quote\'s author',
+                        },
+                    },
+                    list: {
+                        class: List,
+                        inlineToolbar: true,
+                        config: {
+                            defaultStyle: 'unordered'
+                        }
+                    },
+                    embed: {
+                        class: Embed,
+                        inlineToolbar: true,
+                        config: {
+                            services: {
+                                youtube: true,
+                                coub: true,
+                                codepen: {
+                                    regex: /https?:\/\/codepen.io\/([^\/\?\&]*)\/pen\/([^\/\?\&]*)/,
+                                    embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&theme-id=0&default-tab=css,result&embed-version=2',
+                                    html: "<iframe height='300' scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'></iframe>",
+                                    height: 300,
+                                    width: 600,
+                                    id: (groups) => groups.join('/embed/')
+                                }
+                            }
+                        }
+                    },
+                    //image: SimpleImage,
+                    checklist: {
+                        class: Checklist,
+                        inlineToolbar: true,
+                    },
+                    image: {
+                        class: ImageTool,
+                        /*
+                        config: {
+                            endpoints: {
+                                byFile: 'http://localhost:8008/uploadFile', // Your backend file uploader endpoint
+                                byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
+                            }
+                        }
+                        */
+                    },
+
+
+
+
+                    /*
+                    linkTool: {
+                        class: LinkTool,
+                        config: {
+                            endpoint: 'http://localhost:8008/fetchUrl', // Your backend endpoint for url data fetching,
+                        }
+                    }
+                    */
+                },
+            });
+
+
+
+
+            // PROD
+
+            /*
             const editorHandler = new EditorHandler('#editor', '#textarea', '#form', 'quill');
             editorHandler.handleChangeEditor('quill');
 
@@ -138,6 +296,8 @@
                     editorHandler.handleChangeEditor(editor);
                 });
             });
+
+            */
 
         });
     </script>
