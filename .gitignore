@@ -1,22 +1,43 @@
+# Ignorar archivos generados automáticamente
 /node_modules
 /public/hot
 /public/storage
 /storage/*.key
 /vendor
+
+# Ignorar archivos de configuración y datos sensibles
 .env
 .env.backup
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
 Homestead.yaml
+
+# Ignorar archivos de registro y caché
+bootstrap/cache
+storage/logs
+storage/app/*.log
+
+# Ignorar archivos de herramientas de desarrollo
 npm-debug.log
 yarn-error.log
+
+# Ignorar archivos de IDE
 .idea
+*.iml
+*.ipr
+*.iws
+
+# Ignorar archivos CSS, JS y de fuentes
 public/css
 public/js
 public/mix-manifest.json
-/code-generator
 /public/admin-panel
 /public/assets
 /public/fonts/vendor
+
+# Ignorar archivo de caché de generar código
+/code-generator
+
+# Ignorar archivos de sistema Mac OS
 .DS_Store
