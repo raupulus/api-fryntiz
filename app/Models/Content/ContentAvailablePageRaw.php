@@ -11,4 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContentAvailablePageRaw extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'content_available_page_raw';
 }

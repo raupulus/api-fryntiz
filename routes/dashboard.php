@@ -241,6 +241,11 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::match(['post', 'delete'], '/destroy', [ContentController::class, 'destroy'])
             ->name('dashboard.content.destroy');
 
+        ## Crea una nueva página
+        Route::post('/{content}/add/page', [ContentController::class, 'addPage'])
+            ->name('dashboard.content.add.page');
+
+
         Route::group(['prefix' => '/ajax'], function () {
 
             ## Devuelve información del contenido por plataforma (etiquetas, categorías, contenidos...)
@@ -260,6 +265,32 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
 
             Route::post('/tag/create', [ContentController::class, 'ajaxTagCreate'])
                 ->name('dashboard.content.ajax.tag.create');
+
+
+
+            ## Sube un archivo asociado a un contenido
+            Route::post('/upload/file/{contentModel?}', [ContentController::class, 'ajaxStoreFile'])
+                ->name('dashboard.content.ajax.upload.file');
+
+            Route::post('/upload/remove/file', [ContentController::class, 'ajaxRemoveFile'])
+                ->name('dashboard.content.ajax.upload.remove.file');
+
+
+
+            /******* Páginas ********/
+
+            ## Crea una nueva página asociada al contenido
+            Route::post('/page/create/{content}', [ContentController::class, 'ajaxPageCreate'])
+                ->name('dashboard.content.ajax.page.create');
+
+            ## Actualiza el contenido de una página existente
+            Route::post('/page/{contentPage}/{contentType}/update', [ContentController::class, 'ajaxPageUpdate'])
+                ->name('dashboard.content.ajax.page.update');
+
+            ## Devuelve el contenido RAW de una página
+            Route::get('/page/{contentPage}/get', [ContentController::class, 'ajaxPageGetContent'])
+                    ->name('dashboard.content.ajax.page.get.content');
+
         });
     });
 ############################################################

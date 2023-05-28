@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers\Dashboard\Content;
 
+use App\Helpers\TextFormatParseHelper;
 use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Content\Content;
+use App\Models\Content\ContentAvailablePageRaw;
 use App\Models\Content\ContentAvailableType;
+use App\Models\Content\ContentFile;
 use App\Models\Content\ContentPage;
+use App\Models\Content\ContentPageRaw;
+use App\Models\File;
 use App\Models\Platform;
 use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use JsonHelper;
@@ -80,7 +87,6 @@ class ContentController extends BaseWithTableCrudController
         //dd($request->all(), $request->validated());
         $modelString = $this::getModel();
         $requestValidated = $request->validated();
-
 
         $model = $modelString::create($requestValidated);
 
@@ -216,6 +222,28 @@ class ContentController extends BaseWithTableCrudController
     }
 
 
+    /**
+     * Crea una nueva página y lleva a editar contenido, dentro de esta.
+     *
+     * @param Content $content
+     * @return RedirectResponse
+     */
+    public function addPage(Content $content): RedirectResponse
+    {
+        $lastPageOrder = ContentPage::where('content_id', $content->id)
+            ->max('order');
+
+        $page = ContentPage::create([
+            'content_id' => $content->id,
+            'title' => uniqid(),
+            'slug' => uniqid(),
+            'order' => ++$lastPageOrder,
+        ]);
+
+        return redirect()->to(route('dashboard.content.edit', $content->id) . '?page=' . $page->id);
+    }
+
+
     ############################################################
     ##                       AJAX                             ##
     ############################################################
@@ -338,4 +366,159 @@ class ContentController extends BaseWithTableCrudController
         ]);
 
     }
+
+    /**
+     * Almacena un archivo recibido por ajax para relacionarlo al contenido.
+     *
+     * @param Request $request
+     * @param Content|null $contentModel
+     *
+     * @return JsonResponse
+     */
+    public function ajaxStoreFile(Request $request, Content $contentModel = null): JsonResponse
+    {
+        $content = $contentModel ?: Content::find($request->get('content_id'));
+
+        if (!$content || !$request->hasFile('file')) {
+            return JsonHelper::success([
+                'success' => false,
+                'message' => 'Parámetros erróneos',
+                'data' => array_merge($request->all(), [
+                    'content' => $content,
+                    'contentModel' => $contentModel,
+                ]),
+            ]);
+        }
+
+        $metadata = [];
+
+        $uploadFile = $request->file('file');
+
+        if (!$content) {
+            return JsonHelper::success([
+                'success' => false,
+                'data' => array_merge($request->all(), [
+                    'content' => $content,
+                    'contentModel' => $contentModel,
+                ]),
+            ]);
+        }
+
+        $file = File::addFile($uploadFile, 'content', false);
+
+        if ($file) {
+            $contentFile = ContentFile::firstOrCreate([
+                'content_id' => $content->id,
+                'file_id' => $file->id,
+            ]);
+
+            $metadata = [
+                'file_id' => $file->id,
+                'module' => $file->module,
+                'title' => $file->title,
+                'name' => $file->name,
+                'alt' => $file->alt,
+                'size' => $file->size,
+                'extension' => $file->fileType?->extension,
+            ];
+        }
+
+        return JsonHelper::accepted([
+            'success' => (bool) $file,
+            "file" => array_merge([
+                'url' => $file?->thumbnail('normal'),
+            ], $metadata),
+
+        ]);
+    }
+
+    /**
+     * Elimina un archivo adjunto o imagen relacionado con el contenido.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function ajaxRemoveFile(Request $request): JsonResponse
+    {
+        $fileId = $request->get('file_id');
+        $file = File::find($fileId);
+
+        if ($file && $file->user_id === auth()->id()) {
+            $file->safeDelete();
+        }
+
+        return JsonHelper::accepted([
+            'success' => true,
+        ]);
+    }
+
+    public function ajaxPageCreate(Content $content)
+    {
+
+    }
+
+    public function ajaxPageUpdate(Request $request, ContentPage $contentPage, string $contentType)
+    {
+        // TODO: Crear validación request.
+
+        $content = $request->get('content');
+
+        if (!$content) {
+            return JsonHelper::success([
+                'success' => false,
+            ]);
+        }
+
+        $contentPageRawAvailable = ContentAvailablePageRaw::where('type', $contentType)->first();
+
+        $contentPageRaw = ContentPageRaw::where('content_page_id', $contentPage->id)
+            ->where('available_page_raw_id', $contentPageRawAvailable->id)
+            ->first();
+
+        if (! $contentPageRaw) {
+            ContentPageRaw::create([
+                'content_page_id' => $contentPage->id,
+                'available_page_raw_id' => $contentPageRawAvailable->id,
+            ]);
+        }
+
+        $contentPageRaw->content = $content;
+        $contentPageRaw->save();
+
+        $html = TextFormatParseHelper::arrayToHtml($content);
+
+        $dataUpdate = [
+            'current_page_raw_id' => $contentPageRawAvailable->id,
+            'title' => $request->get('title'),
+            'slug' => Str::slug($request->get('slug')),
+            'content' => $html,
+        ];
+
+        $contentPage->update(array_filter($dataUpdate));
+
+        // TODO: Guardar imagen principal de la página??????
+
+        // TODO: Metadatos secundarios: calidad del texto, derechos de autor, contar palabras totales, contar palabras clave
+
+        return JsonHelper::accepted([
+            'success' => true,
+            'request' => $request->all(),
+            'contentPage' => $contentPage,
+        ]);
+
+    }
+
+    /**
+     * Devuelve el contenido RAW de la página recibida.
+     *
+     * @param ContentPage $contentPage Página de la que solicita el contenido raw
+     *
+     * @return JsonResponse
+     */
+    public function ajaxPageGetContent(ContentPage $contentPage): JsonResponse
+    {
+        return response()->json(json_decode($contentPage->raw->content, true));
+    }
 }
+

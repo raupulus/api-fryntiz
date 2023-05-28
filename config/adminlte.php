@@ -669,11 +669,21 @@ return [
                     'location' => '/vendor/editorjs/marker.js',
                 ],
 
+                /*
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/editorjs-html.js',
+                ],
+                */
+
+                /*
                 [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '/vendor/editorjs/personality.js', // https://github.com/editor-js/personality
                 ],
+                */
             ],
         ],
 

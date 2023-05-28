@@ -14,7 +14,7 @@ trait ImageTrait
      *
      * @return string
      */
-    public function getUrlImageAttribute()
+    public function getUrlImageAttribute(): string
     {
         return $this->image ? $this->image->url : File::urlDefaultImage('large');
     }
@@ -22,11 +22,11 @@ trait ImageTrait
     /**
      * Devuelve el thumbnail de la imagen asociada.
      *
-     * @param $size
+     * @param string $size Clave con el tamaño del thumbnail, o se devuelve por defecto.
      *
-     * @return mixed
+     * @return string
      */
-    public function urlThumbnail($size = 'medium')
+    public function urlThumbnail(string $size = 'medium'): string
     {
         if ($this->image) {
             return $this->image->thumbnail($size);

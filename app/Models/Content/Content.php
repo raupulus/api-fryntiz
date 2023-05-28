@@ -2,6 +2,7 @@
 
 namespace App\Models\Content;
 
+use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Models\Category;
 use App\Models\File;
@@ -11,6 +12,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use function route;
 use function url;
@@ -25,7 +27,7 @@ use \Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Content extends BaseAbstractModelWithTableCrud
 {
-    use HasFactory;
+    use HasFactory, ImageTrait;
 
     protected $table = 'contents';
 
@@ -152,7 +154,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function contentsRelated(): BelongsToMany
     {
-        return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id')
+        return $this->belongsToMany(self::class, 'content_related', 'content_id', 'content_related_id')
             ->where('contents.platform_id', $this->platform_id);
     }
 
@@ -164,7 +166,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function contentsRelatedAllPlatforms(): BelongsToMany
     {
-        return $this->belongsToMany(Content::class, 'content_related', 'content_id', 'content_related_id');
+        return $this->belongsToMany(self::class, 'content_related', 'content_id', 'content_related_id');
     }
 
     /**
@@ -174,7 +176,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function contentsRelatedMe(): BelongsToMany
     {
-        return $this->belongsToMany(Content::class, 'content_related', 'content_related_id', 'content_id')
+        return $this->belongsToMany(self::class, 'content_related', 'content_related_id', 'content_id')
             ->where('contents.platform_id', $this->platform_id);
     }
 
@@ -185,7 +187,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function contentsRelatedMeAllPlatforms(): BelongsToMany
     {
-        return $this->belongsToMany(Content::class, 'content_related', 'content_related_id', 'content_id');
+        return $this->belongsToMany(self::class, 'content_related', 'content_related_id', 'content_id');
     }
 
     /**
@@ -221,9 +223,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación al seo asociado.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
-    public function seo()
+    public function seo(): HasOne
     {
         return $this->hasOne(ContentSeo::class, 'content_id', 'id');
     }

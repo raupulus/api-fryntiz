@@ -9,7 +9,7 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="title">Título</label>
-                    <input type="text" class="form-control"
+                    <input type="text" class="page-form-input-title form-control"
                            name="title"
                            value="{{$page->title}}"
                            placeholder="Título de la página">
@@ -19,7 +19,7 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="slug">Slug</label>
-                    <input type="text" class="form-control"
+                    <input type="text" class="page-form-input-slug form-control"
                            name="slug"
                             value="{{$page->slug}}"
                            placeholder="Slug de la página">
