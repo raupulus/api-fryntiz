@@ -63,6 +63,7 @@
         "rxjs": "^7.8.1",
         "s": "^1.0.0",
         "vue": "^3.2.47",
+        "vue-advanced-cropper": "^2.8.8",
         "vue-axios": "^3.5.2",
         "vue-next": "^0.0.1",
         "vue-router": "^4.1.6",

@@ -25,6 +25,7 @@
 @section('content')
 
     <div class="row" id="app">
+
         <div class="col-12">
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -110,6 +111,7 @@
                         <div class="tab-pane fade {{$navbarSectionID === 2 ? 'show active' : ''}}" id="nav-pages"
                              role="tabpanel"
                              aria-labelledby="nav-profile-tab">
+
                             @includeWhen(isset($pages), 'dashboard.content.layouts._pages')
                         </div>
 

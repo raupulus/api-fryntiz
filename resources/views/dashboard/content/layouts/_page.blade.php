@@ -5,6 +5,7 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
 
 <div class="row">
     <div class="col-12">
+
         <div class="row">
             <div class="col-12 col-md-6">
                 <div class="form-group">
@@ -26,6 +27,13 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
                 </div>
             </div>
 
+
+
+            {{-- Selector Cropper de imágenes --}}
+            <div class="col-12">
+                <v-image-cropper></v-image-cropper>
+            </div>
+
             <div class="col-12">
                 <div class="form-group">
                     <label for="image">Imagen</label>
@@ -33,6 +41,8 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
                            class="form-control"
                            name="image"
                            alt="Imagen para la página">
+
+
                 </div>
             </div>
 

@@ -54,7 +54,10 @@ const app = createApp({
 });
 
 import TableComponent from './vue/Components/TableComponent.vue';
+import ImageCropper from "./vue/Components/ImageCropper.vue";
+
 app.component('v-table-component', TableComponent)
+app.component('v-image-cropper', ImageCropper)
 
 app.component('v-chipiona-weather-component', require('./vue/Components/ChipionaWeatherComponent.vue').default);
 
