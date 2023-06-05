@@ -41,35 +41,39 @@
 
             {{-- Selector de secciones para el contenido --}}
             <div class="row">
+
+                @php($navbarSectionID = request()->get('currentPage') ? 2 : 1)
+
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active"
+                        <a class="nav-item nav-link {{$navbarSectionID === 1 ? 'active' : ''}}"
                            id="nav-home-tab" data-toggle="tab"
                            href="#nav-home" role="tab"
-                           aria-controls="nav-home" aria-selected="true">
+                           aria-controls="nav-home" aria-selected="{{$navbarSectionID === 1 ? 'true' : 'false'}}">
                             Datos Principales
                         </a>
 
                         @if ($model->id)
-                            <a class="nav-item nav-link" id="nav-profile-tab"
-                               data-toggle="tab" href="#nav-profile" role="tab"
-                               aria-controls="nav-profile"
-                               aria-selected="false">
+                            <a class="nav-item nav-link {{$navbarSectionID === 2 ? 'active' : ''}}"
+                               id="nav-pages-tab"
+                               data-toggle="tab" href="#nav-pages" role="tab"
+                               aria-controls="nav-pages"
+                               aria-selected="{{$navbarSectionID === 2 ? 'true' : 'false'}}">
                                 Páginas
                             </a>
                         @endif
 
-                        <a class="nav-item nav-link" id="nav-contact-tab"
+                        <a class="nav-item nav-link {{$navbarSectionID === 3 ? 'active' : ''}}" id="nav-contact-tab"
                            data-toggle="tab" href="#nav-contact" role="tab"
                            aria-controls="nav-contact"
-                           aria-selected="false">
+                           aria-selected="{{$navbarSectionID === 3 ? 'true' : 'false'}}">
                             Metadatos
                         </a>
 
-                        <a class="nav-item nav-link" id="nav-o-tab"
+                        <a class="nav-item nav-link {{$navbarSectionID === 4 ? 'active' : ''}}" id="nav-o-tab"
                            data-toggle="tab" href="#nav-o" role="tab"
                            aria-controls="nav-contact"
-                           aria-selected="false">
+                           aria-selected="{{$navbarSectionID === 4 ? 'true' : 'false'}}">
                             SEO
                         </a>
                     </div>
@@ -81,7 +85,7 @@
                     <div class="tab-content" id="nav-tabContent">
 
                         {{-- Sección con datos principales del contenido --}}
-                        <div class="tab-pane fade show active" id="nav-home"
+                        <div class="tab-pane fade {{$navbarSectionID === 1 ? 'show active' : ''}}" id="nav-home"
                              role="tabpanel" aria-labelledby="nav-home-tab">
 
                             <form action="{{$model && $model->id ? route($model::getCrudRoutes()['update'], $model->id) : route($model::getCrudRoutes()['store'])}}"
@@ -100,25 +104,24 @@
                                 @include('dashboard.content.layouts._main')
 
                             </form>
-
                         </div>
 
                         {{-- Páginas con el editor de contenidos --}}
-                        <div class="tab-pane fade" id="nav-profile"
+                        <div class="tab-pane fade {{$navbarSectionID === 2 ? 'show active' : ''}}" id="nav-pages"
                              role="tabpanel"
                              aria-labelledby="nav-profile-tab">
                             @includeWhen(isset($pages), 'dashboard.content.layouts._pages')
                         </div>
 
                         {{-- Metadatos --}}
-                        <div class="tab-pane fade" id="nav-contact"
+                        <div class="tab-pane fade {{$navbarSectionID === 3 ? 'show active' : ''}}" id="nav-contact"
                              role="tabpanel"
                              aria-labelledby="nav-contact-tab">
                             ...
                         </div>
 
                         {{-- Seo --}}
-                        <div class="tab-pane fade" id="nav-o"
+                        <div class="tab-pane fade {{$navbarSectionID === 4 ? 'show active' : ''}}" id="nav-o"
                              role="tabpanel" aria-labelledby="nav-o-tab">
                             ...
                         </div>

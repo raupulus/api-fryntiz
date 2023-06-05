@@ -1,3 +1,8 @@
+@php($idPageActive = request()->get('currentPage') ? (int) request()->get('currentPage') : null)
+
+{{-- Almacena la página seleccionada actual entre todas las relacionadas al contenido --}}
+@php($pageSelected = $idPageActive ? $pages->where('id', $idPageActive)->first() : $pages->first())
+
 <div class="row">
 
     {{-- Listado de Páginas creadas --}}
@@ -8,7 +13,7 @@
 
             @foreach($pages as $page)
 
-                @php($active = $page->order === 1)
+                @php($active = $idPageActive ? $idPageActive === $page->id : $page->order === 1)
 
                 <a class="btn-change-page nav-link {{$active ? 'active' : '' }}"
                    id="ref-page-{{$page->id}}-tab"
@@ -36,8 +41,8 @@
         --}}
 
         <textarea id="textarea-content-editable" name="content">
-                {{$page->first()->content}}
-            </textarea>
+            {{ $pageSelected->content }}
+        </textarea>
     </div>
 
     <div class="col-12 col-md-9 col-xl-10 mt-3">
@@ -79,7 +84,7 @@
 
             {{-- Sección por cada página --}}
             @foreach($pages as $page)
-                @php($active = $page->order === 1)
+                @php($active = $idPageActive ? $idPageActive === $page->id : $page->order === 1)
 
                 <div class="box-page-form tab-pane fade show {{$active ? 'active' : ''}}"
                      id="ref-page-{{$page->id}}" role="tabpanel"
@@ -128,12 +133,13 @@
 @section('js')
 
     <script>
-        window.currentPage = "{{$pages->first()?->id}}"
+        window.currentPage = "{{$pageSelected?->id}}"
 
         /**
          * Cambia a la página recibida guardando los datos primero.
          *
          * @param pageId Nueva página a la que ir.
+         *
          * @returns {Promise<void>}
          */
         async function changePage(pageId) {
@@ -465,82 +471,7 @@
 
                 },
 
-                data: {
-                    "time": 1683536316992,
-                    "blocks": [
-                        {
-                            "id": "kYV99Mgkjj",
-                            "type": "paragraph",
-                            "data": {
-                                "text": "dfsafasdf asdf asdf asdf<br>"
-                            },
-                            "tunes": {
-                                "textVariant": ""
-                            }
-                        },
-                        {
-                            "id": "lGe6graBkd",
-                            "type": "paragraph",
-                            "data": {
-                                "text": "sfdghjkl ahsdJKFH Ajklsd hjklah djklfahs djklfhaklsjdhfjkl ajksldf asdf"
-                            },
-                            "tunes": {
-                                "textVariant": ""
-                            }
-                        },
-                        {
-                            "id": "wlKXaBKYBX",
-                            "type": "paragraph",
-                            "data": {
-                                "text": "&nbsp;asd fas"
-                            },
-                            "tunes": {
-                                "textVariant": ""
-                            }
-                        },
-                        {
-                            "id": "fenPhV-w0a",
-                            "type": "paragraph",
-                            "data": {
-                                "text": "df asdf a"
-                            },
-                            "tunes": {
-                                "textVariant": ""
-                            }
-                        },
-                        {
-                            "id": "Ak-BnyOeM5",
-                            "type": "list",
-                            "data": {
-                                "style": "unordered",
-                                "items": [
-                                    "asdfasdfasdfasdfas",
-                                    "df",
-                                    "as",
-                                    "df",
-                                    "as",
-                                    "df",
-                                    "as",
-                                    "df"
-                                ]
-                            },
-                            "tunes": {
-                                "textVariant": ""
-                            }
-                        },
-                        {
-                            "id": "kxXibW2dK-",
-                            "type": "paragraph",
-                            "data": {
-                                "text": "asdfasdfkjashdfjklahskdf ajklsdfhjkl<br>"
-                            },
-                            "tunes": {
-                                "textVariant": ""
-                            }
-                        }
-                    ],
-                    "version": "2.26.5"
-                }
+                data: JSON.parse('{!! $pageSelected?->raw?->content ?? "{}" !!}'),
             });
 
 

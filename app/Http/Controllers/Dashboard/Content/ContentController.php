@@ -240,7 +240,7 @@ class ContentController extends BaseWithTableCrudController
             'order' => ++$lastPageOrder,
         ]);
 
-        return redirect()->to(route('dashboard.content.edit', $content->id) . '?page=' . $page->id);
+        return redirect()->to(route('dashboard.content.edit', $content->id) . '?currentPage=' . $page->id);
     }
 
 
