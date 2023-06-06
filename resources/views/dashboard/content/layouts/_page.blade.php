@@ -31,7 +31,10 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
 
             {{-- Selector Cropper de imágenes --}}
             <div class="col-12">
-                <v-image-cropper></v-image-cropper>
+                <v-image-cropper
+                    url="{{$page->url}}"
+                    :aspect-ratios-restriction="[1,1]"
+                ></v-image-cropper>
             </div>
 
             <div class="col-12">
