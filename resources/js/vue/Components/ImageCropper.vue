@@ -277,8 +277,6 @@ export default {
         },
     },
     setup(props) {
-        console.log(props)
-
         const isActive = ref(false);
         //const cropper = ref(null);
 
@@ -293,10 +291,12 @@ export default {
 
         //const zoom = () => cropper.value?.zoom(2);
 
+        /*
         onMounted(() => {
             //console.log('test 1')
             //console.log(cropper.value);
         });
+        */
 
         return {
             img,
@@ -442,8 +442,6 @@ export default {
 
                     this.src = URL.createObjectURL(blob);
 
-                    console.log(this.src);
-
                     fetch(this.url, {
                         method: 'POST',
                         headers: headers,
@@ -576,7 +574,6 @@ export default {
 .v-image-cropper-preview-image {
     width: 100%;
     height: auto;
-    max-width: 200px;
     display: block;
     margin: auto;
     cursor: pointer;
