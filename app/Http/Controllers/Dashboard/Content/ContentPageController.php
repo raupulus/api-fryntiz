@@ -25,19 +25,13 @@ class ContentPageController extends Controller
      */
     public function ajaxUpdateImage(Request $request, ContentPage $contentPage): JsonResponse
     {
-        /*
         $request->validate([
-            'content_page_id' => 'required|integer|exists:content_pages,id',
             'image' => 'required|image',
         ]);
-        */
-
-        //$image = $request->file('image');
-
 
         $isValid = $request->file('image')->isValid() && (($request->file('image') instanceof \Illuminate\Http\UploadedFile));
 
-        if ($isValid) {
+        if ($contentPage && $contentPage->id && $isValid) {
             $image = File::addFile($request->file('image'), 'pages', false,  $contentPage->image_id);
 
 
@@ -46,9 +40,6 @@ class ContentPageController extends Controller
                 $contentPage->save();
             }
 
-
-
-
             return \JsonHelper::success([
                 'msg' => 'Imagen guardada',
                 'url' => $image->url,
@@ -56,17 +47,6 @@ class ContentPageController extends Controller
 
         }
 
-
-
-
-        return \JsonHelper::success([
-            'test' => 'LLEGA',
-            'request' => $request->all(),
-            'contentPageId' => $contentPage->id,
-            'hasFile' => $request->hasFile('image'),
-            'isUploadContent' => $request->hasFile('image') && $request->file('image') instanceof \Illuminate\Http\UploadedFile,
-            'isImage' => $request->hasFile('image') && $request->file('image')->isValid(),
-            'mime' => ($request->hasFile('image') && $request->file('image')->isValid()) ? $request->file('image')->getMimeType() : false,
-        ]);
+        return \JsonHelper::failed('Imagen no válida');
     }
 }
