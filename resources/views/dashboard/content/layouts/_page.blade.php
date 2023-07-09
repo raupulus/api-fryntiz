@@ -32,11 +32,16 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
             {{-- Selector Cropper de imágenes --}}
             <div class="col-12">
                 <v-image-cropper
-                    url="{{$page->url}}"
+                    url="{{$page->urlStoreImage}}"
+                    default-image="{{$page->urlImage}}"
+                    name="image-main"
+                    csrf="{{csrf_token()}}"
                     :aspect-ratios-restriction="[1,1]"
                 ></v-image-cropper>
             </div>
 
+
+            {{--
             <div class="col-12">
                 <div class="form-group">
                     <label for="image">Imagen</label>
@@ -48,6 +53,7 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
 
                 </div>
             </div>
+            --}}
 
         </div>
 

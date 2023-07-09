@@ -80,7 +80,7 @@ class ContentController extends BaseWithTableCrudController
      *
      * @param \App\Http\Requests\Dashboard\Content\ContentStoreRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(ContentStoreRequest $request)
     {

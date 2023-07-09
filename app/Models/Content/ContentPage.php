@@ -2,7 +2,10 @@
 
 namespace App\Models\Content;
 
+use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\File;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -10,11 +13,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class ContentPage extends BaseModel
 {
+    use ImageTrait;
+
     protected $table = 'content_pages';
 
     protected $fillable = [
         'current_page_raw_id',
         'content_id',
+        'image_id',
         'title',
         'slug',
         'content',
@@ -34,5 +40,25 @@ class ContentPage extends BaseModel
             ->orderByDesc('updated_at');
     }
 
+    /**
+     * Relación con la imagen principal de la página.
+     *
+     * @return BelongsTo
+     */
+    public function image(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id', 'id');
+    }
 
+
+    /**
+     * Devuelve la ruta para actualizar la imagen de la página.
+     *
+     * @return string
+     */
+    public function getUrlStoreImageAttribute(): string
+    {
+        //return route('content.page.store.image', ['content_page' => $this->id]);
+        return route('dashboard.content.ajax.page.upload.image.update', ['contentPage' => $this->id]);
+    }
 }

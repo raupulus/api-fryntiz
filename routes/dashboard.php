@@ -27,6 +27,7 @@ use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\Users\UserController;
 use App\Http\Controllers\Dashboard\EmailController;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\Dashboard\Content\ContentPageController;
 
 ############################################################
 ##                      Dashboard                         ##
@@ -291,8 +292,24 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             Route::get('/page/{contentPage}/get', [ContentController::class, 'ajaxPageGetContent'])
                     ->name('dashboard.content.ajax.page.get.content');
 
+
+
+
+
+            #####TMP Debug -> Falla al llegar al controlador, algún middleware intercepta datos y no valida
+
+            ## Añade/Actualiza una imagen de una página
+            Route::post('/page/upload/image/{contentPage}/update', [ContentPageController::class, 'ajaxUpdateImage'])
+                ->name('dashboard.content.ajax.page.upload.image.update');
         });
     });
+
+
+
+
+
+
+
 ############################################################
 ##                       Idiomas                          ##
 ############################################################
