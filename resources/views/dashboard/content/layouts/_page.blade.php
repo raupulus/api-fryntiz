@@ -35,7 +35,6 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
                     <v-image-cropper
                         url="{{$page->urlStoreImage}}"
                         default-image="{{$page->urlImage}}"
-                        name="image-main"
                         csrf="{{csrf_token()}}"
                         :aspect-ratios-restriction="[16,9]"
                     ></v-image-cropper>

@@ -1,8 +1,16 @@
 <template>
 
     <div>
+        <!-- Input con la imagen resultante -->
+        <input v-if="name"
+               :name="name"
+               type="text"
+               style="display: none;"
+               :value="imageResult" />
+
         <!-- Modal -->
         <div class="v-box-image-cropper-modal" v-if="isActive">
+
             <div class="v-container-cropper-modal">
                 <cropper
                     class="v-cropper"
@@ -263,10 +271,10 @@ export default {
             default: [1, 1]
         },
         name: {
-            default: 'image'
+            default: null
         },
         url: {
-            required: true,
+            default: null,
         },
         defaultImage: {
             required: true,
@@ -285,7 +293,11 @@ export default {
 
         const img = ref(props.defaultImage);
 
+        // Contiene la url hacia la imagen
         const urlImage = ref('');
+
+        // Almacena la imagen final, solo cuando hay "name" y se crea el input.
+        const imageResult = ref(null);
 
         const toggleModalActive = () => isActive.value = !isActive.value;
 
@@ -307,6 +319,7 @@ export default {
             selectorHddActive,
             selectorUrlActive,
             urlImage,
+            imageResult,
         };
     },
 
@@ -412,21 +425,30 @@ export default {
         uploadImage() {
             const { canvas } = this.$refs.cropper.getResult();
 
-            if (canvas) {
+            // Cierro el modal antes de procesar la subida
+            this.isActive = false;
 
-                // Cierro el modal antes de procesar la subida
-                this.isActive = false;
+            // Cuando no hay url para subir por ajax, se añade la imagen al input en formato base64
+            if (this.name && canvas) {
 
+                canvas.toBlob(blob => {
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                        this.imageResult = reader.result;
+
+                        console.log(this.imageResult);
+                    };
+
+                    reader.readAsDataURL(blob);
+
+                    this.img = URL.createObjectURL(blob);
+                }, 'image/png');
+            }
+
+            // Cuando hay url para subir por ajax
+            if (this.url && canvas) {
                 const form = new FormData();
-
-
-                // Tener en cuenta
-                // Añadir token csrf
-                // Plantear función fetch global con token csrf
-                // Comprobar enctype del form, multipart/form-data
-                // Intentar subir en png para mantener canal alfa, en backend se puede convertir a jpg o webp
-
-
 
                 const headers = {
                     'Accept': 'application/json',

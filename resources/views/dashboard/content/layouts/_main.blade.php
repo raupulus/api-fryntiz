@@ -380,6 +380,21 @@
 
             <div class="card-body">
                 <div class="form-group">
+                    <div class="input-group">
+                        {{-- Selector Cropper de imágenes --}}
+                        <div class="col-12">
+                            <div style="width: 100%; max-width: 400px; margin: auto;">
+                                <v-image-cropper
+                                    default-image="{{ $model->urlImage }}"
+                                    name="image"
+                                    :aspect-ratios-restriction="[16,9]"
+                                ></v-image-cropper>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                     <label for="image">
                         Imagen (TODO: Añadir cropper)
                     </label>

@@ -108,10 +108,16 @@ class ContentController extends BaseWithTableCrudController
             $model->saveCategories($requestValidated['categories']);
         }
 
+        // Guarda la imagen en base64
+        if ($request->has('image')) {
+            // TODO: Implementar en el trait método para guardar desde base64
+            //$model->saveImageFromBase64($request->file('image'));
+        }
+
 
         // TODO: Crear trait? Para imágenes y dinamizar?
 
-        dd($model);
+        dd($model, $request->get('image'), $request->all(), $request->validated());
 
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
