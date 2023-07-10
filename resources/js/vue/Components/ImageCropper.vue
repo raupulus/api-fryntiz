@@ -327,10 +327,11 @@ export default {
     methods: {
 
         reset() {
+            this.$refs.cropper.reset();
             this.zoom(0);
             this.flip();
             this.rotate();
-
+            this.img = this.defaultImage;
         },
         zoom(quantity = 2) {
             this.$refs.cropper.zoom(quantity);
@@ -373,7 +374,9 @@ export default {
         },
 
         loadImageFromUrl() {
-            this.img = this.urlImage;
+            if (this.urlImage) {
+                this.img = this.urlImage;
+            }
         },
 
         /**
