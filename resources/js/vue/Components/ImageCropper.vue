@@ -362,6 +362,41 @@ export default {
         },
         */
 
+        /**
+         * Comrpueba si la imagen desde la URL es válida.
+         *
+         * @param url URL de la imagen.
+         * @param callback Función a ejecutar.
+         * @param timeout Tiempo de espera.
+         */
+        checkImage(url, callback, timeout = 5000) {
+            let timedOut = false, timer;
+            let img = new Image();
+
+            img.onerror = img.onabort = function() {
+                if (!timedOut) {
+                    clearTimeout(timer);
+                    callback(url, "error");
+                }
+            };
+
+            img.onload = function() {
+                if (!timedOut) {
+                    clearTimeout(timer);
+                    callback(url, "success");
+                }
+            };
+
+            img.src = url;
+
+            timer = setTimeout(function() {
+                timedOut = true;
+                // reset .src to invalid URL so it stops previous
+                // loading, but doesn't trigger new load
+                img.src = "//!!!!/test.jpg";
+                callback(url, "timeout");
+            }, timeout);
+        },
 
         changeOriginImageSelector(section = 'hdd') {
             if (section === 'hdd') {
@@ -373,9 +408,19 @@ export default {
             }
         },
 
+        /**
+         * Carga una nueva imagen desde una url solo si es posible.
+         */
         loadImageFromUrl() {
             if (this.urlImage) {
-                this.img = this.urlImage;
+                // TODO: Añadir un spinner de carga y poner aviso en caso de error.
+                this.checkImage(this.urlImage, (url, status) => {
+                    if (status === "success") {
+                        this.img = this.urlImage;
+                    } else {
+                        this.img = this.defaultImage;
+                    }
+                }, 5000);
             }
         },
 
