@@ -1,12 +1,12 @@
 <template>
 
-    <div>
+    <div style="width: 100%; height: 100%;">
         <!-- Input con la imagen resultante -->
         <input v-if="name"
                :name="name"
                type="text"
                style="display: none;"
-               :value="imageResult" />
+               :value="imageResult"/>
 
         <!-- Modal -->
         <div class="v-box-image-cropper-modal" v-if="isActive">
@@ -193,7 +193,7 @@
 
                     <!-- Selector de imagen -->
                     <div v-if="selectorHddActive" class="v-text-center">
-                        <input type="file" ref="file" @change="loadImage($event)" accept="image/*" />
+                        <input type="file" ref="file" @change="loadImage($event)" accept="image/*"/>
                     </div>
 
 
@@ -233,14 +233,11 @@
 
 
         <!-- Imagen de previsualización tras cerrar modal -->
-        <div>
+        <img :src="img"
+             @click="toggleModalActive"
+             class="v-image-cropper-preview-image"
+             alt="Imagen por defecto">
 
-            <img :src="img"
-                 @click="toggleModalActive"
-                 class="v-image-cropper-preview-image"
-                 alt="Imagen por defecto">
-
-        </div>
 
         <!-- Botón para abrir modal -->
         <div class="v-text-center v-mt-1">
@@ -256,7 +253,7 @@
 </template>
 
 <script>
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import {Cropper} from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
@@ -373,14 +370,14 @@ export default {
             let timedOut = false, timer;
             let img = new Image();
 
-            img.onerror = img.onabort = function() {
+            img.onerror = img.onabort = function () {
                 if (!timedOut) {
                     clearTimeout(timer);
                     callback(url, "error");
                 }
             };
 
-            img.onload = function() {
+            img.onload = function () {
                 if (!timedOut) {
                     clearTimeout(timer);
                     callback(url, "success");
@@ -389,7 +386,7 @@ export default {
 
             img.src = url;
 
-            timer = setTimeout(function() {
+            timer = setTimeout(function () {
                 timedOut = true;
                 // reset .src to invalid URL so it stops previous
                 // loading, but doesn't trigger new load
@@ -431,7 +428,7 @@ export default {
          */
         loadImage(event) {
             // Reference to the DOM input element
-            const { files } = event.target;
+            const {files} = event.target;
             // Ensure that you have a file before attempting to read it
             if (files && files[0]) {
                 // 1. Revoke the object URL, to allow the garbage collector to destroy the uploaded before file
@@ -471,7 +468,7 @@ export default {
         },
 
         uploadImage() {
-            const { canvas } = this.$refs.cropper.getResult();
+            const {canvas} = this.$refs.cropper.getResult();
 
             // Cierro el modal antes de procesar la subida
             this.isActive = false;
@@ -524,7 +521,7 @@ export default {
                                 this.img = data.url;
                             }
 
-                    }).catch(err => {
+                        }).catch(err => {
                         console.log(err);
                     });
                 }, 'image/png');
@@ -642,11 +639,12 @@ export default {
 
 /* Imagen de previsualización tras cerrar modal */
 .v-image-cropper-preview-image {
-    width: 100%;
-    height: auto;
+    width: auto;
+    height: 100%;
     display: block;
     margin: auto;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 

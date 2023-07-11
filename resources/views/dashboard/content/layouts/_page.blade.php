@@ -10,7 +10,9 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="title">Título</label>
-                    <input type="text" class="page-form-input-title form-control"
+
+                    <input type="text"
+                           class="page-form-input-title form-control"
                            name="title"
                            value="{{$page->title}}"
                            placeholder="Título de la página">
@@ -20,7 +22,9 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="slug">Slug</label>
-                    <input type="text" class="page-form-input-slug form-control"
+
+                    <input type="text"
+                           class="page-form-input-slug form-control"
                            name="slug"
                             value="{{$page->slug}}"
                            placeholder="Slug de la página">
@@ -31,7 +35,7 @@ Debe recibirse "$page" como instancia del modelo "ContentPage"
 
             {{-- Selector Cropper de imágenes --}}
             <div class="col-12">
-                <div style="width: 100%; max-width: 400px; margin: auto;">
+                <div style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
                     <v-image-cropper
                         url="{{$page->urlStoreImage}}"
                         default-image="{{$page->urlImage}}"

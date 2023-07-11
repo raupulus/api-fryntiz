@@ -383,7 +383,7 @@
                     <div class="input-group">
                         {{-- Selector Cropper de imágenes --}}
                         <div class="col-12">
-                            <div style="width: 100%; max-width: 400px; margin: auto;">
+                            <div style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
                                 <v-image-cropper
                                     default-image="{{ $model->urlImage }}"
                                     name="image"
@@ -393,39 +393,6 @@
                         </div>
                     </div>
 
-
-
-                    <label for="image">
-                        Imagen (TODO: Añadir cropper)
-                    </label>
-
-                    <div class="input-group">
-                        <img class="cursor-pointer"
-                             src="{{ $model->urlThumbnail('small') }}"
-                             alt="Imagen de Portada"
-                             id="main-image-preview"
-                             style="width: 80px; margin-right: 10px;"/>
-
-                        <div class="custom-file">
-
-                            <input type="file"
-                                   name="image"
-                                   id="main-image-input"
-                                   accept="image/*"
-                                   class="cursor-pointer form-control-file">
-
-                            <label class="custom-file-label cursor-pointer"
-                                   id="main-image-label"
-                                   for="main-image-input">
-
-                                @if ($model->image)
-                                    {{$model->image->original_name}}
-                                @else
-                                    Añadir archivo
-                                @endif
-                            </label>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

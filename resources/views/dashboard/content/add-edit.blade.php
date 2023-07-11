@@ -430,10 +430,6 @@
             }
 
 
-            // Previsualización de imagen para apartado principal.
-            preparePreviewImage('#main-image-input', '#main-image-preview', '#main-image-label');
-
-
 
 
 
