@@ -97,7 +97,7 @@
                                 @php($checked = $checked ?? $model->author_id  === $user->id)
 
                                 <option value="{{ $user->id }}"
-                                        {{$checked ? 'selected' : ''}}>
+                                    {{$checked ? 'selected' : ''}}>
                                     {{ $user->name }}
                                 </option>
                             @endforeach
@@ -122,7 +122,7 @@
                             $platform->id)
 
                             <option value="{{ $platform->id }}"
-                                    {{$checked ? 'selected' : ''}}>
+                                {{$checked ? 'selected' : ''}}>
                                 {{ $platform->title }}
                             </option>
                         @endforeach
@@ -142,7 +142,7 @@
                             @php($checked = $checked ?? $model->type_id === $contentType->id)
 
                             <option value="{{ $contentType->id }}"
-                                    {{$checked ? 'selected' : ''}}>
+                                {{$checked ? 'selected' : ''}}>
                                 {{ $contentType->name }}
                             </option>
                         @endforeach
@@ -211,7 +211,7 @@
                                type="checkbox"
                                id="is_comment_enabled"
                                name="is_comment_enabled"
-                                {{old('is_comment_enabled', $model->is_comment_enabled) ? 'checked' : ''}}>
+                            {{old('is_comment_enabled', $model->is_comment_enabled) ? 'checked' : ''}}>
                         <label for="is_comment_enabled"
                                class="custom-control-label">
                             Permitir Comentarios
@@ -223,7 +223,7 @@
                                type="checkbox"
                                id="is_comment_anonymous"
                                name="is_comment_anonymous"
-                                {{ old('is_comment_anonymous', $model->is_comment_anonymous) ? 'checked' : '' }}>
+                            {{ old('is_comment_anonymous', $model->is_comment_anonymous) ? 'checked' : '' }}>
                         <label for="is_comment_anonymous"
                                class="custom-control-label">
                             Permitir Comentarios Anónimos
@@ -235,7 +235,7 @@
                                type="checkbox"
                                id="is_visible_on_archive"
                                name="is_visible_on_archive"
-                                {{ old('is_visible_on_archive', $model->is_visible_on_archive) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_archive', $model->is_visible_on_archive) ? 'checked' : '' }}>
                         <label for="is_visible_on_archive"
                                class="custom-control-label">
                             Contenido Archivado (obsoleto)
@@ -383,7 +383,8 @@
                     <div class="input-group">
                         {{-- Selector Cropper de imágenes --}}
                         <div class="col-12">
-                            <div style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
+                            <div
+                                style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
                                 <v-image-cropper
                                     default-image="{{ $model->urlImage }}"
                                     name="image"
@@ -526,7 +527,7 @@
                         <div class="mt-3 text-center">
                             <span class="btn btn-sm btn-primary"
                                   data-toggle="modal"
-                                  data-target=".modal-create-tag"  >
+                                  data-target=".modal-create-tag">
                                 <i class="fa fa-plus"></i>
                                 Crear etiqueta
                             </span>
@@ -587,22 +588,23 @@
                 </div>
 
 
-                {{-- Categorías --}}
+                {{-- NUEVO Categorías --}}
+
                 <div class="form-group">
                     <label for="categories">
                         Categorías
-
-                        <br>
-
-                        <small>
-                            Agrupa tipo de contenido relacionado
-                            indirectamente, sobre el mismo tema pero no
-                            exactamente igual.
-                        </small>
                     </label>
 
-                    <div class="select2-info">
+                    <br>
 
+                    <small>
+                        Agrupa tipo de contenido relacionado indirectamente,
+                        sobre el mismo tema pero no exactamente igual.
+                    </small>
+
+                    <br/>
+
+                    <div class="select2-purple">
                         <select id="categories" name="categories[]"
                                 class="select2 select2-hidden-accessible"
                                 multiple=""
@@ -627,15 +629,71 @@
                         </select>
 
                         <div class="mt-3 text-center">
-                            <span class="btn btn-sm btn-primary">
-                                <i class="fa fa-plus"></i>
-                                Crear etiqueta
-                            </span>
+                    <span class="btn btn-sm btn-primary"
+                          data-toggle="modal"
+                          data-target=".modal-create-category">
+                        <i class="fa fa-plus"></i>
+
+                        Crear Categoría
+                    </span>
+
+                            <div id="modal-create-category"
+                                 class="modal fade modal-create-category"
+                                 tabindex="-1" role="dialog"
+                                 aria-labelledby="modal-create-category-label"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="category-create">
+                                                        Añadir Categoría
+                                                    </label>
+
+                                                    <p>
+                                                        <small>
+                                                            Las categorías se
+                                                            separan por comas
+                                                            para añadir varias
+                                                        </small>
+                                                    </p>
+
+                                                    <input id="create-category-input"
+                                                           class="form-control m-auto w-75"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <p class="msg-success">
+                                                    Introduce las categorías separadas por coma: "tag1, tag2, tag3"
+                                                </p>
+                                            </div>
+
+                                            {{-- Añado badges con las
+                                            etiquetas que estoy creando --}}
+                                            <div id="box-categories-created"
+                                                 class="col-12">
+                                            </div>
+
+                                            <div class="col-12">
+                                        <span id="create-categories-button"
+                                              class="btn btn-sm
+                                        btn-success m-2">
+                                                Añadir
+                                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
+
+
             </div>
         </div>
 
@@ -654,7 +712,7 @@
                                type="checkbox"
                                id="is_visible_on_home"
                                name="is_visible_on_home"
-                                {{ old('is_visible_on_home', $model->is_visible_on_home) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_home', $model->is_visible_on_home) ? 'checked' : '' }}>
                         <label for="is_visible_on_home"
                                class="custom-control-label">
                             Visible en la página principal
@@ -666,7 +724,7 @@
                                type="checkbox"
                                id="is_visible_on_menu"
                                name="is_visible_on_menu"
-                                {{ old('is_visible_on_menu', $model->is_visible_on_menu) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_menu', $model->is_visible_on_menu) ? 'checked' : '' }}>
                         <label for="is_visible_on_menu"
                                class="custom-control-label">
                             Visible en el menú
@@ -678,7 +736,7 @@
                                type="checkbox"
                                id="is_visible_on_footer"
                                name="is_visible_on_footer"
-                                {{ old('is_visible_on_footer', $model->is_visible_on_footer) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_footer', $model->is_visible_on_footer) ? 'checked' : '' }}>
                         <label for="is_visible_on_footer"
                                class="custom-control-label">
                             Visible en el Footer
@@ -690,7 +748,7 @@
                                type="checkbox"
                                id="is_visible_on_sidebar"
                                name="is_visible_on_sidebar"
-                                {{ old('is_visible_on_sidebar', $model->is_visible_on_sidebar) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_sidebar', $model->is_visible_on_sidebar) ? 'checked' : '' }}>
                         <label for="is_visible_on_sidebar"
                                class="custom-control-label">
                             Visible en el Sidebar
@@ -702,7 +760,7 @@
                                type="checkbox"
                                id="is_visible_on_search"
                                name="is_visible_on_search"
-                                {{ old('is_visible_on_search', $model->is_visible_on_search) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_search', $model->is_visible_on_search) ? 'checked' : '' }}>
                         <label for="is_visible_on_search"
                                class="custom-control-label">
                             Visible en las búsquedas
@@ -714,7 +772,7 @@
                                type="checkbox"
                                id="is_visible_on_rss"
                                name="is_visible_on_rss"
-                                {{ old('is_visible_on_rss', $model->is_visible_on_rss) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_rss', $model->is_visible_on_rss) ? 'checked' : '' }}>
                         <label for="is_visible_on_rss"
                                class="custom-control-label">
                             Visible en las redes sociales
@@ -726,7 +784,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap"
                                name="is_visible_on_sitemap"
-                                {{ old('is_visible_on_sitemap', $model->is_visible_on_sitemap) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_sitemap', $model->is_visible_on_sitemap) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap"
                                class="custom-control-label">
                             Visible para el Sitemap General
@@ -738,7 +796,7 @@
                                type="checkbox"
                                id="is_visible_on_sitemap_news"
                                name="is_visible_on_sitemap_news"
-                                {{ old('is_visible_on_sitemap_news', $model->is_visible_on_sitemap_news) ? 'checked' : '' }}>
+                            {{ old('is_visible_on_sitemap_news', $model->is_visible_on_sitemap_news) ? 'checked' : '' }}>
                         <label for="is_visible_on_sitemap_news"
                                class="custom-control-label">
                             Visible para el Sitemap de Noticias

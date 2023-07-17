@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
+use App\Models\Category;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailablePageRaw;
 use App\Models\Content\ContentAvailableType;
@@ -15,6 +16,7 @@ use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
 use App\Models\File;
 use App\Models\Platform;
+use App\Models\PlatformCategory;
 use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\User;
@@ -335,7 +337,7 @@ class ContentController extends BaseWithTableCrudController
 
     public function ajaxTagCreate(Request $request): JsonResponse
     {
-        $tagsName = $request->get('tagNames');
+        $tagsName = $request->get('words');
         $platformId = $request->get('platform_id');
         $platform = Platform::find($platformId);
 
@@ -368,6 +370,54 @@ class ContentController extends BaseWithTableCrudController
                 PlatformTag::firstOrCreate([
                     'platform_id' => $platformId,
                     'tag_id' => $tag->id,
+                ]);
+            }
+        }
+
+        return JsonHelper::accepted([
+            'tags' => $tags,
+        ]);
+
+    }
+
+    public function ajaxCategoryCreate(Request $request): JsonResponse
+    {
+
+        // TOFIX: He copiado el método para etiquetas, hay que unificar partes en común.
+
+        $tagsName = $request->get('words');
+        $platformId = $request->get('platform_id');
+        $platform = Platform::find($platformId);
+
+        if (!$platform) {
+            return JsonHelper::accepted([
+                'message' => 'Error al crear las etiquetas.',
+                'errors' => [
+                    'El id de la plataforma no es válido, se ha eliminado o no existe.',
+                ],
+            ]);
+        }
+
+        $tags = [];
+
+        $slugs = $platform->categories()->pluck('slug')->toArray();
+
+        foreach ($tagsName as $tagName) {
+            $name = trim($tagName);
+            $slug = Str::slug($tagName);
+
+            if (!in_array($slug, $slugs)) {
+                $tag = Category::firstOrCreate([
+                    'slug' => $slug,
+                ], [
+                    'name' => $name,
+                ]);
+
+                $tags[] = $tag;
+
+                PlatformCategory::firstOrCreate([
+                    'platform_id' => $platformId,
+                    'category_id' => $tag->id,
                 ]);
             }
         }

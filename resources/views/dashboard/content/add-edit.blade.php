@@ -14,6 +14,7 @@
 @section('content_header')
     <script>
         window.urlContentCreateTag = "{{ route('dashboard.content.ajax.tag.create') }}";
+        window.urlContentCreateCategory = "{{ route('dashboard.content.ajax.category.create') }}";
     </script>
 
     <h1>

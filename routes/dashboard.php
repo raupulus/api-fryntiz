@@ -264,8 +264,13 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             Route::match(['put', 'patch', 'post'], '/table/action', [ContentController::class, 'ajaxTableActions'])
                 ->name('dashboard.content.ajax.table.actions');
 
+            ## Crea una nueva etiqueta/s asociada al contenido
             Route::post('/tag/create', [ContentController::class, 'ajaxTagCreate'])
                 ->name('dashboard.content.ajax.tag.create');
+
+            ## Crea una nueva categoría/s asociada al contenido
+            Route::post('/category/create', [ContentController::class, 'ajaxCategoryCreate'])
+                ->name('dashboard.content.ajax.category.create');
 
 
 

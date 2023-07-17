@@ -5,21 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PlatformTag extends Model
+class PlatformCategory extends Model
 {
     protected $fillable = [
         'platform_id',
-        'tag_id',
+        'category_id',
     ];
 
     /**
-     * Relación con la tabla de etiquetas para las plataformas.
+     * Relación con la tabla de categorías para las plataformas.
      *
      * @return BelongsTo
      */
-    public function tag(): BelongsTo
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Tag::class, 'tag_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
-
 }
