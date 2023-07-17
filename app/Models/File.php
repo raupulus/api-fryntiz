@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Intervention\Image\Facades\Image;
 use function array_filter;
 use function asset;
@@ -102,22 +103,22 @@ class File extends Model
      * Lo devuelve una vez almacenado.
      *
      * @param \Illuminate\Http\UploadedFile $file
-     * @param string                        $path      Directorio dónde
+     * @param string $path Directorio dónde
      *                                                 guardarlo.
-     * @param int|null                      $file_id   Id del archivo si
+     * @param int|null $file_id Id del archivo si
      *                                                 existiera.
-     * @param string                        $privacity Visibilidad,
+     * @param string $privacity Visibilidad,
      *                                                 directorio public o
      *                                                 private
      *
-     * @return \App\Models\File|null
+     * @return self|null
      */
     public static function addFile(UploadedFile $uploadedFile,
                                    string       $path = 'upload',
                                    bool         $is_private = true,
                                    int          $file_id = null,
                                    bool         $has_thumbnails = true
-    )
+    ): ?File
     {
 
         $fullPath = ($is_private ? 'private' : 'public') . '/' . $path;
@@ -127,7 +128,7 @@ class File extends Model
         $imageName = $imageNameArray[count($imageNameArray) - 1];
         $mime = $uploadedFile->getClientMimeType();
 
-        $canEditImage = in_array($mime, File::$imageMimeCanEdit);
+        $canEditImage = in_array($mime, self::$imageMimeCanEdit);
 
         ## Obtengo el tipo de archivo o lo creo si no existe.
         $fileType = FileType::updateOrCreate([
@@ -142,7 +143,7 @@ class File extends Model
 
         ## Cuando se está reemplazando un archivo se borra del disco el anterior.
         if ($file_id) {
-            $oldFile = File::find($file_id);
+            $oldFile = self::find($file_id);
 
             if ($oldFile && file_exists($oldFile->storagePathFile)) {
                 unlink($oldFile->storagePathFile);
@@ -196,6 +197,62 @@ class File extends Model
         return $file;
     }
 
+
+    /**
+     * Recibe un string en base64 y lo convierte en un archivo.
+     *
+     * @param string $base64 Cadena en base64
+     * @param string $path Directorio dónde se almacenará
+     * @param bool $is_private Indica si pertenece al espacio privado
+     * @param int|null $file_id Id del archivo si existiera
+     * @param bool $has_thumbnails Indica si se deben generar miniaturas
+     *
+     * @return File|null
+     */
+    public static function addFileFromBase64(string $base64,
+                                             string $path = 'upload',
+                                             bool   $is_private = true,
+                                             int    $file_id = null,
+                                             bool   $has_thumbnails = true): ?File
+    {
+
+
+        // Get file data base64 string
+        $fileData = base64_decode(Arr::last(explode(',', $base64)));
+
+        // Create temp file and get its absolute path
+        $tempFile = tmpfile();
+        $tempFilePath = stream_get_meta_data($tempFile)['uri'];
+
+        // Save file data in file
+        file_put_contents($tempFilePath, $fileData);
+
+
+        $tempFileObject = new \Illuminate\Http\File($tempFilePath);
+
+        $uploadedFile = new UploadedFile(
+            $tempFileObject->getPathname(),
+            $tempFileObject->getFilename(),
+            $tempFileObject->getMimeType(),
+            0,
+            true // Mark it as test, since the file isn't from real HTTP POST.
+        );
+
+
+        $file = self::addFile($uploadedFile, $path, $is_private, $file_id, $has_thumbnails);
+
+
+        // Close this file after response is sent.
+        // Closing the file will cause to remove it from temp director!
+        app()->terminating(function () use ($tempFile) {
+            fclose($tempFile);
+        });
+
+
+        return $file;
+    }
+
+
     /**
      * Crea las miniaturas de un archivo.
      *
@@ -222,10 +279,10 @@ class File extends Model
             $oldThumbnail->delete();
         }
 
-        $canEditImage = $file && $file->fileType && in_array ($file->fileType->mime,  File::$imageMimeCanEdit);
+        $canEditImage = $file && $file->fileType && in_array($file->fileType->mime, File::$imageMimeCanEdit);
 
         ## Compruebo si es una imagen editable
-        if ( ! $canEditImage ) {
+        if (!$canEditImage) {
             return $thumbnails;
         }
 
