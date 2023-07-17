@@ -108,14 +108,13 @@ class ContentController extends BaseWithTableCrudController
             $model->saveCategories($requestValidated['categories']);
         }
 
+
         // Guarda la imagen en base64
-        if ($request->has('image')) {
-            // TODO: Implementar en el trait método para guardar desde base64
-            //$model->saveImageFromBase64($request->file('image'));
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'content', false);
         }
 
 
-        // TODO: Crear trait? Para imágenes y dinamizar?
 
         dd($model, $request->get('image'), $request->all(), $request->validated());
 
@@ -333,14 +332,20 @@ class ContentController extends BaseWithTableCrudController
         ]);
     }
 
-    public function ajaxTagCreate(Request $request)
+
+    public function ajaxTagCreate(Request $request): JsonResponse
     {
         $tagsName = $request->get('tagNames');
         $platformId = $request->get('platform_id');
         $platform = Platform::find($platformId);
 
         if (!$platform) {
-            return JsonHelper::error('Plataforma no encontrada');
+            return JsonHelper::accepted([
+                'message' => 'Error al crear las etiquetas.',
+                'errors' => [
+                    'El id de la plataforma no es válido, se ha eliminado o no existe.',
+                ],
+            ]);
         }
 
         $tags = [];

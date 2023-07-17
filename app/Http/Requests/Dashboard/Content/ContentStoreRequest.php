@@ -92,8 +92,8 @@ class ContentStoreRequest extends FormRequest
 
             // Relaciones
             'contributors.*' => 'nullable|exists:users,id',
-            'contents_related.*' => 'nullable|exists:contents,id',
             'tags.*' => 'nullable|exists:tags,id',
+            'contents_related.*' => 'nullable|exists:contents,id',
             'categories.*' => 'nullable|exists:categories,id',
 
         ];

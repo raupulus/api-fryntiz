@@ -560,7 +560,7 @@
 
                                             <div class="col-12">
                                                 <p class="msg-success">
-                                                    Error/Success
+                                                    Introduce las etiquetas separadas por coma: "tag1, tag2, tag3"
                                                 </p>
                                             </div>
 

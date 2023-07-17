@@ -48,40 +48,84 @@ window.document.addEventListener('DOMContentLoaded', () => {
                     let platformIdInput = document.getElementById('platform_id');
                     let platformId = platformIdInput.value;
 
+                    // Bloque para mostrar mensajes de estado
+                    let statusBox = document.querySelector('.msg-success');
+
+                    // Almacena el mensaje de estado final
+                    let statusMessage = '';
+
+                    statusBox.textContent = '';
+
+                    // Realiza la petición AJAX para crear las etiquetas
                     let ajaxResponse = await sendAjaxCreateTags(array, platformId);
 
-                    console.log(ajaxResponse);
 
-                    ajaxResponse.tags.forEach((ele) => {
-                        let id = ele.id;
-                        let name = ele.name;
-                        let slug = ele.slug;
+                    if (!ajaxResponse.errors && (ajaxResponse.status === 'ok') && (!ajaxResponse.tags?.length)) {
+                        // OK, Pero sin nuevas tags guardadas. Podrían ser repetidas o no válidas
 
-                        // Crear badge en el modal
-                        let badge = document.createElement('span');
+                        statusMessage = 'No se han guardado nuevas etiquetas.';
 
-                        badge.classList.add('badge', 'badge-primary', 'mr-1');
-                        badge.innerText = name;
+                    } else if (!ajaxResponse.errors && (ajaxResponse.tags?.length)) {
+                        // OK, Con nuevas tags guardadas
 
-                        if (boxBadge) {
-                            boxBadge.appendChild(badge);
-                        }
+                        // Cantidad de tags guardadas.
+                        const quantity = ajaxResponse.tags.length;
 
-                        // Añadir nuevo slug al select
-                        let select = document.querySelector('#tags');
+                        statusMessage = `Se han guardado ${quantity} etiquetas.`;
 
-                        if (select) {
-                            let option = document.createElement('option');
-                            option.value = id;
-                            option.innerText = slug;
-                            select.appendChild(option);
+                    } else if (ajaxResponse.errors && ajaxResponse.errors.length) {
+                        // En este punto ha ocurrido un error en el servidor, probablemente no hay plataforma
 
-                            $('#tags').select2("destroy");
+                        // Mensaje de error/fallo.
+                        const message = ajaxResponse.message;
 
-                            $('#tags').select2();
-                        }
+                        // Array de errores.
+                        const errors = ajaxResponse.errors;
 
-                    });
+
+                        statusMessage = message;
+
+                        errors.forEach((error) => {
+                            //console.log(error);
+                        });
+                    }
+
+                    // Añado mensaje final al bloque de mensajes
+                    statusBox.textContent = statusMessage;
+
+
+                    if (ajaxResponse.tags?.length) {
+                        ajaxResponse.tags.forEach((ele) => {
+                            let id = ele.id;
+                            let name = ele.name;
+                            let slug = ele.slug;
+
+                            // Crear badge en el modal
+                            let badge = document.createElement('span');
+
+                            badge.classList.add('badge', 'badge-primary', 'mr-1');
+                            badge.innerText = name;
+
+                            if (boxBadge) {
+                                boxBadge.appendChild(badge);
+                            }
+
+                            // Añadir nuevo slug al select
+                            let select = document.querySelector('#tags');
+
+                            if (select) {
+                                let option = document.createElement('option');
+                                option.value = id;
+                                option.innerText = slug;
+                                select.appendChild(option);
+
+                                $('#tags').select2("destroy");
+
+                                $('#tags').select2();
+                            }
+
+                        });
+                    }
                 }
             });
         }
