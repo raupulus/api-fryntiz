@@ -72,18 +72,18 @@ class JsonHelper
      *
      * @return array[]
      */
-    private static function siteData()
+    private static function siteData(): array
     {
         // TODO → Plantear si interesa solo cuando se está en debug, mejor rendimiento??
 
         return [
             'source' => [
-                'domain' => request()->getHost(),
-                'url' => request()->root(),
-                'full_url' => request()->fullUrl(),
-                'path' => request()->path(),
-                'parameters' => request()->all(),
-                'headers' => request()->headers->all(),
+                'domain' => request()?->getHost(),
+                'url' => request()?->root(),
+                'full_url' => request()?->fullUrl(),
+                'path' => request()?->path(),
+                'parameters' => request()?->all(),
+                'headers' => request()?->headers?->all(),
             ],
 
             /*
@@ -105,7 +105,7 @@ class JsonHelper
      *
      * @return array
      */
-    private static function prepareSuccess(Array $data)
+    private static function prepareSuccess(Array $data): array
     {
         return array_merge(
             self::$success,
@@ -117,7 +117,7 @@ class JsonHelper
     /**
      * Prepara un mensaje de error para una acción fallida.
      *
-     * @param String|null     $message Mensaje en formato humano.
+     * @param String     $message Mensaje en formato humano.
      * @param Int             $httpCode Código http del error.
      * @param Exception|null $exception Excepción de seguimiento.
      * @param Int|null        $codeError Id del error dentro de la aplicación.
@@ -127,7 +127,7 @@ class JsonHelper
     private static function prepareError(String $message = 'Error',
                                  Int $httpCode = 400,
                                  Exception $exception = null,
-                                 Int $codeError = null)
+                                 Int $codeError = null): array
     {
         return array_merge(
             self::$error,
@@ -156,7 +156,7 @@ class JsonHelper
     private static function prepareFail(String $message = 'The given data was invalid.',
                                        Array $errors = [],
                                        Int $httpCode = 422,
-                                       Int $codeError = 0)
+                                       Int $codeError = 0): array
     {
         return array_merge(
             self::$fail,
@@ -177,7 +177,7 @@ class JsonHelper
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function success(Array $data = [])
+    public static function success(Array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 200);
     }
@@ -189,7 +189,7 @@ class JsonHelper
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function created(Array $data = [])
+    public static function created(Array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 201);
     }
@@ -201,7 +201,7 @@ class JsonHelper
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function updated(Array $data = [])
+    public static function updated(Array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 202);
     }
@@ -213,7 +213,7 @@ class JsonHelper
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function deleted(Array $data = [])
+    public static function deleted(Array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 200);
     }
@@ -225,7 +225,7 @@ class JsonHelper
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function accepted(Array $data = [])
+    public static function accepted(Array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 202);
     }
@@ -243,7 +243,7 @@ class JsonHelper
     public static function failed(String $message = 'The given data was invalid.',
                                   Array $errors = [],
                                   Int $httpCode = 422,
-                                  Int $codeError = 0)
+                                  Int $codeError = 0): JsonResponse
     {
         return response()->json(self::prepareFail(
                 $message,
@@ -261,7 +261,7 @@ class JsonHelper
      *
      * @return JsonResponse
      */
-    public static function notFound(String $message = '404 This resource does not exist')
+    public static function notFound(String $message = '404 This resource does not exist'): JsonResponse
     {
         $httpCode = 404;
         $exception = new NotFoundHttpException($message);
