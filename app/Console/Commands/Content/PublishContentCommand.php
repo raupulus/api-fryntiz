@@ -34,15 +34,10 @@ class PublishContentCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): void
     {
-        echo "\n\n Comenzando publicación de contenido \n\n";
-
         $now = Carbon::now();
-
 
         $contents = Content::whereNull('published_at')
             ->where(function ($q) use ($now) {
@@ -52,20 +47,10 @@ class PublishContentCommand extends Command
             ->get();
 
 
-        $ids = [];
-
         $contents->each(function ($content) use ($now, &$ids) {
             $content->published_at = $now;
             $content->save();
-
-            $ids[] = $content->id;
         });
 
-
-        echo "\n\n Se han publicado " . count($ids) . " páginas de contenido \n\n";
-        var_dump($ids);
-
-
-        echo "\n\n Fin actualización de páginas de contenido \n\n";
     }
 }
