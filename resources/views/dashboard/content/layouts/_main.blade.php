@@ -344,15 +344,15 @@
                         </label>
 
                         <div class="input-group date"
-                             id="programated_at"
+                             id="scheduled_at"
                              data-target-input="nearest">
                             <input type="text"
-                                   value="{{old('programated_at', $model->programated_at)}}"
-                                   name="programated_at"
+                                   value="{{old('scheduled_at', $model->scheduled_at)}}"
+                                   name="scheduled_at"
                                    class="form-control datetimepicker-input"
-                                   data-target="#programated_at">
+                                   data-target="#scheduled_at">
                             <div class="input-group-append"
-                                 data-target="#programated_at"
+                                 data-target="#scheduled_at"
                                  data-toggle="datetimepicker">
 
                                 <div class="input-group-text">

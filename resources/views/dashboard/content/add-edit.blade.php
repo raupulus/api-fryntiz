@@ -150,9 +150,10 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             /*** Selector datetimepicker programar publicación ***/
-            $('#programated_at').datetimepicker({
+            $('#scheduled_at').datetimepicker({
                 minDate: new Date(),
-                icons:{time:'far fa-clock'}
+                icons:{time:'far fa-clock'},
+                format:'YYYY-MM-DDTHH:mm:ss.SSSZ',
             });
 
             /*** Select 2 ***/
@@ -172,18 +173,18 @@
                 selectableFooter:"",
                 selectionFooter:"",
                 beforeInit:function(algo) {
-                    console.log(algo);
+                    //console.log(algo);
                 },
                 afterInit:function(container) {
                     // after init
-                    console.log('Tras iniciar', container);
+                    //console.log('Tras iniciar', container);
                 },
 
                 afterSelect:function(values) {
 
                     if(values && typeof values === 'object') {
                         Array.from(values).forEach(value => {
-                            console.log('Valor', value);
+                            //console.log('Valor', value);
                             let option = document.querySelector('#contentRelated option[value="' + value + '"]');
                             option.setAttribute('selected', 'selected');
                         });

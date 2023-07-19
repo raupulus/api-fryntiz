@@ -119,15 +119,13 @@ class CreateContentsTable extends Migration
                 ->default(false)
                 ->comment('Indica si el contenido está visible en el sitemap de noticias');
 
-            $table->timestamp('processed_at')
-                ->nullable()
-                ->comment('Fecha de procesado del contenido, verificaciones, etc Por ejemplo para revisar autoría del contenido o revisar si hay actualizaciones en la nube.');
-            $table->timestamp('published_at')
+           $table->timestamp('published_at')
                 ->nullable()
                 ->comment('Fecha de publicación del contenido');
-            $table->timestamp('programated_at')
+
+            $table->timestamp('scheduled_at')
                 ->nullable()
-                ->comment('Fecha en la que está programada la programación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento');
+                ->comment('Momento en la que está programada la publicación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento');
 
             $table->timestamps();
             $table->softDeletes();

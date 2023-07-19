@@ -59,7 +59,7 @@ class Content extends BaseAbstractModelWithTableCrud
 
         'processed_at',
         'published_at',
-        'programmated_at',
+        'scheduled_at',
     ];
 
     protected $dates = [
@@ -68,7 +68,7 @@ class Content extends BaseAbstractModelWithTableCrud
         'deleted_at',
         'processed_at',
         'published_at',
-        'programmated_at',
+        'scheduled_at',
     ];
 
 
@@ -398,6 +398,10 @@ class Content extends BaseAbstractModelWithTableCrud
     public function saveContributors(Array $contributors)
     {
         $contributors = array_unique(array_filter($contributors));
+
+        if (isset($contributors[auth()->id()])) {
+            unset($contributors[auth()->id()]);
+        }
 
         if (! $contributors || ! count($contributors)) {
             $this->contributors()->delete();

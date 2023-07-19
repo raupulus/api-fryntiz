@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Dashboard\Content;
 
 use App\Models\Content\Content;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use function auth;
 
@@ -23,7 +24,24 @@ class ContentStoreRequest extends FormRequest
 
     public function prepareForValidation()
     {
+        $now = Carbon::now();
+
         //dd($this->all());
+
+
+        $scheduledAt = trim($this->get('scheduled_at'));
+
+        if ($scheduledAt) {
+            try {
+                $scheduledAt = \Carbon\Carbon::parse($scheduledAt)->setTimezone('UTC');
+            } catch (\Exception $e) {
+                $scheduledAt = null;
+            }
+        } else {
+            $scheduledAt = null;
+        }
+
+        $publishedAt = (!$scheduledAt || ($scheduledAt && $scheduledAt <= $now)) ? $now : null;
 
         $this->merge([
             'title' => trim($this->get('title')),
@@ -33,14 +51,13 @@ class ContentStoreRequest extends FormRequest
             'platform_id' => (int) trim($this->get('platform_id')),
             'type_id' => (int) trim($this->get('type_id')),
 
-            //'image_id'
-
             'is_active' => (bool) $this->get('is_active'),
             'is_featured' => (bool) $this->get('is_featured'),
             'is_comment_enabled' => (bool) $this->get('is_comment_enabled'),
             'is_comment_anonymous' => (bool) $this->get('is_comment_anonymous'),
             'is_visible_on_archive' => (bool) $this->get('is_visible_on_archive'),
-            //'programated_at' => trim($this->get('programated_at')),
+            'scheduled_at' => $scheduledAt,
+            'published_at' => $publishedAt,
 
             'is_visible_on_home' => (bool) $this->get('is_visible_on_home'),
             'is_visible_on_menu' => (bool) $this->get('is_visible_on_menu'),
@@ -68,17 +85,14 @@ class ContentStoreRequest extends FormRequest
             'author_id' => 'required|exists:users,id',
             'platform_id' => 'required|exists:platforms,id',
             'type_id' => 'required|exists:content_available_types,id',
-            //'image_id' => 'nullable|exists:images,id', // TODO: Implementarvalidación
-            //'is_copyright_valid' => 'required|boolean', //Esto se comprueba
-            // en el controlador llamando a método en el modelo
+            //'is_copyright_valid' => 'required|boolean', // Revisar si dejar aquí o en página individual.
             'is_active' => 'required|boolean',
             'is_featured' => 'required|boolean',
             'is_comment_enabled' => 'required|boolean',
             'is_comment_anonymous' => 'required|boolean',
             'is_visible_on_archive' => 'required|boolean',
-            //'processed_at' => 'nullable|date', // Se comprueba en el controlador
-            //'published_at' => 'nullable|date', // Se comprueba en el controlador
-            'programated_at' => 'nullable|date',
+            'published_at' => 'nullable|date',
+            'scheduled_at' => 'nullable|date',
 
             'is_visible_on_home' => 'required|boolean',
             'is_visible_on_menu' => 'required|boolean',

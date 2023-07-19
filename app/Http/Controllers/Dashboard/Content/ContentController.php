@@ -92,13 +92,11 @@ class ContentController extends BaseWithTableCrudController
 
         $model = $modelString::create($requestValidated);
 
-        //'processed_at' => 'nullable|date', // Se comprueba en el controlador
-        //'published_at' => 'nullable|date', // Se comprueba en el controlador
+        if (isset($requestValidated['contents_related'])) {
+            $model->contentsRelated()->sync($requestValidated['contents_related']);
+        }
 
-        //'contentRelated' => 'nullable|array', //Check ids
-
-
-        // Todo: validar si el usuario puede añadir contribuidor, si ya estuviese añadido, borrar si esto no llega
+        // TODO?: validar si el usuario puede añadir contribuidor
         if (isset($requestValidated['contributors'])) {
             $model->saveContributors($requestValidated['contributors']);
         }
@@ -113,15 +111,20 @@ class ContentController extends BaseWithTableCrudController
 
         ## Guarda la imagen en base64
         if ($request->has('image') && $request->get('image')) {
-            $image = File::addFileFromBase64($request->get('image'), 'content', false);
+            File::addFileFromBase64($request->get('image'), 'content', false);
         }
+
+
 
 
 
         dd($model, $request->get('image'), $request->all(), $request->validated(), $model->categories, $model->tags);
 
 
-        return redirect()->route($modelString::getCrudRoutes()['index']);
+        //return redirect()->route($modelString::getCrudRoutes()['index']);
+
+
+        return redirect()->to($model->urlEdit);
     }
 
     /**
