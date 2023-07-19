@@ -5,6 +5,9 @@ namespace App\Models;
 use App;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use function route;
@@ -40,9 +43,9 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Asocia con el usuario al que pertenece la plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
@@ -50,9 +53,9 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Asocia todos los contenidos creados para la plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function contents()
+    public function contents(): HasMany
     {
         return $this->hasMany(Content::class, 'platform_id', 'id');
     }
@@ -60,9 +63,9 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Asocia todos los tags para la plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'platform_tags', 'platform_id', 'tag_id');
     }
@@ -70,9 +73,9 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Asocia todas las categorías para la plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'platform_categories', 'platform_id', 'category_id');
     }

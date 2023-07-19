@@ -7,6 +7,7 @@ use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Models\Category;
 use App\Models\File;
 use App\Models\Platform;
+use App\Models\PlatformCategory;
 use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\User;
@@ -300,9 +301,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con las etiquetas asociadas.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function tagsJoin()
+    public function tagsJoin(): HasMany
     {
         return $this->hasMany(ContentTag::class, 'content_id', 'id');
     }
@@ -310,9 +311,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con las etiquetas asociadas a través de la tabla de join.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function tagsPlatform()
+    public function tagsPlatform(): BelongsToMany
     {
         return $this->belongsToMany(PlatformTag::class, 'content_tags', 'content_id', 'platform_tag_id');
     }
@@ -320,9 +321,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con la plataforma asociada al contenido
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function platform()
+    public function platform(): BelongsTo
     {
         return $this->belongsTo(Platform::class, 'platform_id', 'id');
     }
@@ -418,30 +419,62 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function saveTags(Array $tags)
     {
+
+        ## Limpio etiquetas vacías y duplicadas.
         $tags = array_unique(array_filter($tags));
 
+        $platformTags = $this->platform->tags()
+            ->whereIn('tag_id', $tags)
+            ->pluck('tag_id')
+            ->toArray();
 
-        // TOFIX: Al cambiar funcionamiento de etiquetas asociadas a plataforma -> contenido -> etiqueta
-        // Esto ha dejado de funcionar tal como se planteaba
+        ## Almacena las etiquetas que aún no están asociadas a la plataforma.
+        $platformTagsDiff = array_diff($tags, $platformTags);
 
-        /*
-        $this->tags()->delete();
+        ## Creamos las etiquetas que no estén asociadas a la plataforma.
+        foreach ($platformTagsDiff as $platformTag) {
+            $this->platform->tags()->create([
+                'tag_id' => $platformTag,
+            ]);
+        }
 
-        foreach ($tags as $tag) {
-            $platformTagId = $this->platform->tags()
-                ->where('platform_tags.tag_id', $tag)
-                ->pluck('platform_tags.id')
-                ->first();
+        ## Etiquetas ya asociadas al contenido
+        $contentTags = $this->tagsJoin()
+            ->pluck('platform_tag_id')
+            ->toArray();
 
-            if ($platformTagId) {
-                $this->tags()->create([
-                    'content_id' => $this->id,
-                    'platform_tag_id' => $platformTagId,
-                ]);
+
+        ## Borramos las etiquetas que no estén en el array, ya no forma parte del contenido.
+        foreach ($contentTags as $contentTag ) {
+            if (!in_array($contentTag, $tags)) {
+                $contentTag->delete();
             }
         }
-        */
 
+        ## Vuelvo a buscar las etiquetas asociadas al contenido, ya que puede haber cambiado
+        $platformTags = PlatformTag::select(['id', 'tag_id'])
+            ->whereIn('tag_id', $tags)
+            ->where('platform_id', $this->platform_id)
+            ->get();
+
+        ## Cada etiqueta que no esté asociada al contenido, la creamos.
+        foreach ($tags as $tag) {
+            if (in_array($tag, $contentTags)) {
+                continue;
+            }
+
+            $platformTag = $platformTags->where('tag_id', $tag)->first();
+
+
+            if (!$platformTag) {
+                continue;
+            }
+
+            $this->tagsJoin()->create([
+                'content_id' => $this->id,
+                'platform_tag_id' => $platformTag->id,
+            ]);
+        }
 
 
 
@@ -457,23 +490,59 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function saveCategories(Array $categories)
     {
-
+        ## Limpio categorías vacías y duplicadas.
         $categories = array_unique(array_filter($categories));
 
-        $this->categories()->delete();
+        $platformCategories = $this->platform->categories()
+            ->whereIn('category_id', $categories)
+            ->pluck('category_id')
+            ->toArray();
 
-        foreach ($categories as $category) {
-            $platformCategoryId = $this->platform->categories()
-                ->where('platform_categories.category_id', $category)
-                ->pluck('platform_categories.id')
-                ->first();
+        ## Almacena las categorías que aún no están asociadas a la plataforma.
+        $platformCategoriesDiff = array_diff($categories, $platformCategories);
 
-            if ($platformCategoryId) {
-                $this->categories()->create([
-                    'content_id' => $this->id,
-                    'platform_category_id' => $platformCategoryId,
-                ]);
+        ## Creamos las categorías que no estén asociadas a la plataforma.
+        foreach ($platformCategoriesDiff as $platformCategory) {
+            $this->platform->categories()->create([
+                'category_id' => $platformCategory,
+            ]);
+        }
+
+        ## Categorías ya asociadas al contenido
+        $contentCategories = $this->categoriesJoin()
+            ->pluck('platform_category_id')
+            ->toArray();
+
+
+        ## Borramos las categorías que no estén en el array, ya no forma parte del contenido.
+        foreach ($contentCategories as $contentCategory) {
+            if (!in_array($contentCategory, $categories)) {
+                $contentCategory->delete();
             }
+        }
+
+        ## Vuelvo a buscar las categorías asociadas al contenido, ya que puede haber cambiado
+        $platformCategories = PlatformCategory::select(['id', 'category_id'])
+            ->whereIn('category_id', $categories)
+            ->where('platform_id', $this->platform_id)
+            ->get();
+
+        ## Cada categoría que no esté asociada al contenido, la creamos.
+        foreach ($categories as $category) {
+            if (in_array($category, $contentCategories)) {
+                continue;
+            }
+
+            $platformCategory = $platformCategories->where('category_id', $category)->first();
+
+            if (!$platformCategory) {
+                continue;
+            }
+
+            $this->categoriesJoin()->create([
+                'content_id' => $this->id,
+                'platform_category_id' => $platformCategory->id,
+            ]);
         }
     }
 

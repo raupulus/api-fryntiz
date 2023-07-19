@@ -41,8 +41,6 @@ class CreateContentTagsTable extends Migration
                 ->references('id')->on('platform_tags')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('name', 255)->index();
-            $table->string('description', 511)->nullable();
             $table->timestamps();
             $table->softDeletes();
 

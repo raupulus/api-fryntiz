@@ -118,7 +118,7 @@ class ContentController extends BaseWithTableCrudController
 
 
 
-        dd($model, $request->get('image'), $request->all(), $request->validated());
+        dd($model, $request->get('image'), $request->all(), $request->validated(), $model->categories, $model->tags);
 
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
@@ -295,13 +295,13 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Devuelve el contenido relacionado a partir del patrón de búsqueda
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Platform $platform
+     * @param Request $request
+     * @param Platform $platform
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function ajaxGetContentRelatedFiltered(Request  $request,
-                                                  Platform $platform)
+                                                  Platform $platform): JsonResponse
     {
         $contentRelatedSearch = $request->get('content_related_search');
         $contentId = $request->get('contentId');
