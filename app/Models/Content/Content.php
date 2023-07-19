@@ -384,7 +384,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function getUrlEditAttribute()
     {
-        return route('panel.content.edit', ['content' => $this->id]);
+        return route('dashboard.content.edit', ['model' => $this->id]);
     }
 
     /**

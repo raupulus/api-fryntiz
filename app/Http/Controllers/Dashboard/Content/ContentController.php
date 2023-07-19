@@ -92,6 +92,13 @@ class ContentController extends BaseWithTableCrudController
 
         $model = $modelString::create($requestValidated);
 
+        $model->pages()->create([
+            'title' => $model->title,
+            'slug' => Str::slug($model->title . '-' . Str::random(20)),
+            'content' => '{}',
+            'order' => 1,
+        ]);
+
         if (isset($requestValidated['contents_related'])) {
             $model->contentsRelated()->sync($requestValidated['contents_related']);
         }
@@ -116,9 +123,7 @@ class ContentController extends BaseWithTableCrudController
 
 
 
-
-
-        dd($model, $request->get('image'), $request->all(), $request->validated(), $model->categories, $model->tags);
+        //dd($model, $request->get('image'), $request->all(), $request->validated(), $model->categories, $model->tags);
 
 
         //return redirect()->route($modelString::getCrudRoutes()['index']);
