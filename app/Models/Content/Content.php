@@ -397,12 +397,30 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function saveContributors(Array $contributors)
     {
-
         $contributors = array_unique(array_filter($contributors));
 
-        $this->contributorsJoin()->delete();
+        if (! $contributors || ! count($contributors)) {
+            $this->contributors()->delete();
+
+            return;
+        }
+
+        $contributorsToDelete = $this->contributors()->pluck('user_id')->diff($contributors);
+
+        $contributorsToDelete->each(function ($contributor) {
+            $contributor->delete();
+        });
+
+        $contributorsStored = $this->contributors()
+            ->whereIn('user_id', $contributors)
+            ->pluck('user_id')
+            ->toArray();
 
         foreach ($contributors as $contributor) {
+            if (in_array($contributor, $contributorsStored)) {
+                continue;
+            }
+
             $this->contributorsJoin()->create([
                 'user_id' => $contributor,
                 'content_id' => $this->id,

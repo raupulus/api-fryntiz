@@ -98,6 +98,7 @@ class ContentController extends BaseWithTableCrudController
         //'contentRelated' => 'nullable|array', //Check ids
 
 
+        // Todo: validar si el usuario puede añadir contribuidor, si ya estuviese añadido, borrar si esto no llega
         if (isset($requestValidated['contributors'])) {
             $model->saveContributors($requestValidated['contributors']);
         }
@@ -110,8 +111,7 @@ class ContentController extends BaseWithTableCrudController
             $model->saveCategories($requestValidated['categories']);
         }
 
-
-        // Guarda la imagen en base64
+        ## Guarda la imagen en base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'content', false);
         }
