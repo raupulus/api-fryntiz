@@ -546,7 +546,7 @@ class ContentController extends BaseWithTableCrudController
             ->first();
 
         if (! $contentPageRaw) {
-            ContentPageRaw::create([
+            $contentPageRaw = ContentPageRaw::create([
                 'content_page_id' => $contentPage->id,
                 'available_page_raw_id' => $contentPageRawAvailable->id,
             ]);

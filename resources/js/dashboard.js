@@ -155,7 +155,7 @@ function prepareModalAddWords(url,
 
 window.document.addEventListener('DOMContentLoaded', () => {
 
-    // Inicializa crear etiquetas -> Estoy rehaciendo la lógica para categorías y etiquetas en las líneas inferiores
+    // Inicializa crear etiquetas
     prepareModalAddWords(window.urlContentCreateTag, '#tags', '#modal-create-tag', '#create-tag-input', '#create-tag-button', '#box-tags-created', '.msg-success');
     prepareModalAddWords(window.urlContentCreateCategory, '#categories', '#modal-create-category', '#create-category-input', '#create-categories-button', '#box-categories-created', '.msg-success');
 

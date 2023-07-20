@@ -1,6 +1,7 @@
 @extends('adminlte::page')
 
 @section('plugins.momentjs', true)
+@section('plugins.multiselect', true)
 @section('plugins.tempusdominusBootstrap', true)
 @section('plugins.select2', true)
 @section('plugins.bootstrapDualListbox', true)
@@ -10,6 +11,11 @@
 @section('plugins.editors', true)
 
 @section('title', 'Añadir ' . $model::getModelTitles()['singular'])
+
+@php($idPageActive = request()->get('currentPage') ? (int) request()->get('currentPage') : null)
+
+{{-- Almacena la página seleccionada actual entre todas las relacionadas al contenido --}}
+@php($pageSelected = isset($pages) ? ($idPageActive ? $pages->where('id', $idPageActive)->first() : $pages->first()) : null)
 
 @section('content_header')
     <script>
@@ -136,17 +142,36 @@
     </div>
 @stop
 
+
+@section('css')
+    <style>
+        .box-editor {
+            margin: auto;
+            max-width: 1024px;
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .box-editor .ce-block__content {
+            max-width: 900px;
+        }
+    </style>
+@endsection
+
 @section('js')
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.min.js"
-            integrity="sha512-vSyPWqWsSHFHLnMSwxfmicOgfp0JuENoLwzbR+Hf5diwdYTJraf/m+EKrMb4ulTYmb/Ra75YmckeTQ4sHzg2hg=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{mix('dashboard/js/content_pages.js')}}"></script>
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css"
-          integrity="sha512-3lMc9rpZbcRPiC3OeFM3Xey51i0p5ty5V8jkdlNGZLttjj6tleviLJfHli6p8EpXZkCklkqNt8ddSroB3bvhrQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <script>
+        window.contentId = "{{$model->id}}";
+        window.currentPage = "{{isset($pageSelected) ? $pageSelected?->id : ''}}";
+        window.urlPageUpdate = '{{route('dashboard.content.ajax.page.update', ['contentType' => 'json', 'contentPage' => ':pageId'])}}'
+        window.urlPageGetContent = "{{route('dashboard.content.ajax.page.get.content', ':pageId')}}";
+        window.pageSelectedContent = JSON.parse('{!! isset($pageSelected) ? ($pageSelected?->raw?->content ?? "{}") : "{}" !!}')
+        window.urlPageAdd = "{{$model->id ? route('dashboard.content.add.page', $model->id) : ''}}";
+        window.urlUploadFile = "{{$model->id ? route('dashboard.content.ajax.upload.file', $model->id) : ''}}";
+        window.urlRemoveFile = "{{route('dashboard.content.ajax.upload.remove.file')}}";
 
         document.addEventListener('DOMContentLoaded', () => {
             /*** Selector datetimepicker programar publicación ***/

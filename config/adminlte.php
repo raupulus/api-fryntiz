@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'Api Fryntiz',
+    'title' => 'Api Raupulus',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -45,12 +45,12 @@ return [
     |
     */
 
-    'logo' => '<b>API</b>Fryntiz',
-    'logo_img' => 'images/logo.png',
+    'logo' => '<b>API</b>Raupulus',
+    'logo_img' => 'images/logo/logo128x128.webp',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Api Fryntiz',
+    'logo_img_alt' => 'Api Raupulus',
 
     /*
     |--------------------------------------------------------------------------
@@ -524,7 +524,8 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => 'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
+                    //'location' => 'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
+                    'location' => '/vendor/moment/moment.min.js',
                 ],
             ],
         ],
@@ -542,6 +543,23 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '/vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
+                ],
+            ],
+        ],
+
+        // Incluye datetimepicker para bootstrap
+        'multiselect' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/vendor/multiselect/multi-select.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/multiselect/multi-select.min.js',
                 ],
             ],
         ],
@@ -727,7 +745,7 @@ return [
             'fullscreen' => true,
         ],
         'options' => [
-            'loading_screen' => 1000,
+            'loading_screen' => 300,
             'auto_show_new_tab' => true,
             'use_navbar_items' => true,
         ],

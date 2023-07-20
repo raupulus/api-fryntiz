@@ -23,6 +23,7 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/jquery.js', 'public/js')
     .combine(['resources/js/dashboard.js', 'resources/js/functions.js', 'resources/js/global_vars.js'], 'public/dashboard/js/dashboard.js')
     .js('resources/js/dashboard/editors.js', 'public/dashboard/js/editors.js')
+    .js('resources/js/dashboard/content_pages.js', 'public/dashboard/js/content_pages.js')
 
 
     .sass('resources/sass/styles.scss', 'public/css/')
