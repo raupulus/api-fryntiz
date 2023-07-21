@@ -91,10 +91,8 @@
                             class="custom-select rounded-0">
                         @if (in_array(auth()->user()->role_id, [1, 2]))
                             @foreach($users as $user)
-                                @php($checked = (int)old('author_id')===  $user->id)
-                                @php($checked = $checked ?? !$model->author_id
-                                 && ($user->id === auth()->id()))
-                                @php($checked = $checked ?? $model->author_id  === $user->id)
+                                @php($checked = (int)old('author_id', $model->author_id) ===  $user->id)
+                                @php($checked = $checked || (auth()->id() === $user->id))
 
                                 <option value="{{ $user->id }}"
                                     {{$checked ? 'selected' : ''}}>
@@ -138,8 +136,7 @@
                     <select id="type_id" name="type_id"
                             class="custom-select rounded-0">
                         @foreach($contentTypes as $contentType)
-                            @php($checked = (int)old('type_id') === $contentType->id)
-                            @php($checked = $checked ?? $model->type_id === $contentType->id)
+                            @php($checked = (int)old('type_id', $model->type_id) === $contentType->id)
 
                             <option value="{{ $contentType->id }}"
                                 {{$checked ? 'selected' : ''}}>
@@ -172,16 +169,18 @@
                         </label>
                     </div>
 
-                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                        <input type="checkbox" class="custom-control-input"
-                               {{old('is_active', $model->is_active) ?
-                               'checked' : ''}}
-                               name="is_active"
-                               id="is_active">
-                        <label class="custom-control-label" for="is_active">
-                            Contenido Activo
-                        </label>
-                    </div>
+                    @if ($model && $model->id)
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                            <input type="checkbox" class="custom-control-input"
+                                   {{old('is_active', $model->is_active) ?
+                                   'checked' : ''}}
+                                   name="is_active"
+                                   id="is_active">
+                            <label class="custom-control-label" for="is_active">
+                                Contenido Activo
+                            </label>
+                        </div>
+                    @endif
 
                     <div class="custom-control custom-switch  custom-switch-off custom-switch-on-primary">
                         <input type="checkbox" class="custom-control-input"

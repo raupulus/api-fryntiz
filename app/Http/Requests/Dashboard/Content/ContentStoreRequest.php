@@ -26,9 +26,6 @@ class ContentStoreRequest extends FormRequest
     {
         $now = Carbon::now();
 
-        //dd($this->all());
-
-
         $scheduledAt = trim($this->get('scheduled_at'));
 
         if ($scheduledAt) {

@@ -237,7 +237,7 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::get('/{model}/edit', [ContentController::class, 'edit'])
             ->middleware('can:edit,model')
             ->name('dashboard.content.edit');
-        Route::match(['put', 'patch'], '/update/{model}', [ContentController::class, 'update'])
+        Route::match(['put', 'patch'], '/update/{content}', [ContentController::class, 'update'])
             ->name('dashboard.content.update');
         Route::match(['post', 'delete'], '/destroy', [ContentController::class, 'destroy'])
             ->name('dashboard.content.destroy');

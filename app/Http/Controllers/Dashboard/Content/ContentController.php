@@ -86,7 +86,6 @@ class ContentController extends BaseWithTableCrudController
      */
     public function store(ContentStoreRequest $request)
     {
-        //dd($request->all(), $request->validated());
         $modelString = $this::getModel();
         $requestValidated = $request->validated();
 
@@ -103,7 +102,6 @@ class ContentController extends BaseWithTableCrudController
             $model->contentsRelated()->sync($requestValidated['contents_related']);
         }
 
-        // TODO?: validar si el usuario puede añadir contribuidor
         if (isset($requestValidated['contributors'])) {
             $model->saveContributors($requestValidated['contributors']);
         }
@@ -121,14 +119,9 @@ class ContentController extends BaseWithTableCrudController
             File::addFileFromBase64($request->get('image'), 'content', false);
         }
 
-
-
         //dd($model, $request->get('image'), $request->all(), $request->validated(), $model->categories, $model->tags);
 
-
         //return redirect()->route($modelString::getCrudRoutes()['index']);
-
-
         return redirect()->to($model->urlEdit);
     }
 
@@ -149,7 +142,7 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Content\Content $model
+     * @param Content $model
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
@@ -195,20 +188,26 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Content\ContentUpdateRequest $request
-     * @param int|null $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(ContentUpdateRequest $request, int|null $id = null)
+    public function update(ContentUpdateRequest $request, Content $content)
     {
-        $modelString = $this::getModel();
-        $model = $modelString::find($id);
+        $requestValidated = $request->validated();
 
-        $model->fill($request->validated());
-        $model->save();
+        $content->update($requestValidated);
 
-        return redirect()->route($modelString::getCrudRoutes()['index']);
+        $content->contentsRelated()->sync($requestValidated['contents_related'] ?? []);
+        $content->saveContributors($requestValidated['contributors'] ?? []);
+        $content->saveTags($requestValidated['tags'] ?? []);
+        $content->saveCategories($requestValidated['categories'] ?? []);
+
+        ## Guarda la imagen en base64
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'content', false, $content->image?->id);
+            $content->image_id = $image->id;
+            $content->save();
+        }
+
+        return redirect()->to($content->urlEdit);
     }
 
     /**

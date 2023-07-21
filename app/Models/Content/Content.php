@@ -45,6 +45,7 @@ class Content extends BaseAbstractModelWithTableCrud
 
         'is_comment_enabled',
         'is_comment_anonymous',
+        'is_active',
         'is_featured',
         'is_visible',
         'is_visible_on_home',
@@ -135,7 +136,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function image(): BelongsTo
     {
-        return $this->belongsTo(File::class, 'file_id', 'id');
+        return $this->belongsTo(File::class, 'image_id', 'id');
     }
 
     /**
@@ -412,7 +413,9 @@ class Content extends BaseAbstractModelWithTableCrud
         $contributorsToDelete = $this->contributors()->pluck('user_id')->diff($contributors);
 
         $contributorsToDelete->each(function ($contributor) {
-            $contributor->delete();
+            ContentContributor::where('user_id', $contributor)
+                ->where('content_id', $this->id)
+                ->delete();
         });
 
         $contributorsStored = $this->contributors()
@@ -439,7 +442,7 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @return void
      */
-    public function saveTags(Array $tags)
+    public function saveTags(Array $tags): void
     {
 
         ## Limpio etiquetas vacías y duplicadas.
@@ -469,7 +472,9 @@ class Content extends BaseAbstractModelWithTableCrud
         ## Borramos las etiquetas que no estén en el array, ya no forma parte del contenido.
         foreach ($contentTags as $contentTag ) {
             if (!in_array($contentTag, $tags)) {
-                $contentTag->delete();
+                ContentTag::where('content_id', $this->id)
+                    ->where('platform_tag_id', $contentTag)
+                    ->delete();
             }
         }
 
@@ -492,13 +497,11 @@ class Content extends BaseAbstractModelWithTableCrud
                 continue;
             }
 
-            $this->tagsJoin()->create([
+            $this->tagsJoin()->updateOrCreate([
                 'content_id' => $this->id,
                 'platform_tag_id' => $platformTag->id,
             ]);
         }
-
-
 
     }
 
@@ -539,7 +542,10 @@ class Content extends BaseAbstractModelWithTableCrud
         ## Borramos las categorías que no estén en el array, ya no forma parte del contenido.
         foreach ($contentCategories as $contentCategory) {
             if (!in_array($contentCategory, $categories)) {
-                $contentCategory->delete();
+
+                ContentCategory::where('content_id', $this->id)
+                    ->where('platform_category_id', $contentCategory)
+                    ->delete();
             }
         }
 
@@ -561,7 +567,7 @@ class Content extends BaseAbstractModelWithTableCrud
                 continue;
             }
 
-            $this->categoriesJoin()->create([
+            $this->categoriesJoin()->updateOrCreate([
                 'content_id' => $this->id,
                 'platform_category_id' => $platformCategory->id,
             ]);

@@ -100,6 +100,10 @@
                                   enctype="multipart/form-data"
                                   method="POST">
 
+                                @if ($model && $model->id)
+                                    @method('PUT')
+                                @endif
+
                                 @csrf
 
                                 <input type="hidden" name="id"
