@@ -96,7 +96,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'author_id', 'id');
     }
 
     /**

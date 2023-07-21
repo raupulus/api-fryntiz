@@ -51,6 +51,7 @@
             <div class="row">
 
                 @php($navbarSectionID = request()->get('currentPage') ? 2 : 1)
+                @php($navbarSectionID = (($navbarSectionID === 1) && request()->get('seo')) ? 4 : 1)
 
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -78,12 +79,15 @@
                             Metadatos
                         </a>
 
-                        <a class="nav-item nav-link {{$navbarSectionID === 4 ? 'active' : ''}}" id="nav-o-tab"
-                           data-toggle="tab" href="#nav-o" role="tab"
-                           aria-controls="nav-contact"
-                           aria-selected="{{$navbarSectionID === 4 ? 'true' : 'false'}}">
-                            SEO
-                        </a>
+                        @if($model && $model->id)
+                            <a class="nav-item nav-link {{$navbarSectionID === 4 ? 'active' : ''}}" id="nav-o-tab"
+                               data-toggle="tab" href="#nav-o" role="tab"
+                               aria-controls="nav-contact"
+                               aria-selected="{{$navbarSectionID === 4 ? 'true' : 'false'}}">
+                                SEO
+                            </a>
+                        @endif
+
                     </div>
                 </nav>
             </div>
@@ -136,7 +140,7 @@
                         {{-- Seo --}}
                         <div class="tab-pane fade {{$navbarSectionID === 4 ? 'show active' : ''}}" id="nav-o"
                              role="tabpanel" aria-labelledby="nav-o-tab">
-                            ...
+                            @includeWhen($model && $model->id, 'dashboard.content.layouts._seo')
                         </div>
                     </div>
                 </div>

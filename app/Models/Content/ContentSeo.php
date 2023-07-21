@@ -13,4 +13,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContentSeo extends BaseModel
 {
     use HasFactory;
+
+    protected $table = 'content_seo';
 }

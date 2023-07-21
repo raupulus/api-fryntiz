@@ -73,6 +73,31 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+
+    /**
+
+    public function socials()
+    {
+        return $this->belongsToMany(SocialN::class, 'user_socials', 'user_id', 'social_id');
+    }
+     */
+
+
+
+    /**
+     * Devuelve el nombre completo del usuario (nombre y apellido).
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        if (!$this->surname) {
+            return $this->name;
+        }
+
+        return $this->name . ' ' . $this->surname;
+    }
+
     public function urlAvatarIcon()
     {
         if ($this->profile_photo_path) {
