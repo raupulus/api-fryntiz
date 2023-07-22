@@ -239,7 +239,7 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.content.edit');
         Route::match(['put', 'patch'], '/update/{content}', [ContentController::class, 'update'])
             ->name('dashboard.content.update');
-        Route::match(['post', 'delete'], '/destroy', [ContentController::class, 'destroy'])
+        Route::match(['post', 'delete'], '/destroy/{content?}', [ContentController::class, 'destroy'])
             ->name('dashboard.content.destroy');
 
         ## Crea una nueva página
@@ -296,12 +296,6 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ## Devuelve el contenido RAW de una página
             Route::get('/page/{contentPage}/get', [ContentController::class, 'ajaxPageGetContent'])
                     ->name('dashboard.content.ajax.page.get.content');
-
-
-
-
-
-            #####TMP Debug -> Falla al llegar al controlador, algún middleware intercepta datos y no valida
 
             ## Añade/Actualiza una imagen de una página
             Route::post('/page/upload/image/{contentPage}/update', [ContentPageController::class, 'ajaxUpdateImage'])

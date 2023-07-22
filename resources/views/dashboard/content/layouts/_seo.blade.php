@@ -20,16 +20,6 @@
                     Guardar
                 </button>
             </div>
-
-            <div>
-                <p>
-                    Al actualizar el contenido:
-                </p>
-
-                <p>
-                    meta_author
-                </p>
-            </div>
         </div>
 
         <div class="col-12 col-md-6">
@@ -50,56 +40,49 @@
                                 <div
                                     style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
                                     <v-image-cropper
-                                        default-image="{{ $model->urlImage }}"
+                                        default-image="{{ $model->seo?->urlImage }}"
                                         name="image"
-                                        :aspect-ratios-restriction="[16,9]"
+                                        :aspect-ratios-restriction="[16, 9]"
                                     ></v-image-cropper>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="meta_distribution">Scope (Recomendado Global)</label>
-                                    <select name="meta_distribution"
-                                            id="meta_distribution"
+                                    <label for="distribution">Scope (Recomendado Global)</label>
+                                    <select name="distribution"
+                                            id="distribution"
                                             class="form-control">
                                         <option
-                                            value="global" {{$model->seo?->meta_description === 'global' ? 'selected' : ''}}>
+                                            value="global" {{$model->seo?->distribution === 'global' ? 'selected' : ''}}>
                                             Global
                                         </option>
                                         <option
-                                            value="local" {{$model->seo?->meta_description === 'local' ? 'selected' : ''}}>
+                                            value="local" {{$model->seo?->distribution === 'local' ? 'selected' : ''}}>
                                             Local
                                         </option>
                                         <option
-                                            value="ui" {{$model->seo?->meta_description === 'global' ? 'selected' : ''}}>
+                                            value="ui" {{$model->seo?->distribution === 'global' ? 'selected' : ''}}>
                                             UI (Interno, puede ser bloqueado desde exterior)
                                         </option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="meta_keywords">Keywords</label>
-                                    <input name="meta_keywords"
-                                           id="meta_keywords"
-                                           value="{{$model->seo?->meta_keywords ?? $model->tags->pluck('name')->implode(', ')}}"
+                                    <label for="keywords">Keywords</label>
+                                    <input name="keywords"
+                                           id="keywords"
+                                           value="{{$model->seo?->keywords ?? $model->tags->pluck('name')->implode(', ')}}"
                                            class="form-control">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="meta_description">Descripción</label>
-                                    <textarea name="meta_description"
-                                              id="meta_description"
-                                              class="form-control">{{$model->seo?->meta_description ?? $model->excerpt}}</textarea>
+                                    <label for="description">Descripción</label>
+                                    <textarea name="description"
+                                              id="description"
+                                              class="form-control">{{$model->seo?->description ?? $model->excerpt}}</textarea>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="meta_copyright">Copyright</label>
-                                    <input name="meta_copyright"
-                                           id="meta_copyright"
-                                           value="{{$model->seo?->meta_copyright ?? $model->author->fullName}}"
-                                           class="form-control">
-                                </div>
                             </div>
                         </div>
 
@@ -122,43 +105,21 @@
                 <div class="card-body">
                     <div class="form-group">
                         <div class="input-group">
-                            {{-- Selector Cropper de imágenes --}}
                             <div class="col-12">
-                                <div
-                                    style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
-                                    <v-image-cropper
-                                        default-image="{{ $model->urlImage }}"
-                                        name="search_image"
-                                        :aspect-ratios-restriction="[16,9]"
-                                    ></v-image-cropper>
-                                </div>
-                            </div>
 
-                            <div class="col-12">
                                 <div class="form-group">
-                                    <label for="search_title">Título</label>
-
-                                    <input type="text"
-                                           id="search_title"
-                                           name="search_title"
-                                           value="{{$model->seo?->search_title ?? $model->title}}"
+                                    <label for="revisit_after">Revisitar web (Crawlers)</label>
+                                    <input name="revisit_after"
+                                           id="revisit_after"
+                                           value="{{$model->seo?->revisit_after ?? '7 days'}}"
                                            class="form-control">
-
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="search_description">Descripción de buscadores</label>
-                                    <textarea name="search_description"
-                                              id="search_description"
-                                              class="form-control">{{$model->seo?->search_description ?? $model->excerpt}}</textarea>
-                                </div>
+                                    <label for="robots">Robots</label>
 
-                                <div class="form-group">
-                                    <label for="meta_robots">Robots (TODO -> al crear contenido, marcar "noindex,
-                                        nofollow")</label>
-
-                                    <select name="meta_robots"
-                                            id="meta_robots"
+                                    <select name="robots"
+                                            id="robots"
                                             class="form-control">
                                         <option
                                             value="index, follow" {{$model->seo?->meta_robots === 'index, follow' ? 'selected' : ''}}>
@@ -188,10 +149,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        {{-- Redes Sociales --}}
-        <div class="col-12 col-md-6">
 
             <div class="card card-info">
                 <div class="card-header">
@@ -203,48 +160,18 @@
                 <div class="card-body">
                     <div class="form-group">
                         <div class="input-group">
-                            {{-- Selector Cropper de imágenes --}}
-                            <div class="col-12">
-                                <div
-                                    style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
-                                    <v-image-cropper
-                                        default-image="{{ $model->urlImage }}"
-                                        name="og_image"
-                                        :aspect-ratios-restriction="[16,9]"
-                                    ></v-image-cropper>
-                                </div>
-                            </div>
 
                             <div class="col-12">
-                                <div class="form-group">
-                                    <label for="og_image_alt">Imagen ALT</label>
-
-                                    <input type="text" name="og_image_alt"
-                                           id="og_image_alt"
-                                           value="{{$model->seo?->search_title ?? $model->title}}"
-                                           class="form-control">
-
-                                </div>
-
 
                                 <div class="form-group">
                                     <label for="og_title">Título</label>
 
                                     <input type="text" id="og_title"
                                            name="og_title"
-                                           value="{{$model->seo?->search_title ?? $model->title}}"
+                                           value="{{$model->seo?->og_title ?? $model->title}}"
                                            class="form-control">
 
                                 </div>
-
-
-                                <div class="form-group">
-                                    <label for="og_description">Descripción de Redes Sociales</label>
-                                    <textarea name="og_description"
-                                              id="og_description"
-                                              class="form-control">{{$model->seo?->og_description ?? $model->excerpt}}</textarea>
-                                </div>
-
 
                                 <div class="form-group">
                                     {{-- TODO: Según el tipo, puede tener otras metaetiquetas definidas aquí: https://ogp.me/#types  REVISAR SI ES INTERESANTE --}}
@@ -268,6 +195,7 @@
             </div>
         </div>
 
+
         {{-- Twitter --}}
         <div class="col-12 col-md-6">
 
@@ -281,92 +209,39 @@
                 <div class="card-body">
                     <div class="form-group">
                         <div class="input-group">
-                            {{-- Selector Cropper de imágenes --}}
-                            <div class="col-12">
-                                <div
-                                    style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
-                                    <v-image-cropper
-                                        default-image="{{ $model->urlImage }}"
-                                        name="search_image"
-                                        :aspect-ratios-restriction="[16,9]"
-                                    ></v-image-cropper>
-                                </div>
-                            </div>
 
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="twitter_site">Site user (@raupulus)</label>
-
-                                    <input type="text" name="twitter_site" id="twitter_site"
-                                           value="{{$model->seo?->twitter_site ?? '@raupulus'}}"
-                                           class="form-control">
-
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="twitter_creator">Título</label>
+                                    <label for="twitter_creator">Nick del creador del contenido</label>
 
                                     <input type="text"
                                            name="twitter_creator"
                                            id="twitter_creator"
-                                           value="{{$model->seo?->twitter_creator ?? {{$model->author?->}}}}"
+                                           value="{{$model->seo?->twitter_creator ?? $model->author?->twitter?->nick ?? '@raupulus'}}"
                                            class="form-control">
 
                                 </div>
                             </div>
 
-                            <p>
-                                twitter_card
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        {{-- Facebook --}}
-        <div class="col-12 col-md-6">
-
-            <div class="card card-info">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        Facebook
-                    </h3>
-                </div>
-
-                <div class="card-body">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{-- Selector Cropper de imágenes --}}
-                            <div class="col-12">
-                                <div
-                                    style="height: 100%; max-height: 220px; margin: auto; overflow: hidden; box-sizing: border-box;">
-                                    <v-image-cropper
-                                        default-image="{{ $model->urlImage }}"
-                                        name="????"
-                                        :aspect-ratios-restriction="[16,9]"
-                                    ></v-image-cropper>
-                                </div>
-                            </div>
-
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="????">Título</label>
+                                    <label for="twitter_card">Card Type</label>
 
-                                    <input type="text" name="???" class="form-control">
+                                    <select name="twitter_card" id="twitter_card" class="form-control">
+                                        <option value="summary" {{($model->seo?->twitter_card === 'summary') ? 'select' : ''}}>Summary</option>
+                                        <option value="summary_large_image" {{$model->seo?->twitter_card === 'summary_large_image' ? 'select' : ''}}>Summary Large Image</option>
+                                        <option value="app" {{$model->seo?->twitter_card === 'app' ? 'select' : ''}}>App</option>
+                                        <option value="player" {{$model->seo?->twitter_card === 'player' ? 'select' : ''}}>Player</option>
+                                    </select>
 
                                 </div>
-
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
 
     </div>
 </form>

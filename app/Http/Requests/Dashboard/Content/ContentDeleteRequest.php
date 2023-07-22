@@ -29,7 +29,7 @@ class ContentDeleteRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|exists:tags,id',
+            'id' => 'required|exists:contents,id',
         ];
     }
 }

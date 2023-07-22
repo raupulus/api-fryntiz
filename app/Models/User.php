@@ -6,6 +6,7 @@ use App\Http\Traits\ImageTrait;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -75,12 +76,34 @@ class User extends Authenticatable
 
 
     /**
-
-    public function socials()
-    {
-        return $this->belongsToMany(SocialN::class, 'user_socials', 'user_id', 'social_id');
-    }
+     * Devuelve todos los datos de redes sociales para el usuario.
+     *
+     * @return HasMany
      */
+    public function socials(): HasMany
+    {
+        return $this->hasMany(UserSocial::class, 'user_id', 'id');
+    }
+
+    /**
+     * Obtiene los datos para la red social de Twitter.
+     *
+     * @return UserSocial|null
+     */
+    public function getTwitterAttribute(): ?UserSocial
+    {
+        return $this->socials()->where('social_network_id', 2)->first();
+    }
+
+    /**
+     * Obtiene los datos para la red social de Facebook.
+     *
+     * @return UserSocial|null
+     */
+    public function getFacebookAttribute(): ?UserSocial
+    {
+        return $this->socials()->where('social_network_id', 1)->first();
+    }
 
 
 

@@ -14,6 +14,7 @@ use App\Models\Content\ContentAvailableType;
 use App\Models\Content\ContentFile;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
+use App\Models\Content\ContentSeo;
 use App\Models\File;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
@@ -116,10 +117,32 @@ class ContentController extends BaseWithTableCrudController
 
         ## Guarda la imagen en base64
         if ($request->has('image') && $request->get('image')) {
-            File::addFileFromBase64($request->get('image'), 'content', false);
+            $image = File::addFileFromBase64($request->get('image'), 'content', false);
+
+            if ($image) {
+                $model->image_id = $image->id;
+                $model->save();
+            }
+
         }
 
-        //dd($model, $request->get('image'), $request->all(), $request->validated(), $model->categories, $model->tags);
+
+        ## Genero entrada para SEO
+
+        if ($request->has('image') && $request->get('image')) {
+            $seoImage = File::addFileFromBase64($request->get('image'), 'content_seo', false);
+        }
+
+        ContentSeo::create([
+            'content_id' => $model->id,
+            'image_id' => $seoImage->id ?? null,
+            'image_alt' => $model->title,
+            'keywords' => $model->tags->pluck('name')->implode(', '),
+            'description' => $model->excerpt,
+            'og_title' => $model->title,
+            'og_description' => $model->excerpt,
+            'twitter_creator' => $model->author->twitter?->nick,
+        ]);
 
         //return redirect()->route($modelString::getCrudRoutes()['index']);
         return redirect()->to($model->urlEdit);
@@ -203,8 +226,11 @@ class ContentController extends BaseWithTableCrudController
         ## Guarda la imagen en base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'content', false, $content->image?->id);
-            $content->image_id = $image->id;
-            $content->save();
+
+            if ($image) {
+                $content->image_id = $image->id;
+                $content->save();
+            }
         }
 
         return redirect()->to($content->urlEdit);
@@ -218,7 +244,7 @@ class ContentController extends BaseWithTableCrudController
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function destroy(ContentDeleteRequest $request, int|null $id = null)
+    public function destroy(ContentDeleteRequest $request, Content $content = null)
     {
         $deleted = false;
         $idRequest = $request->get('id');

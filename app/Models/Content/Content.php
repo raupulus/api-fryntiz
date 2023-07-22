@@ -574,6 +574,26 @@ class Content extends BaseAbstractModelWithTableCrud
         }
     }
 
+    /**
+     * Elimina el contenido de la plataforma y lo que tenga asociado.
+     *
+     * @return bool
+     */
+    public function safeDelete(): bool
+    {
+        $this->seo?->safeDelete();
+
+        $pages = $this->pages;
+
+        if ($pages->count()) {
+            foreach ($pages as $page) {
+                $page->safeDelete();
+            }
+        }
+
+        return parent::safeDelete();
+    }
+
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
