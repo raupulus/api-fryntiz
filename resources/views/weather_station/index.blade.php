@@ -7,7 +7,7 @@
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Chipiona Estación Meteorológica')
-@section('rs-sitename', 'Api Fryntiz')
+@section('rs-sitename', 'Api Raupulus')
 @section('rs-description', 'Estación meteorológica en tiempo real para la ciudad de Chipiona tomando Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Indice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)')
 @section('rs-image', asset('images/wheater-station/social-thumbnail.jpg'))
 @section('rs-url', route('weather_station.index'))

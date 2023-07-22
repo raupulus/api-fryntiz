@@ -3,11 +3,11 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'Energía (Generadores y Consumo)')
 @section('description', 'Estadísticas y datos para la energía producida y la consumida por mis sistemas y equipos.')
-@section('keywords', 'energía, generador, generadores, consumo, panel solar, paneles solares, Raúl Caro Pastorino, fryntiz')
+@section('keywords', 'energía, generador, generadores, consumo, panel solar, paneles solares, Raúl Caro Pastorino, raupulus')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Energía (Generadores y Consumo)')
-@section('rs-sitename', 'Api Fryntiz')
+@section('rs-sitename', 'Api Raupulus')
 @section('rs-description', 'Estadísticas y datos para la energía producida y la consumida por mis sistemas y equipos.')
 @section('rs-image', asset('images/energy/energy.png'))
 @section('rs-url', route('hardware.energy.index'))

@@ -8,7 +8,7 @@
 <title>@yield('title', 'APP Admin Panel')</title>
 <meta name="description" content="@yield('description', config('app.description'))">
 <meta name="author" content="@yield('title', 'Raúl Caro Pastorino')">
-<meta name="keywords" content="@yield('keywords', 'App Fryntiz, fryntiz, chipiona, desarrollador web')" />
+<meta name="keywords" content="@yield('keywords', 'App Raupulus, raupulus, chipiona, desarrollador web')" />
 
 <script>
     window.urlContentCreateTag = "{{ route('dashboard.content.ajax.tag.create') }}";

@@ -3,14 +3,14 @@
 <nav class="fixed w-full top-0 flex items-center justify-between flex-wrap
 p-2 navbar-main">
     <div class="flex items-center flex-no-shrink text-white mr-6">
-        <img src="{{asset('images/logo-64x64.png')}}"
-             alt="Logo Api Fryntiz"
+        <img src="{{asset('images/logo/logo128x128.webp')}}"
+             alt="Logo Api Raupulus"
              class="w-16"/>
         &nbsp;
         &nbsp;
         <a href="{{route('home')}}"
            class="navbar-site-title {{(request()->path() == '/') ? $classSelected : ''}}" >
-            Api Fryntiz
+            Api Raupulus
         </a>
     </div>
 

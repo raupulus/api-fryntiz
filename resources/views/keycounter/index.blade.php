@@ -7,7 +7,7 @@
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Keycounter && Mousecounter, contador de pulsaciones')
-@section('rs-sitename', 'Api Fryntiz')
+@section('rs-sitename', 'Api Raupulus')
 @section('rs-description', 'Contador de pulsaciones de teclado y ratón por rachas')
 @section('rs-image', asset('images/keycounter/social-thumbnail.jpg'))
 @section('rs-url', route('keycounter.index'))

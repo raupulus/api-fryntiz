@@ -112,7 +112,7 @@ class AirFlightController extends Controller
             'lat' => 36.7381,
             'lon' => -6.4301,
             'refresh' => 5000,
-            'version' => 'api fryntiz v1'
+            'version' => 'api raupulus v1'
         ]);
     }
 

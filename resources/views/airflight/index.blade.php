@@ -7,7 +7,7 @@
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Vuelos en tiempo real sobre Chipiona')
-@section('rs-sitename', 'Api Fryntiz')
+@section('rs-sitename', 'Api Raupulus')
 @section('rs-description', 'Registro de vuelos en tiempo real para aviones en Chipiona y alrededores')
 @section('rs-image', asset('images/airflight/social-thumbnail.jpg'))
 @section('rs-url', route('airflight.index'))

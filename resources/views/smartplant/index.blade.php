@@ -7,7 +7,7 @@
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Smart Plant, monitorización de plantas')
-@section('rs-sitename', 'Api Fryntiz')
+@section('rs-sitename', 'Api Raupulus')
 @section('rs-description', 'Monitorización, control y riego automatizado en plantas')
 @section('rs-image', asset('images/smartplant/social-thumbnail.jpg'))
 @section('rs-url', route('smartplant.index'))

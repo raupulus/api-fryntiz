@@ -7,7 +7,7 @@
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'API Privada de Raúl Caro Pastorino')
-@section('rs-sitename', 'API Fryntiz')
+@section('rs-sitename', 'API Raupulus')
 @section('rs-description', 'Api privada dónde depuro desarrollos y monitorizo datos de mis aplicaciones')
 @section('rs-image', asset('images/social-thumbnail.jpg'))
 @section('rs-url', route('weather_station.index'))
@@ -124,8 +124,8 @@
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
-                               title="Api fryntiz en GitLab">
-                                https://gitlab.com/fryntiz/api-fryntiz
+                               title="Api Raupulus en GitLab">
+                                https://gitlab.com/raupulus/api-fryntiz
                             </a>
                         </p>
                     </div>
