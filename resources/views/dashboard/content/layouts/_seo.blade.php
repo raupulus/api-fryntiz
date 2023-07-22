@@ -1,10 +1,14 @@
-<form action="#"
+<form action="{{route('dashboard.content.seo.store', $model->id)}}"
       enctype="multipart/form-data"
       method="POST">
 
     @method('PUT')
 
     @csrf
+
+    <input type="hidden"
+           name="content_id"
+           value="{{$model->id}}">
 
     <div class="row">
 
@@ -49,6 +53,16 @@
 
                             <div class="col-12">
                                 <div class="form-group">
+                                    <label for="image_alt">Image Alt</label>
+                                    <input name="image_alt"
+                                           id="image_alt"
+                                           value="{{$model->seo?->image_alt ?? $model->title}}"
+                                           class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
                                     <label for="distribution">Scope (Recomendado Global)</label>
                                     <select name="distribution"
                                             id="distribution"
@@ -62,7 +76,7 @@
                                             Local
                                         </option>
                                         <option
-                                            value="ui" {{$model->seo?->distribution === 'global' ? 'selected' : ''}}>
+                                            value="ui" {{$model->seo?->distribution === 'ui' ? 'selected' : ''}}>
                                             UI (Interno, puede ser bloqueado desde exterior)
                                         </option>
                                     </select>
@@ -228,10 +242,21 @@
                                     <label for="twitter_card">Card Type</label>
 
                                     <select name="twitter_card" id="twitter_card" class="form-control">
-                                        <option value="summary" {{($model->seo?->twitter_card === 'summary') ? 'select' : ''}}>Summary</option>
-                                        <option value="summary_large_image" {{$model->seo?->twitter_card === 'summary_large_image' ? 'select' : ''}}>Summary Large Image</option>
-                                        <option value="app" {{$model->seo?->twitter_card === 'app' ? 'select' : ''}}>App</option>
-                                        <option value="player" {{$model->seo?->twitter_card === 'player' ? 'select' : ''}}>Player</option>
+                                        <option
+                                            value="summary" {{($model->seo?->twitter_card === 'summary') ? 'select' : ''}}>
+                                            Summary
+                                        </option>
+                                        <option
+                                            value="summary_large_image" {{$model->seo?->twitter_card === 'summary_large_image' ? 'select' : ''}}>
+                                            Summary Large Image
+                                        </option>
+                                        <option value="app" {{$model->seo?->twitter_card === 'app' ? 'select' : ''}}>
+                                            App
+                                        </option>
+                                        <option
+                                            value="player" {{$model->seo?->twitter_card === 'player' ? 'select' : ''}}>
+                                            Player
+                                        </option>
                                     </select>
 
                                 </div>

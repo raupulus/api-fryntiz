@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard\Content;
 use App\Helpers\TextFormatParseHelper;
 use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
+use App\Http\Requests\Dashboard\Content\ContentSeoUpdateRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
 use App\Models\Category;
@@ -126,7 +127,6 @@ class ContentController extends BaseWithTableCrudController
 
         }
 
-
         ## Genero entrada para SEO
 
         if ($request->has('image') && $request->get('image')) {
@@ -223,7 +223,7 @@ class ContentController extends BaseWithTableCrudController
         $content->saveTags($requestValidated['tags'] ?? []);
         $content->saveCategories($requestValidated['categories'] ?? []);
 
-        ## Guarda la imagen en base64
+        ## Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'content', false, $content->image?->id);
 
@@ -280,7 +280,38 @@ class ContentController extends BaseWithTableCrudController
             'order' => ++$lastPageOrder,
         ]);
 
+        $content->touch();  // TODO: Pasar a el modelo tanto al crear como al actualizar
+
         return redirect()->to(route('dashboard.content.edit', $content->id) . '?currentPage=' . $page->id);
+    }
+
+    /**
+     * Actualiza los datos SEO asociado al contenido.
+     *
+     * @param ContentSeoUpdateRequest $request Datos validados
+     * @param Content $content Contenido
+     *
+     * @return RedirectResponse
+     */
+    public function seoStore(ContentSeoUpdateRequest $request, Content $content): RedirectResponse
+    {
+        $requestValidated = $request->validated();
+
+        $seo = $content->seo()->updateOrCreate([
+            'content_id' => $content->id,
+        ], $requestValidated);
+
+        ## Guarda la imagen desde base64
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'content_seo', false, $seo->image?->id);
+
+            if ($image) {
+                $seo->image_id = $image->id;
+                $seo->save();
+            }
+        }
+
+        return redirect()->to($content->urlEdit . '?seo=true');
     }
 
 

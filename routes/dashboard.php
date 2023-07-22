@@ -246,6 +246,10 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::post('/{content}/add/page', [ContentController::class, 'addPage'])
             ->name('dashboard.content.add.page');
 
+        ## Guarda SEO de una página
+        Route::match(['put', 'patch'], '/seo/store/{content}', [ContentController::class, 'seoStore'])
+            ->name('dashboard.content.seo.store');
+
 
         Route::group(['prefix' => '/ajax'], function () {
 
