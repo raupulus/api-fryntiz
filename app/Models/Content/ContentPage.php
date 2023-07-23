@@ -50,6 +50,15 @@ class ContentPage extends BaseModel
         return $this->belongsTo(File::class, 'image_id', 'id');
     }
 
+    /**
+     * Relación con el contenido al que pertenece la página.
+     *
+     * @return BelongsTo
+     */
+    public function contentModel(): BelongsTo
+    {
+        return $this->belongsTo(Content::class, 'content_id', 'id');
+    }
 
     /**
      * Devuelve la ruta para actualizar la imagen de la página.

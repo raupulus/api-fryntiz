@@ -694,7 +694,7 @@ class ContentController extends BaseWithTableCrudController
             $image->save();
         }
 
-        $contentPage->content->touch(); // TODO: Pasar a el modelo tanto al crear como al actualizar
+        $contentPage->contentModel->touch(); // TODO: Pasar a el modelo tanto al crear como al actualizar
 
         return JsonHelper::accepted([
             'success' => true,

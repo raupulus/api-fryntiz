@@ -154,15 +154,36 @@
 @section('css')
     <style>
         .box-editor {
-            margin: auto;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 100%;
             max-width: 1024px;
-            background-color: #ffffff;
-            padding: 1rem;
-            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: rgba(50, 50, 50, 0.6);
+            border-radius: 15px;
         }
 
         .box-editor .ce-block__content {
-            max-width: 900px;
+        }
+
+        .codex-editor {
+            margin: 0;
+            padding: 2rem 0.5rem;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .ce-toolbar {
+            translate: 35px;
+            z-index: 3;
+        }
+
+        .ce-toolbar__actions.ce-toolbar__actions--opened {
+            background-color: rgba(200, 200, 200, 0.4);
+            padding: 3px;
+            border-radius: 3px;
         }
     </style>
 @endsection

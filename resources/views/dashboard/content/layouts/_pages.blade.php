@@ -103,10 +103,8 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col-12">
-        <div id="editor" class="box-editor">
-            <p id="editor-title"></p>
-        </div>
+    <div class="col-12" style="margin: 0; padding: 0;">
+        <div id="editor" class="box-editor"></div>
     </div>
 </div>
 

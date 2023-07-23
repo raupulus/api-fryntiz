@@ -154,6 +154,31 @@ window.document.addEventListener('DOMContentLoaded', function () {
              * Id of Element that should contain Editor instance
              */
             holder: 'editor',
+            placeholder: 'Comienza a escribir aquí...',
+            readOnly: false, // editor.readOnly.toggle();
+
+
+            logLevel: 'INFO', // 'ERROR' | 'WARN' | 'INFO' | 'DEBUG'
+
+            /*
+            i18n: { // https://editorjs.io/i18n/
+                messages: {
+                    ui: {
+                        // Translations of internal UI components of the editor.js core
+                    },
+                    toolNames: {
+                        // Section for translation Tool Names: both block and inline tools
+                    },
+                    tools: {
+                        // Section for passing translations to the external tools classes
+                        // The first-level keys of this object should be equal of keys ot the 'tools' property of EditorConfig
+                    },
+                    blockTunes: {
+                        // Section allows to translate Block Tunes
+                    },
+                }
+            }
+            */
 
             //stretched: true,
 
@@ -171,7 +196,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 raw: RawTool,
                 textVariant: TextVariantTune,
 
-                code: CodeTool,
+                code: editorjsCodeflask, // Otras opciones: Code, CodeTool, CodeMirror, editorjsCodeflask
 
                 Marker: {
                     class: Marker,

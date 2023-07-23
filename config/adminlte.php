@@ -672,6 +672,24 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
+                    'location' => '/vendor/editorjs/codemirror.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/codebox.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/vendor/editorjs/codeflask.js',
+                ],
+
+                [
+                    'type' => 'js',
+                    'asset' => false,
                     'location' => '/vendor/editorjs/paragraph.js',
                 ],
 
