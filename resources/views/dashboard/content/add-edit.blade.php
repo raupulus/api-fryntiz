@@ -176,10 +176,10 @@
         window.currentPage = "{{isset($pageSelected) ? $pageSelected?->id : $model->pages->first()?->id}}";
         window.urlPageUpdate = '{{route('dashboard.content.ajax.page.update', ['contentType' => 'json', 'contentPage' => ':pageId'])}}'
         window.urlPageGetContent = "{{route('dashboard.content.ajax.page.get.content', ':pageId')}}";
-        //window.pageSelectedContent = JSON.parse('{!! isset($pageSelected) ? ($pageSelected?->raw?->content ?? "{}") : "{}" !!}');
         window.urlPageAdd = "{{$model->id ? route('dashboard.content.add.page', $model->id) : ''}}";
         window.urlUploadFile = "{{$model->id ? route('dashboard.content.ajax.upload.file', $model->id) : ''}}";
         window.urlRemoveFile = "{{route('dashboard.content.ajax.upload.remove.file')}}";
+        window.urlUpdateMetadataFile = "{{route('dashboard.content.ajax.update.metadata.file', ['contentFile' => ':contentFileId', 'file' => ':fileId'])}}";
 
         document.addEventListener('DOMContentLoaded', () => {
 

@@ -282,6 +282,11 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             Route::post('/upload/file/{contentModel?}', [ContentController::class, 'ajaxStoreFile'])
                 ->name('dashboard.content.ajax.upload.file');
 
+            ## Actualiza los metadatos de un archivo asociado a un contenido
+            Route::patch('/update/metadata/file/{contentFile}/{file}', [ContentController::class, 'ajaxUpdateMetadataFile'])
+                ->name('dashboard.content.ajax.update.metadata.file');
+
+            ## Elimina un archivo asociado a un contenido
             Route::post('/upload/remove/file', [ContentController::class, 'ajaxRemoveFile'])
                 ->name('dashboard.content.ajax.upload.remove.file');
 

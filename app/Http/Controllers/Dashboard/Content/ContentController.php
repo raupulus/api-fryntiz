@@ -26,6 +26,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationData;
 use JsonHelper;
 
 /**
@@ -123,14 +124,23 @@ class ContentController extends BaseWithTableCrudController
             if ($image) {
                 $model->image_id = $image->id;
                 $model->save();
+
+                $image->title = $model->title;
+                $image->alt = $model->title;
+                $image->save();
             }
 
         }
 
-        ## Genero entrada para SEO
-
+        ## Creo entrada para SEO
         if ($request->has('image') && $request->get('image')) {
             $seoImage = File::addFileFromBase64($request->get('image'), 'content_seo', false);
+
+            if ($seoImage) {
+                $seoImage->title = $model->title;
+                $seoImage->alt = $model->title;
+                $seoImage->save();
+            }
         }
 
         ContentSeo::create([
@@ -235,6 +245,10 @@ class ContentController extends BaseWithTableCrudController
             if ($image) {
                 $content->image_id = $image->id;
                 $content->save();
+
+                $image->title = $content->title;
+                $image->alt = $content->title;
+                $image->save();
             }
         }
 
@@ -311,7 +325,10 @@ class ContentController extends BaseWithTableCrudController
             $image = File::addFileFromBase64($request->get('image'), 'content_seo', false, $seo->image?->id);
 
             if ($image) {
+                $image->title = $seo->image_alt;
+                $image->alt = $seo->image_alt;
                 $seo->image_id = $image->id;
+
                 $seo->save();
             }
         }
@@ -543,6 +560,8 @@ class ContentController extends BaseWithTableCrudController
             ]);
 
             $metadata = [
+                'content_id' => $content->id,
+                'content_file_id' => $contentFile->id,
                 'file_id' => $file->id,
                 'module' => $file->module,
                 'title' => $file->title,
@@ -557,8 +576,46 @@ class ContentController extends BaseWithTableCrudController
             'success' => (bool) $file,
             "file" => array_merge([
                 'url' => $file?->thumbnail('normal'),
+                'path' => str_replace(config('app.url') . '/', '', $file?->thumbnail('normal')),
+                'url_thumbnail' => $file?->thumbnail('small'),
+                'path-thumbnail' => str_replace(config('app.url') . '/', '', $file?->thumbnail('small')),
+                'url_large' => $file?->thumbnail('large'),
+                'path-large' => str_replace(config('app.url') . '/', '', $file?->thumbnail('large')),
             ], $metadata),
 
+        ]);
+    }
+
+    /**
+     * Actualiza los metadatos de un archivo relacionado con el contenido.
+     *
+     * @param Request $request
+     * @param ContentFile $contentFile
+     * @param File $file
+     *
+     * @return JsonResponse
+     */
+    public function ajaxUpdateMetadataFile(Request $request, ContentFile $contentFile, File $file): JsonResponse
+    {
+        $title = $request->get('title');
+        $alt = $request->get('alt');
+
+        if (($contentFile->file_id === $file->id) && auth()->id() === $file->user_id) {
+
+            if ($title) {
+                $file->title = $title;
+            }
+
+            if ($alt) {
+                $file->alt = $alt;
+            }
+
+            $file->save();
+        }
+
+        return JsonHelper::accepted([
+            'success' => true,
+            'file' => $file,
         ]);
     }
 
@@ -627,9 +684,17 @@ class ContentController extends BaseWithTableCrudController
 
         $contentPage->update(array_filter($dataUpdate));
 
-        // TODO: Guardar imagen principal de la página??????
-
         // TODO: Metadatos secundarios: calidad del texto, derechos de autor, contar palabras totales, contar palabras clave
+
+        // Actualizo datos de la imagen principal para la página.
+        if ($contentPage->image_id) {
+            $image = $contentPage->image;
+            $image->title = $contentPage->title;
+            $image->alt = $contentPage->title;
+            $image->save();
+        }
+
+        $contentPage->content->touch(); // TODO: Pasar a el modelo tanto al crear como al actualizar
 
         return JsonHelper::accepted([
             'success' => true,

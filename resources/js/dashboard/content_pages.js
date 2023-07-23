@@ -31,7 +31,7 @@ async function changePage(pageId, save = true) {
         return response.json();
     }).then((data) => {
         //console.log(data);
-        if(data && data.blocks && data.blocks.length) {
+        if (data && data.blocks && data.blocks.length) {
             editor.render(data);
         }
     }).catch((error) => {
@@ -61,7 +61,6 @@ async function savePage(pageId = null) {
     }
 
     updatePageUrl = updatePageUrl.replace(':pageId', pageId);
-
 
 
     const boxPageForm = document.querySelector('.box-page-form[data-id="' + pageId + '"]');
@@ -304,7 +303,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 // Event type:  block-added
 
                 if (event.type === 'block-removed') {
-                    console.log('Block removed: ', block);
+                    //console.log('Block removed: ', block);
 
                     if (['image', 'attaches'].includes(blockType) && blockData.file && blockData.file.file_id) {
                         let removeFileUrl = window.urlRemoveFile;
@@ -322,6 +321,8 @@ window.document.addEventListener('DOMContentLoaded', function () {
                             return response.json();
                         }).then((data) => {
                             //console.log(data);
+                            savePage();
+
                         }).catch((error) => {
                             console.log(error);
                         });
@@ -331,11 +332,50 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 } else if (event.type === 'block-added') {
                     //console.log('Block added: ', event.detail.block);
                 } else if (event.type === 'block-changed') {
-                    //console.log('Block updated: ', event.detail.block);
+                    //console.log('Block updated: ', event.detail.block, event.detail, event);
+
+                    //console.log('BlockData: ', blockData);
 
                     // Guardo toda la página al subir imágenes y adjuntos
                     if (['image', 'attaches'].includes(blockType)) {
-                        savePage();
+                        await savePage();
+
+                        if ((blockData.caption ||blockData.title) && blockData.file && blockData.file.content_file_id && blockData.file.file_id) {
+
+                            // Cuando se actualice nombre de imagen, vendrá caption. Cuando sea un adjunto, vendrá title
+                            const caption = blockData.caption?.replace(/<p>|<\/p>|<br>|<br\/>|<br \/>/gi, '').trim();
+                            const title = blockData.title?.replace(/<p>|<\/p>|<br>|<br\/>|<br \/>/gi, '').trim();
+                            const fileId = blockData.file.file_id;
+                            const contentFileId = blockData.file.content_file_id;
+
+                            let urlRaw = window.urlUpdateMetadataFile;
+                            let url = urlRaw.replace(':fileId', fileId).replace(':contentFileId', contentFileId);
+
+                            console.log('Caption: ', caption);
+                            console.log('Title: ', title);
+                            console.log('File ID: ', fileId);
+                            console.log('Content ID: ', contentFileId);
+                            console.log('URL: ', url);
+
+                            await fetch(url, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                },
+                                body: JSON.stringify({
+                                    title: caption ?? title,
+                                    alt: caption ?? title,
+                                })
+                            })
+                                .then(res => res.json())
+                                .then(response => {
+                                    console.log('Success:', response);
+                                })
+                                .catch(error => console.error('Error:', error));
+
+
+                        }
                     }
 
                 } else {
@@ -355,10 +395,6 @@ window.document.addEventListener('DOMContentLoaded', function () {
 
 
     }
-
-
-
-
 
 
     // PROD
