@@ -7,30 +7,58 @@ namespace App\Helpers;
  */
 class TextFormatParseHelper
 {
+    public static function getTemplates()
+    {
+        return [
+            'raw' => function($html) {
+                return $html;
+            },
+            'header' => function($text, $level) {
+                return "<h{$level}>{$text}</h{$level}>";
+            },
+            'paragraph' => function($text) {
+                return "<p>{$text}</p>";
+            },
+            'image' => function($file, $caption, $widthBorder, $stretched, $withBackground) {
+                return "<img src=\"{$file['url']}\" title=\"{$caption}\" alt=\"{$caption}\">";
+            },
+            'quote' => function($text, $caption, $aligment) {
+                return "<blockquote><p>${text}</p><span>${caption}</span></blockquote>";
+            },
+            'embed' => function($service, $source, $embed, $width, $height, $caption) {
+                return '<div class="embed"><iframe width="' . $width . '" height="' . $height . '" src="' . $embed . '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>';
+            },
+        ];
+    }
+
 
     /**
      * Recibe un array de elementos y los prepara para devolver una estructura HTML
      *
-     * @param array $array Array de bloques para generar la estructura HTML.
+     * @param array $blocks Array de bloques para generar la estructura HTML.
      * @return string
      */
-    public static function arrayToHtml(array $array): string
+    public static function arrayToHtml(array $blocks): string
     {
-        if (empty($array)) {
+        return '';
+
+        if (empty($blocks)) {
             return '';
         }
 
+        $result = [];
 
-        // TODO Parsear estructura
+        $templates = self::getTemplates();
 
-        foreach ($array as $block) {
-
+        foreach ($blocks as $block) {
+            if (array_key_exists($block['type'], $templates)) {
+                $template = $templates[$block['type']];
+                $data = $block['data'];
+                $result[] = call_user_func_array($template, $data);
+            }
         }
 
-
-
-
-        return '<div></div>';
+        return implode($result);
     }
 
     /**
@@ -41,6 +69,14 @@ class TextFormatParseHelper
      */
     public static function jsonToHtml(string $json): string
     {
-        return self::arrayToHtml(json_decode($json, true));
+        return '';
+
+        $jsonDecoded = json_decode($json, true);
+
+        if (isset($jsonDecoded['blocks'])) {
+            return self::arrayToHtml($jsonDecoded['blocks']);
+        }
+
+        return self::arrayToHtml($jsonDecoded);
     }
 }

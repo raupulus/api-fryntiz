@@ -171,6 +171,11 @@ class ContentController extends BaseWithTableCrudController
      */
     public function edit(Content $model)
     {
+        //$html = TextFormatParseHelper::jsonToHtml($model->pages->first()->raw->content);
+
+        //dd($model->pages->first()->toArray(), $model->pages->first()->raw->toArray(), $html);
+        //return $html;
+
         $contributorsIds = $model->contributors->pluck('id')->toArray();
 
         $contentRelated = $model->contentsRelated;
@@ -509,8 +514,8 @@ class ContentController extends BaseWithTableCrudController
                 'success' => false,
                 'message' => 'Parámetros erróneos',
                 'data' => array_merge($request->all(), [
-                    'content' => $content,
-                    'contentModel' => $contentModel,
+                    //'content' => $content,
+                    //'contentModel' => $contentModel,
                 ]),
             ]);
         }
@@ -522,10 +527,10 @@ class ContentController extends BaseWithTableCrudController
         if (!$content) {
             return JsonHelper::success([
                 'success' => false,
-                'data' => array_merge($request->all(), [
-                    'content' => $content,
-                    'contentModel' => $contentModel,
-                ]),
+                //'data' => array_merge($request->all(), [
+                //    'content' => $content,
+                //    'contentModel' => $contentModel,
+                //]),
             ]);
         }
 

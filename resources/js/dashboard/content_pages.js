@@ -2,11 +2,15 @@
  * Cambia a la página recibida guardando los datos primero.
  *
  * @param pageId Nueva página a la que ir.
+ * @param save Guardar antes de cambiar de página.
  *
  * @returns {Promise<void>}
  */
-async function changePage(pageId) {
-    await savePage(currentPage);
+async function changePage(pageId, save = true) {
+
+    if (save) {
+        await savePage(currentPage);
+    }
 
     await editor.clear();
 
@@ -26,7 +30,7 @@ async function changePage(pageId) {
     }).then((response) => {
         return response.json();
     }).then((data) => {
-        console.log(data);
+        //console.log(data);
         if(data && data.blocks && data.blocks.length) {
             editor.render(data);
         }
@@ -317,7 +321,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                         }).then((response) => {
                             return response.json();
                         }).then((data) => {
-                            console.log(data);
+                            //console.log(data);
                         }).catch((error) => {
                             console.log(error);
                         });
@@ -325,9 +329,9 @@ window.document.addEventListener('DOMContentLoaded', function () {
                     }
 
                 } else if (event.type === 'block-added') {
-                    console.log('Block added: ', event.detail.block);
+                    //console.log('Block added: ', event.detail.block);
                 } else if (event.type === 'block-changed') {
-                    console.log('Block updated: ', event.detail.block);
+                    //console.log('Block updated: ', event.detail.block);
 
                     // Guardo toda la página al subir imágenes y adjuntos
                     if (['image', 'attaches'].includes(blockType)) {
@@ -335,13 +339,21 @@ window.document.addEventListener('DOMContentLoaded', function () {
                     }
 
                 } else {
-                    console.log('Event type: ', event.type);
+                    //console.log('Event type: ', event.type);
                 }
 
             },
+            onReady: () => {
+                // Inicio el editor con la página actual si existiera
+                if (window.currentPage) {
+                    changePage(window.currentPage, false);
+                }
+            },
 
-            data: pageSelectedContent,
+            data: {},
         });
+
+
     }
 
 

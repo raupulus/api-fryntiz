@@ -173,15 +173,16 @@
 
     <script>
         window.contentId = "{{$model->id}}";
-        window.currentPage = "{{isset($pageSelected) ? $pageSelected?->id : ''}}";
+        window.currentPage = "{{isset($pageSelected) ? $pageSelected?->id : $model->pages->first()?->id}}";
         window.urlPageUpdate = '{{route('dashboard.content.ajax.page.update', ['contentType' => 'json', 'contentPage' => ':pageId'])}}'
         window.urlPageGetContent = "{{route('dashboard.content.ajax.page.get.content', ':pageId')}}";
-        window.pageSelectedContent = JSON.parse('{!! isset($pageSelected) ? ($pageSelected?->raw?->content ?? "{}") : "{}" !!}')
+        //window.pageSelectedContent = JSON.parse('{!! isset($pageSelected) ? ($pageSelected?->raw?->content ?? "{}") : "{}" !!}');
         window.urlPageAdd = "{{$model->id ? route('dashboard.content.add.page', $model->id) : ''}}";
         window.urlUploadFile = "{{$model->id ? route('dashboard.content.ajax.upload.file', $model->id) : ''}}";
         window.urlRemoveFile = "{{route('dashboard.content.ajax.upload.remove.file')}}";
 
         document.addEventListener('DOMContentLoaded', () => {
+
             /*** Selector datetimepicker programar publicación ***/
             $('#scheduled_at').datetimepicker({
                 minDate: new Date(),
@@ -504,7 +505,7 @@
         let title = document.querySelector('input[data-slug_provider="title"]');
         let slug = document.querySelector('input[data-sluggable="title"]');
 
-        console.log('title:', title, slug);
+        //console.log('title:', title, slug);
 
         if(title && slug) {
             title.addEventListener('focusout', () => {

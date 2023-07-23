@@ -41,8 +41,6 @@
 <meta name="url" content="{{request()->fullUrl()}}">
 <meta name="identifier-URL" content="{{request()->fullUrl()}}">
 <meta name="revisit-after" content="7 days">
-<meta name="owner" content="Raúl Caro Pastorino">
-<meta name="designer" content="Raúl Caro Pastorino">
 
 
 
