@@ -35,7 +35,7 @@ async function changePage(pageId, save = true) {
             editor.render(data);
         }
     }).catch((error) => {
-        console.log(error);
+        console.error(error);
     });
 
 }
@@ -64,8 +64,6 @@ async function checkSlug(contentPageId, slug, input = null) {
             contentPageId: contentPageId,
         })
     }).then(res => res.json()).then((data) => {
-        //console.log(data);
-
         const isValid = data && data.is_valid;
 
         if (input) {
@@ -75,8 +73,10 @@ async function checkSlug(contentPageId, slug, input = null) {
                 input.classList.add('is-invalid');
             }
         }
+
+        return isValid;
     }).catch((error) => {
-        console.log(error);
+        console.error(error);
     });
 }
 
@@ -107,6 +107,14 @@ async function savePage(pageId = null) {
     const title = boxPageForm.querySelector('input[name="title"]')?.value;
     const slug = boxPageForm.querySelector('input[name="slug"]')?.value;
 
+
+    // Compruebo slug
+    const isValidSlug = await checkSlug(pageId, slug);
+
+    if (!isValidSlug) {
+        return false;
+    }
+
     return fetch(updatePageUrl, {
         method: 'POST',
         headers: {
@@ -122,9 +130,9 @@ async function savePage(pageId = null) {
     }).then((response) => {
         return response.json();
     }).then((data) => {
-        console.log(data);
+        //console.log(data);
     }).catch((error) => {
-        console.log(error);
+        console.error(error);
     });
 
 }
@@ -155,7 +163,7 @@ async function createPage() {
 
     let test = await savePage(currentPage);
 
-    console.log(test);
+    //console.log(test);
 
     form.submit();
 }
@@ -208,7 +216,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
             readOnly: false, // editor.readOnly.toggle();
 
 
-            logLevel: 'INFO', // 'ERROR' | 'WARN' | 'INFO' | 'DEBUG'
+            logLevel: 'ERROR', // 'ERROR' | 'WARN' | 'INFO' | 'DEBUG'
 
             /*
             i18n: { // https://editorjs.io/i18n/
@@ -426,12 +434,6 @@ window.document.addEventListener('DOMContentLoaded', function () {
                             let urlRaw = window.urlUpdateMetadataFile;
                             let url = urlRaw.replace(':fileId', fileId).replace(':contentFileId', contentFileId);
 
-                            console.log('Caption: ', caption);
-                            console.log('Title: ', title);
-                            console.log('File ID: ', fileId);
-                            console.log('Content ID: ', contentFileId);
-                            console.log('URL: ', url);
-
                             await fetch(url, {
                                 method: 'PATCH',
                                 headers: {
@@ -445,7 +447,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                             })
                                 .then(res => res.json())
                                 .then(response => {
-                                    console.log('Success:', response);
+                                    //console.log('Success:', response);
                                 })
                                 .catch(error => console.error('Error:', error));
 
