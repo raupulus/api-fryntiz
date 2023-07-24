@@ -240,7 +240,7 @@
 
 
         <!-- Botón para abrir modal -->
-        <div class="v-text-center v-mt-1">
+        <div v-if="hasEditButton" class="v-text-center v-mt-1">
             <span class="v-image-cropper-buttons v-image-cropper-button-open"
                   @click="toggleModalActive">
                 Editar imagen
@@ -279,6 +279,9 @@ export default {
         csrf: {
             default: null,
             required: false,
+        },
+        hasEditButton: {
+            default: false,
         },
     },
     setup(props) {

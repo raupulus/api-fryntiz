@@ -309,6 +309,10 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ## Añade/Actualiza una imagen de una página
             Route::post('/page/upload/image/{contentPage}/update', [ContentPageController::class, 'ajaxUpdateImage'])
                 ->name('dashboard.content.ajax.page.upload.image.update');
+
+            ## Comprueba si es un slug válido para la página dentro de la plataforma
+            Route::post('/page/check/slug/{page?}', [ContentPageController::class, 'ajaxCheckSlug'])
+                ->name('dashboard.content.ajax.page.check.slug');
         });
     });
 

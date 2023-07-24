@@ -259,7 +259,7 @@ class ContentController extends BaseWithTableCrudController
      * Remove the specified resource from storage.
      *
      * @param \App\Http\Requests\Dashboard\Content\ContentDeleteRequest $request
-     * @param int|null $id
+     * @param Content|null $content
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
@@ -675,10 +675,24 @@ class ContentController extends BaseWithTableCrudController
 
         $html = TextFormatParseHelper::arrayToHtml($content);
 
+        $slug = Str::slug($request->get('slug'));
+
+        if (!$slug) {
+            $slug = Str::slug($request->get('title')) . '-' . Str::random(20);
+        }
+
+        $isSlugUnique = ContentPage::where('slug', $slug)
+            ->where('id', '!=', $contentPage->id)
+            ->count() === 0;
+
+        if (!$isSlugUnique) {
+            $slug .= '-' . Str::random(20);
+        }
+
         $dataUpdate = [
             'current_page_raw_id' => $contentPageRawAvailable->id,
             'title' => $request->get('title'),
-            'slug' => Str::slug($request->get('slug')),
+            'slug' => $slug,
             'content' => $html,
         ];
 

@@ -29,7 +29,7 @@ class ContentPageController extends Controller
             'image' => 'required|image',
         ]);
 
-        $isValid = $request->file('image')->isValid() && (($request->file('image') instanceof \Illuminate\Http\UploadedFile));
+        $isValid = $request->file('image')?->isValid() && (($request->file('image') instanceof \Illuminate\Http\UploadedFile));
 
         if ($contentPage && $contentPage->id && $isValid) {
             $image = File::addFile($request->file('image'), 'pages', false,  $contentPage->image_id);
@@ -48,5 +48,47 @@ class ContentPageController extends Controller
         }
 
         return \JsonHelper::failed('Imagen no válida');
+    }
+
+    /**
+     * Comprueba que el slug sea único.
+     * En caso de que el slug sea válido, devuelve un JSON con el slug y un mensaje de éxito.
+     * Si se recibe la página actual, se comprueba que el slug sea distinto al actual.
+     *
+     * @param Request $request
+     * @param ContentPage|null $page
+     * @return JsonResponse
+     */
+    public function ajaxCheckSlug(Request $request, ContentPage|null $page = null): JsonResponse
+    {
+        $slug = \Str::slug($request->get('slug'));
+
+        $responseValid = \JsonHelper::success([
+            'msg' => 'Slug válido',
+            'slug' => $slug,
+            'is_valid' => true,
+        ]);
+
+        $responseInvalid = \JsonHelper::success([
+            'msg' => 'Slug no válido',
+            'slug' => $slug,
+            'is_valid' => false,
+        ]);
+
+        if (!$slug) {
+            return $responseInvalid;
+        }
+
+        if ($page && $page->id && $page->slug === $slug) {
+            return $responseValid;
+        }
+
+        $searchPage = ContentPage::where('slug', $slug)->first();
+
+        if ($searchPage && $searchPage->id) {
+            return $responseInvalid;
+        }
+
+        return $responseValid;
     }
 }

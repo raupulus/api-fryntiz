@@ -40,6 +40,46 @@ async function changePage(pageId, save = true) {
 
 }
 
+
+
+async function checkSlug(contentPageId, slug, input = null) {
+    if (!contentPageId || !slug || !slug.length || slug.length < 5 || slug.length > 255) {
+        if (input) {
+            input.classList.add('is-invalid');
+        }
+
+        return false;
+    }
+
+    const url = window.urlPageCheckSlug?.replace(':page', contentPageId);
+
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            slug: slug,
+            contentPageId: contentPageId,
+        })
+    }).then(res => res.json()).then((data) => {
+        //console.log(data);
+
+        const isValid = data && data.is_valid;
+
+        if (input) {
+            if (isValid) {
+                input.classList.remove('is-invalid');
+            } else {
+                input.classList.add('is-invalid');
+            }
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 /**
  * Procesa el guardado de datos para la página actual.
  *
@@ -141,6 +181,16 @@ window.document.addEventListener('DOMContentLoaded', function () {
     btnsAddPage.forEach((btn) => {
         btn.addEventListener('click', createPage);
     });
+
+    /** Al modificar el slug, se comprueba si es válido y único **/
+    let slugInputs = document.querySelectorAll('.page-slug');
+
+    // Almacena las comprobaciones de slug para evitar que se hagan muchas peticiones
+    window.checkingPageSlugInterval = {};
+
+    slugInputs.forEach((input) => input.addEventListener('change', function (e) {
+        checkSlug(input.getAttribute('data-page_id'), input.value, input)
+    }));
 
 
     // Modificar url al guardar

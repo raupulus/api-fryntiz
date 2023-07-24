@@ -51,7 +51,7 @@
             <div class="row">
 
                 @php($navbarSectionID = request()->get('currentPage') ? 2 : 1)
-                @php($navbarSectionID = (($navbarSectionID === 1) && request()->get('seo')) ? 4 : 1)
+                @php($navbarSectionID = (($navbarSectionID === 1) && request()->get('seo')) ? 4 : $navbarSectionID)
 
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -153,30 +153,38 @@
 
 @section('css')
     <style>
-        .box-editor {
-            margin: 2rem auto;
-            padding: 2rem;
-            width: 100%;
-            max-width: 1024px;
-            box-sizing: border-box;
-            background-color: rgba(50, 50, 50, 0.6);
-            border-radius: 15px;
+
+        .is-invalid {
+            border-color: red !important;
         }
 
-        .box-editor .ce-block__content {
+
+        /**
+            * Estilos para el editor de texto
+         */
+        .box-editor {
+            margin: 1rem auto;
+            padding: 1.2rem;
+            width: 100%;
+            max-width: 1400px;
+            box-sizing: border-box;
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 15px;
         }
 
         .codex-editor {
             margin: 0;
-            padding: 2rem 0.5rem;
+            padding: 2rem 1rem;
             width: 100%;
             height: 100%;
             box-sizing: border-box;
             background-color: #fafafa;
+            border-radius: 4px;
+            box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.8)
         }
 
         .ce-toolbar {
-            translate: 35px;
+            /*translate: 35px;*/
             z-index: 3;
         }
 
@@ -184,6 +192,26 @@
             background-color: rgba(200, 200, 200, 0.4);
             padding: 3px;
             border-radius: 3px;
+        }
+
+        @media (max-width: 600px) {
+            .box-editor {
+                margin: 0 auto;
+                padding: 0.3rem;
+                border-radius: 7px;
+            }
+        }
+
+        @media (max-width: 898px) {
+            .box-editor {
+                margin: 0.4rem auto;
+                padding: 0.7rem;
+                border-radius: 10px;
+            }
+
+            .ce-toolbar {
+                translate: 8px;
+            }
         }
     </style>
 @endsection
@@ -201,6 +229,8 @@
         window.urlUploadFile = "{{$model->id ? route('dashboard.content.ajax.upload.file', $model->id) : ''}}";
         window.urlRemoveFile = "{{route('dashboard.content.ajax.upload.remove.file')}}";
         window.urlUpdateMetadataFile = "{{route('dashboard.content.ajax.update.metadata.file', ['contentFile' => ':contentFileId', 'file' => ':fileId'])}}";
+
+        window.urlPageCheckSlug = "{{route('dashboard.content.ajax.page.check.slug', ':page')}}";
 
         document.addEventListener('DOMContentLoaded', () => {
 

@@ -1,30 +1,94 @@
 
 <div class="row">
 
-    {{-- Listado de Páginas creadas --}}
-    <div id="box-page-selector" class="col-12 col-md-3 col-xl-2 mt-3">
+    <div class="col-12" style="margin: 0; padding: 0;">
 
-        <div class="nav flex-column nav-pills" id="v-pills-tab"
-             role="tablist" aria-orientation="vertical">
+            {{-- Listado de Páginas creadas --}}
+            <div id="box-page-selector" class="mt-1">
 
-            @foreach($pages as $page)
+                <div class="nav flex-row nav-pills" id="v-pills-tab"
+                     role="tablist" aria-orientation="vertical">
 
-                @php($active = $idPageActive ? $idPageActive === $page->id : $page->order === 1)
+                    <span class="btn-add-page btn btn-dark mr-1">
+                        +
+                        <i class="fa fa-file-alt"></i>
+                    </span>
 
-                <a class="btn-change-page nav-link {{$active ? 'active' : '' }}"
-                   id="ref-page-{{$page->id}}-tab"
-                   data-toggle="pill"
-                   href="#ref-page-{{$page->id}}"
-                   role="tab"
-                   aria-controls="ref-page-{{$page->id}}"
-                   data-id="{{$page->id}}"
-                   aria-selected="{{$active ? 'true' : 'false'}}">Página {{$page->order}}</a>
-            @endforeach
+                    @foreach($pages as $page)
 
-            <span class="btn-add-page btn btn-dark">
-                +
-            </span>
-        </div>
+                        @php($active = $idPageActive ? $idPageActive === $page->id : $page->order === 1)
+
+                        <a class="btn-change-page nav-link {{$active ? 'active' : '' }}"
+                           id="ref-page-{{$page->id}}-tab"
+                           data-toggle="pill"
+                           href="#ref-page-{{$page->id}}"
+                           role="tab"
+                           aria-controls="ref-page-{{$page->id}}"
+                           data-id="{{$page->id}}"
+                           aria-selected="{{$active ? 'true' : 'false'}}">
+
+                            <i class="fa fa-file-alt"></i>
+                            {{$page->order}}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="tab-content" id="v-pills-tabContent" style="width: 100%;">
+
+                {{-- Sección por cada página --}}
+                @foreach($pages as $page)
+                    @php($active = $idPageActive ? $idPageActive === $page->id : $page->order === 1)
+
+                    <div class="box-page-form tab-pane fade show {{$active ? 'active' : ''}}"
+                         id="ref-page-{{$page->id}}" role="tabpanel"
+                         data-id="{{$page->id}}"
+                         aria-labelledby="ref-page-{{$page->id}}-tab">
+
+                        <div style="display: block; text-align: center; position: absolute; right: 0; top: 0; translate: 0 -80px;" class="mt-1">
+                            <span class="btn-save-page btn btn-success" data-id="{{$page->id}}" style="margin: auto;">
+                                Guardar Página
+                            </span>
+                        </div>
+
+                        @include('dashboard.content.layouts._page')
+                    </div>
+                @endforeach
+
+                {{-- Selector de editores --}}
+                {{--
+                <div>
+                    <div class="btn-group" role="group"
+                         aria-label="Basic example"
+                         style="">
+                        <button type="button"
+                                class="btn btn-secondary disabled btn-success btn-change-editor"
+                                data-editor="quill">
+                            Quilljs
+                        </button>
+
+                        <button type="button"
+                                data-editor="summernote"
+                                class="btn btn-secondary btn-info btn-change-editor">
+                            Summernote
+                        </button>
+
+                        <button type="button"
+                                data-editor="grapesjs"
+                                class="btn btn-secondary btn-info btn-change-editor">
+                            GrapesJS
+                        </button>
+
+                        <button type="button"
+                                data-editor="gutenberg"
+                                class="btn btn-secondary btn-info btn-change-editor">
+                            Gutenberg
+                        </button>
+                    </div>
+                </div>
+                --}}
+
+            </div>
     </div>
 
 
@@ -41,68 +105,9 @@
         </textarea>
     </div>
 
-    <div class="col-12 col-md-9 col-xl-10 mt-3">
-
-        <div class="tab-content" id="v-pills-tabContent">
-
-            {{-- Selector de editores --}}
-            {{--
-            <div>
-                <div class="btn-group" role="group"
-                     aria-label="Basic example"
-                     style="">
-                    <button type="button"
-                            class="btn btn-secondary disabled btn-success btn-change-editor"
-                            data-editor="quill">
-                        Quilljs
-                    </button>
-
-                    <button type="button"
-                            data-editor="summernote"
-                            class="btn btn-secondary btn-info btn-change-editor">
-                        Summernote
-                    </button>
-
-                    <button type="button"
-                            data-editor="grapesjs"
-                            class="btn btn-secondary btn-info btn-change-editor">
-                        GrapesJS
-                    </button>
-
-                    <button type="button"
-                            data-editor="gutenberg"
-                            class="btn btn-secondary btn-info btn-change-editor">
-                        Gutenberg
-                    </button>
-                </div>
-            </div>
-            --}}
-
-            {{-- Sección por cada página --}}
-            @foreach($pages as $page)
-                @php($active = $idPageActive ? $idPageActive === $page->id : $page->order === 1)
-
-                <div class="box-page-form tab-pane fade show {{$active ? 'active' : ''}}"
-                     id="ref-page-{{$page->id}}" role="tabpanel"
-                     data-id="{{$page->id}}"
-                     aria-labelledby="ref-page-{{$page->id}}-tab">
-                    <div class="row">
-                        <div class="col-12 text-right">
-                            <span class="btn-save-page btn btn-success" data-id="{{$page->id}}">
-                                Guardar Página
-                            </span>
-                        </div>
-                    </div>
-
-                    @include('dashboard.content.layouts._page')
-                </div>
-            @endforeach
-
-        </div>
-    </div>
 </div>
 
-<div class="row mt-4">
+<div class="row mt-1">
     <div class="col-12" style="margin: 0; padding: 0;">
         <div id="editor" class="box-editor"></div>
     </div>
