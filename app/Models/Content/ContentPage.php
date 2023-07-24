@@ -70,4 +70,23 @@ class ContentPage extends BaseModel
         //return route('content.page.store.image', ['content_page' => $this->id]);
         return route('dashboard.content.ajax.page.upload.image.update', ['contentPage' => $this->id]);
     }
+
+    /**
+     * Limpia una cadena de texto, elimina html, entidades y espacios innecesarios.
+     * También capitaliza la primera letra del texto.
+     *
+     * @param string $text Cadena de texto a limpiar.
+     *
+     * @return string
+     */
+    public static function sanitizeTitle(string $text): string
+    {
+        $title = trim(str_replace(['&amp;', '&nbsp;', '&#160;', '<p>', '<br>'], '', $text));
+        $title = trim(strip_tags(html_entity_decode($title)));
+        $title = trim(str_replace(['&amp;', '&nbsp;', '&#160;', '<p>', '<br>'], '', $title));
+        $title = trim(strip_tags(html_entity_decode(preg_replace("/&#?[a-z0-9]+;/i",'',$title))));
+        $title = trim(preg_replace("/\s+/", ' ', $title));
+
+        return ucfirst($title);
+    }
 }

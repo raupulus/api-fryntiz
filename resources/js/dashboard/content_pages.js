@@ -423,16 +423,19 @@ window.document.addEventListener('DOMContentLoaded', function () {
                     if (['image', 'attaches'].includes(blockType)) {
                         await savePage();
 
-                        if ((blockData.caption ||blockData.title) && blockData.file && blockData.file.content_file_id && blockData.file.file_id) {
+                        if ((blockData.caption || blockData.title) && blockData.file && blockData.file.content_file_id && blockData.file.file_id) {
 
                             // Cuando se actualice nombre de imagen, vendrá caption. Cuando sea un adjunto, vendrá title
-                            const caption = blockData.caption?.replace(/<p>|<\/p>|<br>|<br\/>|<br \/>/gi, '').trim();
-                            const title = blockData.title?.replace(/<p>|<\/p>|<br>|<br\/>|<br \/>/gi, '').trim();
+                            const caption = blockData.caption?.trim().replace(/<p>|<\/p>|<br>|<br\/>|<br \/>/gi, '').trim();
+                            const title = blockData.title?.trim().replace(/<p>|<\/p>|<br>|<br\/>|<br \/>/gi, '').trim();
                             const fileId = blockData.file.file_id;
                             const contentFileId = blockData.file.content_file_id;
 
                             let urlRaw = window.urlUpdateMetadataFile;
                             let url = urlRaw.replace(':fileId', fileId).replace(':contentFileId', contentFileId);
+
+                            blockData.title = title;
+                            await event.detail.target.save();
 
                             await fetch(url, {
                                 method: 'PATCH',

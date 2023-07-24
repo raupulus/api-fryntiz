@@ -597,17 +597,17 @@ class ContentController extends BaseWithTableCrudController
      */
     public function ajaxUpdateMetadataFile(Request $request, ContentFile $contentFile, File $file): JsonResponse
     {
-        $title = $request->get('title');
-        $alt = $request->get('alt');
+        $title = ContentPage::sanitizeTitle($request->get('title'));
+        $alt = ContentPage::sanitizeTitle($request->get('alt'));
 
         if (($contentFile->file_id === $file->id) && auth()->id() === $file->user_id) {
 
             if ($title) {
-                $file->title = $title;
+                $file->title = Str::title($title);
             }
 
             if ($alt) {
-                $file->alt = $alt;
+                $file->alt = Str::title($alt);
             }
 
             $file->save();
@@ -670,10 +670,55 @@ class ContentController extends BaseWithTableCrudController
             ]);
         }
 
+
+
+
+
+
+
+
+        // FIX ALT-TITLE (Intento corregir fallos en los bloques, por ejemplo caption de imágenes y title de archivos adjuntos)
+
+
+        try {
+            $contentPreFix = collect($content['blocks']);
+
+            $contentPreFix = $contentPreFix->map(function($item, $key) {
+                if (isset($item['type']) && ($item['type'] === 'attaches' && isset($item['data']['title']))) {
+                    $item['data']['title'] = ContentPage::sanitizeTitle($item['data']['title']);
+                }
+
+                if (isset($item['type']) && ($item['type'] === 'image' && isset($item['data']['caption']))) {
+                    $item['data']['caption'] = ContentPage::sanitizeTitle($item['data']['caption']);
+                }
+
+                return $item;
+
+            });
+
+            $content['blocks'] = $contentPreFix->toArray();
+        } catch (\Exception $e) {
+            \Log::error('Error al intentar corregir el contenido de la página');
+            \Log::error($e->getMessage());
+        }
+
+
+        //dd($content['blocks'], $contentPreFix->toArray());
+
+
+        // END FIX
+
+
+
+
+
+
+
+
         $contentPageRaw->content = $content;
         $contentPageRaw->save();
 
-        $html = TextFormatParseHelper::arrayToHtml($content);
+        $html = TextFormatParseHelper::arrayToHtml($content['blocks']);
 
         $slug = Str::slug($request->get('slug'));
 
@@ -703,8 +748,8 @@ class ContentController extends BaseWithTableCrudController
         // Actualizo datos de la imagen principal para la página.
         if ($contentPage->image_id) {
             $image = $contentPage->image;
-            $image->title = $contentPage->title;
-            $image->alt = $contentPage->title;
+            $image->title = trim(strip_tags($contentPage->title));
+            $image->alt = trim(strip_tags($contentPage->title));
             $image->save();
         }
 

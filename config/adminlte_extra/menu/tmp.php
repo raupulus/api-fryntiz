@@ -257,6 +257,13 @@ return [
             ],
         ],
     ],
+    ['header' => 'Configuraciones !!'],
+    [
+        'text' => 'Tipos de Archivos',
+        'icon' => 'fas fa-fw fa-file-alt',
+        'route' => 'dashboard.language.index',
+    ],
+
     ['header' => 'Acciones'],
     [
         'text' => 'Home',

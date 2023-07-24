@@ -7,27 +7,135 @@ namespace App\Helpers;
  */
 class TextFormatParseHelper
 {
+
+    /**
+     * Devuelve el contenido HTML de un campo con contenido de código en bruto.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @return string
+     */
+    public static function getFieldRaw(string $id, array $data): string
+    {
+        return preg_replace('/\\n/', '', view('editor.fields._raw', [
+            'id' => $id,
+            'html' => $data['html'],
+        ])->render());
+    }
+
+    /**
+     * Devuelve el contenido HTML de un campo con contenido de párrafo.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     * @return string
+     */
+    public static function getParagraphRaw(string $id, array $data, array $tunes): string
+    {
+
+        // "Párrafo Normal<br>"
+        // TODO: Quitar <br> al final del párrafo
+
+
+        return view('editor.fields._paragraph', [
+            'id' => $id,
+            'text' => $data['text'],
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    /**
+     * Devuelve el contenido HTML de un campo con contenido de cabecera.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
+    public static function getHeaderRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._header', [
+            'id' => $id,
+            'text' => $data['text'],
+            'level' => $data['level'],
+            'tunes' => collect($tunes),
+        ])->render();
+    }
+
+    public static function getCodeRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._code', [
+            'id' => $id,
+            'data' => $data,
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    public static function getWarningRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._warning', [
+            'id' => $id,
+            'title' => $data['title'],
+            'message' => $data['message'],
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    public static function getQuoteRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._quote', [
+            'id' => $id,
+            'text' => $data['text'],
+            'caption' => $data['caption'],
+            'alignment' => $data['alignment'], // left, center
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    public static function getListRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._list', [
+            'id' => $id,
+            'style' => $data['style'], // ordered, unordered
+            'items' => $data['items'], // Array de items
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    public static function getCheckboxRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._checkbox', [
+            'id' => $id,
+            'items' => $data['items'], // Array de items
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    public static function getAttachesRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._attaches', [
+            'id' => $id,
+            'file' => $data['file'],
+            'title' => $data['title'],
+        ])->render();
+    }
+
+
+
     public static function getTemplates()
     {
         return [
-            'raw' => function($html) {
-                return $html;
-            },
-            'header' => function($text, $level) {
-                return "<h{$level}>{$text}</h{$level}>";
-            },
-            'paragraph' => function($text) {
-                return "<p>{$text}</p>";
-            },
+            /*
             'image' => function($file, $caption, $widthBorder, $stretched, $withBackground) {
                 return "<img src=\"{$file['url']}\" title=\"{$caption}\" alt=\"{$caption}\">";
             },
-            'quote' => function($text, $caption, $aligment) {
-                return "<blockquote><p>${text}</p><span>${caption}</span></blockquote>";
-            },
+
             'embed' => function($service, $source, $embed, $width, $height, $caption) {
                 return '<div class="embed"><iframe width="' . $width . '" height="' . $height . '" src="' . $embed . '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>';
             },
+            */
         ];
     }
 
@@ -40,25 +148,69 @@ class TextFormatParseHelper
      */
     public static function arrayToHtml(array $blocks): string
     {
-        return '';
-
         if (empty($blocks)) {
             return '';
         }
 
         $result = [];
 
-        $templates = self::getTemplates();
+        //$templates = self::getTemplates();
 
         foreach ($blocks as $block) {
+
+
+            switch ($block['type']) {
+                case 'raw':
+                    $result[] = self::getFieldRaw($block['id'], $block['data']);
+                    break;
+                case 'paragraph':
+                    $result[] = self::getParagraphRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+                case 'header':
+                    $result[] = self::getHeaderRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+                case 'code':
+                    $result[] = self::getCodeRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+                case 'warning':
+                    $result[] = self::getWarningRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'quote':
+                    $result[] = self::getQuoteRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'list':
+                    $result[] = self::getListRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'checklist':
+                    $result[] = self::getCheckboxRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'attaches':
+                    $result[] = self::getAttachesRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+                default:
+                    //$result[] = ''; // Plantear añadir <span>??
+                    break;
+            }
+
+            /*
             if (array_key_exists($block['type'], $templates)) {
                 $template = $templates[$block['type']];
                 $data = $block['data'];
-                $result[] = call_user_func_array($template, $data);
+
+                //$result[] = call_user_func_array($template, $data);
+                $result[] = call_user_func_array($template($data), $data);
             }
+            */
         }
 
-        return implode($result);
+
+        dd('Checkpoint 1', $result);
+
+        return implode(' ', $result);
     }
 
     /**
@@ -69,13 +221,12 @@ class TextFormatParseHelper
      */
     public static function jsonToHtml(string $json): string
     {
-        return '';
-
         $jsonDecoded = json_decode($json, true);
 
         if (isset($jsonDecoded['blocks'])) {
             return self::arrayToHtml($jsonDecoded['blocks']);
         }
+
 
         return self::arrayToHtml($jsonDecoded);
     }
