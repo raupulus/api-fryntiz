@@ -177,6 +177,7 @@
             padding: 2rem 1rem;
             width: 100%;
             height: 100%;
+            min-height: 1200px;
             box-sizing: border-box;
             background-color: #fafafa;
             border-radius: 4px;
@@ -229,7 +230,6 @@
         window.urlUploadFile = "{{$model->id ? route('dashboard.content.ajax.upload.file', $model->id) : ''}}";
         window.urlRemoveFile = "{{route('dashboard.content.ajax.upload.remove.file')}}";
         window.urlUpdateMetadataFile = "{{route('dashboard.content.ajax.update.metadata.file', ['contentFile' => ':contentFileId', 'file' => ':fileId'])}}";
-
         window.urlPageCheckSlug = "{{route('dashboard.content.ajax.page.check.slug', ':page')}}";
 
         document.addEventListener('DOMContentLoaded', () => {
