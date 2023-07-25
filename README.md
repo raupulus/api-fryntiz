@@ -12,10 +12,10 @@
 - [ ] Crear comando artisan para primera instalación
 - [ ] Crear comando artisan para reparar instalaciones (segundas
   instalaciones o corregir migración)
-  
+
 ## Instalación
 
-git clone https://gitlab.com/fryntiz/api-fryntiz.git
+git clone https://gitlab.com/raupulus/api-fryntiz.git
 
 - Editar .env
 - Crear Base de datos (postgresql)
@@ -122,7 +122,7 @@ Más información en [https://beyondco.de/docs/laravel-websockets/getting-starte
 
 
 Incrementar límites de conexiones al websockets, esto normalmente es un límite del sistema operativo, en este caso Debian Stable:
-    
+
 ```bash
 sudo nano  /etc/security/limits.d/laravel-echo.conf
 ```

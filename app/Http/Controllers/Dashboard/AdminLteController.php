@@ -12,8 +12,6 @@ use Image;
 
 class AdminLteController extends Controller
 {
-
-
     /**
      * Muestra el listado con todos los tipos de archivos que hay en la plataforma.
      *
@@ -40,7 +38,14 @@ class AdminLteController extends Controller
         ]);
     }
 
-
+    /**
+     * Actualiza el icono de un tipo de archivo.
+     *
+     * @param Request $request
+     * @param FileType $fileType Tipo de archivo a actualizar.
+     *
+     * @return JsonResponse
+     */
     public function fileTypesIconUpdate(Request $request, FileType $fileType): JsonResponse
     {
         $request->validate([
@@ -68,10 +73,7 @@ class AdminLteController extends Controller
                     }
                 }
             }
-
-
         }
-
 
         if ($request->file('image') instanceof UploadedFile) {
             $image = $request->file('image');

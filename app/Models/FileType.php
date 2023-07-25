@@ -19,12 +19,6 @@ class FileType extends Model
         'icon16',
     ];
 
-
-    // TODO: En la tabla de pruebas hay dos tipos mime/png, uno con extensión y otro sin extensión. ¿Por qué?
-
-
-
-
     /**
      * Devuelve la url para actualizar el icono del tipo de archivo.
      *
