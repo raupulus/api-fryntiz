@@ -28,6 +28,7 @@ use App\Http\Controllers\Dashboard\Users\UserController;
 use App\Http\Controllers\Dashboard\EmailController;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\Dashboard\Content\ContentPageController;
+use \App\Http\Controllers\Dashboard\AdminLteController;
 
 ############################################################
 ##                      Dashboard                         ##
@@ -36,6 +37,14 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
     Route::get('/', function () {
         return view('dashboard.index');
     })->name('dashboard.index');
+
+
+    ## Listado con todos los tipos de archivos que hay en la plataforma.
+    Route::get('/app/file-types', [AdminLteController::class, 'fileTypesIndex'])
+        ->name('dashboard.app.file_types.index');
+
+    Route::post('/app/file-types/update/icon/{fileType}', [AdminLteController::class, 'fileTypesIconUpdate'])
+        ->name('dashboard.app.file_types.update.icon');
 });
 
 ############################################################

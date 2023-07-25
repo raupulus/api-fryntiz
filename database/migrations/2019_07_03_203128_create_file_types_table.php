@@ -35,10 +35,10 @@ class CreateFileTypesTable extends Migration
                 ->comment('Tipo mime que representa el tipo de archivo');
             $table->string('extension', 12)
                 ->comment('Extensión con la que se representa de forma mayoritaria.');
-            $table->text('icon16')->default('images/icons/file-types/default_16.png');
-            $table->text('icon32')->default('images/icons/file-types/default_32.png');
-            $table->text('icon64')->default('images/icons/file-types/default_64.png');
-            $table->text('icon128')->default('images/icons/file-types/default_128.png');
+            $table->text('icon16')->nullable();
+            $table->text('icon32')->nullable();
+            $table->text('icon64')->nullable();
+            $table->text('icon128')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

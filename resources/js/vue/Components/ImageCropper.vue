@@ -2,7 +2,7 @@
 
     <div style="width: 100%; height: 100%;">
         <!-- Input con la imagen resultante -->
-        <input v-if="name"
+       <input v-if="name"
                :name="name"
                type="text"
                style="display: none;"
@@ -485,7 +485,7 @@ export default {
                     reader.onload = () => {
                         this.imageResult = reader.result;
 
-                        console.log(this.imageResult);
+                        //console.log(this.imageResult);
                     };
 
                     reader.readAsDataURL(blob);

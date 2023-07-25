@@ -131,15 +131,8 @@ class File extends Model
         $canEditImage = in_array($mime, self::$imageMimeCanEdit);
 
         ## Obtengo el tipo de archivo o lo creo si no existe.
-        $fileType = FileType::updateOrCreate([
-            'mime' => $uploadedFile->getClientMimeType(),
-            'extension' => $uploadedFile->getClientOriginalExtension(),
-        ], [
-            'user_id' => auth()->id(),
-            'type' => $mime ? explode('/', $mime)[0] : '',
-            'mime' => $mime,
-            'extension' => $uploadedFile->getClientOriginalExtension(),
-        ]);
+        $fileType = FileType::addFileType($uploadedFile->getClientMimeType(), $uploadedFile->getClientOriginalExtension());
+
 
         ## Cuando se está reemplazando un archivo se borra del disco el anterior.
         if ($file_id) {
@@ -329,13 +322,7 @@ class File extends Model
 
                 if ($mime) {
                     ## Obtengo el tipo de archivo o lo creo si no existe.
-                    $fileType = FileType::updateOrCreate([
-                        'mime' => $mime,
-                        'extension' => $extension,
-                    ], [
-                        'user_id' => $file->user_id,
-                        'type' => $mime ? explode('/', $mime)[0] : '',
-                    ]);
+                    $fileType = FileType::addFileType($mime, $extension);
                 } else {
                     $fileType = $file->fileType;
                 }

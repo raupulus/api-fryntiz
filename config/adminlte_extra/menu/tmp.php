@@ -257,11 +257,11 @@ return [
             ],
         ],
     ],
-    ['header' => 'Configuraciones !!'],
+    ['header' => 'Configuraciones'],
     [
         'text' => 'Tipos de Archivos',
         'icon' => 'fas fa-fw fa-file-alt',
-        'route' => 'dashboard.language.index',
+        'route' => 'dashboard.app.file_types.index',
     ],
 
     ['header' => 'Acciones'],

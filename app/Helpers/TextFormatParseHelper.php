@@ -208,7 +208,7 @@ class TextFormatParseHelper
         }
 
 
-        dd('Checkpoint 1', $result);
+        //dd('Checkpoint 1', $result);
 
         return implode(' ', $result);
     }

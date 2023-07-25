@@ -1,6 +1,7 @@
 
-<p id="{{$id}}">
-    <code data-language="{{isset($data['language']) ? $data['language'] : 'text'}}">
+<p id="{{$id}}" class="r-codeblock-container">
+    <code class="r-codeblock"
+        data-language="{{isset($data['language']) ? $data['language'] : 'text'}}">
         {{$data['code']}}
     </code>
 </p>
