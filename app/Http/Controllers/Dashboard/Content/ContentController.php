@@ -569,6 +569,8 @@ class ContentController extends BaseWithTableCrudController
                 'alt' => $file->alt,
                 'size' => $file->size,
                 'extension' => $file->fileType?->extension,
+                'mime' => $file->fileType?->mime,
+                'file_type_image' => $file->fileType?->urlImage,
             ];
         }
 
