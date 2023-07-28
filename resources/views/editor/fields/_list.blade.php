@@ -1,7 +1,8 @@
-<ul id="{{$id}}" class="r-list">
+<{{ ($style === 'ordered') ? 'ol' : 'ul'}}
+    id="{{$id}}" class="r-list">
     @foreach($items as $item)
-        {!! ($style === 'unordered') ? '<li class="r-list-item">' : '<ol class="r-list-item">' !!}
-           {{$item}}
-        {!! ($style === 'unordered') ? '</li>' : '</ol>' !!}
+        <li class="r-list-item">
+            {!! preg_replace('/\\n|\\r|\<br\>/', '', $item) !!}
+        </li>
     @endforeach
-</ul>
+</{{ ($style === 'ordered') ? 'ol' : 'ul'}} >

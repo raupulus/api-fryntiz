@@ -1,5 +1,7 @@
-<div id="{{$id}}">
+<div id="{{$id}}" class="r-checkbox-container">
     @foreach($items as $item)
-        <input type="checkbox" {{$item['checked'] ? 'checked' : ''}} > {{$item['text']}}
+        <input type="checkbox"
+               class="r-checkbox"
+               {{$item['checked'] ? 'checked' : ''}} > {{$item['text']}}
     @endforeach
 </div>

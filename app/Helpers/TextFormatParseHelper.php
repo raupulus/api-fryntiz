@@ -119,19 +119,31 @@ class TextFormatParseHelper
             'id' => $id,
             'file' => $data['file'],
             'title' => $data['title'],
+            'tunes' => $tunes,
         ])->render();
     }
 
+    public static function getImageRaw(string $id, array $data, array $tunes): string
+    {
+        $caption = $data['caption'] ?? '';
+        $caption = preg_replace('/\\n|\\r|\<br\>/', '', $caption);
+
+        return view('editor.fields._image', [
+            'id' => $id,
+            'file' => $data['file'],
+            'caption' => $data['caption'],
+            'withBackground' => $data['withBackground'],
+            'withBorder' => $data['withBorder'],
+            'stretched' => $data['stretched'],
+            'tunes' => $tunes,
+        ])->render();
+    }
 
 
     public static function getTemplates()
     {
         return [
             /*
-            'image' => function($file, $caption, $widthBorder, $stretched, $withBackground) {
-                return "<img src=\"{$file['url']}\" title=\"{$caption}\" alt=\"{$caption}\">";
-            },
-
             'embed' => function($service, $source, $embed, $width, $height, $caption) {
                 return '<div class="embed"><iframe width="' . $width . '" height="' . $height . '" src="' . $embed . '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>';
             },
@@ -154,10 +166,7 @@ class TextFormatParseHelper
 
         $result = [];
 
-        //$templates = self::getTemplates();
-
         foreach ($blocks as $block) {
-
 
             switch ($block['type']) {
                 case 'raw':
@@ -191,22 +200,34 @@ class TextFormatParseHelper
                 case 'attaches':
                     $result[] = self::getAttachesRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
                     break;
+
+                case 'image':
+                    $result[] = self::getImageRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+
+                    break;
                 default:
                     //$result[] = ''; // Plantear añadir <span>??
                     break;
             }
 
-            /*
-            if (array_key_exists($block['type'], $templates)) {
-                $template = $templates[$block['type']];
-                $data = $block['data'];
 
-                //$result[] = call_user_func_array($template, $data);
-                $result[] = call_user_func_array($template($data), $data);
-            }
-            */
+
+            $htmlRaw = implode(' ', $result);
+            $html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
+            $html = preg_replace('/\\s{2,}/', ' ', $html);
+
+
+            dd('ENTRA', $block, $result, $html);
+
         }
 
+
+        $htmlRaw = implode(' ', $result);
+
+        $html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
+        $html = preg_replace('/\\s{2,}/', ' ', $html);
+
+        dd($html);
 
         dd('Checkpoint 1', $result);
 

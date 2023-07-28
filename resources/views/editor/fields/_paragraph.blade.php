@@ -1,24 +1,25 @@
-<p id="{{$id}}">
+<p id="{{$id}}"
+   class="r-paragraph {{count($tunes) && isset($tunes['textVariant']) ? 'r-paragraph-' . $tunes['textVariant'] : ''}}">
+
     @if($tunes && count($tunes) && isset($tunes['textVariant']))
         @if($tunes['textVariant'] == 'citation')
             <cite>
-                {{$text}}
+                {!! $text !!}
             </cite>
         @elseif($tunes['textVariant'] == 'call-out')
-
-            <span class="call-out">
-                {{$text}}
+            <span class="r-call-out">
+                {!! $text !!}
             </span>
-
         @elseif($tunes['textVariant'] == 'details') {{-- Texto pequño --}}
             <details>
-                <summary>{{$text}}</summary>
+                <summary>Detalles</summary>
+                {!! $text !!}
             </details>
         @else
-            {{$text}}
+            {!! $text !!}
         @endif
     @else
-        {{$text}}
+        {!! $text !!}
     @endif
 </p>
 
