@@ -250,7 +250,15 @@ window.document.addEventListener('DOMContentLoaded', function () {
              * Pass Tool's class or Settings object for each Tool you want to use
              */
             tools: {
-                header: Header,
+                header: {
+                    class: Header,
+                    config: {
+                        placeholder: 'Introduce un título h3-h6...',
+                        levels: [3, 4, 5, 6],
+                        defaultLevel: 3,
+                        defaultAlignment: 'center'
+                    }
+                },
                 raw: RawTool,
                 textVariant: TextVariantTune,
                 delimiter: Delimiter,
