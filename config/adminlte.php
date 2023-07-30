@@ -615,6 +615,11 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
+                    'location' => '/vendor/editorjs/editorjs-alert.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
                     'location' => '/vendor/editorjs/link.js', // https://github.com/editor-js/link
                 ],
                 [

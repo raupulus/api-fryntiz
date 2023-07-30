@@ -254,6 +254,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 raw: RawTool,
                 textVariant: TextVariantTune,
                 delimiter: Delimiter,
+                alert: Alert,
 
                 code: editorjsCodeflask, // Otras opciones: Code, CodeTool, CodeMirror, editorjsCodeflask
 
@@ -307,8 +308,8 @@ window.document.addEventListener('DOMContentLoaded', function () {
                     inlineToolbar: true,
                     shortcut: 'CMD+SHIFT+O',
                     config: {
-                        quotePlaceholder: 'Enter a quote',
-                        captionPlaceholder: 'Quote\'s author',
+                        quotePlaceholder: 'Texto de Cita',
+                        captionPlaceholder: 'Autor de la cita',
                     },
                 },
                 list: {

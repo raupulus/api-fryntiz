@@ -148,6 +148,20 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    public static function getAlertRaw(string $id, array $data, array $tunes): string
+    {
+        $text = $data['text'] ?? $data['message'];
+
+
+
+        return view('editor.fields._alert', [
+            'id' => $id,
+            'type' => $data['type'],
+            'align' => $data['align'],
+            'text' => $text,
+            'tunes' => $tunes,
+        ])->render();
+    }
     public static function getTableRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._table', [
@@ -231,6 +245,11 @@ class TextFormatParseHelper
                 case 'table':
                     $result[] = self::getTableRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
                     break;
+
+                case 'alert':
+                    $result[] = self::getAlertRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
                 default:
                     //$result[] = ''; // Plantear añadir <span>??
                     break;
