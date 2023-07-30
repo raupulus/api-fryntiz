@@ -984,6 +984,13 @@
   dependencies:
     "@codexteam/icons" "^0.0.5"
 
+"@editorjs/delimiter@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@editorjs/delimiter/-/delimiter-1.3.0.tgz"
+  integrity sha512-/qz+3yRSPmx6dJpBcwnDfgKtCjOrCsQRoDhXR+wLWirGOchOifhYwQ/6JZyTvcgmY84UEoYY29/dgdWOGVPEEQ==
+  dependencies:
+    "@codexteam/icons" "^0.0.5"
+
 "@editorjs/editorjs@^2.26.5":
   version "2.26.5"
   resolved "https://registry.npmjs.org/@editorjs/editorjs/-/editorjs-2.26.5.tgz"

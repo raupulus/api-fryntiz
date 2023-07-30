@@ -253,6 +253,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 header: Header,
                 raw: RawTool,
                 textVariant: TextVariantTune,
+                delimiter: Delimiter,
 
                 code: editorjsCodeflask, // Otras opciones: Code, CodeTool, CodeMirror, editorjsCodeflask
 

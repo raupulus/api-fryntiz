@@ -47,6 +47,7 @@
         "vue-loader": "^16.8.3"
     },
     "dependencies": {
+        "@editorjs/delimiter": "^1.3.0",
         "@editorjs/editorjs": "^2.26.5",
         "@editorjs/embed": "^2.5.3",
         "@editorjs/header": "^2.7.0",

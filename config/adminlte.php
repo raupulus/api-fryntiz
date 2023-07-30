@@ -610,6 +610,11 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
+                    'location' => '/vendor/editorjs/delimiter.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
                     'location' => '/vendor/editorjs/link.js', // https://github.com/editor-js/link
                 ],
                 [

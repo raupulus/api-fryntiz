@@ -139,6 +139,25 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    public static function getDelimiterRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._delimiter', [
+            'id' => $id,
+            'data' => $data,
+            'tunes' => $tunes,
+        ])->render();
+    }
+
+    public static function getTableRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._table', [
+            'id' => $id,
+            'rows' => $data['rows'],
+            'columns' => $data['columns'],
+            'tunes' => $tunes,
+        ])->render();
+    }
+
 
     public static function getTemplates()
     {
@@ -203,7 +222,14 @@ class TextFormatParseHelper
 
                 case 'image':
                     $result[] = self::getImageRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
 
+                case 'delimiter':
+                    $result[] = self::getDelimiterRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'table':
+                    $result[] = self::getTableRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
                     break;
                 default:
                     //$result[] = ''; // Plantear añadir <span>??
