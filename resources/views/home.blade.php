@@ -497,9 +497,12 @@
 @endsection
 
 @section('css')
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700"
-          rel="stylesheet"/>
     <style>
+        @font-face {
+            font-family: Source Sans Pro;
+            src: url("{{asset('fonts/SourceSans3-VariableFont_wght.ttf')}}");
+        }
+
         @font-face {
             font-family: medieval;
             src: url("{{asset('fonts/morris-roman.black.ttf')}}");
