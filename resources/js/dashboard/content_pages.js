@@ -329,6 +329,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 },
                 embed: {
                     class: Embed,
+                    /*
                     inlineToolbar: true,
                     config: {
                         services: {
@@ -344,6 +345,7 @@ window.document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
                     }
+                    */
                 },
                 //image: SimpleImage,
                 checklist: {

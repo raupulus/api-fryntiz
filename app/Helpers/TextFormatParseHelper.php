@@ -186,17 +186,18 @@ class TextFormatParseHelper
     }
 
 
-    public static function getTemplates()
+    public static function getEmbedRaw(string $id, array $data, array $tunes): string
     {
-        return [
-            /*
-            'embed' => function($service, $source, $embed, $width, $height, $caption) {
-                return '<div class="embed"><iframe width="' . $width . '" height="' . $height . '" src="' . $embed . '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>';
-            },
-            */
-        ];
+        return view('editor.fields._embed', [
+            'id' => $id,
+            'service' => $data['service'], // youtube, vimeo, twitter, instagram, facebook, vine, vk
+            'source' => $data['source'],
+            'embed' => $data['embed'],
+            'width' => $data['width'],
+            'height' => $data['height'],
+            'caption' => $data['caption'],
+        ])->render();
     }
-
 
     /**
      * Recibe un array de elementos y los prepara para devolver una estructura HTML
@@ -265,6 +266,10 @@ class TextFormatParseHelper
 
                 case 'linkTool':
                     $result[] = self::getWebPreviewRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'embed':
+                    $result[] = self::getEmbedRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
                     break;
 
                 default:
