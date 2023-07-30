@@ -10,12 +10,14 @@
             </thead>
         @endif
 
-        @foreach($rows as $row)
-            <tr>
-                @foreach($columns as $column)
-                    <td>{{$column}}</td>
-                @endforeach
-            </tr>
-        @endforeach
+        <tbody>
+            @foreach($rows as $row)
+                <tr>
+                    @foreach($row as $field)
+                        <td>{{$field}}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+        </tbody>
     </table>
 </div>
