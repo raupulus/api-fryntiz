@@ -52,6 +52,7 @@
         "@editorjs/embed": "^2.5.3",
         "@editorjs/header": "^2.7.0",
         "@editorjs/list": "^1.8.0",
+        "@editorjs/table": "^2.2.2",
         "autoprefixer": "^10.4.14",
         "bootstrap5": "^1.1.9",
         "chart.js": "^3.9.1",

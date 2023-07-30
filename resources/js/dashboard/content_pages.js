@@ -370,12 +370,20 @@ window.document.addEventListener('DOMContentLoaded', function () {
                     }
                 },
 
-
                 linkTool: {
                     class: LinkTool,
                     config: {
                         endpoint: window.urlExternalPageGetMetadata, // Your backend endpoint for url data fetching,
                     }
+                },
+
+                table: {
+                    class: Table,
+                    inlineToolbar: true,
+                    config: {
+                        rows: 3,
+                        cols: 3,
+                    },
                 }
 
 

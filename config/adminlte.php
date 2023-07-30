@@ -650,6 +650,11 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
+                    'location' => '/vendor/editorjs/table.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
                     'location' => '/vendor/editorjs/list.js',
                 ],
                 [

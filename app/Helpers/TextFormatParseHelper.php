@@ -64,6 +64,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido de código.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getCodeRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._code', [
@@ -73,6 +82,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para un warning.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getWarningRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._warning', [
@@ -83,6 +101,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para un quote.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getQuoteRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._quote', [
@@ -94,6 +121,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para un listado.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getListRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._list', [
@@ -104,6 +140,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para un listado de checkboxs.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getCheckboxRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._checkbox', [
@@ -113,6 +158,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con adjuntos.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getAttachesRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._attaches', [
@@ -123,6 +177,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para una imagen.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getImageRaw(string $id, array $data, array $tunes): string
     {
         $caption = $data['caption'] ?? '';
@@ -139,6 +202,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML con un delimitador.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getDelimiterRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._delimiter', [
@@ -148,11 +220,18 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para un alert.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getAlertRaw(string $id, array $data, array $tunes): string
     {
         $text = $data['text'] ?? $data['message'];
-
-
 
         return view('editor.fields._alert', [
             'id' => $id,
@@ -163,6 +242,15 @@ class TextFormatParseHelper
         ])->render();
     }
 
+    /**
+     * Devuelve el contenido HTML de un campo para previsualizar un sitio web.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getWebPreviewRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._web_preview', [
@@ -175,17 +263,16 @@ class TextFormatParseHelper
             'image' => $data['image']['url'] ?? '',
         ])->render();
     }
-    public static function getTableRaw(string $id, array $data, array $tunes): string
-    {
-        return view('editor.fields._table', [
-            'id' => $id,
-            'rows' => $data['rows'],
-            'columns' => $data['columns'],
-            'tunes' => $tunes,
-        ])->render();
-    }
 
-
+    /**
+     * Devuelve el contenido HTML de un campo con contenido embebido.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
     public static function getEmbedRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._embed', [
@@ -198,6 +285,37 @@ class TextFormatParseHelper
             'caption' => $data['caption'],
         ])->render();
     }
+
+    /**
+     * Devuelve el contenido HTML de un campo con contenido para una tabla.
+     *
+     * @param string $id ID del campo.
+     * @param array $data Array con el contenido del campo.
+     * @param array $tunes Array con datos adicionales.
+     *
+     * @return string
+     */
+    public static function getTableRaw(string $id, array $data, array $tunes): string
+    {
+        $hasHeader = $data['withHeadings'] ?? false;
+        $rows = $data['content'];
+        $columns = [];
+
+        if ($hasHeader) {
+            $columns = $rows[0];
+            unset($rows[0]);
+        }
+
+
+        return view('editor.fields._table', [
+            'id' => $id,
+            'hasHeader' => $hasHeader,
+            'rows' => $rows,
+            'columns' => $columns,
+            'tunes' => $tunes,
+        ])->render();
+    }
+
 
     /**
      * Recibe un array de elementos y los prepara para devolver una estructura HTML
@@ -276,7 +394,6 @@ class TextFormatParseHelper
                     //$result[] = ''; // Plantear añadir <span>??
                     break;
             }
-
 
 
             $htmlRaw = implode(' ', $result);
