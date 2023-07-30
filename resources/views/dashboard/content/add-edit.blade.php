@@ -231,6 +231,7 @@
         window.urlRemoveFile = "{{route('dashboard.content.ajax.upload.remove.file')}}";
         window.urlUpdateMetadataFile = "{{route('dashboard.content.ajax.update.metadata.file', ['contentFile' => ':contentFileId', 'file' => ':fileId'])}}";
         window.urlPageCheckSlug = "{{route('dashboard.content.ajax.page.check.slug', ':page')}}";
+        window.urlExternalPageGetMetadata = "{{route('dashboard.content.ajax.external.page.get.metadata')}}";
 
         document.addEventListener('DOMContentLoaded', () => {
 

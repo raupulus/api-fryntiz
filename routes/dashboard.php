@@ -322,6 +322,10 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ## Comprueba si es un slug válido para la página dentro de la plataforma
             Route::post('/page/check/slug/{page?}', [ContentPageController::class, 'ajaxCheckSlug'])
                 ->name('dashboard.content.ajax.page.check.slug');
+
+            ## Obtiene metadatos de una página externa
+            Route::get('/external/page/get/metadata', [ContentPageController::class, 'ajaxGetUrlMetadata'])
+                ->name('dashboard.content.ajax.external.page.get.metadata');
         });
     });
 

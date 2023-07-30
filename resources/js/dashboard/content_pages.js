@@ -369,14 +369,12 @@ window.document.addEventListener('DOMContentLoaded', function () {
                 },
 
 
-                /*
                 linkTool: {
                     class: LinkTool,
                     config: {
-                        endpoint: 'http://localhost:8008/fetchUrl', // Your backend endpoint for url data fetching,
+                        endpoint: window.urlExternalPageGetMetadata, // Your backend endpoint for url data fetching,
                     }
                 }
-                */
 
 
             },

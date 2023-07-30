@@ -162,6 +162,19 @@ class TextFormatParseHelper
             'tunes' => $tunes,
         ])->render();
     }
+
+    public static function getWebPreviewRaw(string $id, array $data, array $tunes): string
+    {
+        return view('editor.fields._web_preview', [
+            'id' => $id,
+            'data' => $data,
+            'link' => $data['link'],
+            'title' => $data['meta']['title'],
+            'description' => $data['meta']['description'] ?? '',
+            'keywords' => $data['meta']['keywords'] ?? '',
+            'image' => $data['image']['url'] ?? '',
+        ])->render();
+    }
     public static function getTableRaw(string $id, array $data, array $tunes): string
     {
         return view('editor.fields._table', [
@@ -248,6 +261,10 @@ class TextFormatParseHelper
 
                 case 'alert':
                     $result[] = self::getAlertRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
+                    break;
+
+                case 'linkTool':
+                    $result[] = self::getWebPreviewRaw($block['id'], $block['data'], isset($block['tunes']) ? $block['tunes'] : []);
                     break;
 
                 default:
