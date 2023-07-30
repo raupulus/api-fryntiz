@@ -29,6 +29,11 @@ class FileType extends Model
         return route('dashboard.app.file_types.update.icon', $this->id);
     }
 
+    /**
+     * Devuelve la url hacia el icono principal del tipo de archivo.
+     *
+     * @return string
+     */
     public function getUrlImageAttribute(): string
     {
         if (!$this->icon128) {

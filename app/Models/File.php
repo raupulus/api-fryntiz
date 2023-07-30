@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Intervention\Image\Facades\Image;
@@ -33,7 +35,7 @@ class File extends Model
     public static $genericImages = [
         'error' => 'error.png',
         'default' => 'default.png',
-        'not_found' => 'not_found.png',
+        'not_found' => 'images/default/errors/not_found.webp',
         'not_image' => 'not_image.png',  // No Es una imagen
         'not_authorized' => 'not_authorized.png',
         'not_allowed' => 'not_allowed.png',
@@ -60,9 +62,9 @@ class File extends Model
     /**
      * Relación con el tipo de archivo asociado.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function fileType()
+    public function fileType(): BelongsTo
     {
         return $this->belongsTo(FileType::class, 'file_type_id', 'id');
     }
@@ -70,9 +72,11 @@ class File extends Model
     /**
      * Devuelve la url de una imagen genérica.
      *
+     * @param $size
+     *
      * @return string
      */
-    public static function urlDefaultImage($size = 'medium')
+    public static function urlDefaultImage($size = 'medium'): string
     {
         switch ($size) {
             case 'micro':
@@ -102,16 +106,13 @@ class File extends Model
      * Almacena y devuelve un archivo recibiendo el objeto de tipo UploadFile.
      * Lo devuelve una vez almacenado.
      *
-     * @param \Illuminate\Http\UploadedFile $file
-     * @param string $path Directorio dónde
-     *                                                 guardarlo.
-     * @param int|null $file_id Id del archivo si
-     *                                                 existiera.
-     * @param string $privacity Visibilidad,
-     *                                                 directorio public o
-     *                                                 private
+     * @param UploadedFile $uploadedFile
+     * @param string $path Directorio dónde guardarlo.
+     * @param bool $is_private Si es privado o público.
+     * @param int|null $file_id Id del archivo si existiera.
+     * @param bool $has_thumbnails Si tiene miniaturas.
      *
-     * @return self|null
+     * @return File|null
      */
     public static function addFile(UploadedFile $uploadedFile,
                                    string       $path = 'upload',
@@ -150,11 +151,11 @@ class File extends Model
 
         $width = $height = null;
 
-        if (($fileType->type === 'image') && isset(getimagesize($uploadedFile)[0])) {
+        if (($fileType?->type === 'image') && isset(getimagesize($uploadedFile)[0])) {
             $width = getimagesize($uploadedFile)[0];
         }
 
-        if (($fileType->type === 'image') && isset(getimagesize($uploadedFile)[1])) {
+        if (($fileType?->type === 'image') && isset(getimagesize($uploadedFile)[1])) {
             $height = getimagesize($uploadedFile)[1];
         }
 
@@ -166,7 +167,7 @@ class File extends Model
             'id' => $file_id
         ], [
             'user_id' => auth()->id(),
-            'file_type_id' => $fileType->id,
+            'file_type_id' => $fileType?->id,
             'size' => $uploadedFile->getSize(),
             'width' => $width,
             'height' => $height,
@@ -207,8 +208,6 @@ class File extends Model
                                              int    $file_id = null,
                                              bool   $has_thumbnails = true): ?File
     {
-
-
         // Get file data base64 string
         $fileData = base64_decode(Arr::last(explode(',', $base64)));
 
@@ -248,11 +247,11 @@ class File extends Model
     /**
      * Crea las miniaturas de un archivo.
      *
-     * @param \App\Models\File $file
+     * @param File $file
      *
-     * @return array[\APP\Models\File]
+     * @return array
      */
-    public static function createThumbnails(File $file)
+    public static function createThumbnails(File $file): array
     {
         $sizes = self::$thumbnailsSizeWidth;
 
@@ -271,7 +270,7 @@ class File extends Model
             $oldThumbnail->delete();
         }
 
-        $canEditImage = $file && $file->fileType && in_array($file->fileType->mime, File::$imageMimeCanEdit);
+        $canEditImage = $file->fileType && in_array($file->fileType?->mime, self::$imageMimeCanEdit);
 
         ## Compruebo si es una imagen editable
         if (!$canEditImage) {
@@ -351,9 +350,9 @@ class File extends Model
      *
      * @return array[int]
      */
-    public static function safeDeleteByIds(array $ids)
+    public static function safeDeleteByIds(array $ids): array
     {
-        $files = File::whereIn('id', $ids)->get();
+        $files = self::whereIn('id', $ids)->get();
 
         $result = [];
 
@@ -374,7 +373,7 @@ class File extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
+    public function getUrlAttribute(): string
     {
         if ($this->path && $this->name && !$this->deleted_at) {
             return route('file.get', [
@@ -384,7 +383,7 @@ class File extends Model
             ]);
         }
 
-        return File::$genericImages['not_found'];
+        return asset(self::$genericImages['not_found']);
     }
 
     /**
@@ -392,7 +391,7 @@ class File extends Model
      *
      * @return string
      */
-    public function getStoragePathFileAttribute()
+    public function getStoragePathFileAttribute(): string
     {
         if ($this->storage_path) {
             return storage_path('app/' . $this->storage_path . '/' . $this->name);
@@ -408,7 +407,7 @@ class File extends Model
      *
      * @return string
      */
-    public function thumbnail($key = 'small')
+    public function thumbnail(string $key = 'small'): string
     {
         if ($this->fileType && ($this->fileType->type === 'image')) {
             $thumbnail = $this->thumbnails()->where('key', $key)->first();
@@ -424,9 +423,9 @@ class File extends Model
     /**
      * Relación con las miniaturas asociadas a un archivo de tipo imagen.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function thumbnails()
+    public function thumbnails(): HasMany
     {
         return $this->hasMany(FileThumbnail::class, 'file_id', 'id');
     }
@@ -437,7 +436,7 @@ class File extends Model
      *
      * @return bool
      */
-    public function safeDelete()
+    public function safeDelete(): bool
     {
         return self::safeDeleteById($this->id);
     }
@@ -445,13 +444,13 @@ class File extends Model
     /**
      * Elimina un archivo.
      *
-     * @param $id
+     * @param int $id Id del archivo a eliminar.
      *
-     * @return false|int
+     * @return bool
      */
-    public static function safeDeleteById($id)
+    public static function safeDeleteById(int $id): bool
     {
-        $file = File::find($id);
+        $file = self::find($id);
 
         if (!$file) {
             return false;
