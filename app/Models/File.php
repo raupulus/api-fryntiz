@@ -133,7 +133,6 @@ class File extends Model
         ## Obtengo el tipo de archivo o lo creo si no existe.
         $fileType = FileType::addFileType($uploadedFile->getClientMimeType(), $uploadedFile->getClientOriginalExtension());
 
-
         ## Cuando se está reemplazando un archivo se borra del disco el anterior.
         if ($file_id) {
             $oldFile = self::find($file_id);

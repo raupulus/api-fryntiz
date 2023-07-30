@@ -49,9 +49,12 @@ class FileType extends Model
      */
     public static function addFileType(string $mime, string $extension, string $type = null): ?FileType
     {
-
         if (!$mime || (count(explode('/', $mime)) !== 2)) {
             return null;
+        }
+
+        if (!$extension) {
+            $extension = explode('/', $mime)[1];
         }
 
         if (! $type) {
