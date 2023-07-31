@@ -23,10 +23,24 @@
         window.urlContentCreateCategory = "{{ route('dashboard.content.ajax.category.create') }}";
     </script>
 
-    <h1>
-        <i class="fas fa-globe"></i>
-        {{\Illuminate\Support\Str::ucfirst($model::getModelTitles()['singular'])}}
-    </h1>
+    <div class="col-12 mb-4">
+
+        <h1 class="d-inline-block">
+            <i class="fas fa-globe"></i>
+            {{\Illuminate\Support\Str::ucfirst($model::getModelTitles()['singular'])}}
+        </h1>
+
+        @if($model->id)
+            <a class="btn btn-sm btn-primary d-inline-block float-right mr-5"
+               target="_blank"
+               href="{{route('dashboard.content.preview.full', $model->id)}}">
+                <i class="fa fa-eye"></i>
+                Previsualizar
+            </a>
+        @endif
+
+    </div>
+
 @stop
 
 @section('content')
@@ -100,9 +114,10 @@
                         <div class="tab-pane fade {{$navbarSectionID === 1 ? 'show active' : ''}}" id="nav-home"
                              role="tabpanel" aria-labelledby="nav-home-tab">
 
-                            <form action="{{$model && $model->id ? route($model::getCrudRoutes()['update'], $model->id) : route($model::getCrudRoutes()['store'])}}"
-                                  enctype="multipart/form-data"
-                                  method="POST">
+                            <form
+                                action="{{$model && $model->id ? route($model::getCrudRoutes()['update'], $model->id) : route($model::getCrudRoutes()['store'])}}"
+                                enctype="multipart/form-data"
+                                method="POST">
 
                                 @if ($model && $model->id)
                                     @method('PUT')
@@ -238,14 +253,14 @@
             /*** Selector datetimepicker programar publicación ***/
             $('#scheduled_at').datetimepicker({
                 minDate: new Date(),
-                icons:{time:'far fa-clock'},
-                format:'YYYY-MM-DDTHH:mm:ss.SSSZ',
+                icons: {time: 'far fa-clock'},
+                format: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
             });
 
             /*** Select 2 ***/
             $('.select2').select2();
             $('.select2bs4').select2({
-                theme:'bootstrap4'
+                theme: 'bootstrap4'
             });
 
 
@@ -253,22 +268,22 @@
             var dualListBox = $('.duallistbox').bootstrapDualListbox(bootstrapDualListboxOptions);
 
             const dualListBoxContentRelated = $('#contentRelated').multiSelect({
-                selectableHeader:"<div class='multiselect-header'>Disponible</div>",
-                selectionHeader:"<div " +
+                selectableHeader: "<div class='multiselect-header'>Disponible</div>",
+                selectionHeader: "<div " +
                     "class='multiselect-header'>Seleccionado</div>",
-                selectableFooter:"",
-                selectionFooter:"",
-                beforeInit:function(algo) {
+                selectableFooter: "",
+                selectionFooter: "",
+                beforeInit: function (algo) {
                     //console.log(algo);
                 },
-                afterInit:function(container) {
+                afterInit: function (container) {
                     // after init
                     //console.log('Tras iniciar', container);
                 },
 
-                afterSelect:function(values) {
+                afterSelect: function (values) {
 
-                    if(values && typeof values === 'object') {
+                    if (values && typeof values === 'object') {
                         Array.from(values).forEach(value => {
                             //console.log('Valor', value);
                             let option = document.querySelector('#contentRelated option[value="' + value + '"]');
@@ -277,8 +292,8 @@
                     }
 
                 },
-                afterDeselect:function(values) {
-                    if(values && typeof values === 'object') {
+                afterDeselect: function (values) {
+                    if (values && typeof values === 'object') {
                         Array.from(values).forEach(value => {
                             console.log('Valor', value);
                             let option = document.querySelector('#contentRelated option[value="' + value + '"]');
@@ -290,9 +305,9 @@
 
 
             // Fuerzo seleccionar todo el contenido que debería estar seleccionado
-            if(document.getElementById('contentRelated')) {
+            if (document.getElementById('contentRelated')) {
                 let nd = document.querySelectorAll('#contentRelated option');
-                if(nd && nd.length) {
+                if (nd && nd.length) {
                     Array.from(nd).forEach((ele) => {
                         ele.setAttribute('selected', 'selected');
                     });
@@ -308,7 +323,7 @@
             function getContentRelatedFiltered(e) {
                 let search = searchContentRelated.value;
 
-                if(search.length < 2) {
+                if (search.length < 2) {
                     return;
                 }
 
@@ -321,19 +336,19 @@
 
 
                 fetch(url, {
-                    method:'POST',
-                    headers:{
-                        'Content-Type':'application/json',
-                        'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body:JSON.stringify({
-                        content_related_search:search,
-                        contentId:contentId,
+                    body: JSON.stringify({
+                        content_related_search: search,
+                        contentId: contentId,
                     })
 
                 }).then(response => response.json())
                     .then(data => {
-                        if(data && data.contents.length) {
+                        if (data && data.contents.length) {
                             let node = document.getElementById('contentRelated');
 
                             /*
@@ -347,7 +362,7 @@
                             console.log(nodesNotSelected);
 
                             // Limpio nodos no seleccionados
-                            if(nodesNotSelected.length) {
+                            if (nodesNotSelected.length) {
                                 nodesNotSelected.forEach(node => {
                                     node.remove();
                                 });
@@ -360,7 +375,7 @@
 
                                 console.log('oldNode:', oldNode);
 
-                                if(!oldNode) {
+                                if (!oldNode) {
                                     let option = document.createElement('option');
                                     option.value = content.id;
                                     option.innerText = content.title;
@@ -403,7 +418,7 @@
             function changePlatformCategories(categories, selectedCategories) {
                 let node = document.getElementById('categories');
 
-                if(node) {
+                if (node) {
                     node.innerHTML = '';
 
                     const selectedIds = selectedCategories.map(ele => ele.id);
@@ -413,7 +428,7 @@
                         option.value = category.id;
                         option.innerText = category.name;
 
-                        if(selectedIds.length && (selectedIds.includes(category.id))) {
+                        if (selectedIds.length && (selectedIds.includes(category.id))) {
                             option.selected = true;
                         }
 
@@ -425,7 +440,7 @@
             function changePlatformTags(tags, tagsSelected) {
                 let node = document.getElementById('tags');
 
-                if(node) {
+                if (node) {
                     node.innerHTML = '';
 
                     const selectedIds = tagsSelected.map(ele => ele.id);
@@ -435,7 +450,7 @@
                         option.value = tag.id;
                         option.innerText = tag.name;
 
-                        if(selectedIds.length && (selectedIds.includes(tag.id))) {
+                        if (selectedIds.length && (selectedIds.includes(tag.id))) {
                             option.selected = true;
                         }
 
@@ -459,11 +474,11 @@
                 // Limpio el campo de búsqueda.
                 searchContentRelated.value = '';
 
-                if(node) {
+                if (node) {
                     node.innerHTML = '';
 
                     contentsRelated.forEach(content => {
-                        if(parseInt(content.id) !== currentContentId) {
+                        if (parseInt(content.id) !== currentContentId) {
                             let option = document.createElement('option');
                             option.value = content.id;
                             option.innerText = content.title;
@@ -477,7 +492,7 @@
                 dualListBoxContentRelated.multiSelect('refresh');
             }
 
-            if(platformIdNode) {
+            if (platformIdNode) {
                 platformIdNode.addEventListener('change', (e) => {
                     let platformId = e.target.value ?? "{{old('platform_id', $model->platform_id)}}";
 
@@ -487,28 +502,28 @@
 
                     fetch(url,
                         {
-                            method:'POST',
-                            headers:{
-                                'Content-Type':'application/json',
-                                'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content,
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             },
-                            body:JSON.stringify({
-                                contentId:"{{$model->id}}",
-                                platformId:platformId
+                            body: JSON.stringify({
+                                contentId: "{{$model->id}}",
+                                platformId: platformId
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
 
-                            if(data.contentsRelated) {
+                            if (data.contentsRelated) {
                                 changePlatformRelatedContent(data.contentsRelated);
                             }
 
-                            if(data.categories) {
+                            if (data.categories) {
                                 changePlatformCategories(data.categories, data.categoriesSelected);
                             }
 
-                            if(data.tags) {
+                            if (data.tags) {
                                 changePlatformTags(data.tags, data.tagsSelected);
                             }
 
@@ -516,16 +531,6 @@
 
                 });
             }
-
-
-
-
-
-
-
-
-
-
 
 
             // TODO: Dinamizar por cada página que exista, externalizar a una
@@ -539,18 +544,7 @@
             //$('#summernote').summernote(editorSummernoteOptions);
 
 
-
-
-
-
-
-
-
         });
-
-
-
-
 
 
         // Set title form to slug
@@ -559,12 +553,12 @@
 
         //console.log('title:', title, slug);
 
-        if(title && slug) {
+        if (title && slug) {
             title.addEventListener('focusout', () => {
                 console.log('event focusout');
                 // TODO check if slug is empty
 
-                if(slug.value == '') {
+                if (slug.value == '') {
                     slug.value = slugify(title.value);
                 }
 

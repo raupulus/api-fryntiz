@@ -27,6 +27,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationData;
+use Illuminate\View\View;
 use JsonHelper;
 
 /**
@@ -336,6 +337,21 @@ class ContentController extends BaseWithTableCrudController
         return redirect()->to($content->urlEdit . '?seo=true');
     }
 
+    public function preview(Content $content): View|RedirectResponse
+    {
+        if (!$content->id) {
+
+            // TODO: Crear Helper para mensajes Flash y componente vue para estos.
+
+            return redirect()->back();
+        }
+
+        return view('dashboard.content.preview')->with([
+            'content' => $content,
+            'pages' => $content->pages,
+        ]);
+
+    }
 
     ############################################################
     ##                       AJAX                             ##

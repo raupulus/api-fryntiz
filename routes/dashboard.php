@@ -260,6 +260,12 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.content.seo.store');
 
 
+        ## Ruta para previsualizar el contenido
+        Route::get('/preview/full/{content}', [ContentController::class, 'preview'])
+            ->name('dashboard.content.preview.full');
+
+
+
         Route::group(['prefix' => '/ajax'], function () {
 
             ## Devuelve información del contenido por plataforma (etiquetas, categorías, contenidos...)

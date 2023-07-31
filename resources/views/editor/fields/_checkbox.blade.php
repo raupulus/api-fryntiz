@@ -2,6 +2,7 @@
     @foreach($items as $item)
         <input type="checkbox"
                class="r-checkbox"
+               readonly
                {{$item['checked'] ? 'checked' : ''}} > {{$item['text']}}
     @endforeach
 </div>

@@ -75,10 +75,15 @@ class TextFormatParseHelper
      */
     public static function getCodeRaw(string $id, array $data, array $tunes): string
     {
+        $code = preg_replace('/\\n|\\r/', '<br>', $data['code']);
+        $nLines = substr_count($code, '<br>');
+
         return view('editor.fields._code', [
             'id' => $id,
             'data' => $data,
             'tunes' => $tunes,
+            'code' => $code,
+            'nLines' => $nLines,
         ])->render();
     }
 
@@ -331,6 +336,11 @@ class TextFormatParseHelper
 
         $result = [];
 
+
+        // TODO: Añadir Carousel https://github.com/mr8bit/carousel-editorjs
+        // TODO: Añadir Galería https://gitlab.com/rodrigoodhin/editorjs-image-gallery
+        // TODO: Añadir Diagramas: https://github.com/naduma/editorjs-mermaid
+
         foreach ($blocks as $block) {
 
             switch ($block['type']) {
@@ -396,12 +406,12 @@ class TextFormatParseHelper
             }
 
 
-            $htmlRaw = implode(' ', $result);
-            $html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
-            $html = preg_replace('/\\s{2,}/', ' ', $html);
+            //$htmlRaw = implode(' ', $result);
+            //$html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
+            //$html = preg_replace('/\\s{2,}/', ' ', $html);
 
 
-            dd('ENTRA', $block, $result, $html);
+            //dd('ENTRA', $block, $result, $html);
 
         }
 
@@ -409,13 +419,7 @@ class TextFormatParseHelper
         $htmlRaw = implode(' ', $result);
 
         $html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
-        $html = preg_replace('/\\s{2,}/', ' ', $html);
-
-        dd($html);
-
-        dd('Checkpoint 1', $result);
-
-        return implode(' ', $result);
+        return preg_replace('/\\s{2,}/', ' ', $html);
     }
 
     /**

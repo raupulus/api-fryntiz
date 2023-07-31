@@ -1,3 +1,27 @@
+<div id="{{$id}}" class="r-list-container">
+    <div class="r-list-box">
+        @foreach($items as $idx => $item)
+            @php($pos = $idx + 1)
+            <div class="r-list-item">
+                <div class="r-list-item-icon">
+                    @if($style === 'ordered')
+                        {{$pos}}
+                    @else
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z"/></svg>
+                    @endif
+                </div>
+
+                <div class="r-list-item-content">
+                    {!! preg_replace('/\\n|\\r|\<br\>/', '', $item) !!}
+                </div>
+
+            </div>
+        @endforeach
+    </div>
+</div>
+
+
+{{--
 <{{ ($style === 'ordered') ? 'ol' : 'ul'}}
     id="{{$id}}" class="r-list">
     @foreach($items as $item)
@@ -6,3 +30,4 @@
         </li>
     @endforeach
 </{{ ($style === 'ordered') ? 'ol' : 'ul'}} >
+--}}
