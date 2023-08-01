@@ -8,7 +8,8 @@
             </cite>
         @elseif($tunes['textVariant'] == 'call-out')
             <span class="r-call-out">
-                {!! $text !!}
+                <span class="r-call-out-left"></span>
+                <span class="r-call-out-right">{!! $text !!}</span>
             </span>
         @elseif($tunes['textVariant'] == 'details') {{-- Texto pequño --}}
             <details>
