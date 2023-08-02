@@ -129,12 +129,21 @@
 
     /** Cita **/
 
-    .r-paragraph .r-paragraph-citation {
-
+    .r-paragraph.r-paragraph-citation {
+        display: block;
+        font-size: 1.5em;
+        color: #666;
     }
 
-    .r-paragraph .r-paragraph-citation cite {
-
+    .r-paragraph.r-paragraph-citation cite {
+        display: block;
+        margin: auto;
+        padding: 2rem 1rem;
+        width: 80%;
+        max-width: 600px;
+        background-color: #eee;
+        box-sizing: border-box;
+        border-radius: 50px 0 50px 0;
     }
 
     /** Callout **/
