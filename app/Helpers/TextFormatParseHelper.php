@@ -295,7 +295,7 @@ class TextFormatParseHelper
             'title' => $data['meta']['title'],
             'description' => $data['meta']['description'] ?? '',
             'keywords' => $data['meta']['keywords'] ?? '',
-            'image' => $data['image']['url'] ?? '',
+            'image' => $data['meta']['image']['url'] ?? '',
         ])->render();
     }
 
