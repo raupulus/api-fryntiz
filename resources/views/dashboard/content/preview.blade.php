@@ -339,23 +339,59 @@
     /** Adjuntos **/
 
     .r-attaches-container {
+        max-width: 650px;
+        margin: 0 auto;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
 
+    .r-attaches-box {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid #EFF0F1;;
+        border-radius: 7px;
+        background: #fff;
     }
 
     .r-attaches-img {
+        height: 80px;
+    }
 
+    .r-attaches-img img {
+        height: 100%;
     }
 
     .r-attaches-info {
+        display: grid;
+        grid-gap: 4px;
+        max-width: calc(100% - 80px);
+        margin: auto 0;
+        flex-grow: 2;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2d3748;
+    }
 
+    .r-attaches-info .r-attaches-info-size {
+        font-size: 0.9rem;
+        font-weight: normal;
+        color: #707684;
     }
 
     .r-attaches-info .r-attaches-info-originalname {
-
+        display: none;
+        font-size: 0.7rem;
+        font-weight: normal;
     }
 
     .r-attaches-download {
 
+    }
+
+    .r-attaches-download svg {
+        color: rgba(63, 131, 248, 0.9);
+        width: 3rem;
     }
 
     .r-attaches-download .r-attaches-download-link {
@@ -491,48 +527,96 @@
     /** Imágenes **/
 
     .r-image-container {
+        width: 100%;
+        text-align: center;
+        height: 320px;
+    }
+
+    .r-image-container.r-image-container-with-border {
 
     }
 
-    .r-image-container .r-image-container-with-border {
+    .r-image-container.r-image-container-stretched {
 
     }
 
-    .r-image-container .r-image-container-stretched {
-
-    }
-
-    .r-image-container .r-image-container-withBackground {
-
+    .r-image-container.r-image-container-withBackground {
+        padding: 1rem 0;
+        background-color: #eee;
+        box-sizing: border-box;
     }
 
     .r-image-box {
+        display: inline-block;
+        margin: auto;
+        height: 300px;
+        box-sizing: border-box;
+        overflow: hidden;
+        border-radius: 15px;
+    }
 
+    .r-image-box:hover {
+        height: 320px;
     }
 
     .r-image-figure {
-
+        margin: 0;
+        padding: 0;
+        width: auto;
+        height: 100%;
     }
 
     .r-image-img {
-
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
     }
 
     .r-image-caption {
+        display: none;
 
+    }
+
+    .r-image-img:hover {
+        filter: blur(0.5px) brightness(0.8) contrast(0.9) grayscale(0.4);
+    }
+    .r-image-img:hover + .r-image-caption,  .r-image-caption:hover {
+        display: block;
+        width: 100%;
+        color: #eee;
+        font-size: 1.2rem;
+        font-weight: bold;
+        max-width: 320px;
+        text-align: center;
+        margin: auto;
+        translate: 0 -110%;
+        background-color: rgba(0,0,0, 0.6);
+        border-radius: 5px;
+        padding: 3px 3px 10px 3px;
     }
 
     /** Delimitador **/
     .r-delimiter-container {
+        width: 100%;
 
     }
 
     .r-delimiter {
+        margin: auto;
+        width: 80%;
+        text-align: center;
+    }
 
+    .r-delimiter-content:after {
+        content: '***';
     }
 
     .r-delimiter-content {
+        margin: auto;
 
+        font-size: 5rem;
+        font-weight: bold;
     }
 
     /** Alerts **/
@@ -657,14 +741,95 @@
 
     /** Tablas **/
     .r-table-container {
-
+        margin: 1rem 0 ;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .r-table {
+        margin: auto;
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 0 24px 5px rgba(185, 188, 191, 0.2);
+        border-radius: 5px;
+        overflow: auto;
+    }
 
+    .r-table thead th {
+        padding: 10px 16px;
+        text-align: left;
+        background-color: #f3f3f5;
+    }
+
+    .r-table tbody tr td {
+        padding: 10px 16px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .r-table-field-head {
+        display: none;
+    }
+
+    @media screen and (max-width: 767px) {
+        .r-table {
+            background-color: transparent;
+            box-shadow: none;
+        }
+        .r-table thead {
+            display: none;
+        }
+        .r-table tbody tr {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            padding: 1rem;
+            position: relative;
+            background-color: #fff;
+            box-shadow: 0 0 24px 5px rgba(185, 188, 191, 0.2);
+        }
+        .r-table tbody tr td {
+            display: flex;
+            background-color: transparent;
+            padding: 0;
+            margin-bottom: 5px;
+            margin-right: 16px;
+            border: none;
+            flex-wrap: wrap;
+        }
+
+        .r-table-field-head {
+            display: block;
+            font-weight: 700;
+            margin-right: 5px;
+        }
     }
 
 </style>
+
+<script>
+
+    /**
+     * Cambia la imagen por su tamaño medio (aprox 640px)
+     *
+     * @param img Nodo de la etiqutea html "img"
+     */
+    function setImageFullSize(img) {
+        const url = img.getAttribute('data-url_medium');
+
+        if (url) {
+            img.src = url;
+        }
+    }
+
+    window.document.addEventListener('DOMContentLoaded', () => {
+
+        /** Cambio las imágenes **/
+        const images = document.querySelectorAll('.r-image-img');
+
+        images.forEach(setImageFullSize);
+    });
+</script>
 
 </body>
 </html>

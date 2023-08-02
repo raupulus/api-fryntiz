@@ -7,6 +7,28 @@ namespace App\Helpers;
  */
 class TextFormatParseHelper
 {
+    /**
+     * Devuelve la cadena con el peso formateado en la unidad de medida más apropiada.
+     *
+     * @param int $bytes
+     * @param int $precision
+     * @return string
+     */
+    public static function formatBytes(int $bytes, int $precision = 2): string
+    {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        // Uncomment one of the following alternatives
+        $bytes /= pow(1024, $pow);
+        // $bytes /= (1 << (10 * $pow));
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
 
     /**
      * Devuelve el contenido HTML de un campo con contenido de código en bruto.
@@ -174,11 +196,19 @@ class TextFormatParseHelper
      */
     public static function getAttachesRaw(string $id, array $data, array $tunes): string
     {
+        $size = $data['file']['size'] ?? null;
+
+        // Convertimos bytes a kb o megas o gigas
+        if ($size && $size > 0) {
+            $size = self::formatBytes($size, 2);
+        }
+
         return view('editor.fields._attaches', [
             'id' => $id,
             'file' => $data['file'],
             'title' => $data['title'],
             'tunes' => $tunes,
+            'size' => $size,
         ])->render();
     }
 
