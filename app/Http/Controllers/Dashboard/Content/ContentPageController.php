@@ -7,6 +7,7 @@ use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -16,14 +17,26 @@ use Illuminate\Http\Request;
 class ContentPageController extends Controller
 {
 
-    public function safeDestroy(ContentPage $page, Content $content)
+    /**
+     * Elimina de forma segura una página y redirecciona al editor.
+     *
+     * @param ContentPage $page
+     * @return RedirectResponse
+     */
+    public function safeDestroy(ContentPage $page): RedirectResponse
     {
+        $content = $page->contentModel;
 
+        ## Almaceno si elimina correctamente la página.
         $deleted = $page->safeDelete();
 
+        $firstPage = $content->pages->first();
 
-        return redirect()->back();
+        if (!$firstPage) {
+            $firstPage = $content->addPage();
+        }
 
+        return redirect()->to(route('dashboard.content.edit', $content->id) . '?currentPage=' . $firstPage->id);
     }
 
 

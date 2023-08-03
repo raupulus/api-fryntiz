@@ -290,17 +290,7 @@ class ContentController extends BaseWithTableCrudController
      */
     public function addPage(Content $content): RedirectResponse
     {
-        $lastPageOrder = ContentPage::where('content_id', $content->id)
-            ->max('order');
-
-        $page = ContentPage::create([
-            'content_id' => $content->id,
-            'title' => uniqid(),
-            'slug' => uniqid(),
-            'order' => ++$lastPageOrder,
-        ]);
-
-        $content->touch();  // TODO: Pasar a el modelo tanto al crear como al actualizar
+        $page = $content->addPage();
 
         return redirect()->to(route('dashboard.content.edit', $content->id) . '?currentPage=' . $page->id);
     }

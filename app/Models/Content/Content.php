@@ -390,6 +390,24 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
+     * Añade una nueva página al contenido.
+     *
+     * @return ContentPage
+     */
+    public function addPage(): ContentPage
+    {
+        $lastPageOrder = $this->pages()->max('order');
+        $this->touch();
+
+        return ContentPage::create([
+            'content_id' => $this->id,
+            'title' => uniqid(),
+            'slug' => uniqid(),
+            'order' => ++$lastPageOrder,
+        ]);
+    }
+
+    /**
      * Almacena los contribuidores del contenido, previamente borrará los
      * existentes si los hubiera.
      *
