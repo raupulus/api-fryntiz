@@ -2,6 +2,7 @@
 
 namespace App\Models\Content;
 
+use App\Helpers\TextFormatParseHelper;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
@@ -70,6 +71,59 @@ class ContentPage extends BaseModel
         //return route('content.page.store.image', ['content_page' => $this->id]);
         return route('dashboard.content.ajax.page.upload.image.update', ['contentPage' => $this->id]);
     }
+
+    /**
+     * Elimina de forma segura la página y cualquier elemento asociado, incluso del storage.
+     *
+     * @return bool
+     */
+    public function safeDelete(): bool
+    {
+        $content = $this->contentModel;
+
+        ## Contenido en bruto asociado a esta página.
+        $raws = ContentPageRaw::where('content_page_id', $this->id)->get();
+
+        foreach ($raws as $raw) {
+
+            ## Cuando es un JSON, proviene del editor.js
+            if ($raw->available_page_raw_id === 2) {
+                $jsonRaw = json_decode($raw->content, true);
+
+                $blocks = $jsonRaw['blocks'] ?? null;
+
+                if ($blocks && count($blocks)) {
+                    $blocksToDelete = TextFormatParseHelper::searchBlocks($blocks, [
+                        'attaches',
+                        'image'
+                    ]);
+
+                    $filesId = $blocksToDelete->pluck('data.file.file_id')->toArray();
+                    $contentFilesId = $blocksToDelete->pluck('data.file.content_file_id')->toArray();
+
+                    $files = File::whereIn('id', $filesId)->get();
+
+                    foreach ($files as $f) {
+                        $f->safeDelete();
+                    }
+
+                    ContentFile::whereIn('id', $contentFilesId)->delete();
+                }
+            }
+        }
+
+        ## Borro la imagen principal de la página.
+        $this->image?->safeDelete();
+
+        ## Reordeno todas las páginas.
+        $content->pages()->where('order', '>', $this->order)->get()->map(function ($page) {
+            --$page->order;
+            $page->save();
+        });
+
+        return $this->delete();
+    }
+
 
     /**
      * Limpia una cadena de texto, elimina html, entidades y espacios innecesarios.

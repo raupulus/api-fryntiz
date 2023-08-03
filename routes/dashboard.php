@@ -264,6 +264,10 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::get('/preview/full/{content}', [ContentController::class, 'preview'])
             ->name('dashboard.content.preview.full');
 
+        ## Elimina una página
+        Route::post('/delete/{page}/{content?}', [ContentPageController::class, 'safeDestroy'])
+            ->name('dashboard.content.page.delete');
+
 
 
         Route::group(['prefix' => '/ajax'], function () {

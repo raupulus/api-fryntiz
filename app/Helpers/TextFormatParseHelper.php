@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Collection;
+
 /**
  * Clase de utilidad para convertir entre formatos de archivos y html.
  */
@@ -468,5 +470,21 @@ class TextFormatParseHelper
 
 
         return self::arrayToHtml($jsonDecoded);
+    }
+
+
+    /**
+     * Busca en un array de bloques los elementos recibidos en otro array con los strings de campos a buscar.
+     *
+     * @param array $blocks Es un array con todos los bloques del editor.
+     * @param array $search Es un array con cadenas de texto que coinciden con los bloques a buscar.
+     *
+     * @return Collection
+     */
+    public static function searchBlocks(array $blocks, array $search): Collection
+    {
+        return collect(array_filter($blocks, function($b) use ($search) {
+            return in_array($b['type'], $search, false);
+        }));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard\Content;
 
 use App\Http\Controllers\Controller;
+use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +15,17 @@ use Illuminate\Http\Request;
  */
 class ContentPageController extends Controller
 {
+
+    public function safeDestroy(ContentPage $page, Content $content)
+    {
+
+        $deleted = $page->safeDelete();
+
+
+        return redirect()->back();
+
+    }
+
 
     /**
      * Procesa la petición AJAX para actualizar la imagen de la página.

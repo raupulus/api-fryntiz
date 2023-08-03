@@ -18,7 +18,7 @@ class BaseModel extends Model
      *
      * @return bool
      */
-    public function safeDelete()
+    public function safeDelete(): bool
     {
         ## Elimino la imagen asociada y todas las miniaturas.
         if ($this->image) {
