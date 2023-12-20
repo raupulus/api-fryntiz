@@ -15,9 +15,22 @@ use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class GenericWSController
 {
+
+    /**
+     * Guarda una colección de datos.
+     *
+     * @param Collection $datas
+     * @return bool
+     */
+    private function storeData(Collection $datas): bool
+    {
+
+    }
+
     /**
      *
      * 'hardware_device_id' => 9, // 9 = Esp32
@@ -39,6 +52,24 @@ class GenericWSController
      */
     public function add(Request $request)
     {
+
+        /*
+        if ($request->isJson()) {
+            $datas = collect($request->json()?->all());
+        } else {
+            $datas = collect($request->all());
+        }
+
+        if ($datas && is_array($datas)) {
+            foreach ($datas as $data) {
+                //$data->put('hardware_device_id', $request->get('hardware_device_id'));
+                //$data->put('user_id', auth()->id());
+                $datas = storeData(collect($data));
+            }
+        } else {
+            $datas = storeData($datas);
+        }
+        */
 
         // TODO: Preparar validación de request
 

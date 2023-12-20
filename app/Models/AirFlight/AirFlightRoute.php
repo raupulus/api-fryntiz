@@ -19,6 +19,7 @@ class AirFlightRoute extends Model
 
     protected $fillable = [
         'airplane_id',
+        'hardware_device_id',
         'user_id',
         'squawk',
         'flight',

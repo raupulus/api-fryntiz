@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\AirFlight;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
 use App\Http\Controllers\Controller;
+use App\Models\Hardware\HardwareDevice;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -151,6 +152,8 @@ class AirFlightController extends Controller
     }
 
     public function addJson(Request $request) {
+        $hardware_id = $request->get('hardware_device_id');
+        $hardware = $hardware_id ? HardwareDevice::find($hardware_id) : null;
         $data = json_decode($request->get('data'));
 
         //return response()->json(['ok' => true]);
@@ -177,6 +180,10 @@ class AirFlightController extends Controller
                             'icao' => $d->icao,
                         ]
                     );
+
+                    if ($hardware && $airflight && !$airflight->hardware_device_id) {
+                        $airflight->hardware_device_id = $hardware->id;
+                    }
 
                     ## Compruebo si no tiene el país o la bandera para buscarlos.
                     if (! $airflight->country || ! $airflight->flag) {
@@ -242,6 +249,7 @@ class AirFlightController extends Controller
                                 'seen_at' => $d->seen_at,
                             ],
                             [
+                                'hardware_device_id' => $hardware ? $hardware->id : null,
                                 'user_id' => auth()->id(),
                                 'airplane_id' => $airflight->id,
                                 'squawk' => $d->squawk,
