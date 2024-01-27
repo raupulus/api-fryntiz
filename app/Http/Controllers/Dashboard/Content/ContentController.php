@@ -196,9 +196,10 @@ class ContentController extends BaseWithTableCrudController
 
         $pages = $model->pages;
 
+
         if (!$pages || !$pages->count()) {
             $pages = collect([
-                new ContentPage([
+                ContentPage::create([
                     'content_id' => $model->id,
                     'title' => 'Página Principal',
                     'slug' => Str::slug($model->title),
