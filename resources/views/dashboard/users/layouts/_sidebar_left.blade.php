@@ -2,6 +2,9 @@
     {{-- User Card --}}
     <div class="row ">
         @if(RoleHelper::canUserEdit($user->id))
+
+            TODO: PONER CROPPER NUEVO
+            {{--
             <v-cropper-image style="margin: -90px auto 0 auto;"
                     width="500"
                     preview_width="150"
@@ -10,6 +13,7 @@
                     api_url="{{ route('panel.ajax.user.avatar.upload') }}"
                     csrf_token="{{csrf_token()}}"
                     image_path="{{$user->urlAvatar}}"></v-cropper-image>
+            --}}
         @else
             <div class="col-12 user-image text-center">
                 <img class="rounded-circle"
@@ -35,17 +39,19 @@
                 Enviar Mensaje
             </button>
 
-            <a href="{{route('panel.users.add', ['user_id' => $user->id])}}"
+            {{--
+            <a href="{{route('dashboard.users.add', ['user_id' => $user->id])}}"
                class="btn btn-primary btn-block">
                 <i class="fas fa-user-edit"></i>
                 Editar Perfil
             </a>
 
-            <a href="{{route('panel.users.add')}}"
+            <a href="{{route('dashboard.users.add')}}"
                class="btn btn-danger btn-block">
                 <i class="fas fa-trash"></i>
                 Eliminar Cuenta
             </a>
+            --}}
         </div>
 
         {{-- Seguidores --}}

@@ -209,7 +209,7 @@ return [
             [
                 'text' => 'Añadir Usuario',
                 'icon' => 'fa fa-plus',
-                'url' => '#',
+                'route' => 'dashboard.users.create',
             ],
         ],
     ],

@@ -5,13 +5,19 @@ namespace App\Http\Controllers\Dashboard\Users;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 /**
  * Class UserController
  */
 class UserController extends Controller
 {
-    public function index()
+    /**
+     * Listado de usuarios.
+     *
+     * @return View
+     */
+    public function index(): View
     {
         ## Usuarios Activos.
         $n_usersActive = User::countActive();
@@ -34,23 +40,47 @@ class UserController extends Controller
         ]);
     }
 
-    public function show(User $user)
+    /**
+     * Muestra un usuario concreto.
+     *
+     * @param User|null $user
+     * @return View
+     */
+    public function show(User $user = null): View
     {
+        $user = $user?->id ? $user : auth()->user();
+
         return view('dashboard.users.show')->with([
             'user' => $user,
         ]);
     }
 
-    public function create()
+    /**
+     * Lleva a la vista para crear un usuario.
+     *
+     * @return View
+     */
+    public function create(): View
     {
-        return view('dashboard.users.add-edit');
+        return view('dashboard.users.add-edit', ['user' => new User()]);
     }
 
-    public function edit(User $user)
+    /**
+     * Lleva a la vista para editar usuario.
+     *
+     * @param User $user
+     * @return View
+     */
+    public function edit(User $user): View
     {
         return view('dashboard.users.add-edit')->with([
             'user' => $user,
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        dd('WORK IN PROGRESS');
     }
 
     public function update(Request $request, User $user)

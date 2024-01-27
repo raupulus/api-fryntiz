@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    @foreach($user->social as $social)
+    @foreach($user->socials as $social)
         <div class="row text-center">
             <div class="col-md-3 text-left">
                 <i class="{{ $social->icon }} font-weight-bold"
@@ -27,16 +27,16 @@
             </div>
 
             <div class="col-md-3">
-                <a href="{{ $social->personal->url }}"
-                   title="{{ $social->name }} - {{ $social->personal->nick }}">
-                    {{ $social->personal->nick }}
+                <a href="{{ $social->url }}"
+                   title="{{ $social->name }} - {{ $social->nick }}">
+                    {{ $social->nick }}
                 </a>
             </div>
 
             <div class="col-md-6">
-                <a href="{{ $social->personal->url }}"
-                   title="{{ $social->name }} - {{ $social->personal->nick }}">
-                    {{ $social->personal->url }}
+                <a href="{{ $social->url }}"
+                   title="{{ $social->name }} - {{ $social->nick }}">
+                    {{ $social->url }}
                 </a>
             </div>
         </div>

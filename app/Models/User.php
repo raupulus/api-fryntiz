@@ -6,6 +6,7 @@ use App\Http\Traits\ImageTrait;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -86,6 +87,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Relación con el role del usuario.
+     *
+     * @return BelongsTo
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(UserRole::class, 'role_id', 'id');
+    }
+
+    /**
      * Obtiene los datos para la red social de Twitter.
      *
      * @return UserSocial|null
@@ -147,7 +158,7 @@ class User extends Authenticatable
     public function urlProfile()
     {
         //return route('users.show', $this);
-        return '#';
+        return route('dashboard.users.show', $this->id);
     }
 
     public function adminlte_image()

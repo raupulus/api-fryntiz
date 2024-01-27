@@ -15,7 +15,7 @@
         <div class="col-12">
             <h2>
                 Listado de Usuarios
-                <a href="{{ route('dashboard.hardware.device.create') }}"
+                <a href="{{ route('dashboard.users.create') }}"
                    class="btn  btn-primary float-right">
                     <i class="fas fa-plus"></i>
                     Nuevo
@@ -35,7 +35,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Dispositivos</h3>
+                    <h3 class="card-title">Usuarios</h3>
                 </div>
 
                 <div class="card-body p-0">
@@ -43,7 +43,7 @@
                         <thead>
                         <tr>
                             <th style="width: 1%">
-                                #
+                                ID
                             </th>
                             <th style="width: 14%;" class="text-center">
                                 Imagen
@@ -54,57 +54,49 @@
                             </th>
 
                             <th style="width: 20%;" class="text-center">
-                                Model
+                                Email
                             </th>
+
                             <th style="width: 35%;">
                             </th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        @foreach($users as $device)
+                        @foreach($users as $user)
                             <tr>
                                 <td>
-                                    #
+                                    {{$user->id}}
                                 </td>
                                 <td class="text-center">
                                     <ul class="list-inline">
                                         <li class="list-inline-item">
                                             <img alt="Avatar"
                                                  class="table-avatar"
-                                                 src="{{$device->urlThumbnail('small')}}">
+                                                 src="{{$user->urlThumbnail('small')}}">
                                         </li>
                                     </ul>
                                 </td>
 
                                 <td>
-                                    {{$device->name}}
-
-                                    @if ($device->buy_at)
-                                        <br>
-                                        <small>
-                                            Compra:
-                                            {{$device->buy_at->format('d/m/Y')}}
-                                        </small>
-                                    @endif
+                                    {{$user->name}}
                                 </td>
-                                <td class="text-center">
-                                    <span class="badge badge-success">
-                                        {{$device->model}}
-                                    </span>
+
+                                <td>
+                                    {{$user->email}}
                                 </td>
 
                                 <td class="project-actions text-right">
-                                    {{--
-                                    <a class="btn btn-primary btn-sm" href="#">
-                                        <i class="fas fa-folder">
+
+                                    <a class="btn btn-success btn-sm mr-2"
+                                       href="{{route('dashboard.users.show', $user->id)}}">
+                                        <i class="fas fa-pencil-alt">
                                         </i>
                                         Ver
                                     </a>
-                                    --}}
 
                                     <a class="btn btn-info btn-sm"
-                                       href="{{route('dashboard.hardware.device.edit', $device->id)}}">
+                                       href="{{route('dashboard.users.edit', $user->id)}}">
                                         <i class="fas fa-pencil-alt">
                                         </i>
                                         Editar
@@ -112,15 +104,17 @@
 
                                     &nbsp;
 
+                                    {{--
+                                    Prevenir eliminar al pulsar botón directamente, pedir confirmación
                                     <form
-                                        action="{{route('dashboard.hardware.device.destroy', $device->id)}}"
+                                        action="{{route('dashboard.users.destroy', $user->id)}}"
                                         method="POST"
                                         style="display: inline-block;">
 
                                         @csrf
 
                                         <input type="hidden" name="id"
-                                               value="{{$device->id}}">
+                                               value="{{$user->id}}">
 
                                         <button type="submit"
                                                 class="btn btn-danger btn-sm">
@@ -129,6 +123,7 @@
                                         </button>
 
                                     </form>
+                                    --}}
                                 </td>
                             </tr>
                         @endforeach

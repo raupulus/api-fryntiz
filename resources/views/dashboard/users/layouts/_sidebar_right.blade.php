@@ -8,7 +8,7 @@
         </div>
 
         <div class="col-md-12 text-center">
-            <a href="{{ route('index') }}">
+            <a href="#">
                 <img src="{{ asset('images/icons/programming-languages/laravel.png') }}">
             </a>
         </div>
@@ -23,7 +23,7 @@
         </div>
 
         <div class="col-md-12 text-center">
-            <a href="{{ route('index') }}">
+            <a href="#">
                 <img src="{{ asset('images/icons/programming-languages/vue.png') }}">
             </a>
         </div>

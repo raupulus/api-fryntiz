@@ -194,7 +194,7 @@ return [
     'register_url' => 'register',
     'password_reset_url' => 'password/reset',
     'password_email_url' => 'password/email',
-    'profile_url' => false,
+    'profile_url' => 'users/show',
 
     /*
     |--------------------------------------------------------------------------
@@ -235,8 +235,8 @@ return [
             //'route' => 'dashboard.search'
         ],
         [
-            'text' => 'test-link-navbar',
-            'url' => '#',
+            'text' => 'Inicio',
+            'route' => 'dashboard.index',
             'topnav' => true,
         ],
         [

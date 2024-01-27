@@ -196,7 +196,7 @@ Route::group(['prefix' => '/users', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [UserController::class, 'index'])
             ->name('dashboard.users.index');
-        Route::get('/show', [UserController::class, 'show'])
+        Route::get('/show/{user?}', [UserController::class, 'show'])
             ->name('dashboard.users.show');
         Route::get('/create', [UserController::class, 'create'])
             ->name('dashboard.users.create');

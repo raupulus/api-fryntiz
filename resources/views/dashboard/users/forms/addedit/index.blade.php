@@ -17,7 +17,7 @@ if (isset($user_id) && $user_id) {
             <a id="user-form-create-tab-profile"
                class="nav-link active"
                data-toggle="pill"
-               href="#user-form-create-profile"
+               href="{{route('dashboard.users.show', auth()->id())}}"
                role="tab"
                aria-controls="user-form-create-profile"
                aria-selected="true">
