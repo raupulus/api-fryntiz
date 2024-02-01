@@ -1,0 +1,130 @@
+.box-modal-youtube-video-search {
+  display: grid;
+  position: fixed;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%,-50%);
+  width: 90vw;
+  max-width: 1400px;
+  align-items: center;
+  height: 90vh;
+  background-color: #f8f8f8;
+  z-index: 1040;
+  border: 2px solid #ada2a2;
+  color: #5d5d5d;
+}
+
+.container-modal-youtube-video-search {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  margin:auto;
+  padding: 1.3rem;
+  grid-template-rows: 200px auto 150px;
+  overflow-x: scroll;
+}
+
+.header-modal-youtube-video-search {
+}
+
+/* Caja para la X de cerrar modal */
+.box-close-modal-youtube-video-search {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
+.title-modal-youtube-video-search {
+  font-size: 2.4rem;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+}
+
+.input-modal-youtube-video-search {
+  display: block;
+  margin: 1.3rem auto 1.3rem auto;
+  padding: 0.3rem;
+  width: 90%;
+  border-radius: 7px;
+  text-align: center;
+}
+
+.body-modal-youtube-video-search {
+  overflow-x: scroll;
+  padding: 0.3rem;
+}
+
+.footer-modal-youtube-video-search {
+  display: grid;
+  align-content: center;
+}
+
+.btn-modal-youtube-video-search {
+  display: inline-block;
+  margin: 0.2rem;
+  padding: 0.3rem 1rem;
+  cursor:pointer;
+  border: 1px groove #22558e;
+  border-radius: 7px;
+  box-shadow: 1px 1px 1px #201f1f;
+}
+
+.btn-modal-youtube-video-search-primary {
+  color: #f8f8f8;
+  background-color: #3272b8;
+}
+.btn-modal-youtube-video-search-secondary {
+  color: #f8f8f8;
+  background-color: #5d5d5d;
+}
+
+
+
+/* Tarjetas para cada vídeo de youtube */
+
+.modal-youtube-video-search-card-container {
+  display: grid;
+  margin: 0.3rem 0;
+  padding: 0.3rem;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  background-color: #c9d0e647;
+  border: 2px solid #ada2a2;
+  align-items: center;
+  border-radius: 7px;
+  box-shadow: 1px 1px 1px #ada2a2;
+}
+
+.modal-youtube-video-search-card-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #3272b8;
+  text-align: center;
+}
+
+
+
+
+
+/* AUXILIARES */
+
+.modal-youtube-video-search-text-center {
+  text-align: center;
+}
+
+.modal-youtube-video-search-text-right {
+  text-align: right;
+}
+
+.modal-youtube-video-search-block {
+  display: block;
+}
+
+.modal-youtube-video-search-hidden {
+  display: none;
+}

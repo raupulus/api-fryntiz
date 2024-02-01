@@ -255,9 +255,13 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::post('/{content}/add/page', [ContentController::class, 'addPage'])
             ->name('dashboard.content.add.page');
 
-        ## Guarda SEO de una página
+        ## Guarda SEO de un contenido
         Route::match(['put', 'patch'], '/seo/store/{content}', [ContentController::class, 'seoStore'])
             ->name('dashboard.content.seo.store');
+
+        ## Guarda Metadatos de un contenido
+        Route::match(['put', 'patch'], '/metadata/store/{content}', [ContentController::class, 'metadataStore'])
+            ->name('dashboard.content.metadata.store');
 
 
         ## Ruta para previsualizar el contenido

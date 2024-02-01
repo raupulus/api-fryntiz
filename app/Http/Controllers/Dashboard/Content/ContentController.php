@@ -328,6 +328,11 @@ class ContentController extends BaseWithTableCrudController
         return redirect()->to($content->urlEdit . '?seo=true');
     }
 
+    public function contentStore()
+    {
+        dd('WIP');
+    }
+
     public function preview(Content $content): View|RedirectResponse
     {
         if (!$content->id) {

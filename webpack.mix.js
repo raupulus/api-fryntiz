@@ -36,6 +36,8 @@ mix.js('resources/js/app.js', 'public/js')
         //require('tailwindcss/nesting'),
         require('tailwindcss'),
     ])
+    .copy('resources/css/dashboard/youtube_video_search.css', 'public/css/youtube_video_search.css')
+    .copy('resources/js/dashboard/youtube_video_search.js', 'public/dashboard/js/youtube_video_search.js')
     .copy('node_modules/@editorjs/editorjs/dist/editor.js', 'public/vendor/editorjs/editor.js')
     .copy('node_modules/@editorjs/header/dist/bundle.js', 'public/vendor/editorjs/header.js')
     .copy('node_modules/@editorjs/link/dist/bundle.js', 'public/vendor/editorjs/link.js')
