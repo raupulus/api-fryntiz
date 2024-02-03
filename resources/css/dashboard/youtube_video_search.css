@@ -77,12 +77,17 @@
   color: #f8f8f8;
   background-color: #3272b8;
 }
+
 .btn-modal-youtube-video-search-secondary {
   color: #f8f8f8;
   background-color: #5d5d5d;
 }
 
-
+.btn-modal-youtube-video-search-disable {
+  cursor: not-allowed;
+  color: #a4a4a4;
+  background-color: #5d5d5d;
+}
 
 /* Tarjetas para cada vídeo de youtube */
 

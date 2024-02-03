@@ -108,188 +108,6 @@
 
 
 
-
-
-
-
-
-            {{-- Desarrollando buscador de vídeos en youtube --}}
-
-            <div class="card-body">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="col-12">
-
-                            <div>
-                                <button id="btn-youtube-video-search" class="btn btn-danger">Buscar vídeo de youtube</button>
-
-                                <div id="modal-youtube-video-search" class="modal-youtube-video-search-hidden">
-
-
-
-
-
-                                    {{-- Toda esta estructura debería crearse con javascript dinámicamente --}}
-
-
-
-
-
-                                    <div class="box-modal-youtube-video-search">
-                                        <div class="container-modal-youtube-video-search">
-
-                                            <div class="header-modal-youtube-video-search">
-                                                <span class="box-close-modal-youtube-video-search">
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                         class="btn-close-modal-youtube-video-search"
-                                                         fill="#5d5d5d"
-                                                         viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
-                                                </span>
-                                                <div>
-                                                    <span class="title-modal-youtube-video-search">Busca un vídeo en tu canal</span>
-
-                                                    <input type="text" class="input-modal-youtube-video-search">
-                                                </div>
-                                            </div>
-
-                                            <div class="body-modal-youtube-video-search">
-
-                                                <div class="modal-youtube-video-search-card-container">
-                                                    <img src="https://i.ytimg.com/vi/6nKKoMsNuus/default.jpg" alt="">
-
-                                                    <div>
-                                                        <span class="modal-youtube-video-search-card-title">
-                                                            Asustor Lockestor AS6704T ampliando memoria RAM a 16GB
-                                                        </span>
-
-                                                        <span>
-                                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...
-                                                        </span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span class="btn-modal-youtube-video-search btn-modal-youtube-video-search-primary">
-                                                        Usar
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-youtube-video-search-card-container">
-                                                    <img src="https://i.ytimg.com/vi/6nKKoMsNuus/default.jpg" alt="">
-
-                                                    <div>
-                                                        <span class="modal-youtube-video-search-card-title">
-                                                            Asustor Lockestor AS6704T ampliando memoria RAM a 16GB
-                                                        </span>
-
-                                                        <span>
-                                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...
-                                                        </span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span class="btn-modal-youtube-video-search btn-modal-youtube-video-search-primary">
-                                                        Usar
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-youtube-video-search-card-container">
-                                                    <img src="https://i.ytimg.com/vi/6nKKoMsNuus/default.jpg" alt="">
-
-                                                    <div>
-                                                        <span class="modal-youtube-video-search-card-title">
-                                                            Asustor Lockestor AS6704T ampliando memoria RAM a 16GB
-                                                        </span>
-
-                                                        <span>
-                                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...
-                                                        </span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span class="btn-modal-youtube-video-search btn-modal-youtube-video-search-primary">
-                                                        Usar
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-youtube-video-search-card-container">
-                                                    <img src="https://i.ytimg.com/vi/6nKKoMsNuus/default.jpg" alt="">
-
-                                                    <div>
-                                                        <span class="modal-youtube-video-search-card-title">
-                                                            Asustor Lockestor AS6704T ampliando memoria RAM a 16GB
-                                                        </span>
-
-                                                        <span>
-                                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...
-                                                        </span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span class="btn-modal-youtube-video-search btn-modal-youtube-video-search-primary">
-                                                        Usar
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-
-                                            </div>
-
-                                            <div class="footer-modal-youtube-video-search">
-                                                <div class="modal-youtube-video-search-text-center">
-                                                    <span class="btn-modal-youtube-video-search btn-modal-youtube-video-search-primary">Página Anterior</span>
-                                                    <span class="btn-modal-youtube-video-search btn-modal-youtube-video-search-primary">Página Siguiente</span>
-                                                </div>
-
-                                                <div class="modal-youtube-video-search-text-center">
-                                                    <span class="btn-close-modal-youtube-video-search btn-modal-youtube-video-search btn-modal-youtube-video-search-secondary">Cerrar</span>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-
-
-
-
-                                    {{-- FIN Toda esta estructura debería crearse con javascript dinámicamente --}}
-
-
-
-
-
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {{-- FIN Desarrollando buscador de vídeos en youtube --}}
-
-
-
-
-
-
             <div class="row">
                 <div class="col-12">
                     <div class="tab-content" id="nav-tabContent">
@@ -440,14 +258,49 @@
 
 
 
+        function changeChannel() {
+            // TODO: Cambia en la clase el canal según el asociado a la plataforma.
+            //newChannel = ???
+            //youtubeVideoSearch.channelId = newChannel
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+
+            function handleYoutubeVideoSelect(e, video) {
+                const id = video.id;
+
+                if (! id) {
+                    return;
+                }
+
+                const url = 'https://www.youtube.com/watch?v=' + id;
+                const iframeurl = 'https://www.youtube.com/embed/' + id;
+                const youtube_video = document.querySelector('input[name="youtube_video"]');
+                const youtube_video_id = document.querySelector('input[name="youtube_video_id"]');
+
+                if (youtube_video) {
+                    youtube_video.value = url;
+                }
+
+                if (youtube_video_id) {
+                    youtube_video_id.value = id;
+                }
+
+                const iframe = document.getElementById('iframe-preview-youtube-video');
+
+                iframe.src = iframeurl;
+                iframe.classList.remove('hidden');
+
+                youtubeVideoSearch.closeModal()
+            }
 
             const apiKey = "{{env('GOOGLE_DEV_API_KEY')}}";
             const channelId = 'UCZescg-D1m_yCSgTdCLRBpw';
 
 
 
-            const youtubeVideoSearch = new YoutubeVideoSearch(apiKey, channelId, '#modal-youtube-video-search', '#btn-youtube-video-search')
+            const youtubeVideoSearch = new YoutubeVideoSearch(apiKey, channelId, '#modal-youtube-video-search', handleYoutubeVideoSelect, '#btn-youtube-video-search')
+
 
 
 
