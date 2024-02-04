@@ -258,11 +258,7 @@
 
 
 
-        function changeChannel() {
-            // TODO: Cambia en la clase el canal según el asociado a la plataforma.
-            //newChannel = ???
-            //youtubeVideoSearch.channelId = newChannel
-        }
+
 
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -294,12 +290,28 @@
                 youtubeVideoSearch.closeModal()
             }
 
+
+            const youtubeChannelsByPlatform = {};
+
+            @forEach($platforms as $p)
+                youtubeChannelsByPlatform["{{$p->id}}"] = "{{$p->youtube_channel_id}}";
+            @endforeach
+
+            const selectPlatforms =  document.querySelector('select[name="platform_id"]');
+
+            function changeChannel() {
+                const newChannel = youtubeChannelsByPlatform[selectPlatforms.value];
+                youtubeVideoSearch.setChannelId = newChannel;
+            }
+
+            selectPlatforms.addEventListener('change', changeChannel);
+
+
             const apiKey = "{{env('GOOGLE_DEV_API_KEY')}}";
-            const channelId = 'UCZescg-D1m_yCSgTdCLRBpw';
-
-
+            const channelId = "{{$model->platform?->youtube_channel_id}}";
 
             const youtubeVideoSearch = new YoutubeVideoSearch(apiKey, channelId, '#modal-youtube-video-search', handleYoutubeVideoSelect, '#btn-youtube-video-search')
+
 
 
 

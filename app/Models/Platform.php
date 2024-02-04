@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App;
+use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,11 +18,14 @@ use App\Models\Content\Content;
  */
 class Platform extends BaseAbstractModelWithTableCrud
 {
-    use HasFactory;
+    use ImageTrait;
 
     protected $table = 'platforms';
 
-    protected $fillable = ['user_id', 'title', 'slug', 'description'];
+    protected $fillable = ['user_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
+        'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
+        'instagram'
+        ];
 
     public static function  getModuleName(): string
     {
@@ -80,6 +83,16 @@ class Platform extends BaseAbstractModelWithTableCrud
         return $this->belongsToMany(Category::class, 'platform_categories', 'platform_id', 'category_id');
     }
 
+    /**
+     * Asocia a la imagen principal.
+     *
+     * @return BelongsTo
+     */
+    public function image(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id', 'id');
+    }
+
 
 
 
@@ -122,8 +135,10 @@ class Platform extends BaseAbstractModelWithTableCrud
     {
         return [
             'id' => 'ID',
+            'urlImage' => 'Imagen',
             'title' => 'Título',
             'slug' => 'Slug',
+            'domain' => 'Dominio',
             'description' => 'Descripción',
         ];
     }
@@ -139,12 +154,18 @@ class Platform extends BaseAbstractModelWithTableCrud
             'id' => [
                 'type' => 'integer',
             ],
+            'urlImage' => [
+                'type' => 'image',
+            ],
             'title' => [
                 'type' => 'text',
                 'wrapper' => 'span',
                 'class' => 'text-weight-bold',
             ],
             'slug' => [
+                'type' => 'text',
+            ],
+            'domain' => [
                 'type' => 'text',
             ],
             'description' => [

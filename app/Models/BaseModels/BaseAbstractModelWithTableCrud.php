@@ -298,7 +298,7 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
         $columns = array_keys($tableHeads);
         $columnsFiltered = array_filter($columns, fn($column) => !in_array
         ($column, [
-            'url_image',
+            'urlImage',
         ]));
 
 
@@ -311,7 +311,7 @@ abstract class BaseAbstractModelWithTableCrud extends BaseModel
 
         if (in_array('urlImage', $columns)) {
             $tableRows = $tableRows->map(function ($row) use ($cellsInfo) {
-                $row->url_image = $row->urlThumbnail($size = 'small');
+                $row->urlImage = $row->urlThumbnail('small');
 
                 return $row;
             });

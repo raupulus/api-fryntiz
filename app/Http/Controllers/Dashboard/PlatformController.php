@@ -6,8 +6,11 @@ use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Platform\PlatformDeleteRequest;
 use App\Http\Requests\Dashboard\Platform\PlatformStoreRequest;
 use App\Http\Requests\Dashboard\Platform\PlatformUpdateRequest;
+use App\Models\File;
 use App\Models\Platform;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use JsonHelper;
 use function redirect;
 use function view;
@@ -25,9 +28,9 @@ class PlatformController extends BaseWithTableCrudController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
             'model' => self::getModel(),
@@ -37,9 +40,9 @@ class PlatformController extends BaseWithTableCrudController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         $model = new (self::getModel())();
 
@@ -51,18 +54,28 @@ class PlatformController extends BaseWithTableCrudController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Platform\PlatformStoreRequest $request
+     * @param PlatformStoreRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function store(PlatformStoreRequest $request)
+    public function store(PlatformStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
-        $modelString::create($request->validated());
+        $model = $modelString::create($request->validated());
 
+        ## Guarda la imagen desde base64
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'platform', false, $model->image?->id);
 
+            if ($image) {
+                $model->image_id = $image->id;
+                $model->save();
 
-        // TODO: Crear trait? Para imágenes y dinamizar?
+                $image->title = $model->title;
+                $image->alt = $model->title;
+                $image->save();
+            }
+        }
 
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
@@ -71,11 +84,9 @@ class PlatformController extends BaseWithTableCrudController
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param Platform $platform
      */
-    public function show($id)
+    public function show(Platform $platform)
     {
         //
     }
@@ -83,11 +94,11 @@ class PlatformController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Platform $model
+     * @param Platform $model
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function edit(Platform $model)
+    public function edit(Platform $model): View
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
@@ -97,32 +108,48 @@ class PlatformController extends BaseWithTableCrudController
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Platform\PlatformUpdateRequest $request
-     * @param int|null                                               $id
+     * @param PlatformUpdateRequest $request
+     * @param Platform $model
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function update(PlatformUpdateRequest $request, int|null $id = null)
+    public function update(PlatformUpdateRequest $request, Platform $model): RedirectResponse
     {
-        $modelString = $this::getModel();
-        $model = $modelString::find($id);
 
         $model->fill($request->validated());
         $model->save();
 
-        return redirect()->route($modelString::getCrudRoutes()['index']);
+        ## Guarda la imagen desde base64
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'platform', false, $model->image?->id);
+
+            if ($image) {
+                $model->image_id = $image->id;
+                $model->save();
+
+                $image->title = $model->title;
+                $image->alt = $model->title;
+                $image->save();
+            }
+        }
+
+        return redirect()->route(Platform::getCrudRoutes()['index']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Http\Requests\Dashboard\Platform\PlatformDeleteRequest $request
-     * @param int|null                                               $id
+     * @param PlatformDeleteRequest $request
+     * @param int|null $id
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @return JsonResponse|RedirectResponse
      */
-    public function destroy(PlatformDeleteRequest $request, int|null $id = null)
+    public function destroy(PlatformDeleteRequest $request, int|null $id = null): JsonResponse|RedirectResponse
     {
+
+        // TODO: Revisar si recibir ID o inyectar modelo Platform
+
+
         $deleted = false;
         $idRequest = $request->get('id');
         $model = self::getModel()::find($idRequest);

@@ -58,19 +58,31 @@ class YoutubeVideoSearch {
     }
 
 
+    /**
+     * Establece un nuevo id de canal para realizar las consultas.
+     *
+     * @param channelId
+     */
     set setChannelId(channelId) {
         this.channelId = channelId;
     }
 
+    /**
+     * Obtiene el id del canal actual.
+     *
+     * @returns {*}
+     */
     get getChannelId() {
         return this.channelId;
     }
 
 
+    /**
+     * Genera el contenido para el DOM del modal.
+     */
     domModalGenerate() {
         const box = document.createElement('div');
         box.classList.add('box-modal-youtube-video-search');
-
 
         const container = document.createElement('div');
         container.classList.add('container-modal-youtube-video-search');
@@ -94,6 +106,11 @@ class YoutubeVideoSearch {
         this.domModalFooterGenerate()
     }
 
+    /**
+     * Genera el contenido para el DOM solo del Header.
+     *
+     * @returns {HTMLDivElement}
+     */
     domModalHeaderGenerate() {
 
         const boxHeader = document.createElement('div');
@@ -105,20 +122,6 @@ class YoutubeVideoSearch {
         boxClose.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="btn-close-modal-youtube-video-search"\n' +
             'fill="#5d5d5d"\n' +
             'viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>';
-
-        /*
-        const svg = document.createElement('svg');
-        svg.classList.add('btn-close-modal-youtube-video-search');
-        svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        svg.setAttribute('fill', '#5d5d5d');
-        svg.setAttributeNS(null, 'viewBox', '0 0 512 512');
-
-        const svgPath = document.createElement('path');
-        svgPath.setAttribute('d', 'M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z');
-
-        svg.append(svgPath);
-        boxClose.append(svg);
-        */
 
         const boxTitle = document.createElement('div');
         const title = document.createElement('span');
@@ -138,6 +141,11 @@ class YoutubeVideoSearch {
         return boxHeader;
     }
 
+    /**
+     * Genera la parte del DOM para el footer del modal.
+     *
+     * @returns {HTMLDivElement}
+     */
     domModalFooterGenerate() {
         const boxFooter = document.createElement('div');
         boxFooter.classList.add('footer-modal-youtube-video-search');
@@ -170,23 +178,19 @@ class YoutubeVideoSearch {
     searchInputChangeHandler(e) {
         const key = e.keyCode || e.charCode;
 
-        console.log('se ha pulsado:', key);
-
-        // TODO: Descartar teclas meta, ctrl, alt.... ya que también salta este evento.
+        // Descarta teclas no necesarias (ctrl, alt, meta...)
         const keysDiscard = [16,17,18,27,37,38,39,40,44,224];
 
-        console.log(keysDiscard.includes(key));
-
         if (keysDiscard.includes(key)) {
-            console.log('Tecla ' + key + ' Descartada');
+            //console.log('Tecla ' + key + ' Descartada');
 
-            return
+            return;
         }
 
         const search = this.inputSearch.value.trim().replace(/ +/g,' ');
 
         if (search === this.search) {
-            console.log('La cadena es igual a la actual');
+            //console.log('La cadena es igual a la actual');
 
             return
         }
@@ -198,29 +202,29 @@ class YoutubeVideoSearch {
         if (search.length >= 3) {
             this.timeoutSearch = setTimeout(() => this.queryYoutubeApi(), 400);
         } else {
-            console.log('Introduce mínimo 3 carácteres');
+            //console.log('Introduce mínimo 3 carácteres');
         }
     }
 
     /**
      * Lleva a la siguiente página de resultados.
      */
-    goToNextPage(e) {
+    async goToNextPage(e) {
         const nextPage = this.nextPageToken
 
         if (nextPage) {
-            this.queryYoutubeApi(nextPage);
+            return this.queryYoutubeApi(nextPage);
         }
     }
 
     /**
      * Lleva a la página anterior de resultados.
      */
-    goToPrevPage(e) {
+    async goToPrevPage(e) {
         const prevPage = this.prevPageToken
 
         if (prevPage) {
-            this.queryYoutubeApi(prevPage);
+            return this.queryYoutubeApi(prevPage);
         }
     }
 
@@ -236,7 +240,7 @@ class YoutubeVideoSearch {
 
         this.search = search;
 
-        console.log('Realiza petición a la api de google con el valor: ', search);
+        //console.log('Realiza petición a la api de google con el valor: ', search);
 
         const params = {
             q: search,
@@ -261,8 +265,6 @@ class YoutubeVideoSearch {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('DATA:', data);
-
                 const results = {
                     totalResults: data.pageInfo.totalResults,
                     resultsPerPage: data.pageInfo.resultsPerPage,
@@ -315,8 +317,8 @@ class YoutubeVideoSearch {
                     body.textContent = 'No hay resultados para esta búsqueda';
                 }
 
-                console.log('Results:', results);
-                console.log('Videos:', this.videos);
+                //console.log('Results:', results);
+                //console.log('Videos:', this.videos);
 
                 const prevButton = this.box.querySelectorAll('[data-modal_youtube_prev]');
                 const nextButton = this.box.querySelectorAll('[data-modal_youtube_next]');
@@ -374,12 +376,6 @@ class YoutubeVideoSearch {
 
         const body = this.box.querySelector('.body-modal-youtube-video-search');
         body.append(box);
-
-        console.log(box);
-
-
-        // TODO: Añadir evento al botón de usar.
-
     }
 
     /**
@@ -392,6 +388,7 @@ class YoutubeVideoSearch {
             body.removeChild(body.lastChild);
         }
     }
+
     /**
      * Oculta el modal de búsqueda.
      */
@@ -399,18 +396,14 @@ class YoutubeVideoSearch {
         this.box.classList.add('modal-youtube-video-search-hidden');
     }
 
-
     /**
      * Devuelve el conjunto de resultados de la última búsqueda.
      * Es un array de objetos con los datos de los vídeos.
      *
      * @returns {*[]}
      */
-    get videos() {
+    get getVideos() {
         return this.videos;
     }
 
-
-
 }
-

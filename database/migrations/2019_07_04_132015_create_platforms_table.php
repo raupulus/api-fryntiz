@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateSectionsTable
@@ -53,6 +53,39 @@ class CreatePlatformsTable extends Migration
             $table->string('description', 1023)
                 ->nullable()
                 ->comment('Descripción breve de la sección');
+            $table->string('domain', 255)
+                ->nullable()
+                ->comment('Dominio principal hacia la plataforma');
+            $table->string('url_about', 255)
+                ->nullable()
+                ->comment('Página con información del proyecto');
+            $table->string('youtube_channel_id', 64)
+                ->nullable()
+                ->comment('Identificador del canal en youtube');
+            $table->string('youtube_presentation_video_id', 64)
+                ->nullable()
+                ->comment('Vídeo principal con la presentación del proyecto en youtube');
+            $table->string('twitter', 255)
+                ->nullable()
+                ->comment('Usuario en twitter');
+            $table->string('twitter_token', 511)
+                ->nullable()
+                ->comment('Token para la api de twitter');
+            $table->string('mastodon', 255)
+                ->nullable()
+                ->comment('Usuario en mastodon');
+            $table->string('mastodon_token', 255)
+                ->nullable()
+                ->comment('Token para la api de mastodon');
+            $table->string('twitch', 255)
+                ->nullable()
+                ->comment('Usuario en twitch');
+            $table->string('tiktok', 255)
+                ->nullable()
+                ->comment('Usuario en tiktok');
+            $table->string('instagram', 255)
+                ->nullable()
+                ->comment('Usuario en instagram');
             $table->timestamps();
             $table->softDeletes();
         });
