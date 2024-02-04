@@ -65,6 +65,7 @@
             <div class="row">
 
                 @php($navbarSectionID = request()->get('currentPage') ? 2 : 1)
+                @php($navbarSectionID = (($navbarSectionID === 1) && request()->get('metadata')) ? 3 : $navbarSectionID)
                 @php($navbarSectionID = (($navbarSectionID === 1) && request()->get('seo')) ? 4 : $navbarSectionID)
 
                 <nav>
@@ -76,7 +77,7 @@
                             Datos Principales
                         </a>
 
-                        @if ($model->id)
+                        @if($model && $model->id)
                             <a class="nav-item nav-link {{$navbarSectionID === 2 ? 'active' : ''}}"
                                id="nav-pages-tab"
                                data-toggle="tab" href="#nav-pages" role="tab"
@@ -84,16 +85,14 @@
                                aria-selected="{{$navbarSectionID === 2 ? 'true' : 'false'}}">
                                 Páginas
                             </a>
-                        @endif
 
-                        <a class="nav-item nav-link {{$navbarSectionID === 3 ? 'active' : ''}}" id="nav-contact-tab"
-                           data-toggle="tab" href="#nav-contact" role="tab"
-                           aria-controls="nav-contact"
-                           aria-selected="{{$navbarSectionID === 3 ? 'true' : 'false'}}">
-                            Metadatos
-                        </a>
+                            <a class="nav-item nav-link {{$navbarSectionID === 3 ? 'active' : ''}}" id="nav-contact-tab"
+                               data-toggle="tab" href="#nav-contact" role="tab"
+                               aria-controls="nav-contact"
+                               aria-selected="{{$navbarSectionID === 3 ? 'true' : 'false'}}">
+                                Metadatos
+                            </a>
 
-                        @if($model && $model->id)
                             <a class="nav-item nav-link {{$navbarSectionID === 4 ? 'active' : ''}}" id="nav-o-tab"
                                data-toggle="tab" href="#nav-o" role="tab"
                                aria-controls="nav-contact"
@@ -304,68 +303,16 @@
                 youtubeVideoSearch.setChannelId = newChannel;
             }
 
-            selectPlatforms.addEventListener('change', changeChannel);
 
 
             const apiKey = "{{env('GOOGLE_DEV_API_KEY')}}";
             const channelId = "{{$model->platform?->youtube_channel_id}}";
 
-            const youtubeVideoSearch = new YoutubeVideoSearch(apiKey, channelId, '#modal-youtube-video-search', handleYoutubeVideoSelect, '#btn-youtube-video-search')
+            if (document.getElementById('#modal-youtube-video-search')) {
+                const youtubeVideoSearch = new YoutubeVideoSearch(apiKey, channelId, '#modal-youtube-video-search', handleYoutubeVideoSelect, '#btn-youtube-video-search')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                selectPlatforms.addEventListener('change', changeChannel);
+            }
 
 
 

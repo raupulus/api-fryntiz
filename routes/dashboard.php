@@ -259,6 +259,10 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::match(['put', 'patch'], '/seo/store/{content}', [ContentController::class, 'seoStore'])
             ->name('dashboard.content.seo.store');
 
+        ## Guarda metadatos de un contenido
+        Route::match(['put', 'patch'], '/metadata/store/{content}', [ContentController::class, 'metadataStore'])
+            ->name('dashboard.content.metadata.store');
+
         ## Guarda Metadatos de un contenido
         Route::match(['put', 'patch'], '/metadata/store/{content}', [ContentController::class, 'metadataStore'])
             ->name('dashboard.content.metadata.store');

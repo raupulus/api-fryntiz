@@ -33,31 +33,31 @@ class CreateContentMetadataTable extends Migration
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('web')
+            $table->string('web', 255)
                 ->nullable()
                 ->comment('Sitio web del contenido');
-            $table->string('telegram_channel')
+            $table->string('telegram_channel', 255)
                 ->nullable()
                 ->comment('Canal de telegram');
-            $table->string('youtube_channel')
+            $table->string('youtube_channel', 255)
                 ->nullable()
                 ->comment('Canal de Youtube, página principal del canal');
-            $table->string('youtube_video')
+            $table->string('youtube_video', 255)
                 ->nullable()
                 ->comment('Vídeo en Youtube con presentación o asociado al contenido');
-            $table->string('youtube_video_id')
+            $table->string('youtube_video_id', 255)
                 ->nullable()
                 ->comment('ID del vídeo subido en Youtube');
-            $table->string('gitlab')
+            $table->string('gitlab', 255)
                 ->nullable()
                 ->comment('Url del repositorio asociado en Gitlab');
-            $table->string('github')
+            $table->string('github', 255)
                 ->nullable()
                 ->comment('Url del repositorio asociado en Github');
-            $table->string('mastodon')
+            $table->string('mastodon', 255)
                 ->nullable()
                 ->comment('Cuenta de Mastodon');
-            $table->string('twitter')
+            $table->string('twitter', 255)
                 ->nullable()
                 ->comment('Cuenta de Twitter');
 

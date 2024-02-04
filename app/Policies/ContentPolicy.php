@@ -74,4 +74,17 @@ class ContentPolicy
     {
         return RoleHelper::isAdmin($user->role_id) ?? $user->id ===  $content->author_id;
     }
+
+    /**
+     * Permite actualizar los metadatos de un contenido.
+     *
+     * @param User $user Usuario autenticado.
+     * @param Content $content Contenido a actualizar.
+     *
+     * @return bool
+     */
+    public function updateMetadata(User $user, Content $content): bool
+    {
+        return RoleHelper::isAdmin($user->role_id) ?? $user->id ===  $content->author_id;
+    }
 }

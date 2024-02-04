@@ -3,7 +3,6 @@
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Metadatos asociados al contenido.
@@ -11,6 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 class ContentMetadata extends BaseModel
 {
     protected $table = 'content_metadata';
+
+    protected $fillable = [
+        'content_id', 'web', 'telegram_channel', 'youtube_channel', 'youtube_video', 'youtube_video_id', 'gitlab',
+        'github', 'mastodon', 'twitter',
+    ];
 
     /**
      * Devuelve la url para insertar el iframe.

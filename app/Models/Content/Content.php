@@ -234,6 +234,16 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
+     * Relación a los metadatos asociados al contenido.
+     *
+     * @return HasOne
+     */
+    public function metadata(): HasOne
+    {
+        return $this->hasOne(ContentMetadata::class, 'content_id', 'id');
+    }
+
+    /**
      * Creo consulta personalizada para las categorías, NO ES UNA RELACIÓN
      *
      */

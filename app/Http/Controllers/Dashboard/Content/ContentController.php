@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard\Content;
 use App\Helpers\TextFormatParseHelper;
 use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Content\ContentDeleteRequest;
+use App\Http\Requests\Dashboard\Content\ContentMetadataUpdateRequest;
 use App\Http\Requests\Dashboard\Content\ContentSeoUpdateRequest;
 use App\Http\Requests\Dashboard\Content\ContentStoreRequest;
 use App\Http\Requests\Dashboard\Content\ContentUpdateRequest;
@@ -326,6 +327,18 @@ class ContentController extends BaseWithTableCrudController
         }
 
         return redirect()->to($content->urlEdit . '?seo=true');
+    }
+
+    public function metadataStore(ContentMetadataUpdateRequest $request, Content $content): RedirectResponse
+    {
+        $requestValidated = $request->validated();
+
+        $metadata = $content->metadata()->updateOrCreate([
+            'content_id' => $content->id,
+        ], $requestValidated);
+
+        return redirect()->to($content->urlEdit . '?metadata=true');
+
     }
 
     public function contentStore()
