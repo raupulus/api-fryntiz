@@ -95,12 +95,6 @@
                                            class="form-control">
                                 </div>
 
-                                TODO: Mirar plantilla de "próximo proyecto" para ver si poner muchos repositorios,
-                                adjuntar
-                                archivos etc. Puede que aquí sea interesante tener más datos? o crear sección
-                                similar a "content_resources" dónde subir documentos, múltiples enlaces, esquemas,
-                                estimación....
-
                                 <div class="form-group">
                                     <label for="gitlab">Gitlab</label>
                                     <input name="gitlab"

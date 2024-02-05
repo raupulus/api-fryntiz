@@ -799,7 +799,7 @@ class ContentController extends BaseWithTableCrudController
      */
     public function ajaxPageGetContent(ContentPage $contentPage): JsonResponse
     {
-        return response()->json(json_decode($contentPage->raw->content, true));
+        return response()->json(json_decode($contentPage->raw?->content, true));
     }
 }
 

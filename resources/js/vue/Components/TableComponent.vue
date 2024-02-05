@@ -269,7 +269,7 @@ export default {
             ...props.headers
         };
 
-        console.log(props.conditions);
+        //console.log(props.conditions);
 
         /**
          * Realiza una petición ajax.
@@ -336,7 +336,7 @@ export default {
                 const data = response.data;
 
                 if(!data) {
-                    console.log('No hay respuesta del servidor');
+                    //console.log('No hay respuesta del servidor');
                     return null;
                 }
 
@@ -488,7 +488,7 @@ export default {
             changePage(1);
         });
         onMounted(() => {
-            console.log('Component mounted.');
+            //console.log('Component mounted.');
             handleOnFinishLoadData();
         });
 
@@ -552,7 +552,7 @@ export default {
             }, type === 'success' ? 3000 : 8000);
 
 
-            console.log('showPopupMessage() ' + type + ': ' + msg);
+            //console.log('showPopupMessage() ' + type + ': ' + msg);
         }
 
         //
@@ -603,9 +603,9 @@ export default {
         const handleChangeFilter = async (e, type) => {
             // Pongo la tabla en modo de cargar datos.
             handleOnLoadData();
-            console.log('e: ' + e);
-            console.log('type: ' + type);
-            console.log('valor: ' + search.value);
+            //console.log('e: ' + e);
+            //console.log('type: ' + type);
+            //console.log('valor: ' + search.value);
 
             switch(type) {
                 case 'orderBy':
@@ -615,7 +615,7 @@ export default {
                     // TODO
                     break
                 default:
-                    console.log('No coincide');
+                    //console.log('No coincide');
             }
 
             // Actualizo la página para renovar datos.
@@ -772,10 +772,10 @@ export default {
             // TODO → Al pulsar ESC, cancela edición sin mostrar el cartelito.
 
             if (e.which == 13 || e.keyCode == 13) {
-                console.log('Se ha pulsado INTRO dentro del input');
+                //console.log('Se ha pulsado INTRO dentro del input');
                 inputSearch.focus();
             } else if (e.which == 27 || e.keyCode == 27) {
-                console.log('Se ha pulsado ESC dentro del input');
+                //console.log('Se ha pulsado ESC dentro del input');
                 inputSearch.focus();
             }
         }

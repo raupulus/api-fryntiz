@@ -47,7 +47,7 @@ function prepareModalAddWords(url,
     const box = document.querySelector(boxSelector);
 
     if (!box) {
-        console.error('No se ha encontrado el nodo del DOM para el modal de crear palabras: ' + boxSelector);
+        //console.error('No se ha encontrado el nodo del DOM para el modal de crear palabras: ' + boxSelector);
         return;
     }
 
@@ -57,7 +57,7 @@ function prepareModalAddWords(url,
     const statusBox = box.querySelector(statusBoxSelector);
 
     if (!input || !saveButton || !showCreated || !statusBox) {
-        console.error('No se ha encontrado algún nodo del DOM para el modal de crear palabras: ' + boxSelector);
+        //console.error('No se ha encontrado algún nodo del DOM para el modal de crear palabras: ' + boxSelector);
         return;
     }
 

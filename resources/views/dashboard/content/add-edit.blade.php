@@ -261,57 +261,55 @@
 
         document.addEventListener('DOMContentLoaded', () => {
 
-            function handleYoutubeVideoSelect(e, video) {
-                const id = video.id;
-
-                if (! id) {
-                    return;
-                }
-
-                const url = 'https://www.youtube.com/watch?v=' + id;
-                const iframeurl = 'https://www.youtube.com/embed/' + id;
-                const youtube_video = document.querySelector('input[name="youtube_video"]');
-                const youtube_video_id = document.querySelector('input[name="youtube_video_id"]');
-
-                if (youtube_video) {
-                    youtube_video.value = url;
-                }
-
-                if (youtube_video_id) {
-                    youtube_video_id.value = id;
-                }
-
-                const iframe = document.getElementById('iframe-preview-youtube-video');
-
-                iframe.src = iframeurl;
-                iframe.classList.remove('hidden');
-
-                youtubeVideoSearch.closeModal()
-            }
-
-
-            const youtubeChannelsByPlatform = {};
-
-            @forEach($platforms as $p)
-                youtubeChannelsByPlatform["{{$p->id}}"] = "{{$p->youtube_channel_id}}";
-            @endforeach
-
-            const selectPlatforms =  document.querySelector('select[name="platform_id"]');
-
-            function changeChannel() {
-                const newChannel = youtubeChannelsByPlatform[selectPlatforms.value];
-                youtubeVideoSearch.setChannelId = newChannel;
-            }
-
-
-
             const apiKey = "{{env('GOOGLE_DEV_API_KEY')}}";
             const channelId = "{{$model->platform?->youtube_channel_id}}";
 
-            if (document.getElementById('#modal-youtube-video-search')) {
+            if (document.getElementById('modal-youtube-video-search')) {
+                function handleYoutubeVideoSelect(e, video) {
+                    const id = video.id;
+
+                    if (! id) {
+                        return;
+                    }
+
+                    const url = 'https://www.youtube.com/watch?v=' + id;
+                    const iframeurl = 'https://www.youtube.com/embed/' + id;
+                    const youtube_video = document.querySelector('input[name="youtube_video"]');
+                    const youtube_video_id = document.querySelector('input[name="youtube_video_id"]');
+
+                    if (youtube_video) {
+                        youtube_video.value = url;
+                    }
+
+                    if (youtube_video_id) {
+                        youtube_video_id.value = id;
+                    }
+
+                    const iframe = document.getElementById('iframe-preview-youtube-video');
+
+                    iframe.src = iframeurl;
+                    iframe.classList.remove('hidden');
+
+                    youtubeVideoSearch.closeModal()
+                }
+
+
+                const youtubeChannelsByPlatform = {};
+
+                @forEach($platforms as $p)
+                    youtubeChannelsByPlatform["{{$p->id}}"] = "{{$p->youtube_channel_id}}";
+                @endforeach
+
+                const selectPlatforms =  document.querySelector('select[name="platform_id"]');
+
                 const youtubeVideoSearch = new YoutubeVideoSearch(apiKey, channelId, '#modal-youtube-video-search', handleYoutubeVideoSelect, '#btn-youtube-video-search')
 
                 selectPlatforms.addEventListener('change', changeChannel);
+
+                function changeChannel() {
+                    const newChannel = youtubeChannelsByPlatform[selectPlatforms.value];
+                    youtubeVideoSearch.setChannelId = newChannel;
+                }
             }
 
 
