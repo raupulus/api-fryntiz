@@ -261,7 +261,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
 
-            const apiKey = "{{env('GOOGLE_DEV_API_KEY')}}";
+            const apiKey = "{{config('google.google_api_key')}}";
             const channelId = "{{$model->platform?->youtube_channel_id}}";
 
             if (document.getElementById('modal-youtube-video-search')) {
