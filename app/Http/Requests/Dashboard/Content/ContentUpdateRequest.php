@@ -62,7 +62,7 @@ class ContentUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|min:5|max:255',
-            'slug' => 'required|max:255|unique:tags,slug,' . $this->get('id'),
+            'slug' => 'required|max:255|unique:contents,slug,' . $this->get('id'),
             'excerpt' => 'nullable|string|max:255',
             'author_id' => 'required|exists:users,id',
             'platform_id' => 'required|exists:platforms,id',
