@@ -114,10 +114,18 @@ class Platform extends BaseAbstractModelWithTableCrud
         return $this->belongsTo(File::class, 'image_id', 'id');
     }
 
-
-
-
-
+    /**
+     * Devuelve todos los dominios asignados a las plataformas.
+     *
+     * @return array
+     */
+    public static function getAllDomains(): array
+    {
+        return self::whereNotNull('domain')
+            ->whereNotIn('domain', ['', ' ', false])
+            ->pluck('domain')
+            ->toArray();
+    }
 
 
     /****************** Métodos para tablas dinámicas ******************/

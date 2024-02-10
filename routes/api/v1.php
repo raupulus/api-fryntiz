@@ -89,7 +89,7 @@ Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function (
 ######################################################
 ##                   Plataformas
 ######################################################
-Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () {
+Route::group(['prefix' => 'v1/platform', 'middleware' => ['check.domain', 'cors']], function () {
 
     ## Devuelve información principal de todas las plataformas existentes.
     Route::get('/all', [PlatformController::class, 'index']);

@@ -50,7 +50,6 @@ class PlatformController extends Controller
         ];
 
         ## Páginas
-        // TODOS LOS CONTENIDOS DE TIPO: Pages
         $pages = $platform->contentPages->map(function ($ele) {
             return [
                 'title' => $ele->title,
@@ -66,21 +65,29 @@ class PlatformController extends Controller
 
         return \JsonHelper::success([
             'data' => [
+                'title' => $platform->title,
+                'slug' => $platform->slug,
+                'description' => $platform->description,
+                'domain' => $platform->domain,
+                'url_about' => $platform->url_about,
                 'technologies' => $technologies,
                 'contents' => $contents,
                 'pages' => $pages,
                 'author' => $author,
+                'social_networks' => [
+                    'youtube_channel_id' => $platform->youtube_channel_id,
+                    'youtube_presentation_video_id' => $platform->youtube_presentation_video_id,
+                    'twitter' => $platform->twitter,
+                    'mastodon' => $platform->mastodon,
+                    'twitch' => $platform->twitch,
+                    'tiktok' => $platform->tiktok,
+                    'instagram' => $platform->instagram,
+                ],
             ]
         ]);
 
 
-
-
-
-
         return response()->json([
-
-
             'resources' => [
                 'title' => 'Recursos',
                 'description' => 'Listado de recursos',
