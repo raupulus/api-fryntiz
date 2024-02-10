@@ -341,32 +341,6 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
-     * Devuelve la ruta hacia la imagen asociada.
-     *
-     * @return string
-     */
-    public function getUrlImageAttribute()
-    {
-        return $this->image ? $this->image->url : File::urlDefaultImage('large');
-    }
-
-    /**
-     * Devuelve el thumbnail de la imagen asociada.
-     *
-     * @param $size
-     *
-     * @return mixed
-     */
-    public function urlThumbnail($size = 'medium')
-    {
-        if ($this->image) {
-            return $this->image->thumbnail($size);
-        }
-
-        return File::urlDefaultImage($size);
-    }
-
-    /**
      * Devuelve la url para la previsualización del contenido
      * editándose, basándose en el útimo guardado.
      * Útil para previsualizar borradores principalmente.
@@ -659,6 +633,7 @@ class Content extends BaseAbstractModelWithTableCrud
     {
         return [
             'id' => 'ID',
+            'image_id' => 'Imagen ID',
             'urlImage' => 'Imagen',
             'title' => 'Título',
             'published_at' => 'Publicado',
@@ -677,6 +652,9 @@ class Content extends BaseAbstractModelWithTableCrud
         return [
             'id' => [
                 'type' => 'integer',
+            ],
+            'image_id' => [
+                'type' => 'hidden',
             ],
             'urlImage' => [
                 'type' => 'image',

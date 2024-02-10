@@ -34,7 +34,7 @@
                 <tr>
                     <th scope="col" v-for="(head, key) of heads"
                         :data-key="key"
-                        v-show="(key !== 'id') || showId">
+                        v-show="((key !== 'id') || showId) && (cellsInfo[key].type !== 'hidden') ">
                         {{ head }}
                     </th>
 
@@ -52,7 +52,7 @@
                         :class="'td-' + key + '-' + row.id"
                         @dblclick="(e) => handleOnClickCellEditable(e, 'td-' + key + '-' + row.id)"
                         @focusout="handleOnFocusoutCellEditable"
-                        v-show="(key !== 'id') || showId"
+                        v-show="((key !== 'id') || showId) && (cellsInfo[key].type !== 'hidden')"
                         @keyup="handleOnKeyUpCellEditable">
 
                         <div v-if="row[key]">
@@ -447,6 +447,9 @@ export default {
                 let html = '';
 
                 switch(info.type) {
+                    case 'hidden':
+                        html = '';
+                        break;
                     case 'button':
                         html = '<button class="btn btn-primary">' + cell + '</button>';
                         break;
@@ -925,7 +928,6 @@ export default {
     margin: 0;
     padding: 0;
     width: 100%;
-    table-layout: fixed;
 }
 
 .v-table caption {

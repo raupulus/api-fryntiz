@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\User\V1\UserController;
 use App\Models\CV\Curriculum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\Api\PlatformController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,11 @@ use Illuminate\Support\Facades\Route;
 ##                   Autenticación
 ######################################################
 Route::group(['prefix' => 'v1/auth'], function () {
+    ## Ruta para obtener token csrf.
+    Route::get('/csrf-cookie', [LoginController::class, 'csrfCookie'])
+        ->middleware(\Illuminate\Session\Middleware\StartSession::class)
+        ->name('api.v1.auth.csrf_cookie');
+
     ## Ruta para hacer login.
     Route::post('/login', [LoginController::class, 'login'])
         //->middleware(\Illuminate\Session\Middleware\StartSession::class)
@@ -32,7 +38,7 @@ Route::group(['prefix' => 'v1/auth'], function () {
         //->middleware(\Illuminate\Session\Middleware\StartSession::class)
         ->name('api.v1.auth.signup');
 
-    ## Grupo de rutas protegidos por token de autenticación.
+    ## Grupo de rutas protegidas por token de autenticación.
     Route::group(['middleware' => 'auth:sanctum'], function () {
         ## Cierra la sesión de un usuario e invalida su token actual.
         Route::post('/logout', [LoginController::class, 'logout'])
@@ -84,74 +90,12 @@ Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function (
 ##                   Plataformas
 ######################################################
 Route::group(['prefix' => 'v1/platform', 'middleware' => ['cors']], function () {
-    Route::post('{slug}/info', function () {
-        return response()->json([
-            'platforms' => [
-                'title' => 'Mis Plataformas',
-                'description' => 'Listado de plataformas',
-                'elements' => [
-                    [
-                        'slug' => 'api-fryntiz',
-                        'name' => 'My Api',
-                        'url' => 'https://api.fryntiz.dev',
-                        'icon' => ''
 
-                    ],
-                    [
-                        'slug' => 'curriculum-vitae',
-                        'name' => 'Curriculum',
-                        'url' => 'https://curriculum.fryntiz.es',
-                        'icon' => ''
+    ## Devuelve información principal de todas las plataformas existentes.
+    Route::get('/all', [PlatformController::class, 'index']);
 
-                    ],
-                    [
-                        'slug' => 'la-guia-linux',
-                        'name' => 'La Guía Linux',
-                        'url' => 'https://laguialinux.es',
-                        'icon' => ''
-
-                    ],
-                ]
-            ],
-            'technologies' => [
-                'vue',
-                'tailwind'
-            ],
-            'resources' => [
-                'title' => 'Recursos',
-                'description' => 'Listado de recursos',
-                'elements' => [
-                    [
-                        'name' => 'Gitlab',
-                        'url' => 'https://gitlab.com/fryntiz/www.fryntiz.es',
-                        'icon' => ''
-
-                    ],
-                    [
-                        'name' => 'Github',
-                        'url' => 'https://github.com/fryntiz/www.fryntiz.es',
-                        'icon' => ''
-
-                    ],
-                ]
-            ],
-            'pages' => [
-                [
-                    'title' => 'Link1',
-                    'url' => 'https://www.fryntiz.es',
-                ],
-                [
-                    'title' => 'Link2',
-                    'url' => 'https://www.fryntiz.es',
-                ],
-            ],
-            'message' => 'Hola soy un mensaje de prueba',
-            'name' => 'Fryntiz',
-            'version' => 1.0,
-            'author' => 'Raúl Caro Pastorino',
-        ]);
-    });
-
+    ## Devuelve toda la información para una plataforma concreta.
+    Route::get('{platform:slug}/info', [PlatformController::class, 'info']);
 
     Route::post('{slug}/projects', function (Request $request, $slug) {
         $category = $request->get('category');

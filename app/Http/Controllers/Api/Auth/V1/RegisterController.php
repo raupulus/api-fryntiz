@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use JsonHelper;
@@ -20,15 +21,15 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param \App\Http\Requests\Api\Auth\RegisterRequest $request
+     * @param RegisterRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function create(RegisterRequest $request)
+    public function create(RegisterRequest $request): JsonResponse
     {
         ## Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
         return JsonHelper::forbidden();
-        
+
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 
@@ -46,11 +47,11 @@ class RegisterController extends Controller
     /**
      * Elimina la cuenta de un usuario.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): JsonResponse
     {
 
         // TODO → No puede quedar tan simple eliminar una cuenta

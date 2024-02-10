@@ -409,15 +409,54 @@ class File extends Model
      */
     public function thumbnail(string $key = 'small'): string
     {
-        if ($this->fileType && ($this->fileType->type === 'image')) {
-            $thumbnail = $this->thumbnails()->where('key', $key)->first();
-
-            if ($thumbnail) {
-                return $thumbnail->url;
-            }
+        // TOFIX: En caso de no ser una imagen devuelvo la url, pero esto no tiene mucho sentido por ahora
+        if ($this->fileType && !($this->fileType->type === 'image')) {
+            return $this->url;
         }
 
-        return $this->url;
+        $thumbnail = $this->thumbnails()->where('key', $key)->first();
+
+        if (!$thumbnail) {
+            $pos = array_search($key, array_keys(self::$thumbnailsSizeWidth), true);
+
+
+            ## En caso de pedir la imagen más grande, buscamos la más cercana en tamaño inferior.
+            if ($pos === (count(self::$thumbnailsSizeWidth) - 1)) {
+                $newArraySizes = array_reverse(self::$thumbnailsSizeWidth);
+                unset($newArraySizes[0]);
+
+                foreach ($newArraySizes as $idx => $size) {
+                    $thumbnail = $this->thumbnails()->where('key', $idx)->first();
+
+                    if ($thumbnail) {
+                        return $thumbnail->url;
+                    }
+                }
+            } else {  ## En caso de tener una imagen pequeña, buscamos la superior más cercana.
+                $newArraySizes = array_slice(self::$thumbnailsSizeWidth, $pos, null, true);
+
+                foreach ($newArraySizes as $idx => $size) {
+                    $thumbnail = $this->thumbnails()->where('key', $idx)->first();
+
+                    if ($thumbnail) {
+                        return $thumbnail->url;
+                    }
+                }
+            }
+
+
+            $thumbnail = $this->thumbnails()->where('key', $key)->first();
+        }
+
+
+
+
+        if ($thumbnail) {
+            return $thumbnail->url;
+        }
+
+        return self::urlDefaultImage($key);
+
     }
 
     /**

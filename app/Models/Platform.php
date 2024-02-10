@@ -22,6 +22,9 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     protected $table = 'platforms';
 
+    //protected $with = ['image'];
+    protected $appends = ['urlImageMicro', 'urlImageSmall'];
+
     protected $fillable = ['user_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
         'instagram'
@@ -61,6 +64,24 @@ class Platform extends BaseAbstractModelWithTableCrud
     public function contents(): HasMany
     {
         return $this->hasMany(Content::class, 'platform_id', 'id');
+    }
+
+    /**
+     * Asocia todos los contenidos creados para la plataforma.
+     *
+     * @return HasMany
+     */
+    public function contentsActive(): HasMany
+    {
+        return $this->contents()
+            ->where('is_active', true)
+            ->whereNotNull('published_at')
+            ;
+    }
+
+    public function contentPages(): HasMany
+    {
+        return $this->contentsActive()->where('type_id', 1);
     }
 
     /**
@@ -135,6 +156,7 @@ class Platform extends BaseAbstractModelWithTableCrud
     {
         return [
             'id' => 'ID',
+            'image_id' => 'Imagen ID',
             'urlImage' => 'Imagen',
             'title' => 'Título',
             'slug' => 'Slug',
@@ -153,6 +175,9 @@ class Platform extends BaseAbstractModelWithTableCrud
         return [
             'id' => [
                 'type' => 'integer',
+            ],
+            'image_id' => [
+                'type' => 'hidden',
             ],
             'urlImage' => [
                 'type' => 'image',

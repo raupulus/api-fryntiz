@@ -347,4 +347,35 @@ class User extends Authenticatable
             ]
         )->count();
     }
+
+    /**
+     * Devuelve información básica sobre el usuario.
+     *
+     * @return array
+     */
+    public function basicInfo(): array
+    {
+        return [
+            'name' => $this->fullName ,
+            'nick' => $this->nickname,
+            'url_image_micro' => $this->urlImageMicro,
+            'url_image_small' => $this->urlImageSmall,
+            'profession' => 'Developer', // Tablas user_details
+            'web' => 'raupulus.dev', // Tabla user_details
+            'social_networks' => $this->socials->map(function($ele) {
+                $sn = $ele->socialNetwork;
+
+                return [
+                    'slug' => $sn->slug,
+                    'name' => $sn->name,
+                    'color' => $sn->color,
+                    'nick' => $ele->nick,
+                    'url' => $ele->url,
+                    //'url_image' => $sn->urlImage,
+                    'url_image' => 'http://localhost:8000/images/default/small.jpg', // TODO->Terminar imágenes en SocialNetwork
+                ];
+            }),
+
+        ];
+    }
 }
