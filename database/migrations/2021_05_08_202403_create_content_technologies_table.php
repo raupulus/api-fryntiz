@@ -33,18 +33,18 @@ class CreateContentTechnologiesTable extends Migration
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->bigInteger('platform_technology_id')
+            $table->bigInteger('technology_id')
                 ->index()
                 ->nullable()
-                ->comment('FK a la plataforma asociada');
-            $table->foreign('platform_technology_id')
-                ->references('id')->on('platform_technologies')
+                ->comment('FK a la tecnología asociada');
+            $table->foreign('technology_id')
+                ->references('id')->on('technologies')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['content_id', 'platform_technology_id']);
+            $table->unique(['content_id', 'technology_id'], 'contents_technologies_unique');
             //$table->index(['content_id', 'platform_technology_id']);
         });
 
@@ -60,7 +60,7 @@ class CreateContentTechnologiesTable extends Migration
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['content_id']);
-            $table->dropForeign(['platform_technology_id']);
+            $table->dropForeign(['contents_technologies_unique']);
         });
     }
 }

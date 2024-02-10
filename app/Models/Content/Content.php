@@ -10,6 +10,7 @@ use App\Models\Platform;
 use App\Models\PlatformCategory;
 use App\Models\PlatformTag;
 use App\Models\Tag;
+use App\Models\Technology;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -212,6 +213,27 @@ class Content extends BaseAbstractModelWithTableCrud
     {
         return $this->hasMany(ContentContributor::class, 'content_id', 'id');
     }
+
+    /**
+     * Relación con las tecnologías.
+     *
+     * @return BelongsToMany
+     */
+    public function technologies(): BelongsToMany
+    {
+        return $this->belongsToMany(Technology::class, 'content_technologies', 'content_id', 'technology_id');
+    }
+
+    /**
+     * Relación con la tabla intermedia de las tecnologías.
+     *
+     * @return HasMany
+     */
+    public function technologiesJoin(): HasMany
+    {
+        return $this->hasMany(ContentTechnology::class, 'content_id', 'id');
+    }
+
 
     /**
      * Relación con las galerías asociadas.
