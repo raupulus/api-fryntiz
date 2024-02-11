@@ -30,6 +30,7 @@ class Platform extends BaseAbstractModelWithTableCrud
         'instagram'
         ];
 
+
     public static function  getModuleName(): string
     {
         return 'platform';
@@ -63,7 +64,9 @@ class Platform extends BaseAbstractModelWithTableCrud
      */
     public function contents(): HasMany
     {
-        return $this->hasMany(Content::class, 'platform_id', 'id');
+        return $this->hasMany(Content::class, 'platform_id', 'id')
+            ->orderByDesc('is_featured')
+            ->orderByDesc('updated_at');
     }
 
     /**
@@ -79,6 +82,11 @@ class Platform extends BaseAbstractModelWithTableCrud
             ;
     }
 
+    /**
+     * Devuelve el contenido de tipo páginas asociado a la plataforma actual.
+     *
+     * @return HasMany
+     */
     public function contentPages(): HasMany
     {
         return $this->contentsActive()->where('type_id', 1);

@@ -147,8 +147,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function pages(): HasMany
     {
-        return $this->hasMany(ContentPage::class, 'content_id', 'id')
-            ->orderBy('order');
+        return $this->hasMany(ContentPage::class, 'content_id', 'id')->orderBy('order');
     }
 
     /**

@@ -100,6 +100,13 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['check.domain', 'cors'
     ## Devuelve el contenido asociado a una plataforma para un tipo de contenido concreto
     Route::get('/{platform:slug}/content/type/{contentType}', [PlatformController::class, 'getContentByType']);
 
+
+
+
+
+    // TODO: Revisar el siguiente endpoint lo que pretendía hacer, habrá que adaptar o replantearlo
+
+
     Route::post('{slug}/projects', function (Request $request, $slug) {
         $category = $request->get('category');
         $search = $request->get('search');

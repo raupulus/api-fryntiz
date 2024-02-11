@@ -245,7 +245,6 @@ class ContentController extends BaseWithTableCrudController
     {
         $requestValidated = $request->validated();
 
-
         $content->update($requestValidated);
 
         $content->contentsRelated()->sync($requestValidated['contents_related'] ?? []);
