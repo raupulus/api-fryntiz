@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PlatformController extends Controller
 {
@@ -26,7 +27,13 @@ class PlatformController extends Controller
         ]);
     }
 
-    public function info(Platform $platform)
+    /**
+     * Devuelve toda la información acerca de una plataforma concreta.
+     *
+     * @param Platform $platform
+     * @return JsonResponse
+     */
+    public function info(Platform $platform): JsonResponse
     {
         $version = '0.0.1';
 
@@ -85,4 +92,48 @@ class PlatformController extends Controller
             ]
         ]);
     }
+
+    public function getContentByType(Request $request, Platform $platform, string $contentType)
+    {
+        $contentAvailableType = ContentAvailableType::where('slug', $contentType)->first();
+
+        if (! $contentAvailableType) {
+            return \JsonHelper::failed('!Tipo de Contenido no reconocido, un saludo!');
+        }
+
+        if (! $platform || !$platform->id) {
+            return \JsonHelper::failed('!Tipo de Plataforma no reconocida, un saludo!');
+        }
+
+        $text = $request->get('text');
+        $technology = $request->get('technology');
+        $page = $request->get('page') ?? 1;
+        $limit = $request->get('limit') ?? 10;
+
+        //$query = $platform->contents()->paginate()
+
+
+
+        if ($technology) {
+            // Buscar modelo, filtrar por su ID
+            // Plantear si vamos a recibir un slug o un id
+        }
+
+
+
+        // Límite es menor de 50
+        $limit = ($limit > 50) ? 50 : $limit;
+
+
+
+
+        return \JsonHelper::success([
+            'message' => 'Si puedes leer esto bien',
+            'platform' => $platform,
+            'contentType' => $contentType,
+        ]);
+
+
+    }
 }
+

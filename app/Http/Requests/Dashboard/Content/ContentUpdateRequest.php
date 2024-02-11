@@ -88,6 +88,7 @@ class ContentUpdateRequest extends FormRequest
 
             // Relaciones
             'contributors.*' => 'nullable|exists:users,id',
+            'technologies.*' => 'nullable|exists:technologies,id',
             'tags.*' => 'nullable|exists:tags,id',
             'contents_related.*' => 'nullable|exists:contents,id',
             'categories.*' => 'nullable|exists:categories,id',

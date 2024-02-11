@@ -95,7 +95,10 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['check.domain', 'cors'
     Route::get('/all', [PlatformController::class, 'index']);
 
     ## Devuelve toda la información para una plataforma concreta.
-    Route::get('{platform:slug}/info', [PlatformController::class, 'info']);
+    Route::get('/{platform:slug}/info', [PlatformController::class, 'info']);
+
+    ## Devuelve el contenido asociado a una plataforma para un tipo de contenido concreto
+    Route::get('/{platform:slug}/content/type/{contentType}', [PlatformController::class, 'getContentByType']);
 
     Route::post('{slug}/projects', function (Request $request, $slug) {
         $category = $request->get('category');

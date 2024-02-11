@@ -53,9 +53,6 @@
                     </div>
                 </div>
 
-                {{-- Slug TODO:check en tiempo real, poner título si está vacío al perder focus del campo título--}}
-
-                {{-- Slug TODO:comprobar si está bien formado en tiempo real--}}
                 <div class="form-group">
                     <label for="slug">
                         Slug
@@ -484,6 +481,63 @@
                     </select>
 
                 </div>
+
+
+
+
+
+
+
+
+                {{-- Tecnologías --}}
+                <div class="form-group">
+                    <label for="technolgies">
+                        Tecnologías
+                    </label>
+
+                    <br>
+
+                    <small>
+                        Tecnologías relacionadas al contenido o descritas en él.
+                    </small>
+
+                    <br/>
+
+                    <div class="select2-purple">
+                        <select id="technologies" name="technologies[]"
+                                class="select2 select2-hidden-accessible"
+                                multiple="multiple"
+                                data-placeholder="Selecciona las tecnologías"
+                                data-dropdown-css-class="select2-purple"
+                                style="width: 100%;"
+                                tabindex="-1"
+                                aria-hidden="true">
+
+                            @foreach($technologies as $technology)
+                                @php($checked = $modelTechnologiesIds && in_array($technology->id, $modelTechnologiesIds))
+                                @php($checked = $checked || (old('technologies') && in_array($technology->id, old('technologies'))))
+
+                                <option {{$checked ? 'selected' : ''}}
+                                        value="{{$technology->id}}">
+                                    {{$technology->name}}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 {{-- Etiquetas --}}

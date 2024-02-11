@@ -56,10 +56,10 @@ class TechnologyController extends BaseWithTableCrudController
     public function store(TechnologyStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
-        $modelString::create($request->validated());
+        $model = $modelString::create($request->validated());
 
         ## Guarda la imagen desde base64
-        if ($request->has('image') && $request->get('image')) {
+        if ($model && $request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'technology', false, $model->image?->id);
 
             if ($image) {

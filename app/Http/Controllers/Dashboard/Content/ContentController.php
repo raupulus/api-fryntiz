@@ -22,12 +22,12 @@ use App\Models\Platform;
 use App\Models\PlatformCategory;
 use App\Models\PlatformTag;
 use App\Models\Tag;
+use App\Models\Technology;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationData;
 use Illuminate\View\View;
 use JsonHelper;
 
@@ -59,9 +59,9 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function create(Request $request, Platform $platform)
+    public function create(Request $request, Platform $platform): View
     {
         $model = new (self::getModel())();
         $model->platform_id = $platform->id;
@@ -74,6 +74,8 @@ class ContentController extends BaseWithTableCrudController
             'platforms' => Platform::all(),
             'contentTypes' => ContentAvailableType::all(),
             'contributorsIds' => $contributorsIds,
+            'technologies' => Technology::all(),
+            'modelTechnologiesIds' => $model->technologies()->pluck('technologies.id')->toArray(),
             'tags' => $model->platform->tags,
             'categories' => $model->platform->categories,
             'modelCategoriesIds' => $model->categories->pluck('id')->toArray(),
@@ -85,11 +87,11 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Content\ContentStoreRequest $request
+     * @param ContentStoreRequest $request
      *
      * @return RedirectResponse
      */
-    public function store(ContentStoreRequest $request)
+    public function store(ContentStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
         $requestValidated = $request->validated();
@@ -105,6 +107,10 @@ class ContentController extends BaseWithTableCrudController
 
         if (isset($requestValidated['contents_related'])) {
             $model->contentsRelated()->sync($requestValidated['contents_related']);
+        }
+
+        if (isset($requestValidated['technologies'])) {
+            $model->technologies()->sync($requestValidated['technologies']);
         }
 
         if (isset($requestValidated['contributors'])) {
@@ -165,9 +171,9 @@ class ContentController extends BaseWithTableCrudController
      *
      * @param Content $model
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function show(Content $model)
+    public function show(Content $model): View
     {
         return view('dashboard.' . $model::getModuleName() . '.show')->with([
             'model' => $model,
@@ -179,9 +185,9 @@ class ContentController extends BaseWithTableCrudController
      *
      * @param Content $model
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function edit(Content $model)
+    public function edit(Content $model): View
     {
         //$html = TextFormatParseHelper::jsonToHtml($model->pages->first()->raw->content);
 
@@ -219,6 +225,8 @@ class ContentController extends BaseWithTableCrudController
             'contentTypes' => ContentAvailableType::all(),
             'contributorsIds' => $contributorsIds,
             'tags' => $model->platform->tags,
+            'technologies' => Technology::all(),
+            'modelTechnologiesIds' => $model->technologies()->pluck('technologies.id')->toArray(),
             'categories' => $model->platform->categories,
             'modelCategoriesIds' => $model->categoriesQuery()->pluck('id')->toArray(),
             'modelTagsIds' => $model->tagsQuery()->pluck('id')->toArray(),
@@ -229,17 +237,26 @@ class ContentController extends BaseWithTableCrudController
     /**
      * Update the specified resource in storage.
      *
+     * @param ContentUpdateRequest $request
+     * @param Content $content
+     * @return RedirectResponse
      */
-    public function update(ContentUpdateRequest $request, Content $content)
+    public function update(ContentUpdateRequest $request, Content $content): RedirectResponse
     {
         $requestValidated = $request->validated();
+
 
         $content->update($requestValidated);
 
         $content->contentsRelated()->sync($requestValidated['contents_related'] ?? []);
+        $content->technologies()->sync($requestValidated['technologies'] ?? []);
         $content->saveContributors($requestValidated['contributors'] ?? []);
         $content->saveTags($requestValidated['tags'] ?? []);
         $content->saveCategories($requestValidated['categories'] ?? []);
+
+
+        // TODO: save/sync array technology
+
 
         ## Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {
@@ -600,7 +617,7 @@ class ContentController extends BaseWithTableCrudController
         }
 
         return JsonHelper::accepted([
-            'success' => (bool) $file,
+            'success' => (bool)$file,
             "file" => array_merge([
                 'url' => $file?->thumbnail('normal'),
                 'path' => str_replace(config('app.url') . '/', '', $file?->thumbnail('normal')),
@@ -690,18 +707,12 @@ class ContentController extends BaseWithTableCrudController
             ->where('available_page_raw_id', $contentPageRawAvailable->id)
             ->first();
 
-        if (! $contentPageRaw) {
+        if (!$contentPageRaw) {
             $contentPageRaw = ContentPageRaw::create([
                 'content_page_id' => $contentPage->id,
                 'available_page_raw_id' => $contentPageRawAvailable->id,
             ]);
         }
-
-
-
-
-
-
 
 
         // FIX ALT-TITLE (Intento corregir fallos en los bloques, por ejemplo caption de imágenes y title de archivos adjuntos)
@@ -710,7 +721,7 @@ class ContentController extends BaseWithTableCrudController
         try {
             $contentPreFix = collect($content['blocks']);
 
-            $contentPreFix = $contentPreFix->map(function($item, $key) {
+            $contentPreFix = $contentPreFix->map(function ($item, $key) {
                 if (isset($item['type']) && ($item['type'] === 'attaches' && isset($item['data']['title']))) {
                     $item['data']['title'] = ContentPage::sanitizeTitle($item['data']['title']);
                 }
@@ -736,12 +747,6 @@ class ContentController extends BaseWithTableCrudController
         // END FIX
 
 
-
-
-
-
-
-
         $contentPageRaw->content = $content;
         $contentPageRaw->save();
 
@@ -754,8 +759,8 @@ class ContentController extends BaseWithTableCrudController
         }
 
         $isSlugUnique = ContentPage::where('slug', $slug)
-            ->where('id', '!=', $contentPage->id)
-            ->count() === 0;
+                ->where('id', '!=', $contentPage->id)
+                ->count() === 0;
 
         if (!$isSlugUnique) {
             $slug .= '-' . Str::random(20);

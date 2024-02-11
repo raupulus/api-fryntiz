@@ -70,6 +70,7 @@
                                                class="form-control"
                                                id="name"
                                                name="name"
+                                               data-slug_provider="title"
                                                value="{{ old('name', $model->name) }}"
                                                placeholder="Nombre de la tecnología">
                                     </div>
@@ -83,6 +84,7 @@
                                                id="slug"
                                                class="form-control"
                                                name="slug"
+                                               data-sluggable="title"
                                                value="{{ old('slug', $model->slug) }}"
                                                placeholder="slug-de-la-tecnologia">
                                     </div>
@@ -146,6 +148,7 @@
 
                                         <input class="form-control"
                                                id="color"
+                                               name="color"
                                                style="height: 8rem;"
                                                type="color" value="{{old('color', $model->color)}}">
                                     </div>
@@ -163,3 +166,26 @@
         </div>
     </div>
 @stop
+
+
+@section('js')
+    <script>
+        // Set title form to slug
+        let title = document.querySelector('input[data-slug_provider="title"]');
+        let slug = document.querySelector('input[data-sluggable="title"]');
+
+        //console.log('title:', title, slug);
+
+        if (title && slug) {
+            title.addEventListener('focusout', () => {
+                //console.log('event focusout');
+                // TODO check if slug is empty
+
+                if (slug.value == '') {
+                    slug.value = slugify(title.value);
+                }
+
+            });
+        }
+    </script>
+@endsection
