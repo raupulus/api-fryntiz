@@ -19,6 +19,22 @@ return [
         ],
     ],
     [
+        'text' => 'Tecnologías',
+        'icon' => 'fas fa-fw fa-file',
+        'submenu' => [
+            [
+                'text' => 'Listado',
+                'icon' => 'far fa-fw fa-file',
+                'route' => 'dashboard.technology.index',
+            ],
+            [
+                'text' => 'Nueva',
+                'icon' => 'fa fa-plus',
+                'route' => 'dashboard.technology.create',
+            ],
+        ],
+    ],
+    [
         'text' => 'Categorías',
         'icon' => 'fas fa-fw fa-file',
         'submenu' => [

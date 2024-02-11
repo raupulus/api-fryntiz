@@ -29,6 +29,8 @@ use App\Http\Controllers\Dashboard\EmailController;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\Dashboard\Content\ContentPageController;
 use \App\Http\Controllers\Dashboard\AdminLteController;
+use \App\Http\Controllers\Dashboard\TechnologyController;
+
 
 ############################################################
 ##                      Dashboard                         ##
@@ -186,6 +188,34 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
             ## Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [CategoryController::class, 'ajaxTableActions'])
                 ->name('dashboard.category.ajax.table.actions');
+        });
+    });
+
+############################################################
+##                     Tecnologías                        ##
+############################################################
+Route::group(['prefix' => '/technology', 'middleware' => ['auth', 'verified']],
+    function () {
+        Route::get('/index', [TechnologyController::class, 'index'])
+            ->name('dashboard.technology.index');
+        Route::get('/create', [TechnologyController::class, 'create'])
+            ->name('dashboard.technology.create');
+        Route::post('/store', [TechnologyController::class, 'store'])
+            ->name('dashboard.technology.store');
+        Route::get('/{technology}/edit', [TechnologyController::class, 'edit'])
+            ->name('dashboard.technology.edit');
+        Route::match(['post', 'put', 'patch'], '/update/{technology?}', [TechnologyController::class, 'update'])
+            ->name('dashboard.technology.update');
+        Route::match(['POST', 'DELETE'], '/destroy/{technology?}', [TechnologyController::class, 'destroy'])
+            ->name('dashboard.technology.destroy');
+
+        Route::group(['prefix' => '/ajax'], function () {
+            Route::post('/table/get', [TechnologyController::class, 'ajaxTableGetQuery'])
+                ->name('dashboard.technology.ajax.table.get');
+
+            ## Acciones sobre datos de la tabla [update, create...]
+            Route::match(['put', 'patch', 'post'], '/table/action', [TechnologyController::class, 'ajaxTableActions'])
+                ->name('dashboard.technology.ajax.table.actions');
         });
     });
 

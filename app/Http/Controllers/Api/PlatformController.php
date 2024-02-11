@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use Illuminate\Http\JsonResponse;
@@ -84,29 +83,6 @@ class PlatformController extends Controller
                     'instagram' => $platform->instagram,
                 ],
             ]
-        ]);
-
-
-        return response()->json([
-            'resources' => [
-                'title' => 'Recursos',
-                'description' => 'Listado de recursos',
-                'elements' => [
-                    [
-                        'name' => 'Gitlab',
-                        'url' => 'https://gitlab.com/fryntiz/www.fryntiz.es',
-                        'icon' => ''
-
-                    ],
-                    [
-                        'name' => 'Github',
-                        'url' => 'https://github.com/fryntiz/www.fryntiz.es',
-                        'icon' => ''
-
-                    ],
-                ]
-            ],
-
         ]);
     }
 }

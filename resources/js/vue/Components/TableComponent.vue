@@ -453,6 +453,9 @@ export default {
                     case 'button':
                         html = '<button class="btn btn-primary">' + cell + '</button>';
                         break;
+                    case 'color':
+                        html = '<span style="display: inline-block; width: 3rem; height: 1rem; background-color:' + cell + '"></span>';
+                        break;
                     case 'image':
                         html = '<img src="' + cell + '" alt=""/>';
                         break;

@@ -4,11 +4,8 @@ namespace App\Models;
 
 use App;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use JetBrains\PhpStorm\ArrayShape;
-use function array_keys;
 use function route;
 
 /**
@@ -16,8 +13,6 @@ use function route;
  */
 class Tag extends BaseAbstractModelWithTableCrud
 {
-    use HasFactory;
-
     protected $table = 'tags';
 
     protected $fillable = ['name', 'slug', 'description'];

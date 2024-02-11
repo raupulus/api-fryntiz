@@ -3,25 +3,21 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\BaseWithTableCrudController;
-use App\Http\Requests\Dashboard\Tag\TagDeleteRequest;
-use App\Http\Requests\Dashboard\Tag\TagStoreRequest;
-use App\Http\Requests\Dashboard\Tag\TagUpdateRequest;
-use App\Models\Tag;
+use App\Http\Requests\Dashboard\Technology\TechnologyDeleteRequest;
+use App\Http\Requests\Dashboard\Technology\TechnologyStoreRequest;
+use App\Http\Requests\Dashboard\Technology\TechnologyUpdateRequest;
+use App\Models\File;
+use App\Models\Technology;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
-use JsonHelper;
-use function redirect;
-use function view;
 
-/**
- * Controlador para Tags
- */
-class TagController extends BaseWithTableCrudController
+class TechnologyController extends BaseWithTableCrudController
 {
     protected static function getModel(): string
     {
-        return Tag::class;
+        return Technology::class;
     }
 
     /**
@@ -53,14 +49,28 @@ class TagController extends BaseWithTableCrudController
     /**
      * Store a newly created resource in storage.
      *
-     * @param TagStoreRequest $request
+     * @param TechnologyStoreRequest $request
      *
      * @return RedirectResponse
      */
-    public function store(TagStoreRequest $request): RedirectResponse
+    public function store(TechnologyStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
         $modelString::create($request->validated());
+
+        ## Guarda la imagen desde base64
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'technology', false, $model->image?->id);
+
+            if ($image) {
+                $model->image_id = $image->id;
+                $model->save();
+
+                $image->title = $model->name;
+                $image->alt = $model->name;
+                $image->save();
+            }
+        }
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
     }
@@ -68,11 +78,11 @@ class TagController extends BaseWithTableCrudController
     /**
      * Display the specified resource.
      *
-     * @param Tag $tag
+     * @param Technology $technology
      *
      * @return Response
      */
-    public function show(Tag $tag)
+    public function show(Technology $technology)
     {
         //
     }
@@ -80,26 +90,26 @@ class TagController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Tag $model
+     * @param Technology $technology
      *
      * @return View
      */
-    public function edit(Tag $model): View
+    public function edit(Technology $technology): View
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
-            'model' => $model,
+            'model' => $technology,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param TagUpdateRequest $request
+     * @param TechnologyUpdateRequest $request
      * @param int|null $id
      *
      * @return RedirectResponse
      */
-    public function update(TagUpdateRequest $request, int|null $id = null): RedirectResponse
+    public function update(TechnologyUpdateRequest $request, int|null $id = null): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::find($id);
@@ -107,18 +117,32 @@ class TagController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
+        ## Guarda la imagen desde base64
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'technology', false, $model->image?->id);
+
+            if ($image) {
+                $model->image_id = $image->id;
+                $model->save();
+
+                $image->title = $model->name;
+                $image->alt = $model->name;
+                $image->save();
+            }
+        }
+
         return redirect()->route($modelString::getCrudRoutes()['index']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param TagDeleteRequest $request
+     * @param TechnologyDeleteRequest $request
      * @param int|null $id
      *
-     * @return RedirectResponse
+     * @return JsonResponse|RedirectResponse
      */
-    public function destroy(TagDeleteRequest $request, int|null $id = null): RedirectResponse
+    public function destroy(TechnologyDeleteRequest $request, int|null $id = null): JsonResponse|RedirectResponse
     {
         $deleted = false;
         $idRequest = $request->get('id');
@@ -129,15 +153,9 @@ class TagController extends BaseWithTableCrudController
         }
 
         if ($request->isJson()) {
-            return JsonHelper::success(['deleted' => $deleted]);
+            return \JsonHelper::success(['deleted' => $deleted]);
         }
 
         return redirect()->back();
     }
-
-
-    ############################################################
-    ##                       AJAX                             ##
-    ############################################################
-
 }
