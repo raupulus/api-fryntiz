@@ -35,7 +35,7 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text">
+                            <span class="input-group-text bg-yellow">
                                 <i class="fa fa-heading"></i>
                             </span>
                         </div>
@@ -60,7 +60,7 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text">
+                            <span class="input-group-text bg-indigo">
                                 <i class="fa fa-link"></i>
                             </span>
                         </div>
@@ -84,24 +84,32 @@
                         Autor
                     </label>
 
-                    <select id="author_id" name="author_id"
-                            class="custom-select rounded-0">
-                        @if (in_array(auth()->user()->role_id, [1, 2]))
-                            @foreach($users as $user)
-                                @php($checked = (int)old('author_id', $model->author_id) ===  $user->id)
-                                @php($checked = $checked || (auth()->id() === $user->id))
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-teal">
+                                <i class="fa fa-user"></i>
+                            </span>
+                        </div>
 
-                                <option value="{{ $user->id }}"
-                                    {{$checked ? 'selected' : ''}}>
-                                    {{ $user->name }}
+                        <select id="author_id" name="author_id"
+                                class="custom-select rounded-0">
+                            @if (in_array(auth()->user()->role_id, [1, 2]))
+                                @foreach($users as $user)
+                                    @php($checked = (int)old('author_id', $model->author_id) ===  $user->id)
+                                    @php($checked = $checked || (auth()->id() === $user->id))
+
+                                    <option value="{{ $user->id }}"
+                                        {{$checked ? 'selected' : ''}}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            @else
+                                <option value="{{ auth()->user()->id }}" selected>
+                                    {{ auth()->user()->name }}
                                 </option>
-                            @endforeach
-                        @else
-                            <option value="{{ auth()->user()->id }}" selected>
-                                {{ auth()->user()->name }}
-                            </option>
-                        @endif
-                    </select>
+                            @endif
+                        </select>
+                    </div>
                 </div>
 
                 {{-- Plataforma --}}
@@ -110,18 +118,26 @@
                         Plataforma
                     </label>
 
-                    <select id="platform_id" name="platform_id"
-                            class="custom-select rounded-0">
-                        @foreach($platforms as $platform)
-                            @php($checked = (int)old('platform_id', $model->platform_id) ===
-                            $platform->id)
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-orange">
+                                <i class="fa fa-layer-group" style="color: #fff;"></i>
+                            </span>
+                        </div>
 
-                            <option value="{{ $platform->id }}"
-                                {{$checked ? 'selected' : ''}}>
-                                {{ $platform->title }}
-                            </option>
-                        @endforeach
-                    </select>
+                        <select id="platform_id" name="platform_id"
+                                class="custom-select rounded-0">
+                            @foreach($platforms as $platform)
+                                @php($checked = (int)old('platform_id', $model->platform_id) ===
+                                $platform->id)
+
+                                <option value="{{ $platform->id }}"
+                                    {{$checked ? 'selected' : ''}}>
+                                    {{ $platform->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 {{-- Tipo de Contenido --}}
@@ -130,17 +146,27 @@
                         Tipo de Contenido
                     </label>
 
-                    <select id="type_id" name="type_id"
-                            class="custom-select rounded-0">
-                        @foreach($contentTypes as $contentType)
-                            @php($checked = (int)old('type_id', $model->type_id) === $contentType->id)
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-dark">
+                                <i class="fa fa-project-diagram"></i>
+                            </span>
+                        </div>
 
-                            <option value="{{ $contentType->id }}"
-                                {{$checked ? 'selected' : ''}}>
-                                {{ $contentType->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                        <select id="type_id" name="type_id"
+                                class="custom-select rounded-0">
+                            @foreach($contentTypes as $contentType)
+                                @php($checked = (int)old('type_id', $model->type_id) === $contentType->id)
+
+                                <option value="{{ $contentType->id }}"
+                                    {{$checked ? 'selected' : ''}}>
+                                    {{ $contentType->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+
                 </div>
             </div>
         </div>

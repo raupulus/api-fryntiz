@@ -102,33 +102,41 @@ class PlatformController extends Controller
             return \JsonHelper::failed('!Tipo de Contenido no reconocido, un saludo!');
         }
 
-        if (! $platform || !$platform->id) {
+        if (!$platform->id) {
             return \JsonHelper::failed('!Tipo de Plataforma no reconocida, un saludo!');
         }
 
         $search = $request->get('search');
+        $technology = $request->get('technology');
         $technology_id = $request->get('technology_id');
+        $category = $request->get('category');
         $category_id = $request->get('category_id');
         $page = $request->get('page') ?? 1;
         $quantity = $request->get('quantity') ?? 10;
 
         $query = $platform->contentsActive()->select('contents.*')->where('type_id', $contentAvailableType->id);
-        $total = (clone($query))->count();
 
-
-        if ($technology_id) {
+        if ($search || $technology || $technology_id) {
             $query->leftJoin('content_technologies', 'contents.id', 'content_technologies.content_id');
-            //$query->groupBy('content_technologies.technology_id');
-            //$query->groupBy('contents.id');
-            $query->where('content_technologies.technology_id', $technology_id);
+            $query->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id');
         }
 
-        if ($category_id) {
+        if ($technology) {
+            $query->where('technologies.slug', $technology);
+        } elseif ($technology_id) {
+            $query->where('technologies.id', $technology_id);
+        }
+
+        if ($category || $category_id) {
             $query->leftJoin('content_categories', 'contents.id', 'content_categories.content_id');
             $query->leftJoin('platform_categories', 'content_categories.platform_category_id', 'platform_categories.id');
             $query->leftJoin('categories', 'platform_categories.category_id', 'categories.id');
 
-            $query->where('categories.id', $category_id);
+            if ($category) {
+                $query->where('categories.slug', $category);
+            } elseif ($category_id) {
+                $query->where('categories.id', $category_id);
+            }
         }
 
         if ($search) {
@@ -136,9 +144,15 @@ class PlatformController extends Controller
             $query->where(function ($q) use ($search) {
                 return $q->orWhere('contents.title', 'iLike', '%' . $search . '%')
                     ->orWhere('contents.slug', 'iLike', '%' . $search . '%')
-                    ->orWhere('contents.excerpt', 'iLike', '%' . $search . '%');
+                    ->orWhere('contents.excerpt', 'iLike', '%' . $search . '%')
+
+                    ->orWhere('technologies.slug', 'iLike', '%' . $search . '%')
+                    ;
             });
         }
+
+
+        $total = (clone($query))->count();
 
         // Límite debe ser menor a 50 contenidos.
         $quantity = ($quantity > 50) ? 50 : $quantity;
@@ -153,7 +167,7 @@ class PlatformController extends Controller
                 'is_featured' => $ele->is_featured,
                 'urlImageSmall' => $ele->urlImageSmall,
                 'urlImageMedium' => $ele->urlImageMedium,
-                'urlImageNormal' => $ele->urlImageNormal,
+                'urlImage' => $ele->urlImageNormal,
                 'total_pages' => $ele->pages()->count(),
                 'categories' => $ele->categoriesQuery()->pluck('name'),
                 'tags' => $ele->tagsQuery()->pluck('name'),
@@ -181,20 +195,24 @@ class PlatformController extends Controller
         $totalPages = (($total % $quantity) !== 0) ? (((int) ($total / $quantity)) + 1) : ($total % $quantity);
 
         return \JsonHelper::success([
-            'totalElements' => $total, // Cantidad total de elementos
-            'totalPages' => $totalPages, // Cantidad total de páginas
-            'quantity_contents_current_page' => $contents->count(), // Cantidad de contenidos en la página actual
-            'hasBackPage' => $page > 1,
-            'hasNextPage' => $page < $totalPages,
-
+            'pagination' => [
+                'totalElements' => $total, // Cantidad total de elementos
+                'totalPages' => $totalPages, // Cantidad total de páginas
+                'quantity_contents_current_page' => $contents->count(), // Cantidad de contenidos en la página actual
+                'hasBackPage' => $page > 1,
+                'hasNextPage' => $page < $totalPages,
+                'currentPage' => $page,
+            ],
             'search_params' => [
                 'search' => $search,
                 'page' => $page,
+                'technology' => $technology,
                 'technology_id' => $technology_id,
+                'category' => $category,
                 'category_id' => $category_id,
                 'quantity' => $quantity,
-                //'orderDirection' => 'DESC',
-                //'orderBy' => 'updated_at',
+                'orderDirection' => 'desc',
+                'orderBy' => ['is_featured', 'updated_at'],
             ],
 
             'contents' => $contents,

@@ -248,7 +248,7 @@ class YoutubeVideoSearch {
             channelId: this.channelId,
             type: 'video',
             key: this.apiKey,
-            maxResults: 5,
+            maxResults: 10,
             order: 'relevance', // viewCount, rating, title, relevance, date
             safeSearch: 'none',
         }
