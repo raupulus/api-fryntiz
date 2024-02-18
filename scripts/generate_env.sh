@@ -64,6 +64,9 @@ source "${WORKSCRIPT}/scripts/functions.sh"
 ## Creo el archivo .env a partir del archivo con parámetros predefinidos.
 cp "${WORKSCRIPT}/.env.example.production" "${WORKSCRIPT}/.env"
 
+## General
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_NAME' "${APP_NAME}"
+
 ## DB.
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_USERNAME' "${DB_USERNAME}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PASSWORD' "${DB_PASSWORD}"

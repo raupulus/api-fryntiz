@@ -161,8 +161,14 @@ class EmailController extends Controller
             $errors['captcha'] = $captchaValid->getErrorCodes();
         }
 
-        $email->attempts = $email->send ?? 1;
-        $email->save();
+
+        // TODO: Si existe un email de el mismo día que coincida todos los parámetros, descartar!!!
+        if (true) {
+            $email->attempts = $email->send ?? 1;
+            $email->save();
+        }
+
+
 
         if ($email->send && $this->sendEmail($email, 'contact')) {
             $email->sent_at = Carbon::now();

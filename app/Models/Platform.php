@@ -65,8 +65,8 @@ class Platform extends BaseAbstractModelWithTableCrud
     public function contents(): HasMany
     {
         return $this->hasMany(Content::class, 'platform_id', 'id')
-            ->orderByDesc('is_featured')
-            ->orderByDesc('updated_at');
+            ->orderByDesc('contents.is_featured')
+            ->orderByDesc('contents.updated_at');
     }
 
     /**
@@ -77,8 +77,8 @@ class Platform extends BaseAbstractModelWithTableCrud
     public function contentsActive(): HasMany
     {
         return $this->contents()
-            ->where('is_active', true)
-            ->whereNotNull('published_at')
+            ->where('contents.is_active', true)
+            ->whereNotNull('contents.published_at')
             ;
     }
 

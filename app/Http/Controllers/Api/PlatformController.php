@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ContentCollection;
+use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
+use App\Models\Technology;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlatformController extends Controller
 {
@@ -39,19 +41,25 @@ class PlatformController extends Controller
         $version = '0.0.1';
 
         ## Tecnologías
-        $technologies = [
-            'vue',
-            'tailwind',
-            'laravel',
-            'javascript',
-        ];
+        $technologies = Technology::select(['technologies.name', 'technologies.slug'])
+            //->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id')
+            ->leftJoin('content_technologies', 'technologies.id', 'content_technologies.technology_id')
+            ->leftJoin('contents', 'content_technologies.content_id', 'contents.id')
+            ->leftJoin('platforms', 'contents.platform_id', 'platforms.id')
+            ->where('platforms.id', $platform->id)
+            ->where('contents.type_id', 5) // Tener en cuenta que limito solo a proyectos????
+            ->whereNotNull('technologies.name')
+            ->whereNotNull('technologies.slug')
+            ->groupBy('technologies.slug')
+            ->groupBy('technologies.name')
+            ->get();
 
         $contentTypes = ContentAvailableType::select(['id', 'plural_name', 'slug', 'name', 'description'])->get();
 
         ## Contenidos y páginas (Contador con cantidad total de contenidos por cada tipo de la plataforma)
         $contents = [
             'total' => $platform->contentsActive()->count(),
-            'types' => $contentTypes->map(function($ele) use ($platform) {
+            'types' => $contentTypes->map(function ($ele) use ($platform) {
                 return $ele->getStatsByPlatform($platform);
             }),
         ];
@@ -98,7 +106,7 @@ class PlatformController extends Controller
     {
         $contentAvailableType = ContentAvailableType::where('slug', $contentType)->first();
 
-        if (! $contentAvailableType) {
+        if (!$contentAvailableType) {
             return \JsonHelper::failed('!Tipo de Contenido no reconocido, un saludo!');
         }
 
@@ -114,11 +122,21 @@ class PlatformController extends Controller
         $page = $request->get('page') ?? 1;
         $quantity = $request->get('quantity') ?? 10;
 
-        $query = $platform->contentsActive()->select('contents.*')->where('type_id', $contentAvailableType->id);
+
+        //$platform->contentsActive()
+
+        $query = Content::select('contents.*')
+            ->where('type_id', $contentAvailableType->id)
+            ->where('platform_id', $platform->id)
+            ->where('contents.is_active', true)
+            ->whereNotNull('contents.published_at');
+
 
         if ($search || $technology || $technology_id) {
             $query->leftJoin('content_technologies', 'contents.id', 'content_technologies.content_id');
             $query->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id');
+
+            $query->groupBy('content_technologies.content_id');
         }
 
         if ($technology) {
@@ -145,14 +163,19 @@ class PlatformController extends Controller
                 return $q->orWhere('contents.title', 'iLike', '%' . $search . '%')
                     ->orWhere('contents.slug', 'iLike', '%' . $search . '%')
                     ->orWhere('contents.excerpt', 'iLike', '%' . $search . '%')
-
-                    ->orWhere('technologies.slug', 'iLike', '%' . $search . '%')
-                    ;
+                    ->orWhere('technologies.slug', 'iLike', '%' . $search . '%');
             });
         }
 
+        $query->groupBy('contents.id');
 
-        $total = (clone($query))->count();
+        $totalQuery = (clone($query));
+
+        $total = $totalQuery->select([
+            DB::raw('COUNT(*) as total'),
+        ])
+            ->get()->count();
+
 
         // Límite debe ser menor a 50 contenidos.
         $quantity = ($quantity > 50) ? 50 : $quantity;
@@ -192,7 +215,14 @@ class PlatformController extends Controller
         });
 
         ## Calculo total de páginas.
-        $totalPages = (($total % $quantity) !== 0) ? (((int) ($total / $quantity)) + 1) : ($total % $quantity);
+        if ($total === 0) {
+            $totalPages = 0;
+        } elseif ($total <= $quantity) { // Se piden más elementos por página de los que hay.
+            $totalPages = 1;
+        } else {
+            $totalPages = (($total % $quantity) !== 0) ? (((int)($total / $quantity)) + 1) : ($total / $quantity);
+        }
+
 
         return \JsonHelper::success([
             'pagination' => [
