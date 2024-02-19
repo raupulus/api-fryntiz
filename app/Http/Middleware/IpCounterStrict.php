@@ -41,7 +41,7 @@ class IpCounterStrict
                 return \response()->json([
                     'messages' => [
                         'errors' => [
-                            'Demasiadas peticiones desde tu ip, por favor, espera un minuto antes de volver a intentarlo.'
+                            'Demasiadas peticiones desde tu ip, la situación ha sido reportada al administrador. Si el envío es legítimo por favor, espera un minuto antes de volver a intentarlo.'
                         ]
                     ],
                 ], 429);

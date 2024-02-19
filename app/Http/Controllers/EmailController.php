@@ -141,7 +141,26 @@ class EmailController extends Controller
 
         $errors = [];
 
-        if ($captchaValid->isSuccess()) {
+
+        $checkLastFromEmail = Email::where('email', $email->email)
+            ->where('created_at', '>=', Carbon::now()->subMinutes(10))
+            ->exists();
+
+        if ($checkLastFromEmail) {
+            $errors['email_sender'] = 'Ya se ha recibido una solicitud de email con esa dirección de correo. Si es légitimo el envío prueba dentro de unos minutos.';
+        }
+
+        $checkSubjectAndMessage = Email::where('subject', 'iLike', $email->subject)
+            ->orWhere('message', 'iLike', $email->message)
+            ->where('created_at', '>=', Carbon::now()->days(1))
+            ->exists();
+
+        if ($checkSubjectAndMessage) {
+            $errors['subject_message'] = 'Ya se ha recibido una solicitud de email con el mismo asunto o mensaje en las últimas 24 horas.';
+        }
+
+
+        if (!$checkLastFromEmail && !$checkSubjectAndMessage && $captchaValid->isSuccess()) {
             // Verified!
             $email->captcha_score = $captchaValid->getScore();
             $qualityCaptcha = $captchaValid->getScore() <= 0.5 ? 0 : ($captchaValid->getScore() - 0.5) * 8;
@@ -161,14 +180,11 @@ class EmailController extends Controller
             $errors['captcha'] = $captchaValid->getErrorCodes();
         }
 
-
-        // TODO: Si existe un email de el mismo día que coincida todos los parámetros, descartar!!!
-        if (true) {
+        ## En caso de mensaje idéntico o parecido descartar guardar
+        if (!$checkLastFromEmail && !$checkSubjectAndMessage) {
             $email->attempts = $email->send ?? 1;
             $email->save();
         }
-
-
 
         if ($email->send && $this->sendEmail($email, 'contact')) {
             $email->sent_at = Carbon::now();
@@ -180,7 +196,7 @@ class EmailController extends Controller
         return \JsonHelper::success(
             [
                 'data' => $email,
-                'messages' => [ // Array con los mensajes de success
+                'messages' => [ // Array con los mensajes de estados
                     'success' => $success,
                     'errors' => $errors, // Array con los mensajes de error
                 ],
