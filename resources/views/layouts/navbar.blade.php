@@ -37,7 +37,7 @@ p-2 navbar-main">
                 </a>
             @endforeach
 
-            <a href="https://fryntiz.es/contact"
+            <a href="https://raupulus.dev/contact"
                target="_blank"
                class="navbar-menu-element block mt-4 lg:inline-block lg:mt-0 text-teal-lighter hover:text-white">
                 Contacto
