@@ -580,23 +580,23 @@ export default {
             let params = btn.getAttribute('data-params');
 
             // Pongo la tabla en modo de cargar datos.
-            handleOnLoadData();
+            await handleOnLoadData();
 
             // Envío datos por AJAX al servidor
             let result = await getQuery(url, method, {...params, id:id})
 
             // TODO → Comprobar respuesta antes de mostrar mensaje popup
             if (result && result.deleted) {
-                showPopupMessage('Se ha eliminado el registro correctamente', 'success')
+                await showPopupMessage('Se ha eliminado el registro correctamente', 'success')
             } else {
-                showPopupMessage('Ha ocurrido un error al eliminar el registro', 'error')
+                await showPopupMessage('Ha ocurrido un error al eliminar el registro', 'error')
             }
 
             // Actualizo la misma página para renovar datos.
             await changePage(currentPage.value, true);
 
             // Quita la tabla del modo cargar datos.
-            handleOnFinishLoadData();
+            await handleOnFinishLoadData();
         };
 
         /**

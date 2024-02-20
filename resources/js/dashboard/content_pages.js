@@ -393,6 +393,11 @@ window.document.addEventListener('DOMContentLoaded', function () {
              * onChange callback
              */
             onChange: async (api, event) => {
+
+                if (!event || !event.detail) {
+                    return;
+                }
+
                 //const index = event.detail.index;
                 const block = await event.detail.target.save();
                 const blockData = block.data;

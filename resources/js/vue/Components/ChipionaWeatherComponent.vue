@@ -44,7 +44,7 @@
 
                                 <div>
                                     <span class="resume-weather-temp">
-                                        {{ info.temperature | roundTo2Decimals }} ºC
+                                        {{ roundTo2Decimals(info.temperature) }} ºC
                                     </span>
                                 </div>
 
@@ -52,7 +52,7 @@
                                     <span>
                                         <span class="icon icon-humidity color-yellow"></span>
 
-                                        {{ info.humidity | roundTo2Decimals }} %
+                                        {{ roundTo2Decimals(info.humidity) }} %
                                     </span>
                                 </div>
 
@@ -60,7 +60,7 @@
                                     <span class="icon icon-pressure color-yellow"></span>
 
                                     <span>
-                                        {{ info.pressure | roundTo2Decimals }} mb
+                                        {{ roundTo2Decimals(info.pressure) }} mb
                                     </span>
                                 </div>
 
@@ -75,20 +75,20 @@
                             </div>
 
                             <!-- Muestra información del viento -->
-                            <div v-show="navigation.wind"
+                            <div v-show="roundTo2Decimals(navigation.wind)"
                                 class="navigation">
                                 <span class="icon icon-wind color-blue"></span>
 
                                 Viento
 
                                 <h1 class="resume-weather-temp">
-                                    {{ wind.average | roundTo2Decimals }} km/h
+                                    {{ roundTo2Decimals(wind.average) }} km/h
                                 </h1>
 
                                 <h3 class="resume-weather-desc">
-                                    Min: {{ wind.min | roundTo2Decimals }} km/h
+                                    Min: {{ roundTo2Decimals(wind.min) }} km/h
                                     <br />
-                                    Max: {{ wind.max | roundTo2Decimals }} km/h
+                                    Max: {{ roundTo2Decimals(wind.max) }} km/h
                                 </h3>
                             </div>
 
@@ -99,13 +99,13 @@
                                 Calidad del Aire
 
                                 <h1 class="resume-weather-temp">
-                                    {{ air_quality.quality | roundTo2Decimals }} %
+                                    {{ roundTo2Decimals(air_quality.quality) }} %
                                 </h1>
 
                                 <h3 class="resume-weather-desc">
-                                    TVOC: {{ air_quality.tvoc | roundTo2Decimals }}
+                                    TVOC: {{ roundTo2Decimals(air_quality.tvoc) }}
                                     <br />
-                                    CO2-ECO2: {{ air_quality.co2_eco2 | roundTo2Decimals }}
+                                    CO2-ECO2: {{ roundTo2Decimals(air_quality.co2_eco2) }}
                                 </h3>
                             </div>
 
@@ -117,13 +117,13 @@
                                 Radiación Solar
 
                                 <h1 class="resume-weather-temp">
-                                    {{ light.index | roundTo2Decimals }} UV
+                                    {{ roundTo2Decimals(light.index) }} UV
                                 </h1>
 
                                 <h3 class="resume-weather-desc">
-                                    UVA: {{ light.uva | roundTo2Decimals }}
+                                    UVA: {{ roundTo2Decimals(light.uva) }}
                                     <br />
-                                    UVB: {{ light.uvb | roundTo2Decimals }}
+                                    UVB: {{ roundTo2Decimals(light.uvb) }}
                                 </h3>
                             </div>
 
@@ -324,6 +324,10 @@ export default {
             }, 65000);
         });
 
+        function roundTo2Decimals(num) {
+            return Math.round(num * 100) / 100;
+        }
+
         return {
             getApiData: getApiData,
             menuSelect: menuSelect,
@@ -335,13 +339,8 @@ export default {
             air_quality: air_quality,
             light: light,
             lightning: lightning,
+            roundTo2Decimals,
         };
-    },
-
-    filters: {
-        roundTo2Decimals(num) {
-            return Math.round(num * 100) / 100;
-        }
     }
 };
 </script>
