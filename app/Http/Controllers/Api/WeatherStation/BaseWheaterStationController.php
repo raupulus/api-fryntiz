@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\WeatherStation;
 
+use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ use function response;
  *
  * @package App\Http\Controllers\Api\WeatherStation
  */
-abstract class BaseWheaterStationController extends Controller
+abstract class BaseWheaterStationController extends BaseWithTableCrudController
 {
     /**
      * @var string Ruta y modelo sobre el que se trabajará.
@@ -30,14 +31,22 @@ abstract class BaseWheaterStationController extends Controller
      */
     protected $addError = '';
 
-    /**
-     * Devuelve los resultados para una página.
-     *
-     * @param number $size Tamaño de cada página
-     * @param number $page Página a la que buscar.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    public function all()
+    {
+        $model = $this->model::whereNotNull('value')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return response()->json($model);
+    }
+
+
+
+
+
+
+
+
+    /*
     public function getTableDataSearchJson(Request $request)
     {
         $page = $request->json('page') ?? 1;
@@ -61,17 +70,10 @@ abstract class BaseWheaterStationController extends Controller
         ]);
     }
 
-    /**
-     * Devuelve todos los elementos del modelo.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function all()
-    {
-        $model = $this->model::whereNotNull('value')
-            ->orderBy('created_at', 'DESC')
-            ->get();
-        return response()->json($model);
-    }
+    */
+
+
+
 
     /**
      * Devuelve un conjunto de datos filtrados.

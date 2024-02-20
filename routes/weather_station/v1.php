@@ -52,47 +52,47 @@ Route::match(['get', 'options'], '/lightning',
 Route::group(['prefix' => 'table'], function () {
 
     ## Obtengo todos los datos de temperatura.
-    Route::match(['post', 'options'],'/temperature', [WeatherStation\TemperatureController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/temperature', [WeatherStation\TemperatureController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.temperature');
 
     ## Obtengo todos los datos de humedad.
-    Route::match(['post', 'options'],'/humidity', [WeatherStation\HumidityController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/humidity', [WeatherStation\HumidityController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.humidity');
 
     ## Obtengo todos los datos de presión atmosférica.
-    Route::match(['post', 'options'],'/pressure', [WeatherStation\PressureController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/pressure', [WeatherStation\PressureController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.pressure');
 
     ## Obtengo todos los datos de Luz.
-    Route::match(['post', 'options'],'/light', [WeatherStation\LightController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/light', [WeatherStation\LightController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.light');
 
     ## Obtengo todos los datos de Viento.
-    Route::match(['post', 'options'],'/winter', [WeatherStation\WinterController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/winter', [WeatherStation\WinterController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.winter');
 
     Route::match(['post', 'options'],'/wind-direction',
-        [WeatherStation\WindDirectionController::class, 'getTableDataSearchJson'])
+        [WeatherStation\WindDirectionController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.wind_direction');
 
     Route::match(['post', 'options'],'/rain',
-        [WeatherStation\RainController::class, 'getTableDataSearchJson'])
+        [WeatherStation\RainController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.rain');
 
     ## Obtengo todos los datos de CO2.
-    Route::match(['post', 'options'],'/eco2', [WeatherStation\Eco2Controller::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/eco2', [WeatherStation\Eco2Controller::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.eco2');
 
     ## Obtengo todos los datos de TVOC.
-    Route::match(['post', 'options'],'/tvoc', [WeatherStation\TvocController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/tvoc', [WeatherStation\TvocController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.tvoc');
 
     ## Obtengo todos los datos de Calidad de aire.
-    Route::match(['post', 'options'],'/air_quality', [WeatherStation\AirQualityController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/air_quality', [WeatherStation\AirQualityController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.air_quality');
 
     ## Obtengo todos los datos de Rayos.
-    Route::match(['post', 'options'],'/lightning', [WeatherStation\LightningController::class, 'getTableDataSearchJson'])
+    Route::match(['post', 'options'],'/lightning', [WeatherStation\LightningController::class, 'ajaxTableGetQuery'])
         ->name('api.wheaterstation.v1.table.lightning');
 });
 

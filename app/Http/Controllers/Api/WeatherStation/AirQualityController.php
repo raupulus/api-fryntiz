@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\WeatherStation;
 
+use App\Models\WeatherStation\AirQuality;
 use Illuminate\Support\Facades\Validator;
 use function response;
 
@@ -13,6 +14,11 @@ use function response;
 class AirQualityController extends BaseWheaterStationController
 {
     protected $model = '\App\Models\WeatherStation\AirQuality';
+
+    protected static function getModel(): string
+    {
+        return AirQuality::class;
+    }
 
     /**
      * Reglas de validación a la hora de insertar datos.

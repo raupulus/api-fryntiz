@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\WeatherStation;
 
+use App\Models\WeatherStation\AirQuality;
+use App\Models\WeatherStation\Lightning;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +20,11 @@ use function response;
 class LightningController extends BaseWheaterStationController
 {
     protected $model = '\App\Models\WeatherStation\Lightning';
+
+    protected static function getModel(): string
+    {
+        return Lightning::class;
+    }
 
     /**
      * Reglas de validación a la hora de insertar datos.

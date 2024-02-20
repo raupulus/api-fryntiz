@@ -38,6 +38,21 @@ class WindDirection extends BaseWheaterStation
      */
     public $name = 'Dirección del viento';
 
+    public static function  getModuleName(): string
+    {
+        return 'wind_direction';
+    }
+
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Dirección del viento',
+            'plural' => 'Direcciones del viento',
+            'add' => 'Agregar Dirección del viento',
+            'edit' => 'Editar Dirección del viento',
+            'delete' => 'Eliminar Dirección del viento',
+        ];
+    }
 
     // Esto se realiza dentro del modelo para la velocidad del viento.
     // Por ahora no se contempla tener un evento para la dirección del viento.
@@ -47,19 +62,6 @@ class WindDirection extends BaseWheaterStation
     ];
     */
 
-    /**
-     * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
-     */
-    public static function getTableHeads()
-    {
-        return [
-            'direction' => 'Dirección',
-            'grades' => 'Grados',
-            'created_at' => 'Instante'
-        ];
-    }
 
     /**
      * Devuelve todos los elementos del modelo.
@@ -117,5 +119,76 @@ class WindDirection extends BaseWheaterStation
         } else {
            return 'N/A';
         }
+    }
+
+
+
+
+
+
+    /****************** Métodos para tablas dinámicas ******************/
+
+    /**
+     * Devuelve el modelo de la política asociada.
+     *
+     * @return string|null
+     */
+    protected static function getPolicy(): string|null
+    {
+        return null;
+    }
+
+    /**
+     * Devuelve un array con el nombre del atributo y la validación aplicada.
+     * Esto está pensado para usarlo en el frontend
+     *
+     * @return array
+     */
+    public static function getFieldsValidation(): array
+    {
+        return [
+            'direction' => 'required|string',
+            'grades' => 'required|integer',
+        ];
+    }
+
+    /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads(): array
+    {
+        return [
+            'id' => 'ID',
+            'direction' => 'Dirección',
+            'grades' => 'Grados',
+            'created_at' => 'Instante'
+        ];
+    }
+
+    /**
+     * Devuelve un array con información sobre los atributos de la tabla.
+     *
+     * @return string[][]
+     */
+    public static function getTableCellsInfo():array
+    {
+        return [
+            'id' => [
+                'type' => 'integer',
+            ],
+            'direction' => [
+                'type' => 'string',
+            ],
+            'grades' => [
+                'type' => 'integer',
+            ],
+            'created_at' => [
+                'type' => 'datetime',
+                'format' => 'd/m/Y',
+            ],
+
+        ];
     }
 }

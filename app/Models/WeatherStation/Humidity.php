@@ -37,7 +37,64 @@ class Humidity extends BaseWheaterStation
      */
     public $name = 'Humedad';
 
+    public static function  getModuleName(): string
+    {
+        return 'humidity';
+    }
+
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Humedad',
+            'plural' => 'Humedades',
+            'add' => 'Agregar Humedad',
+            'edit' => 'Editar Humedad',
+            'delete' => 'Eliminar Humedad',
+        ];
+    }
+
     protected $dispatchesEvents = [
         'created' => HumidityUpdateEvent::class,
     ];
+
+
+
+    /****************** Métodos para tablas dinámicas ******************/
+
+
+    /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads(): array
+    {
+        return [
+            'id' => 'ID',
+            'value' => 'Valor %',
+            'created_at' => 'Instante',
+        ];
+    }
+
+    /**
+     * Devuelve un array con información sobre los atributos de la tabla.
+     *
+     * @return \string[][]
+     */
+    public static function getTableCellsInfo():array
+    {
+        return [
+            'id' => [
+                'type' => 'integer',
+            ],
+            'value' => [
+                'type' => 'float',
+            ],
+            'created_at' => [
+                'type' => 'datetime',
+                'format' => 'd/m/Y',
+            ],
+
+        ];
+    }
 }

@@ -34,7 +34,7 @@
                 <tr>
                     <th scope="col" v-for="(head, key) of heads"
                         :data-key="key"
-                        v-show="((key !== 'id') || showId) && (cellsInfo[key].type !== 'hidden') ">
+                        v-show="key && ((key !== 'id') || showId) && cellsInfo && (cellsInfo[key].type !== 'hidden') ">
                         {{ head }}
                     </th>
 
@@ -52,7 +52,7 @@
                         :class="'td-' + key + '-' + row.id"
                         @dblclick="(e) => handleOnClickCellEditable(e, 'td-' + key + '-' + row.id)"
                         @focusout="handleOnFocusoutCellEditable"
-                        v-show="((key !== 'id') || showId) && (cellsInfo[key].type !== 'hidden')"
+                        v-show="key && ((key !== 'id') || showId) && cellsInfo && (cellsInfo[key].type !== 'hidden')"
                         @keyup="handleOnKeyUpCellEditable">
 
                         <div v-if="row[key]">
@@ -350,7 +350,7 @@ export default {
                     totalPages.value = 1;
                 } else if(
                     ((totalElements.value / props.elements) > 1) &&
-                    ((totalElements.value % props.elements) == 0)) {
+                    ((totalElements.value % props.elements) === 0)) {
                     totalPages.value = Math.floor(totalElements.value / props.elements);
                 } else {
                     totalPages.value = Math.floor(totalElements.value / props.elements) +1;
@@ -361,17 +361,17 @@ export default {
 
                 switch(true) {
                     // No hay páginas → OK
-                    case 0 == totalPages.value:
+                    case 0 === totalPages.value:
                         showPages.value = ['...'];
 
                         break;
 
-                    case 1 == totalPages.value:
+                    case 1 === totalPages.value:
                         showPages.value = [1]
                         break;
 
                     // Hay más de 8 páginas y la actual es la última → OK
-                    case (8 < totalPages.value) && (currentPage.value == totalPages.value):
+                    case (8 < totalPages.value) && (currentPage.value === totalPages.value):
 
                         showPages.value = [1, '...'];
 
@@ -384,7 +384,7 @@ export default {
                         break;
 
                     // Hay más de 8 páginas y la actual es la primera → OK
-                    case (8 < totalPages.value) && (currentPage.value == 1):
+                    case (8 < totalPages.value) && (currentPage.value === 1):
                         showPages.value = [];
 
                         for(let i = 1; i <= 6; i++) {
@@ -405,9 +405,9 @@ export default {
                         }
                         break;
                     default:
-                        if(currentPage.value == 2) {
+                        if(currentPage.value === 2) {
                             showPages.value = [1, currentPage.value, currentPage.value + 1];
-                        } else if(currentPage.value == 3) {
+                        } else if(currentPage.value === 3) {
                             showPages.value = [1, currentPage.value - 1, currentPage.value, currentPage.value + 1];
                         } else {
                             showPages.value = [1, '...', currentPage.value - 1, currentPage.value, currentPage.value + 1];
@@ -417,7 +417,7 @@ export default {
                             showPages.value.push(currentPage.value + 2);
                             showPages.value.push('...');
                             showPages.value.push(totalPages.value);
-                        } else if((currentPage.value + 2) == totalPages.value) {
+                        } else if((currentPage.value + 2) === totalPages.value) {
                             showPages.value.push(totalPages.value);
                         }
 
@@ -426,7 +426,7 @@ export default {
 
                 rows.value = data.rows;
                 heads.value = data.heads;
-                cellsInfo.value = data.cellsInfo ?? [];
+                cellsInfo.value = data.cellsInfo;
             })
         };
 
@@ -458,6 +458,15 @@ export default {
                         break;
                     case 'image':
                         html = '<img src="' + cell + '" alt=""/>';
+                        break;
+                    case 'bool':
+                        html = cell ? 'SI' : 'No';
+                        break;
+                    case 'integer':
+                        html = !isNaN(cell) ? parseInt(cell) : cell;
+                        break;
+                    case 'float':
+                        html = !isNaN(cell) ? parseFloat(cell).toFixed(2) : cell
                         break;
                     case 'icon':
                         // TODO → preparar iconos

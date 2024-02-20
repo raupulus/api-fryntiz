@@ -2,8 +2,9 @@
 
 namespace App\Models\WeatherStation;
 
+use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use function array_key_exists;
 
@@ -12,7 +13,7 @@ use function array_key_exists;
  *
  * @package App\Models\WeatherStation
  */
-class BaseWheaterStation extends Model
+class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 {
     protected $fillable = [
         'hardware_device_id',
@@ -30,15 +31,32 @@ class BaseWheaterStation extends Model
         //Do-nothing
     }
 
-    /**
-     * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
-     */
-    public static function getTableHeads()
+    public static function  getModuleName(): string
     {
-        return ['value' => 'Valor', 'created_at' => 'Instante'];
+        return 'weater_station';
     }
+
+    public static function getModelTitles(): array
+    {
+        return [
+            'singular' => 'Estación Meteorológica',
+            'plural' => 'Estaciones Meteorológicas',
+            'add' => 'Agregar Estación Meteorológica',
+            'edit' => 'Editar Estación Meteorológica',
+            'delete' => 'Eliminar Estación Meteorológica',
+        ];
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Devuelve los resultados para una página.
@@ -271,5 +289,106 @@ class BaseWheaterStation extends Model
 
         return $result;
 
+    }
+
+
+
+
+
+
+
+
+
+
+
+    /****************** Métodos para tablas dinámicas ******************/
+
+    /**
+     * Devuelve el modelo de la política asociada.
+     *
+     * @return string|null
+     */
+    protected static function getPolicy(): string|null
+    {
+        return null;
+    }
+
+    /**
+     * Devuelve un array con el nombre del atributo y la validación aplicada.
+     * Esto está pensado para usarlo en el frontend
+     *
+     * @return array
+     */
+    public static function getFieldsValidation(): array
+    {
+        return [
+            'value' => 'required|integer',
+        ];
+    }
+
+    /**
+     * Devuelve un array con todos los títulos de una tabla.
+     *
+     * @return array
+     */
+    public static function getTableHeads(): array
+    {
+        return [
+            'id' => 'ID',
+            'value' => 'Valor',
+            'created_at' => 'Instante',
+        ];
+    }
+
+    /**
+     * Devuelve un array con información sobre los atributos de la tabla.
+     *
+     * @return \string[][]
+     */
+    public static function getTableCellsInfo():array
+    {
+        return [
+            'id' => [
+                'type' => 'integer',
+            ],
+            'value' => [
+                'type' => 'integer',
+            ],
+            'created_at' => [
+                'type' => 'datetime',
+                'format' => 'd/m/Y',
+            ],
+
+        ];
+    }
+
+    /**
+     * Devuelve las rutas de acciones
+     *
+     */
+    public static function getTableActionsInfo():Collection
+    {
+        // TODO Crear policies para devolver solo acciones permitidas ahora.
+
+        return collect([
+            [
+                'type' => 'update',
+                'name' => 'Editar',
+                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
+                'method' => 'GET',
+                /*
+                'params' => [
+
+                ]
+                */
+            ],
+            [
+                'type' => 'delete',
+                'name' => 'Eliminar',
+                'url' => route(self::getCrudRoutes()['destroy']),
+                'method' => 'DELETE',
+                'ajax' => true
+            ]
+        ]);
     }
 }
