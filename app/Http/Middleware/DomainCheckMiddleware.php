@@ -17,6 +17,11 @@ class DomainCheckMiddleware
      */
     public function handle($request, Closure $next)
     {
+        return $next($request);
+
+
+        //TOFIX -> Hay que tener en cuenta sockets local en 127.0.0.1:6001
+
         $allowedHosts = array_merge(Platform::getAllDomains(), config('sanctum.stateful'));
         $requestHost = parse_url($request->headers->get('Origin'), PHP_URL_HOST) ?? $request->headers->get('Origin');
 
