@@ -113,7 +113,7 @@
                                $model->url : '') }}"
                    name="url"
                    class="form-control"
-                   placeholder="https://fryntiz.es">
+                   placeholder="https://raupulus.dev">
         </div>
     </div>
 
@@ -136,7 +136,7 @@
                                $model->urlinfo : '') }}"
                    name="urlinfo"
                    class="form-control"
-                   placeholder="https://fryntiz.es/about">
+                   placeholder="https://raupulus.dev/about">
         </div>
     </div>
 
@@ -159,7 +159,7 @@
                                $model->repository : '') }}"
                    name="repository"
                    class="form-control"
-                   placeholder="https://fryntiz.es/about">
+                   placeholder="https://raupulus.dev/about">
         </div>
     </div>
 

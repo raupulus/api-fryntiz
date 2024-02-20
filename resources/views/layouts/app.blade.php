@@ -4,7 +4,7 @@
 @copyright Copyright (c) 2021 Raúl Caro Pastorino
 @license https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
-Author Web: https://fryntiz.es
+Author Web: https://raupulus.dev
 E-mail: raul@fryntiz.dev
 -->
 

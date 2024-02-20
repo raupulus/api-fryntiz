@@ -3,7 +3,7 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'Chipiona Estación Meteorológica')
 @section('description', 'Estación meteorológica en tiempo real para la ciudad de Chipiona tomando Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Indice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)')
-@section('keywords', 'Raúl Caro Pastorino, fryntiz, chipiona, clima, meteorología, tiempo, el tiempo, el clima, tiempo en chipiona, el tiempo en chipiona, humedad, calor, temperatura, presión, presión atmosférica, viento, luz, uv, uva, uvb, co2, eco2, co2-eco2, tvoc, relámpagos, relámpago, rayo, trueno, tormenta, tormentas')
+@section('keywords', 'Raúl Caro Pastorino, raupulus, chipiona, clima, meteorología, tiempo, el tiempo, el clima, tiempo en chipiona, el tiempo en chipiona, humedad, calor, temperatura, presión, presión atmosférica, viento, luz, uv, uva, uvb, co2, eco2, co2-eco2, tvoc, relámpagos, relámpago, rayo, trueno, tormenta, tormentas')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Chipiona Estación Meteorológica')
@@ -98,12 +98,12 @@
                             meteorológica
                             para la raspberry en python3 desde aquí:
 
-                            <a href="https://gitlab.com/fryntiz/raspberry-weather-station"
+                            <a href="https://gitlab.com/raupulus/raspberry-weather-station"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
                                title="Raspberry pi 4 estación meteorológica">
-                                https://gitlab.com/fryntiz/raspberry-weather-station
+                                https://gitlab.com/raupulus/raspberry-weather-station
                             </a>
                         </p>
                     </div>
@@ -120,7 +120,7 @@
             </div>
 
             <div class="container max-w-5xl mx-auto mt-1 mb-4 text-center">
-                <a href="https://gitlab.com/fryntiz/vue-component-weather-chipiona"
+                <a href="https://gitlab.com/raupulus/vue-component-weather-chipiona"
                    class="block inline-block rounded underline text-blue-500
                    text-sm"
                    target="_blank">

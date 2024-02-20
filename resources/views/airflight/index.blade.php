@@ -3,7 +3,7 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'Vuelos en tiempo real sobre Chipiona')
 @section('description', 'Registro de vuelos en tiempo real para aviones en Chipiona y alrededores')
-@section('keywords', 'vuelos, aviones, chipiona, Raúl Caro Pastorino, fryntiz, airplanes, airflight')
+@section('keywords', 'vuelos, aviones, chipiona, Raúl Caro Pastorino, raupulus, airplanes, airflight')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Vuelos en tiempo real sobre Chipiona')
@@ -84,12 +84,12 @@
                             televisión y una
                             raspberry pi con el que los exporto a una db:
 
-                            <a href="https://gitlab.com/fryntiz/dump1090-to-db"
+                            <a href="https://gitlab.com/raupulus/dump1090-to-db"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
                                title="Exportador dump1090 a db postgresql">
-                                https://gitlab.com/fryntiz/dump1090-to-db
+                                https://gitlab.com/raupulus/dump1090-to-db
                             </a>
                         </p>
 

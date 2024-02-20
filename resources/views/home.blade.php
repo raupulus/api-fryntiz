@@ -3,7 +3,7 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'API Privada de Raúl Caro Pastorino')
 @section('description', 'Api privada dónde depuro desarrollos y monitorizo datos de mis aplicaciones')
-@section('keywords', 'Raúl Caro Pastorino, fryntiz, chipiona, api, laravel, vue.js, javascript, php, tailwind, tailwindcss, postgresql, mysql, mariadb, linux, debian, fedora, gnu, open source, software libre, programador, desarrollador, developer, web, web developer, informático, redes, sistema, ingeniero')
+@section('keywords', 'Raúl Caro Pastorino, raupulus, chipiona, api, laravel, vue.js, javascript, php, tailwind, tailwindcss, postgresql, mysql, mariadb, linux, debian, fedora, gnu, open source, software libre, programador, desarrollador, developer, web, web developer, informático, redes, sistema, ingeniero')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'API Privada de Raúl Caro Pastorino')
@@ -39,7 +39,7 @@
                         Una api para depurarlas a todas...
                     </p>
 
-                    <a href="https://fryntiz.es"
+                    <a href="https://raupulus.dev"
                        target="_blank"
                        class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
                         Sobre Mi
@@ -120,7 +120,7 @@
                         <p class="text-gray-600 mb-3">
                             Puedes ver el desarrollo de la api aquí:
 
-                            <a href="https://gitlab.com/fryntiz/api-fryntiz/tree/master"
+                            <a href="https://gitlab.com/raupulus/api-fryntiz/tree/master"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
@@ -134,7 +134,7 @@
                     <div class="w-full sm:w-1/2 p-6">
                         <img src="{{asset('images/main-thumbnail.jpg')}}"
                              class="m-auto w-192 h-192"
-                             alt="Logo fryntiz"/>
+                             alt="Logo Raupulus"/>
                     </div>
                 </div>
 
@@ -176,12 +176,12 @@
                                 Puedes ver el desarrollo de rpi (python3 y
                                 sqlite) aquí:
 
-                                <a href="https://gitlab.com/fryntiz/raspberry-weather-station"
+                                <a href="https://gitlab.com/raupulus/raspberry-weather-station"
                                    class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                    type="button"
                                    target="_blank"
                                    title="Enlace al repositorio de mi estación meteorológica de Chipiona en python3 para raspberry pi">
-                                    https://gitlab.com/fryntiz/raspberry-weather-station
+                                    https://gitlab.com/raupulus/raspberry-weather-station
                                 </a>
                             </p>
                         </div>
@@ -216,12 +216,12 @@
                             Código del proyecto en
                             <strong>C++</strong>:
 
-                            <a href="https://gitlab.com/fryntiz/esp32-smart-bonsai"
+                            <a href="https://gitlab.com/raupulus/esp32-smart-bonsai"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
                                title="Enlace al repositorio con el código para el smart plant con esp32 lite en c++">
-                                https://gitlab.com/fryntiz/esp32-smart-bonsai
+                                https://gitlab.com/raupulus/esp32-smart-bonsai
                             </a>
                         </p>
                     </div>
@@ -273,12 +273,12 @@
                                 Código para GNU/Linux en
                                 <strong>Python3</strong>:
 
-                                <a href="https://gitlab.com/fryntiz/python-keycounter"
+                                <a href="https://gitlab.com/raupulus/python-keycounter"
                                    class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                    type="button"
                                    target="_blank"
                                    title="Enlace al repositorio con el código para el contador de teclas escrito en python 3">
-                                    https://gitlab.com/fryntiz/python-keycounter
+                                    https://gitlab.com/raupulus/python-keycounter
                                 </a>
                             </p>
                         </div>
@@ -314,12 +314,12 @@
                             <strong>dump1090</strong>
                             a sql escrito en php desde aquí:
 
-                            <a href="https://gitlab.com/fryntiz/dump1090-to-db"
+                            <a href="https://gitlab.com/raupulus/dump1090-to-db"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
                                title="Enlace al repositorio con el código para exportar datos capturados con dump1090 a sql escrito en php">
-                                https://gitlab.com/fryntiz/dump1090-to-db
+                                https://gitlab.com/raupulus/dump1090-to-db
                             </a>
                         </p>
                     </div>
@@ -338,7 +338,7 @@
                     {{-- Imagen --}}
                     <div class="w-full sm:w-1/2 p-6 mt-6">
                         <img src="{{asset('images/logo-blog.png')}}"
-                             alt="Logo fryntiz"/>
+                             alt="Logo raupulus"/>
                     </div>
 
                     <div class="w-full sm:w-1/2 p-6 mt-12">
@@ -378,8 +378,8 @@
                         class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
                         <div
                             class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-                            <a href="https://fryntiz.es"
-                               title="Web de Raúl Caro Pastorino (fryntiz)"
+                            <a href="https://raupulus.dev"
+                               title="Web de Raúl Caro Pastorino (raupulus)"
                                target="_blank"
                                class="flex flex-wrap no-underline hover:no-underline">
                                 <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
@@ -402,8 +402,8 @@
                         <div
                             class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
                             <div class="flex items-center justify-center">
-                                <a href="https://fryntiz.es"
-                                   title="Web de Raúl Caro Pastorino (fryntiz)"
+                                <a href="https://raupulus.dev"
+                                   title="Web de Raúl Caro Pastorino (raupulus)"
                                    target="_blank"
                                    class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
                                     Explorar
@@ -417,8 +417,8 @@
                         class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
                         <div
                             class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-                            <a href="https://fryntiz.es/contact"
-                               title="Contactar con Raúl Caro Pastorino (fryntiz)"
+                            <a href="https://raupulus.dev/contact"
+                               title="Contactar con Raúl Caro Pastorino (raupulus)"
                                target="_blank"
                                class="flex flex-wrap no-underline hover:no-underline">
                                 <p class="w-full text-gray-600 text-xs md:text-sm px-6 text-right">
@@ -443,8 +443,8 @@
                         <div
                             class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
                             <div class="flex items-center justify-center">
-                                <a href="https://fryntiz.es/contact"
-                                   title="Contactar con Raúl Caro Pastorino (fryntiz)"
+                                <a href="https://raupulus.dev/contact"
+                                   title="Contactar con Raúl Caro Pastorino (raupulus)"
                                    target="_blank"
                                    class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
                                     Contactar

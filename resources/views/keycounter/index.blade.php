@@ -3,7 +3,7 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'Keycounter && Mousecounter')
 @section('description', 'Contador de pulsaciones de teclado y ratón por rachas')
-@section('keywords', 'keycounter, mousecounter, teclado, Raúl Caro Pastorino, fryntiz, ratón, pulsaciones de teclado, pulsaciones de ratón, contador de pulsaciones')
+@section('keywords', 'keycounter, mousecounter, teclado, Raúl Caro Pastorino, raupulus, ratón, pulsaciones de teclado, pulsaciones de ratón, contador de pulsaciones')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Keycounter && Mousecounter, contador de pulsaciones')
@@ -105,13 +105,13 @@
                                 desaparecerá quedando solo como una api privada
                                 accesible desde un componente en Vue.js para mi
                                 sitio web personal:
-                                <a href="https://fryntiz.es"
+                                <a href="https://raupulus.dev"
                                    class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                    type="button"
                                    target="_blank"
                                    title="Raúl Caro Pastorino web
                                    desarrollador backend chipiona">
-                                    https://fryntiz.es
+                                    https://raupulus.dev
                                 </a>
                             </span>
                         </div>
@@ -165,12 +165,12 @@
                             el desarrollo público bajo licencia GPLv3 en el
                             siguiente enlace:
 
-                            <a href="https://gitlab.com/fryntiz/python-keycounter"
+                            <a href="https://gitlab.com/raupulus/python-keycounter"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
                                title="Raspberry pi 4 estación meteorológica">
-                                https://gitlab.com/fryntiz/python-keycounter
+                                https://gitlab.com/raupulus/python-keycounter
                             </a>
                         </p>
 

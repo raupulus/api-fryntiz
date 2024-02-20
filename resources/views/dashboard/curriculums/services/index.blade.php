@@ -52,7 +52,7 @@
                                $model->url : '') }}"
                    name="url"
                    class="form-control"
-                   placeholder="https://fryntiz.es">
+                   placeholder="https://raupulus.dev">
         </div>
     </div>
 

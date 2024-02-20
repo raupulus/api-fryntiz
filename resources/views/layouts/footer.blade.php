@@ -257,7 +257,7 @@
                     Explora mi sitio Personal
                 </h5>
 
-                <a href="https://fryntiz.es"
+                <a href="https://raupulus.dev"
                    target="_blank"
                    class="bg-indigo-600 text-white hover:bg-indigo-700 rounded py-2 px-6 md:px-12 transition-colors duration-300">
                     Explorar

@@ -463,14 +463,14 @@ export default {
                         html = cell ? 'SI' : 'No';
                         break;
                     case 'integer':
-                        html = !isNaN(cell) ? parseInt(cell) : cell;
+                        html = !isNaN(cell) && (parseInt(cell) >= 1) ? parseInt(cell).toString() : "0";
                         break;
                     case 'float':
                         html = !isNaN(cell) ? parseFloat(cell).toFixed(2) : cell
                         break;
                     case 'icon':
                         // TODO → preparar iconos
-                        html = '<img src="' + cell + '" alt=""/>';
+                        html = '<img src="' + cell + '" alt="Icon"/>';
                         break;
                     case 'date':
 

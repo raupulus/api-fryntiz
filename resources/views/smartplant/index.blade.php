@@ -3,7 +3,7 @@
 {{-- Descripción sobre esta página --}}
 @section('title', 'Smart Plant, monitorización de plantas')
 @section('description', 'Monitorización, control y riego automatizado en plantas')
-@section('keywords', 'Raúl Caro Pastorino, fryntiz, smartplant, smart plant, plant, plantas, riego automático, monitorizar planta, monitorización de planta, monitorización, riego')
+@section('keywords', 'Raúl Caro Pastorino, raupulus, smartplant, smart plant, plant, plantas, riego automático, monitorizar planta, monitorización de planta, monitorización, riego')
 
 {{-- Etiquetas para Redes sociales --}}
 @section('rs-title', 'Smart Plant, monitorización de plantas')
@@ -82,12 +82,12 @@
                             para obtener los datos
                             de las plantas desde un esp32:
 
-                            <a href="https://gitlab.com/fryntiz/esp32-smart-bonsai"
+                            <a href="https://gitlab.com/raupulus/esp32-smart-bonsai"
                                class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
                                type="button"
                                target="_blank"
                                title="Smart Plant con esp32 repository software">
-                                https://gitlab.com/fryntiz/esp32-smart-bonsai
+                                https://gitlab.com/raupulus/esp32-smart-bonsai
                             </a>
                         </p>
 

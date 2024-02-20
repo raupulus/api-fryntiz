@@ -101,7 +101,7 @@
                                $model->url : '') }}"
                    name="url"
                    class="form-control"
-                   placeholder="https://fryntiz.es">
+                   placeholder="https://raupulus.dev">
         </div>
     </div>
 
@@ -124,7 +124,7 @@
                                $model->credential_url : '') }}"
                    name="credential_url"
                    class="form-control"
-                   placeholder="https://fryntiz.es/title">
+                   placeholder="https://raupulus.dev/title">
         </div>
     </div>
 

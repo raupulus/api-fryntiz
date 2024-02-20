@@ -52,7 +52,7 @@
                                $model->url : '') }}"
                    name="url"
                    class="form-control"
-                   placeholder="https://fryntiz.es/iot">
+                   placeholder="https://raupulus.dev/iot">
         </div>
     </div>
 
