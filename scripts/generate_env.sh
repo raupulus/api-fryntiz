@@ -62,20 +62,28 @@ source "${WORKSCRIPT}/scripts/functions.sh"
 ################ Comienza el flujo de generar .env ################
 
 ## Creo el archivo .env a partir del archivo con parámetros predefinidos.
+
 cp "${WORKSCRIPT}/.env.example.production" "${WORKSCRIPT}/.env"
 
 ## General
+
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_NAME' "${APP_NAME}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_DESCRIPTION' "${APP_DESCRIPTION}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_URL' "${APP_URL}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_DATABASE' "${DB_DATABASE}"
 
 ## DB.
+
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_USERNAME' "${DB_USERNAME}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PASSWORD' "${DB_PASSWORD}"
 
 ## Google Captcha
+
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_CAPTCHA_KEY' "${GOOGLE_CAPTCHA_KEY}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_CAPTCHA_SECRET' "${GOOGLE_CAPTCHA_SECRET}"
 
 ## Mail
+
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_HOST' "${MAIL_HOST}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_PORT' "${MAIL_PORT}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_USERNAME' "${MAIL_USERNAME}"
@@ -83,3 +91,19 @@ replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_PASSWORD' "${MAIL_PASSWORD
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_ENCRYPTION' "${MAIL_ENCRYPTION}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_FROM_ADDRESS' "${MAIL_FROM_ADDRESS}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_FROM_NAME' "${MAIL_FROM_NAME}"
+
+## Pusher
+
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'PUSHER_APP_KEY' "${PUSHER_APP_KEY}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'PUSHER_APP_SECRET' "${PUSHER_APP_SECRET}"
+
+## Api
+
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_URL' "${API_URL}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_NAME' "${API_NAME}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_TOKEN' "${API_TOKEN}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'SANCTUM_STATEFUL_DOMAINS' "${SANCTUM_STATEFUL_DOMAINS}"
+
+## AEMET
+
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'AEMET_API_KEY' "${AEMET_API_KEY}"
