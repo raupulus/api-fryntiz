@@ -21,7 +21,9 @@ replace_or_add_line_in_file() {
 replace_or_add_var_in_file() {
     local FILE="${1}"
     local VAR="${2}"
-    local VALUE="${3}"
+    local VALUE_RAW="${3}"
+
+    VALUE=$(echo ${VALUE_RAW} | sed 's/\//\\\//g')
 
     ## Almaceno la línea compuesta de variable=valor.
     local LINE="${VAR}=${VALUE}"
