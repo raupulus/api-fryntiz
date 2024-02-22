@@ -64,6 +64,7 @@ source "${WORKSCRIPT}/scripts/functions.sh"
 ## Creo el archivo .env a partir del archivo con parámetros predefinidos.
 
 cp "${WORKSCRIPT}/.env.example.production" "${WORKSCRIPT}/.env"
+chmod ug+rw "${WORKSCRIPT}/.env"
 
 ## General
 
