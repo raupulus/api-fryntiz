@@ -110,3 +110,8 @@ replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'SANCTUM_STATEFUL_DOMAINS' "${SA
 ## AEMET
 
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'AEMET_API_KEY' "${AEMET_API_KEY}"
+
+
+echo ""
+echo "Resultado del .env final:"
+cat "${WORKSCRIPT}/.env"
