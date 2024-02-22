@@ -77,6 +77,13 @@ replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_URL' "${APP_URL}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_DATABASE' "${DB_DATABASE}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_USERNAME' "${DB_USERNAME}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PASSWORD' "${DB_PASSWORD}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_CONNECTION' "${DB_CONNECTION}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PORT' "${DB_PORT}"
+
+## Redis
+
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'REDIS_PASSWORD' "${REDIS_PASSWORD}"
+
 
 ## Google Captcha
 
