@@ -70,15 +70,17 @@ cp "${WORKSCRIPT}/.env.example.production" "${WORKSCRIPT}/.env"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_NAME' "${APP_NAME}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_DESCRIPTION' "${APP_DESCRIPTION}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_URL' "${APP_URL}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_DATABASE' "${DB_DATABASE}"
 
 ## DB.
 
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_DATABASE' "${DB_DATABASE}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_USERNAME' "${DB_USERNAME}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PASSWORD' "${DB_PASSWORD}"
 
 ## Google Captcha
 
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_API_KEY' "${GOOGLE_API_KEY}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_DEV_API_KEY' "${GOOGLE_DEV_API_KEY}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_CAPTCHA_KEY' "${GOOGLE_CAPTCHA_KEY}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_CAPTCHA_SECRET' "${GOOGLE_CAPTCHA_SECRET}"
 
