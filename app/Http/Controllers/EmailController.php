@@ -24,6 +24,9 @@ class EmailController extends Controller
      */
     private const APPS_ENABLED = [
         'raupulus',
+        'desdechipiona',
+        'fryntiz',
+        'laguialinux',
     ];
 
     /**
@@ -34,6 +37,9 @@ class EmailController extends Controller
     private const DOMAINS_ENABLED = [
         'raupulus.dev',
         'fryntiz.dev',
+        'desdechipiona.es',
+        'laguialinux.es',
+        'laguialinux.com',
     ];
 
 

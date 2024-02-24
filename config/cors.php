@@ -15,11 +15,21 @@ return [
     |
     */
 
-    'paths' => ['api/*'],
+
+    'paths' => [
+        '*',
+        'api/*',
+        'api/v1/*',
+        'api/v1/*/*',
+        'api/v1/*/*/*',
+        'api/v1/*/*/*/*',
+        'api/v1/contact/send',
+        'api/v1/auth/csrf-cookie',
+    ],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => explode(',', env('FRONTEND_URLS')),
 
     'allowed_origins_patterns' => [],
 

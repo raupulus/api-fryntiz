@@ -112,6 +112,7 @@ replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'PUSHER_APP_SECRET' "${PUSHER_AP
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_URL' "${API_URL}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_NAME' "${API_NAME}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_TOKEN' "${API_TOKEN}"
+replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'FRONTEND_URLS' "${FRONTEND_URLS}"
 replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'SANCTUM_STATEFUL_DOMAINS' "${SANCTUM_STATEFUL_DOMAINS}"
 
 ## AEMET

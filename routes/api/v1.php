@@ -25,7 +25,7 @@ use \App\Http\Controllers\Api\PlatformController;
 Route::group(['prefix' => 'v1/auth'], function () {
     ## Ruta para obtener token csrf.
     Route::get('/csrf-cookie', [LoginController::class, 'csrfCookie'])
-        ->middleware(\Illuminate\Session\Middleware\StartSession::class)
+        //->middleware(\Illuminate\Session\Middleware\StartSession::class)
         ->name('api.v1.auth.csrf_cookie');
 
     ## Ruta para hacer login.
@@ -54,7 +54,7 @@ Route::group(['prefix' => 'v1/auth'], function () {
 ##                   Contacto
 ######################################################
 
-Route::group(['prefix' => 'v1/contact', 'middleware' => ['cors.allow.all', 'ip.counter.strict']], function () {
+Route::group(['prefix' => 'v1/contact', 'middleware' => ['ip.counter.strict']], function () {
     ## Recibe un formulario.
     Route::post('/send', [\App\Http\Controllers\EmailController::class, 'sendFromForm'])
         ->name('api.v1.contact.send');
