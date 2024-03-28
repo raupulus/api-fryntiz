@@ -7,6 +7,7 @@ use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use App\Models\Technology;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,7 @@ class PlatformController extends Controller
         $version = '0.0.1';
 
         ## Tecnologías
-        $technologies = Technology::select(['technologies.name', 'technologies.slug'])
+        $technologies = Technology::select(['technologies.name', 'technologies.slug', 'technologies.image_id'])
             //->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id')
             ->leftJoin('content_technologies', 'technologies.id', 'content_technologies.technology_id')
             ->leftJoin('contents', 'content_technologies.content_id', 'contents.id')
@@ -52,7 +53,17 @@ class PlatformController extends Controller
             ->whereNotNull('technologies.slug')
             ->groupBy('technologies.slug')
             ->groupBy('technologies.name')
-            ->get();
+            ->groupBy('technologies.image_id')
+            ->get()
+        ;
+
+        $technologies = $technologies->map(function ($ele) {
+            return [
+                'name' => $ele->name,
+                'slug' => $ele->slug,
+                'urlImageSmall' => $ele->urlImageSmall
+            ];
+        });
 
         $contentTypes = ContentAvailableType::select(['id', 'plural_name', 'slug', 'name', 'description'])->get();
 
@@ -182,6 +193,8 @@ class PlatformController extends Controller
 
         $query->offset($quantity * ($page - 1))->limit($quantity);
 
+        Carbon::setLocale(config('app.locale'));
+
         $contents = $query->get()->map(function ($ele) {
             return collect([
                 'title' => $ele->title,
@@ -191,6 +204,8 @@ class PlatformController extends Controller
                 'urlImageSmall' => $ele->urlImageSmall,
                 'urlImageMedium' => $ele->urlImageMedium,
                 'urlImage' => $ele->urlImageNormal,
+                'created_at' => $ele->created_at,
+                'created_at_human' => $ele->created_at->translatedFormat('d F Y'),
                 'total_pages' => $ele->pages()->count(),
                 'categories' => $ele->categoriesQuery()->pluck('name'),
                 'tags' => $ele->tagsQuery()->pluck('name'),
@@ -208,6 +223,7 @@ class PlatformController extends Controller
                     return [
                         'name' => $tech->name,
                         'slug' => $tech->slug,
+                        'urlImageSmall' => $tech->urlImageSmall,
                     ];
                 })
 
