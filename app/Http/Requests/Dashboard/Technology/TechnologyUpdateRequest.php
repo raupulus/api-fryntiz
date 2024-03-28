@@ -46,7 +46,7 @@ class TechnologyUpdateRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'slug' => 'required|max:255|unique:technologies,slug,' . $this->get('id'),
-            'description' => 'nullable|string|max:512',
+            'description' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:255',
         ];
     }
