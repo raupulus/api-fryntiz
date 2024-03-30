@@ -35,4 +35,14 @@ class ContentMetadata extends BaseModel
     {
         return $this->youtube_video_id ? 'https://www.youtube.com/watch?v=' . $this->youtube_video_id : null;
     }
+
+    /**
+     * Get the URL for the Twitter attribute.
+     *
+     * @return string|null The URL for the Twitter attribute if it exists, otherwise null.
+     */
+    public function getUrlTwitterAttribute(): ?string
+    {
+        return $this->twitter ? 'https://twitter.com/' . $this->twitter : null;
+    }
 }

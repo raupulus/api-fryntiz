@@ -42,18 +42,19 @@ class PlatformController extends Controller
         $version = '0.0.1';
 
         ## Tecnologías
-        $technologies = Technology::select(['technologies.name', 'technologies.slug', 'technologies.image_id'])
+        $technologies = Technology::select(['technologies.name', 'technologies.slug', 'technologies.color', 'technologies.image_id'])
             //->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id')
             ->leftJoin('content_technologies', 'technologies.id', 'content_technologies.technology_id')
             ->leftJoin('contents', 'content_technologies.content_id', 'contents.id')
             ->leftJoin('platforms', 'contents.platform_id', 'platforms.id')
             ->where('platforms.id', $platform->id)
-            ->where('contents.type_id', 5) // Tener en cuenta que limito solo a proyectos????
+            ->where('contents.type_id', 5) // ¡Tener en cuenta que limito solo a proyectos!
             ->whereNotNull('technologies.name')
             ->whereNotNull('technologies.slug')
             ->groupBy('technologies.slug')
             ->groupBy('technologies.name')
             ->groupBy('technologies.image_id')
+            ->groupBy('technologies.color')
             ->get()
         ;
 
@@ -61,6 +62,7 @@ class PlatformController extends Controller
             return [
                 'name' => $ele->name,
                 'slug' => $ele->slug,
+                'color' => $ele->color,
                 'urlImageSmall' => $ele->urlImageSmall
             ];
         });
@@ -113,7 +115,16 @@ class PlatformController extends Controller
         ]);
     }
 
-    public function getContentByType(Request $request, Platform $platform, string $contentType)
+    /**
+     * Devuelve el contenido por tipo de contenido y plataforma.
+     *
+     * @param Request $request
+     * @param Platform $platform Plataforma sobre la que se pide el contenido
+     * @param string $contentType Tipo de contenido (noticia, proyecto, página...)
+     *
+     * @return JsonResponse
+     */
+    public function getContentByType(Request $request, Platform $platform, string $contentType): JsonResponse
     {
         $contentAvailableType = ContentAvailableType::where('slug', $contentType)->first();
 
@@ -217,7 +228,7 @@ class PlatformController extends Controller
                     'gitlab' => $ele->metadata?->gitlab,
                     'github' => $ele->metadata?->github,
                     'mastodon' => $ele->metadata?->mastodon,
-                    'twitter' => $ele->metadata?->twitter,
+                    'twitter' => $ele->metadata?->urlTwitter,
                 ],
                 'technologies' => $ele->technologies->map(function ($tech) {
                     return [
