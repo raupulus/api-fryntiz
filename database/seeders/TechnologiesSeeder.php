@@ -103,7 +103,7 @@ class TechnologiesSeeder extends Seeder
             ],
             [
                 'name' => 'C++',
-                'slug' => 'c_plus_plus',
+                'slug' => 'c-plus-plus',
                 'description' => '',
                 'color' => '#ff0000',
             ],
