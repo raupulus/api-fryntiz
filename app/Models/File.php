@@ -304,15 +304,15 @@ class File extends Model
                 if ($file->fileType->mime === 'image/jpeg') {
                     $newName = preg_replace('/\.jpeg$/i', '.webp', $file->name);
                     $newName = preg_replace('/\.jpg$/i', '.webp', $file->name);
-                    $img->save($newPath . '/' . $newName, 80, 'webp');
+                    $img->save($newPath . '/' . $newName, 90, 'webp');
                     $extension = 'webp';
                 } elseif ($file->fileType->mime === 'image/png') {
                     $newName = preg_replace('/\.png$/i', '.webp', $file->name);
-                    $img->save($newPath . '/' . $newName, 80, 'webp');
+                    $img->save($newPath . '/' . $newName, 90, 'webp');
                     $extension = 'webp';
                 } else {
                     $newName = $file->name;
-                    $img->save($newPath . '/' . $newName, 80);
+                    $img->save($newPath . '/' . $newName, 90);
                 }
 
                 ## Busco de nuevo el tipo mime, por si hubiera cambiado a webp.
