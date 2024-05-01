@@ -78,6 +78,10 @@ class File extends Model
      */
     public static function urlDefaultImage($size = 'medium'): string
     {
+
+        // TODO: Cambiar imágenes por defecto usando el formato webp
+
+
         switch ($size) {
             case 'micro':
                 $name = 'micro.jpg';

@@ -108,7 +108,9 @@ class ContentPageController extends Controller
             return $responseValid;
         }
 
-        $searchPage = ContentPage::where('slug', $slug)->first();
+        $searchPage = ContentPage::where('content_id', $page->content_id)
+            ->where('slug', $slug)
+            ->first();
 
         if ($searchPage && $searchPage->id) {
             return $responseInvalid;

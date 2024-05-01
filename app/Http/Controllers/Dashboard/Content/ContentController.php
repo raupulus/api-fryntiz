@@ -253,10 +253,6 @@ class ContentController extends BaseWithTableCrudController
         $content->saveTags($requestValidated['tags'] ?? []);
         $content->saveCategories($requestValidated['categories'] ?? []);
 
-
-        // TODO: save/sync array technology
-
-
         ## Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'content', false, $content->image?->id);
@@ -757,7 +753,8 @@ class ContentController extends BaseWithTableCrudController
             $slug = Str::slug($request->get('title')) . '-' . Str::random(20);
         }
 
-        $isSlugUnique = ContentPage::where('slug', $slug)
+        $isSlugUnique = ContentPage::where('content_id', $contentPage->content_id)
+                ->where('slug', $slug)
                 ->where('id', '!=', $contentPage->id)
                 ->count() === 0;
 

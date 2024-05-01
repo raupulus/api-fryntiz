@@ -81,6 +81,7 @@ class CreateContentPagesTable extends Migration
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
             $table->dropForeign(['content_id']);
             $table->dropForeign(['image_id']);
+            $table->dropForeign(['current_page_raw_id']);
         });
     }
 }

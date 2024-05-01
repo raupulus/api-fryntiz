@@ -6,7 +6,8 @@ use App\Http\Controllers\Api\User\V1\UserController;
 use App\Models\CV\Curriculum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\Api\PlatformController;
+use App\Http\Controllers\Api\PlatformController;
+use App\Http\Controllers\Api\Content\ContentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +87,19 @@ Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function (
         ->name('api.v1.user.delete');
 });
 
+
+######################################################
+##                   Contenidos
+######################################################
+Route::group(['prefix' => 'v1/content', 'middleware' => ['check.domain', 'cors']], function () {
+    ## Devuelve todas las páginas asociadas a un contenido.
+    Route::get('/{content:slug}/get/pages', [ContentController::class, 'index']);
+
+    ## Devuelve una página concreta para un contenido.
+    Route::get('/{content:slug}/get/page/{page:order}/{type?}', [ContentController::class, 'show']);
+});
+
+
 ######################################################
 ##                   Plataformas
 ######################################################
@@ -99,142 +113,6 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['check.domain', 'cors'
 
     ## Devuelve el contenido asociado a una plataforma para un tipo de contenido concreto
     Route::get('/{platform:slug}/content/type/{contentType}', [PlatformController::class, 'getContentByType']);
-
-
-
-
-
-    // TODO: Revisar el siguiente endpoint lo que pretendía hacer, habrá que adaptar o replantearlo
-
-
-    Route::post('{slug}/projects', function (Request $request, $slug) {
-        $category = $request->get('category');
-        $search = $request->get('search');
-
-
-        return JsonHelper::success([
-            'elements' => [
-                [
-                    'id' => 1,
-                    'title' => "Título? Poner sobre imagen?",
-                    'description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis porta dui. Ut eu iaculis massa. Sed ornare ligula lacus, quis iaculis dui porta volutpat. In sit amet posuere magna..",
-                    'image' => "https://source.unsplash.com/collection/1346951/1000x500?sig=1",
-                    'tags' => ["smart plant", "solar"],
-                    'categories' => ['Laravel', 'PHP'],
-                    'links' => [
-                        [
-                            'type' => "twitter",
-                            'name' => "Twitter",
-                            'url' => "https://twitter.com/xxx",
-                        ],
-
-                        [
-                            'type' => "gitlab",
-                            'name' => "Gitlab",
-                            'url' => "https://gitlab.com/xxx",
-                        ],
-
-                        [
-                            'type' => "web",
-                            'name' => "Web",
-                            'url' => "https://web.com/xxx",
-                        ],
-                    ],
-                ],
-
-                [
-                    'id' => 2,
-                    'title' => "Título2? Poner sobre imagen?",
-                    'description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis porta dui. Ut eu iaculis massa. Sed ornare ligula lacus, quis iaculis dui porta volutpat. In sit amet posuere magna..",
-                    'image' => "https://source.unsplash.com/collection/1346951/1000x500?sig=1",
-                    'tags' => ["smart plant", "solar"],
-                    'categories' => ['Laravel', 'PHP'],
-                    'links' => [
-                        [
-                            'type' => "twitter",
-                            'name' => "Twitter",
-                            'url' => "https://twitter.com/xxx",
-                        ],
-
-                        [
-                            'type' => "gitlab",
-                            'name' => "Gitlab",
-                            'url' => "https://gitlab.com/xxx",
-                        ],
-
-                        [
-                            'type' => "web",
-                            'name' => "Web",
-                            'url' => "https://web.com/xxx",
-                        ],
-                    ],
-                ]
-            ],
-            'categories' => [
-                [
-                    'slug' => "all",
-                    'name' => "Todos",
-                ],
-
-                [
-                    'slug' => "laravel",
-                    'name' => "Laravel",
-                ],
-
-                [
-                    'slug' => "php",
-                    'name' => "PHP",
-                ],
-
-                [
-                    'slug' => "python",
-                    'name' => "Python",
-                ],
-
-                [
-                    'slug' => "vuejs",
-                    'name' => "VueJS",
-                ],
-                [
-                    'slug' => "javascript",
-                    'name' => "Javascript",
-                ],
-                [
-                    'slug' => "Raspberry",
-                    'name' => "raspberry",
-                ],
-                [
-                    'slug' => "arduino",
-                    'name' => "Arduino",
-                ],
-            ],
-            'currentCategorySlug' => $category ?? 'all',
-        ]);
-
-
-        $cv = Curriculum::where('user_id', 2)->where('is_default', 1)->first();
-
-        if (!$cv) {
-            return JsonHelper::success([]);
-        }
-
-        $projects = $cv->projects(); //->where('slug', $slug);
-
-        if ($category) {
-            $projects->where('category', $category);
-        }
-
-        // TODO → Buscar también por cadena en tags y descripción
-        if ($search) {
-            $projects->where('name', 'like', "%$search%");
-        }
-
-        return JsonHelper::success([
-            'total' => $cv->projects()->count(),
-            'results' => $projects->count(),
-            'elements' => $projects->get()
-        ]);
-    });
 });
 
 /**
