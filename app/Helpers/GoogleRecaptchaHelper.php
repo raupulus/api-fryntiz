@@ -25,6 +25,9 @@ class GoogleRecaptchaHelper
      */
     private const HOSTS = [
         'raupulus.dev',
+        'fryntiz.es',
+        'fryntiz.dev',
+        'api.fryntiz.dev'
     ];
 
 
@@ -97,6 +100,4 @@ class GoogleRecaptchaHelper
             ->setScoreThreshold($scoreThreshold)
             ->verify($token, $requestIp);
     }
-
-
 }
