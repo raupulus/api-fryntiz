@@ -165,11 +165,7 @@ class EmailController extends Controller
             $errors['subject_message'] = 'Ya se ha recibido una solicitud de email con el mismo asunto o mensaje en las últimas 24 horas.';
         }
 
-
-        // TODO: Cuando se termine, no continuar al primer error para ahorrar peticiones a recaptcha si es un mensaje
-        // duplicado. Es decir, si no pasa validaciones de email no seguir comprobando captcha
-
-        if ($checkLastFromEmail && $checkSubjectAndMessage) {
+        if (!$checkLastFromEmail && !$checkSubjectAndMessage) {
             $captchaToken = $request->get('captcha_token');
             $captchaValid = GoogleRecaptchaHelper::checkCaptcha($captchaToken, 'contact', $request->ip());
         }
@@ -187,11 +183,14 @@ class EmailController extends Controller
 
             $email->send = $priority >= 4; ## Umbral mínimo para enviar 4/10
             $email->priority = $priority;
+        } else if (!$checkLastFromEmail && !$checkSubjectAndMessage && !$captchaValid->isSuccess()) {
+                $email->send = false;
+                $email->priority = 0;
+
+                $errors['captcha'] = $captchaValid->getErrorCodes();
         } else {
             $email->send = false;
             $email->priority = 0;
-
-            $errors['captcha'] = $captchaValid->getErrorCodes();
         }
 
         ## En caso de mensaje idéntico o parecido descartar guardar
