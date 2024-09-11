@@ -137,34 +137,42 @@ class EmailController extends Controller
         $checkDomain = $this->checkDomain($request->get('app_domain'));
 
         if (!$checkIp || !$checkApp || !$checkDomain) {
-            return \JsonHelper::forbidden('Origen erróneo, petición mal formada o ip bloqueada');
+            return \JsonHelper::forbidden('Origen erróneo, petición mal formada o ip bloqueada. Enviada alerta de seguridad al administrador');
         }
 
         $email = new Email($request->validated());
-
-        $captchaToken = $request->get('captcha_token');
-        $captchaValid = GoogleRecaptchaHelper::checkCaptcha($captchaToken, 'contact', $request->ip());
 
         $errors = [];
 
 
         $checkLastFromEmail = Email::where('email', $email->email)
-            ->where('created_at', '>=', Carbon::now()->subMinutes(10))
+            ->where('created_at', '>=', Carbon::now()->subMinutes(2))
             ->exists();
 
         if ($checkLastFromEmail) {
             $errors['email_sender'] = 'Ya se ha recibido una solicitud de email con esa dirección de correo. Si es légitimo el envío prueba dentro de unos minutos.';
         }
 
-        $checkSubjectAndMessage = Email::where('subject', 'iLike', $email->subject)
-            ->orWhere('message', 'iLike', $email->message)
-            ->where('created_at', '>=', Carbon::now()->days(1))
+        $checkSubjectAndMessage = Email::where('email', $email->email)
+            ->where(function ($query) use ($email) {
+                return $query->where('subject', 'iLike', $email->subject)
+                    ->orWhere('message', 'iLike', $email->message);
+            })
+            ->where('created_at', '>=', Carbon::now()->subDay())
             ->exists();
 
         if ($checkSubjectAndMessage) {
             $errors['subject_message'] = 'Ya se ha recibido una solicitud de email con el mismo asunto o mensaje en las últimas 24 horas.';
         }
 
+
+        // TODO: Cuando se termine, no continuar al primer error para ahorrar peticiones a recaptcha si es un mensaje
+        // duplicado. Es decir, si no pasa validaciones de email no seguir comprobando captcha
+
+        if ($checkLastFromEmail && $checkSubjectAndMessage) {
+            $captchaToken = $request->get('captcha_token');
+            $captchaValid = GoogleRecaptchaHelper::checkCaptcha($captchaToken, 'contact', $request->ip());
+        }
 
         if (!$checkLastFromEmail && !$checkSubjectAndMessage && $captchaValid->isSuccess()) {
             // Verified!
@@ -188,7 +196,7 @@ class EmailController extends Controller
 
         ## En caso de mensaje idéntico o parecido descartar guardar
         if (!$checkLastFromEmail && !$checkSubjectAndMessage) {
-            $email->attempts = $email->send ?? 1;
+            $email->attempts = $email->send ?? true;
             $email->save();
         }
 
