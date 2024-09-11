@@ -142,12 +142,14 @@ class ContentPageController extends Controller
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/html; charset=utf-8']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         $result = curl_exec($ch);
         curl_close($ch);
 
+        $result = mb_convert_encoding($result, 'UTF-8', mb_detect_encoding($result));
 
         $title = preg_match('!<title>(.*?)</title>!i', $result, $matches) ? $matches[1] : '';
         $description = preg_match('!<meta name="description" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
@@ -250,7 +252,7 @@ class ContentPageController extends Controller
             'meta' => [
                 'content_page_id' => $page?->id,
                 'title' => trim($title),
-                'description' => utf8_encode(trim($description)),
+                'description' => trim($description),
                 'keywords' => trim($keywords),
                 'images' => $images,
                 'image' => [
