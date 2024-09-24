@@ -204,6 +204,10 @@ class PlatformController extends Controller
 
         $query->offset($quantity * ($page - 1))->limit($quantity);
 
+        ## Orden
+        //$query->orderBy('contents.updated_at', 'desc')->orderBy('contents.published_at', 'desc');
+        $query->orderBy('contents.published_at', 'desc');
+
         Carbon::setLocale(config('app.locale'));
 
         $contents = $query->get()->map(function ($ele) {
