@@ -413,54 +413,35 @@ class File extends Model
      */
     public function thumbnail(string $key = 'small'): string
     {
-        // TOFIX: En caso de no ser una imagen devuelvo la url, pero esto no tiene mucho sentido por ahora
+        ## En caso de no ser una imagen, devuelvo la url del archivo directamente.
         if ($this->fileType && !($this->fileType->type === 'image')) {
             return $this->url;
         }
 
+        ## Obtenemos la miniatura en base a la clave.
         $thumbnail = $this->thumbnails()->where('key', $key)->first();
 
+        ## Si no encontramos la miniatura, buscamos iterativamente la miniatura de menor tamaño
         if (!$thumbnail) {
-            $pos = array_search($key, array_keys(self::$thumbnailsSizeWidth), true);
+            $keys = array_keys(self::$thumbnailsSizeWidth);
+            $pos = array_search($key, $keys, true);
 
-
-            ## En caso de pedir la imagen más grande, buscamos la más cercana en tamaño inferior.
-            if ($pos === (count(self::$thumbnailsSizeWidth) - 1)) {
-                $newArraySizes = array_reverse(self::$thumbnailsSizeWidth);
-                unset($newArraySizes[0]);
-
-                foreach ($newArraySizes as $idx => $size) {
-                    $thumbnail = $this->thumbnails()->where('key', $idx)->first();
-
-                    if ($thumbnail) {
-                        return $thumbnail->url;
-                    }
-                }
-            } else {  ## En caso de tener una imagen pequeña, buscamos la superior más cercana.
-                $newArraySizes = array_slice(self::$thumbnailsSizeWidth, $pos, null, true);
-
-                foreach ($newArraySizes as $idx => $size) {
-                    $thumbnail = $this->thumbnails()->where('key', $idx)->first();
-
-                    if ($thumbnail) {
-                        return $thumbnail->url;
-                    }
+            // Iteramos hacia abajo para encontrar una miniatura existente
+            for ($i = $pos; $i >= 0; $i--) {
+                $thumbnail = $this->thumbnails()->where('key', $keys[$i])->first();
+                if ($thumbnail) {
+                    return $thumbnail->url;
                 }
             }
-
-
-            $thumbnail = $this->thumbnails()->where('key', $key)->first();
         }
 
-
-
-
+        ## Si encontramos la miniatura, devolvemos su URL.
         if ($thumbnail) {
             return $thumbnail->url;
         }
 
-        return self::urlDefaultImage($key);
-
+        ## Si no se ha encontrado ninguna miniatura, devolvemos la URL de la imagen principal.
+        return $this->url;
     }
 
     /**
