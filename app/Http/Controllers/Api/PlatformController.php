@@ -220,6 +220,7 @@ class PlatformController extends Controller
                 'urlImageMedium' => $ele->urlImageMedium,
                 'urlImage' => $ele->urlImageNormal,
                 'created_at' => $ele->created_at,
+                'updated_at' => $ele->updated_at,
                 'created_at_human' => $ele->created_at->translatedFormat('d F Y'),
                 'total_pages' => $ele->pages()->count(),
                 'categories' => $ele->categoriesQuery()->pluck('name'),
@@ -240,8 +241,8 @@ class PlatformController extends Controller
                         'slug' => $tech->slug,
                         'urlImageSmall' => $tech->urlImageSmall,
                     ];
-                })
-
+                }),
+                'pages_slug' => $ele->pages()->pluck('slug'),
             ]);
         });
 

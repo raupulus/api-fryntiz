@@ -92,6 +92,9 @@ Route::group(['prefix' => 'v1/user', 'middleware' => 'auth:sanctum'], function (
 ##                   Contenidos
 ######################################################
 Route::group(['prefix' => 'v1/content', 'middleware' => ['check.domain', 'cors']], function () {
+    ## Devuelve un contenido a partir de su slug
+    Route::get('/{platform:slug}/{content:slug}/get', [ContentController::class, 'getContentBySlug']);
+
     ## Devuelve todas las páginas asociadas a un contenido.
     Route::get('/{content:slug}/get/pages', [ContentController::class, 'index']);
 

@@ -7,7 +7,6 @@ use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use JsonHelper;
 
 class ContentController extends Controller
@@ -30,8 +29,56 @@ class ContentController extends Controller
         //       puede cambiar por cada plataforma en base al sitio/hueco dónde se situará. ¿Dinamizar parámetro de ruta?
         // TODO: Obtener cada página raw con el json? En content viene el html y no suele interesar.
 
-        return  JsonHelper::success([
+        return JsonHelper::success([
             'pages' => $pages,
+        ]);
+    }
+
+    public function getContentBySlug(string $slugPlatform, string $slugContent): JsonResponse
+    {
+        $contentQuery = Content::where('slug', $slugContent)->first();
+
+        if (!$contentQuery) {
+            return JsonHelper::failed('Content not found');
+        }
+
+        $content = collect([
+            'title' => $contentQuery->title,
+            'slug' => $contentQuery->slug,
+            'excerpt' => $contentQuery->excerpt,
+            'is_featured' => $contentQuery->is_featured,
+            'urlImageSmall' => $contentQuery->urlImageSmall,
+            'urlImageMedium' => $contentQuery->urlImageMedium,
+            'urlImage' => $contentQuery->urlImageNormal,
+            'created_at' => $contentQuery->created_at,
+            'updated_at' => $contentQuery->updated_at,
+            'created_at_human' => $contentQuery->created_at->translatedFormat('d F Y'),
+            'total_pages' => $contentQuery->pages()->count(),
+            'categories' => $contentQuery->categoriesQuery()->pluck('name'),
+            'tags' => $contentQuery->tagsQuery()->pluck('name'),
+            'metadata' => [
+                'web' => $contentQuery->metadata?->web,
+                'telegram_channel' => $contentQuery->metadata?->telegram_channel,
+                'youtube_channel' => $contentQuery->metadata?->youtube_channel,
+                'youtube_video' => $contentQuery->metadata?->youtube_video,
+                'gitlab' => $contentQuery->metadata?->gitlab,
+                'github' => $contentQuery->metadata?->github,
+                'mastodon' => $contentQuery->metadata?->mastodon,
+                'twitter' => $contentQuery->metadata?->urlTwitter,
+            ],
+            'technologies' => $contentQuery->technologies->map(function ($tech) {
+                return [
+                    'name' => $tech->name,
+                    'slug' => $tech->slug,
+                    'urlImageSmall' => $tech->urlImageSmall,
+                ];
+            }),
+            'pages_slug' => $contentQuery->pages()->pluck('slug'),
+        ]);
+
+        return JsonHelper::success([
+            'ok' => true,
+            'content' => $content,
         ]);
     }
 
