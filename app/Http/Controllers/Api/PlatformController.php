@@ -117,6 +117,7 @@ class PlatformController extends Controller
 
     /**
      * Devuelve el contenido por tipo de contenido y plataforma.
+     * - Máximo 50 elementos
      *
      * @param Request $request
      * @param Platform $platform Plataforma sobre la que se pide el contenido
@@ -142,7 +143,7 @@ class PlatformController extends Controller
         $category = $request->get('category');
         $category_id = $request->get('category_id');
         $page = $request->get('page') ?? 1;
-        $quantity = $request->get('quantity') ?? 10;
+        $quantity = $request->get('quantity') ?? 10; // Debe ser menor a 50
 
 
         //$platform->contentsActive()
@@ -151,6 +152,7 @@ class PlatformController extends Controller
             ->where('type_id', $contentAvailableType->id)
             ->where('platform_id', $platform->id)
             ->where('contents.is_active', true)
+            ->where('contents.published_at', '<=', now())
             ->whereNotNull('contents.published_at');
 
 
@@ -199,14 +201,14 @@ class PlatformController extends Controller
             ->get()->count();
 
 
-        // Límite debe ser menor a 50 contenidos.
+        ## Límite debe ser menor a 50 contenidos.
         $quantity = ($quantity > 50) ? 50 : $quantity;
 
         $query->offset($quantity * ($page - 1))->limit($quantity);
 
         ## Orden
         //$query->orderBy('contents.updated_at', 'desc')->orderBy('contents.published_at', 'desc');
-        $query->orderBy('contents.published_at', 'desc');
+        $query->orderByDesc('contents.is_featured')->orderBy('contents.published_at', 'desc');
 
         Carbon::setLocale(config('app.locale'));
 
@@ -274,7 +276,7 @@ class PlatformController extends Controller
                 'category_id' => $category_id,
                 'quantity' => $quantity,
                 'orderDirection' => 'desc',
-                'orderBy' => ['is_featured', 'updated_at'],
+                'orderBy' => ['is_featured', 'published_at'],
             ],
 
             'contents' => $contents,
