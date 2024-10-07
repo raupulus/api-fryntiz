@@ -281,8 +281,6 @@ class PlatformController extends Controller
 
             'contents' => $contents,
         ]);
-
-
     }
 }
 
