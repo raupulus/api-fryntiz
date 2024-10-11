@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\KeyCounter\Keyboard;
-use App\Models\KeyCounter\Mouse;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -45,48 +43,31 @@ class KeyCounterRemoveDuplicate extends Command
      */
     public function handle(): void
     {
-        $this->removeDuplicates(Keyboard::class, ['start_at', 'end_at', 'pulsations', 'hardware_device_id']);
-        $this->removeDuplicates(Mouse::class, ['start_at', 'end_at', 'total_clicks', 'hardware_device_id']);
+        $this->removeDuplicates('keycounter_keyboard', ['start_at', 'end_at', 'pulsations', 'hardware_device_id']);
+        $this->removeDuplicates('keycounter_mouse', ['start_at', 'end_at', 'total_clicks', 'hardware_device_id']);
     }
 
     /**
      * Remove duplicates accordingly
      *
-     * @param string $model
+     * @param string $table
      * @param array $groupByColumns
      *
      * @return void
      */
-    private function removeDuplicates(string $model, array $groupByColumns): void
+    private function removeDuplicates(string $table, array $groupByColumns): void
     {
-        $offset = 0;
-        $limit = 50;
+        $groupByCols = implode(', ', $groupByColumns);
 
-        do {
-            // Get a batch of ids of records that should be kept
-            $uniqueIds = DB::table(with(new $model)->getTable())
-                ->select(DB::raw('MIN(id) AS id'))
-                ->groupBy($groupByColumns)
-                ->offset($offset)
-                ->limit($limit)
-                ->pluck('id');
+        // CTE (Common Table Expression) to identify duplicates
+        $query = "
+            DELETE FROM $table
+            WHERE id NOT IN (
+                SELECT min(id) FROM $table
+                GROUP BY $groupByCols
+            );
+        ";
 
-            if ($uniqueIds->isEmpty()) {
-                break;
-            }
-
-            // Delete duplicate records but keep the ones with ids in uniqueIds
-            DB::table(with(new $model)->getTable())
-                ->whereNotIn('id', $uniqueIds)
-                ->whereIn('id', function ($query) use ($groupByColumns, $model) {
-                    $query->select('id')
-                        ->from(with(new $model)->getTable())
-                        ->groupBy($groupByColumns)
-                        ->havingRaw('COUNT(*) > 1');
-                })
-                ->delete();
-
-            $offset += $limit;
-        } while (!$uniqueIds->isEmpty());
+        DB::statement($query);
     }
 }
