@@ -28,7 +28,10 @@ Route::group(['prefix' => '/'], function () {
 ######################################################
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
-    ## Obtener listado de equipos
+    ## Obtener información de un dispositivo concreto
+    Route::get('/get/device/{id}/info', [HardwareDeviceController::class, 'getDeviceInfo']);
+
+    ## Obtener listado de equipos/PCs
     Route::get('/get/computers/list', [HardwareDeviceController::class, 'getComputersList']);
 
     ## Añadir Datos Energía

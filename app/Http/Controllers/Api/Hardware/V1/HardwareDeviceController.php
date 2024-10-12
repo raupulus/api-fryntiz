@@ -11,6 +11,24 @@ class HardwareDeviceController extends Controller
 {
 
     /**
+     * Devuelve información sobre un dispositivo de hardware recibido.
+     */
+    public function getDeviceInfo($id): JsonResponse
+    {
+        $device = HardwareDevice::where('hardware_devices.id', $id)
+            ->select(['hardware_devices.hardware_type_id', 'hardware_devices.name', 'hardware_devices.name_friendly',
+                'hardware_devices.model', 'hardware_devices.description', 'hardware_devices.ip_local', 'hardware_devices.ip_public',
+                'hardware_devices.last_seen_at', 'hardware_types.name as hardware_type_name'])
+            ->leftJoin('hardware_types', 'hardware_types.id', '=', 'hardware_devices.hardware_type_id')
+            ->whereNull('hardware_devices.deleted_at')
+            ->first();
+
+        return \JsonHelper::success([
+            'device' => $device,
+        ]);
+    }
+
+    /**
      * Devuelve un listado de equipos.
      */
     public function getComputersList(Request $request): JsonResponse
