@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\KeyCounter\Keyboard;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -40,17 +39,35 @@ class KeyCounterRemoveDuplicate extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        ## Obtiene todos los id únicos en un array.
-        $keyboardUniques_ids = Keyboard::select(
-            DB::raw('min(id) as id1'), 'start_at')
-            ->groupBy('start_at', 'end_at', 'pulsations', 'device_id', 'device_name')
-            ->get()
-            ->pluck('id1');
+        $this->removeDuplicates('keycounter_keyboard', ['start_at', 'end_at', 'pulsations', 'hardware_device_id']);
+        $this->removeDuplicates('keycounter_mouse', ['start_at', 'end_at', 'total_clicks', 'hardware_device_id']);
+    }
 
-        $keycounter = Keyboard::whereNotIn('id', $keyboardUniques_ids)->delete();
+    /**
+     * Remove duplicates accordingly
+     *
+     * @param string $table
+     * @param array $groupByColumns
+     *
+     * @return void
+     */
+    private function removeDuplicates(string $table, array $groupByColumns): void
+    {
+        $groupByCols = implode(', ', $groupByColumns);
+
+        // CTE (Common Table Expression) to identify duplicates
+        $query = "
+            DELETE FROM $table
+            WHERE id NOT IN (
+                SELECT min(id) FROM $table
+                GROUP BY $groupByCols
+            );
+        ";
+
+        DB::statement($query);
     }
 }
