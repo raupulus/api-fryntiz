@@ -98,6 +98,16 @@ class CreateHardwareDevicesTable extends Migration
             $table->dateTime('buy_at')
                 ->nullable()
                 ->comment('Fecha de compra del dispositivo');
+            $table->timestamp('last_seen_at')
+                ->nullable()
+                ->comment('Última vez que se vio el dispositivo');
+            $table->string('ip_local', 255)
+                ->nullable()
+                ->comment('Ip local del dispositivo');
+            $table->string('ip_public', 255)
+                ->nullable()
+                ->comment('Ip pública del dispositivo');
+
 
             $table->timestamps();
             $table->softDeletes();

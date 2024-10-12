@@ -25,7 +25,7 @@ class HardwareDevice extends BaseModel
     protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id',
         'name', 'name_friendly', 'ref', 'model', 'brand', 'software_version',
         'hardware_version', 'serial_number', 'battery_type', 'battery_nominal_capacity',
-        'url_company', 'description', 'buy_at'];
+        'url_company', 'description', 'buy_at', 'last_seen_at', 'ip_local', 'ip_public'];
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'buy_at'];
 

@@ -6,6 +6,7 @@
 
 use App\Http\Controllers\Api\Hardware\V1\EnergyMonitorController;
 use App\Http\Controllers\Api\Hardware\V1\SolarChargeController;
+use \App\Http\Controllers\Api\Hardware\V1\HardwareDeviceController;
 use Illuminate\Support\Facades\Route;
 
 ######################################################
@@ -26,6 +27,9 @@ Route::group(['prefix' => '/'], function () {
 ##                    Privada
 ######################################################
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    ## Obtener listado de equipos
+    Route::get('/get/computers/list', [HardwareDeviceController::class, 'getComputersList']);
 
     ## Añadir Datos Energía
     Route::post('/energy-monitor/store', [EnergyMonitorController::class, 'store']);
