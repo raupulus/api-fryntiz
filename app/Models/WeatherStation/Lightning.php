@@ -14,6 +14,7 @@ class Lightning extends BaseWheaterStation
     protected $table = 'meteorology_lightning';
 
     protected $fillable = [
+        'user_id',
         'hardware_device_id',
         'distance',
         'energy',
@@ -49,7 +50,7 @@ class Lightning extends BaseWheaterStation
     public static function getModelTitles(): array
     {
         return [
-            'singular' => 'Rayo/Relámpagos',
+            'singular' => 'Rayo/Relámpago',
             'plural' => 'Rayos/Relámpagos',
             'add' => 'Agregar Rayos/Relámpagos',
             'edit' => 'Editar Rayos/Relámpagos',
