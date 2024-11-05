@@ -69,8 +69,10 @@ class ForceClearCommand extends Command
 
         Artisan::call('view:clear');
 
-        $this->info('Limpiando caché para la barra de debug');
-        Artisan::call('debugbar:clear');
+        if (app()->environment() !== 'production') {
+            $this->info('Limpiando caché para la barra de debug');
+            Artisan::call('debugbar:clear');
+        }
 
         $this->info('Limpiando caché de rutas');
         Artisan::call('route:clear');
