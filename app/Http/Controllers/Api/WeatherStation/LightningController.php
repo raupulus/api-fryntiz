@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Http\Requests\Api\WeatherStation\StoreLightningBatchRequest;
 use App\Http\Requests\Api\WeatherStation\StoreLightningRequest;
-use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Lightning;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,12 +63,15 @@ class LightningController extends BaseWheaterStationController
         ]);
     }
 
+    /**
+     * Procesa el guardado de un lote de datos para registros de rayos.
+     *
+     * @param StoreLightningBatchRequest $request
+     * @return JsonResponse
+     */
     public function storeBatch(StoreLightningBatchRequest $request): JsonResponse
     {
         $data = $request->validated();
-
-        // TODO: Borrar cuando acabe de depurar!!!
-        Log::info($data);
 
         $errors = 0;
 

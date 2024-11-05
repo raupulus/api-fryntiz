@@ -4,6 +4,7 @@
  * sufijo /api/weatherstation/v1/*
  */
 
+use App\Http\Controllers\Api\WeatherStation\LightningController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\WeatherStation;
 
@@ -158,12 +159,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/air_quality/add-json', 'App\Http\Controllers\Api\WeatherStation\AirQualityController@addJson');
 
     ## Añadir nuevo registro de Rayos.
-    Route::post('/lightning/store', 'App\Http\Controllers\Api\WeatherStation\LightningController@store');
-    Route::post('/lightning/add', 'App\Http\Controllers\Api\WeatherStation\LightningController@add'); //TOFIX: Legacy, para borrar
+    Route::post('/lightning/store', [LightningController::class, 'store']);
+    #Route::post('/lightning/add', 'App\Http\Controllers\Api\WeatherStation\LightningController@add'); //TOFIX: Legacy, para borrar
 
     ## Añadir nuevos registros de Rayos por lotes JSON
-    Route::post('/lightning/batch/store', 'App\Http\Controllers\Api\WeatherStation\LightningController@storeBatch');
-    Route::post('/lightning/add-json', 'App\Http\Controllers\Api\WeatherStation\LightningController@addJson'); //TOFIX: Legacy, para borrar
+    Route::post('/lightning/batch/store', [LightningController::class, 'storeBatch']);
+    #Route::post('/lightning/add-json', 'App\Http\Controllers\Api\WeatherStation\LightningController@addJson'); //TOFIX: Legacy, para borrar
 });
 
 

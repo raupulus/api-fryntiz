@@ -18,6 +18,7 @@ class StoreLightningBatchRequest extends BaseFormRequest
      */
     public function authorize(): bool
     {
+        // TODO: hardware_device_id tiene que corresponder al user?
         return true;
     }
 
