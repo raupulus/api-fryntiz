@@ -168,7 +168,7 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.category.create');
         Route::post('/store', [CategoryController::class, 'store'])
             ->name('dashboard.category.store');
-        Route::get('/{category}/edit', [CategoryController::class, 'edit'])
+        Route::get('/{model}/edit', [CategoryController::class, 'edit'])
             ->name('dashboard.category.edit');
         Route::match(['post', 'put', 'patch'], '/update/{category?}', [CategoryController::class, 'update'])
             ->name('dashboard.category.update');

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Policies\CategoryPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use function collect;
 use function route;
@@ -18,7 +19,7 @@ class Category extends BaseAbstractModelWithTableCrud
 
     protected $table = 'categories';
 
-    protected $fillable = ['name', 'slug', 'description'];
+    protected $fillable = ['name', 'slug', 'description', 'parent_id'];
 
     public static function  getModuleName(): string
     {
@@ -34,6 +35,16 @@ class Category extends BaseAbstractModelWithTableCrud
             'edit' => 'Editar Categoría',
             'delete' => 'Eliminar Categoría',
         ];
+    }
+
+    /**
+     * Devuelve todas las subcategorías asociadas a la categoría actual.
+     *
+     * @return HasMany
+     */
+    public function subcategories(): HasMany
+    {
+        return $this->hasMany(Category::class, 'parent_id', 'id');
     }
 
     /**

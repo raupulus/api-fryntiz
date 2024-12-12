@@ -57,6 +57,7 @@ class CategoryController extends BaseWithTableCrudController
     public function store(CategoryStoreRequest $request)
     {
         $modelString = $this::getModel();
+
         $modelString::create($request->validated());
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
@@ -104,7 +105,13 @@ class CategoryController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
-        return redirect()->route($modelString::getCrudRoutes()['index']);
+        //return redirect()->route($modelString::getCrudRoutes()['index']);
+
+        if ($request->has('parent_id') && $request->get('parent_id')) {
+            return redirect()->route($modelString::getCrudRoutes()['edit'], $request->get('parent_id'));
+        }
+
+        return redirect()->route($modelString::getCrudRoutes()['edit'], $id);
     }
 
     /**

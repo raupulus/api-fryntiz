@@ -30,6 +30,7 @@
                                :show-id="false"
                                :searchable="true"
                                :sortable="true"
+                               :conditions="[{filter: 'where', column: 'parent_id', value: null}]"
                                csrf="{{csrf_token()}}"
                                url-edit-hot='{{ route($model::getTableAjaxRoutes()['actions']) }}'
                                :actions='{!! $model::getTableActionsInfoJson() !!}'
