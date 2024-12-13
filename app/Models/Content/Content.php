@@ -13,6 +13,7 @@ use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\User;
 use App\Policies\ContentPolicy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
@@ -277,8 +278,10 @@ class Content extends BaseAbstractModelWithTableCrud
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
      * @param int|null $platformId Id de la plataforma
+     *
+     * @return Builder
      */
-    public function categoriesQuery(int $platformId = null)
+    public function categoriesQuery(int $platformId = null): Builder
     {
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
@@ -287,6 +290,37 @@ class Content extends BaseAbstractModelWithTableCrud
             ->where('content_categories.content_id', $this->id)
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
+            ->whereNull('categories.parent_id')
+            ->get();
+
+        return Category::whereIn('id', $categoriesId);
+    }
+
+    /**
+     * Creo consulta personalizada para las subcategorías, NO ES UNA RELACIÓN
+     */
+    public function getSubcategoriesAttribute()
+    {
+        return $this->subcategoriesQuery()->get();
+    }
+
+    /**
+     * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
+     *
+     * @param int|null $platformId Id de la plataforma
+     *
+     * @return Builder
+     */
+    public function subcategoriesQuery(int $platformId = null): Builder
+    {
+        $categoriesId = Category::select('categories.id')
+            ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
+            ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
+            //->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
+            ->where('content_categories.content_id', $this->id)
+            ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
+            ->groupBy('categories.id')
+            ->whereNotNull('categories.parent_id')
             ->get();
 
         return Category::whereIn('id', $categoriesId);
@@ -537,35 +571,25 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @return void
      */
-    public function saveCategories(Array $categories)
+    public function saveCategories(Array $categories, Array $subcategories = [])
     {
         ## Limpio categorías vacías y duplicadas.
         $categories = array_unique(array_filter($categories));
+        $subcategories = array_unique(array_filter($subcategories));
 
-        $platformCategories = $this->platform->categories()
-            ->whereIn('category_id', $categories)
-            ->pluck('category_id')
-            ->toArray();
-
-        ## Almacena las categorías que aún no están asociadas a la plataforma.
-        $platformCategoriesDiff = array_diff($categories, $platformCategories);
-
-        ## Creamos las categorías que no estén asociadas a la plataforma.
-        foreach ($platformCategoriesDiff as $platformCategory) {
-            $this->platform->categories()->create([
-                'category_id' => $platformCategory,
-            ]);
-        }
+        $allCategories = array_merge($categories, $subcategories);
 
         ## Categorías ya asociadas al contenido
         $contentCategories = $this->categoriesJoin()
             ->pluck('platform_category_id')
             ->toArray();
 
+        //dd($allCategories, $contentCategories);
+
 
         ## Borramos las categorías que no estén en el array, ya no forma parte del contenido.
         foreach ($contentCategories as $contentCategory) {
-            if (!in_array($contentCategory, $categories)) {
+            if (!in_array($contentCategory, $allCategories)) {
 
                 ContentCategory::where('content_id', $this->id)
                     ->where('platform_category_id', $contentCategory)
@@ -575,12 +599,12 @@ class Content extends BaseAbstractModelWithTableCrud
 
         ## Vuelvo a buscar las categorías asociadas al contenido, ya que puede haber cambiado
         $platformCategories = PlatformCategory::select(['id', 'category_id'])
-            ->whereIn('category_id', $categories)
+            ->whereIn('category_id', $allCategories)
             ->where('platform_id', $this->platform_id)
             ->get();
 
-        ## Cada categoría que no esté asociada al contenido, la creamos.
-        foreach ($categories as $category) {
+        ## Cada categoría que no esté asociada al contenido, la creamos en la tabla de join.
+        foreach ($allCategories as $category) {
             if (in_array($category, $contentCategories)) {
                 continue;
             }
@@ -596,6 +620,7 @@ class Content extends BaseAbstractModelWithTableCrud
                 'platform_category_id' => $platformCategory->id,
             ]);
         }
+
     }
 
     /**

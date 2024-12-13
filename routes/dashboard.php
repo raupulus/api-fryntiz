@@ -182,6 +182,9 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.tag.ajax.get.all');
             */
 
+            Route::get('/html/get/{category}/subcategories/{content?}', [CategoryController::class, 'ajaxGetHtmlSubcategories'])
+                ->name('dashboard.category.ajax.html.subcategories');
+
             Route::post('/table/get', [CategoryController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.category.ajax.table.get');
 

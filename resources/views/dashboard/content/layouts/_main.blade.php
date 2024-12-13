@@ -667,7 +667,10 @@
                 </div>
 
 
-                {{-- NUEVO Categorías --}}
+
+
+
+                {{-- Categorías --}}
 
                 <div class="form-group">
                     <label for="categories">
@@ -683,20 +686,23 @@
 
                     <br/>
 
-                    <div class="select2-purple">
-                        <select id="categories" name="categories[]"
-                                class="select2 select2-hidden-accessible"
-                                multiple=""
-                                data-placeholder="Selecciona las categorías"
-                                data-dropdown-css-class="select2-info"
-                                style="width: 100%;"
+
+                    <div class="box-categories form-group mb-3">
+                        @php($mainCategory = $model->categories->whereNull('parent_id')->first())
+                        @php($mainCategoryId = $mainCategory?->id)
+
+                        <select id="categories"
+                                name="categories[]"
+                                class="form-control select2-categories select2-purple select2-hidden-accessible rounded-0 "
                                 tabindex="-1"
-                                aria-hidden="true">
+                                aria-hidden="true"
+                                style="width: 100%;"
+                                data-select2-id="{{$mainCategoryId}}"
+                                data-dropdown-css-class="select2-purple"
+                                data-placeholder="Selecciona las categorías">
 
-
-                            @foreach($categories as $category)
-                                @php($checked = $modelCategoriesIds && in_array($category->id, $modelCategoriesIds))
-                                @php($checked = $checked || (old('categories') && in_array($category->id, old('categories'))))
+                            @foreach($categories->whereNull('parent_id') as $category)
+                                @php($checked = $category->id == $mainCategoryId)
 
                                 <option {{$checked ? 'selected' : ''}}
                                         value="{{$category->id}}">
@@ -706,69 +712,24 @@
                             @endforeach
 
                         </select>
+                    </div>
 
-                        <div class="mt-3 text-center">
-                    <span class="btn btn-sm btn-primary"
-                          data-toggle="modal"
-                          data-target=".modal-create-category">
-                        <i class="fa fa-plus"></i>
 
-                        Crear Categoría
-                    </span>
 
-                            <div id="modal-create-category"
-                                 class="modal fade modal-create-category"
-                                 tabindex="-1" role="dialog"
-                                 aria-labelledby="modal-create-category-label"
-                                 aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="form-group">
-                                                    <label for="category-create">
-                                                        Añadir Categoría
-                                                    </label>
 
-                                                    <p>
-                                                        <small>
-                                                            Las categorías se
-                                                            separan por comas
-                                                            para añadir varias
-                                                        </small>
-                                                    </p>
 
-                                                    <input id="create-category-input"
-                                                           class="form-control m-auto w-75"/>
-                                                </div>
-                                            </div>
 
-                                            <div class="col-12">
-                                                <p class="msg-success">
-                                                    Introduce las categorías separadas por coma: "tag1, tag2, tag3"
-                                                </p>
-                                            </div>
 
-                                            {{-- Añado badges con las
-                                            etiquetas que estoy creando --}}
-                                            <div id="box-categories-created"
-                                                 class="col-12">
-                                            </div>
+                    {{-- Subcategorías --}}
 
-                                            <div class="col-12">
-                                        <span id="create-categories-button"
-                                              class="btn btn-sm
-                                        btn-success m-2">
-                                                Añadir
-                                        </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div id="box-subcategories" class="mt-3">
+                        @if($mainCategory)
 
-                        </div>
+                            @foreach($mainCategory->subcategories as $subcategory)
+                                @include('dashboard.content.fields._field_subcategory', ['category' => $mainCategory, 'subcategory' => $subcategory, 'content' => $model])
+                            @endforeach
 
+                        @endif
                     </div>
                 </div>
 

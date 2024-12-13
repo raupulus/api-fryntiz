@@ -7,6 +7,8 @@ use App\Http\Requests\Dashboard\Category\CategoryDeleteRequest;
 use App\Http\Requests\Dashboard\Category\CategoryStoreRequest;
 use App\Http\Requests\Dashboard\Category\CategoryUpdateRequest;
 use App\Models\Category;
+use App\Models\Content\Content;
+use Illuminate\Http\JsonResponse;
 use JsonHelper;
 use function redirect;
 use function view;
@@ -143,4 +145,31 @@ class CategoryController extends BaseWithTableCrudController
     ############################################################
     ##                       AJAX                             ##
     ############################################################
+
+
+    /**
+     * Devuelve una cadena con el html que corresponde a las subcategorías de la categoría recibida.
+     * Utilizado para actualizar los checkbox cuando cambiamos de categoría o plataforma.
+     *
+     * @param Category $category
+     * @return JsonResponse
+     *
+     * @throws \Throwable
+     */
+    public function ajaxGetHtmlSubcategories(Category $category, Content $content): JsonResponse
+    {
+        $html = '';
+
+        foreach ($category->subcategories as $subcategory) {
+            $html .= view('dashboard.content.fields._field_subcategory', [
+                'subcategory' => $subcategory,
+                'category' => $category,
+                'content' => $content,
+            ])->render();
+        }
+
+        return JsonHelper::success([
+            'html' => $html,
+        ]);
+    }
 }

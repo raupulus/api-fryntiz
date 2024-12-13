@@ -121,7 +121,9 @@ class ContentController extends BaseWithTableCrudController
             $model->saveTags($requestValidated['tags']);
         }
 
-        if (isset($requestValidated['categories'])) {
+        if (isset($requestValidated['categories']) && isset($requestValidated['subcategories'])) {
+            $model->saveCategories($requestValidated['categories'], $requestValidated['subcategories']);
+        } elseif (isset($requestValidated['categories'])) {
             $model->saveCategories($requestValidated['categories']);
         }
 
@@ -251,7 +253,7 @@ class ContentController extends BaseWithTableCrudController
         $content->technologies()->sync($requestValidated['technologies'] ?? []);
         $content->saveContributors($requestValidated['contributors'] ?? []);
         $content->saveTags($requestValidated['tags'] ?? []);
-        $content->saveCategories($requestValidated['categories'] ?? []);
+        $content->saveCategories($requestValidated['categories'] ?? [], $requestValidated['subcategories'] ?? []);
 
         ## Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {

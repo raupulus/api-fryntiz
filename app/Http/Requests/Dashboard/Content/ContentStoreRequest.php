@@ -107,6 +107,7 @@ class ContentStoreRequest extends FormRequest
             'tags.*' => 'nullable|exists:tags,id',
             'contents_related.*' => 'nullable|exists:contents,id',
             'categories.*' => 'nullable|exists:categories,id',
+            'subcategories.*' => 'nullable|exists:categories,id',
 
         ];
     }

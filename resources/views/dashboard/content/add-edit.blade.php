@@ -178,6 +178,11 @@
         }
 
 
+        /* Parche para altura de select2 con categorías */
+        .box-categories .select2-selection--single {
+            height: 38px !important;
+        }
+
         /**
             * Estilos para el editor de texto
          */
@@ -328,6 +333,25 @@
             });
 
 
+            // Personalizo el select2 para las categorías permitiendo evento para actualizar subcategorías.
+            let selectCategories = document.getElementById('categories');
+
+            if (selectCategories) {
+                // Inicializa Select2
+                $(selectCategories).select2();
+
+                // Maneja el evento de cambio
+                $(selectCategories).on('select2:select', (e) => {
+                    let categoryId = e.params.data.id; // Obtiene el valor seleccionado
+                    getSubcategoriesHtml(categoryId); // Llama a tu función
+                });
+            }
+
+
+
+
+
+
             /*** Selectores Dual Listbox ***/
             var dualListBox = $('.duallistbox').bootstrapDualListbox(bootstrapDualListboxOptions);
 
@@ -423,7 +447,7 @@
 
                             let nodesNotSelected = node.querySelectorAll('option:not(option[selected="selected"])');
 
-                            console.log(nodesNotSelected);
+                            //console.log(nodesNotSelected);
 
                             // Limpio nodos no seleccionados
                             if (nodesNotSelected.length) {
@@ -437,7 +461,7 @@
                                 let oldNode = node.querySelector
                                 ('option[value="' + content.id + '"]');
 
-                                console.log('oldNode:', oldNode);
+                                //console.log('oldNode:', oldNode);
 
                                 if (!oldNode) {
                                     let option = document.createElement('option');
@@ -477,6 +501,46 @@
             });
 
 
+            /**
+             * Actualiza las subcategorías para poder seleccionarlas.
+             * Se utilizará al cambiar de categoría o de plataforma con sus categorías.
+             *
+             * @param categoryId Recibe el ID de la categoría sobre la que pedir subcategorías.
+             */
+            function getSubcategoriesHtml(categoryId) {
+                boxSubcategories = document.getElementById('box-subcategories');
+                boxSubcategories.innerHTML = '';
+
+                let contentId = "{{$model->id}}";
+
+
+                let url = '{{route('dashboard.category.ajax.html.subcategories', ['category' => ':categoryId', 'content' => ':contentId'])}}';
+                url = url.replace(':categoryId', categoryId);
+                url = url.replace(':contentId', contentId);
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+
+                    /*
+                    body: JSON.stringify({
+                        categoryId: categoryId,
+                    })
+                    */
+
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data && data.html && data.html.length) {
+                            boxSubcategories.innerHTML = data.html;
+                        } else {
+                            boxSubcategories.innerHTML = '';
+                        }
+                    });
+            }
+
             let platformIdNode = document.getElementById('platform_id');
 
             function changePlatformCategories(categories, selectedCategories) {
@@ -487,6 +551,8 @@
 
                     const selectedIds = selectedCategories.map(ele => ele.id);
 
+                    let currentCategoryId = null
+
                     categories.forEach(category => {
                         let option = document.createElement('option');
                         option.value = category.id;
@@ -494,10 +560,18 @@
 
                         if (selectedIds.length && (selectedIds.includes(category.id))) {
                             option.selected = true;
+                            currentCategoryId = category.id;
                         }
 
                         node.appendChild(option);
                     });
+
+
+
+                    // Refresco las subcategorías asociadas a la nueva categoría.
+                    if (currentCategoryId) {
+                        getSubcategoriesHtml(currentCategoryId);
+                    }
                 }
             }
 
