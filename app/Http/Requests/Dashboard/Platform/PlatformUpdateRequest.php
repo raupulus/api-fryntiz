@@ -68,6 +68,9 @@ class PlatformUpdateRequest extends FormRequest
             'twitch' => 'nullable|string|max:255',
             'tiktok' => 'nullable|string|max:255',
             'instagram' => 'nullable|string|max:255',
+
+            // Relaciones
+            'categories.*' => 'nullable|exists:categories,id',
         ];
     }
 }

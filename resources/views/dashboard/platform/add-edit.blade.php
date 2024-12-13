@@ -370,6 +370,50 @@
                     </div>
 
 
+
+
+
+                    {{-- Categorías --}}
+                    <div class="col-12">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    Categorías de la Plataforma
+                                </h3>
+                            </div>
+
+                            <div class="card-body" style="min-height: 160px;">
+                                <div class="form-group">
+                                    @foreach($categories->whereNull('parent_id') as $category)
+                                        <div class="custom-control custom-checkbox mr-2 mb-2 d-inline-block">
+
+                                            @if($model && $model->id)
+                                                @php($checked = in_array($category->id, $model->categories->pluck('id')->toArray()))
+                                            @else
+                                                @php($checked = false)
+                                            @endif
+
+
+
+                                            <input class="custom-control-input custom-control-input-success"
+                                                   type="checkbox"
+                                                   id="category-{{$category->id}}"
+                                                   value="{{$category->id}}"
+                                                   name="categories[]"
+                                                {{$checked ? 'checked' : ''}}>
+                                            <label for="category-{{$category->id}}"
+                                                   class="custom-control-label">
+                                                {{$category->name}}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                 </div>
 
             </form>

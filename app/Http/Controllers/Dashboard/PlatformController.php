@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseWithTableCrudController;
 use App\Http\Requests\Dashboard\Platform\PlatformDeleteRequest;
 use App\Http\Requests\Dashboard\Platform\PlatformStoreRequest;
 use App\Http\Requests\Dashboard\Platform\PlatformUpdateRequest;
+use App\Models\Category;
 use App\Models\File;
 use App\Models\Platform;
 use Illuminate\Http\JsonResponse;
@@ -48,6 +49,7 @@ class PlatformController extends BaseWithTableCrudController
 
         return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
             'model' => $model,
+            'categories' => Category::all(),
         ]);
     }
 
@@ -78,6 +80,29 @@ class PlatformController extends BaseWithTableCrudController
         }
 
 
+        //TODO: Unificar esta parte con la del update si se ve rentable en tiempo
+
+        $subcategories = [];
+        $categories = $request->get('categories') ?? [];
+
+        foreach ($categories as $category) {
+            $categoryModel = Category::find($category);
+
+            if ($categoryModel) {
+                $subcategories = array_merge($subcategories, $categoryModel->subcategories->pluck('id')->toArray());
+            }
+        }
+
+        $categoriesWithSubcategories = array_merge($categories, $subcategories);
+
+        foreach ($categoriesWithSubcategories as $id) {
+            $model->categories()->attach($id, [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
         return redirect()->route($modelString::getCrudRoutes()['index']);
     }
 
@@ -102,6 +127,7 @@ class PlatformController extends BaseWithTableCrudController
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
+            'categories' => Category::all(),
         ]);
     }
 
@@ -131,6 +157,41 @@ class PlatformController extends BaseWithTableCrudController
                 $image->alt = $model->title;
                 $image->save();
             }
+        }
+
+        //TODO: Unificar esta parte con la del store si se ve rentable en tiempo
+
+        $subcategories = [];
+        $categories = $request->get('categories') ?? [];
+
+        foreach ($categories as $category) {
+            $categoryModel = Category::find($category);
+
+            if ($categoryModel) {
+                $subcategories = array_merge($subcategories, $categoryModel->subcategories->pluck('id')->toArray());
+            }
+        }
+
+        $categoriesWithSubcategories = array_merge($categories, $subcategories);
+
+        $currentIds = $model->categories->pluck('id')->toArray();
+
+        ## IDs a eliminarse
+        $idsToRemove = array_diff($currentIds, $categoriesWithSubcategories);
+
+        ## IDs para añadirse
+        $idsToAdd = array_diff($categoriesWithSubcategories, $currentIds);
+
+        ## Elimino relaciones que no están en los nuevos IDs
+        if (!empty($idsToRemove)) {
+            $model->categories()->detach($idsToRemove);
+        }
+
+        foreach ($idsToAdd as $id) {
+            $model->categories()->attach($id, [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
         return redirect()->route(Platform::getCrudRoutes()['index']);
