@@ -44,7 +44,7 @@ class Category extends BaseAbstractModelWithTableCrud
      */
     public function subcategories(): HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id');
+        return $this->hasMany(self::class, 'parent_id', 'id');
     }
 
     /**

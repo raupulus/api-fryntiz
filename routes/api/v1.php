@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PlatformController;
 use App\Http\Controllers\Api\Content\ContentController;
+use App\Http\Controllers\Api\Content\ContentCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +117,11 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['check.domain', 'cors'
 
     ## Devuelve el contenido asociado a una plataforma para un tipo de contenido concreto
     Route::get('/{platform:slug}/content/type/{contentType}', [PlatformController::class, 'getContentByType']);
+
+
+
+    ## Devuelve un listado de categorías para una plataforma
+    Route::get('/{platform:slug}/get/categories', [ContentCategoryController::class, 'index']);
 });
 
 /**

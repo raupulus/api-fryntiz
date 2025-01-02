@@ -142,6 +142,8 @@ class PlatformController extends Controller
         $technology_id = $request->get('technology_id');
         $category = $request->get('category');
         $category_id = $request->get('category_id');
+        $subcategory = $request->get('subcategory');
+        $subcategory_id = $request->get('subcategory_id');
         $page = $request->get('page') ?? 1;
         $quantity = $request->get('quantity') ?? 10; // Debe ser menor a 50
 
@@ -149,8 +151,8 @@ class PlatformController extends Controller
         //$platform->contentsActive()
 
         $query = Content::select('contents.*')
-            ->where('type_id', $contentAvailableType->id)
-            ->where('platform_id', $platform->id)
+            ->where('contents.type_id', $contentAvailableType->id)
+            ->where('contents.platform_id', $platform->id)
             ->where('contents.is_active', true)
             ->where('contents.published_at', '<=', now())
             ->whereNotNull('contents.published_at');
@@ -169,7 +171,7 @@ class PlatformController extends Controller
             $query->where('technologies.id', $technology_id);
         }
 
-        if ($category || $category_id) {
+        if (($category || $category_id) && !$subcategory && !$subcategory_id) {
             $query->leftJoin('content_categories', 'contents.id', 'content_categories.content_id');
             $query->leftJoin('platform_categories', 'content_categories.platform_category_id', 'platform_categories.id');
             $query->leftJoin('categories', 'platform_categories.category_id', 'categories.id');
@@ -178,6 +180,19 @@ class PlatformController extends Controller
                 $query->where('categories.slug', $category);
             } elseif ($category_id) {
                 $query->where('categories.id', $category_id);
+            }
+        }
+
+        // TODO: Está duplicado con categorías, pensar como unificar
+        if ($subcategory || $subcategory_id) {
+            $query->leftJoin('content_categories', 'contents.id', 'content_categories.content_id');
+            $query->leftJoin('platform_categories', 'content_categories.platform_category_id', 'platform_categories.id');
+            $query->leftJoin('categories', 'platform_categories.category_id', 'categories.id');
+
+            if ($subcategory) {
+                $query->where('categories.slug', $subcategory);
+            } elseif ($subcategory_id) {
+                $query->where('categories.id', $subcategory_id);
             }
         }
 
@@ -225,7 +240,16 @@ class PlatformController extends Controller
                 'updated_at' => $ele->updated_at,
                 'created_at_human' => $ele->created_at->translatedFormat('d F Y'),
                 'total_pages' => $ele->pages()->count(),
-                'categories' => $ele->categoriesQuery()->pluck('name'),
+                'categories' => $ele->categoriesQuery()->select(['categories.name', 'categories.slug'])->get(),
+                /*
+                'categories' => $ele->technologies->map(function ($tech) {
+                    return [
+                        'name' => $tech->name,
+                        'slug' => $tech->slug,
+                        'urlImageSmall' => $tech->urlImageSmall,
+                    ];
+                }),
+                */
                 'tags' => $ele->tagsQuery()->pluck('name'),
                 'metadata' => [
                     'web' => $ele->metadata?->web,
@@ -274,6 +298,8 @@ class PlatformController extends Controller
                 'technology_id' => $technology_id,
                 'category' => $category,
                 'category_id' => $category_id,
+                'subcategory' => $subcategory,
+                'subcategory_id' => $subcategory_id,
                 'quantity' => $quantity,
                 'orderDirection' => 'desc',
                 'orderBy' => ['is_featured', 'published_at'],
