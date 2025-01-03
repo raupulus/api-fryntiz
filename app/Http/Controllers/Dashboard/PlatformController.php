@@ -102,6 +102,9 @@ class PlatformController extends BaseWithTableCrudController
             ]);
         }
 
+        ## Refresca el caché asociado a la plataforma
+        $model->refresh();
+        $model->cleanAllCache();
 
         return redirect()->route($modelString::getCrudRoutes()['index']);
     }
@@ -193,6 +196,10 @@ class PlatformController extends BaseWithTableCrudController
                 'updated_at' => now(),
             ]);
         }
+
+        ## Refresca el caché asociado a la plataforma
+        $model->refresh();
+        $model->cleanAllCache();
 
         return redirect()->route(Platform::getCrudRoutes()['index']);
     }

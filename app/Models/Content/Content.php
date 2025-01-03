@@ -14,7 +14,6 @@ use App\Models\Technology;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use function route;
@@ -30,7 +29,7 @@ use \Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Content extends BaseAbstractModelWithTableCrud
 {
-    use HasFactory, ImageTrait;
+    use ImageTrait;
 
     protected $table = 'contents';
 

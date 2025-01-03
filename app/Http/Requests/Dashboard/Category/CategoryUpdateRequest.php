@@ -31,6 +31,8 @@ class CategoryUpdateRequest extends FormRequest
                 'name' => trim($this->get('name')) ?? $model->name,
                 'slug' => trim($this->get('slug')) ?? $model->slug,
                 'description' => trim($this->get('description')),
+                'color' => trim($this->get('color')),
+                'priority' => $this->get('priority') ?? ($this->get('parent_id') ? 2 : 1),
             ]);
         }
     }
@@ -44,9 +46,11 @@ class CategoryUpdateRequest extends FormRequest
     {
         return [
             'parent_id' => 'nullable|exists:categories,id',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name,' . $this->get('id'),
             'slug' => 'required|max:255|unique:categories,slug,' . $this->get('id'),
             'description' => 'nullable|string|max:255',
+            'color' => 'nullable|string|max:255',
+            'priority' => 'nullable|integer',
         ];
     }
 }

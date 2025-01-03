@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use function route;
 use App\Models\Content\Content;
 
@@ -45,6 +46,23 @@ class Platform extends BaseAbstractModelWithTableCrud
             'edit' => 'Editar plataforma',
             'delete' => 'Eliminar plataforma',
         ];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento "saved": Se dispara después de ser guardado por primera vez
+        static::saved(function ($model) {
+            //$model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
+            //\Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
+        });
+
+        // Evento "updated": Solo se dispara cuando el modelo es actualizado
+        static::updated(function ($model) {
+            //$model->cleanAllCache();
+            //\Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
+        });
     }
 
     /**
@@ -133,6 +151,81 @@ class Platform extends BaseAbstractModelWithTableCrud
             ->whereNotIn('domain', ['', ' ', false])
             ->pluck('domain')
             ->toArray();
+    }
+
+
+    /**
+     * Limpia y renueva el caché para las categorías asociadas a la plataforma.
+     *
+     * @return void
+     */
+    public function cleanApiCategoryCache(): void
+    {
+        Cache::forget('api-categories-' . $this->slug);
+        $this->getApiCategories();
+    }
+
+    /**
+     * Limpia y renueva aquello que se haya cacheado para la plataforma, útil para recomponer datos después
+     * de crear o actualizar una.
+     *
+     * @return void
+     */
+    public function cleanAllCache(): void
+    {
+        $this->cleanApiCategoryCache();
+    }
+
+    /**
+     * Devuelve todas las categorías formateadas para consumirla a través de api.
+     * Estas categorías se cachean automáticamente al editarlas.
+     *
+     * @return Collection
+     */
+    public function getApiCategories(): Collection
+    {
+        return Cache::rememberForever('api-categories-' . $this->slug, function () {
+            $categories = $this->categories()
+                ->select('categories.id', 'categories.parent_id', 'categories.slug', 'categories.name', 'categories.description', 'categories.icon', 'categories.color', 'categories.image_id')
+                ->where('parent_id', null)
+                ->with('subcategories', function ($query) {
+                    $query->select('id', 'parent_id', 'slug', 'name', 'description', 'icon', 'color', 'image_id');
+                })
+                ->with('image')
+                ->orderBy('categories.name')
+                ->get()
+            ;
+
+            // TODO: Revisar la forma de obtener subcategorías para optimizar esta parte y quitar esos unset.
+            $categories->map(function ($category) {
+                $category->urlImageMicro = $category->urlImageMicro;
+                $category->urlImageSmall = $category->urlImageSmall;
+                unset($category->id);
+                unset($category->image_id);
+                unset($category->image);
+                unset($category->pivot);
+                unset($category->parent_id);
+
+                if ($category->subcategories) {
+                    $category->subcategories->map(function ($subcategory) use ($category) {
+                        $subcategory->urlImageMicro = $subcategory->urlImageMicro;
+                        $subcategory->urlImageSmall = $subcategory->urlImageSmall;
+                        unset($subcategory->id);
+                        unset($subcategory->image_id);
+                        unset($subcategory->image);
+                        unset($subcategory->parent_id);
+
+                        $subcategory->parent = $category->slug;
+
+                        return $subcategory;
+                    });
+                }
+
+                return $category;
+            });
+
+            return $categories;
+        });
     }
 
 

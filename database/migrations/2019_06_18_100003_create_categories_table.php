@@ -45,6 +45,15 @@ class CreateCategoriesTable extends Migration
             // de la descendencia de una categoría padre y ordenar el camino
             // sin hacer tantas consultas.
 
+            $table->bigInteger('image_id')
+                ->nullable()
+                ->comment('FK a la imagen en la tabla files');
+
+            $table->foreign('image_id')
+                ->references('id')->on('files')
+                ->onUpdate('cascade')
+                ->onDelete('SET NULL');
+
             $table->integer('priority')
                 ->nullable()
                 ->comment('Orden de prioridad de la categoría sobre otras, esto crea una ruta por ejemplo: /terminal/editores/vim');

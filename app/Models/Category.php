@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Policies\CategoryPolicy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use function collect;
@@ -15,11 +16,11 @@ use function route;
  */
 class Category extends BaseAbstractModelWithTableCrud
 {
-    use HasFactory;
+    use ImageTrait;
 
     protected $table = 'categories';
 
-    protected $fillable = ['name', 'slug', 'description', 'parent_id'];
+    protected $fillable = ['name', 'slug', 'description', 'parent_id', 'image_id', 'icon', 'color', 'priority'];
 
     public static function  getModuleName(): string
     {
@@ -45,6 +46,16 @@ class Category extends BaseAbstractModelWithTableCrud
     public function subcategories(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id', 'id');
+    }
+
+    /**
+     * Relación con la tabla "files" que contiene la imagen principal.
+     *
+     * @return BelongsTo
+     */
+    public function image(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id', 'id');
     }
 
     /**

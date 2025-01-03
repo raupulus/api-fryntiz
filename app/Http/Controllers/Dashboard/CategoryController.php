@@ -8,7 +8,11 @@ use App\Http\Requests\Dashboard\Category\CategoryStoreRequest;
 use App\Http\Requests\Dashboard\Category\CategoryUpdateRequest;
 use App\Models\Category;
 use App\Models\Content\Content;
+use App\Models\File;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
 use JsonHelper;
 use function redirect;
 use function view;
@@ -26,9 +30,9 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
             'model' => self::getModel(),
@@ -38,9 +42,9 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         $model = new (self::getModel())();
 
@@ -52,17 +56,26 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Category\CategoryStoreRequest $request
+     * @param CategoryStoreRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function store(CategoryStoreRequest $request)
+    public function store(CategoryStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
 
-        $modelString::create($request->validated());
+        $model = $modelString::create($request->validated());
 
-        return redirect()->route($modelString::getCrudRoutes()['index']);
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'category', false, $model->image?->id);
+
+            if ($image) {
+                $model->image_id = $image->id;
+                $model->save();
+            }
+        }
+
+        return redirect()->route($modelString::getCrudRoutes()['edit'], $model->parent_id ?? $model->id);
     }
 
     /**
@@ -70,7 +83,7 @@ class CategoryController extends BaseWithTableCrudController
      *
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -80,11 +93,11 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Category $model
+     * @param Category $model
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function edit(Category $model)
+    public function edit(Category $model): View
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
             'model' => $model,
@@ -94,20 +107,27 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Category\CategoryUpdateRequest $request
+     * @param CategoryUpdateRequest $request
      * @param int|null                                          $id
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function update(CategoryUpdateRequest $request, int|null $id = null)
+    public function update(CategoryUpdateRequest $request, int|null $id = null): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::find($id);
 
         $model->fill($request->validated());
-        $model->save();
 
-        //return redirect()->route($modelString::getCrudRoutes()['index']);
+        if ($request->has('image') && $request->get('image')) {
+            $image = File::addFileFromBase64($request->get('image'), 'category', false, $model->image?->id);
+
+            if ($image) {
+                $model->image_id = $image->id;
+            }
+        }
+
+        $model->save();
 
         if ($request->has('parent_id') && $request->get('parent_id')) {
             return redirect()->route($modelString::getCrudRoutes()['edit'], $request->get('parent_id'));
@@ -119,12 +139,12 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Http\Requests\Dashboard\Category\CategoryDeleteRequest $request
+     * @param CategoryDeleteRequest $request
      * @param int|null                                          $id
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @return JsonResponse|RedirectResponse
      */
-    public function destroy(CategoryDeleteRequest $request, int|null $id = null)
+    public function destroy(CategoryDeleteRequest $request, int|null $id = null): JsonResponse|RedirectResponse
     {
         $deleted = false;
         $idRequest = $request->get('id');

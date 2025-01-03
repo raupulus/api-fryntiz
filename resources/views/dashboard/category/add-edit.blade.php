@@ -26,9 +26,9 @@
 
         <div class="col-12">
             <form
-                    action="{{$model && $model->id ? route($model::getCrudRoutes()['update'], $model->id) : route($model::getCrudRoutes()['store'])}}"
-                    enctype="multipart/form-data"
-                    method="POST">
+                action="{{$model && $model->id ? route($model::getCrudRoutes()['update'], $model->id) : route($model::getCrudRoutes()['store'])}}"
+                enctype="multipart/form-data"
+                method="POST">
 
                 @csrf
 
@@ -58,6 +58,23 @@
                             </div>
 
                             <div class="card-body" style="min-height: 160px;">
+
+                                {{-- Imagen --}}
+                                <div class="form-group">
+                                    {{-- Selector Cropper de imágenes --}}
+                                    <div class="col-12">
+                                        <div
+                                            style="height: 140px; width: 140px; margin: auto; overflow: hidden; box-sizing: border-box;">
+                                            <v-image-cropper
+                                                default-image="{{ $model->urlImage }}"
+                                                name="image"
+                                                :aspect-ratios-restriction="[1,1]"
+                                            ></v-image-cropper>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                                 <div class="form-group">
                                     <label for="name">
                                         Nombre
@@ -112,9 +129,6 @@
         </div>
 
 
-
-
-
         {{-- Subcategorías --}}
         @if(isset($model) && $model && $model->id)
 
@@ -140,8 +154,6 @@
                         <div class="row">
 
 
-
-
                             <div class="col-12">
                                 <div class="card card-warning">
                                     <div class="card-header">
@@ -163,6 +175,33 @@
                                         <div class="row">
 
 
+                                            {{-- Imagen --}}
+                                            <div class="col-12">
+                                                <div class="card card-primary">
+                                                    <div class="card-header">
+                                                        <h3 class="card-title">
+                                                            Imagen
+                                                        </h3>
+                                                    </div>
+
+                                                    <div class="card-body" style="min-height: 160px;">
+                                                        <div class="form-group">
+                                                            {{-- Selector Cropper de imágenes --}}
+                                                            <div class="col-12">
+                                                                <div
+                                                                    style="height: 140px; width: 140px; margin: auto; overflow: hidden; box-sizing: border-box;">
+                                                                    <v-image-cropper
+                                                                        default-image="{{ $subcategory->urlImage }}"
+                                                                        name="image"
+                                                                        :aspect-ratios-restriction="[1,1]"
+                                                                    ></v-image-cropper>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                             <div class="col-12 col-md-6">
                                                 <div class="card card-primary">
@@ -173,6 +212,8 @@
                                                     </div>
 
                                                     <div class="card-body" style="min-height: 160px;">
+
+
                                                         <div class="form-group">
                                                             <label for="name">
                                                                 Nombre
@@ -223,22 +264,10 @@
                                             </div>
 
 
-
-
-
-
-
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
-
 
 
                         </div>
@@ -262,8 +291,6 @@
                     <div class="row">
 
 
-
-
                         <div class="col-12">
                             <div class="card card-danger">
                                 <div class="card-header">
@@ -284,6 +311,32 @@
                                 <div class="card-body" style="min-height: 160px;">
                                     <div class="row">
 
+                                        {{-- Imagen --}}
+                                        <div class="col-12">
+                                            <div class="card card-primary">
+                                                <div class="card-header">
+                                                    <h3 class="card-title">
+                                                        Imagen
+                                                    </h3>
+                                                </div>
+
+                                                <div class="card-body" style="min-height: 160px;">
+                                                    <div class="form-group">
+                                                        {{-- Selector Cropper de imágenes --}}
+                                                        <div class="col-12">
+                                                            <div
+                                                                style="height: 140px; width: 140px; margin: auto; overflow: hidden; box-sizing: border-box;">
+                                                                <v-image-cropper
+                                                                    default-image="{{ asset('images/default/large.jpg') }}"
+                                                                    name="image"
+                                                                    :aspect-ratios-restriction="[1,1]"
+                                                                ></v-image-cropper>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
 
                                         <div class="col-12 col-md-6">
@@ -345,22 +398,10 @@
                                         </div>
 
 
-
-
-
-
-
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
-
-
-
-
 
 
                     </div>
