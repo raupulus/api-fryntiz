@@ -730,6 +730,15 @@
                             @endforeach
 
                         @endif
+
+                        <div>
+                            *
+                            <small>
+                                <input type="radio" checked>
+                                La Subcategoría marcada será la principal.
+                            </small>
+                        </div>
+
                     </div>
                 </div>
 

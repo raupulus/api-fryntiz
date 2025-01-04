@@ -38,6 +38,32 @@ class Category extends BaseAbstractModelWithTableCrud
         ];
     }
 
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
+        static::saved(function ($model) {
+
+            ## Actualiza el caché de categorías para todas las plataformas
+            $platforms = Platform::all();
+            foreach ($platforms as $platform) {
+                $platform->cleanAllCache();
+            }
+        });
+    }
+
+    /**
+     * Devuelve la categoría padre si la tuviera.
+     *
+     * @return BelongsTo
+     */
+    public function parentCategory(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id');
+    }
+
     /**
      * Devuelve todas las subcategorías asociadas a la categoría actual.
      *
@@ -65,7 +91,12 @@ class Category extends BaseAbstractModelWithTableCrud
      */
     public function safeDelete(): bool
     {
-        return (bool) $this->delete();
+        ## Elimino la imagen asociada y todas las miniaturas.
+        if ($this->image) {
+            $this->image->safeDelete();
+        }
+
+        return $this->delete();
     }
 
 

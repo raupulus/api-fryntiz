@@ -184,7 +184,7 @@
         }
 
         /**
-            * Estilos para el editor de texto
+         * Estilos para el editor de texto
          */
         .box-editor {
             margin: 1rem auto;

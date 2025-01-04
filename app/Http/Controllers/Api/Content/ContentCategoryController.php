@@ -17,6 +17,7 @@ class ContentCategoryController extends Controller
      *
      * @param Request $request The HTTP request instance.
      * @param Platform $platform The platform entity for which categories are being fetched.
+     *
      * @return JsonResponse A JSON response containing the formatted categories data.
      */
     public function index(Request $request, Platform $platform): JsonResponse

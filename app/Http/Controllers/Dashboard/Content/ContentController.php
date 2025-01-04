@@ -13,6 +13,7 @@ use App\Models\Category;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailablePageRaw;
 use App\Models\Content\ContentAvailableType;
+use App\Models\Content\ContentCategory;
 use App\Models\Content\ContentFile;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
@@ -164,6 +165,28 @@ class ContentController extends BaseWithTableCrudController
             'twitter_creator' => $model->author->twitter?->nick,
         ]);
 
+        ## Establezco subcategoría principal
+        if ($request->has('subcategory_main') && $request->get('subcategory_main')) {
+            $model->refresh();
+
+            $platformCategory = PlatformCategory::where('platform_id', $model->platform_id)->where('category_id', $request->get('subcategory_main'))->first();
+
+            if ($platformCategory) {
+                $contentCategory = ContentCategory::where('content_id', $model->id)->where('platform_category_id', $platformCategory->id)->first();
+                $currentContentCategoryMain = ContentCategory::where('content_id', $model->id)->where('is_main', true)->first();
+
+                if ($currentContentCategoryMain && $contentCategory) {
+                    $currentContentCategoryMain->is_main = false;
+                    $contentCategory->save();
+                }
+
+                if ($contentCategory) {
+                    $contentCategory->is_main = true;
+                    $contentCategory->save();
+                }
+            }
+        }
+
         //return redirect()->route($modelString::getCrudRoutes()['index']);
         return redirect()->to($model->urlEdit);
     }
@@ -266,6 +289,29 @@ class ContentController extends BaseWithTableCrudController
                 $image->title = $content->title;
                 $image->alt = $content->title;
                 $image->save();
+            }
+        }
+
+
+        ## Establezco subcategoría principal
+        if ($request->has('subcategory_main') && $request->get('subcategory_main')) {
+            $content->refresh();
+
+            $platformCategory = PlatformCategory::where('platform_id', $content->platform_id)->where('category_id', $request->get('subcategory_main'))->first();
+
+            if ($platformCategory) {
+                $contentCategory = ContentCategory::where('content_id', $content->id)->where('platform_category_id', $platformCategory->id)->first();
+                $currentContentCategoryMain = ContentCategory::where('content_id', $content->id)->where('is_main', true)->first();
+
+                if ($currentContentCategoryMain && $contentCategory) {
+                    $currentContentCategoryMain->is_main = false;
+                    $contentCategory->save();
+                }
+
+                if ($contentCategory) {
+                    $contentCategory->is_main = true;
+                    $contentCategory->save();
+                }
             }
         }
 

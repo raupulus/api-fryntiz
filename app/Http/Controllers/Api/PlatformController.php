@@ -241,15 +241,13 @@ class PlatformController extends Controller
                 'created_at_human' => $ele->created_at->translatedFormat('d F Y'),
                 'total_pages' => $ele->pages()->count(),
                 'categories' => $ele->categoriesQuery()->select(['categories.name', 'categories.slug'])->get(),
-                /*
-                'categories' => $ele->technologies->map(function ($tech) {
-                    return [
-                        'name' => $tech->name,
-                        'slug' => $tech->slug,
-                        'urlImageSmall' => $tech->urlImageSmall,
-                    ];
+                'subcategories' => $ele->subcategoriesQuery()->select(['categories.name', 'categories.slug', 'content_categories.is_main', 'parent_id'])->get()->map(function ($subcat) {
+                    $subcat->parent = $subcat->parentCategory?->slug;
+                    unset($subcat->parent_id);
+                    unset($subcat->parentCategory);
+
+                    return $subcat;
                 }),
-                */
                 'tags' => $ele->tagsQuery()->pluck('name'),
                 'metadata' => [
                     'web' => $ele->metadata?->web,

@@ -290,7 +290,7 @@ class Content extends BaseAbstractModelWithTableCrud
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
             ->whereNull('categories.parent_id')
-            ->get();
+            ->pluck('categories.id');
 
         return Category::whereIn('id', $categoriesId);
     }
@@ -300,7 +300,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function getSubcategoriesAttribute()
     {
-        return $this->subcategoriesQuery()->get();
+        return $this->subcategoriesQuery()->select('categories.*')->get();
     }
 
     /**
@@ -320,9 +320,24 @@ class Content extends BaseAbstractModelWithTableCrud
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
             ->whereNotNull('categories.parent_id')
-            ->get();
+            ->pluck('categories.id');
 
-        return Category::whereIn('id', $categoriesId);
+
+
+        // Falla al obtener las categorías, el leftJoin de platform_categories duplica las categorías
+
+        /*
+        dd($categoriesId, Category::whereIn('categories.id', $categoriesId)
+            ->where('platform_categories.platform_id', $this->platform_id)
+            ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
+            ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
+            ->pluck('categories.id'));
+        */
+
+        return Category::whereIn('categories.id', $categoriesId)
+            ->where('platform_categories.platform_id', $this->platform_id)
+            ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
+            ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id');
     }
 
     /**

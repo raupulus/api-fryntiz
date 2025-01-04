@@ -52,7 +52,7 @@ class Platform extends BaseAbstractModelWithTableCrud
     {
         parent::boot();
 
-        // Evento "saved": Se dispara después de ser guardado por primera vez
+        // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function ($model) {
             //$model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
             //\Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);

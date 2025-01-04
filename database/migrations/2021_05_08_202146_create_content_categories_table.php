@@ -41,6 +41,7 @@ class CreateContentCategoriesTable extends Migration
                 ->references('id')->on('platform_categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->boolean('is_main')->default(false);
 
             $table->timestamps();
             $table->softDeletes();
