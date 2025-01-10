@@ -47,6 +47,7 @@ class ContentController extends Controller
             'slug' => $contentQuery->slug,
             'excerpt' => $contentQuery->excerpt,
             'is_featured' => $contentQuery->is_featured,
+            'has_image' => (bool) $contentQuery->image_id,
             'urlImageSmall' => $contentQuery->urlImageSmall,
             'urlImageMedium' => $contentQuery->urlImageMedium,
             'urlImage' => $contentQuery->urlImageNormal,
@@ -54,13 +55,21 @@ class ContentController extends Controller
             'updated_at' => $contentQuery->updated_at,
             'created_at_human' => $contentQuery->created_at->translatedFormat('d F Y'),
             'total_pages' => $contentQuery->pages()->count(),
-            'categories' => $contentQuery->categoriesQuery()->pluck('name'),
+            'categories' => $contentQuery->categoriesQuery()->select(['categories.name', 'categories.slug'])->get(),
+            'subcategories' => $contentQuery->subcategoriesQuery()->select(['categories.name', 'categories.slug', 'content_categories.is_main', 'parent_id'])->get()->map(function ($subcat) {
+                $subcat->parent = $subcat->parentCategory?->slug;
+                unset($subcat->parent_id);
+                unset($subcat->parentCategory);
+
+                return $subcat;
+            }),
             'tags' => $contentQuery->tagsQuery()->pluck('name'),
             'metadata' => [
                 'web' => $contentQuery->metadata?->web,
                 'telegram_channel' => $contentQuery->metadata?->telegram_channel,
                 'youtube_channel' => $contentQuery->metadata?->youtube_channel,
                 'youtube_video' => $contentQuery->metadata?->youtube_video,
+                'youtube_video_id' => $contentQuery->metadata?->youtube_video_id,
                 'gitlab' => $contentQuery->metadata?->gitlab,
                 'github' => $contentQuery->metadata?->github,
                 'mastodon' => $contentQuery->metadata?->mastodon,
@@ -121,6 +130,7 @@ class ContentController extends Controller
                 'title' => $page->title,
                 'content' => $content,
                 'order' => $page->order,
+                'has_image' => (bool) $page->image_id,
                 'images' => [
                     'medium' => $page->urlImageMedium,
                     'normal' => $page->urlImageNormal,
