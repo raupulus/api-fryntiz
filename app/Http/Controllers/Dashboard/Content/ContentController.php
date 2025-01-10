@@ -393,6 +393,14 @@ class ContentController extends BaseWithTableCrudController
     {
         $requestValidated = $request->validated();
 
+        $hasYoutubeVideoId = ($request->has('youtube_video_id') && $requestValidated['youtube_video_id']);
+
+        if ($request->has('youtube_video') && $requestValidated['youtube_video'] && !$hasYoutubeVideoId) {
+            $youtubeVideoUrl = $requestValidated['youtube_video'];
+            $videoId = explode('v=', $youtubeVideoUrl)[1] ?? null;
+            $requestValidated['youtube_video_id'] = $videoId ? explode('&', $videoId)[0] : null;
+        }
+
         $metadata = $content->metadata()->updateOrCreate([
             'content_id' => $content->id,
         ], $requestValidated);
