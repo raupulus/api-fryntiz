@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use function route;
 use App\Models\Content\Content;
+use App\Helpers\ContentHelper;
 
 /**
  * Class Platform
@@ -166,6 +167,39 @@ class Platform extends BaseAbstractModelWithTableCrud
     }
 
     /**
+     * Limpia y renueva el caché para los contenidos destacados asociados a la plataforma.
+     *
+     * @return void
+     */
+    public function cleanContentFeaturedCache(): void
+    {
+        Cache::forget('api-content-featured-' . $this->slug);
+        $this->getContentFeatured();
+    }
+
+    /**
+     * Limpia y renueva el caché para los últimos contenidos asociados a la plataforma.
+     *
+     * @return void
+     */
+    public function cleanContentLatestCache(): void
+    {
+        Cache::forget('api-content-latest-' . $this->slug);
+        $this->getContentLatest();
+    }
+
+    /**
+     * Limpia y renueva el caché para los últimos contenidos en tendencia por visitas.
+     *
+     * @return void
+     */
+    public function cleanContentTrendCache(): void
+    {
+        Cache::forget('api-content-trend-' . $this->slug);
+        $this->getContentTrend();
+    }
+
+    /**
      * Limpia y renueva aquello que se haya cacheado para la plataforma, útil para recomponer datos después
      * de crear o actualizar una.
      *
@@ -174,6 +208,149 @@ class Platform extends BaseAbstractModelWithTableCrud
     public function cleanAllCache(): void
     {
         $this->cleanApiCategoryCache();
+        $this->cleanContentFeaturedCache();
+        $this->cleanContentLatestCache();
+        $this->cleanContentTrendCache();
+    }
+
+    public function getContentTrendByType(string $type, int $limit = 6): Collection
+    {
+        $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
+
+        // TODO: Terminar de hacer método por cantidad de visitas, actualmente devuelve los destacados
+
+        return $this->contentsActive()
+            ->select($fields)
+            ->whereHas('type', function ($query) use ($type) {
+                $query->where('slug', $type);
+            })
+            ->whereIn('contents.is_featured', [true])
+            ->orderByDesc('contents.updated_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Devuelve el contenido destacado formateado para consumirla a través de api.
+     *
+     * @return array
+     */
+    public function getContentTrend(): array
+    {
+        //return $this->contentsActive()->where('is_featured', true)->first();
+
+        // TODO: Terminar de hacer método por cantidad de visitas, actualmente devuelve los destacados
+
+        $posts = $this->getContentTrendByType('blog');
+        $news = $this->getContentTrendByType('news');
+        $guides = $this->getContentTrendByType('guide');
+
+        return [
+            'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
+            'news' => ContentHelper::contentFeaturedPrepareAll($news),
+            'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
+        ];
+
+        /*
+        return Cache::rememberForever('api-content-featured-' . $this->slug, function () {
+            return [
+                'posts' => collect(),
+                'news' => collect(),
+            ];
+        });
+        */
+    }
+
+    public function getContentFeaturedByType(string $type, int $limit = 6): Collection
+    {
+        $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
+
+        return $this->contentsActive()
+            ->select($fields)
+            ->whereHas('type', function ($query) use ($type) {
+                $query->where('slug', $type);
+            })
+            ->whereIn('contents.is_featured', [true])
+            //->orderByDesc('contents.is_featured')
+            ->orderByDesc('contents.updated_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Devuelve el contenido destacado formateado para consumirla a través de api.
+     *
+     * @return array
+     */
+    public function getContentFeatured(): array
+    {
+        $posts = $this->getContentFeaturedByType('blog');
+        $news = $this->getContentFeaturedByType('news');
+        $guides = $this->getContentFeaturedByType('guide');
+
+        return [
+            'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
+            'news' => ContentHelper::contentFeaturedPrepareAll($news),
+            'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
+        ];
+
+        /*
+        return Cache::rememberForever('api-content-featured-' . $this->slug, function () {
+            return [
+                'posts' => collect(),
+                'news' => collect(),
+            ];
+        });
+        */
+    }
+
+    /**
+     * Devuelve el último contenido
+     *
+     * @param string $type
+     * @param int $limit
+     * @return Collection
+     */
+    public function getContentLatestByType(string $type, int $limit = 6): Collection
+    {
+        $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
+
+        return $this->contentsActive()
+            ->select($fields)
+            ->whereHas('type', function ($query) use ($type) {
+                $query->where('slug', $type);
+            })
+            ->whereNotIn('contents.is_featured', [true])
+            ->orderByDesc('contents.updated_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Devuelve el contenido destacado formateado para consumirla a través de api.
+     *
+     * @return array
+     */
+    public function getContentLatest(): array
+    {
+        $posts = $this->getContentLatestByType('blog');
+        $news = $this->getContentLatestByType('news');
+        $guides = $this->getContentLatestByType('guide');
+
+        return [
+            'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
+            'news' => ContentHelper::contentFeaturedPrepareAll($news),
+            'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
+        ];
+
+        /*
+        return Cache::rememberForever('api-content-latest-' . $this->slug, function () {
+            return [
+                'posts' => collect(),
+                'news' => collect(),
+            ];
+        });
+        */
     }
 
     /**

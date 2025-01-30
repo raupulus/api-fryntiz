@@ -118,7 +118,8 @@ Route::group(['prefix' => 'v1/platform', 'middleware' => ['check.domain', 'cors'
     ## Devuelve el contenido asociado a una plataforma para un tipo de contenido concreto
     Route::get('/{platform:slug}/content/type/{contentType}', [PlatformController::class, 'getContentByType']);
 
-
+    ## Devuelve el contenido destacado y últimos añadidos para la plataforma
+    Route::get('/{platform:slug}/content/featured', [PlatformController::class, 'getContentFeatured']);
 
     ## Devuelve un listado de categorías para una plataforma
     Route::get('/{platform:slug}/get/categories', [ContentCategoryController::class, 'index']);

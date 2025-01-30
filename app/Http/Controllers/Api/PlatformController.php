@@ -308,5 +308,42 @@ class PlatformController extends Controller
             'contents' => $contents,
         ]);
     }
+
+
+    /**
+     * Devuelve el contenido de la plataforma destacado y/o los últimos añadidos
+     *
+     * @param Request $request
+     * @param Platform $platform
+     *
+     * @return JsonResponse
+     */
+    public function getContentFeatured(Request $request, Platform $platform): JsonResponse
+    {
+        $type = $request->get('type') ?? 'all';
+        //$quantity = $request->get('quantity') ?? 6; // Creo que no interesa, al menos por ahora
+
+        $featured = $latest = $trend = null;
+
+        switch ($type) {
+            case 'featured':
+                $featured = $platform->getContentFeatured();
+                break;
+            case 'latest':
+                $latest = $platform->getContentLatest();
+                break;
+            case 'all':
+                $featured = $platform->getContentFeatured();
+                $latest = $platform->getContentLatest();
+                $trend = $platform->getContentTrend();
+                break;
+        }
+
+        return \JsonHelper::success([
+            'featured' => $featured,
+            'latest' => $latest,
+            'trend' => $trend,
+        ]);
+    }
 }
 

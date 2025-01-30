@@ -104,7 +104,7 @@ class ContentController extends Controller
     public function show(Content $content, ContentPage $page, string $type = 'json'): JsonResponse
     {
 
-        // TODO: Cachear petición de la página -> ¿Redsys?
+        // TODO: Cachear petición de la página -> ¿Redis?
 
         ## Si el tipo es html, devolvemos $page->content
         if (!$type || $type === 'html') {
