@@ -237,28 +237,18 @@ class Platform extends BaseAbstractModelWithTableCrud
      */
     public function getContentTrend(): array
     {
-        //return $this->contentsActive()->where('is_featured', true)->first();
-
         // TODO: Terminar de hacer método por cantidad de visitas, actualmente devuelve los destacados
+        return Cache::rememberForever('api-content-trend-' . $this->slug, function () {
+            $posts = $this->getContentTrendByType('blog');
+            $news = $this->getContentTrendByType('news');
+            $guides = $this->getContentTrendByType('guide');
 
-        $posts = $this->getContentTrendByType('blog');
-        $news = $this->getContentTrendByType('news');
-        $guides = $this->getContentTrendByType('guide');
-
-        return [
-            'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
-            'news' => ContentHelper::contentFeaturedPrepareAll($news),
-            'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
-        ];
-
-        /*
-        return Cache::rememberForever('api-content-featured-' . $this->slug, function () {
             return [
-                'posts' => collect(),
-                'news' => collect(),
+                'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
+                'news' => ContentHelper::contentFeaturedPrepareAll($news),
+                'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
             ];
         });
-        */
     }
 
     public function getContentFeaturedByType(string $type, int $limit = 6): Collection
@@ -284,24 +274,17 @@ class Platform extends BaseAbstractModelWithTableCrud
      */
     public function getContentFeatured(): array
     {
-        $posts = $this->getContentFeaturedByType('blog');
-        $news = $this->getContentFeaturedByType('news');
-        $guides = $this->getContentFeaturedByType('guide');
-
-        return [
-            'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
-            'news' => ContentHelper::contentFeaturedPrepareAll($news),
-            'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
-        ];
-
-        /*
         return Cache::rememberForever('api-content-featured-' . $this->slug, function () {
+            $posts = $this->getContentFeaturedByType('blog');
+            $news = $this->getContentFeaturedByType('news');
+            $guides = $this->getContentFeaturedByType('guide');
+
             return [
-                'posts' => collect(),
-                'news' => collect(),
+                'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
+                'news' => ContentHelper::contentFeaturedPrepareAll($news),
+                'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
             ];
         });
-        */
     }
 
     /**
@@ -333,24 +316,17 @@ class Platform extends BaseAbstractModelWithTableCrud
      */
     public function getContentLatest(): array
     {
-        $posts = $this->getContentLatestByType('blog');
-        $news = $this->getContentLatestByType('news');
-        $guides = $this->getContentLatestByType('guide');
-
-        return [
-            'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
-            'news' => ContentHelper::contentFeaturedPrepareAll($news),
-            'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
-        ];
-
-        /*
         return Cache::rememberForever('api-content-latest-' . $this->slug, function () {
+            $posts = $this->getContentLatestByType('blog');
+            $news = $this->getContentLatestByType('news');
+            $guides = $this->getContentLatestByType('guide');
+
             return [
-                'posts' => collect(),
-                'news' => collect(),
+                'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
+                'news' => ContentHelper::contentFeaturedPrepareAll($news),
+                'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
             ];
         });
-        */
     }
 
     /**
