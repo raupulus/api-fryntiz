@@ -332,6 +332,9 @@ class PlatformController extends Controller
             case 'latest':
                 $latest = $platform->getContentLatest();
                 break;
+            case 'trend':
+                $trend = $platform->getContentTrend();
+                break;
             case 'all':
                 $featured = $platform->getContentFeatured();
                 $latest = $platform->getContentLatest();
