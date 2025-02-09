@@ -28,7 +28,6 @@ class ContentPage extends BaseModel
         'order',
     ];
 
-
     /**
      * Relación con el contenido RAW desde el que se genera el código HTML final.
      * En caso de tener varios orígenes, se tomará el actualizado más recientemente.

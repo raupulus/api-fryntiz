@@ -90,6 +90,30 @@ class Content extends BaseAbstractModelWithTableCrud
         ];
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
+        static::saved(function ($model) {
+            //$model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
+            //\Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
+
+            $platform = $model->platform;
+
+            if ($platform) {
+                $platform->cleanAllCache();
+            }
+        });
+
+        // Evento "updated": Solo se dispara cuando el modelo es actualizado
+        static::updated(function ($model) {
+            //$model->cleanAllCache();
+            //\Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
+        });
+    }
+
+
     /**
      * Devuelve la relación con el autor/usuario que ha creado el contenido.
      *
