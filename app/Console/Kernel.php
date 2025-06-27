@@ -35,6 +35,7 @@ class Kernel extends ConsoleKernel
 
         ## Publicar contenido programado
         $schedule->command('content:publish')->everyFiveMinutes();
+        $schedule->command('sitemap:generate')->dailyAt('02:05');
     }
 
     /**
