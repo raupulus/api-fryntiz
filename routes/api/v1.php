@@ -3,12 +3,11 @@
 use App\Http\Controllers\Api\Auth\V1\LoginController;
 use App\Http\Controllers\Api\Auth\V1\RegisterController;
 use App\Http\Controllers\Api\User\V1\UserController;
-use App\Models\CV\Curriculum;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PlatformController;
 use App\Http\Controllers\Api\Content\ContentController;
 use App\Http\Controllers\Api\Content\ContentCategoryController;
+use App\Http\Controllers\Api\NewsletterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +61,17 @@ Route::group(['prefix' => 'v1/contact', 'middleware' => ['ip.counter.strict']], 
         ->name('api.v1.contact.send');
 });
 
+
+######################################################
+##                   Newsletter
+######################################################
+Route::prefix('v1/newsletter')->group(function () {
+    Route::post('subscribe', [NewsletterController::class, 'subscribe']);
+    Route::post('resend-verification', [NewsletterController::class, 'resendVerification']);
+    Route::get('verify/{token}', [NewsletterController::class, 'verify'])->name('newsletter.verify');
+    Route::get('unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+    Route::get('stats', [NewsletterController::class, 'stats']);
+});
 
 ######################################################
 ##                   Usuarios

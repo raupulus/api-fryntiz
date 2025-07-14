@@ -21,6 +21,10 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+Route::get('/about', function () {
+    return redirect()->route('home');
+})->name('about');
+
 ## Documentación
 Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
     return view('documentation');

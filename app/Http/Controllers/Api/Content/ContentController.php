@@ -42,6 +42,10 @@ class ContentController extends Controller
             return JsonHelper::failed('Content not found');
         }
 
+        ## Pone job en cola para procesar la visita aumentando contador
+        //dispatch(new ProcessContentViewJob($contentId, now()));
+
+
         $content = collect([
             'title' => $contentQuery->title,
             'slug' => $contentQuery->slug,
