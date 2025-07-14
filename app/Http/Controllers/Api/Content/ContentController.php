@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\Content;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessContentViewJob;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use JsonHelper;
 
 class ContentController extends Controller
@@ -43,8 +46,7 @@ class ContentController extends Controller
         }
 
         ## Pone job en cola para procesar la visita aumentando contador
-        //dispatch(new ProcessContentViewJob($contentId, now()));
-
+        dispatch(new ProcessContentViewJob($contentQuery->id, now()));
 
         $content = collect([
             'title' => $contentQuery->title,

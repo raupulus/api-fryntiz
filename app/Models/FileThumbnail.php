@@ -19,7 +19,7 @@ class FileThumbnail extends Model
     public static $genericImages = [
         'error' => 'error.png',
         'default' => 'default.png',
-        'not_found' => 'not_found.png',
+        'not_found' => 'images/default/errors/not_found.webp',
         'not_image' => 'not_image.png',  // No Es una imagen
         'not_authorized' => 'not_authorized.png',
         'not_allowed' => 'not_allowed.png',
@@ -45,7 +45,7 @@ class FileThumbnail extends Model
             ]);
         }
 
-        return FileThumbnail::$genericImages['not_found'];
+        return self::$genericImages['not_found'];
     }
 
     /**

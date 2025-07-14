@@ -9,9 +9,8 @@
 
 ## Pendiente
 
-- [ ] Crear comando artisan para primera instalación
-- [ ] Crear comando artisan para reparar instalaciones (segundas
-  instalaciones o corregir migración)
+- Preparar vista de emails generales
+- Terminar de revisar vista de email para verificar newsletter
 
 ## Instalación
 
