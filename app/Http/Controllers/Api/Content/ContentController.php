@@ -90,7 +90,7 @@ class ContentController extends Controller
      */
     public function relatedContent(Content $content): JsonResponse
     {
-        $contents = $content->contentsRelatedMe()->inRandomOrder()->limit(3)->get();
+        $contents = $content->contentsRelatedMe()->inRandomOrder()->limit(5)->get();
 
         $related = ContentRelatedResource::collection($contents);
 
