@@ -111,6 +111,9 @@ Route::group(['prefix' => 'v1/content', 'middleware' => ['check.domain', 'cors']
 
     ## Devuelve una página concreta para un contenido.
     Route::get('/{content:slug}/get/page/{page:order}/{type?}', [ContentController::class, 'show']);
+
+    ## Contenido relacionado al contenido recibido por el slug
+    Route::get('/{content:slug}/get/related', [ContentController::class, 'relatedContent']);
 });
 
 

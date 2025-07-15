@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use function route;
 use App\Models\Content\Content;
 use App\Helpers\ContentHelper;
@@ -217,14 +218,21 @@ class Platform extends BaseAbstractModelWithTableCrud
     {
         $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
 
-        // TODO: Terminar de hacer método por cantidad de visitas, actualmente devuelve los destacados
+        // Fecha de hace 3 días
+        $threeDaysAgo = now()->subDays(3)->format('Y-m-d');
 
         return $this->contentsActive()
             ->select($fields)
+            ->addSelect(DB::raw('COALESCE(SUM(content_daily_views.views), 0) as total_views'))
+            ->leftJoin('content_daily_views', function ($join) use ($threeDaysAgo) {
+                $join->on('contents.id', '=', 'content_daily_views.content_id')
+                    ->where('content_daily_views.date', '>=', $threeDaysAgo);
+            })
             ->whereHas('type', function ($query) use ($type) {
                 $query->where('slug', $type);
             })
-            ->whereIn('contents.is_featured', [true])
+            ->groupBy('contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at')
+            ->orderByDesc('total_views')
             ->orderByDesc('contents.updated_at')
             ->limit($limit)
             ->get();
@@ -237,8 +245,7 @@ class Platform extends BaseAbstractModelWithTableCrud
      */
     public function getContentTrend(): array
     {
-        // TODO: Terminar de hacer método por cantidad de visitas, actualmente devuelve los destacados
-        return Cache::rememberForever('api-content-trend-' . $this->slug, function () {
+        return Cache::remember('api-content-trend-' . $this->slug, 60*60, function () {
             $posts = $this->getContentTrendByType('blog');
             $news = $this->getContentTrendByType('news');
             $guides = $this->getContentTrendByType('guide');

@@ -197,7 +197,7 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
-     * Relación con el contenido asociado al actual.
+     * Relación con el contenido asociado al actual en la plataforma actual.
      *
      * @return BelongsToMany
      */

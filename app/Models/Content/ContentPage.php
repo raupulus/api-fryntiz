@@ -61,6 +61,26 @@ class ContentPage extends BaseModel
     }
 
     /**
+     * Obtiene el contenido según el tipo especificado
+     *
+     * @param string $type
+     * @return mixed
+     */
+    public function getContentByType(string $type = 'html'): string
+    {
+        if (!$type || $type === 'html') {
+            return $this->content;
+        }
+
+        $contentRaw = ContentPageRaw::where('content_page_raw.content_page_id', $this->id)
+            ->leftJoin('content_available_page_raw', 'content_available_page_raw.id', '=', 'content_page_raw.available_page_raw_id')
+            ->where('content_available_page_raw.type', $type)
+            ->first();
+
+        return $contentRaw?->content ?? $this->content;
+    }
+
+    /**
      * Devuelve la ruta para actualizar la imagen de la página.
      *
      * @return string
