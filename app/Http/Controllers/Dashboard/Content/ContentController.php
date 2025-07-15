@@ -492,20 +492,18 @@ class ContentController extends BaseWithTableCrudController
         $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
 
 
-        $contents = $platform->contents()
-            ->select(['contents.id', 'contents.title']);
+        $contents = $platform->contents()->select(['contents.id', 'contents.title']);
 
         if ($contentRelatedAll && $contentRelatedAll->count()) {
-            $contents->whereNotIn('contents.id', clone ($contentRelatedAll)->pluck
-            ('id'));
+            $contents->whereNotIn('contents.id', clone ($contentRelatedAll)->pluck('id'));
         }
 
         if ($contentRelatedSearch) {
-            $contents->where('contents.title', 'like', '%' .
+            $contents->where('contents.title', 'ilike', '%' .
                 $contentRelatedSearch . '%');
         }
 
-        $contents = $contents->limit(20)->get();
+        $contents = $contents->orderBy('contents.title')->limit(20)->get();
 
         return JsonHelper::accepted([
             'contents' => $contents,
