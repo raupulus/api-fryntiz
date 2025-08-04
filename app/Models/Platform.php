@@ -8,13 +8,13 @@ use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use function route;
 use App\Models\Content\Content;
 use App\Helpers\ContentHelper;
+use App\Http\Resources\ContentFeaturedResource;
 
 /**
  * Class Platform
@@ -216,13 +216,14 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     public function getContentTrendByType(string $type, int $limit = 6): Collection
     {
-        $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
+        $fields = ['contents.id', 'contents.type_id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
 
         // Fecha de hace 3 días
         $threeDaysAgo = now()->subDays(3)->format('Y-m-d');
 
         return $this->contentsActive()
             ->select($fields)
+            //->addSelect(DB::raw('content_available_types.name as type'))
             ->addSelect(DB::raw('COALESCE(SUM(content_daily_views.views), 0) as total_views'))
             ->leftJoin('content_daily_views', function ($join) use ($threeDaysAgo) {
                 $join->on('contents.id', '=', 'content_daily_views.content_id')
@@ -251,16 +252,16 @@ class Platform extends BaseAbstractModelWithTableCrud
             $guides = $this->getContentTrendByType('guide');
 
             return [
-                'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
-                'news' => ContentHelper::contentFeaturedPrepareAll($news),
-                'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
+                'blog' => ContentFeaturedResource::collection($posts),
+                'news' => ContentFeaturedResource::collection($news),
+                'guides' => ContentFeaturedResource::collection($guides),
             ];
         });
     }
 
     public function getContentFeaturedByType(string $type, int $limit = 6): Collection
     {
-        $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
+        $fields = ['contents.id', 'contents.type_id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
 
         return $this->contentsActive()
             ->select($fields)
@@ -287,9 +288,9 @@ class Platform extends BaseAbstractModelWithTableCrud
             $guides = $this->getContentFeaturedByType('guide');
 
             return [
-                'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
-                'news' => ContentHelper::contentFeaturedPrepareAll($news),
-                'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
+                'blog' => ContentFeaturedResource::collection($posts),
+                'news' => ContentFeaturedResource::collection($news),
+                'guides' => ContentFeaturedResource::collection($guides),
             ];
         });
     }
@@ -303,7 +304,7 @@ class Platform extends BaseAbstractModelWithTableCrud
      */
     public function getContentLatestByType(string $type, int $limit = 6): Collection
     {
-        $fields = ['contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
+        $fields = ['contents.id', 'contents.type_id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
 
         return $this->contentsActive()
             ->select($fields)
@@ -329,9 +330,9 @@ class Platform extends BaseAbstractModelWithTableCrud
             $guides = $this->getContentLatestByType('guide');
 
             return [
-                'blog' => ContentHelper::contentFeaturedPrepareAll($posts),
-                'news' => ContentHelper::contentFeaturedPrepareAll($news),
-                'guides' => ContentHelper::contentFeaturedPrepareAll($guides),
+                'blog' => ContentFeaturedResource::collection($posts),
+                'news' => ContentFeaturedResource::collection($news),
+                'guides' => ContentFeaturedResource::collection($guides),
             ];
         });
     }

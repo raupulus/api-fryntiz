@@ -90,9 +90,26 @@ class ContentController extends Controller
      */
     public function relatedContent(Content $content): JsonResponse
     {
-        $contents = $content->contentsRelatedMe()->inRandomOrder()->limit(5)->get();
+        $contentRelated = $content->contentsRelated()
+            ->where('contents.id', '!=', $content->id)
+            ->limit(10)
+            ->get();
 
-        $related = ContentRelatedResource::collection($contents);
+        $contentRelatedMe = $content->contentsRelatedMe()
+            ->where('contents.id', '!=', $content->id)
+            ->limit(10)
+            ->get();
+
+        ## Combino colecciones
+        $contentRelatedAll = $contentRelated->merge($contentRelatedMe);
+
+        ## Elimino duplicados por ID (en caso de que haya relaciones bidireccionales)
+        $contentRelatedAll = $contentRelatedAll->unique('id');
+
+        ## Mezclo aleatoriamente y tomo máximo 5 elementos
+        $relatedRandom = $contentRelatedAll->shuffle()->take(5);
+
+        $related = ContentRelatedResource::collection($relatedRandom);
 
         return JsonHelper::success([
             'related' => $related,
