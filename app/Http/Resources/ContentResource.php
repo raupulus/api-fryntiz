@@ -27,6 +27,7 @@ class ContentResource extends JsonResource
         return [
             'title' => $this->title,
             'slug' => $this->slug,
+            'type' => $this->type?->slug,
             'excerpt' => $this->excerpt,
             'is_featured' => $this->is_featured,
             'images' => $images,
@@ -52,12 +53,7 @@ class ContentResource extends JsonResource
             }),
             'pages_slug' => $this->pages()->pluck('slug'),
             'metadata' => ContentMetadataResource::make($this->whenLoaded('metadata')),
-
-            // ¡¡¡Legacy, dejar de usarlo -> Está en otro sitio o de otra forma!!!
             'has_image' => (bool) $this->image_id,
-            'urlImageSmall' => $this->urlImageSmall,
-            'urlImageMedium' => $this->urlImageMedium,
-            'urlImage' => $this->urlImageNormal,
         ];
     }
 }
