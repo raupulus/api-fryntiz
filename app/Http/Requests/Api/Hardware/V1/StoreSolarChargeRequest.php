@@ -27,7 +27,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
 
     protected function prepareForValidation()
     {
-        $created_at = Carbon::create($this->read_at ?? $this->created_at);
+        $created_at = Carbon::create($this->read_at ?? $this->created_at ?? now()->format('Y-m-d H:i:s'));
 
         $this->merge([
             'created_at' => $created_at,

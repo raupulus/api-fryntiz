@@ -37,13 +37,6 @@ class SolarChargeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     */
-
-    /**
      * Procesa el guardado de los datos de la carga solar.
      *
      * @param \App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest $request
@@ -156,7 +149,16 @@ class SolarChargeController extends Controller
 
         return JsonHelper::created([
             'message' => 'Carga de energía registrada correctamente.',
-            'request' => $request->validated()
+            'data' => [
+                'device' => $device->id,
+                'hardwarePowerGenerator' => $hardwarePowerGenerator->id,
+                'hardwarePowerGeneratorToday' => $hardwarePowerGeneratorToday->id,
+                'hardwarePowerGeneratorHistorical' => $hardwarePowerGeneratorHistorical->id,
+                'hardwarePowerLoad' => $hardwarePowerLoad->id,
+                'hardwarePowerLoadToday' => $hardwarePowerLoadToday->id,
+                'hardwarePowerLoadHistorical' => $hardwarePowerLoadHistorical->id,
+            ]
+            //'request' => $request->validated()
         ]);
 
     }
