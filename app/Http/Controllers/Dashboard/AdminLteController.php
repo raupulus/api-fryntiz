@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\View\View;
-use Image;
+use Intervention\Image\Laravel\Facades\Image;
 
 class AdminLteController extends Controller
 {
@@ -104,20 +104,20 @@ class AdminLteController extends Controller
             $name16 = $name . '_16.' . $extension;
 
             // 1 - Redimensionar a 128
-            $image128 = Image::make($tmpPath)->resize(128, 128)
-                ->save($fullPath . '/' . $name128, 90, $format);
+            $image128 = Image::read($tmpPath)->resize(128, 128)
+                ->save($fullPath . '/' . $name128, quality: 90);
 
             // 2 - Redimensionar a 64
-            $image64 = Image::make($tmpPath)->resize(64, 64)
-                ->save($fullPath . '/' . $name64, 90, $format);
+            $image64 = Image::read($tmpPath)->resize(64, 64)
+                ->save($fullPath . '/' . $name64, quality: 90);
 
             // 3 - Redimensionar a 32
-            $image32 = Image::make($tmpPath)->resize(32, 32)
-                ->save($fullPath . '/' . $name32, 90, $format);
+            $image32 = Image::read($tmpPath)->resize(32, 32)
+                ->save($fullPath . '/' . $name32, quality: 90);
 
             // 4 - Redimensionar a 16
-            $image16 = Image::make($tmpPath)->resize(16, 16)
-                ->save($fullPath . '/' . $name16, 90, $format);
+            $image16 = Image::read($tmpPath)->resize(16, 16)
+                ->save($fullPath . '/' . $name16, quality: 90);
 
             $fileType->icon128 = $path . '/' . $name128;
             $fileType->icon64 = $path . '/' . $name64;

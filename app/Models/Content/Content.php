@@ -14,6 +14,7 @@ use App\Models\Technology;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use function route;
@@ -29,7 +30,7 @@ use \Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Content extends BaseAbstractModelWithTableCrud
 {
-    use ImageTrait;
+    use ImageTrait, HasFactory;
 
     protected $table = 'contents';
 
@@ -304,7 +305,7 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @return Builder
      */
-    public function categoriesQuery(int $platformId = null): Builder
+    public function categoriesQuery(?int $platformId = null): Builder
     {
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
@@ -334,7 +335,7 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @return Builder
      */
-    public function subcategoriesQuery(int $platformId = null): Builder
+    public function subcategoriesQuery(?int $platformId = null): Builder
     {
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
@@ -388,7 +389,7 @@ class Content extends BaseAbstractModelWithTableCrud
      *
      * @param int|null $platformId Id de la plataforma
      */
-    public function tagsQuery(int $platformId = null)
+    public function tagsQuery(?int $platformId = null)
     {
         $tagsId = Tag::select('tags.id')
             ->leftJoin('platform_tags', 'platform_tags.tag_id', '=',

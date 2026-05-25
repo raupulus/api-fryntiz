@@ -3,7 +3,6 @@
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileThumbnailController;
 use App\Http\Controllers\LanguageController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -64,7 +63,7 @@ Route::group(['prefix' => '/file'], function () {
 
 });
 
-Auth::routes();
+// Nota: Las rutas de autenticación se manejan por Laravel Fortify.
 
 
 /**

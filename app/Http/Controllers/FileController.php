@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\File;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
 use function auth;
 use function redirect;
 use function response;
@@ -75,21 +75,15 @@ class FileController extends Controller
 
 
 
-        $image = Image::make($file->storagePathFile);
-        $image->resize($width);
-
-
-        $image->resize(150, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-
-        //$image->save('tmp??');
-
+        $image = Image::read($file->storagePathFile);
+        $image->scale(width: (int) $width);
 
         // TODO → Cachear la imagen o comprobar si ya existe ahí.
 
+        $encoded = $image->encodeByMediaType();
 
-        return $image->response();
+        return response($encoded->toString())
+            ->header('Content-Type', $encoded->mediaType());
         //return response()->file($file->storagePathFile)->deleteFileAfterSend();
 
     }

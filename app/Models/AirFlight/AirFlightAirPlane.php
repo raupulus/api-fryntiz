@@ -288,7 +288,7 @@ class AirFlightAirPlane extends Model
 
     }
 
-    public static function getRecentsAircrafts(Carbon $checkFrom = null, Carbon $checkTo = null)
+    public static function getRecentsAircrafts(?Carbon $checkFrom = null, ?Carbon $checkTo = null)
     {
         $now = Carbon::now();
         $checkFrom = $checkFrom ?? (clone($now))->subMinutes(10);

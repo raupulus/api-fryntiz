@@ -1,190 +1,87 @@
 @extends('layouts.app')
 
-{{-- Descripción sobre esta página --}}
-@section('title', 'Smart Plant, monitorización de plantas')
-@section('description', 'Monitorización, control y riego automatizado en plantas')
-@section('keywords', 'Raúl Caro Pastorino, raupulus, smartplant, smart plant, plant, plantas, riego automático, monitorizar planta, monitorización de planta, monitorización, riego')
+@section('title', 'Smart Plant | Api Raupulus')
+@section('description', 'Monitorización inteligente de plantas y bonsais con sensores de humedad, temperatura y luz')
+@section('keywords', 'smart plant, bonsai, plantas, sensores, Raúl Caro Pastorino, raupulus, esp32, riego')
 
-{{-- Etiquetas para Redes sociales --}}
-@section('rs-title', 'Smart Plant, monitorización de plantas')
+@section('rs-title', 'Smart Plant - Monitorización de plantas')
 @section('rs-sitename', 'Api Raupulus')
-@section('rs-description', 'Monitorización, control y riego automatizado en plantas')
-@section('rs-image', asset('images/smartplant/social-thumbnail.jpg'))
+@section('rs-description', 'Monitorización inteligente de plantas y bonsais')
+@section('rs-image', asset('images/smart-plant/social-thumbnail.jpg'))
 @section('rs-url', route('smartplant.index'))
-@section('rs-image-alt', 'Smartplant, monitorización de plantas')
-
-@section('meta-twitter-title', 'Smart Plant, monitorización de plantas')
 
 @section('content')
-    <div class="leading-normal tracking-normal"
-         style="font-family: 'Source Sans Pro', sans-serif;">
+    {{-- Hero --}}
+    <section class="hero-gradient min-h-[40vh] flex items-center pt-20">
+        <div class="max-w-7xl mx-auto px-6 text-white">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Smart Plant</h1>
+            <p class="text-xl text-white/80">Monitorización inteligente de plantas y bonsais</p>
+        </div>
+    </section>
 
-        <section class="bg-white border-b">
-            <div class="container max-w-5xl mx-auto m-4">
-                <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
-                    Smart Plant
-                </h1>
+    {{-- Descripción --}}
+    <section class="py-12 bg-surface">
+        <div class="max-w-5xl mx-auto px-6">
+            <h3 class="text-3xl text-on-surface font-bold leading-none mb-3">Sobre este módulo</h3>
+            <p class="text-on-surface-variant mb-3">
+                Proyecto para monitorizar plantas delicadas, principalmente bonsais pudiendo observar el comportamiento asegurando cubrir necesidades manteniendo así la salud o descubrir problemas.
+            </p>
+            <p class="text-on-surface-variant mb-3">
+                Utilizo un <strong>esp32 lite</strong> conectado a una placa solar y sensores para medir la humedad en tierra/aire, temperatura, luz y tanque de agua está lleno antes de activar el riego.
+            </p>
+            <p class="text-on-surface-variant mb-3">
+                Código del proyecto en <strong>C++</strong>:
+                <a href="https://gitlab.com/raupulus/esp32-smart-bonsai" class="underline text-on-tertiary-container font-bold text-xs" target="_blank">
+                    https://gitlab.com/raupulus/esp32-smart-bonsai
+                </a>
+            </p>
+        </div>
+    </section>
 
-                <h2 class="w-full my-2 text-4xl font-bold leading-tight text-center text-gray-800">
-                    Monitorización y riego automatizado en plantas
-                </h2>
+    {{-- Listado de plantas --}}
+    <section class="py-12 bg-surface-container-low">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-on-surface mb-6">Plantas registradas</h2>
 
-                {{-- Información general sobre el proyecto --}}
-                <div class="flex flex-wrap content-center">
-                    <div class="w-full p-6">
-                        <div class="bg-red-100 border border-red-400 m-2 mb-5 text-red-700 px-2 py-2 rounded relative"
-                             role="alert">
-                            <span class="inline text-sm">
-                                Sitio
-                                <strong>temporal</strong>
-                                con la finalidad de comprobar el
-                                funcionamiento de los dispositivos que uso
-                                para recopilar los datos (esp32, circuito
-                                propio, conjunto de sensores y software propio)
-                            </span>
+            @if($smartplants->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($smartplants as $plant)
+                        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-lg">
+                            <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4">
+                                <span class="material-symbols-outlined text-green-700">potted_plant</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-on-surface mb-2">{{ $plant->name ?? 'Planta #'.$plant->id }}</h3>
+                            <p class="text-on-surface-variant text-sm mb-2">{{ $plant->description ?? 'Sin descripción' }}</p>
+                            @if($plant->registers && $plant->registers->count() > 0)
+                                @php $lastRegister = $plant->registers->last(); @endphp
+                                <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+                                    <div class="bg-surface-container rounded-lg p-2 text-center">
+                                        <span class="text-on-surface-variant text-xs">Humedad Tierra</span>
+                                        <p class="text-on-surface font-bold">{{ $lastRegister->soil_humidity ?? '-' }}%</p>
+                                    </div>
+                                    <div class="bg-surface-container rounded-lg p-2 text-center">
+                                        <span class="text-on-surface-variant text-xs">Temperatura</span>
+                                        <p class="text-on-surface font-bold">{{ $lastRegister->temperature ?? '-' }}°C</p>
+                                    </div>
+                                    <div class="bg-surface-container rounded-lg p-2 text-center">
+                                        <span class="text-on-surface-variant text-xs">Humedad Aire</span>
+                                        <p class="text-on-surface font-bold">{{ $lastRegister->humidity ?? '-' }}%</p>
+                                    </div>
+                                    <div class="bg-surface-container rounded-lg p-2 text-center">
+                                        <span class="text-on-surface-variant text-xs">Luz</span>
+                                        <p class="text-on-surface font-bold">{{ $lastRegister->light ?? '-' }}%</p>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
-
-                        <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
-                            Sobre esta api
-                        </h3>
-
-                        <p class="text-gray-600 mb-2">
-                            Para obtener los datos que llegan a esta API utilizo
-                            un dispositivo <strong>esp32</strong> y un software
-                            propio escrito en <strong>C++</strong> con el que
-                            obtengo lecturas desde cada planta (principalmente
-                            son bonsais) para poder atenderlos con un mejor
-                            cuidado y aprender en las situaciones
-                            climatológicas adversas que se le presenten.
-                        </p>
-
-                        <div class="text-gray-600 mb-2">
-                            Condiciones para encender motor de riego:
-
-                            <ul class="ml-5">
-                                <li>Tanque de agua lleno</li>
-                                <li>Humedad de tierra menor al 35%</li>
-                            </ul>
-                        </div>
-
-                        <div class="text-gray-600 mb-2">
-                            Condiciones para vaporizador de agua:
-
-                            <ul class="ml-5">
-                                <li>Temperatura ambiente menor a 30ºC</li>
-                                <li>Humedad ambiente menor a 60%</li>
-                            </ul>
-                        </div>
-
-                        <p class="text-gray-600 mb-2">
-                            Puedes ver el desarrollo del programa en
-                            <strong>C++</strong>
-                            para obtener los datos
-                            de las plantas desde un esp32:
-
-                            <a href="https://gitlab.com/raupulus/esp32-smart-bonsai"
-                               class="underline text-lightBlue-500 background-transparent font-bold text-xs outline-none focus:outline-none ease-linear transition-all duration-150"
-                               type="button"
-                               target="_blank"
-                               title="Smart Plant con esp32 repository software">
-                                https://gitlab.com/raupulus/esp32-smart-bonsai
-                            </a>
-                        </p>
-
-                        <div class="bg-yellow-100 border border-red-400 m-2 my-4 text-red-700 px-2 py-2 rounded relative text-center"
-                             role="alert">
-                            <span class="inline font-bold">
-                                Franja horaria UTC +0:00
-                            </span>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-            </div>
-        </section>
-
-        <section class="bg-white border-b">
-            <div class="container max-w-5xl mx-auto m-4">
-                <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
-                    Estadísticas para 100 resultados
-                </h1>
-            </div>
-        </section>
-
-        @foreach($smartplants as $plant)
-            <section class="bg-white border-b">
-                <div class="container max-w-5xl mx-auto m-4 overflow-x-scroll">
-
-                    <h2 class="w-full capitalize my-2 text-4xl font-bold leading-tight text-center text-gray-800">
-                        {{$plant->name}}
-                    </h2>
-
-
-                    <h3 class="w-full capitalize my-2 text-2xl font-bold leading-tight text-center text-gray-800">
-                        (<small>Scientific Name:</small> {{$plant->name_scientific}})
-                    </h3>
-
-                    <p class="text-gray-600 mb-2">
-                        {!! $plant->description !!}
-                    </p>
-
-                    {{-- Añado imagen si existe --}}
-                    @if($plant->image)
-                        <div class="w-full">
-                            <img src="{{$plant->urlImage}}"
-                                 title="{{$plant->name}}"
-                                 alt="{{$plant->name}}"
-                                 style="width: 300px; margin: auto;" />
-                        </div>
-                    @endif
-
-                    {{-- Detalles de la planta --}}
-                    <p class="text-gray-600 mb-2 smartplant-details w-full">
-                        {!! $plant->details !!}
-                    </p>
-
-                    <table class="min-w-max w-full table-auto">
-                        <thead class="justify-between">
-                        <tr class="bg-gray-800">
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">UV</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Temperatura</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Humedad ambiente</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Humedad en tierra</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Tanque de agua lleno</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Motor de riego activo</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Vaporizador de agua activo</th>
-                            <th class="px-1 py-2 text-gray-300 capitalize text-center">Momento del registro</th>
-                        </tr>
-                        </thead>
-
-                        <tbody class="bg-gray-200">
-                        @foreach($plant->last100registers() as $reg)
-                            <tr class="bg-white border-4 border-gray-200">
-                                <td class="px-1 py-2 items-center text-center">{{$reg->uv ?? 0}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->temperature ?? 0.00}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->humidity ?? 0.00}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->soil_humidity}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->full_water_tank ? 'Si' : 'No'}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->waterpump_enabled ? 'Si' : 'No'}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->vaporizer_enabled ? 'Si' : 'No'}}</td>
-                                <td class="px-1 py-2 items-center text-center">{{$reg->created_at}}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+            @else
+                <div class="bg-surface-container rounded-xl p-12 text-center">
+                    <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">potted_plant</span>
+                    <p class="text-on-surface-variant text-lg">No hay plantas registradas actualmente.</p>
                 </div>
-            </section>
-        @endforeach
-    </div>
-@endsection
-
-@section('css')
-    <style>
-        .smartplant-description {
-            font-size: 0.8em;
-        }
-
-        .smartplant-details {
-            font-size: 0.6em;
-        }
-    </style>
+            @endif
+        </div>
+    </section>
 @endsection

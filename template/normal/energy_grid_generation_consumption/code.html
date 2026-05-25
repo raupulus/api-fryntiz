@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#bfc2ff",
+              "on-surface-variant": "#464651",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-fixed-dim": "#92ccff",
+              "tertiary-container": "#001d31",
+              "tertiary-fixed": "#cce5ff",
+              "surface-variant": "#d9e3f6",
+              "on-secondary-fixed": "#181836",
+              "surface-container": "#e6eeff",
+              "on-primary-fixed-variant": "#383d90",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error": "#ba1a1a",
+              "tertiary": "#000000",
+              "primary": "#000000",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed": "#050765",
+              "on-tertiary-fixed": "#001d31",
+              "on-background": "#121c2a",
+              "inverse-surface": "#27313f",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary-container": "#d8d6fe",
+              "surface-dim": "#d0dbed",
+              "background": "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-container": "#1d8acd",
+              "surface": "#f8f9ff",
+              "on-secondary-fixed-variant": "#444464",
+              "on-primary-container": "#767cd2",
+              "outline-variant": "#c7c5d3",
+              "on-tertiary-fixed-variant": "#004b73",
+              "secondary": "#5b5b7d",
+              "surface-container-high": "#dee9fc",
+              "primary-fixed-dim": "#bfc2ff",
+              "outline": "#777682",
+              "on-secondary-container": "#5c5c7e",
+              "surface-container-highest": "#d9e3f6",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "primary-container": "#050765",
+              "surface-tint": "#5056a9",
+              "on-surface": "#121c2a",
+              "secondary-fixed-dim": "#c4c3ea",
+              "on-error": "#ffffff",
+              "surface-container-low": "#eff4ff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-tertiary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">Api Raupulus</div>
+<!-- Desktop Links -->
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Weather Station</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Keycounter</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Airflight</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Smart Plant</a>
+<a class="text-black dark:text-white font-semibold border-b-2 border-black dark:border-white pb-1 font-inter text-sm tracking-tight" href="#">Energy</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Contacto</a>
+</div>
+<!-- Mobile Menu Icon (Placeholder) -->
+<div class="md:hidden">
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-16 px-6 max-w-7xl mx-auto">
+<!-- Hero / Live Status Section -->
+<header class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-2xl">
+<span class="text-on-tertiary-container font-semibold tracking-widest text-xs uppercase mb-4 block">Hardware Metrics</span>
+<h1 class="text-6xl font-extrabold tracking-tighter text-primary mb-6 leading-none">Energy Intelligence.</h1>
+<p class="text-secondary text-lg leading-relaxed">Monitoring generation, consumption, and storage across our distributed infrastructure with millisecond precision.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex items-center gap-4">
+<div class="p-3 rounded-full bg-secondary-fixed text-on-secondary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<p class="text-xs font-medium text-secondary uppercase tracking-wider">Current Grid Load</p>
+<p class="text-2xl font-bold text-on-surface">2.4 <span class="text-sm font-normal text-secondary">kW</span></p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Bento Grid: Stats & Real-time -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-16">
+<!-- Real-time Generation Card -->
+<div class="md:col-span-8 bg-primary-container rounded-xl overflow-hidden relative min-h-[400px] flex flex-col justify-between p-8 group">
+<div class="absolute inset-0 z-0 opacity-40">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Close-up of high-efficiency silicon solar cells under bright sunlight with a modern blue geometric pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqPFQCsq_wvAQ2alMqDC3uPFgT6BX0SjUguOuxva-RtsxGgpumyEvhsKqWd-cMwNs-rO5Fk5xTNIjDYQhOF59iNJuHegOAESmVENVQ00OkK9Qa3bdFcW8RIVhkZJNxurfj4wXT35RTy382PZTotAmqF2dMJ6N7upzCkeEt5l52KGRhEJfqS8LyVzDWOgsJaPsL0vwB0pXq56sZMpIElpF30kMyFi1LHg0zv4GvNvFxmQjCAmSeXTX0pvH3vzlPNXvzl8e8rrq0aKE"/>
+</div>
+<div class="relative z-10 flex justify-between items-start">
+<div>
+<h2 class="text-white text-3xl font-bold tracking-tight">Solar Generation</h2>
+<p class="text-on-primary-container font-medium">Real-time PV Output</p>
+</div>
+<div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+<span class="text-white text-sm font-mono tracking-widest">LIVE • ACTIVE</span>
+</div>
+</div>
+<div class="relative z-10 flex items-baseline gap-2">
+<span class="text-white text-8xl font-black tracking-tighter">842</span>
+<span class="text-white/60 text-2xl font-light italic">Watts</span>
+</div>
+</div>
+<!-- Side Stats Column -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Today Total -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/15 flex-1">
+<span class="material-symbols-outlined text-on-tertiary-container mb-4" data-weight="fill">calendar_today</span>
+<h3 class="text-secondary font-semibold text-sm uppercase tracking-widest mb-1">Today's Harvest</h3>
+<p class="text-4xl font-bold text-on-surface">12.8 <span class="text-lg font-medium text-outline">kWh</span></p>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="bg-on-tertiary-container h-full w-3/4"></div>
+</div>
+</div>
+<!-- Historic Peak -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/15 flex-1">
+<span class="material-symbols-outlined text-secondary mb-4" data-weight="fill">history</span>
+<h3 class="text-secondary font-semibold text-sm uppercase tracking-widest mb-1">Historic Peak</h3>
+<p class="text-4xl font-bold text-on-surface">1.2 <span class="text-lg font-medium text-outline">mW</span></p>
+<p class="text-xs text-secondary mt-2 italic">Recorded June 12, 2023</p>
+</div>
+</div>
+</div>
+<!-- Devices Infrastructure Section -->
+<section class="mb-16">
+<div class="flex items-center gap-4 mb-8">
+<h2 class="text-2xl font-bold tracking-tight">Device Infrastructure</h2>
+<div class="h-px flex-1 bg-outline-variant/30"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Solar Controllers -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all">
+<div class="flex items-start justify-between mb-8">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-surface">solar_power</span>
+</div>
+<span class="text-[10px] font-bold px-2 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed uppercase">Controller</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Solar Master Array</h4>
+<p class="text-sm text-secondary mb-6">MPPT tracking systems managing high-voltage input from primary roof arrays.</p>
+<div class="flex items-center gap-3 text-xs font-mono text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> ONLINE</span>
+<span class="text-outline">|</span>
+<span>IP: 192.168.1.45</span>
+</div>
+</div>
+<!-- Raspberry Pi Nodes -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all">
+<div class="flex items-start justify-between mb-8">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-surface">developer_board</span>
+</div>
+<span class="text-[10px] font-bold px-2 py-1 rounded bg-secondary-fixed text-on-secondary-fixed uppercase">IoT Nodes</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Raspberry Pi Cluster</h4>
+<p class="text-sm text-secondary mb-6">Distributed sensor network for environmental data and voltage stabilization monitoring.</p>
+<div class="flex items-center gap-3 text-xs font-mono text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> 4 ACTIVE</span>
+<span class="text-outline">|</span>
+<span>0.04% Packet Loss</span>
+</div>
+</div>
+<!-- Lenovo Thinkpad -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all">
+<div class="flex items-start justify-between mb-8">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-surface">laptop_mac</span>
+</div>
+<span class="text-[10px] font-bold px-2 py-1 rounded bg-surface-container-high text-on-surface uppercase">Workstation</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Thinkpad Monitoring</h4>
+<p class="text-sm text-secondary mb-6">Core terminal for local administration and heavy data visualization tasks.</p>
+<div class="flex items-center gap-3 text-xs font-mono text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-orange-400"></span> STANDBY</span>
+<span class="text-outline">|</span>
+<span>BAT: 98%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Consumption/Generation Analytics Asymmetric Layout -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="order-2 lg:order-1">
+<img class="w-full h-auto rounded-xl shadow-2xl" data-alt="Sophisticated data dashboard with glowing neon lines representing energy consumption waves against a dark elegant background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4axoUQknJncdf5Wfz2XlkBTw8Wm3oMRRI6ia7eCYKCC7101MVdW4DU3hu-gYoM4upiiy3-tA77VMQ2UBmr-zB63y9civICCBj9WE9AArTQgFCCOYJox2zekln0VJlDPx4Fnq2TQi6Sb-CcOzBlOCO--9MqgLps9jA-Hg5vaR0uRPNFVfaN_c2Z0IJr3Fv71KhGXoNSHcKrCamDfyANyxG6vJgW_8lJnIqMR8fNSap-5xK_ZolBkW57_v268dxWusXpPMOZBYVu6U"/>
+</div>
+<div class="order-1 lg:order-2 space-y-8">
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface">Intelligent Balance.</h2>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="shrink-0 w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center text-xs font-bold">01</div>
+<div>
+<h5 class="font-bold mb-1">Load Balancing</h5>
+<p class="text-secondary text-sm">Automated redirection of energy during peak production to non-critical storage units.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="shrink-0 w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center text-xs font-bold">02</div>
+<div>
+<h5 class="font-bold mb-1">Predictive Harvesting</h5>
+<p class="text-secondary text-sm">Weather-station integration allows system pre-charging ahead of low-light forecasts.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="shrink-0 w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center text-xs font-bold">03</div>
+<div>
+<h5 class="font-bold mb-1">Hardware Health</h5>
+<p class="text-secondary text-sm">Real-time voltage monitoring prevents thermal degradation on all node components.</p>
+</div>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
+                    Download Full Dataset
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#27313f] dark:bg-slate-950 w-full py-12 px-8 flex flex-col items-center space-y-8 text-center">
+<div class="text-lg font-bold text-white uppercase tracking-widest">Api Raupulus</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">APIS</a>
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">DOCUMENTACIÓN</a>
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">Personal Site</a>
+</div>
+<div class="text-slate-300 dark:text-slate-400 font-inter text-xs uppercase tracking-widest">
+            © Raúl Caro Pastorino 2018 - 2024
+        </div>
+<div class="flex gap-6 grayscale hover:grayscale-0 transition-all duration-300 opacity-50">
+<span class="material-symbols-outlined text-white">memory</span>
+<span class="material-symbols-outlined text-white">terminal</span>
+<span class="material-symbols-outlined text-white">storage</span>
+</div>
+<div class="text-slate-500 text-[10px] tracking-[0.2em] font-medium">
+            HECHO CON <span class="text-error">♥</span> EN ANDALUCÍA
+        </div>
+</footer>
+</body></html>

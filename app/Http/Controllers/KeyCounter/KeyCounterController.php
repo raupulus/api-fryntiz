@@ -33,8 +33,8 @@ class KeyCounterController extends Controller
      */
     public function index(Request $request)
     {
-        $month = $request->get('month') ?? date('m');
-        $year = $request->get('year') ?? date('Y');
+        $month = (int) ($request->get('month') ?? date('m'));
+        $year = (int) ($request->get('year') ?? date('Y'));
 
         $statistics = Keyboard::getStatisticsPreparedToGraphics($month, $year);
 
@@ -74,8 +74,8 @@ class KeyCounterController extends Controller
      */
     public function getKeyboardDataAjax(Request $request)
     {
-        $month = $request->get('month') ?? date('m');
-        $year = $request->get('year') ?? date('Y');
+        $month = (int) ($request->get('month') ?? date('m'));
+        $year = (int) ($request->get('year') ?? date('Y'));
 
         $statistics = Keyboard::getStatisticsPreparedToGraphics($month, $year);
         $keyboard_statistics = $statistics['keyboard_statistics'];

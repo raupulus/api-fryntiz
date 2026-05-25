@@ -2,23 +2,30 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Exceptions\JsonAuthorizationException;
-use App\Exceptions\JsonValidationException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-/**
- * Class BaseFormRequest
- */
 class BaseFormRequest extends FormRequest
 {
-    protected function failedAuthorization()
+    protected function failedValidation(Validator $validator): void
     {
-        throw new JsonAuthorizationException;
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Error de validacion',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 
-    protected function failedValidation(Validator $validator)
+    protected function failedAuthorization(): void
     {
-        throw new JsonValidationException($validator);
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'No autorizado para realizar esta accion',
+            ], 403)
+        );
     }
 }

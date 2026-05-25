@@ -1,0 +1,24 @@
+# Archivos que no debe leer una IA
+.env
+.env.*
+!.env.example
+!.env.example.production
+*.pem
+*.key
+*.crt
+auth.json
+storage/*.key
+*.sql
+*.dump
+vendor/
+node_modules/
+storage/logs/
+*.log
+storage/app/public/
+storage/app/private/
+storage/framework/cache/
+storage/framework/sessions/
+*.zip
+*.tar
+*.gz
+public/storage/

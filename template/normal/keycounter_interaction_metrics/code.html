@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Keycounter - Api Raupulus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#bfc2ff",
+              "on-surface-variant": "#464651",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-fixed-dim": "#92ccff",
+              "tertiary-container": "#001d31",
+              "tertiary-fixed": "#cce5ff",
+              "surface-variant": "#d9e3f6",
+              "on-secondary-fixed": "#181836",
+              "surface-container": "#e6eeff",
+              "on-primary-fixed-variant": "#383d90",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error": "#ba1a1a",
+              "tertiary": "#000000",
+              "primary": "#000000",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed": "#050765",
+              "on-tertiary-fixed": "#001d31",
+              "on-background": "#121c2a",
+              "inverse-surface": "#27313f",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary-container": "#d8d6fe",
+              "surface-dim": "#d0dbed",
+              "background": "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-container": "#1d8acd",
+              "surface": "#f8f9ff",
+              "on-secondary-fixed-variant": "#444464",
+              "on-primary-container": "#767cd2",
+              "outline-variant": "#c7c5d3",
+              "on-tertiary-fixed-variant": "#004b73",
+              "secondary": "#5b5b7d",
+              "surface-container-high": "#dee9fc",
+              "primary-fixed-dim": "#bfc2ff",
+              "outline": "#777682",
+              "on-secondary-container": "#5c5c7e",
+              "surface-container-highest": "#d9e3f6",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "primary-container": "#050765",
+              "surface-tint": "#5056a9",
+              "on-surface": "#121c2a",
+              "secondary-fixed-dim": "#c4c3ea",
+              "on-error": "#ffffff",
+              "surface-container-low": "#eff4ff"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 glass-nav shadow-sm">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">
+                Api Raupulus
+            </div>
+<div class="hidden md:flex items-center space-x-8 font-inter text-sm tracking-tight">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#">Weather Station</a>
+<a class="text-black dark:text-white font-semibold border-b-2 border-black dark:border-white pb-1" href="#">Keycounter</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#">Airflight</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#">Smart Plant</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#">Energy</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#">Contacto</a>
+</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-16">
+<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-4">Keycounter</h1>
+<p class="text-secondary text-lg max-w-2xl leading-relaxed">
+                A precise analytical tool monitoring keystroke efficiency, mouse interaction patterns, and user activity pulses across professional environments.
+            </p>
+</header>
+<!-- Bento Grid Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Main Graph Card -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-[0_24px_40px_-4px_rgba(18,28,42,0.06)] relative overflow-hidden">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">Activity Pulse</h2>
+<p class="text-sm text-secondary">Last 24 hours intensity tracking</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container-low rounded-full text-xs font-semibold text-primary tracking-wider uppercase">Live Data</span>
+</div>
+</div>
+<!-- Mock SVG Chart -->
+<div class="h-64 w-full relative">
+<svg class="w-full h-full" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#050765" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#050765" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,150 Q50,140 100,160 T200,100 T300,120 T400,60 T500,80 T600,40 T700,90 T800,70 L800,200 L0,200 Z" fill="url(#chartGradient)"></path>
+<path d="M0,150 Q50,140 100,160 T200,100 T300,120 T400,60 T500,80 T600,40 T700,90 T800,70" fill="none" stroke="#050765" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="600" cy="40" fill="#050765" r="4"></circle>
+</svg>
+<!-- Y-Axis Labels -->
+<div class="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-outline font-medium py-2">
+<span>1.2k</span><span>800</span><span>400</span><span>0</span>
+</div>
+</div>
+<div class="grid grid-cols-4 mt-8 pt-8 border-t border-outline-variant/15 text-center">
+<div>
+<p class="text-[10px] uppercase tracking-widest text-secondary mb-1">Peak Keys</p>
+<p class="text-xl font-bold text-on-surface">842</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-secondary mb-1">Avg Click</p>
+<p class="text-xl font-bold text-on-surface">124</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-secondary mb-1">Efficiency</p>
+<p class="text-xl font-bold text-on-surface">94.2%</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-secondary mb-1">Total Hrs</p>
+<p class="text-xl font-bold text-on-surface">12.5</p>
+</div>
+</div>
+</div>
+<!-- Monthly Summary Vertical Card -->
+<div class="md:col-span-4 space-y-6">
+<div class="bg-primary-container text-white p-8 rounded-xl shadow-lg relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<p class="text-sm font-medium opacity-70 mb-1">Total Keys (30d)</p>
+<h3 class="text-4xl font-extrabold mb-6 tracking-tight">2,481,209</h3>
+<div class="flex items-center gap-2 text-xs font-semibold bg-white/20 w-fit px-2 py-1 rounded">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12% vs last month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_-4px_rgba(18,28,42,0.06)]">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-fixed">ads_click</span>
+</div>
+<div>
+<p class="text-xs text-secondary uppercase tracking-widest font-bold">Total Points</p>
+<h4 class="text-2xl font-bold text-on-surface">45.8k</h4>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed">monitor_heart</span>
+</div>
+<div>
+<p class="text-xs text-secondary uppercase tracking-widest font-bold">Max Pulse</p>
+<h4 class="text-2xl font-bold text-on-surface">182 <span class="text-sm font-normal text-secondary">kpm</span></h4>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Results Table Section -->
+<section class="mt-20">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h2 class="text-3xl font-bold tracking-tight text-on-surface mb-2">Detailed Ledger</h2>
+<p class="text-secondary">Chronological history of recent activity bursts and keyboard interactions.</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-low px-4 py-2 rounded-full text-sm font-semibold text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">filter_list</span> Filter
+                    </button>
+<button class="bg-primary-container text-on-primary px-6 py-2 rounded-full text-sm font-semibold shadow-md active:scale-95 transition-transform">
+                        Export CSV
+                    </button>
+</div>
+</div>
+<div class="overflow-x-auto bg-surface-container-lowest rounded-xl shadow-[0_24px_40px_-4px_rgba(18,28,42,0.06)] border border-outline-variant/10">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-dim/30 border-b border-outline-variant/15">
+<th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Timestamp</th>
+<th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Duration</th>
+<th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Keys</th>
+<th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Clicks</th>
+<th class="px-6 py-5 text-xs font-bold uppercase tracking-widest text-secondary text-right">Points</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Repeatable Rows -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<span class="text-sm font-semibold text-on-surface block">Today, 14:24</span>
+<span class="text-[10px] text-secondary">Session ID: #88219</span>
+</td>
+<td class="px-6 py-4 text-sm text-secondary">42m 12s</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-on-surface">3,421</span>
+<span class="text-[10px] text-on-tertiary-container bg-tertiary-fixed px-1.5 py-0.5 rounded">+4%</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-secondary">124</td>
+<td class="px-6 py-4 text-sm font-mono font-bold text-primary text-right">18,204.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<span class="text-sm font-semibold text-on-surface block">Today, 12:05</span>
+<span class="text-[10px] text-secondary">Session ID: #88218</span>
+</td>
+<td class="px-6 py-4 text-sm text-secondary">1h 05m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-on-surface">5,190</span>
+<span class="text-[10px] text-on-tertiary-container bg-tertiary-fixed px-1.5 py-0.5 rounded">+12%</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-secondary">208</td>
+<td class="px-6 py-4 text-sm font-mono font-bold text-primary text-right">25,840.10</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<span class="text-sm font-semibold text-on-surface block">Today, 09:12</span>
+<span class="text-[10px] text-secondary">Session ID: #88217</span>
+</td>
+<td class="px-6 py-4 text-sm text-secondary">2h 14m</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-on-surface">12,450</span>
+<span class="text-[10px] text-error bg-error-container px-1.5 py-0.5 rounded">-2%</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-secondary">412</td>
+<td class="px-6 py-4 text-sm font-mono font-bold text-primary text-right">58,112.50</td>
+</tr>
+<!-- Static filler rows to indicate long list -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4"><span class="text-sm font-semibold text-on-surface">Yesterday, 18:30</span></td>
+<td class="px-6 py-4 text-sm text-secondary">15m 02s</td>
+<td class="px-6 py-4 text-sm font-bold text-on-surface">841</td>
+<td class="px-6 py-4 text-sm text-secondary">55</td>
+<td class="px-6 py-4 text-sm font-mono font-bold text-primary text-right">4,201.20</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4"><span class="text-sm font-semibold text-on-surface">Yesterday, 16:45</span></td>
+<td class="px-6 py-4 text-sm text-secondary">48m 10s</td>
+<td class="px-6 py-4 text-sm font-bold text-on-surface">2,990</td>
+<td class="px-6 py-4 text-sm text-secondary">110</td>
+<td class="px-6 py-4 text-sm font-mono font-bold text-primary text-right">15,440.00</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-6 border-t border-outline-variant/15 flex justify-center">
+<button class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+                        View all 100 entries <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Asymmetric CTA Section -->
+<section class="mt-32 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+<div class="relative">
+<div class="aspect-square bg-surface-container-high rounded-[2rem] overflow-hidden rotate-2 hover:rotate-0 transition-transform duration-500 shadow-2xl">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Close-up high-angle shot of a custom mechanical keyboard with soft backlighting on a clean minimalist desk setup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA54tig03_kD-P9Qc6LM0vI7N7rExH7Hia0XTR46l_xWIR3CPa6LZFACMa-6wMKVtTEXdq0Cy1svonnO7I5w_oa5kc8pmh3SGCS3DgRI3eZ6fQCbgsunDGp70scoEvoOqKnVDbHH36os724km9pDacgCcD9k7_OuvEW4bl-DsxKINPaRCxAj85vTOr52u7sxw78au58x-UeoQEn_3rnXUgwMhw4HiuZsFyxL1N5E0R-5daGp4EWAOXo4X8smPs2Le5Z782Yq1Hz6wE"/>
+</div>
+<!-- Decorative element -->
+<div class="absolute -bottom-6 -left-6 w-32 h-32 bg-tertiary-fixed rounded-xl -z-10 animate-pulse"></div>
+</div>
+<div class="md:pl-12">
+<span class="text-xs font-extrabold uppercase tracking-[0.3em] text-on-tertiary-container mb-4 block">Personal Workspace Analytics</span>
+<h2 class="text-4xl font-bold tracking-tighter mb-6 leading-[1.1]">The Precision of Every Stroke Matters.</h2>
+<p class="text-secondary mb-8 text-lg">Keycounter isn't just a logger; it's a productivity mirror. By understanding your interaction velocity, you can optimize your workspace ergonomics and software hotkeys for peak performance.</p>
+<div class="flex gap-4">
+<button class="bg-primary px-8 py-4 rounded-full text-white font-bold hover:shadow-xl transition-shadow">Download Client</button>
+<button class="border border-outline px-8 py-4 rounded-full font-bold hover:bg-surface-container transition-colors">Documentation</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 bg-[#27313f] dark:bg-slate-950 flex flex-col items-center space-y-8 text-center">
+<div class="text-lg font-bold text-white uppercase tracking-[0.2em]">Api Raupulus</div>
+<div class="flex flex-wrap justify-center gap-8 font-inter text-xs uppercase tracking-widest">
+<a class="text-slate-400 hover:text-white transition-colors" href="#">APIS</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">DOCUMENTACIÓN</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Personal Site</a>
+</div>
+<div class="pt-8 border-t border-white/10 w-full max-w-lg">
+<p class="text-slate-300 dark:text-slate-400 text-xs font-inter uppercase tracking-widest mb-4">
+                © Raúl Caro Pastorino 2018 - 2024
+            </p>
+<div class="flex justify-center gap-6 opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0">
+<span class="material-symbols-outlined text-white" title="Laravel">terminal</span>
+<span class="material-symbols-outlined text-white" title="Vue.js">javascript</span>
+<span class="material-symbols-outlined text-white" title="PostgreSQL">database</span>
+</div>
+</div>
+<div class="text-[10px] text-slate-500 font-inter uppercase tracking-tighter italic">
+            Hecho con <span class="text-red-400">❤</span> en España
+        </div>
+</footer>
+</body></html>

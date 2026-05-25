@@ -19,7 +19,16 @@ class JsonValidationException extends Exception
 
     public function __construct(Validator $validator)
     {
+        parent::__construct($this->message);
         $this->validator = $validator;
+    }
+
+    /**
+     * Devuelve los errores de validación.
+     */
+    public function errors(): array
+    {
+        return $this->validator->errors()->toArray();
     }
 
     public function report()

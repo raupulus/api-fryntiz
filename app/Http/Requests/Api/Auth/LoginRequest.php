@@ -4,32 +4,28 @@ namespace App\Http\Requests\Api\Auth;
 
 use App\Http\Requests\Api\BaseFormRequest;
 
-/**
- * Class LoginRequest
- */
 class LoginRequest extends BaseFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(): bool
     {
-        return ! (bool)auth()->id();
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required',
-            //'device' => 'required'
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:6'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'El correo electronico es obligatorio.',
+            'email.email' => 'El formato del correo electronico no es valido.',
+            'password.required' => 'La contrasena es obligatoria.',
+            'password.min' => 'La contrasena debe tener al menos :min caracteres.',
         ];
     }
 }

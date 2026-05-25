@@ -1,141 +1,212 @@
-## Api de propósito general
+# Api Raupulus
 
-## Secciones
+Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (estación meteorológica, plantas inteligentes, contador de pulsaciones, registro de vuelos, energía solar), gestión de contenidos multi-plataforma, currículum vitae y newsletter.
 
-- Estación Meteorológica
-- Contador de pulsaciones para teclado/ratón
-- SmartPlant para control y monitorización de plantas
-- Radar de vuelos para aviones en las proximidades
+**Autor:** Raúl Caro Pastorino — [raupulus.dev](https://raupulus.dev)
 
-## Pendiente
+## Stack Tecnológico
 
-- Preparar vista de emails generales
-- Terminar de revisar vista de email para verificar newsletter
+| Componente | Tecnología |
+|------------|-----------|
+| **Backend** | PHP 8.4, Laravel 13 |
+| **Panel Admin** | Filament 5 (Livewire 4) |
+| **Frontend** | Blade + Tailwind CSS 4 + Alpine.js 3 |
+| **Bundler** | Vite 6 |
+| **Base de datos** | PostgreSQL 17 |
+| **Caché** | Redis 7 |
+| **Autenticación Web** | Laravel Fortify |
+| **Autenticación API** | Laravel Sanctum 4 |
+| **Imágenes** | Intervention Image 3 |
+| **SEO** | Spatie Laravel Sitemap 8 |
+| **reCAPTCHA** | Google reCAPTCHA |
 
-## Instalación
+## Módulos
 
-git clone https://gitlab.com/raupulus/api-fryntiz.git
+| Módulo | Descripción |
+|--------|-------------|
+| **Weather Station** | Datos meteorológicos de sensores (temperatura, humedad, presión, viento, lluvia, calidad del aire, rayos) + integración AEMET (predicciones, eventos adversos, costas, ozono, radiación solar) |
+| **Hardware / Energy** | Gestión de dispositivos hardware, monitorización de energía solar, generadores y consumos con resúmenes diarios |
+| **KeyCounter** | Registro de pulsaciones de teclado, clicks y movimientos de ratón con estadísticas por usuario y dispositivo |
+| **AirFlight** | Registro de aviones detectados, rutas y telemetría |
+| **Smart Plant** | Monitorización de plantas con sensores de humedad del suelo, luz y temperatura |
+| **Content (CMS)** | CMS multi-plataforma y multi-tipo (artículo, tutorial, proyecto, página, reseña) con SEO, categorías, tags, tecnologías y galerías |
+| **CV** | Currículum vitae completo con 16 secciones (experiencia, formación, habilidades, proyectos, repositorios) y generación PDF (DomPDF) |
+| **Newsletter** | Gestión de suscriptores con verificación por email y baja por token |
 
-- Editar .env
-- Crear Base de datos (postgresql)
+## Arquitectura
 
-cd /var/www/web/api-fryntiz
-sudo -u postgres createdb -O web -T template1 api_fryntiz
+- **Patrón:** MVC con Service Layer
+- **API:** Versionada (V1 legacy + V2 actual), respuestas JSON con JsonResources
+- **Admin:** Dos paneles Filament 5 (Admin para superadmin, Tenant para usuarios)
+- **Roles:** SuperAdmin (1), Admin (2), User (3)
+
+### Estructura de Directorios
+
+```
+app/
+├── Actions/              # Operaciones atómicas reutilizables
+├── Console/Commands/     # Comandos Artisan (AEMET, content, project, sitemap, keycounter)
+├── Enums/                # PHP 8.4 backed enums
+├── Filament/
+│   ├── Admin/            # Panel Admin (superadmin)
+│   └── Tenant/           # Panel Tenant (usuarios)
+├── Http/
+│   ├── Controllers/Api/  # Controladores API por módulo/versión
+│   ├── Controllers/      # Controladores web públicos
+│   ├── Middleware/        # Cors, DomainCheck, IpCounter
+│   ├── Requests/         # FormRequests
+│   └── Resources/V2/     # JsonResources para API V2
+├── Models/               # Eloquent models por módulo
+├── Services/             # Service Layer por módulo
+└── Traits/               # Traits compartidos (HasSlug, HasStatus, Filterable, etc.)
+
+routes/
+├── web.php               # Rutas frontend público
+├── api/v1.php            # API V1 (legacy)
+├── api/v2.php            # API V2 (actual)
+├── console.php           # Scheduler
+├── weather_station/      # Rutas Weather Station (web + API)
+├── hardware/             # Rutas Hardware/Energy (web + API)
+├── keycounter/           # Rutas KeyCounter (web + API)
+├── smart_plant/          # Rutas Smart Plant (web + API)
+├── airflight/            # Rutas AirFlight (web + API)
+└── cv/                   # Rutas CV (web + API)
+
+docs/info/                # Documentación técnica de cada módulo
+```
+
+## Requisitos
+
+- PHP >= 8.4
+- PostgreSQL >= 15
+- Redis >= 7 (opcional, recomendado)
+- Node.js >= 20
+- Composer >= 2.7
+
+## Instalación (Desarrollo)
+
+```bash
+# Clonar repositorio
+git clone https://gitlab.com/raupulus/api-fryntiz.git api-raupulus
+cd api-raupulus
+
+# Instalación automática
+php artisan project:install
+
+# O manualmente:
 cp .env.example .env
-nano .env
-
-composer install --no-dev
-php artisan migrate
-php artisan db:seed
-php artisan passport:install
+composer install
+npm install
+npm run build
 php artisan key:generate
-
-#ln -s $PWD/storage/app/public $PWD/public/storage
+php artisan migrate --seed
 php artisan storage:link
+php artisan serve
+```
 
-npm install --production
-
-sudo chown -R www-data:www-data /var/www/web/api-fryntiz
-sudo find /var/www/web/api-fryntiz/ -type f -exec chmod 644 {} \;
-sudo find /var/www/web/api-fryntiz/ -type d -exec chmod 775 {} \;
-
-sudo mkdir /var/log/apache2/api-fryntiz
-sudo cp /var/www/web/api-fryntiz/api-fryntiz.conf /etc/apache2/sites-available/
-sudo a2ensite api-fryntiz.conf
-
-echo '127.0.0.1       fryntiz.dev' | sudo tee -a /etc/hosts
-echo '127.0.0.1       api.fryntiz.dev' | sudo tee -a /etc/hosts
-
-sudo systemctl reload apache2
-
-sudo certbot --authenticator webroot --installer apache \
--w /var/www/web/api-fryntiz/public \
--d www.api.fryntiz.dev -d api.fryntiz.dev
-
-
-sudo certbot certonly --webroot -w /var/www/web/api-fryntiz/public \
--d www.api.fryntiz.dev -d api.fryntiz.dev
-
-
-## API Estación meteorológica
-
-Ruta de acceso: /weatherstation
-
-## API Contador de teclas (Keycounter)
-
-Ruta de acceso: /keycounter
-
-## API Smart Plant
-
-Ruta de acceso: /smartplant
-
-## API Airflight
-
-Ruta de acceso: /airflight
-
-## Cronjobs
-
-Añadir tarea cron para ejecutar cada minuto el comando de laravel para ejecutar los cronjobs:
+## Instalación (Producción)
 
 ```bash
-## Laravel api-fryntiz
-* * * * * fryntiz cd /var/www/public/api-fryntiz && php artisan schedule:run >> /dev/null 2>&1
+cp .env.example.production .env
+# Editar .env con las credenciales de producción
+composer install --optimize-autoloader --no-dev
+npm install
+npm run build
+php artisan key:generate
+php artisan migrate --force
+php artisan db:seed --force
+php artisan storage:link
+php artisan project:clear --production
 ```
 
-Así laravel podrá gestionar las tareas programadas controladas por código internamente.
-
-## Websockets
-
-Antes de continuar, todo lo que ves a continuación es para instalar websockets en un servidor con Debian Stable, en caso de usar otro sistema operativo o versión de Debian, puede que no funcione o haya que adaptar los comandos.
-
-De cualquier forma, me salto las partes de configuración para la seguridad por ser de ámbito general y esto es un proyecto de código abierto, no un tutorial de seguridad. Lo mínimo que deberías plantear es tener un certificado SSL válido y que la aplicación no se ejecute como root, si no como un nuevo usuario con permisos limitados al menos para la parte de websockets. También deberías tener un firewall activo y configurado para evitar ataques. En el servidor de nginx/apache o el que uses deberías limitar el acceso a la aplicación por IP o rango de IPs (cualquier mecanismo para evitar accesos no autorizados que consuman recursos y/o puedan escalar acceso).
-
-El ejemplo para la configuración de apache lo puedes encontrar en el archivo *api-fryntiz.conf* en la raíz del proyecto.
-
-Para habilitar los websockets se hay que instalar algún gestor de tareas como *supervisor*
+## Docker
 
 ```bash
-sudo apt install supervisor
+# Desarrollo
+docker compose up -d
+
+# Producción
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-Y crear un archivo de configuración en */etc/supervisor/conf.d/api-fryntiz.conf* con el siguiente contenido cambiando ruta y usuario:
+Los servicios disponibles son:
 
-```
-[program:api_fryntiz_websockets]
-command=/usr/bin/php /var/www/public/api-fryntiz/artisan websockets:serve --port 6001
-numprocs=1
-autostart=true
-autorestart=true
-user=fryntiz
-```
+| Servicio | Puerto por defecto | Descripción |
+|----------|-------------------|-------------|
+| **app** | — | Aplicación PHP-FPM |
+| **nginx** | 8080 | Servidor web |
+| **postgres** | 5432 | Base de datos PostgreSQL 17 |
+| **redis** | 6379 | Caché y colas Redis 7 |
 
-Y reiniciar el servicio de supervisor
+## API
+
+La API tiene dos versiones:
+
+- **V1** (`/api/v1/...`): Versión original, mantenida por compatibilidad
+- **V2** (`/api/v2/...`): Versión actual con JsonResources, validaciones mejoradas y mayor seguridad
+
+La documentación detallada de la API V2 está en [`docs/api-v2.md`](docs/api-v2.md).
+
+### Autenticación API
+
+Los endpoints protegidos requieren un token Bearer de Laravel Sanctum. Los tokens se obtienen mediante el endpoint de login.
+
+## Paneles de Administración
+
+- **Admin** (`/admin`): Gestión completa del sistema — solo superadministradores
+- **Panel** (`/panel`): Panel de usuario — acceso a recursos propios
+
+## Comandos Útiles
 
 ```bash
-sudo supervisorctl update
-sudo supervisorctl restart api_fryntiz_websockets
-sudo supervisorctl status api_fryntiz_websockets
+# Proyecto
+php artisan project:install              # Inicializar proyecto completo
+php artisan project:clear                # Limpiar cachés
+php artisan project:clear --production   # Limpiar y recachear para producción
+
+# Contenido
+php artisan content:publish              # Publicar contenidos programados
+
+# SEO
+php artisan sitemap:generate             # Generar sitemap.xml
+
+# AEMET (datos meteorológicos de la agencia estatal)
+php artisan aemet:daily                  # Obtener datos diarios de AEMET
+php artisan aemet:every-10m              # Datos cada 10 minutos
+php artisan aemet:every-30m              # Datos cada 30 minutos
+php artisan aemet:every-4h               # Datos cada 4 horas
+
+# KeyCounter
+php artisan keycounter:generate-duration # Generar duraciones de sesiones
+php artisan keycounter:remove-duplicate  # Eliminar registros duplicados
+
+# Limpieza
+php artisan force:clear                  # Limpieza forzada de cachés
 ```
 
-Más información en [https://beyondco.de/docs/laravel-websockets/getting-started/installation](https://beyondco.de/docs/laravel-websockets/getting-started/installation)
-
-
-Incrementar límites de conexiones al websockets, esto normalmente es un límite del sistema operativo, en este caso Debian Stable:
+## Tests
 
 ```bash
-sudo nano  /etc/security/limits.d/laravel-echo.conf
+php artisan test
 ```
 
-Cambia el nombre del archivo y del usuario por el que corresponda, en este caso es laravel-echo como ejemplo.
+## Documentación
 
-Dentro deberá tener el siguiente contenido adaptado a tu caso:
+| Recurso | Ubicación |
+|---------|-----------|
+| Arquitectura y convenciones | [`AGENTS.md`](AGENTS.md) |
+| API V2 | [`docs/api-v2.md`](docs/api-v2.md) |
+| Documentación de módulos | [`docs/info/`](docs/info/) |
+| Citación académica | [`CITATION.txt`](CITATION.txt) |
 
-```bash
-#<domain>    <type>  <item>    <value>
+## Convenciones
 
-laravel-echo       soft    nofile        10000
-```
+- **Idioma del código:** Inglés (variables, métodos, clases)
+- **Idioma de documentación:** Español (PHPDoc, comentarios, mensajes de validación)
+- **Estilo:** PSR-12, principios SOLID
+- **Naming:** Convenciones Laravel (PascalCase clases, camelCase métodos, snake_case tablas/columnas)
+- **Base de datos:** Migraciones con `comment` en todas las columnas, foreign keys explícitas
 
-Suele estar limitado a 1024.
+## Licencia
 
-Para más seguridad y evitar problemas, es mejor haber utilizado un usuario específico para la aplicación y no el usuario root o cualquier otro administrador.
+Este proyecto está licenciado bajo **GNU General Public License v3.0** — ver archivo [`LICENSE`](LICENSE) para más detalles.

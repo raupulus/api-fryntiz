@@ -4,34 +4,32 @@ namespace App\Http\Requests\Api\Auth;
 
 use App\Http\Requests\Api\BaseFormRequest;
 
-/**
- * Class RegisterRequest
- */
 class RegisterRequest extends BaseFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(): bool
     {
-        return ! (bool)auth()->id();
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'surname' => ['nullable', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'nickname' => ['nullable', 'string', 'max:100', 'unique:users,nickname'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'password_confirmation' => ['required'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electronico es obligatorio.',
+            'email.unique' => 'Este correo electronico ya esta registrado.',
+            'password.required' => 'La contrasena es obligatoria.',
+            'password.min' => 'La contrasena debe tener al menos :min caracteres.',
+            'password.confirmed' => 'La confirmacion de la contrasena no coincide.',
         ];
     }
 }

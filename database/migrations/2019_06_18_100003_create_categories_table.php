@@ -48,11 +48,9 @@ class CreateCategoriesTable extends Migration
             $table->bigInteger('image_id')
                 ->nullable()
                 ->comment('FK a la imagen en la tabla files');
-
-            $table->foreign('image_id')
-                ->references('id')->on('files')
-                ->onUpdate('cascade')
-                ->onDelete('SET NULL');
+            // La FK a "files" se añade en una migración posterior
+            // (2019_07_04_132012_add_image_foreign_to_categories_table)
+            // porque la tabla "files" se crea después de "categories".
 
             $table->integer('priority')
                 ->nullable()

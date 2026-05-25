@@ -113,7 +113,7 @@ class GeneralController
                 ->limit(1)
                 ->toSql();
 
-            $d = Temperature::select([
+            $result = Temperature::select([
                 'meteorology_temperature.value as temperature',
                 DB::raw("($airQuality) as air_quality"),
                 DB::raw("($eco2) as eco2"),
@@ -133,8 +133,31 @@ class GeneralController
                 DB::raw("($wind_max) as wind_max"),
             ])
                 ->orderByDesc('created_at')
-                ->first()
-                ->toArray();
+                ->first();
+
+            // Si no hay datos de temperatura, devolver array vacío con valores por defecto
+            if (!$result) {
+                return [
+                    'temperature' => null,
+                    'air_quality' => null,
+                    'eco2' => null,
+                    'humidity' => null,
+                    'light' => null,
+                    'last_lightning_at' => null,
+                    'pressure' => null,
+                    'tvoc' => null,
+                    'uv_index' => null,
+                    'uva' => null,
+                    'uvb' => null,
+                    'wind_direction' => null,
+                    'wind_average' => null,
+                    'wind_min' => null,
+                    'wind_max' => null,
+                    'lightningQuantityLastTenMinutes' => 0,
+                ];
+            }
+
+            $d = $result->toArray();
 
             $lightningQuantityLastTenMinutes = Lightning::selectRaw('count(*) as qm')
                 ->where('created_at', '>=', $lastTenMinutes)

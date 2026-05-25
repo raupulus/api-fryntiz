@@ -1,0 +1,31 @@
+# Extensión de docker-compose.yml para producción
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    restart: always
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    volumes:
+      # En producción, NO montar código fuente — usar imagen compilada
+      - ${STORAGE_VOLUME:-/opt/api-raupulus/storage}:/var/www/storage
+      - ${LOGS_VOLUME:-/opt/api-raupulus/logs}:/var/www/storage/logs
+
+  nginx:
+    restart: always
+    ports:
+      - "${APP_PORT:-80}:80"
+    volumes:
+      - ${STORAGE_VOLUME:-/opt/api-raupulus/storage}:/var/www/storage
+
+  postgres:
+    restart: always
+    volumes:
+      - ${DB_VOLUME:-/opt/api-raupulus/db}:/var/lib/postgresql/data
+
+  redis:
+    restart: always

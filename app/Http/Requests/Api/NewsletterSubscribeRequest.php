@@ -151,18 +151,18 @@ class NewsletterSubscribeRequest extends FormRequest
      * Obtener platform_id basado en el dominio
      *
      * @param string $domain
-     * @return int
+     * @return int|null
      */
-    private function getPlatformIdFromDomain(string $domain): int
+    private function getPlatformIdFromDomain(string $domain): ?int
     {
         $platform = Platform::where('domain', $domain)->first();
 
         if (!$platform) {
-            // Si no encuentra la plataforma, usa la primera disponible o crea una por defecto
+            // Si no encuentra la plataforma por dominio, usa la primera disponible
             $platform = Platform::first();
         }
 
-        return $platform ? $platform->id : 1;
+        return $platform?->id;
     }
 
     /**

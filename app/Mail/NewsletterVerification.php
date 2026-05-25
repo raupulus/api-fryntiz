@@ -2,41 +2,32 @@
 
 namespace App\Mail;
 
-use App\Models\Newsletter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class NewsletterVerification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $newsletter;
+    public function __construct(
+        public $newsletter
+    ) {}
 
-    /**
-     * Create a new message instance.
-     *
-     * @param Newsletter $newsletter
-     */
-    public function __construct(Newsletter $newsletter)
+    public function envelope(): Envelope
     {
-        $this->newsletter = $newsletter;
+        return new Envelope(
+            subject: 'Verifica tu suscripcion al newsletter',
+        );
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
+    public function content(): Content
     {
-        return $this->subject('Confirma tu suscripción a ' . config('app.name'))
-            ->view('mail.newsletter')
-            ->with([
-                'type' => 'verification',
-                'newsletter' => $this->newsletter,
-                'actionUrl' => $this->newsletter->getVerificationUrl(),
-                'actionText' => 'Confirmar Suscripción',
-            ]);
+        return new Content(
+            view: 'emails.newsletter.verification',
+            with: ['newsletter' => $this->newsletter],
+        );
     }
 }

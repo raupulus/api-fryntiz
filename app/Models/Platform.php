@@ -5,6 +5,7 @@ namespace App\Models;
 use App;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +22,7 @@ use App\Http\Resources\ContentFeaturedResource;
  */
 class Platform extends BaseAbstractModelWithTableCrud
 {
-    use ImageTrait;
+    use ImageTrait, HasFactory;
 
     protected $table = 'platforms';
 

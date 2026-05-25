@@ -49,7 +49,7 @@ class ContentController extends BaseWithTableCrudController
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(Platform $platform = null, $slug = null)
+    public function index(?Platform $platform = null, $slug = null)
     {
         return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
             'model' => self::getModel(),
@@ -326,7 +326,7 @@ class ContentController extends BaseWithTableCrudController
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function destroy(ContentDeleteRequest $request, Content $content = null)
+    public function destroy(ContentDeleteRequest $request, ?Content $content = null)
     {
         $deleted = false;
         $idRequest = $request->get('id');
@@ -613,7 +613,7 @@ class ContentController extends BaseWithTableCrudController
      *
      * @return JsonResponse
      */
-    public function ajaxStoreFile(Request $request, Content $contentModel = null): JsonResponse
+    public function ajaxStoreFile(Request $request, ?Content $contentModel = null): JsonResponse
     {
         $content = $contentModel ?: Content::find($request->get('content_id'));
 

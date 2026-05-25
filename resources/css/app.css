@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* ============================================
+   TEMA NORMAL (Raupulus Slate)
+   Referencia: template/normal/raupulus_slate/DESIGN.md
+   ============================================ */
+@theme {
+    --color-primary: #000000;
+    --color-primary-container: #050765;
+    --color-on-primary: #ffffff;
+    --color-secondary: #5b5b7d;
+    --color-secondary-container: #d8d6fe;
+    --color-tertiary: #000000;
+    --color-tertiary-container: #001d31;
+    --color-tertiary-fixed: #cce5ff;
+    --color-on-tertiary-container: #1d8acd;
+    --color-surface: #f8f9ff;
+    --color-surface-dim: #d0dbed;
+    --color-surface-container: #e6eeff;
+    --color-surface-container-low: #eff4ff;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-high: #dee9fc;
+    --color-surface-container-highest: #d9e3f6;
+    --color-on-surface: #121c2a;
+    --color-on-surface-variant: #464651;
+    --color-on-background: #121c2a;
+    --color-background: #f8f9ff;
+    --color-outline: #777682;
+    --color-outline-variant: #c7c5d3;
+    --color-error: #ba1a1a;
+    --color-error-container: #ffdad6;
+    --color-inverse-surface: #27313f;
+    --color-inverse-on-surface: #eaf1ff;
+    --color-inverse-primary: #bfc2ff;
+
+    --font-family-headline: 'Inter', sans-serif;
+    --font-family-body: 'Inter', sans-serif;
+    --font-family-label: 'Inter', sans-serif;
+}
+
+/* ============================================
+   TEMA OSCURO
+   Referencia: template/dark/home_dark_api_architecture/code.html
+   Se activa añadiendo class="dark" al <html>
+   ============================================ */
+html.dark {
+    --color-primary: #adc6ff;
+    --color-primary-container: #4d8eff;
+    --color-on-primary: #002e6a;
+    --color-secondary: #4fdbc8;
+    --color-secondary-container: #04b4a2;
+    --color-tertiary: #ffb786;
+    --color-tertiary-container: #df7412;
+    --color-tertiary-fixed: #ffdcc6;
+    --color-on-tertiary-container: #cce5ff;
+    --color-surface: #0f131d;
+    --color-surface-dim: #0f131d;
+    --color-surface-container: #1b2029;
+    --color-surface-container-low: #171c25;
+    --color-surface-container-lowest: #090e17;
+    --color-surface-container-high: #252a34;
+    --color-surface-container-highest: #30353f;
+    --color-on-surface: #dee2f0;
+    --color-on-surface-variant: #c2c6d6;
+    --color-on-background: #dee2f0;
+    --color-background: #0f131d;
+    --color-outline: #8c909f;
+    --color-outline-variant: #424754;
+    --color-error: #ffb4ab;
+    --color-error-container: #93000a;
+    --color-inverse-surface: #dee2f0;
+    --color-inverse-on-surface: #2c303b;
+    --color-inverse-primary: #005ac2;
+}
+
+/* ============================================
+   Estilos comunes a ambos temas
+   ============================================ */
+
+/* Glassmorphism del navbar */
+.glass-nav {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+}
+
+html.dark .glass-nav {
+    background-color: rgba(15, 19, 29, 0.8);
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Gradiente hero principal */
+.hero-gradient {
+    background: linear-gradient(135deg, var(--color-primary-container), var(--color-secondary));
+}
+
+/* Gradiente para botones CTA */
+.gradient {
+    background: linear-gradient(90deg, var(--color-primary-container) 0%, var(--color-secondary) 100%);
+}

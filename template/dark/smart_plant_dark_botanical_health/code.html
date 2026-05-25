@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAUPULUS API - Smart Plant Ecosystem</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#04b4a2",
+                        "surface-container-highest": "#30353f",
+                        "inverse-surface": "#dee2f0",
+                        "on-background": "#dee2f0",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "inverse-on-surface": "#2c303b",
+                        "on-error": "#690005",
+                        "surface-bright": "#343944",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "primary-fixed": "#d8e2ff",
+                        "outline": "#8c909f",
+                        "surface-variant": "#30353f",
+                        "tertiary-container": "#df7412",
+                        "surface-container-low": "#171c25",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-primary-fixed": "#001a42",
+                        "surface-dim": "#0f131d",
+                        "on-primary": "#002e6a",
+                        "on-tertiary": "#502400",
+                        "surface-container-lowest": "#090e17",
+                        "primary-fixed-dim": "#adc6ff",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "secondary": "#4fdbc8",
+                        "primary-container": "#4d8eff",
+                        "surface-container-high": "#252a34",
+                        "on-tertiary-fixed": "#311400",
+                        "on-secondary-fixed": "#00201c",
+                        "on-secondary-fixed-variant": "#005048",
+                        "background": "#0f131d",
+                        "on-secondary-container": "#003f38",
+                        "surface-container": "#1b2029",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface": "#0f131d",
+                        "primary": "#adc6ff",
+                        "inverse-primary": "#005ac2",
+                        "on-surface": "#dee2f0",
+                        "on-primary-container": "#00285d",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#71f8e4",
+                        "outline-variant": "#424754",
+                        "tertiary": "#ffb786",
+                        "on-tertiary-container": "#461f00",
+                        "on-secondary": "#003731",
+                        "on-surface-variant": "#c2c6d6"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f131d; color: #dee2f0; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(37, 42, 52, 0.7); backdrop-filter: blur(20px); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #090e17; }
+        ::-webkit-scrollbar-thumb { background: #424754; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex flex-col min-h-screen">
+<!-- TopNavBar Shell -->
+<nav class="fixed top-0 w-full z-50 bg-[#090e17]/80 backdrop-blur-xl border-none shadow-2xl shadow-blue-900/10 h-16 flex justify-between items-center px-8 max-w-full mx-auto">
+<div class="text-lg font-black tracking-tighter text-slate-100 uppercase">RAUPULUS API</div>
+<div class="hidden md:flex items-center gap-8 font-sans tracking-tight text-sm font-medium">
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Weather Station</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Keycounter</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Airflight</a>
+<a class="text-blue-400 border-b border-blue-400 pb-1" href="#">Smart Plant</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Energy</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#">Contact</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-md transition-all scale-95 duration-200 ease-out">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-md transition-all scale-95 duration-200 ease-out">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</nav>
+<main class="flex-grow pt-24 px-8 pb-16 max-w-7xl mx-auto w-full">
+<!-- Dashboard Header -->
+<header class="mb-12">
+<h1 class="text-3xl font-light tracking-tight text-on-surface mb-2">Ecosystem <span class="font-bold text-primary">Health Overview</span></h1>
+<p class="text-on-surface-variant text-sm tracking-wide">Telemetry stream active. All sensors reporting nominal status.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- 1. Environmental Metrics (Asymmetric Column) -->
+<section class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/15">
+<div class="flex items-center justify-between mb-8">
+<span class="label-sm font-mono text-secondary tracking-widest uppercase">Atmosphere</span>
+<span class="material-symbols-outlined text-secondary text-sm">sensors</span>
+</div>
+<div class="space-y-8">
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-4">
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-tighter mb-1">Humidity</p>
+<p class="text-3xl font-light font-headline tracking-tighter">64<span class="text-lg opacity-50">%</span></p>
+</div>
+<div class="w-16 h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[64%]"></div>
+</div>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-4">
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-tighter mb-1">Temperature</p>
+<p class="text-3xl font-light font-headline tracking-tighter">22.4<span class="text-lg opacity-50">°C</span></p>
+</div>
+<div class="text-secondary text-xs font-mono">+1.2°</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-tighter mb-1">Light Intensity</p>
+<p class="text-3xl font-light font-headline tracking-tighter">840<span class="text-lg opacity-50">LUX</span></p>
+</div>
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+</div>
+</div>
+</div>
+<!-- Settings Controls -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 space-y-4">
+<h3 class="label-sm font-mono text-on-surface-variant tracking-widest uppercase mb-4">Autonomous Systems</h3>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">water_drop</span>
+<span class="text-sm font-medium">Auto-Watering</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+<span class="text-sm font-medium">Smart Lighting</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- 2. Plant Grid (Large Visual Column) -->
+<section class="md:col-span-8 space-y-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Ficus Card -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-outline-variant/5 hover:border-outline-variant/20 transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="close-up of a vibrant green ficus lyrata plant with broad leaves against a dark moody architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx3LU3MePDGX4d8023SDfaIp21EdXMj3FrCKiTdT3oIzBBFUsTC5f7A1_ISrRCf950OmDS1Sr94lPnKwdrPpUm34Q3djWVRs-NZ1gsXTF1AkWKem-ymTqCa5qpjALFhusOCoSf6mQQy5pO5dYkC3SLU53tRgWKnITPPJlozzFum9rzHStRqCnd9Ar28YRdHEfLe1HrlyRiOsh0YHm6jNGs-J_y7XHn5pjTvLO08s8IpsRPJcUldou6J447squaeADKirLwnIWHNC0"/>
+<div class="absolute top-4 left-4 px-2 py-1 bg-surface/80 backdrop-blur-md rounded text-[10px] font-mono tracking-tighter uppercase text-secondary">Optimal</div>
+</div>
+<div class="p-5">
+<h4 class="text-lg font-semibold text-slate-100 mb-1">Ficus Lyrata</h4>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant font-mono uppercase tracking-widest">Health Index</span>
+<span class="text-lg font-bold text-secondary">98%</span>
+</div>
+<div class="mt-3 w-full bg-surface-container-lowest h-1 rounded-full">
+<div class="bg-secondary h-full w-[98%]"></div>
+</div>
+</div>
+</div>
+<!-- Glicinia Card -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-outline-variant/5 hover:border-outline-variant/20 transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="dramatic close-up of purple wisteria glicinia flowers blooming in a dark garden setting with soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr2VjEfJNH3ia4bc4leIF4ptCVEjMPOu71M61pIUtEFVHSbfYimyV9Ar5WOLNbeqe0ScU22STKX_AtSLWFeZBO2nwoo2HFtRWYxMyk10sn2W4wAhD05C46Ds59FoNvDtQBLcMu6hOsld7LNzldVILfM9HN5BKrcQnvDGLP4JDofs4YZFBuycMmcMwm_hwPf18JmHKDOGQeUtrlqNlyFohEfwY3rZxPcAoV9IXPb76bKwlReyzajb_vksqDIftKV6ZLPSkC_qrzGjQ"/>
+<div class="absolute top-4 left-4 px-2 py-1 bg-surface/80 backdrop-blur-md rounded text-[10px] font-mono tracking-tighter uppercase text-tertiary">Dry Soil</div>
+</div>
+<div class="p-5">
+<h4 class="text-lg font-semibold text-slate-100 mb-1">Glicinia</h4>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant font-mono uppercase tracking-widest">Health Index</span>
+<span class="text-lg font-bold text-tertiary">72%</span>
+</div>
+<div class="mt-3 w-full bg-surface-container-lowest h-1 rounded-full">
+<div class="bg-tertiary h-full w-[72%]"></div>
+</div>
+</div>
+</div>
+<!-- Monstera Card -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-outline-variant/5 hover:border-outline-variant/20 transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="macro shot of a large monstera deliciosa leaf showing intricate patterns and holes with dark shadows and emerald green tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkWGTFIY-3ShcQIUT7gnJtp8fbnGLMa9IXrJfV3uPCouCKsH-RPWYCxgY9pPiObfnVRxWi1uzievgtzn7g5cSeKq36oBiW0tLUcRGDVIbKM7aBQSfi_9hgmNBhYSg-dSKsS16nvLYs77wjN0o0CyMd31fkN_xPjTemp5T-Uyl49hQvi6vVboLsXk_DD5atJIyq4vGL3MAwPCeVPpVLTWsdJ2NfgtXT4zCRpW-a9EI-acjNWQriOch5PzZ5dFBgeOxcLrXmafpIb60"/>
+<div class="absolute top-4 left-4 px-2 py-1 bg-surface/80 backdrop-blur-md rounded text-[10px] font-mono tracking-tighter uppercase text-secondary">Stable</div>
+</div>
+<div class="p-5">
+<h4 class="text-lg font-semibold text-slate-100 mb-1">Monstera</h4>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant font-mono uppercase tracking-widest">Health Index</span>
+<span class="text-lg font-bold text-secondary">91%</span>
+</div>
+<div class="mt-3 w-full bg-surface-container-lowest h-1 rounded-full">
+<div class="bg-secondary h-full w-[91%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Telemetry History Table -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant/15 overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="label-sm font-mono text-on-surface-variant tracking-widest uppercase">Telemetry History</h3>
+<button class="text-[10px] font-mono text-primary flex items-center gap-1 uppercase tracking-widest">
+                            Export CSV <span class="material-symbols-outlined text-[14px]">download</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-[10px] font-mono text-on-surface-variant uppercase tracking-widest bg-surface-container-lowest/50">
+<th class="px-6 py-4">Timestamp</th>
+<th class="px-6 py-4">Soil PH</th>
+<th class="px-6 py-4">Conductivity</th>
+<th class="px-6 py-4">Substrate Hum</th>
+<th class="px-6 py-4">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-high transition-colors text-sm">
+<td class="px-6 py-4 font-mono text-xs">2024-05-20 14:32:11</td>
+<td class="px-6 py-4">6.4</td>
+<td class="px-6 py-4 text-secondary">840 µS/cm</td>
+<td class="px-6 py-4">42%</td>
+<td class="px-6 py-4"><span class="w-2 h-2 rounded-full bg-secondary inline-block mr-2"></span>Nominal</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors text-sm">
+<td class="px-6 py-4 font-mono text-xs">2024-05-20 12:15:04</td>
+<td class="px-6 py-4">6.5</td>
+<td class="px-6 py-4 text-secondary">838 µS/cm</td>
+<td class="px-6 py-4">41%</td>
+<td class="px-6 py-4"><span class="w-2 h-2 rounded-full bg-secondary inline-block mr-2"></span>Nominal</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors text-sm">
+<td class="px-6 py-4 font-mono text-xs">2024-05-20 10:02:45</td>
+<td class="px-6 py-4">6.3</td>
+<td class="px-6 py-4 text-secondary">822 µS/cm</td>
+<td class="px-6 py-4">38%</td>
+<td class="px-6 py-4"><span class="w-2 h-2 rounded-full bg-tertiary inline-block mr-2"></span>Low Moisture</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors text-sm">
+<td class="px-6 py-4 font-mono text-xs">2024-05-20 08:00:22</td>
+<td class="px-6 py-4">6.4</td>
+<td class="px-6 py-4 text-secondary">841 µS/cm</td>
+<td class="px-6 py-4">44%</td>
+<td class="px-6 py-4"><span class="w-2 h-2 rounded-full bg-secondary inline-block mr-2"></span>Nominal</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="bg-[#090e17] border-t border-slate-800/50 w-full mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-12 py-16 w-full max-w-7xl mx-auto">
+<div class="flex flex-col gap-4">
+<div class="text-slate-500 font-bold tracking-tighter text-lg uppercase">RAUPULUS</div>
+<p class="text-[10px] label-sm font-mono tracking-widest uppercase text-slate-500 leading-relaxed">
+                    Raul Caro Pastorino 2018-2024 — HECHO CON ❤️ EN ESPAÑA
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="label-sm font-mono tracking-widest uppercase text-teal-400">Infrastructure</h5>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">AWS</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">POSTGRES</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">PYTHON</a>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="label-sm font-mono tracking-widest uppercase text-teal-400">Engineering</h5>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">NODE</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">EDGE</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">API DOCS</a>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="label-sm font-mono tracking-widest uppercase text-teal-400">Legal</h5>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">PRIVACY</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">TERMS</a>
+<a class="text-slate-500 hover:text-slate-200 transition-colors text-xs font-mono" href="#">SECURITY</a>
+</div>
+</div>
+</footer>
+</body></html>

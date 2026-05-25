@@ -1,11 +1,6 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+import Alpine from 'alpinejs';
+import dataTable from './components/data-table.js';
 
-require('./bootstrap');
-require('./vue');
-
-require('./navbar');
-require('./footer');
+window.Alpine = Alpine;
+Alpine.data('dataTable', dataTable);
+Alpine.start();

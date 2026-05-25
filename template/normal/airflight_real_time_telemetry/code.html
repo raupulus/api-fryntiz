@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Airflight - Api Raupulus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#bfc2ff",
+              "on-surface-variant": "#464651",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-fixed-dim": "#92ccff",
+              "tertiary-container": "#001d31",
+              "tertiary-fixed": "#cce5ff",
+              "surface-variant": "#d9e3f6",
+              "on-secondary-fixed": "#181836",
+              "surface-container": "#e6eeff",
+              "on-primary-fixed-variant": "#383d90",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error": "#ba1a1a",
+              "tertiary": "#000000",
+              "primary": "#000000",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed": "#050765",
+              "on-tertiary-fixed": "#001d31",
+              "on-background": "#121c2a",
+              "inverse-surface": "#27313f",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary-container": "#d8d6fe",
+              "surface-dim": "#d0dbed",
+              "background": "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-container": "#1d8acd",
+              "surface": "#f8f9ff",
+              "on-secondary-fixed-variant": "#444464",
+              "on-primary-container": "#767cd2",
+              "outline-variant": "#c7c5d3",
+              "on-tertiary-fixed-variant": "#004b73",
+              "secondary": "#5b5b7d",
+              "surface-container-high": "#dee9fc",
+              "primary-fixed-dim": "#bfc2ff",
+              "outline": "#777682",
+              "on-secondary-container": "#5c5c7e",
+              "surface-container-highest": "#d9e3f6",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "primary-container": "#050765",
+              "surface-tint": "#5056a9",
+              "on-surface": "#121c2a",
+              "secondary-fixed-dim": "#c4c3ea",
+              "on-error": "#ffffff",
+              "surface-container-low": "#eff4ff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9ff;
+        color: #121c2a;
+      }
+      .glass-effect {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .ambient-shadow {
+        box-shadow: 0 24px 40px -4px rgba(18, 28, 42, 0.06);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-sm dark:bg-slate-950/70 dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">
+                Api Raupulus
+            </div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Weather Station</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Keycounter</a>
+<a class="text-black dark:text-white font-semibold border-b-2 border-black dark:border-white pb-1 font-inter text-sm tracking-tight" href="#">Airflight</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Smart Plant</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Energy</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Contacto</a>
+</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 max-w-7xl mx-auto px-6">
+<!-- Hero Section -->
+<header class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="text-on-tertiary-container bg-tertiary-fixed px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-4 inline-block">Real-time Telemetry</span>
+<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-primary mb-4">Airflight Tracking</h1>
+<p class="text-secondary text-lg max-w-2xl leading-relaxed">
+                        Monitoring local airspace traffic via ADS-B telemetry. High-precision data acquisition and historical logging for civil aviation.
+                    </p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 flex flex-col min-w-[160px]">
+<span class="text-secondary text-xs uppercase tracking-widest font-semibold mb-2">Active Planes</span>
+<span class="text-3xl font-bold text-primary">24</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 flex flex-col min-w-[160px]">
+<span class="text-secondary text-xs uppercase tracking-widest font-semibold mb-2">Altitude Peak</span>
+<span class="text-3xl font-bold text-primary">38k ft</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Map Placeholder & Flight Focus -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Map Section -->
+<div class="relative w-full aspect-video rounded-xl overflow-hidden ambient-shadow group">
+<div class="absolute inset-0 bg-surface-dim flex items-center justify-center">
+<!-- Dynamic Map Placeholder -->
+<div class="w-full h-full bg-cover bg-center opacity-80" data-alt="Satellite topographic map of a Mediterranean region with subtle flight path overlays in glowing blue lines" data-location="Seville, Spain" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDsrT4575BgaHpAuNGonSTbsjV8eA5FXRw-lqARtbSVxHP73wgMX78UxQF4j11rZ7pPzoKlm2wD9ztdaMDFN1FH_JLSCUsK9xjaefADr7Y3uAQgG94XOh2pI6euwOKvWeZEMfaYALZNWkKy_2qvJ7QrMIHAmhSzi7B82Om-YJornrQDTM3a2bqLcTOz0R6ydL7xgJrrHMbC_MjRwNfnxb2vZAzvuq-x-7jEobFEaNp2zdrvntKnr5_x13qeXZSXIo4XyzPTLIRmEhE')"></div>
+<div class="absolute inset-0 bg-primary-container/10 mix-blend-multiply"></div>
+<div class="absolute flex flex-col items-center justify-center text-center p-8 bg-surface-container-lowest/90 backdrop-blur-md rounded-xl max-w-xs shadow-2xl">
+<span class="material-symbols-outlined text-4xl text-on-tertiary-container mb-3" style="font-variation-settings: 'FILL' 1;">my_location</span>
+<h3 class="font-bold text-xl mb-1 text-primary">Live Radar</h3>
+<p class="text-secondary text-sm">Interactive map view currently tracking local ADS-B transmissions.</p>
+</div>
+</div>
+<!-- Overlay Controls -->
+<div class="absolute bottom-6 left-6 flex gap-2">
+<button class="bg-primary-container text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-opacity-90 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">filter_alt</span>
+                            Filter Altitude
+                        </button>
+<button class="bg-surface-container-lowest text-primary px-4 py-2 rounded-full text-xs font-bold hover:bg-surface-container shadow-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">layers</span>
+                            Satellite View
+                        </button>
+</div>
+</div>
+<!-- Bento Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-xl ambient-shadow flex flex-col justify-between h-48">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary-container text-3xl">flight_takeoff</span>
+<span class="text-on-tertiary-container text-xs font-bold">+12% vs last hr</span>
+</div>
+<div>
+<span class="text-4xl font-extrabold text-primary">156</span>
+<p class="text-secondary text-xs uppercase tracking-widest mt-1">Flights Today</p>
+</div>
+</div>
+<div class="bg-primary-container text-white p-8 rounded-xl shadow-xl flex flex-col justify-between h-48">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-tertiary-fixed text-3xl">router</span>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Active Link</span>
+</div>
+</div>
+<div>
+<span class="text-4xl font-extrabold">98.2%</span>
+<p class="text-slate-300 text-xs uppercase tracking-widest mt-1">Signal Strength</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 flex flex-col justify-between h-48">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary-container text-3xl">speed</span>
+<span class="text-secondary text-xs font-medium">Local Max</span>
+</div>
+<div>
+<span class="text-4xl font-extrabold text-primary">540</span>
+<span class="text-lg text-secondary">kts</span>
+<p class="text-secondary text-xs uppercase tracking-widest mt-1">Top Ground Speed</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar: Last Hour Planes -->
+<aside class="lg:col-span-4 space-y-6">
+<div class="bg-surface-container-lowest rounded-xl ambient-shadow overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h2 class="font-bold text-lg text-primary">Live Activity</h2>
+<span class="text-[10px] bg-surface-container-high px-2 py-1 rounded uppercase tracking-tighter text-on-surface-variant font-bold">Last 60m</span>
+</div>
+<div class="divide-y divide-outline-variant/5">
+<!-- Plane Entry 1 -->
+<div class="p-5 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="text-primary-container font-mono font-bold text-sm">IBE3104</span>
+<span class="text-[10px] text-secondary">14:22:15</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">flight</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-primary">Airbus A320-214</p>
+<p class="text-xs text-secondary">Altitude: 34,000 ft • 450 kts</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Plane Entry 2 -->
+<div class="p-5 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="text-primary-container font-mono font-bold text-sm">RYR154C</span>
+<span class="text-[10px] text-secondary">14:18:40</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">flight</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-primary">Boeing 737-8AS</p>
+<p class="text-xs text-secondary">Altitude: 21,500 ft • 380 kts</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Plane Entry 3 -->
+<div class="p-5 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="text-primary-container font-mono font-bold text-sm">VLG2110</span>
+<span class="text-[10px] text-secondary">14:05:12</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">flight</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-primary">Airbus A321-231</p>
+<p class="text-xs text-secondary">Altitude: 12,000 ft • 290 kts</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Plane Entry 4 -->
+<div class="p-5 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="text-primary-container font-mono font-bold text-sm">BAW455</span>
+<span class="text-[10px] text-secondary">13:58:33</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">flight</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-primary">Airbus A319-131</p>
+<p class="text-xs text-secondary">Altitude: 36,000 ft • 465 kts</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low text-center">
+<button class="text-primary text-xs font-bold hover:underline">View All Flights</button>
+</div>
+</div>
+<!-- Weather Card Integration -->
+<div class="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-bold text-primary mb-1">Local Conditions</h3>
+<div class="flex items-center gap-4 mt-4">
+<span class="text-4xl font-extrabold text-primary">18°C</span>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-on-surface-variant">Clear Sky</span>
+<span class="text-xs text-secondary">Wind: 12km/h NW</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-primary/5 rotate-12 group-hover:scale-110 transition-transform">cloud_queue</span>
+</div>
+</aside>
+</div>
+<!-- Flight Records Table -->
+<section class="mt-20">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-primary">Detailed Log</h2>
+<p class="text-secondary text-sm mt-1">Full telemetry history of the last 24 hours.</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-lowest p-2 rounded-lg border border-outline-variant/15 text-primary hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined">download</span>
+</button>
+<button class="bg-surface-container-lowest p-2 rounded-lg border border-outline-variant/15 text-primary hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl ambient-shadow overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-dim border-b border-outline-variant/20">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary">Timestamp</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary">Callsign</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary">ICAO24</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary">Altitude</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary">Ground Speed</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary">Heading</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-secondary text-right">Squawk</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 text-sm text-secondary">2024-05-20 14:25:31</td>
+<td class="px-6 py-4 text-sm font-bold text-primary">IBE3104</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">3442A2</td>
+<td class="px-6 py-4 text-sm text-primary">34,000 ft</td>
+<td class="px-6 py-4 text-sm text-primary">450 kts</td>
+<td class="px-6 py-4 text-sm text-primary">270°</td>
+<td class="px-6 py-4 text-sm font-mono text-right text-on-tertiary-container font-bold">1000</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 text-sm text-secondary">2024-05-20 14:24:12</td>
+<td class="px-6 py-4 text-sm font-bold text-primary">RYR154C</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">4CA4D1</td>
+<td class="px-6 py-4 text-sm text-primary">21,500 ft</td>
+<td class="px-6 py-4 text-sm text-primary">380 kts</td>
+<td class="px-6 py-4 text-sm text-primary">085°</td>
+<td class="px-6 py-4 text-sm font-mono text-right text-on-tertiary-container font-bold">2345</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 text-sm text-secondary">2024-05-20 14:22:45</td>
+<td class="px-6 py-4 text-sm font-bold text-primary">VLG2110</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">34468E</td>
+<td class="px-6 py-4 text-sm text-primary">12,000 ft</td>
+<td class="px-6 py-4 text-sm text-primary">290 kts</td>
+<td class="px-6 py-4 text-sm text-primary">190°</td>
+<td class="px-6 py-4 text-sm font-mono text-right text-on-tertiary-container font-bold">1000</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 text-sm text-secondary">2024-05-20 14:21:05</td>
+<td class="px-6 py-4 text-sm font-bold text-primary">AEA245</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">34433C</td>
+<td class="px-6 py-4 text-sm text-primary">37,000 ft</td>
+<td class="px-6 py-4 text-sm text-primary">472 kts</td>
+<td class="px-6 py-4 text-sm text-primary">045°</td>
+<td class="px-6 py-4 text-sm font-mono text-right text-on-tertiary-container font-bold">7000</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 text-sm text-secondary">2024-05-20 14:19:18</td>
+<td class="px-6 py-4 text-sm font-bold text-primary">BAW455</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">40089A</td>
+<td class="px-6 py-4 text-sm text-primary">36,000 ft</td>
+<td class="px-6 py-4 text-sm text-primary">465 kts</td>
+<td class="px-6 py-4 text-sm text-primary">135°</td>
+<td class="px-6 py-4 text-sm font-mono text-right text-on-tertiary-container font-bold">4522</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-8 flex justify-center">
+<button class="bg-primary-container text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all">
+                    Load Older Records
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 bg-[#27313f] dark:bg-slate-950 flex flex-col items-center space-y-8 text-center">
+<div class="text-lg font-bold text-white uppercase tracking-widest">Api Raupulus</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">APIS</a>
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">DOCUMENTACIÓN</a>
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">Personal Site</a>
+</div>
+<div class="text-slate-300 dark:text-slate-400 font-inter text-xs uppercase tracking-widest">
+            © Raúl Caro Pastorino 2018 - 2024
+        </div>
+<div class="flex items-center gap-6 grayscale hover:grayscale-0 transition-all duration-300 opacity-50">
+<span class="material-symbols-outlined text-white text-2xl" data-icon="terminal">terminal</span>
+<span class="material-symbols-outlined text-white text-2xl" data-icon="database">database</span>
+<span class="material-symbols-outlined text-white text-2xl" data-icon="cloud">cloud</span>
+</div>
+</footer>
+</body></html>

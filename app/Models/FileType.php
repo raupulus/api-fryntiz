@@ -52,7 +52,7 @@ class FileType extends Model
      * @param string|null $type Tipo de archivo, por ejemplo: image
      * @return FileType|null
      */
-    public static function addFileType(string $mime, string $extension, string $type = null): ?FileType
+    public static function addFileType(string $mime, string $extension, ?string $type = null): ?FileType
     {
         if (!$mime || (count(explode('/', $mime)) !== 2)) {
             return null;

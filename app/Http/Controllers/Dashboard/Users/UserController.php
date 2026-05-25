@@ -46,7 +46,7 @@ class UserController extends Controller
      * @param User|null $user
      * @return View
      */
-    public function show(User $user = null): View
+    public function show(?User $user = null): View
     {
         $user = $user?->id ? $user : auth()->user();
 

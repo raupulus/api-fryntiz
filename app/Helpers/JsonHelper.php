@@ -126,8 +126,8 @@ class JsonHelper
      */
     private static function prepareError(String $message = 'Error',
                                  Int $httpCode = 400,
-                                 Exception $exception = null,
-                                 Int $codeError = null): array
+                                 ?Exception $exception = null,
+                                 ?Int $codeError = null): array
     {
         return array_merge(
             self::$error,
@@ -289,7 +289,7 @@ class JsonHelper
     public static function forbidden(String $message = '403 Forbidden Access',
                                      Int $httpCode = 403,
                                      Int $codeError = 0,
-                                     Exception $exception = null): JsonResponse
+                                     ?Exception $exception = null): JsonResponse
     {
         $exception = $exception ?? new AccessDeniedHttpException($message);
 

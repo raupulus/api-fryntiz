@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
 use function array_filter;
 use function asset;
 use function auth;
@@ -281,7 +281,7 @@ class File extends Model
             return $thumbnails;
         }
 
-        $imgOriginal = Image::make($file->storagePathFile);
+        $imgOriginal = Image::read($file->storagePathFile);
 
 
         ## Genero las nuevas miniaturas.
@@ -293,34 +293,32 @@ class File extends Model
 
                 $img = clone($imgOriginal);
 
-                $img->resize($size, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                });
+                $img->scale(width: $size);
 
                 if (!\File::isDirectory($newPath)) {
                     \File::makeDirectory($newPath, 493, true);
                 }
 
-                // TODO → Añadir metadatos EXIF
+                // TODO: Anadir metadatos EXIF
 
                 $extension = $file->fileType->extension;
 
                 if ($file->fileType->mime === 'image/jpeg') {
                     $newName = preg_replace('/\.jpeg$/i', '.webp', $file->name);
-                    $newName = preg_replace('/\.jpg$/i', '.webp', $file->name);
-                    $img->save($newPath . '/' . $newName, 90, 'webp');
+                    $newName = preg_replace('/\.jpg$/i', '.webp', $newName);
+                    $img->toWebp(90)->save($newPath . '/' . $newName);
                     $extension = 'webp';
                 } elseif ($file->fileType->mime === 'image/png') {
                     $newName = preg_replace('/\.png$/i', '.webp', $file->name);
-                    $img->save($newPath . '/' . $newName, 90, 'webp');
+                    $img->toWebp(90)->save($newPath . '/' . $newName);
                     $extension = 'webp';
                 } else {
                     $newName = $file->name;
-                    $img->save($newPath . '/' . $newName, 90);
+                    $img->save($newPath . '/' . $newName, quality: 90);
                 }
 
                 ## Busco de nuevo el tipo mime, por si hubiera cambiado a webp.
-                $mime = $img->mime();
+                $mime = 'image/webp';
 
                 if ($mime) {
                     ## Obtengo el tipo de archivo o lo creo si no existe.
@@ -339,7 +337,7 @@ class File extends Model
                     'key' => $key,
                     'width' => $img->width(),
                     'height' => $img->height(),
-                    'size' => $img->filesize(),
+                    'size' => filesize($newPath . '/' . $newName),
                 ]);
             }
         }

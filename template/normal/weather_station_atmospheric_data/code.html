@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Weather Station - Api Raupulus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#bfc2ff",
+              "on-surface-variant": "#464651",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-fixed-dim": "#92ccff",
+              "tertiary-container": "#001d31",
+              "tertiary-fixed": "#cce5ff",
+              "surface-variant": "#d9e3f6",
+              "on-secondary-fixed": "#181836",
+              "surface-container": "#e6eeff",
+              "on-primary-fixed-variant": "#383d90",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error": "#ba1a1a",
+              "tertiary": "#000000",
+              "primary": "#000000",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed": "#050765",
+              "on-tertiary-fixed": "#001d31",
+              "on-background": "#121c2a",
+              "inverse-surface": "#27313f",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary-container": "#d8d6fe",
+              "surface-dim": "#d0dbed",
+              "background": "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-container": "#1d8acd",
+              "surface": "#f8f9ff",
+              "on-secondary-fixed-variant": "#444464",
+              "on-primary-container": "#767cd2",
+              "outline-variant": "#c7c5d3",
+              "on-tertiary-fixed-variant": "#004b73",
+              "secondary": "#5b5b7d",
+              "surface-container-high": "#dee9fc",
+              "primary-fixed-dim": "#bfc2ff",
+              "outline": "#777682",
+              "on-secondary-container": "#5c5c7e",
+              "surface-container-highest": "#d9e3f6",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "primary-container": "#050765",
+              "surface-tint": "#5056a9",
+              "on-surface": "#121c2a",
+              "secondary-fixed-dim": "#c4c3ea",
+              "on-error": "#ffffff",
+              "surface-container-low": "#eff4ff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ambient-shadow {
+            box-shadow: 0 24px 40px -4px rgba(18, 28, 42, 0.06);
+        }
+        .ghost-border {
+            border: 1px solid rgba(199, 197, 211, 0.15);
+        }
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- Shared Component: TopNavBar -->
+<nav class="fixed top-0 w-full z-50 glass-nav shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50 font-headline">Api Raupulus</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-black dark:text-white font-semibold border-b-2 border-black dark:border-white pb-1 font-inter text-sm tracking-tight" href="#">Weather Station</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Keycounter</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Airflight</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Smart Plant</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Energy</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors font-inter text-sm tracking-tight" href="#">Contacto</a>
+</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+<!-- Hero Section -->
+<header class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-4">Estación <br/><span class="text-primary-container">Meteorológica</span></h1>
+<p class="text-secondary max-w-xl text-lg leading-relaxed">Monitoreo ambiental en tiempo real desde el nodo central. Datos precisos de temperatura, humedad y actividad eléctrica atmosférica.</p>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl ghost-border">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sensors</span>
+</div>
+<div>
+<p class="text-xs uppercase tracking-widest text-secondary font-semibold">Estado del Sensor</p>
+<p class="text-on-surface font-bold">ONLINE · ACTIVO</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Real-Time Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-16">
+<!-- Primary Condition Card -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 ambient-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-primary-container/10 transition-colors"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-12">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold rounded-full uppercase tracking-wider">Atmósfera Actual</span>
+<span class="text-secondary text-sm">Actualizado hace 2 min</span>
+</div>
+<div class="flex flex-col md:flex-row items-baseline gap-2">
+<span class="text-9xl font-extrabold tracking-tighter text-on-surface">24.8</span>
+<span class="text-4xl font-light text-secondary">°C</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12 border-t border-outline-variant/10 pt-8">
+<div>
+<p class="text-xs uppercase tracking-widest text-secondary mb-1">Humedad</p>
+<p class="text-2xl font-bold text-on-surface">62<span class="text-sm font-medium ml-1">%</span></p>
+</div>
+<div>
+<p class="text-xs uppercase tracking-widest text-secondary mb-1">Presión</p>
+<p class="text-2xl font-bold text-on-surface">1013<span class="text-sm font-medium ml-1">hPa</span></p>
+</div>
+<div class="hidden md:block">
+<p class="text-xs uppercase tracking-widest text-secondary mb-1">Punto de Rocío</p>
+<p class="text-2xl font-bold text-on-surface">16.4<span class="text-sm font-medium ml-1">°C</span></p>
+</div>
+</div>
+</div>
+</div>
+<!-- Lightning / Rayos Card -->
+<div class="md:col-span-4 bg-primary-container rounded-xl p-8 text-white relative overflow-hidden">
+<div class="absolute inset-0 opacity-20">
+<img class="w-full h-full object-cover grayscale" data-alt="dramatic dark stormy sky with a bright single lightning bolt striking a distant horizon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvQx7y9deaDC3sinbls_sZGCUYO8x9jWJxPqtYwYxPaSDIlBik1Va0lu16IsM5uYEMnZKOdUlGY1nzuL4BoPIYWCRR1vNqJZ7JDNctckpNH-ODSEw8ooRC93jX3qDjuuCBVpQl6evAxjIrNL7_Nk8NEIB8S2rlB0d7deUzuCdVPzFDZfY0CNz4A8umj96mRE28SpvgAduTotC7cehsaeuxaiMFOd30UhJ6ImYVfq5YXN3g_VfY9WaVQBbKCgBH6rnh8k0vtyp6TSs"/>
+</div>
+<div class="relative z-10 h-full flex flex-col">
+<div class="flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-tertiary-fixed" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-xs font-bold uppercase tracking-widest text-tertiary-fixed">Actividad Eléctrica</span>
+</div>
+<div class="mt-auto">
+<p class="text-5xl font-extrabold tracking-tighter mb-2">0</p>
+<p class="text-blue-200 text-sm font-medium mb-6">Rayos detectados en las últimas 24h</p>
+<div class="bg-white/10 backdrop-blur-md rounded-lg p-4 ghost-border">
+<div class="flex justify-between text-xs mb-2">
+<span>Distancia estimada</span>
+<span class="font-bold">N/A</span>
+</div>
+<div class="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-tertiary-fixed h-full w-0"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Stats Grid -->
+<div class="md:col-span-4 bg-surface-container-low rounded-xl p-6 ghost-border">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container">wb_sunny</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Índice UV</span>
+</div>
+<p class="text-3xl font-bold text-on-surface">Bajo (1.2)</p>
+<p class="text-xs text-secondary mt-2">Riesgo mínimo de exposición solar actual.</p>
+</div>
+<div class="md:col-span-4 bg-surface-container-low rounded-xl p-6 ghost-border">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container">air</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Viento</span>
+</div>
+<p class="text-3xl font-bold text-on-surface">4.2 <span class="text-sm">km/h</span></p>
+<p class="text-xs text-secondary mt-2">Dirección actual: Noroeste (NW).</p>
+</div>
+<div class="md:col-span-4 bg-surface-container-low rounded-xl p-6 ghost-border">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container">water_drop</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Precipitación</span>
+</div>
+<p class="text-3xl font-bold text-on-surface">0.0 <span class="text-sm">mm</span></p>
+<p class="text-xs text-secondary mt-2">Sin lluvia registrada hoy.</p>
+</div>
+</section>
+<!-- Historical Data Table Section -->
+<section class="mb-16">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-3xl font-bold tracking-tight text-on-surface">Registros Históricos</h2>
+<p class="text-secondary text-sm">Últimas 24 horas de lecturas consecutivas.</p>
+</div>
+<button class="bg-secondary-fixed text-on-secondary-fixed px-6 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
+                    Descargar CSV
+                </button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden ambient-shadow ghost-border">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-dim/30">
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-secondary">Hora</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-secondary">Temp (°C)</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-secondary">Hum (%)</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-secondary">Pres (hPa)</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-secondary">Rayos</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-secondary text-right">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5 text-sm font-medium text-on-surface">14:00</td>
+<td class="px-6 py-5 text-sm font-bold text-on-surface">24.8</td>
+<td class="px-6 py-5 text-sm text-secondary">62</td>
+<td class="px-6 py-5 text-sm text-secondary">1013.2</td>
+<td class="px-6 py-5 text-sm text-secondary">0</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5 text-sm font-medium text-on-surface">13:00</td>
+<td class="px-6 py-5 text-sm font-bold text-on-surface">24.5</td>
+<td class="px-6 py-5 text-sm text-secondary">64</td>
+<td class="px-6 py-5 text-sm text-secondary">1013.5</td>
+<td class="px-6 py-5 text-sm text-secondary">0</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5 text-sm font-medium text-on-surface">12:00</td>
+<td class="px-6 py-5 text-sm font-bold text-on-surface">23.9</td>
+<td class="px-6 py-5 text-sm text-secondary">67</td>
+<td class="px-6 py-5 text-sm text-secondary">1014.0</td>
+<td class="px-6 py-5 text-sm text-secondary">0</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5 text-sm font-medium text-on-surface">11:00</td>
+<td class="px-6 py-5 text-sm font-bold text-on-surface">22.8</td>
+<td class="px-6 py-5 text-sm text-secondary">71</td>
+<td class="px-6 py-5 text-sm text-secondary">1014.2</td>
+<td class="px-6 py-5 text-sm text-secondary">0</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5 text-sm font-medium text-on-surface">10:00</td>
+<td class="px-6 py-5 text-sm font-bold text-on-surface">21.5</td>
+<td class="px-6 py-5 text-sm text-secondary">75</td>
+<td class="px-6 py-5 text-sm text-secondary">1014.8</td>
+<td class="px-6 py-5 text-sm text-secondary">0</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Visualization Teaser -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+<div class="order-2 md:order-1 relative">
+<div class="aspect-video bg-surface-container-high rounded-2xl overflow-hidden ambient-shadow rotate-1 group transition-transform hover:rotate-0">
+<img class="w-full h-full object-cover" data-alt="clean minimal data visualization dashboard showing multiple line charts with smooth curves in shades of blue and black on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKJlGgK6K4FecVlT6PIRwOBGaUKcqERhB9LPtr1nZKzDpO4HYh8iL9MjUnHRyEZYS0s70rNRNx-6QmRDzooPTITOa6C7NUpIzTTeVPw5uWH2SWE5TFG69R-WpOqAkZH68GMMxLKUlcsnRuwyltxMe6-UNuGH33QDR8OJyEyY_QjQDY_Og9YTxLoJmcZKLYN9AOc7VSeEWQHAycBCRg1QY9852ai8dyInGBvlVXZHgvFbkI1NKR7bTmf6mM3hpNU4W37NZ-Br4Z_Uk"/>
+</div>
+<div class="absolute -bottom-4 -left-4 bg-primary-container text-white p-6 rounded-xl shadow-2xl hidden md:block">
+<p class="text-3xl font-bold tracking-tighter">99.9%</p>
+<p class="text-[10px] uppercase tracking-widest text-blue-200">Precisión del Sensor</p>
+</div>
+</div>
+<div class="order-1 md:order-2">
+<h3 class="text-4xl font-bold tracking-tight text-on-surface mb-6">Gráficos de Tendencia</h3>
+<p class="text-secondary mb-8 text-lg">Visualice la evolución de las variables atmosféricas de forma interactiva. Nuestra API proporciona datos serializados para integraciones personalizadas.</p>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<span class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-sm">check</span>
+</span>
+<p class="font-medium text-on-surface">Exportación JSON en tiempo real</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-sm">check</span>
+</span>
+<p class="font-medium text-on-surface">Histórico completo de 12 meses</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-sm">check</span>
+</span>
+<p class="font-medium text-on-surface">Alertas inteligentes configurables</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Shared Component: Footer -->
+<footer class="bg-[#27313f] dark:bg-slate-950 w-full py-12 px-8">
+<div class="flex flex-col items-center space-y-8 w-full text-center">
+<div class="text-lg font-bold text-white font-headline">Api Raupulus</div>
+<div class="flex space-x-8">
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">APIS</a>
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">DOCUMENTACIÓN</a>
+<a class="text-slate-400 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">Personal Site</a>
+</div>
+<div class="text-slate-300 dark:text-slate-400 font-inter text-xs uppercase tracking-widest">
+                Hecho con <span class="text-red-500">♥</span> por Raúl Caro Pastorino
+            </div>
+<div class="pt-4 flex items-center space-x-6 grayscale opacity-50 hover:opacity-100 transition-all duration-300">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'opsz' 32;">code</span>
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'opsz' 32;">terminal</span>
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'opsz' 32;">database</span>
+</div>
+<div class="text-slate-500 font-inter text-[10px] tracking-widest mt-4">
+                © Raúl Caro Pastorino 2018 - 2024
+            </div>
+</div>
+</footer>
+</body></html>
