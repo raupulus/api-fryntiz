@@ -204,10 +204,30 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            return $this->role_id === 1;
+            return $this->isSuperAdmin();
         }
 
         return true;
+    }
+
+    /**
+     * Comprueba si el usuario es SuperAdmin (role_id = 1).
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role_id === 1;
+    }
+
+    /**
+     * Comprueba si el usuario es Admin o SuperAdmin (role_id = 1 o 2).
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return in_array($this->role_id, [1, 2], true);
     }
 
     /**

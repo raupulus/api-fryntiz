@@ -8,6 +8,12 @@ class NewsletterTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \App\Models\Platform::factory()->create();
+    }
+
     /** @test */
     public function can_subscribe_with_valid_email(): void
     {

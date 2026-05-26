@@ -6,6 +6,7 @@ use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar plantas y registros de sensores.
@@ -13,12 +14,28 @@ use Illuminate\Console\Command;
  */
 class SeedSmartPlantDebugCommand extends Command
 {
+    use ResolvesDebugDefaults;
+
     protected $signature = 'debug:seed-smartplant {--plants=5 : Número de plantas} {--registers=50 : Número de registros}';
 
     protected $description = 'Inserta plantas y registros de sensores para debug (solo desarrollo)';
 
     public function handle(): int
     {
+        if (! $this->guardEnvironment()) {
+            return self::FAILURE;
+        }
+
+        $userId = $this->resolveUserId();
+        if (! $userId) {
+            return self::FAILURE;
+        }
+
+        $hardwareDeviceId = $this->resolveHardwareDeviceId();
+        if (! $hardwareDeviceId) {
+            return self::FAILURE;
+        }
+
         $plantsCount = (int) $this->option('plants');
         $registersCount = (int) $this->option('registers');
         $now = Carbon::now();
@@ -30,10 +47,11 @@ class SeedSmartPlantDebugCommand extends Command
         $plants = [];
         for ($i = 0; $i < $plantsCount; $i++) {
             $plant = SmartPlantPlant::create([
-                'user_id' => 1,
-                'hardware_device_id' => 1,
+                'user_id' => $userId,
                 'name' => $plantNames[$i % count($plantNames)] . ' #' . ($i + 1),
+                'name_scientific' => $plantNames[$i % count($plantNames)] . ' scientificus',
                 'description' => 'Planta de debug generada automáticamente',
+                'details' => 'Detalles avanzados de la planta de debug',
                 'start_at' => $now->copy()->subDays(fake()->numberBetween(30, 365)),
                 'created_at' => $now,
             ]);
@@ -48,12 +66,12 @@ class SeedSmartPlantDebugCommand extends Command
 
             SmartPlantRegister::create([
                 'plant_id' => $plant->id,
-                'hardware_device_id' => 1,
-                'uv' => fake()->randomFloat(2, 0, 15),
+                'hardware_device_id' => $hardwareDeviceId,
+                'uv' => fake()->numberBetween(0, 15),
                 'pressure' => fake()->randomFloat(2, 990, 1040),
                 'temperature' => fake()->randomFloat(2, 15, 38),
                 'humidity' => fake()->randomFloat(2, 30, 90),
-                'soil_humidity' => fake()->randomFloat(2, 10, 85),
+                'soil_humidity' => fake()->numberBetween(10, 85),
                 'soil_humidity_raw' => fake()->numberBetween(200, 800),
                 'full_water_tank' => fake()->boolean(80),
                 'waterpump_enabled' => fake()->boolean(20),

@@ -3,6 +3,7 @@
 namespace App\Models\KeyCounter;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Traits\BelongsToUser;
 use Carbon\Carbon;
 use Carbon\Traits\Creator;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,8 @@ use function json_encode;
  */
 class BaseKeyCounter extends Model
 {
+    use BelongsToUser;
+
     protected $fillable = [
         'user_id',
         'hardware_device_id',

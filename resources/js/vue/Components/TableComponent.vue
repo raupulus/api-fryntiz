@@ -152,6 +152,25 @@
 
 
 <script setup>
+/**
+ * @component TableComponent
+ * @description Tabla genérica con paginación, búsqueda, ordenación y acciones
+ *              configurables. Carga los datos vía AJAX desde la URL indicada
+ *              en la prop `url`. Útil para listados del panel admin.
+ *
+ * @prop {String}  title       - Título de la tabla.
+ * @prop {String}  caption     - Texto descriptivo bajo el título.
+ * @prop {String}  url         - Endpoint que devuelve los datos paginados.
+ * @prop {Boolean} showId      - Si muestra la columna `id`.
+ * @prop {Number}  elements    - Filas por página (default 10).
+ * @prop {Boolean} editable    - Habilita celdas editables in-place.
+ * @prop {Boolean} searchable  - Habilita campo de búsqueda.
+ * @prop {Boolean} shortable   - Habilita ordenación por columna.
+ * @prop {Array}   actions     - Acciones por fila (botones).
+ * @prop {Object}  headers     - Mapa columna → etiqueta.
+ * @prop {String}  csrf        - Token CSRF (requerido).
+ * @prop {Object}  conditions  - Filtros adicionales que se envían en cada petición.
+ */
 import { ref, onBeforeMount, onMounted } from 'vue';
 
 const props = defineProps({

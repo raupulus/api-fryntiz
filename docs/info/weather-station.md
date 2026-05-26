@@ -2,6 +2,8 @@
 
 Módulo IoT para recopilar datos meteorológicos de sensores locales y datos oficiales de AEMET (Agencia Estatal de Meteorología). Incluye 12 tipos de sensores, integración con API de AEMET y resúmenes históricos.
 
+> 📘 Para detalles de la integración técnica con AEMET (endpoints, rate-limit, retry/backoff, caché), ver [apis/aemet.md](apis/aemet.md).
+
 ## Archivos principales
 
 ### Modelos

@@ -140,8 +140,13 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 - **Tarjetas de dispositivos:** Icono `solar_power` con colores amber para cada dispositivo hardware.
 - **Diseño profesional:** Fondos con gradientes por sección (amber para "Ahora", emerald para "Hoy", indigo para "Histórico").
 
-### Comando de debug
+### Comandos de debug
 
 ```bash
+# Crear dispositivos hardware sueltos
+php artisan debug:seed-hardware --count=5
+
+# Crear dispositivos y registros de energía solar (voltaje, corriente, potencia)
 php artisan debug:seed-energy --devices=5 --records=100
 ```
+

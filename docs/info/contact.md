@@ -77,3 +77,10 @@ Módulo para enviar formularios de contacto vía API con verificación reCAPTCHA
 3. `RecaptchaService::verify()` valida el token reCAPTCHA
 4. `ContactService::sendContactForm()` envía el `ContactMail`
 5. Respuesta: `{ success: true, message: "Mensaje enviado correctamente" }`
+
+## Comando de debug
+
+```bash
+php artisan debug:seed-contact --count=10
+```
+

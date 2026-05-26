@@ -253,6 +253,21 @@
 </template>
 
 <script>
+/**
+ * @component ImageCropper
+ * @description Componente Vue que permite seleccionar una imagen (desde disco
+ *              o desde URL), recortarla con `vue-advanced-cropper` y emitir el
+ *              resultado en base64 a través de un input oculto. Útil para
+ *              formularios de subida de imágenes con preview y aspect-ratio
+ *              fijo.
+ *
+ * @prop {Array<Number>} aspectRatiosRestriction - Relación de aspecto [W, H]. Por defecto [1, 1].
+ * @prop {String}        name                    - Nombre del input oculto que llevará la imagen recortada (base64).
+ * @prop {String}        url                     - URL inicial (opcional) para precargar.
+ * @prop {String}        defaultImage            - Imagen por defecto (URL o base64). Obligatoria.
+ * @prop {String}        csrf                    - Token CSRF de Laravel (cuando el componente sube directamente).
+ * @prop {Boolean}       hasEditButton           - Si muestra el botón "Editar". Por defecto false.
+ */
 import {ref} from "vue";
 import {Cropper} from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';

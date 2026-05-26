@@ -6,6 +6,7 @@ use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar aviones y registros de vuelo.
@@ -13,12 +14,28 @@ use Illuminate\Console\Command;
  */
 class SeedAirFlightDebugCommand extends Command
 {
+    use ResolvesDebugDefaults;
+
     protected $signature = 'debug:seed-airflight {--planes=10 : Número de aviones} {--routes=100 : Número de registros de ruta}';
 
     protected $description = 'Inserta aviones y registros de vuelo para debug (solo desarrollo)';
 
     public function handle(): int
     {
+        if (! $this->guardEnvironment()) {
+            return self::FAILURE;
+        }
+
+        $userId = $this->resolveUserId();
+        if (! $userId) {
+            return self::FAILURE;
+        }
+
+        $hardwareDeviceId = $this->resolveHardwareDeviceId();
+        if (! $hardwareDeviceId) {
+            return self::FAILURE;
+        }
+
         $planesCount = (int) $this->option('planes');
         $routesCount = (int) $this->option('routes');
         $now = Carbon::now();
@@ -45,8 +62,8 @@ class SeedAirFlightDebugCommand extends Command
 
             AirFlightRoute::create([
                 'airplane_id' => $plane->id,
-                'hardware_device_id' => 1,
-                'user_id' => 1,
+                'hardware_device_id' => $hardwareDeviceId,
+                'user_id' => $userId,
                 'squawk' => fake()->randomElement([null, '7000', '7500', '7600', '7700', (string) fake()->numberBetween(1000, 9999)]),
                 'flight' => strtoupper(fake()->bothify('???####')),
                 'lat' => fake()->randomFloat(6, 36.4, 37.1),

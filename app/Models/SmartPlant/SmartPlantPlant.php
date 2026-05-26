@@ -3,6 +3,7 @@
 namespace App\Models\SmartPlant;
 
 use App\Models\BaseModels\BaseModel;
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SmartPlantPlant extends BaseModel
 {
+    use BelongsToUser;
+
     protected $table = 'smartplant_plants';
 
     protected $fillable = [

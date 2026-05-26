@@ -18,9 +18,9 @@ class NewsletterFactory extends Factory
             'email'              => $this->faker->unique()->safeEmail(),
             'name'               => $this->faker->name(),
             'is_verified'        => true,
-            'verification_token' => Str::random(64),
+            'verification_token' => Str::random(60),
             'verified_at'        => now(),
-            'unsubscribe_token'  => Str::random(64),
+            'unsubscribe_token'  => Str::random(60),
             'status'             => 'active',
             'subscription_source' => 'api',
             'language'           => 'es',
@@ -32,7 +32,7 @@ class NewsletterFactory extends Factory
         return $this->state([
             'is_verified' => false,
             'verified_at' => null,
-            'status'      => 'pending',
+            'status'      => 'inactive',
         ]);
     }
 }

@@ -29,6 +29,13 @@ class JsonAuthorizationException extends Exception
      */
     public function render($request)
     {
+        if ($request->is('api/v2/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => $this->message,
+            ], 403);
+        }
+
         return JsonHelper::forbidden($this->message, 403);
     }
 }

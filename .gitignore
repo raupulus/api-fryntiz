@@ -35,6 +35,10 @@ public/mix-manifest.json
 /public/admin-panel
 /public/assets
 /public/fonts/vendor
+/public/fonts/filament
+
+# Ignorar planes locales del IDE Junie
+.junie/
 
 # Ignorar archivo de caché de generar código
 /code-generator

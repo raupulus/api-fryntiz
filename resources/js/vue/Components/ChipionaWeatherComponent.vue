@@ -110,6 +110,16 @@
 </template>
 
 <script setup>
+/**
+ * @component ChipionaWeatherComponent
+ * @description Widget en tiempo casi-real que muestra los datos de la
+ *              estación meteorológica de Chipiona (información instantánea,
+ *              viento, calidad del aire y luz). Se refresca periódicamente
+ *              llamando al endpoint `apiBaseUrl + apiPath`.
+ *
+ * @prop {String} apiBaseUrl - Base URL del backend que sirve los datos.
+ * @prop {String} apiPath    - Ruta relativa al endpoint de resumen (default 'api/weatherstation/v1/resume').
+ */
 import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
 
 const props = defineProps({

@@ -20,6 +20,15 @@ abstract class ApiTestCase extends TestCase
     {
         parent::setUp();
         $this->seedRoles();
+        $this->seedLanguages();
+        $this->seedContentStatuses();
+    }
+
+    private function seedContentStatuses(): void
+    {
+        if (DB::table('content_available_status')->count() === 0) {
+            (new \Database\Seeders\ContentAvailableStatusSeeder())->run();
+        }
     }
 
     /**
@@ -69,6 +78,22 @@ abstract class ApiTestCase extends TestCase
                 ['id' => 1, 'name' => 'superadmin', 'display_name' => 'Super Admin', 'slug' => 'super-admin', 'description' => 'Administrador Principal', 'created_at' => now(), 'updated_at' => now()],
                 ['id' => 2, 'name' => 'admin', 'display_name' => 'Admin', 'slug' => 'admin', 'description' => 'Administradores', 'created_at' => now(), 'updated_at' => now()],
                 ['id' => 3, 'name' => 'user', 'display_name' => 'Usuario', 'slug' => 'usuario', 'description' => 'Usuario normal', 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
+    }
+
+    private function seedLanguages(): void
+    {
+        if (DB::table('languages')->count() === 0) {
+            DB::table('languages')->insert([
+                'id' => 1,
+                'locale' => 'es_ES',
+                'iso_locale' => 'es-ES',
+                'iso2' => 'es',
+                'iso3' => 'esp',
+                'name' => 'Español',
+                'iso_language' => 'Spanish',
+                'created_at' => now(),
             ]);
         }
     }

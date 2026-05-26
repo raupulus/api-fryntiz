@@ -22,6 +22,7 @@ class ContentAvailableStatusSeeder extends Seeder
     {
         $datas = [
             [
+                'id' => 1,
                 'name' => 'Borrador',
                 'slug' => 'draft',
                 'description' => 'Borrador para contenido incompleto.',
@@ -29,13 +30,7 @@ class ContentAvailableStatusSeeder extends Seeder
                 'color' => '#ffa753',
             ],
             [
-                'name' => 'Programado',
-                'slug' => 'programmed',
-                'description' => 'Programado para publicarse en la fecha especificada.',
-                'icon' => 'fa-solid fa-timer',
-                'color' => '#89ce40',
-            ],
-            [
+                'id' => 2,
                 'name' => 'Publicado',
                 'slug' => 'published',
                 'description' => 'Contenido publicado correctamente.',
@@ -43,6 +38,15 @@ class ContentAvailableStatusSeeder extends Seeder
                 'color' => '#39617b',
             ],
             [
+                'id' => 3,
+                'name' => 'Programado',
+                'slug' => 'programmed',
+                'description' => 'Programado para publicarse en la fecha especificada.',
+                'icon' => 'fa-solid fa-timer',
+                'color' => '#89ce40',
+            ],
+            [
+                'id' => 4,
                 'name' => 'No Publicado',
                 'slug' => 'not-published',
                 'description' => 'Contenido listo pero sin publicar.',
@@ -50,6 +54,7 @@ class ContentAvailableStatusSeeder extends Seeder
                 'color' => '#e72a59',
             ],
             [
+                'id' => 5,
                 'name' => 'Copyright Protected',
                 'slug' => 'copyright-protected',
                 'description' => 'Contenido marcado por incumplir el copyright.',
@@ -57,13 +62,13 @@ class ContentAvailableStatusSeeder extends Seeder
                 'color' => '#00ff00',
             ],
             [
+                'id' => 6,
                 'name' => 'Para eliminar',
                 'slug' => 'to-remove',
                 'description' => 'Contenido marcado para eliminar.',
                 'icon' => 'fa-solid fa-trash',
                 'color' => '#ff0000',
             ],
-
         ];
 
         $now = Carbon::now();

@@ -65,6 +65,17 @@ Route::group(['prefix' => '/file'], function () {
 
 // Nota: Las rutas de autenticación se manejan por Laravel Fortify.
 
+// Redirecciones de URLs antiguas /dashboard → /panel (panel Filament tenant).
+Route::redirect('/dashboard', '/panel', 301);
+Route::redirect('/dashboard/{any}', '/panel', 301)->where('any', '.*');
+
+// Bloqueo explícito del registro: ninguna URL relacionada con registro
+// debe responder. Solo el admin da de alta usuarios manualmente.
+Route::any('/register', fn () => abort(404));
+Route::any('/register/{any}', fn () => abort(404))->where('any', '.*');
+Route::any('/panel/register', fn () => abort(404));
+Route::any('/panel/register/{any}', fn () => abort(404))->where('any', '.*');
+
 
 /**
  * Ruta por defecto cuando no se encuentra una petición.

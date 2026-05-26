@@ -2,6 +2,36 @@
 
 Módulo de autenticación con soporte dual: Fortify para web y Sanctum para API. Gestión de usuarios con sistema de roles jerárquicos (SuperAdmin, Admin, User) y dos paneles Filament separados.
 
+## Política de acceso
+
+- **No hay registro público.** Las URLs `/register` y `/panel/register` devuelven 404. Tampoco se llama a `->registration()` en los paneles Filament.
+- **Solo dos puntos de entrada**:
+  - `/admin/login` para administradores (panel `admin`, requiere rol SuperAdmin).
+  - `/panel/login` para usuarios (panel `tenant`).
+- **Alta de usuarios**: manual desde el panel admin (Sistema → Users) o por comando `php artisan debug:seed-users` en entorno de desarrollo.
+- **Redirección legacy**: `/dashboard` y `/dashboard/*` redirigen a `/panel` (HTTP 301).
+
+### Método `canAccessPanel()`
+
+El modelo `App\Models\User` implementa `Filament\Models\Contracts\FilamentUser` y restringe el acceso por panel:
+
+| Panel | Condición |
+|-------|-----------|
+| `admin` | Usuario SuperAdmin (`User::isSuperAdmin()`) |
+| `tenant` (`/panel`) | Cualquier usuario autenticado |
+
+### Assets de Filament
+
+Las vistas `/admin/login` y `/panel/login` dependen de los assets compilados de Filament que viven en `public/css/filament/`, `public/js/filament/` y `public/fonts/filament/`. Si la página carga sin CSS o el botón "Iniciar sesión" no responde, lo más probable es que estos assets no estén publicados:
+
+```bash
+php artisan filament:assets       # publica CSS, JS y fuentes en public/
+# o el atajo equivalente:
+php artisan filament:upgrade
+```
+
+`composer.json` ya está configurado para ejecutar `filament:upgrade` en cada `composer install/update` (sección `post-autoload-dump`), así que en condiciones normales no hace falta lanzarlo a mano — pero conviene saberlo cuando algo va mal en producción.
+
 ## Archivos principales
 
 ### Modelos
@@ -140,3 +170,10 @@ Vía Laravel Fortify:
 - Reset password: `/forgot-password`
 - Verificación email
 - Two-Factor Authentication (2FA)
+
+## Comando de debug
+
+```bash
+php artisan debug:seed-users --count=5
+```
+

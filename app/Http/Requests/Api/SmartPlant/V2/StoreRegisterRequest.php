@@ -17,12 +17,21 @@ class StoreRegisterRequest extends BaseFormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
+        $mergeData = [
             'user_id' => auth()->id(),
-            'plant_id' => (int)$this->plant_id,
-            'hardware_device_id' => (int)$this->hardware_device_id,
-            'soil_humidity' => (float)$this->soil_humidity,
-        ]);
+        ];
+
+        if ($this->has('plant_id')) {
+            $mergeData['plant_id'] = (int)$this->plant_id;
+        }
+        if ($this->has('hardware_device_id')) {
+            $mergeData['hardware_device_id'] = (int)$this->hardware_device_id;
+        }
+        if ($this->has('soil_humidity')) {
+            $mergeData['soil_humidity'] = (float)$this->soil_humidity;
+        }
+
+        $this->merge($mergeData);
     }
 
     public function rules(): array

@@ -7,6 +7,7 @@ use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerLoad;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar dispositivos y registros de energía.
@@ -14,12 +15,20 @@ use Illuminate\Console\Command;
  */
 class SeedEnergyDebugCommand extends Command
 {
+    use ResolvesDebugDefaults;
+
     protected $signature = 'debug:seed-energy {--devices=5 : Número de dispositivos} {--records=100 : Registros por dispositivo}';
 
     protected $description = 'Inserta dispositivos y registros de energía para debug (solo desarrollo)';
 
     public function handle(): int
     {
+        if (! $this->guardEnvironment()) {
+            return self::FAILURE;
+        }
+
+        $userId = $this->resolveUserId() ?? 1;
+
         $devicesCount = (int) $this->option('devices');
         $recordsCount = (int) $this->option('records');
         $now = Carbon::now();
@@ -31,7 +40,7 @@ class SeedEnergyDebugCommand extends Command
 
         for ($i = 0; $i < $devicesCount; $i++) {
             $device = HardwareDevice::create([
-                'user_id' => 2,
+                'user_id' => $userId,
                 'hardware_type_id' => 1,
                 'name' => ($deviceNames[$i % count($deviceNames)]) . ' #' . ($i + 1),
                 'name_friendly' => 'Debug Device ' . ($i + 1),

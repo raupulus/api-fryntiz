@@ -3,6 +3,7 @@
 namespace App\Models\WeatherStation;
 
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use App\Traits\HasTimestampScopes;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +16,8 @@ use function array_key_exists;
  */
 class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 {
+    use HasTimestampScopes;
+
     protected $fillable = [
         'hardware_device_id',
         'value',
@@ -219,22 +222,22 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
             if ($windDirection) {
                 $result['direction'] = $windDirection->direction;
                 $result['direction_grades'] = $windDirection->grades;
-            }
 
-            $windDirectionDatas = $windDirection->prepareApiResponse();
+                $windDirectionDatas = $windDirection->prepareApiResponse();
 
-            if ($windDirectionDatas && $windDirectionDatas['historical'] &&
-                count($windDirectionDatas['historical'])) {
+                if ($windDirectionDatas && $windDirectionDatas['historical'] &&
+                    count($windDirectionDatas['historical'])) {
 
-                foreach ($windDirectionDatas['historical'] as $key =>  $historical) {
+                    foreach ($windDirectionDatas['historical'] as $key =>  $historical) {
 
-                    if (isset($result['historical'][$key])) {
+                        if (isset($result['historical'][$key])) {
 
-                        $result['historical'][$key]['direction'] = WindDirection::getDirection($historical['grades']);
-                        $result['historical'][$key]['direction_grades'] = $historical['grades'];
+                            $result['historical'][$key]['direction'] = WindDirection::getDirection($historical['grades']);
+                            $result['historical'][$key]['direction_grades'] = $historical['grades'];
+                        }
                     }
-                }
 
+                }
             }
         }
 

@@ -6,6 +6,7 @@ use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
+use App\Traits\BelongsToUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Request;
@@ -18,7 +19,7 @@ use function array_filter;
  */
 class HardwareDevice extends BaseModel
 {
-    use HasFactory, ImageTrait;
+    use HasFactory, ImageTrait, BelongsToUser;
 
     protected $table = 'hardware_devices';
 

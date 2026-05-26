@@ -2,13 +2,16 @@
 
 namespace App\Console\Commands\AEMET;
 
-use App\Models\WeatherStation\AEMETHighSea;
-use App\Models\WeatherStation\AEMETPredictionBeach;
-use App\Models\WeatherStation\AEMETSunRadiation;
+use App\Console\Commands\AEMET\Concerns\ValidatesAemetPayload;
+use App\Models\WeatherStation\AEMET\AEMETHighSea;
+use App\Models\WeatherStation\AEMET\AEMETPredictionBeach;
+use App\Models\WeatherStation\AEMET\AEMETSunRadiation;
 use Illuminate\Console\Command;
 
 class AEMETDaily8Command extends Command
 {
+    use ValidatesAemetPayload;
+
     /**
      * The name and signature of the console command.
      *
@@ -42,17 +45,10 @@ class AEMETDaily8Command extends Command
     {
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
-        ## Playa de Regla
-        AEMETPredictionBeach::saveFromApi(\AEMETHelper::getPredictionBeachById(1101604));
-
-        ## Playa Cruz del Mar
-        AEMETPredictionBeach::saveFromApi(\AEMETHelper::getPredictionBeachById(1101602));
-
-        ## Obtiene predicciones de alta mar, zona de Cádiz (Parece renovar a las 8:00)
-        AEMETHighSea::saveFromApi(\AEMETHelper::getAltamarPrediction());
-
-        ## Obtiene predicciones de radiación solar
-        AEMETSunRadiation::saveFromApi(\AEMETHelper::getSunRadiation());
+        $this->guardedSave('beach_regla', fn () => \AEMETHelper::getPredictionBeachById(1101604), [AEMETPredictionBeach::class, 'saveFromApi']);
+        $this->guardedSave('beach_cruz', fn () => \AEMETHelper::getPredictionBeachById(1101602), [AEMETPredictionBeach::class, 'saveFromApi']);
+        $this->guardedSave('altamar', fn () => \AEMETHelper::getAltamarPrediction(), [AEMETHighSea::class, 'saveFromApi']);
+        $this->guardedSave('sun_radiation', fn () => \AEMETHelper::getSunRadiation(), [AEMETSunRadiation::class, 'saveFromApi']);
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

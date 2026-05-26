@@ -85,6 +85,8 @@ docs/info/                # Documentación técnica de cada módulo
 
 ## Instalación (Desarrollo)
 
+> **Gestor de paquetes JS**: este proyecto **prefiere `pnpm`** sobre `npm`. Instálalo con `npm install -g pnpm` si aún no lo tienes.
+
 ```bash
 # Clonar repositorio
 git clone https://gitlab.com/raupulus/api-fryntiz.git api-raupulus
@@ -96,8 +98,8 @@ php artisan project:install
 # O manualmente:
 cp .env.example .env
 composer install
-npm install
-npm run build
+pnpm install
+pnpm run build
 php artisan key:generate
 php artisan migrate --seed
 php artisan storage:link
@@ -106,12 +108,16 @@ php artisan serve
 
 ## Instalación (Producción)
 
+Ver guía completa en [`docs/deploys/deploy-vps.md`](docs/deploys/deploy-vps.md) (Docker + bare-metal).
+
+Resumen rápido:
+
 ```bash
 cp .env.example.production .env
 # Editar .env con las credenciales de producción
 composer install --optimize-autoloader --no-dev
-npm install
-npm run build
+pnpm install --frozen-lockfile
+pnpm run build
 php artisan key:generate
 php artisan migrate --force
 php artisan db:seed --force
@@ -142,8 +148,8 @@ Los servicios disponibles son:
 
 La API tiene dos versiones:
 
-- **V1** (`/api/v1/...`): Versión original, mantenida por compatibilidad
-- **V2** (`/api/v2/...`): Versión actual con JsonResources, validaciones mejoradas y mayor seguridad
+- **V1** (`/api/v1/...`): ⚠️ **Versión deprecada**. Se mantiene únicamente por compatibilidad con clientes que aún no han migrado. **No añadir endpoints nuevos a V1.** Será eliminada en una versión mayor futura.
+- **V2** (`/api/v2/...`): Versión actual con JsonResources, validaciones mejoradas y mayor seguridad. **Toda nueva funcionalidad debe ir aquí.**
 
 La documentación detallada de la API V2 está en [`docs/api-v2.md`](docs/api-v2.md).
 
@@ -158,31 +164,17 @@ Los endpoints protegidos requieren un token Bearer de Laravel Sanctum. Los token
 
 ## Comandos Útiles
 
+Catálogo completo en [`docs/info/commands.md`](docs/info/commands.md). Los más habituales:
+
 ```bash
-# Proyecto
 php artisan project:install              # Inicializar proyecto completo
 php artisan project:clear                # Limpiar cachés
-php artisan project:clear --production   # Limpiar y recachear para producción
-
-# Contenido
 php artisan content:publish              # Publicar contenidos programados
-
-# SEO
 php artisan sitemap:generate             # Generar sitemap.xml
-
-# AEMET (datos meteorológicos de la agencia estatal)
-php artisan aemet:daily                  # Obtener datos diarios de AEMET
-php artisan aemet:every-10m              # Datos cada 10 minutos
-php artisan aemet:every-30m              # Datos cada 30 minutos
-php artisan aemet:every-4h               # Datos cada 4 horas
-
-# KeyCounter
-php artisan keycounter:generate-duration # Generar duraciones de sesiones
-php artisan keycounter:remove-duplicate  # Eliminar registros duplicados
-
-# Limpieza
-php artisan force:clear                  # Limpieza forzada de cachés
+php artisan debug:seed-all               # Poblar la base de datos para desarrollo
 ```
+
+Para el listado de comandos AEMET, KeyCounter, debug y resto, ver [`docs/info/commands.md`](docs/info/commands.md).
 
 ## Tests
 
@@ -197,6 +189,10 @@ php artisan test
 | Arquitectura y convenciones | [`AGENTS.md`](AGENTS.md) |
 | API V2 | [`docs/api-v2.md`](docs/api-v2.md) |
 | Documentación de módulos | [`docs/info/`](docs/info/) |
+| Catálogo de comandos Artisan | [`docs/info/commands.md`](docs/info/commands.md) |
+| Despliegue en VPS | [`docs/deploys/deploy-vps.md`](docs/deploys/deploy-vps.md) |
+| Integración AEMET | [`docs/info/apis/aemet.md`](docs/info/apis/aemet.md) |
+| WebSockets (Reverb) | [`docs/info/websockets.md`](docs/info/websockets.md) |
 | Citación académica | [`CITATION.txt`](CITATION.txt) |
 
 ## Convenciones

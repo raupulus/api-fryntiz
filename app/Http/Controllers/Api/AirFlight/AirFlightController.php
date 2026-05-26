@@ -98,7 +98,11 @@ class AirFlightController extends Controller
      */
     public function getFromDb(Request $request, $data)
     {
-        return response()->file(public_path('resources/airflight/db/' . $data . '.json'));
+        $path = public_path('resources/airflight/db/' . $data . '.json');
+        if (!file_exists($path)) {
+            abort(404);
+        }
+        return response()->file($path);
     }
 
     /**

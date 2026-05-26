@@ -60,34 +60,43 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
 
-        // Rate limiter general para API
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+        if (app()->environment('testing')) {
+            RateLimiter::for('api', fn () => Limit::none());
+            RateLimiter::for('sensor-data', fn () => Limit::none());
+            RateLimiter::for('contact', fn () => Limit::none());
+            RateLimiter::for('api-auth', fn () => Limit::none());
+            RateLimiter::for('api-store', fn () => Limit::none());
+            RateLimiter::for('api-store-batch', fn () => Limit::none());
+        } else {
+            // Rate limiter general para API
+            RateLimiter::for('api', function (Request $request) {
+                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            });
 
-        // Rate limiter estricto para escritura de datos de sensores
-        RateLimiter::for('sensor-data', function (Request $request) {
-            return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
-        });
+            // Rate limiter estricto para escritura de datos de sensores
+            RateLimiter::for('sensor-data', function (Request $request) {
+                return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
+            });
 
-        // Rate limiter para contacto
-        RateLimiter::for('contact', function (Request $request) {
-            return Limit::perHour(5)->by($request->ip());
-        });
+            // Rate limiter para contacto
+            RateLimiter::for('contact', function (Request $request) {
+                return Limit::perHour(5)->by($request->ip());
+            });
 
-        // Rate limiter para autenticación API V2 (prevenir fuerza bruta)
-        RateLimiter::for('api-auth', function (Request $request) {
-            return Limit::perMinute(10)->by($request->ip());
-        });
+            // Rate limiter para autenticación API V2 (prevenir fuerza bruta)
+            RateLimiter::for('api-auth', function (Request $request) {
+                return Limit::perMinute(10)->by($request->ip());
+            });
 
-        // Rate limiter para stores IoT API V2
-        RateLimiter::for('api-store', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+            // Rate limiter para stores IoT API V2
+            RateLimiter::for('api-store', function (Request $request) {
+                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            });
 
-        // Rate limiter para batch stores API V2
-        RateLimiter::for('api-store-batch', function (Request $request) {
-            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
-        });
+            // Rate limiter para batch stores API V2
+            RateLimiter::for('api-store-batch', function (Request $request) {
+                return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
+            });
+        }
     }
 }

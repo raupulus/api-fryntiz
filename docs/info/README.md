@@ -22,3 +22,9 @@
 | [files.md](files.md) | Gestión de Archivos | Uploads, thumbnails, redimensión de imágenes |
 | [common.md](common.md) | Entidades Comunes | Categorías, tags, tecnologías, idiomas |
 | [debug-commands.md](debug-commands.md) | Comandos de Debug | Inserción de datos de prueba para desarrollo |
+| [commands.md](commands.md) | Catálogo de comandos | Todos los comandos Artisan personalizados |
+| [websockets.md](websockets.md) | WebSockets (Reverb) | Configuración de Reverb + Laravel Echo |
+| [apis/aemet.md](apis/aemet.md) | API AEMET OpenData | Integración técnica con AEMET (rate-limit, retry, caché) |
+| [../deploys/deploy-vps.md](../deploys/deploy-vps.md) | Despliegue en VPS | Guía paso a paso Docker / bare-metal |
+
+> 🌐 **Idioma por defecto del proyecto**: español (`es`). El `fallback_locale` también es `es` — ver [config/app.php](../../config/app.php) y [auth.md](auth.md).

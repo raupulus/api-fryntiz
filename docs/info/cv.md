@@ -95,3 +95,10 @@ Módulo para gestionar un currículum vitae completo con 16 secciones organizada
 - El endpoint `/api/v2/cv` devuelve el CV del usuario con `role_id=1` (SuperAdmin)
 - La generación de PDF usa DomPDF
 - Todas las secciones del CV se comparten mediante `CurriculumBaseSection` como modelo base
+
+## Comando de debug
+
+```bash
+php artisan debug:seed-cv
+```
+

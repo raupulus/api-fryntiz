@@ -40,9 +40,9 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
 
 // Content
 Route::prefix('content')->group(function () {
-    Route::get('/{platform:slug}/{content:slug}', [\App\Http\Controllers\Api\Content\V2\ContentController::class, 'show'])->name('api.v2.content.show');
     Route::get('/{content:slug}/pages', [\App\Http\Controllers\Api\Content\V2\ContentController::class, 'pages'])->name('api.v2.content.pages');
     Route::get('/{content:slug}/related', [\App\Http\Controllers\Api\Content\V2\ContentController::class, 'related'])->name('api.v2.content.related');
+    Route::get('/{platform:slug}/{content:slug}', [\App\Http\Controllers\Api\Content\V2\ContentController::class, 'show'])->name('api.v2.content.show');
 });
 
 // Platforms

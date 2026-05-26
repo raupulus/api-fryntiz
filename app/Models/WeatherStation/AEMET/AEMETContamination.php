@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\WeatherStation;
+namespace App\Models\WeatherStation\AEMET;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

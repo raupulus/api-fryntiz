@@ -38,6 +38,14 @@ class JsonValidationException extends Exception
 
     public function render($request)
     {
+        if ($request->is('api/v2/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => $this->message,
+                'errors' => $this->validator->errors()->toArray(),
+            ], 422);
+        }
+
         return JsonHelper::failed(
             $this->message,
             $this->validator->errors()->toArray(),

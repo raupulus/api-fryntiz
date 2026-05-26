@@ -78,3 +78,10 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 ## Caché
 
 El modelo Platform usa caché intensivamente para categorías y contenido destacado, limpiando caché automáticamente en eventos `saved` y `updated`.
+
+## Comando de debug
+
+```bash
+php artisan debug:seed-platform --count=3
+```
+

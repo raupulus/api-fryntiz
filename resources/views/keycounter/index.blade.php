@@ -195,38 +195,56 @@
     <section class="py-8 bg-surface-container-low">
         <div class="max-w-5xl mx-auto px-6">
             <h2 class="text-2xl font-bold text-on-surface mb-6">Estadísticas Globales</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {{-- Total global --}}
-                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
-                    <span class="material-symbols-outlined text-primary text-2xl">functions</span>
+                <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-3xl">functions</span>
                     <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['total_global']) }}</p>
-                    <p class="text-xs text-on-surface-variant">Total pulsaciones</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.total_pulsations') }}</p>
                 </div>
 
                 {{-- Año top --}}
                 @if($widgets['top_year'])
-                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
-                    <span class="material-symbols-outlined text-primary text-2xl">calendar_month</span>
+                <div class="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-3xl">military_tech</span>
                     <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_year']->total) }}</p>
-                    <p class="text-xs text-on-surface-variant">Mejor año: {{ (int)$widgets['top_year']->year }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_year') }}: {{ (int)$widgets['top_year']->year }}</p>
                 </div>
                 @endif
 
                 {{-- Mes top --}}
                 @if($widgets['top_month'])
-                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
-                    <span class="material-symbols-outlined text-primary text-2xl">today</span>
+                <div class="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-3xl">event</span>
                     <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_month']->total) }}</p>
-                    <p class="text-xs text-on-surface-variant">Mejor mes: {{ (int)$widgets['top_month']->month }}/{{ (int)$widgets['top_month']->year }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_month') }}: {{ (int)$widgets['top_month']->month }}/{{ (int)$widgets['top_month']->year }}</p>
                 </div>
                 @endif
 
                 {{-- Totales por año --}}
                 @foreach($widgets['totals_by_year'] as $yearData)
-                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
-                    <span class="material-symbols-outlined text-primary text-2xl">bar_chart</span>
+                <div class="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">bar_chart</span>
                     <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($yearData->total) }}</p>
-                    <p class="text-xs text-on-surface-variant">Año {{ (int)$yearData->year }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.year') }} {{ (int)$yearData->year }}</p>
+                </div>
+                @endforeach
+
+                {{-- Dispositivo top --}}
+                @if($widgets['top_device'])
+                <div class="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-3xl">devices</span>
+                    <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_device']->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.top_device') }}: {{ $widgets['top_device']->name }}</p>
+                </div>
+                @endif
+
+                {{-- Totales por dispositivo --}}
+                @foreach($widgets['totals_by_device'] as $deviceData)
+                <div class="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-3xl">dns</span>
+                    <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($deviceData->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ $deviceData->name }}</p>
                 </div>
                 @endforeach
             </div>

@@ -103,3 +103,10 @@ Al crear un suscriptor, se generan automáticamente:
 5. Se marca `is_verified=true` y `verified_at=now()`
 6. Para darse de baja → GET `/unsubscribe/{token}`
 7. Se marca `status=unsubscribed` y `unsubscribed_at=now()`
+
+## Comando de debug
+
+```bash
+php artisan debug:seed-newsletter --count=10
+```
+

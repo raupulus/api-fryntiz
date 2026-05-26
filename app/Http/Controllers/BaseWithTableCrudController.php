@@ -54,10 +54,10 @@ abstract class BaseWithTableCrudController extends Controller
      */
     public function ajaxTableGetQuery(Request $request)
     {
-        $page = $request->json('page');
-        $size = $request->json('size');
-        $orderBy = $request->json('orderBy');
-        $orderDirection = $request->json('orderDirection');
+        $page = (int) ($request->json('page') ?? 1);
+        $size = (int) ($request->json('size') ?? 10);
+        $orderBy = $request->json('orderBy') ?? 'created_at';
+        $orderDirection = $request->json('orderDirection') ?? 'DESC';
         $search = $request->json('search');
         $conditions = $request->json('conditions');
 

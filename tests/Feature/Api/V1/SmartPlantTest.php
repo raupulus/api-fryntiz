@@ -6,7 +6,7 @@ use Tests\Feature\Api\ApiTestCase;
 
 class SmartPlantTest extends ApiTestCase
 {
-    protected string $apiPrefix = 'api/smart_plant/v1';
+    protected string $apiPrefix = 'api/smartplant/v1';
 
     /** @test */
     public function cannot_store_register_unauthenticated(): void

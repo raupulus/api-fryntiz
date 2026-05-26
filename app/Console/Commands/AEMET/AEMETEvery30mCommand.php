@@ -2,11 +2,14 @@
 
 namespace App\Console\Commands\AEMET;
 
-use App\Models\WeatherStation\AEMETAdverseEvents;
+use App\Console\Commands\AEMET\Concerns\ValidatesAemetPayload;
+use App\Models\WeatherStation\AEMET\AEMETAdverseEvents;
 use Illuminate\Console\Command;
 
 class AEMETEvery30mCommand extends Command
 {
+    use ValidatesAemetPayload;
+
     /**
      * The name and signature of the console command.
      *
@@ -39,7 +42,7 @@ class AEMETEvery30mCommand extends Command
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
         // Cuando se emite fenómeno, preferente: 09:00, 11:30, 23:00 y 23:50
-        AEMETAdverseEvents::saveFromApi(\AEMETHelper::getAvisosCap());
+        $this->guardedSave('avisos_cap', fn () => \AEMETHelper::getAvisosCap(), [AEMETAdverseEvents::class, 'saveFromApi']);
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

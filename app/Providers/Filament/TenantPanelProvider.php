@@ -21,7 +21,6 @@ class TenantPanelProvider extends PanelProvider
             ->id('tenant')
             ->path('panel')
             ->login()
-            ->registration()
             ->colors([
                 'primary' => Color::Blue,
             ])

@@ -112,6 +112,15 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $request) {
+            if ($request->is('api/*') || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No autorizado para realizar esta accion',
+                ], 403);
+            }
+        });
+
         $exceptions->render(function (\Illuminate\Database\Eloquent\ModelNotFoundException $e, $request) {
             if ($request->is('api/*') || $request->wantsJson()) {
                 return response()->json([
@@ -122,6 +131,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+            if ($request->is('api/v2/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'API V2 - Endpoint no encontrado',
+                ], 404);
+            }
             if ($request->is('api/*') || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,

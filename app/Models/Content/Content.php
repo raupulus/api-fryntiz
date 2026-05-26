@@ -74,6 +74,12 @@ class Content extends BaseAbstractModelWithTableCrud
         'scheduled_at',
     ];
 
+    protected $casts = [
+        'published_at' => 'datetime',
+        'scheduled_at' => 'datetime',
+        'processed_at' => 'datetime',
+    ];
+
 
     public static function getModuleName(): string
     {
@@ -791,5 +797,45 @@ class Content extends BaseAbstractModelWithTableCrud
                 'ajax' => true
             ]
         ]);
+    }
+
+    /**
+     * Scope para filtrar por plataforma.
+     */
+    public function scopeForPlatform(Builder $query, int $platformId): Builder
+    {
+        return $query->where('platform_id', $platformId);
+    }
+
+    /**
+     * Scope para filtrar contenidos publicados.
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status_id', 2);
+    }
+
+    /**
+     * Scope para filtrar contenidos destacados.
+     */
+    public function scopeFeatured(Builder $query): Builder
+    {
+        return $query->where('is_featured', true);
+    }
+
+    /**
+     * Scope para filtrar por tipo de contenido.
+     */
+    public function scopeOfType(Builder $query, int $typeId): Builder
+    {
+        return $query->where('type_id', $typeId);
+    }
+
+    /**
+     * Scope para filtrar contenidos programados.
+     */
+    public function scopeScheduled(Builder $query): Builder
+    {
+        return $query->where('status_id', 3);
     }
 }

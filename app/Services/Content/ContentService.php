@@ -11,7 +11,7 @@ class ContentService
 {
     public function getBySlug(string $platformSlug, string $contentSlug): ?Content
     {
-        return Content::with(['pages', 'seo', 'metadata', 'categories', 'tags', 'technologies'])
+        return Content::with(['pages', 'seo', 'metadata', 'technologies'])
             ->whereHas('platform', fn ($q) => $q->where('slug', $platformSlug))
             ->where('slug', $contentSlug)
             ->published()

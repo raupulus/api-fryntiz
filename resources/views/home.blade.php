@@ -413,7 +413,7 @@
                 {{-- Panel de gestión --}}
                 <div class="flex flex-col flex-grow flex-shrink">
                     <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow">
-                        <a href="{{ route('dashboard.index') }}"
+                        <a href="/panel"
                            title="Acceso al panel de gestión para la api de Raúl Caro Pastorino"
                            class="flex flex-wrap no-underline hover:no-underline p-6">
                             <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
@@ -429,7 +429,7 @@
                     </div>
                     <div class="flex-none mt-auto bg-surface-container-lowest rounded-b overflow-hidden shadow p-6">
                         <div class="flex items-center justify-center">
-                            <a href="{{ route('dashboard.index') }}"
+                            <a href="/panel"
                                title="Acceso al panel de gestión para la api de Raúl Caro Pastorino"
                                class="mx-auto lg:mx-0 gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
                                 Acceder

@@ -17,14 +17,79 @@ class Curriculum extends Model
         'id'
     ];
 
-    /**
-     * Relación con todos los proyectos asociados al curriculum.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    public function repositories()
+    {
+        return $this->hasMany(CurriculumRepository::class, 'curriculum_id', 'id');
+    }
+
+    public function services()
+    {
+        return $this->hasMany(CurriculumService::class, 'curriculum_id', 'id');
+    }
+
+    public function collaborations()
+    {
+        return $this->hasMany(CurriculumCollaboration::class, 'curriculum_id', 'id');
+    }
+
+    public function hobbies()
+    {
+        return $this->hasMany(CurriculumHobby::class, 'curriculum_id', 'id');
+    }
+
+    public function jobs()
+    {
+        return $this->hasMany(CurriculumJob::class, 'curriculum_id', 'id');
+    }
+
     public function projects()
     {
-        return $this->hasMany(Project::class);
+        return $this->hasMany(CurriculumProject::class, 'curriculum_id', 'id');
+    }
+
+    public function academicTraining()
+    {
+        return $this->hasMany(CurriculumAcademicTraining::class, 'curriculum_id', 'id');
+    }
+
+    public function academicComplementary()
+    {
+        return $this->hasMany(CurriculumAcademicComplementary::class, 'curriculum_id', 'id');
+    }
+
+    public function academicComplementaryOnline()
+    {
+        return $this->hasMany(CurriculumAcademicComplementaryOnline::class, 'curriculum_id', 'id');
+    }
+
+    public function experienceAccredited()
+    {
+        return $this->hasMany(CurriculumExperienceAccredited::class, 'curriculum_id', 'id');
+    }
+
+    public function experienceNoAccredited()
+    {
+        return $this->hasMany(CurriculumExperienceNoAccredited::class, 'curriculum_id', 'id');
+    }
+
+    public function experienceSelfEmployed()
+    {
+        return $this->hasMany(CurriculumExperienceSelfEmployed::class, 'curriculum_id', 'id');
+    }
+
+    public function experienceAdditional()
+    {
+        return $this->hasMany(CurriculumExperienceAdditional::class, 'curriculum_id', 'id');
+    }
+
+    public function experienceOther()
+    {
+        return $this->hasMany(CurriculumExperienceOther::class, 'curriculum_id', 'id');
+    }
+
+    public function skills()
+    {
+        return $this->hasMany(CurriculumSkill::class, 'curriculum_id', 'id');
     }
 
     /**

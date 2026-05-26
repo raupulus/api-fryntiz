@@ -93,11 +93,45 @@ class KeyCounterController extends Controller
                 ->orderByDesc('year')
                 ->get();
 
+            // Dispositivo con más pulsaciones (top_device)
+            $topDevice = Keyboard::selectRaw('hardware_device_id, SUM(pulsations) as total')
+                ->whereNotNull('hardware_device_id')
+                ->groupBy('hardware_device_id')
+                ->orderByDesc('total')
+                ->first();
+
+            $topDeviceName = null;
+            if ($topDevice) {
+                $device = \App\Models\Hardware\HardwareDevice::find($topDevice->hardware_device_id);
+                $topDeviceName = $device?->name_friendly ?? $device?->name ?? "Device #{$topDevice->hardware_device_id}";
+            }
+
+            // Totales de pulsaciones por cada dispositivo (totals_by_device)
+            $totalsByDevice = Keyboard::selectRaw('hardware_device_id, SUM(pulsations) as total')
+                ->whereNotNull('hardware_device_id')
+                ->groupBy('hardware_device_id')
+                ->orderByDesc('total')
+                ->get()
+                ->map(function ($row) {
+                    $device = \App\Models\Hardware\HardwareDevice::find($row->hardware_device_id);
+                    return (object) [
+                        'hardware_device_id' => $row->hardware_device_id,
+                        'name' => $device?->name_friendly ?? $device?->name ?? "Device #{$row->hardware_device_id}",
+                        'total' => $row->total,
+                    ];
+                });
+
             return [
                 'total_global' => $totalGlobal,
                 'top_year' => $topYear,
                 'top_month' => $topMonth,
                 'totals_by_year' => $totalsByYear,
+                'top_device' => $topDevice ? (object) [
+                    'hardware_device_id' => $topDevice->hardware_device_id,
+                    'name' => $topDeviceName,
+                    'total' => $topDevice->total,
+                ] : null,
+                'totals_by_device' => $totalsByDevice,
             ];
         });
 

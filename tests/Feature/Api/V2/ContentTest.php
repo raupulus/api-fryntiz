@@ -17,6 +17,7 @@ class ContentTest extends ApiTestCase
         $content = Content::factory()->create([
             'platform_id' => $platform->id,
             'is_active' => true,
+            'status_id' => 2,
             'published_at' => now()->subDay(),
         ]);
 
@@ -32,6 +33,7 @@ class ContentTest extends ApiTestCase
         $content = Content::factory()->create([
             'platform_id' => $platform->id,
             'is_active' => true,
+            'status_id' => 2,
             'published_at' => now()->subDay(),
         ]);
 
@@ -55,6 +57,7 @@ class ContentTest extends ApiTestCase
     {
         $content = Content::factory()->create([
             'is_active' => true,
+            'status_id' => 2,
             'published_at' => now()->subDay(),
         ]);
         $response = $this->getJson($this->apiUrl("content/{$content->slug}/pages"));
@@ -74,6 +77,7 @@ class ContentTest extends ApiTestCase
     {
         $content = Content::factory()->create([
             'is_active' => true,
+            'status_id' => 2,
             'published_at' => now()->subDay(),
         ]);
         $response = $this->getJson($this->apiUrl("content/{$content->slug}/related"));

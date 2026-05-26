@@ -2,12 +2,15 @@
 
 namespace App\Console\Commands\AEMET;
 
-use App\Models\WeatherStation\AEMETCoast;
-use App\Models\WeatherStation\AEMETOzone;
+use App\Console\Commands\AEMET\Concerns\ValidatesAemetPayload;
+use App\Models\WeatherStation\AEMET\AEMETCoast;
+use App\Models\WeatherStation\AEMET\AEMETOzone;
 use Illuminate\Console\Command;
 
 class AEMETDaily12Command extends Command
 {
+    use ValidatesAemetPayload;
+
     /**
      * The name and signature of the console command.
      *
@@ -44,11 +47,8 @@ class AEMETDaily12Command extends Command
         // Devuelve  UV máximo para la provincia. Por ahora no usado
         //$response = \AEMETHelper::getUviInfo();
 
-        // Obtiene predicciones de costa, zona de Cádiz/huelva (Parece renovar dos veces al día: 12:00 y 20:00)
-        AEMETCoast::saveFromApi(\AEMETHelper::getCostaPrediction());
-
-        ## Pide los datos para el ozono obtenidos mediante una ozonosonda
-        AEMETOzone::saveFromApi(\AEMETHelper::getOzone()); // Obtiene datos de ozono, parece ser lanzado globo y registrado una vez a la semana sobre las 11:00 los miércoles.
+        $this->guardedSave('costa_12h', fn () => \AEMETHelper::getCostaPrediction(), [AEMETCoast::class, 'saveFromApi']);
+        $this->guardedSave('ozono', fn () => \AEMETHelper::getOzone(), [AEMETOzone::class, 'saveFromApi']);
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }
