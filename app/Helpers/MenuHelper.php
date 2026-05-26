@@ -22,27 +22,27 @@ class MenuHelper
             'weatherstation' => [
                 'route' => route('weather_station.index'),
                 'name' => 'Weather Station',
-                'selected' => $path == 'weatherstation',
+                'selected' => str_starts_with($path, 'weatherstation'),
             ],
             'keycounter' => [
                 'route' => route('keycounter.index'),
                 'name' => 'Keycounter',
-                'selected' => $path == 'keycounter',
+                'selected' => str_starts_with($path, 'keycounter'),
             ],
             'airflight' => [
                 'route' => route('airflight.index'),
                 'name' => 'Airflight',
-                'selected' => $path == 'airflight',
+                'selected' => str_starts_with($path, 'airflight'),
             ],
             'smartplant' => [
                 'route' => route('smartplant.index'),
                 'name' => 'Smart Plant',
-                'selected' => $path == 'smartplant',
+                'selected' => str_starts_with($path, 'smartplant'),
             ],
             'energy' => [
                 'route' => route('hardware.energy.index'),
                 'name' => 'Energy',
-                'selected' => $path == 'hardware/energy',
+                'selected' => str_starts_with($path, 'hardware/energy'),
             ],
         ];
     }

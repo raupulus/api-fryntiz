@@ -20,6 +20,20 @@
         </div>
     </section>
 
+    {{-- Aviso de privacidad --}}
+    <div class="max-w-5xl mx-auto px-6 mt-6">
+        <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded-lg p-4 text-sm text-amber-800 dark:text-amber-200" role="alert">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-amber-500 mt-0.5">privacy_tip</span>
+                <p>
+                    <strong>Aviso de privacidad:</strong> Por motivos de privacidad, los datos mostrados pueden tener pequeñas variaciones
+                    en las representaciones. Los datos del día actual no serán exactos, por elección del desarrollador, para proteger
+                    información precisa sobre actividad en tiempo real.
+                </p>
+            </div>
+        </div>
+    </div>
+
     {{-- Filtros de fecha --}}
     <section class="py-8 bg-surface">
         <div class="max-w-5xl mx-auto px-6">
@@ -44,7 +58,9 @@
                     <select name="month"
                             class="keycounter-date-select border border-outline-variant rounded-lg text-on-surface h-10 pl-5 pr-10 bg-surface-container-lowest appearance-none">
                         @foreach(range(1, 12) as $m)
-                            <option value="{{ $m }}" {{ ($month && ($month == $m)) ? 'selected' : '' }}>
+                            <option value="{{ $m }}"
+                                {{ ($month && ($month == $m)) ? 'selected' : '' }}
+                                {{ ($year == date('Y') && $m > date('n')) ? 'disabled' : '' }}>
                                 {{ $months[$m - 1] }}
                             </option>
                         @endforeach
@@ -57,22 +73,9 @@
                 <canvas id="line-chart" width="600" height="350" style="max-height: 400px; max-width: 100%; margin: auto"></canvas>
             </div>
 
-            {{-- Aviso temporal --}}
-            <div class="bg-error-container border border-error/30 mb-5 text-on-surface px-4 py-3 rounded-lg" role="alert">
-                <span class="text-sm">
-                    Sitio <strong>temporal</strong> con la finalidad de detectar posibles caídas/cuelgues o lecturas imprecisas en los programas que desarrollo para obtener las estadísticas de pulsaciones de teclado y ratón que conforman este <strong>keycounter</strong>.
-                    <br/>
-                    Una vez acabada la aplicación, este sitio desaparecerá quedando solo como una api privada accesible desde un componente en Vue.js para mi sitio web personal:
-                    <a href="https://raupulus.dev" class="underline text-on-tertiary-container font-bold text-xs" target="_blank">https://raupulus.dev</a>
-                </span>
-            </div>
-
             {{-- Descripción --}}
             <div class="mb-8">
                 <h3 class="text-3xl text-on-surface font-bold leading-none mb-3">Sobre esta api</h3>
-                <p class="text-on-surface-variant mb-2">
-                    Los datos pueden no ser precisos debido a que aún se encuentra en depuración para detección de errores en código o cálculos.
-                </p>
                 <p class="text-on-surface-variant mb-2">
                     La finalidad de esta aplicación es leer las pulsaciones de teclado y ratón quedando de forma anónima las teclas pulsadas por privacidad y transmitiendo para ser almacenado en esta API solamente las estadísticas generales por rachas.
                 </p>
@@ -101,7 +104,7 @@
                     <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $keyboard_statistics['period_count'] }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Total de puntuaciones</h4>
+                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Total de pulsaciones</h4>
                     <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $keyboard_statistics['period_total_pulsations'] }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
@@ -112,126 +115,121 @@
         </div>
     </section>
 
-    {{-- Resumen últimos 100 resultados --}}
+    {{-- Tarjetas resumen Keyboard y Mouse --}}
     <section class="py-8 bg-surface">
         <div class="max-w-5xl mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-on-surface mb-6">Resumen últimos 100 resultados</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant">Total de pulsaciones</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $keyboard->sum('pulsations') }}</h3>
+            <h2 class="text-3xl font-bold text-center text-on-surface mb-6">Resumen últimos registros</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Keyboard Summary Card --}}
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 p-4">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-white text-3xl">keyboard</span>
+                            <h3 class="text-xl font-bold text-white">Teclado</h3>
+                        </div>
+                        <p class="text-indigo-200 text-xs mt-1">Resumen últimos {{ $keyboardSummary['total_records'] }} registros</p>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Media de pulsaciones</span>
+                            <span class="text-on-surface font-bold">{{ $keyboardSummary['avg_pulsations'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Pulsaciones/min (media)</span>
+                            <span class="text-on-surface font-bold">{{ $keyboardSummary['avg_pulsations_per_minute'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Score medio</span>
+                            <span class="text-on-surface font-bold">{{ $keyboardSummary['avg_score'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Máximo pulsaciones en racha</span>
+                            <span class="text-on-surface font-bold">{{ $keyboardSummary['max_pulsations'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Total pulsaciones</span>
+                            <span class="text-on-surface font-bold text-lg">{{ number_format($keyboardSummary['total_pulsations']) }}</span>
+                        </div>
+                        <div class="text-xs text-on-surface-variant pt-2 border-t border-surface-container">
+                            Período: {{ $keyboardSummary['period_start'] }} — {{ $keyboardSummary['period_end'] }}
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant">Puntuación Total</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $keyboard->sum('score') }}</h3>
-                </div>
-                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant">Pulsaciones media</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ round($keyboard->avg('pulsations'), 2) }}</h3>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant">Media teclas especiales</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ round($keyboard->avg('pulsations_special_keys'), 2) }}</h3>
-                </div>
-                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant">Pulsaciones por minuto</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ round($keyboard->avg('pulsation_average'), 2) }}</h3>
-                </div>
-                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
-                    <h4 class="text-sm uppercase text-on-surface-variant">Puntuación Media</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ round($keyboard->avg('score'), 2) }}</h3>
+
+                {{-- Mouse Summary Card --}}
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-600 to-emerald-500 p-4">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-white text-3xl">mouse</span>
+                            <h3 class="text-xl font-bold text-white">Ratón</h3>
+                        </div>
+                        <p class="text-emerald-200 text-xs mt-1">Resumen últimos {{ $mouseSummary['total_records'] }} registros</p>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Media de clicks</span>
+                            <span class="text-on-surface font-bold">{{ $mouseSummary['avg_clicks'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Clicks/min (media)</span>
+                            <span class="text-on-surface font-bold">{{ $mouseSummary['avg_clicks_per_minute'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Máximo clicks en racha</span>
+                            <span class="text-on-surface font-bold">{{ $mouseSummary['max_clicks'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Total clicks</span>
+                            <span class="text-on-surface font-bold text-lg">{{ number_format($mouseSummary['total_clicks']) }}</span>
+                        </div>
+                        <div class="text-xs text-on-surface-variant pt-2 border-t border-surface-container">
+                            Período: {{ $mouseSummary['period_start'] }} — {{ $mouseSummary['period_end'] }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- Tabla Keyboard --}}
+    {{-- Widgets estadísticos --}}
     <section class="py-8 bg-surface-container-low">
-        <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
-            <h2 class="text-2xl font-bold text-on-surface mb-4">KEYBOARD</h2>
-            <table class="min-w-max w-full table-auto text-sm">
-                <thead>
-                    <tr class="bg-inverse-surface text-inverse-on-surface">
-                        <td class="px-2 py-2 text-center">nº</td>
-                        <td class="px-2 py-2 text-center">start_at</td>
-                        <td class="px-2 py-2 text-center">end_at</td>
-                        <td class="px-2 py-2 text-center">duration</td>
-                        <td class="px-2 py-2 text-center">pulsations</td>
-                        <td class="px-2 py-2 text-center">special_keys</td>
-                        <td class="px-2 py-2 text-center">avg</td>
-                        <td class="px-2 py-2 text-center">score</td>
-                        <td class="px-2 py-2 text-center">weekday</td>
-                        <td class="px-2 py-2 text-center">device_id</td>
-                        <td class="px-2 py-2 text-center">device_name</td>
-                        <td class="px-2 py-2 text-center">created_at</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($keyboard as $reg)
-                        <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->id }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->start_at }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->end_at }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->duration }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->pulsations }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->pulsations_special_keys }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->pulsation_average }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->score }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->weekday }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->hardware_device_id }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->hardware->name ?? '-' }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->created_at }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </section>
+        <div class="max-w-5xl mx-auto px-6">
+            <h2 class="text-2xl font-bold text-on-surface mb-6">Estadísticas Globales</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {{-- Total global --}}
+                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-primary text-2xl">functions</span>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['total_global']) }}</p>
+                    <p class="text-xs text-on-surface-variant">Total pulsaciones</p>
+                </div>
 
-    {{-- Tabla Mouse --}}
-    <section class="py-8 bg-surface">
-        <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
-            <h2 class="text-2xl font-bold text-on-surface mb-4">MOUSE</h2>
-            <table class="min-w-max w-full table-auto text-sm">
-                <thead>
-                    <tr class="bg-inverse-surface text-inverse-on-surface">
-                        <td class="px-2 py-2 text-center">nº</td>
-                        <td class="px-2 py-2 text-center">start_at</td>
-                        <td class="px-2 py-2 text-center">end_at</td>
-                        <td class="px-2 py-2 text-center">duration</td>
-                        <td class="px-2 py-2 text-center">clicks_left</td>
-                        <td class="px-2 py-2 text-center">clicks_right</td>
-                        <td class="px-2 py-2 text-center">clicks_middle</td>
-                        <td class="px-2 py-2 text-center">total_clicks</td>
-                        <td class="px-2 py-2 text-center">clicks_average</td>
-                        <td class="px-2 py-2 text-center">weekday</td>
-                        <td class="px-2 py-2 text-center">device_id</td>
-                        <td class="px-2 py-2 text-center">device_name</td>
-                        <td class="px-2 py-2 text-center">created_at</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($mouse as $reg)
-                        <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->id }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->start_at }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->end_at }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->duration }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->clicks_left }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->clicks_right }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->clicks_middle }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->total_clicks }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->clicks_average }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->weekday }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->device_id ?? $reg->hardware_device_id }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->hardware->name ?? '-' }}</td>
-                            <td class="px-2 py-2 text-center text-on-surface">{{ $reg->created_at }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                {{-- Año top --}}
+                @if($widgets['top_year'])
+                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-primary text-2xl">calendar_month</span>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_year']->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">Mejor año: {{ (int)$widgets['top_year']->year }}</p>
+                </div>
+                @endif
+
+                {{-- Mes top --}}
+                @if($widgets['top_month'])
+                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-primary text-2xl">today</span>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_month']->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">Mejor mes: {{ (int)$widgets['top_month']->month }}/{{ (int)$widgets['top_month']->year }}</p>
+                </div>
+                @endif
+
+                {{-- Totales por año --}}
+                @foreach($widgets['totals_by_year'] as $yearData)
+                <div class="bg-surface-container-lowest rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-primary text-2xl">bar_chart</span>
+                    <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($yearData->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">Año {{ (int)$yearData->year }}</p>
+                </div>
+                @endforeach
+            </div>
         </div>
     </section>
 @endsection
@@ -283,6 +281,23 @@
                 });
             }
         }
+
+        // Deshabilitar meses futuros dinámicamente al cambiar año
+        document.querySelector('select[name="year"]').addEventListener('change', function() {
+            const selectedYear = parseInt(this.value);
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            const monthSelect = document.querySelector('select[name="month"]');
+
+            Array.from(monthSelect.options).forEach(option => {
+                const monthVal = parseInt(option.value);
+                option.disabled = (selectedYear === currentYear && monthVal > currentMonth);
+            });
+
+            if (selectedYear === currentYear && parseInt(monthSelect.value) > currentMonth) {
+                monthSelect.value = currentMonth;
+            }
+        });
 
         window.document.addEventListener('DOMContentLoaded', () => {
             createFilterEvents();

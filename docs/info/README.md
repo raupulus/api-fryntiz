@@ -21,3 +21,4 @@
 | [contact.md](contact.md) | Formulario de Contacto | Email de contacto con reCAPTCHA |
 | [files.md](files.md) | Gestión de Archivos | Uploads, thumbnails, redimensión de imágenes |
 | [common.md](common.md) | Entidades Comunes | Categorías, tags, tecnologías, idiomas |
+| [debug-commands.md](debug-commands.md) | Comandos de Debug | Inserción de datos de prueba para desarrollo |

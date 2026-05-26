@@ -89,4 +89,20 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 
 | Ruta | Descripción |
 |------|-------------|
-| `/airflight` | Mapa/listado de aviones detectados |
+| `/airflight` | Mapa interactivo de aviones detectados + tabla |
+
+### Frontend (Fix 5)
+
+- **Mapa interactivo OpenLayers:** Recuperado de la rama `main`, integrado con layout v2 vía `@push('head')` y `@push('scripts')`.
+- **jQuery 3.0:** Cargado solo en `/airflight` desde `public/resources/airflight/jquery/`.
+- **OpenLayers 3.17.1:** Cargado desde `public/resources/airflight/ol3/`.
+- **Scripts del mapa:** `config.js`, `markers.js`, `dbloader.js`, `registrations.js`, `planeObject.js`, `formatter.js`, `flags.js`, `layers.js`, `script.js`.
+- **Assets:** Directorio `public/resources/airflight/` con banderas, bases de datos de aviones, sprites, etc.
+- **Controles del mapa:** Reset zoom, recargar datos, ir arriba/abajo del mapa, seguir avión seleccionado.
+- **Sidebar de información:** Muestra detalles del vuelo seleccionado (ICAO, callsign, altitud, velocidad, squawk, posición, distancia a Chipiona) con enlaces a FlightAware, FR24, FlightStats y PlaneFinder.
+
+### Comando de debug
+
+```bash
+php artisan debug:seed-airflight --planes=10 --routes=100
+```

@@ -102,3 +102,17 @@ Ambos FormRequests calculan automáticamente en `prepareForValidation()`:
 | Ruta | Descripción |
 |------|-------------|
 | `/keycounter` | Dashboard de estadísticas de pulsaciones |
+
+### Frontend (Fix 5)
+
+- **Aviso de privacidad:** Se muestra al inicio de la vista, advirtiendo que los datos pueden tener variaciones por privacidad.
+- **Tarjetas resumen (caché 1h):** Resumen de Keyboard y Mouse con estadísticas de los últimos 100 registros. Claves de caché: `keycounter:keyboard:summary`, `keycounter:mouse:summary`.
+- **Widgets estadísticos (caché 24h):** Total global de pulsaciones, mejor año, mejor mes, totales por año. Clave de caché: `keycounter:widgets`.
+- **Tablas detalladas eliminadas:** Se eliminaron las tablas con registros individuales por motivos de privacidad.
+- **Meses futuros deshabilitados:** En el selector de fecha, los meses futuros se deshabilitan dinámicamente al cambiar el año (JavaScript).
+
+### Comando de debug
+
+```bash
+php artisan debug:seed-keycounter --count=50
+```

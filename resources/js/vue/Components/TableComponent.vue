@@ -151,702 +151,312 @@
 </template>
 
 
-<script>
-import {onBeforeMount, onMounted, ref} from 'vue';
+<script setup>
+import { ref, onBeforeMount, onMounted } from 'vue';
 
-export default {
-    name:'VTableComponent',
-    props:{
-        title: { // Título sobre la tabla.
-            type:String,
-            default:'',
-            required:false
-        },
-        caption: { // Caption de la tabla.
-            type:String,
-            default:'',
-            required:false
-        },
+const props = defineProps({
+    title: { type: String, default: '' },
+    caption: { type: String, default: '' },
+    url: { type: String, required: true },
+    showId: { type: Boolean, default: false },
+    elements: { type: Number, default: 10 },
+    editable: { type: Boolean, default: false },
+    urlEditHot: { default: 'http:://test' },
+    searchable: { type: Boolean, default: false },
+    shortable: { type: Boolean, default: false },
+    actions: { type: Array, default: () => [] },
+    headers: { type: Object, default: () => ({}) },
+    csrf: { required: true },
+    conditions: { type: Object, default: () => ({}) },
+});
 
-        url: { // Url para obtener los datos de la tabla.
-            type:String,
-            required:true
-        },
-        showId: { // Indica si muestra el ID en la tabla.
-            type:Boolean,
-            default:false,
-            required:false
-        },
+const tableId = ref('table-' + Math.random().toString(36).substr(2, 9));
+const rows = ref([]);
+const heads = ref([]);
+const totalPages = ref(0);
+const totalElements = ref(0);
+const currentPage = ref(0);
+const hasBackPage = ref(false);
+const hasNextPage = ref(false);
+const showPages = ref([]);
+const cellsInfo = ref([]);
+const searchTimer = ref(null);
+const search = ref('');
+const orderDirection = ref('DESC');
+const orderBy = ref('created_at');
 
-        elements: { // Cantidad de elementos por página.
-            type:Number,
-            default:10,
-            required:false
-        },
-        editable: { // Indica si se habilita el editar.
-            type:Boolean,
-            default:false,
-            required:false
-        },
-        urlEditHot: {  // Url para editar campos en al pulsarlos.
-            //type:String|null, // Falla, pero no encuentro la solución.
-            default:'http:://test',
-            required:false
-        },
-        searchable:{  // Indica si tiene input de búsqueda.
-            type:Boolean,
-            default:false,
-            required:false
-        },
-        shortable:{  // Indica si permite ordenar por campos
-            type:Boolean,
-            default:false,
-            required:false
-        },
-        actions:{  // JSON con las acciones para añadir botones
-            type:Array,
-            default:[],
-            required:false
+const fetchHeaders = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'X-CSRF-TOKEN': props.csrf,
+    ...props.headers,
+};
 
-        },
-        headers:{  // Cabeceras para peticiones ajax
-            type:Object,
-            default:{},
-            required:false
+const getQuery = async (url, method, params) => {
+    return fetch(url, {
+        headers: fetchHeaders,
+        method: method,
+        body: JSON.stringify({ ...params, conditions: props.conditions }),
+    }).then((response) => response.json());
+};
 
-        },
-        csrf:{  // Token csrf para la seguridad del formulario
-            required:true
-        },
-        conditions: {
-            type:Object,
-            default:[],
-            required:false
-        },
-    },
+const fetchPage = async (page) => {
+    return getQuery(props.url, 'POST', {
+        page: page,
+        size: props.elements,
+        orderBy: orderBy.value,
+        orderDirection: orderDirection.value,
+        search: search.value,
+    });
+};
 
-    // TODO → Implementar autoreload de la tabla, por defecto off.
-    setup(props) {
-        const tableId = ref('table-random');  // Prepara un ID aleatorio para la tabla.
-        const rows = ref([]);  // Columnas con los datos
-        const heads = ref([]);  // Títulos para columnas
-        const totalPages = ref(0);  // Cantidad total de páginas
-        const totalElements = ref(0);  // Cantidad total de elementos
-        const currentPage = ref(0);  // Número de página actual
-        const hasBackPage = ref(false);  // Indica si tiene página anterior
-        const hasNextPage = ref(false);  // Indica si tiene próxima página
-        const showPages = ref([]);  // Lista con las páginas a mostrar
-        const cellsInfo = ref([]);  // Información de las celdas
+const changePage = (page, reload = false) => {
+    if (!reload && page === currentPage.value) return null;
 
-        // Almacena timeout para buscar por ajax, así evito consultar al escribir seguido.
-        const searchTimer = ref(null);
+    fetchPage(page).then((response) => {
+        const data = response.data;
+        if (!data) return null;
 
-        const search = ref('');  // Cadena de búsqueda
-        const orderDirection = ref('DESC');  // Modo de ordenar
-        const orderBy = ref('created_at');  // Campo por el que ordenar
+        currentPage.value = data.currentPage;
+        totalElements.value = data.totalElements;
 
-        /**
-         * Genera un id aleatorio compuesto pro carácteres alfanuméricos.
-         *
-         * @returns {string} Devuelve un id aleatorio.
-         */
-        const makeId = () => {
-            return 'table-' + Math.random().toString(36).substr(2, 9);
-        };
-
-        tableId.value = makeId();
-
-        // Headers para las peticiones ajax, dinamizado con prop headers
-        const fetchHeaders = {
-            ... {
-                'Accept':
-                    'application/json',
-                'Content-Type':
-                    'application/json',
-                'X-CSRF-TOKEN':
-                props.csrf
-            },
-            ...props.headers
-        };
-
-        //console.log(props.conditions);
-
-        /**
-         * Realiza una petición ajax.
-         *
-         * @param url
-         * @param method
-         * @param params
-         * @returns {Promise<any>}
-         */
-        const getQuery = async(url, method, params) => {
-            return fetch(url, {
-                    headers:fetchHeaders,
-                    method:method,
-                    body:JSON.stringify({...params,
-                        conditions:props.conditions})
-                }
-            ).then((response) => response.json());
-        };
-
-        /**
-         * Obtiene los registros para una página concreta.
-         *
-         * @param page Página a descargar.
-         * @returns {Promise<*>}
-         */
-        const fetchPage = async(page) => {
-            let params = {
-                page:page,
-                size:props.elements,
-                orderBy:orderBy.value,
-                orderDirection:orderDirection.value,
-                search:search.value,
-            };
-
-            return getQuery(props.url, 'POST', params);
+        if (totalElements.value && totalElements.value > 0 && totalElements.value <= props.elements) {
+            totalPages.value = 1;
+        } else if (totalElements.value / props.elements > 1 && totalElements.value % props.elements === 0) {
+            totalPages.value = Math.floor(totalElements.value / props.elements);
+        } else {
+            totalPages.value = Math.floor(totalElements.value / props.elements) + 1;
         }
 
-        /**
-         * Ejecuta una acción (eliminar, actualizar...)
-         *
-         * @param action Nombre de la acción
-         * @returns {Promise<void>}
-         */
-        /*
-         const executeAction = async (action) => {
-         if (props.actions && props.actions.length) {
-         let info = props.actions.find(ele => ele.name == action)
-         }
-         }
-         */
+        hasBackPage.value = totalPages.value > 1 && currentPage.value > 1;
+        hasNextPage.value = totalPages.value > 1 && currentPage.value < totalPages.value;
 
-        /**
-         * Procesa el cambio de página.
-         * @param {number} page La página a la que se está cambiando.
-         * @param {boolean} reload Indica si fuerza la recarga de la página.
-         */
-        const changePage = (page, reload = false) => {
-            // Descarto si intenta cargar la página actual.
-            if(!reload && (page === currentPage.value)) {
-                return null;
-            }
-
-            fetchPage(page).then( response => {
-                const data = response.data;
-
-                if(!data) {
-                    //console.log('No hay respuesta del servidor');
-                    return null;
-                }
-
-                currentPage.value = data.currentPage;
-                totalElements.value = data.totalElements;
-
-                if(
-                    (totalElements.value && (totalElements.value > 0)) &&
-                    (totalElements.value <= props.elements)
-                ) {
-                    totalPages.value = 1;
-                } else if(
-                    ((totalElements.value / props.elements) > 1) &&
-                    ((totalElements.value % props.elements) === 0)) {
-                    totalPages.value = Math.floor(totalElements.value / props.elements);
+        switch (true) {
+            case 0 === totalPages.value:
+                showPages.value = ['...'];
+                break;
+            case 1 === totalPages.value:
+                showPages.value = [1];
+                break;
+            case 8 < totalPages.value && currentPage.value === totalPages.value:
+                showPages.value = [1, '...'];
+                for (let i = 5; i >= 1; i--) showPages.value.push(totalPages.value - i);
+                showPages.value.push(totalPages.value);
+                break;
+            case 8 < totalPages.value && currentPage.value === 1:
+                showPages.value = [];
+                for (let i = 1; i <= 6; i++) showPages.value.push(i);
+                showPages.value.push('...');
+                showPages.value.push(totalPages.value);
+                break;
+            case 8 >= totalPages.value:
+                showPages.value = [];
+                for (let i = 1; i <= totalPages.value; i++) showPages.value.push(i);
+                break;
+            default:
+                if (currentPage.value === 2) {
+                    showPages.value = [1, currentPage.value, currentPage.value + 1];
+                } else if (currentPage.value === 3) {
+                    showPages.value = [1, currentPage.value - 1, currentPage.value, currentPage.value + 1];
                 } else {
-                    totalPages.value = Math.floor(totalElements.value / props.elements) +1;
+                    showPages.value = [1, '...', currentPage.value - 1, currentPage.value, currentPage.value + 1];
                 }
-
-                hasBackPage.value = (totalPages.value > 1) && (currentPage.value > 1);
-                hasNextPage.value = (totalPages.value > 1) && (currentPage.value < totalPages.value);
-
-                switch(true) {
-                    // No hay páginas → OK
-                    case 0 === totalPages.value:
-                        showPages.value = ['...'];
-
-                        break;
-
-                    case 1 === totalPages.value:
-                        showPages.value = [1]
-                        break;
-
-                    // Hay más de 8 páginas y la actual es la última → OK
-                    case (8 < totalPages.value) && (currentPage.value === totalPages.value):
-
-                        showPages.value = [1, '...'];
-
-                        for(let i = 5; i >= 1; i--) {
-                            showPages.value.push(totalPages.value - i);
-                        }
-
-                        showPages.value.push(totalPages.value);
-
-                        break;
-
-                    // Hay más de 8 páginas y la actual es la primera → OK
-                    case (8 < totalPages.value) && (currentPage.value === 1):
-                        showPages.value = [];
-
-                        for(let i = 1; i <= 6; i++) {
-                            showPages.value.push(i);
-                        }
-
-                        showPages.value.push('...');
-                        showPages.value.push(totalPages.value);
-
-                        break;
-
-                    // Hay 8 o menos páginas → OK
-                    case (8 >= totalPages.value):
-                        showPages.value = [];
-
-                        for(let i = 1; i <= totalPages.value; i++) {
-                            showPages.value.push(i);
-                        }
-                        break;
-                    default:
-                        if(currentPage.value === 2) {
-                            showPages.value = [1, currentPage.value, currentPage.value + 1];
-                        } else if(currentPage.value === 3) {
-                            showPages.value = [1, currentPage.value - 1, currentPage.value, currentPage.value + 1];
-                        } else {
-                            showPages.value = [1, '...', currentPage.value - 1, currentPage.value, currentPage.value + 1];
-                        }
-
-                        if((currentPage.value + 2) < totalPages.value) {
-                            showPages.value.push(currentPage.value + 2);
-                            showPages.value.push('...');
-                            showPages.value.push(totalPages.value);
-                        } else if((currentPage.value + 2) === totalPages.value) {
-                            showPages.value.push(totalPages.value);
-                        }
-
-                        break;
+                if (currentPage.value + 2 < totalPages.value) {
+                    showPages.value.push(currentPage.value + 2);
+                    showPages.value.push('...');
+                    showPages.value.push(totalPages.value);
+                } else if (currentPage.value + 2 === totalPages.value) {
+                    showPages.value.push(totalPages.value);
                 }
-
-                rows.value = data.rows;
-                heads.value = data.heads;
-                cellsInfo.value = data.cellsInfo;
-            })
-        };
-
-        /**
-         * Devuelve el contenido de la celda formateado según el tipo de dato
-         * indicado en el objeto cellsInfo.
-         * @param cell
-         * @param field
-         * @returns {string|string|*}
-         */
-        const getCellContent = (cell, field) => {
-
-            // TODO → obtener de controlador tipos y mirar si hay metadatos en él (button, image, etc) para saber como mostrarlo
-            //let info = cellsInfo.value.find(ele => ele.key == field);
-            let info = cellsInfo.value ? cellsInfo.value[field] : null;
-
-            if(info && info.type) {
-                let html = '';
-
-                switch(info.type) {
-                    case 'hidden':
-                        html = '';
-                        break;
-                    case 'button':
-                        html = '<button class="btn btn-primary">' + cell + '</button>';
-                        break;
-                    case 'color':
-                        html = '<span style="display: inline-block; width: 3rem; height: 1rem; background-color:' + cell + '"></span>';
-                        break;
-                    case 'image':
-                        html = '<img src="' + cell + '" alt=""/>';
-                        break;
-                    case 'bool':
-                        html = cell ? 'SI' : 'No';
-                        break;
-                    case 'integer':
-                        html = !isNaN(cell) && (parseInt(cell) >= 1) ? parseInt(cell).toString() : "0";
-                        break;
-                    case 'float':
-                        html = !isNaN(cell) ? parseFloat(cell).toFixed(2) : cell
-                        break;
-                    case 'icon':
-                        // TODO → preparar iconos
-                        html = '<img src="' + cell + '" alt="Icon"/>';
-                        break;
-                    case 'date':
-
-                        if (cell) {
-                            let dateString = new Date(cell).toLocaleDateString();
-                            let dateArray = dateString.split(',');
-
-                            html = dateArray.length ? dateArray[0] : '';
-                        } else {
-                            html = '';
-                        }
-
-                        break;
-                    case 'datetime':
-                        html = cell ? new Date(cell).toLocaleString() : '';
-                        break;
-                    default:
-                        html =  cell;
-                }
-
-                return html;
-            }
-
-
-            return field === 'created_at' ? (new Date(cell)).toLocaleString() : cell;
+                break;
         }
 
-        onBeforeMount(() => {
-            handleOnLoadData();
-            changePage(1);
-        });
-        onMounted(() => {
-            //console.log('Component mounted.');
-            handleOnFinishLoadData();
-        });
-
-
-        /**
-         * Devuelve la clase para el tipo de acción.
-         * @param action
-         * @returns {string}
-         */
-        const getClassByActionType = (action) => {
-            switch(action) {
-                case 'delete':
-                    return 'btn btn-red';
-                case 'update':
-                    return 'btn btn-blue';
-                case 'show':
-                    return 'btn btn-green';
-                default:
-                    return 'btn btn-orange';
-            }
-        };
-
-
-        // Al obtener datos del backend, poner spinner de carga.
-        const handleOnLoadData = async() => {
-            // TODO preparar spinner y señales de carga.
-        }
-
-        // Cuando ha terminado de obtener datos, quito spinner de carga.
-        const handleOnFinishLoadData = async() => {
-            // TODO limpiar señales de carga.
-        }
-
-        /**
-         * Muestra un mensaje en la tabla indicando lo que ha ocurrido.
-         *
-         * @param msg El mensaje a mostrar.
-         * @param type El tipo del mensaje: success|error|warning
-         * @returns {Promise<void>}
-         */
-        const showPopupMessage = async (msg, type = 'success') => {
-            const component = document.getElementById(tableId.value);
-            const boxPopup = component.querySelector('.box-popup-message-info');
-            const popupMessage = boxPopup.querySelector('.popup-message-info');
-
-            // TODO → Mostrar progresivamente el contendor flotante
-            popupMessage.classList.add(type);
-            boxPopup.classList.remove('hidden');
-
-            popupMessage.textContent = msg;
-
-            // TODO → Ocultar progresivamente el contendor flotante
-
-
-
-            setTimeout(() => {
-                boxPopup.classList.add('hidden');
-                popupMessage.classList.remove(type);
-
-                popupMessage.textContent = '';
-            }, type === 'success' ? 3000 : 8000);
-
-
-            //console.log('showPopupMessage() ' + type + ': ' + msg);
-        }
-
-        //
-        /**
-         * Maneja el evento al pulsar botón para eliminar
-         *
-         * @param e Recibe el evento
-         * @returns {Promise<null>}
-         */
-        const handleOnDelete = async(e) => {
-            if(!confirm('¿Estás seguro de eliminar este registro?')) {
-                return null;
-            }
-
-            let btn = e.target;
-            let id = btn.getAttribute('data-id');
-            let url = btn.getAttribute('data-url');
-            let method = btn.getAttribute('data-method');
-            let params = btn.getAttribute('data-params');
-
-            // Pongo la tabla en modo de cargar datos.
-            await handleOnLoadData();
-
-            // Envío datos por AJAX al servidor
-            let result = await getQuery(url, method, {...params, id:id})
-
-            // TODO → Comprobar respuesta antes de mostrar mensaje popup
-            if (result && result.deleted) {
-                await showPopupMessage('Se ha eliminado el registro correctamente', 'success')
-            } else {
-                await showPopupMessage('Ha ocurrido un error al eliminar el registro', 'error')
-            }
-
-            // Actualizo la misma página para renovar datos.
-            await changePage(currentPage.value, true);
-
-            // Quita la tabla del modo cargar datos.
-            await handleOnFinishLoadData();
-        };
-
-        /**
-         * Maneja el evento para cambiar un filtro y recarga la tabla.
-         *
-         * TODO → terminar ordenar por columna
-         *
-         * @param e
-         */
-        const handleChangeFilter = async (e, type) => {
-            // Pongo la tabla en modo de cargar datos.
-            handleOnLoadData();
-            //console.log('e: ' + e);
-            //console.log('type: ' + type);
-            //console.log('valor: ' + search.value);
-
-            switch(type) {
-                case 'orderBy':
-                    // TODO
-                    break
-                case 'orderDirection':
-                    // TODO
-                    break
-                default:
-                    //console.log('No coincide');
-            }
-
-            // Actualizo la página para renovar datos.
-            await changePage(1, true);
-
-            // Quita la tabla del modo cargar datos.
-            handleOnFinishLoadData();
-        };
-
-        /**
-         * Evento que se lanza al dejar un instante de escribir en el campo
-         * de búsqueda que hay sobre la tabla.
-         *
-         * @param e
-         */
-        const handleOnWriteSearchKeyboardUp = async (e) => {
-
-            // Si ya hay una consulta programada, la elimino
-            if (searchTimer.value) {
-                clearTimeout(searchTimer.value);
-                searchTimer.value = null;
-            }
-
-            /**
-             * Solicita la primera página con los cambios del buscador.
-             *
-             * @returns {Promise<void>}
-             */
-            async function startSearch() {
-                // Pongo la tabla en modo de cargar datos.
-                handleOnLoadData();
-
-                // Actualizo la página para renovar datos.
-                await changePage(1, true);
-
-                // Quita la tabla del modo cargar datos.
-                handleOnFinishLoadData();
-            }
-
-            // Si se ha pulsado Enter, se envía de momento la consulta.
-            if (event.which == 13 || event.keyCode == 13) {
-                startSearch();
-            } else {
-                // Añado intervalo a la cola para ejecutarse.
-                searchTimer.value = setTimeout(startSearch, 800);
-            }
-        }
-
-        /**
-         * Maneja el evento al pulsar sobre los inputs de la tabla que están
-         * como editables.
-         *
-         * @param e
-         * @param nodeUniqueClass Selector de clase única para el <td>
-         * @returns {Promise<void>}
-         */
-        const handleOnClickCellEditable = async (e, nodeUniqueClass) => {
-            const target = e.target;
-            const td = target.closest('.box-vue-table-component').querySelector('.' + nodeUniqueClass);
-            const id = td.getAttribute('data-id');
-
-            const boxCellContent = td.querySelector('.td-cell-content');
-            const boxCellEditable = td.querySelector('.td-cell-editable-hidden');
-
-            if (!boxCellContent || !boxCellEditable) {
-                return null;
-            }
-
-            boxCellContent.classList.remove('td-cell-content');
-            boxCellContent.classList.add('td-cell-content-hidden');
-
-            boxCellEditable.classList.remove('td-cell-editable-hidden');
-            boxCellEditable.classList.add('td-cell-editable');
-
-            let input = boxCellEditable.querySelector('input');
-
-            if (input) {
-                input.focus();
-            }
-        };
-
-        /**
-         * Maneja la perdida de focus de una celda editable.
-         *
-         * @param e Evento sobre la celda pulsada.
-         * @returns {Promise<void>}
-         */
-        const handleOnFocusoutCellEditable = async (e) => {
-            const input = e.target;
-            const td = input.closest('td');
-            const id = td.getAttribute('data-id');
-
-            let confirm = window.confirm('¿Quieres guardar los cambios?')
-
-            const boxCellContent = td.querySelector('.td-cell-content-hidden');
-            const boxCellEditable = td.querySelector('.td-cell-editable');
-
-            boxCellContent.classList.remove('td-cell-content-hidden');
-            boxCellContent.classList.add('td-cell-content');
-
-            boxCellEditable.classList.remove('td-cell-editable');
-            boxCellEditable.classList.add('td-cell-editable-hidden');
-
-            if (confirm) {
-                let newValue = input.value;
-                let attribute = td.getAttribute('data-attribute');
-
-                let params = {
-                    action:'update',
-                    id: id,
-                    value:newValue,
-                    attribute:attribute,
-                    orderBy:orderBy.value,
-                    orderDirection:orderDirection.value,
-                    search:search.value,
-                };
-
-                getQuery(props.urlEditHot, 'POST', params).then(response => {
-
-                    if(response && response.errors && response.errors.length) {
-
-                        response.errors.forEach(error => {
-                            showPopupMessage(error, 'error');
-                        });
-
-                    } else if (response && response.success && (!response.errors || !response.errors.length)) {
-
-                        boxCellContent.textContent = getCellContent( response.value, attribute );
-                        input.value = response.value;
-
-                        showPopupMessage('Se ha modificado correctamente', 'success');
-
-                    }
-
-                });
-            } else {
-                input.focus();
-            }
-
-        }
-
-        /**
-         * Manejador del evento que ocurre cuando se pulsa una tecla en una
-         * celda editable, principalmente para controlar teclas ESC y ENTER.
-         * @param e
-         * @returns {Promise<void>}
-         */
-        const handleOnKeyUpCellEditable = async (e) => {
-            const input = e.target;
-
-            const component = input.closest('.box-vue-table-component');
-            const inputSearch = component.querySelector('input[type="search"]');
-
-            // TODO → Al pulsar ESC, cancela edición sin mostrar el cartelito.
-
-            if (e.which == 13 || e.keyCode == 13) {
-                //console.log('Se ha pulsado INTRO dentro del input');
-                inputSearch.focus();
-            } else if (e.which == 27 || e.keyCode == 27) {
-                //console.log('Se ha pulsado ESC dentro del input');
-                inputSearch.focus();
-            }
-        }
-
-        /**
-         * Manejador para pulsaciones sobre el botón de actualizar.
-         *
-         * @param e Evento
-         * @param url Ruta con los parámetros sin dinamizar
-         * @param id Id del elemento
-         * @param slug Slug del elemento
-         */
-        const handleOnUpdate = (e, url, id, slug) => {
-            let urlDecoded = decodeURI(url);
-
-            let urlClean = urlDecoded.replace(/\[id\]/ig, id)
-                                .replace(/\[slug\]/ig, slug);
-
-            window.location.href = urlClean;
-        }
-
-        return {
-            tableId,
-            rows:rows,
-            heads:heads,
-            totalPages:totalPages,
-            totalElements:totalElements,
-            currentPage:currentPage,
-            hasBackPage:hasBackPage,
-            hasNextPage:hasNextPage,
-            showPages:showPages,
-            getCellContent:getCellContent,
-            cellsInfo:cellsInfo,
-
-            changePage:changePage,
-            getClassByActionType:getClassByActionType,
-
-            // Filtro
-            search,
-
-            // Eventos
-            handleOnDelete,
-            handleChangeFilter,
-            handleOnWriteSearchKeyboardUp,
-            handleOnClickCellEditable,
-            handleOnFocusoutCellEditable,
-            handleOnKeyUpCellEditable,
-            handleOnUpdate,
+        rows.value = data.rows;
+        heads.value = data.heads;
+        cellsInfo.value = data.cellsInfo;
+    });
+};
+
+const getCellContent = (cell, field) => {
+    let info = cellsInfo.value ? cellsInfo.value[field] : null;
+
+    if (info && info.type) {
+        switch (info.type) {
+            case 'hidden': return '';
+            case 'button': return '<button class="btn btn-primary">' + cell + '</button>';
+            case 'color': return '<span style="display: inline-block; width: 3rem; height: 1rem; background-color:' + cell + '"></span>';
+            case 'image': return '<img src="' + cell + '" alt=""/>';
+            case 'bool': return cell ? 'SI' : 'No';
+            case 'integer': return !isNaN(cell) && parseInt(cell) >= 1 ? parseInt(cell).toString() : '0';
+            case 'float': return !isNaN(cell) ? parseFloat(cell).toFixed(2) : cell;
+            case 'icon': return '<img src="' + cell + '" alt="Icon"/>';
+            case 'date':
+                if (cell) { let d = new Date(cell).toLocaleDateString().split(','); return d.length ? d[0] : ''; }
+                return '';
+            case 'datetime': return cell ? new Date(cell).toLocaleString() : '';
+            default: return cell;
         }
     }
 
-}
+    return field === 'created_at' ? new Date(cell).toLocaleString() : cell;
+};
+
+const getClassByActionType = (action) => {
+    switch (action) {
+        case 'delete': return 'btn btn-red';
+        case 'update': return 'btn btn-blue';
+        case 'show': return 'btn btn-green';
+        default: return 'btn btn-orange';
+    }
+};
+
+const handleOnLoadData = async () => {};
+const handleOnFinishLoadData = async () => {};
+
+const showPopupMessage = async (msg, type = 'success') => {
+    const component = document.getElementById(tableId.value);
+    const boxPopup = component.querySelector('.box-popup-message-info');
+    const popupMessage = boxPopup.querySelector('.popup-message-info');
+
+    popupMessage.classList.add(type);
+    boxPopup.classList.remove('hidden');
+    popupMessage.textContent = msg;
+
+    setTimeout(() => {
+        boxPopup.classList.add('hidden');
+        popupMessage.classList.remove(type);
+        popupMessage.textContent = '';
+    }, type === 'success' ? 3000 : 8000);
+};
+
+const handleOnDelete = async (e) => {
+    if (!confirm('¿Estás seguro de eliminar este registro?')) return null;
+
+    let btn = e.target;
+    let id = btn.getAttribute('data-id');
+    let url = btn.getAttribute('data-url');
+    let method = btn.getAttribute('data-method');
+    let params = btn.getAttribute('data-params');
+
+    await handleOnLoadData();
+    let result = await getQuery(url, method, { ...params, id: id });
+
+    if (result && result.deleted) {
+        await showPopupMessage('Se ha eliminado el registro correctamente', 'success');
+    } else {
+        await showPopupMessage('Ha ocurrido un error al eliminar el registro', 'error');
+    }
+
+    await changePage(currentPage.value, true);
+    await handleOnFinishLoadData();
+};
+
+const handleChangeFilter = async (e, type) => {
+    handleOnLoadData();
+    await changePage(1, true);
+    handleOnFinishLoadData();
+};
+
+const handleOnWriteSearchKeyboardUp = async (e) => {
+    if (searchTimer.value) {
+        clearTimeout(searchTimer.value);
+        searchTimer.value = null;
+    }
+
+    async function startSearch() {
+        handleOnLoadData();
+        await changePage(1, true);
+        handleOnFinishLoadData();
+    }
+
+    if (e.which == 13 || e.keyCode == 13) {
+        startSearch();
+    } else {
+        searchTimer.value = setTimeout(startSearch, 800);
+    }
+};
+
+const handleOnClickCellEditable = async (e, nodeUniqueClass) => {
+    const target = e.target;
+    const td = target.closest('.box-vue-table-component').querySelector('.' + nodeUniqueClass);
+
+    const boxCellContent = td.querySelector('.td-cell-content');
+    const boxCellEditable = td.querySelector('.td-cell-editable-hidden');
+
+    if (!boxCellContent || !boxCellEditable) return null;
+
+    boxCellContent.classList.remove('td-cell-content');
+    boxCellContent.classList.add('td-cell-content-hidden');
+    boxCellEditable.classList.remove('td-cell-editable-hidden');
+    boxCellEditable.classList.add('td-cell-editable');
+
+    let input = boxCellEditable.querySelector('input');
+    if (input) input.focus();
+};
+
+const handleOnFocusoutCellEditable = async (e) => {
+    const input = e.target;
+    const td = input.closest('td');
+    const id = td.getAttribute('data-id');
+
+    let confirmSave = window.confirm('¿Quieres guardar los cambios?');
+
+    const boxCellContent = td.querySelector('.td-cell-content-hidden');
+    const boxCellEditable = td.querySelector('.td-cell-editable');
+
+    boxCellContent.classList.remove('td-cell-content-hidden');
+    boxCellContent.classList.add('td-cell-content');
+    boxCellEditable.classList.remove('td-cell-editable');
+    boxCellEditable.classList.add('td-cell-editable-hidden');
+
+    if (confirmSave) {
+        let newValue = input.value;
+        let attribute = td.getAttribute('data-attribute');
+
+        getQuery(props.urlEditHot, 'POST', {
+            action: 'update', id, value: newValue, attribute,
+            orderBy: orderBy.value, orderDirection: orderDirection.value, search: search.value,
+        }).then((response) => {
+            if (response && response.errors && response.errors.length) {
+                response.errors.forEach((error) => showPopupMessage(error, 'error'));
+            } else if (response && response.success) {
+                boxCellContent.textContent = getCellContent(response.value, attribute);
+                input.value = response.value;
+                showPopupMessage('Se ha modificado correctamente', 'success');
+            }
+        });
+    } else {
+        input.focus();
+    }
+};
+
+const handleOnKeyUpCellEditable = async (e) => {
+    const input = e.target;
+    const component = input.closest('.box-vue-table-component');
+    const inputSearch = component.querySelector('input[type="search"]');
+
+    if (e.which == 13 || e.keyCode == 13 || e.which == 27 || e.keyCode == 27) {
+        inputSearch.focus();
+    }
+};
+
+const handleOnUpdate = (e, url, id, slug) => {
+    let urlClean = decodeURI(url).replace(/\[id\]/ig, id).replace(/\[slug\]/ig, slug);
+    window.location.href = urlClean;
+};
+
+onBeforeMount(() => {
+    handleOnLoadData();
+    changePage(1);
+});
+
+onMounted(() => {
+    handleOnFinishLoadData();
+});
 </script>
 
 
-<style lang="scss" scoped>
+<style scoped>
 
 /* Modal messages popup */
 

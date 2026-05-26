@@ -17,6 +17,16 @@
         </div>
     </section>
 
+    {{-- Widget resumen del clima actual (Vue 3) --}}
+    <section class="py-8 bg-surface-container-low flex justify-center">
+        <div id="app-weather-chipiona"
+             data-api-base-url="{{ url('/') }}"
+             data-api-path="api/weatherstation/v1/resume"
+             class="w-full max-w-lg">
+            <p class="text-on-surface-variant text-center py-8">Cargando datos del clima...</p>
+        </div>
+    </section>
+
     {{-- Descripción --}}
     <section class="py-12 bg-surface">
         <div class="max-w-5xl mx-auto px-6">
@@ -41,12 +51,12 @@
         <div class="max-w-7xl mx-auto px-6">
             <h2 class="text-3xl font-bold text-on-surface mb-6">Datos de los sensores</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($sections as $title => $url)
-                    <a href="{{ $url }}" class="bg-surface-container-lowest rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
+                @foreach($sections as $section)
+                    <a href="{{ $section['url'] }}" class="bg-surface-container-lowest rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
                         <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4">
-                            <span class="material-symbols-outlined text-on-tertiary-container">thermostat</span>
+                            <span class="material-symbols-outlined text-on-tertiary-container">{{ $section['icon'] }}</span>
                         </div>
-                        <h3 class="text-lg font-bold text-on-surface mb-2">{{ $title }}</h3>
+                        <h3 class="text-lg font-bold text-on-surface mb-2">{{ $section['title'] }}</h3>
                         <span class="text-primary-container font-bold text-xs uppercase tracking-widest group-hover:underline">Ver datos →</span>
                     </a>
                 @endforeach
@@ -54,3 +64,7 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    @vite('resources/js/vue.js')
+@endpush

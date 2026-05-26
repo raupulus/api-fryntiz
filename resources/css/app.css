@@ -101,3 +101,41 @@ html.dark .glass-nav {
 .gradient {
     background: linear-gradient(90deg, var(--color-primary-container) 0%, var(--color-secondary) 100%);
 }
+
+/* ============================================
+   Navbar
+   ============================================ */
+.navbar-main {
+    background-color: var(--color-surface-container);
+    background-image: url("/images/backgrounds/mosaic-1.png");
+    z-index: 50;
+}
+
+html.dark .navbar-main {
+    background-color: rgba(15, 19, 29, 0.95);
+}
+
+.navbar-site-title {
+    font-size: 1.9rem;
+    font-weight: bold;
+    color: var(--color-on-surface);
+    text-decoration: none;
+}
+
+.navbar-menu-element {
+    opacity: 0.75;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+}
+
+.navbar-menu-element:hover {
+    opacity: 1;
+}
+
+.navbar-menu-element-current {
+    color: #ffffff !important;
+    border-bottom: 2px solid #6366f1;
+    font-weight: 600;
+    opacity: 1;
+}

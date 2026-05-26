@@ -24,6 +24,11 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 @foreach($currentStats as $stat)
                     <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 text-center">
+                        <div class="flex justify-center mb-2">
+                            <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-amber-600 dark:text-amber-400">{{ $stat['icon'] ?? 'bolt' }}</span>
+                            </div>
+                        </div>
                         <h4 class="text-xs uppercase text-on-surface-variant leading-tight mb-1">{{ $stat['title'] }}</h4>
                         <h3 class="text-2xl text-on-surface font-semibold">{{ $stat['value'] }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
                     </div>
@@ -39,6 +44,11 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 @foreach($todayStats as $stat)
                     <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 text-center">
+                        <div class="flex justify-center mb-2">
+                            <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">{{ $stat['icon'] ?? 'electric_meter' }}</span>
+                            </div>
+                        </div>
                         <h4 class="text-xs uppercase text-on-surface-variant leading-tight mb-1">{{ $stat['title'] }}</h4>
                         <h3 class="text-2xl text-on-surface font-semibold">{{ $stat['value'] }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
                     </div>
@@ -54,6 +64,11 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 @foreach($historicalStats as $stat)
                     <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 text-center">
+                        <div class="flex justify-center mb-2">
+                            <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400">{{ $stat['icon'] ?? 'energy_savings_leaf' }}</span>
+                            </div>
+                        </div>
                         <h4 class="text-xs uppercase text-on-surface-variant leading-tight mb-1">{{ $stat['title'] }}</h4>
                         <h3 class="text-2xl text-on-surface font-semibold">{{ $stat['value'] }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
                     </div>
@@ -70,17 +85,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($hardwares as $hw)
                         <div class="bg-surface-container-lowest rounded-xl p-6 shadow-lg">
-                            <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4">
-                                <span class="material-symbols-outlined text-on-tertiary-container">bolt</span>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-amber-600 dark:text-amber-400">solar_power</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-on-surface">{{ $hw->name ?? 'Dispositivo #'.$hw->id }}</h3>
                             </div>
-                            <h3 class="text-lg font-bold text-on-surface mb-2">{{ $hw->name ?? 'Dispositivo #'.$hw->id }}</h3>
                             <p class="text-on-surface-variant text-sm">{{ $hw->description ?? 'Sin descripción' }}</p>
                         </div>
                     @endforeach
                 </div>
             @else
                 <div class="bg-surface-container rounded-xl p-12 text-center">
-                    <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">bolt</span>
+                    <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">solar_power</span>
                     <p class="text-on-surface-variant text-lg">No hay dispositivos de energía registrados.</p>
                 </div>
             @endif

@@ -5,21 +5,12 @@ namespace App\Http\Controllers\KeyCounter;
 use App\Http\Controllers\Controller;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
-use Carbon\Carbon;
-use Carbon\Traits\Creator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use JsonHelper;
-use function array_unique;
-use function date;
-use function dd;
-use function implode;
-use function json_encode;
-use function response;
-use function route;
-use function view;
 
 /**
- * Class ViewsController
+ * Class KeyCounterController
  *
  * @package App\Http\Controllers\KeyCounter
  */
@@ -42,6 +33,74 @@ class KeyCounterController extends Controller
                    'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
                    'Noviembre', 'Diciembre'];
 
+        // Resumen Keyboard (caché 1 hora)
+        $keyboardSummary = Cache::remember('keycounter:keyboard:summary', 3600, function () {
+            $records = Keyboard::whereNotNull('start_at')
+                ->whereNotNull('end_at')
+                ->where('pulsations', '>', 0)
+                ->orderByDesc('created_at')
+                ->take(100)
+                ->get();
+
+            return [
+                'total_records' => $records->count(),
+                'avg_pulsations' => round($records->avg('pulsations') ?? 0, 2),
+                'avg_pulsations_per_minute' => round($records->avg('pulsation_average') ?? 0, 2),
+                'avg_score' => round($records->avg('score') ?? 0, 2),
+                'max_pulsations' => $records->max('pulsations') ?? 0,
+                'total_pulsations' => $records->sum('pulsations') ?? 0,
+                'period_start' => $records->min('created_at')?->format('d/m/Y H:i') ?? 'N/A',
+                'period_end' => $records->max('created_at')?->format('d/m/Y H:i') ?? 'N/A',
+            ];
+        });
+
+        // Resumen Mouse (caché 1 hora)
+        $mouseSummary = Cache::remember('keycounter:mouse:summary', 3600, function () {
+            $records = Mouse::whereNotNull('start_at')
+                ->whereNotNull('end_at')
+                ->where('total_clicks', '>', 0)
+                ->orderByDesc('created_at')
+                ->take(100)
+                ->get();
+
+            return [
+                'total_records' => $records->count(),
+                'avg_clicks' => round($records->avg('total_clicks') ?? 0, 2),
+                'avg_clicks_per_minute' => round($records->avg('clicks_average') ?? 0, 2),
+                'max_clicks' => $records->max('total_clicks') ?? 0,
+                'total_clicks' => $records->sum('total_clicks') ?? 0,
+                'period_start' => $records->min('created_at')?->format('d/m/Y H:i') ?? 'N/A',
+                'period_end' => $records->max('created_at')?->format('d/m/Y H:i') ?? 'N/A',
+            ];
+        });
+
+        // Widgets estadísticos (caché 24 horas)
+        $widgets = Cache::remember('keycounter:widgets', 86400, function () {
+            $totalGlobal = Keyboard::sum('pulsations');
+
+            $topYear = Keyboard::selectRaw("EXTRACT(YEAR FROM created_at) as year, SUM(pulsations) as total")
+                ->groupByRaw("EXTRACT(YEAR FROM created_at)")
+                ->orderByDesc('total')
+                ->first();
+
+            $topMonth = Keyboard::selectRaw("EXTRACT(YEAR FROM created_at) as year, EXTRACT(MONTH FROM created_at) as month, SUM(pulsations) as total")
+                ->groupByRaw("EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at)")
+                ->orderByDesc('total')
+                ->first();
+
+            $totalsByYear = Keyboard::selectRaw("EXTRACT(YEAR FROM created_at) as year, SUM(pulsations) as total")
+                ->groupByRaw("EXTRACT(YEAR FROM created_at)")
+                ->orderByDesc('year')
+                ->get();
+
+            return [
+                'total_global' => $totalGlobal,
+                'top_year' => $topYear,
+                'top_month' => $topMonth,
+                'totals_by_year' => $totalsByYear,
+            ];
+        });
+
         return view('keycounter.index')->with([
             'month' => $month,
             'year' => $year,
@@ -49,17 +108,9 @@ class KeyCounterController extends Controller
             'datasetJson' => $statistics['datasetJson'],
             'keyboard_statistics' => $statistics['keyboard_statistics'],
             'months' => $months,
-            'keyboard' => Keyboard::whereNotNull('start_at')
-                ->whereNotNull('end_at')
-                ->where('pulsations', '>', 0)
-                ->orderByDesc('created_at')
-                ->paginate(100),
-            'mouse' => Mouse::whereNotNull('start_at')
-                ->whereNotNull('end_at')
-                ->where('total_clicks', '>', 0)
-                ->where('clicks_average', '>', 0)
-                ->orderByDesc('created_at')
-                ->paginate(100),
+            'keyboardSummary' => $keyboardSummary,
+            'mouseSummary' => $mouseSummary,
+            'widgets' => $widgets,
         ]);
     }
 
@@ -81,8 +132,6 @@ class KeyCounterController extends Controller
         $keyboard_statistics = $statistics['keyboard_statistics'];
         $labelsString = $statistics['labelsString'];
         $datasetJson = $statistics['datasetJson'];
-
-        // TODO → Preparar mejor respuesta
 
         $data = [
             'month' => $month,

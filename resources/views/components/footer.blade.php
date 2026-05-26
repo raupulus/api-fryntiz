@@ -113,6 +113,6 @@
             </div>
         </div>
 
-        <p class="text-xs opacity-30 mt-4 text-center">&copy; {{ date('Y') }} Api Raupulus. Todos los derechos reservados.</p>
+        <p class="text-xs opacity-30 mt-4 text-center">&copy; 2018 Api Raupulus. Todos los derechos reservados.</p>
     </div>
 </footer>

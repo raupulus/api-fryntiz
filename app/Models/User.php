@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
 use Carbon\Carbon;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +24,7 @@ use function asset;
  *
  * @package App\Models
  */
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
     use HasFactory;
@@ -192,6 +194,21 @@ class User extends Authenticatable
         return 'profile/username';
     }
      */
+
+    /**
+     * Determina si el usuario puede acceder al panel de Filament indicado.
+     *
+     * @param Panel $panel
+     * @return bool
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() === 'admin') {
+            return $this->role_id === 1;
+        }
+
+        return true;
+    }
 
     /**
      * Elimina de forma segura un usuario y todos los datos asociado.

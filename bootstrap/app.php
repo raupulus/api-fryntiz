@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/keycounter/v1.php'));
 
             Route::middleware('api')
-                ->prefix('api/smart_plant/v1')
+                ->prefix('api/smartplant/v1')
                 ->group(base_path('routes/smart_plant/v1.php'));
 
             Route::middleware('api')
@@ -100,20 +100,8 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        $exceptions->render(function (\App\Exceptions\JsonValidationException $e, $request) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error de validación',
-                'errors' => $e->errors(),
-            ], 422);
-        });
-
-        $exceptions->render(function (\App\Exceptions\JsonAuthorizationException $e, $request) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No autorizado',
-            ], 403);
-        });
+        // JsonValidationException y JsonAuthorizationException se auto-renderizadas
+        // mediante su propio método render() para mantener compatibilidad con API V1.
 
         $exceptions->render(function (\Illuminate\Auth\Access\AuthorizationException $e, $request) {
             if ($request->is('api/*') || $request->wantsJson()) {

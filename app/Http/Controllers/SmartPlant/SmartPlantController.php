@@ -19,7 +19,9 @@ class SmartPlantController extends Controller
      */
     public function index()
     {
-        $smartplants = SmartPlantPlant::all();
+        $smartplants = SmartPlantPlant::with(['registers' => function ($query) {
+            $query->latest()->take(10);
+        }])->get();
 
         return view('smartplant.index')->with([
             'smartplants' => $smartplants,

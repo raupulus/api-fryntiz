@@ -132,4 +132,16 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | Ruta | Descripción |
 |------|-------------|
 | `/hardware` | Listado de dispositivos |
-| `/hardware/energy` | Dashboard de energía |
+| `/hardware/energy` | Dashboard de energía con iconos Material Symbols |
+
+### Frontend (Fix 5)
+
+- **Iconos Material Symbols:** Las tarjetas de estadísticas ahora soportan un campo `icon` opcional (fallback a `bolt`, `electric_meter`, `energy_savings_leaf` según sección).
+- **Tarjetas de dispositivos:** Icono `solar_power` con colores amber para cada dispositivo hardware.
+- **Diseño profesional:** Fondos con gradientes por sección (amber para "Ahora", emerald para "Hoy", indigo para "Histórico").
+
+### Comando de debug
+
+```bash
+php artisan debug:seed-energy --devices=5 --records=100
+```

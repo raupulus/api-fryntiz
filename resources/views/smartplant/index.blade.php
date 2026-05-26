@@ -53,7 +53,7 @@
                             <h3 class="text-xl font-bold text-on-surface mb-2">{{ $plant->name ?? 'Planta #'.$plant->id }}</h3>
                             <p class="text-on-surface-variant text-sm mb-2">{{ $plant->description ?? 'Sin descripción' }}</p>
                             @if($plant->registers && $plant->registers->count() > 0)
-                                @php $lastRegister = $plant->registers->last(); @endphp
+                                @php $lastRegister = $plant->registers->first(); @endphp
                                 <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
                                     <div class="bg-surface-container rounded-lg p-2 text-center">
                                         <span class="text-on-surface-variant text-xs">Humedad Tierra</span>
@@ -72,6 +72,39 @@
                                         <p class="text-on-surface font-bold">{{ $lastRegister->light ?? '-' }}%</p>
                                     </div>
                                 </div>
+
+                                {{-- Tabla de últimas 10 lecturas --}}
+                                @if($plant->registers->count() > 1)
+                                    <details class="mt-4">
+                                        <summary class="text-xs text-on-tertiary-container font-bold cursor-pointer hover:underline">
+                                            Ver últimas {{ $plant->registers->count() }} lecturas
+                                        </summary>
+                                        <div class="overflow-x-auto mt-2">
+                                            <table class="w-full text-xs text-on-surface">
+                                                <thead class="bg-surface-container text-on-surface-variant uppercase">
+                                                    <tr>
+                                                        <th class="px-2 py-1">Fecha</th>
+                                                        <th class="px-2 py-1">Hum. Tierra</th>
+                                                        <th class="px-2 py-1">Temp.</th>
+                                                        <th class="px-2 py-1">Hum. Aire</th>
+                                                        <th class="px-2 py-1">Luz</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($plant->registers as $register)
+                                                        <tr class="border-b border-surface-container">
+                                                            <td class="px-2 py-1">{{ $register->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
+                                                            <td class="px-2 py-1 text-center">{{ $register->soil_humidity ?? '-' }}%</td>
+                                                            <td class="px-2 py-1 text-center">{{ $register->temperature ?? '-' }}°C</td>
+                                                            <td class="px-2 py-1 text-center">{{ $register->humidity ?? '-' }}%</td>
+                                                            <td class="px-2 py-1 text-center">{{ $register->light ?? '-' }}%</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </details>
+                                @endif
                             @endif
                         </div>
                     @endforeach

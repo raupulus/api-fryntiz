@@ -89,3 +89,14 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 | Ruta | Descripción |
 |------|-------------|
 | `/smartplant` | Dashboard público de plantas |
+
+### Frontend (Fix 5)
+
+- **Eager loading:** El controlador web carga las plantas con `with(['registers' => fn($q) => $q->latest()->take(10)])` para limitar a las 10 últimas lecturas por planta.
+- **Tarjetas de planta:** Cada planta muestra nombre, descripción y última lectura (humedad tierra, temperatura, humedad aire, luz).
+
+### Comando de debug
+
+```bash
+php artisan debug:seed-smartplant --plants=5 --registers=50
+```

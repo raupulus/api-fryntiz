@@ -129,4 +129,27 @@ Todos los sensores heredan estos campos:
 
 | Ruta | Descripción |
 |------|-------------|
-| `/weatherstation` | Dashboard público con datos meteorológicos actuales |
+| `/weatherstation` | Dashboard público con widget Vue 3 del clima y tarjetas de sensores con iconos |
+| `/weatherstation/sensor/{type}` | Página individual de un sensor con tabla paginada Blade y botón volver |
+
+### Tipos de sensor soportados en ruta web
+
+`temperature`, `humidity`, `pressure`, `light`, `wind`, `wind-direction`, `rain`, `eco2`, `tvoc`, `air-quality`, `lightning`
+
+### Widget Vue 3 (`ChipionaWeatherComponent`)
+
+- **Archivo:** `resources/js/vue/Components/ChipionaWeatherComponent.vue`
+- **Montaje:** `resources/js/vue.js` (carga con `@vite('resources/js/vue.js')`)
+- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default `api/weatherstation/v1/resume`)
+- **Actualización:** Cada 65 segundos vía `fetch()` desde API V1
+- **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
+
+### Iconos Material Symbols por sensor
+
+Cada tarjeta de sensor usa un icono representativo definido en `SENSOR_MAP` del controlador.
+
+### Comando de debug
+
+```bash
+php artisan debug:seed-weatherstation --count=20
+```
