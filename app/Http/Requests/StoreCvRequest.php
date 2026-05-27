@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class StoreCvRequest
- * @package App\Http\Requests
  */
 class StoreCvRequest extends FormRequest
 {

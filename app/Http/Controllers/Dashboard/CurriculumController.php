@@ -6,7 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCvRequest;
 use App\Models\CV\Curriculum;
 use App\Models\File;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+
 use function auth;
 use function redirect;
 use function view;
@@ -19,7 +24,7 @@ class CurriculumController extends Controller
     /**
      * Muestra el listado de todos los curriculums.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index()
     {
@@ -37,11 +42,11 @@ class CurriculumController extends Controller
     /**
      * Muestra el formulario para crear un curriculum.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function create()
     {
-        $cv = new Curriculum();
+        $cv = new Curriculum;
 
         return view('dashboard.curriculums.add-edit')->with([
             'cv' => $cv,
@@ -51,13 +56,12 @@ class CurriculumController extends Controller
     /**
      * Guarda un curriculum en la base de datos.
      *
-     * @param \App\Http\Requests\StoreCvRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(StoreCvRequest $request)
     {
-        ## Compruebo si está editando o creando un curriculum.
+        // # Compruebo si está editando o creando un curriculum.
         if ($request->has('cv_id') && ($request->get('cv_id') > 0)) {
             $cv = Curriculum::find($request->get('cv_id'));
         } else {
@@ -70,22 +74,22 @@ class CurriculumController extends Controller
             return redirect()->back()->with('error', 'You are not authorized to edit this curriculum.');
         }
 
-        ## Guardo todos los campos que han pasado validación.
+        // # Guardo todos los campos que han pasado validación.
         $cv->fill($request->validated());
         $cv->save();
 
-        ## Actualizo los demás curriculums para que solo haya 1 predefinido.
+        // # Actualizo los demás curriculums para que solo haya 1 predefinido.
         if ($cv->is_default) {
             Curriculum::where('user_id', auth()->id())
                 ->where('id', '!=', $cv->id)
                 ->update(['is_default' => false]);
         }
 
-        ## Compruebo si se ha subido una imagen y la guardo.
+        // # Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $file = File::addFile($request->file('image'), 'cv', true, $cv->image_id);
 
-            if (!$cv->image_id && $file) {
+            if (! $cv->image_id && $file) {
                 $cv->image_id = $file->id;
                 $cv->save();
             }
@@ -97,15 +101,14 @@ class CurriculumController extends Controller
     /**
      * Muestra un formulario para editar un curriculum.
      *
-     * @param int $id
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     * @return Application|Factory|View|RedirectResponse
      */
     public function edit(int $id)
     {
         $cv = Curriculum::find($id);
 
-        if ( ! $cv) {
+        if (! $cv) {
             return redirect()->back()->with('error', 'Curriculum not found.');
         }
 
@@ -117,9 +120,8 @@ class CurriculumController extends Controller
     /**
      * Procesa el guardado de las modificaciones sobre un curriculum.
      *
-     * @param \App\Http\Requests\StoreCvRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function update(StoreCvRequest $request)
     {
@@ -129,7 +131,7 @@ class CurriculumController extends Controller
     /**
      * Elimina un curriculum.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function destroy(Request $request)
     {
@@ -141,7 +143,7 @@ class CurriculumController extends Controller
 
         $cv = Curriculum::find($id);
 
-        if (!$cv) {
+        if (! $cv) {
             return redirect()->back()->with('error', 'Curriculum not found.');
         }
 

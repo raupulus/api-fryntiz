@@ -44,7 +44,7 @@ class CurriculumExperienceAccredited extends CurriculumBaseSection
      * @var string[]
      */
     public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.experience-accredited.index'
+        'index' => 'dashboard.curriculums.experience-accredited.index',
     ];
 
     /**
@@ -62,10 +62,10 @@ class CurriculumExperienceAccredited extends CurriculumBaseSection
         return [
             'Imagen' => 'image',
             'Título' => 'title',
-            //'Descripción' => 'description',
-            //'Posición' => 'position',
+            // 'Descripción' => 'description',
+            // 'Posición' => 'position',
             'Empresa' => 'company',
-            //'Notas' => 'note',
+            // 'Notas' => 'note',
             'Inicio' => 'start_at',
             'Fin' => 'end_at',
         ];
@@ -74,7 +74,7 @@ class CurriculumExperienceAccredited extends CurriculumBaseSection
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {
@@ -90,7 +90,7 @@ class CurriculumExperienceAccredited extends CurriculumBaseSection
             'position' => [
                 'type' => 'text',
             ],
-           'company' => [
+            'company' => [
                 'type' => 'text',
             ],
             'note' => [

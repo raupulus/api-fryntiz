@@ -11,14 +11,10 @@ class TextFormatParseHelper
 {
     /**
      * Devuelve la cadena con el peso formateado en la unidad de medida más apropiada.
-     *
-     * @param int $bytes
-     * @param int $precision
-     * @return string
      */
     public static function formatBytes(int $bytes, int $precision = 2): string
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
@@ -28,16 +24,14 @@ class TextFormatParseHelper
         $bytes /= pow(1024, $pow);
         // $bytes /= (1 << (10 * $pow));
 
-        return round($bytes, $precision) . ' ' . $units[$pow];
+        return round($bytes, $precision).' '.$units[$pow];
     }
-
 
     /**
      * Devuelve el contenido HTML de un campo con contenido de código en bruto.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
      */
     public static function getFieldRaw(string $id, array $data): string
     {
@@ -50,17 +44,15 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido de párrafo.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getParagraphRaw(string $id, array $data, array $tunes): string
     {
 
         // "Párrafo Normal<br>"
         // TODO: Quitar <br> al final del párrafo
-
 
         return view('editor.fields._paragraph', [
             'id' => $id,
@@ -72,11 +64,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido de cabecera.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getHeaderRaw(string $id, array $data, array $tunes): string
     {
@@ -91,11 +81,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido de código.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getCodeRaw(string $id, array $data, array $tunes): string
     {
@@ -114,11 +102,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para un warning.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getWarningRaw(string $id, array $data, array $tunes): string
     {
@@ -133,11 +119,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para un quote.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getQuoteRaw(string $id, array $data, array $tunes): string
     {
@@ -153,11 +137,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para un listado.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getListRaw(string $id, array $data, array $tunes): string
     {
@@ -172,11 +154,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para un listado de checkboxs.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getCheckboxRaw(string $id, array $data, array $tunes): string
     {
@@ -190,11 +170,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con adjuntos.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getAttachesRaw(string $id, array $data, array $tunes): string
     {
@@ -217,11 +195,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para una imagen.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getImageRaw(string $id, array $data, array $tunes): string
     {
@@ -242,11 +218,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML con un delimitador.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getDelimiterRaw(string $id, array $data, array $tunes): string
     {
@@ -260,11 +234,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para un alert.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getAlertRaw(string $id, array $data, array $tunes): string
     {
@@ -282,11 +254,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo para previsualizar un sitio web.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getWebPreviewRaw(string $id, array $data, array $tunes): string
     {
@@ -304,11 +274,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido embebido.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getEmbedRaw(string $id, array $data, array $tunes): string
     {
@@ -326,11 +294,9 @@ class TextFormatParseHelper
     /**
      * Devuelve el contenido HTML de un campo con contenido para una tabla.
      *
-     * @param string $id ID del campo.
-     * @param array $data Array con el contenido del campo.
-     * @param array $tunes Array con datos adicionales.
-     *
-     * @return string
+     * @param  string  $id  ID del campo.
+     * @param  array  $data  Array con el contenido del campo.
+     * @param  array  $tunes  Array con datos adicionales.
      */
     public static function getTableRaw(string $id, array $data, array $tunes): string
     {
@@ -343,7 +309,6 @@ class TextFormatParseHelper
             unset($rows[0]);
         }
 
-
         return view('editor.fields._table', [
             'id' => $id,
             'hasHeader' => $hasHeader,
@@ -353,12 +318,10 @@ class TextFormatParseHelper
         ])->render();
     }
 
-
     /**
      * Recibe un array de elementos y los prepara para devolver una estructura HTML
      *
-     * @param array $blocks Array de bloques para generar la estructura HTML.
-     * @return string
+     * @param  array  $blocks  Array de bloques para generar la estructura HTML.
      */
     public static function arrayToHtml(array $blocks): string
     {
@@ -367,7 +330,6 @@ class TextFormatParseHelper
         }
 
         $result = [];
-
 
         // TODO: Añadir Carousel https://github.com/mr8bit/carousel-editorjs
         // TODO: Añadir Galería https://gitlab.com/rodrigoodhin/editorjs-image-gallery
@@ -433,32 +395,29 @@ class TextFormatParseHelper
                     break;
 
                 default:
-                    //$result[] = ''; // Plantear añadir <span>??
+                    // $result[] = ''; // Plantear añadir <span>??
                     break;
             }
 
+            // $htmlRaw = implode(' ', $result);
+            // $html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
+            // $html = preg_replace('/\\s{2,}/', ' ', $html);
 
-            //$htmlRaw = implode(' ', $result);
-            //$html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
-            //$html = preg_replace('/\\s{2,}/', ' ', $html);
-
-
-            //dd('ENTRA', $block, $result, $html);
+            // dd('ENTRA', $block, $result, $html);
 
         }
-
 
         $htmlRaw = implode(' ', $result);
 
         $html = preg_replace('/\\n|\\r|\\t/', '', $htmlRaw);
+
         return preg_replace('/\\s{2,}/', ' ', $html);
     }
 
     /**
      * Recibe una cadena en formato JSON y devuelve un string en formato HTML.
      *
-     * @param string $json Cadena con formato JSON
-     * @return string
+     * @param  string  $json  Cadena con formato JSON
      */
     public static function jsonToHtml(string $json): string
     {
@@ -468,22 +427,18 @@ class TextFormatParseHelper
             return self::arrayToHtml($jsonDecoded['blocks']);
         }
 
-
         return self::arrayToHtml($jsonDecoded);
     }
-
 
     /**
      * Busca en un array de bloques los elementos recibidos en otro array con los strings de campos a buscar.
      *
-     * @param array $blocks Es un array con todos los bloques del editor.
-     * @param array $search Es un array con cadenas de texto que coinciden con los bloques a buscar.
-     *
-     * @return Collection
+     * @param  array  $blocks  Es un array con todos los bloques del editor.
+     * @param  array  $search  Es un array con cadenas de texto que coinciden con los bloques a buscar.
      */
     public static function searchBlocks(array $blocks, array $search): Collection
     {
-        return collect(array_filter($blocks, function($b) use ($search) {
+        return collect(array_filter($blocks, function ($b) use ($search) {
             return in_array($b['type'], $search, false);
         }));
     }

@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use JsonHelper;
+
 use function redirect;
 use function view;
 
@@ -26,36 +27,28 @@ class TagController extends BaseWithTableCrudController
 
     /**
      * Display a listing of the resource.
-     *
-     * @return View
      */
     public function index(): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.index')->with([
             'model' => self::getModel(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return View
      */
     public function create(): View
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.$model::getModuleName().'.add-edit')->with([
             'model' => $model,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param TagStoreRequest $request
-     *
-     * @return RedirectResponse
      */
     public function store(TagStoreRequest $request): RedirectResponse
     {
@@ -68,7 +61,6 @@ class TagController extends BaseWithTableCrudController
     /**
      * Display the specified resource.
      *
-     * @param Tag $tag
      *
      * @return Response
      */
@@ -79,27 +71,18 @@ class TagController extends BaseWithTableCrudController
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param Tag $model
-     *
-     * @return View
      */
     public function edit(Tag $model): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.add-edit')->with([
             'model' => $model,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param TagUpdateRequest $request
-     * @param int|null $id
-     *
-     * @return RedirectResponse
      */
-    public function update(TagUpdateRequest $request, int|null $id = null): RedirectResponse
+    public function update(TagUpdateRequest $request, ?int $id = null): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::find($id);
@@ -112,13 +95,8 @@ class TagController extends BaseWithTableCrudController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param TagDeleteRequest $request
-     * @param int|null $id
-     *
-     * @return RedirectResponse
      */
-    public function destroy(TagDeleteRequest $request, int|null $id = null): RedirectResponse
+    public function destroy(TagDeleteRequest $request, ?int $id = null): RedirectResponse
     {
         $deleted = false;
         $idRequest = $request->get('id');
@@ -135,9 +113,8 @@ class TagController extends BaseWithTableCrudController
         return redirect()->back();
     }
 
-
-    ############################################################
-    ##                       AJAX                             ##
-    ############################################################
+    // ###########################################################
+    // #                       AJAX                             ##
+    // ###########################################################
 
 }

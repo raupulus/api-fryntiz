@@ -11,7 +11,6 @@ return [
         'aside' => [
             'minimize' => true,
             'theme' => 'dark', // light, dark, default
-        ]
-    ]
+        ],
+    ],
 ];
-?>

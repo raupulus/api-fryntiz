@@ -22,13 +22,13 @@ class StoreRegisterRequest extends BaseFormRequest
         ];
 
         if ($this->has('plant_id')) {
-            $mergeData['plant_id'] = (int)$this->plant_id;
+            $mergeData['plant_id'] = (int) $this->plant_id;
         }
         if ($this->has('hardware_device_id')) {
-            $mergeData['hardware_device_id'] = (int)$this->hardware_device_id;
+            $mergeData['hardware_device_id'] = (int) $this->hardware_device_id;
         }
         if ($this->has('soil_humidity')) {
-            $mergeData['soil_humidity'] = (float)$this->soil_humidity;
+            $mergeData['soil_humidity'] = (float) $this->soil_humidity;
         }
 
         $this->merge($mergeData);
@@ -37,18 +37,18 @@ class StoreRegisterRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'user_id'            => ['required', 'exists:users,id'],
-            'plant_id'           => ['required', 'numeric', 'exists:smartplant_plants,id'],
+            'user_id' => ['required', 'exists:users,id'],
+            'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id'],
             'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id'],
-            'uv'                 => ['nullable', 'numeric'],
-            'pressure'           => ['nullable', 'numeric'],
-            'temperature'        => ['nullable', 'numeric'],
-            'humidity'           => ['nullable', 'numeric'],
-            'soil_humidity'      => ['required', 'numeric'],
-            'soil_humidity_raw'  => ['nullable', 'numeric'],
-            'full_water_tank'    => ['nullable', 'boolean'],
-            'waterpump_enabled'  => ['nullable', 'boolean'],
-            'vaporizer_enabled'  => ['nullable', 'boolean'],
+            'uv' => ['nullable', 'numeric'],
+            'pressure' => ['nullable', 'numeric'],
+            'temperature' => ['nullable', 'numeric'],
+            'humidity' => ['nullable', 'numeric'],
+            'soil_humidity' => ['required', 'numeric'],
+            'soil_humidity_raw' => ['nullable', 'numeric'],
+            'full_water_tank' => ['nullable', 'boolean'],
+            'waterpump_enabled' => ['nullable', 'boolean'],
+            'vaporizer_enabled' => ['nullable', 'boolean'],
         ];
     }
 

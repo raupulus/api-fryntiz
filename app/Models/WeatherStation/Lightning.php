@@ -6,8 +6,6 @@ use App\Events\WeatherStation\LightningUpdateEvent;
 
 /**
  * Class Lightning
- *
- * @package App\Models\WeatherStation
  */
 class Lightning extends BaseWheaterStation
 {
@@ -19,7 +17,7 @@ class Lightning extends BaseWheaterStation
         'distance',
         'energy',
         'noise_floor',
-        'created_at'
+        'created_at',
     ];
 
     /**
@@ -42,7 +40,7 @@ class Lightning extends BaseWheaterStation
      */
     public $name = 'Rayos y Relámpagos';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'lightning';
     }
@@ -62,23 +60,12 @@ class Lightning extends BaseWheaterStation
         'created' => LightningUpdateEvent::class,
     ];
 
-
-
-
-
-
-
-
-
-
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -86,8 +73,6 @@ class Lightning extends BaseWheaterStation
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -101,8 +86,6 @@ class Lightning extends BaseWheaterStation
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -111,7 +94,7 @@ class Lightning extends BaseWheaterStation
             'distance' => 'Distancia (Km)',
             'energy' => 'Energía',
             'noise_floor' => 'Reducción de Ruido',
-            'created_at' => 'Instante'
+            'created_at' => 'Instante',
         ];
     }
 
@@ -120,7 +103,7 @@ class Lightning extends BaseWheaterStation
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

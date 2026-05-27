@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Intervention\Image\Laravel\Facades\Image;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 use function auth;
 use function redirect;
 use function response;
@@ -17,21 +19,20 @@ class FileController extends Controller
     /**
      * Devuelve un archivo del sistema de archivos.
      *
-     * @param string $module Grupo del archivo.
-     * @param int $id Identificador del archivo.
-     * @param string|null $slug Slug del archivo.
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @param  string  $module  Grupo del archivo.
+     * @param  int  $id  Identificador del archivo.
+     * @param  string|null  $slug  Slug del archivo.
+     * @return BinaryFileResponse
      */
-    public function get(string $module, int $id, string|null $slug = null)
+    public function get(string $module, int $id, ?string $slug = null)
     {
         $file = File::find($id);
 
-        if (!$file) {
+        if (! $file) {
             return response()->file(File::$genericImages['not_found']);
         }
 
-        ## Compruebo si es un archivo privado.
+        // # Compruebo si es un archivo privado.
         if ($file->is_private && ($file->user_id !== auth()->id())) {
             return response()->file(File::$genericImages['not_authorized']);
         }
@@ -42,21 +43,20 @@ class FileController extends Controller
     /**
      * Redimensiona una imagen y la devuelve a ese tamaño.
      *
-     * @param string $module Grupo del archivo.
-     * @param int $id Identificador del archivo.
-     * @param string $slug Slug del archivo.
-     * @param int $width Ancho del archivo a redimensionar.
+     * @param  string  $module  Grupo del archivo.
+     * @param  int  $id  Identificador del archivo.
+     * @param  string  $slug  Slug del archivo.
+     * @param  int  $width  Ancho del archivo a redimensionar.
      */
     public function resizeAndGet(string $module, int $id, string $slug, int $width)
     {
 
         $file = File::find($id);
 
-        if (!$file) {
+        if (! $file) {
             // TODO → Resize this file.
             return response()->file(File::$genericImages['not_found']);
         }
-
 
         // TODO → Check if file is an image.
 
@@ -65,15 +65,11 @@ class FileController extends Controller
             return response()->file(File::$genericImages['not_image']);
         }
 
-
-
-        ## Compruebo si es un archivo privado.
+        // # Compruebo si es un archivo privado.
         if ($file->is_private && ($file->user_id !== auth()->id())) {
             // TODO → Resize this file.
             return response()->file(File::$genericImages['not_authorized']);
         }
-
-
 
         $image = Image::read($file->storagePathFile);
         $image->scale(width: (int) $width);
@@ -84,40 +80,32 @@ class FileController extends Controller
 
         return response($encoded->toString())
             ->header('Content-Type', $encoded->mediaType());
-        //return response()->file($file->storagePathFile)->deleteFileAfterSend();
+        // return response()->file($file->storagePathFile)->deleteFileAfterSend();
 
     }
 
     /**
      * Procesa la subida de un archivo.
      */
-    public function upload(Request $request)
-    {
-
-    }
+    public function upload(Request $request) {}
 
     /**
      * Devuelve la descarga de un archivo.
      *
-     * @param string $module Grupo del archivo.
-     * @param int $id Identificador del archivo.
-     * @param string|null $slug Slug del archivo.
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @param  string  $module  Grupo del archivo.
+     * @param  int  $id  Identificador del archivo.
+     * @param  string|null  $slug  Slug del archivo.
+     * @return BinaryFileResponse
      */
-    public function download(string $module, int $id, string|null $slug = null)
-    {
-
-    }
+    public function download(string $module, int $id, ?string $slug = null) {}
 
     /**
      * Elimina un archivo.
      *
-     * @param int $id
      *
      * @return void
      */
-    public function delete( int $id)
+    public function delete(int $id)
     {
         $destroy = File::safeDeleteById($id);
 

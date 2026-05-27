@@ -31,11 +31,11 @@ class StoreCvJobRequest extends FormRequest
                 ->replaceMatches('/\s\s+/', '')->__toString(),
             'description' => Str::of($this->description)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
-            'url' => Str::of($this->url)->trim()->replaceMatches('/\s+/','')
+            'url' => Str::of($this->url)->trim()->replaceMatches('/\s+/', '')
                 ->__toString(),
-            'urlinfo' => Str::of($this->url)->trim()->replaceMatches('/\s+/','')
+            'urlinfo' => Str::of($this->url)->trim()->replaceMatches('/\s+/', '')
                 ->__toString(),
-            'repository' => Str::of($this->url)->trim()->replaceMatches('/\s+/','')
+            'repository' => Str::of($this->url)->trim()->replaceMatches('/\s+/', '')
                 ->__toString(),
         ]);
     }

@@ -21,7 +21,7 @@ class HardwareDeviceController extends BaseApiController
     {
         $device = $this->service->getDeviceInfo($id);
 
-        if (!$device) {
+        if (! $device) {
             return $this->notFoundResponse('Dispositivo no encontrado');
         }
 

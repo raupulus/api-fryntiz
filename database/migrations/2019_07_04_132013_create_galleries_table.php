@@ -17,10 +17,11 @@ class CreateGalleriesTable extends Migration
     public function up()
     {
         Schema::create('galleries', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de galleries');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario que realiza la subida');
@@ -37,8 +38,8 @@ class CreateGalleriesTable extends Migration
                 ->onDelete('set null');
             $table->string('name', 511)->comment('Nombre de la galería');
             $table->string('description', 1024)->comment('Descripción del contenido de la galería');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

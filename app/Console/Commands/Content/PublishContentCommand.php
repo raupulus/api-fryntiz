@@ -46,7 +46,6 @@ class PublishContentCommand extends Command
             })
             ->get();
 
-
         $contents->each(function ($content) use ($now, &$ids) {
             $content->published_at = $now;
             $content->save();

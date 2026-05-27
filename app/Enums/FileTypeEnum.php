@@ -13,7 +13,7 @@ enum FileTypeEnum: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Image => 'Imagen',
             self::Document => 'Documento',
             self::Video => 'Video',

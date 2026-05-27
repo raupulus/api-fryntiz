@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateReferredPlatformsTable
@@ -22,10 +22,11 @@ class CreateReferredUsersTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario');
             $table->foreign('user_id')
@@ -47,8 +48,8 @@ class CreateReferredUsersTable extends Migration
             $table->date('start_at')
                 ->nullable()
                 ->comment('Fecha de inicio de la afiliación.');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         $comment = 'Tabla para almacenar los usuarios asociados a plataformas de referidos.';

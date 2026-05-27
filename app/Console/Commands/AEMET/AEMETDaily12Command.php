@@ -45,7 +45,7 @@ class AEMETDaily12Command extends Command
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
         // Devuelve  UV máximo para la provincia. Por ahora no usado
-        //$response = \AEMETHelper::getUviInfo();
+        // $response = \AEMETHelper::getUviInfo();
 
         $this->guardedSave('costa_12h', fn () => \AEMETHelper::getCostaPrediction(), [AEMETCoast::class, 'saveFromApi']);
         $this->guardedSave('ozono', fn () => \AEMETHelper::getOzone(), [AEMETOzone::class, 'saveFromApi']);

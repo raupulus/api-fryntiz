@@ -17,6 +17,7 @@ class StoreSensorDataAction
         foreach ($records as $record) {
             $stored[] = $modelClass::create($record);
         }
+
         return $stored;
     }
 }

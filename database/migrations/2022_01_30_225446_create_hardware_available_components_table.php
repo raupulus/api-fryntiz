@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateHardwareAvailableComponentsTable
@@ -16,6 +16,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateHardwareAvailableComponentsTable extends Migration
 {
     private $tableName = 'hardware_available_components';
+
     private $tableComment = 'Tipos de componentes disponibles para un hardware';
 
     /**
@@ -26,10 +27,11 @@ class CreateHardwareAvailableComponentsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->string('name', 255)
                 ->comment('Nombre general (Tarjeta gráfica, Procesador...)');
             $table->string('type', 255)
@@ -40,8 +42,8 @@ class CreateHardwareAvailableComponentsTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción del componente');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

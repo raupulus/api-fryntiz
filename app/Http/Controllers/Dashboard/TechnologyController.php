@@ -22,43 +22,35 @@ class TechnologyController extends BaseWithTableCrudController
 
     /**
      * Display a listing of the resource.
-     *
-     * @return View
      */
     public function index(): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.index')->with([
             'model' => self::getModel(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return View
      */
     public function create(): View
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.$model::getModuleName().'.add-edit')->with([
             'model' => $model,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param TechnologyStoreRequest $request
-     *
-     * @return RedirectResponse
      */
     public function store(TechnologyStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::create($request->validated());
 
-        ## Guarda la imagen desde base64
+        // # Guarda la imagen desde base64
         if ($model && $request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'technology', false, $model->image?->id);
 
@@ -78,7 +70,6 @@ class TechnologyController extends BaseWithTableCrudController
     /**
      * Display the specified resource.
      *
-     * @param Technology $technology
      *
      * @return Response
      */
@@ -89,27 +80,18 @@ class TechnologyController extends BaseWithTableCrudController
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param Technology $technology
-     *
-     * @return View
      */
     public function edit(Technology $technology): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.add-edit')->with([
             'model' => $technology,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param TechnologyUpdateRequest $request
-     * @param int|null $id
-     *
-     * @return RedirectResponse
      */
-    public function update(TechnologyUpdateRequest $request, int|null $id = null): RedirectResponse
+    public function update(TechnologyUpdateRequest $request, ?int $id = null): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::find($id);
@@ -117,7 +99,7 @@ class TechnologyController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
-        ## Guarda la imagen desde base64
+        // # Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'technology', false, $model->image?->id);
 
@@ -136,13 +118,8 @@ class TechnologyController extends BaseWithTableCrudController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param TechnologyDeleteRequest $request
-     * @param int|null $id
-     *
-     * @return JsonResponse|RedirectResponse
      */
-    public function destroy(TechnologyDeleteRequest $request, int|null $id = null): JsonResponse|RedirectResponse
+    public function destroy(TechnologyDeleteRequest $request, ?int $id = null): JsonResponse|RedirectResponse
     {
         $deleted = false;
         $idRequest = $request->get('id');

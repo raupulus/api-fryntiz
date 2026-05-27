@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateMeteorologyWinterTable
@@ -11,6 +11,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateMeteorologyWinterTable extends Migration
 {
     private $tableName = 'meteorology_winter';
+
     private $tableComment = 'Datos del viento';
 
     /**
@@ -21,10 +22,11 @@ class CreateMeteorologyWinterTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -47,7 +49,7 @@ class CreateMeteorologyWinterTable extends Migration
                 ->comment('Velocidad mínima del viento m/s');
             $table->decimal('max', 14, 4)
                 ->comment('Velocidad máxima del viento m/s');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

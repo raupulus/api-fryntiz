@@ -2,15 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
+
 use function bcrypt;
 use function config;
 
 /**
  * Class UsersTableSeeder
- *
- * @package Database\Seeders
  */
 class UsersTableSeeder extends Seeder
 {
@@ -24,8 +23,8 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $superadmin = User::firstOrCreate([
-                'email' => 'superadmin@domain.es',
-            ],[
+            'email' => 'superadmin@domain.es',
+        ], [
             'name' => 'Administrador Principal',
             'role_id' => 1,
             'nickname' => 'superadmin',
@@ -42,7 +41,7 @@ class UsersTableSeeder extends Seeder
 
         $admin = User::firstOrCreate([
             'email' => 'admin@domain.es',
-        ],[
+        ], [
             'name' => 'Administrador',
             'role_id' => 2,
             'nickname' => 'admin',
@@ -53,7 +52,7 @@ class UsersTableSeeder extends Seeder
 
         $user = User::firstOrCreate([
             'email' => 'user@domain.es',
-            ],[
+        ], [
             'name' => 'Usuario Normal',
             'role_id' => 3,
             'nickname' => 'user',

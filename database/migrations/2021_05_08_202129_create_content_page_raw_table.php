@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentPageRawTable extends Migration
 {
     private $tableName = 'content_page_raw';
+
     private $tableComment = 'Contenido original o en otros formatos desde los que se ha compuesto el html almacenado en la tabla de contenidos. Por ejemplo, páginas de inicio, páginas de error, etc.';
 
     /**
@@ -25,10 +26,11 @@ class CreateContentPageRawTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('content_page_id')
                 ->nullable()
                 ->comment('FK a la página.');
@@ -48,8 +50,8 @@ class CreateContentPageRawTable extends Migration
                 ->nullable()
                 ->comment('Contenido de la página en este formato.');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

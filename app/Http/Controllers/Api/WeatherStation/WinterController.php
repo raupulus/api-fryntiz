@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Models\WeatherStation\Wind;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+
 use function response;
 
 /**
  * Class WinterController
- *
- * @package App\Http\Controllers\Api\WeatherStation
  */
 class WinterController extends BaseWheaterStationController
 {
@@ -23,8 +23,7 @@ class WinterController extends BaseWheaterStationController
     /**
      * Reglas de validación a la hora de insertar datos.
      *
-     * @param $request
-     *
+     * @param  $request
      * @return mixed
      */
     public function addValidate($data)
@@ -41,7 +40,8 @@ class WinterController extends BaseWheaterStationController
 
     /**
      * Devuelve todos los elementos del modelo.
-     * @return \Illuminate\Http\JsonResponse
+     *
+     * @return JsonResponse
      */
     public function all()
     {

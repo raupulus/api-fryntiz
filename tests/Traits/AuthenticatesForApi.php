@@ -10,14 +10,16 @@ trait AuthenticatesForApi
     {
         $user = User::factory()->create();
         $user->forceFill(['role_id' => $role])->save();
+
         return $user->fresh();
     }
 
     protected function authenticatedHeaders(User $user): array
     {
         $token = $user->createToken('test-token')->plainTextToken;
+
         return [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'Accept' => 'application/json',
         ];
     }

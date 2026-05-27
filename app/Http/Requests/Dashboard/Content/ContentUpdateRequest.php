@@ -4,6 +4,7 @@ namespace App\Http\Requests\Dashboard\Content;
 
 use App\Models\Content\Content;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 use function trim;
 
@@ -62,7 +63,7 @@ class ContentUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|min:5|max:255',
-            'slug' => 'required|max:255|unique:contents,slug,' . $this->get('id'),
+            'slug' => 'required|max:255|unique:contents,slug,'.$this->get('id'),
             'excerpt' => 'nullable|string|max:255',
             'author_id' => 'required|exists:users,id',
             'platform_id' => 'required|exists:platforms,id',
@@ -84,7 +85,6 @@ class ContentUpdateRequest extends FormRequest
             'is_visible_on_rss' => 'required|boolean',
             'is_visible_on_sitemap' => 'required|boolean',
             'is_visible_on_sitemap_news' => 'required|boolean',
-
 
             // Relaciones
             'contributors.*' => 'nullable|exists:users,id',

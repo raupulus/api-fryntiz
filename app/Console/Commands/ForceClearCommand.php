@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
@@ -11,7 +10,6 @@ use Symfony\Component\Process\Process;
 
 class ForceClearCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -26,34 +24,28 @@ class ForceClearCommand extends Command
      */
     protected $description = 'Fuerza limpieza de caché';
 
-
     /**
      * Get the composer command for the environment.
-     *
-     * @return string
      */
     protected function findComposer(): string
     {
-        if (file_exists(getcwd() . '/composer.phar')) {
-            return '"' . PHP_BINARY . '" ' . getcwd() . '/composer.phar';
+        if (file_exists(getcwd().'/composer.phar')) {
+            return '"'.PHP_BINARY.'" '.getcwd().'/composer.phar';
         }
 
         return 'composer';
     }
 
-
     /**
      * Performs general cleanup operations.
      *
-     * @param Filesystem $filesystem The instance of the Filesystem class.
-     * @return void
+     * @param  Filesystem  $filesystem  The instance of the Filesystem class.
      */
     public function handle(Filesystem $filesystem): void
     {
-        echo('');
+        echo '';
 
         $this->info('Estamos de limpieza general, espera un momento mientras se aplican las operaciones');
-
 
         $this->info('Limpiando caché con Cache::flush');
         Cache::flush();
@@ -89,7 +81,6 @@ class ForceClearCommand extends Command
         $this->info('Recomponiendo Key');
         Artisan::call('key:generate');
 
-
         $this->info('Recomponiendo índice de composer (composer dump-autoload)');
 
         $composer = $this->findComposer();
@@ -97,12 +88,10 @@ class ForceClearCommand extends Command
         $process = new Process([$composer.' dump-autoload']);
         $process->setTimeout(null);
 
-
-        echo('');
+        echo '';
 
         $this->info('El caché de tu aplicación ha quedado más limpio que una sábana nueva');
 
-        echo('');
+        echo '';
     }
-
 }

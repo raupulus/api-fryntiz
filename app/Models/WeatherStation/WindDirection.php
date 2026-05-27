@@ -4,8 +4,6 @@ namespace App\Models\WeatherStation;
 
 /**
  * Class WindDirection
- *
- * @package App\Models\WeatherStation
  */
 class WindDirection extends BaseWheaterStation
 {
@@ -14,7 +12,7 @@ class WindDirection extends BaseWheaterStation
         'resistance',
         'direction',
         'grades',
-        'created_at'
+        'created_at',
     ];
 
     protected $table = 'meteorology_wind_direction';
@@ -38,7 +36,7 @@ class WindDirection extends BaseWheaterStation
      */
     public $name = 'Dirección del viento';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'wind_direction';
     }
@@ -62,7 +60,6 @@ class WindDirection extends BaseWheaterStation
     ];
     */
 
-
     /**
      * Devuelve todos los elementos del modelo.
      */
@@ -72,13 +69,13 @@ class WindDirection extends BaseWheaterStation
         $query::whereNotNull('direction')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return $query;
     }
 
     /**
      * Calcula la resistencia a 16bits según la dirección del viento.
      *
-     * @param $grades
      *
      * @return float|int
      */
@@ -92,7 +89,6 @@ class WindDirection extends BaseWheaterStation
     /**
      * Obtengo la dirección del viento según los grados.
      *
-     * @param $grades
      *
      * @return string
      */
@@ -117,23 +113,16 @@ class WindDirection extends BaseWheaterStation
         } elseif ($grades >= 337.5 && $grades <= 360) {
             return 'N';
         } else {
-           return 'N/A';
+            return 'N/A';
         }
     }
-
-
-
-
-
 
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -141,8 +130,6 @@ class WindDirection extends BaseWheaterStation
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -154,8 +141,6 @@ class WindDirection extends BaseWheaterStation
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -163,7 +148,7 @@ class WindDirection extends BaseWheaterStation
             'id' => 'ID',
             'direction' => 'Dirección',
             'grades' => 'Grados',
-            'created_at' => 'Instante'
+            'created_at' => 'Instante',
         ];
     }
 
@@ -172,7 +157,7 @@ class WindDirection extends BaseWheaterStation
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

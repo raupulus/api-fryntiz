@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api\V2;
 
-use App\Models\KeyCounter\Keyboard;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareType;
+use App\Models\KeyCounter\Keyboard;
 use App\Models\User;
 use Tests\Feature\Api\ApiTestCase;
 

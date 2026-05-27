@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentTechnologiesTable extends Migration
 {
     private $tableName = 'content_technologies';
+
     private $tableComment = 'Tecnologías de la plataforma asociadas al contenido';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentTechnologiesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('content_id')
                 ->index()
                 ->nullable()
@@ -41,11 +43,11 @@ class CreateContentTechnologiesTable extends Migration
                 ->references('id')->on('technologies')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
             $table->unique(['content_id', 'technology_id'], 'contents_technologies_unique');
-            //$table->index(['content_id', 'platform_technology_id']);
+            // $table->index(['content_id', 'platform_technology_id']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

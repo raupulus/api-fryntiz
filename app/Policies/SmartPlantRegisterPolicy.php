@@ -2,11 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class SmartPlantRegisterPolicy
@@ -25,12 +23,33 @@ class SmartPlantRegisterPolicy
         //
     }
 
-    public function create(User $user,
-                           SmartPlantPlant $smartPlantPlant)
+    protected function isAdmin(User $user): bool
     {
+        return $user->role && in_array($user->role->slug, ['admin', 'superadmin'], true);
+    }
 
-        // TODO → Crear sistema de permisos
+    public function viewAny(User $user): bool
+    {
+        return $this->isAdmin($user);
+    }
 
-        return $user->id === $smartPlantPlant->user_id;
+    public function view(User $user, SmartPlantRegister $register): bool
+    {
+        return $this->isAdmin($user);
+    }
+
+    public function create(User $user): bool
+    {
+        return $this->isAdmin($user);
+    }
+
+    public function update(User $user, SmartPlantRegister $register): bool
+    {
+        return $this->isAdmin($user);
+    }
+
+    public function delete(User $user, SmartPlantRegister $register): bool
+    {
+        return $this->isAdmin($user);
     }
 }

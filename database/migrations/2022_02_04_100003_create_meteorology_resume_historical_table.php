@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateMeteorologyResumeHistoricalTable
@@ -11,6 +11,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateMeteorologyResumeHistoricalTable extends Migration
 {
     private $tableName = 'meteorology_resume_historical';
+
     private $tableComment = 'Resumen meteorológico histórico';
 
     /**
@@ -21,10 +22,11 @@ class CreateMeteorologyResumeHistoricalTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -115,7 +117,7 @@ class CreateMeteorologyResumeHistoricalTable extends Migration
                 ->default(0)
                 ->comment('Intensidad de la lluvia en mm/h');
 
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

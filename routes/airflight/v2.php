@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AirFlight\V2\AirFlightController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

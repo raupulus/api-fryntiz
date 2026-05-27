@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentGalleriesTable extends Migration
 {
     private $tableName = 'content_galleries';
+
     private $tableComment = 'Galerías de imágenes asociadas al contenido';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentGalleriesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('gallery_id')
                 ->nullable()
                 ->comment('FK al a la galería que pertenezca');
@@ -39,11 +41,11 @@ class CreateContentGalleriesTable extends Migration
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
-            //$table->unique(['gallery_id', 'content_id']);
-            //$table->index(['gallery_id', 'content_id']);
+            // $table->unique(['gallery_id', 'content_id']);
+            // $table->index(['gallery_id', 'content_id']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

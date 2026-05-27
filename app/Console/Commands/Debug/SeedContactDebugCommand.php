@@ -39,6 +39,7 @@ class SeedContactDebugCommand extends Command
         }
 
         $this->info("✅ {$count} mensajes de contacto creados.");
+
         return self::SUCCESS;
     }
 }

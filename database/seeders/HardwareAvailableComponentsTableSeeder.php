@@ -4,15 +4,12 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
+
 use function array_merge;
-use function bcrypt;
 
 /**
  * Class HardwareAvailableComponentsTableSeeder
- *
- * @package Database\Seeders
  */
 class HardwareAvailableComponentsTableSeeder extends Seeder
 {

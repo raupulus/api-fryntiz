@@ -20,8 +20,8 @@ class UpdateUserRequest extends BaseFormRequest
 
         return [
             'name' => ['sometimes', 'string', 'max:255'],
-            'nickname' => ['sometimes', 'nullable', 'string', 'max:100', 'unique:users,nickname,' . $userId],
-            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users,email,' . $userId],
+            'nickname' => ['sometimes', 'nullable', 'string', 'max:100', 'unique:users,nickname,'.$userId],
+            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users,email,'.$userId],
         ];
     }
 

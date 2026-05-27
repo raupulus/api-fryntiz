@@ -14,7 +14,7 @@ class HardwareTest extends ApiTestCase
         $headers = $this->asUser();
         $response = $this->getJson($this->apiUrl('get/device/1/info'), $headers);
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 
     /** @test */

@@ -85,7 +85,7 @@ class SeedContentDebugCommand extends Command
                 'type_id' => $type->id,
                 'status_id' => $status->id,
                 'title' => $title,
-                'slug' => Str::slug($title) . '-' . Str::random(5),
+                'slug' => Str::slug($title).'-'.Str::random(5),
                 'excerpt' => fake()->paragraph(),
                 'is_active' => true,
                 'published_at' => fake()->dateTimeBetween('-1 year', 'now'),
@@ -96,7 +96,7 @@ class SeedContentDebugCommand extends Command
                 'content_id' => $content->id,
                 'title' => 'Page 1',
                 'slug' => 'page-1',
-                'content' => '<p>' . fake()->paragraphs(3, true) . '</p>',
+                'content' => '<p>'.fake()->paragraphs(3, true).'</p>',
                 'order' => 1,
             ]);
 
@@ -110,7 +110,7 @@ class SeedContentDebugCommand extends Command
             ContentMetadata::create([
                 'content_id' => $content->id,
                 'web' => fake()->url(),
-                'github' => 'https://github.com/' . fake()->userName() . '/' . fake()->word(),
+                'github' => 'https://github.com/'.fake()->userName().'/'.fake()->word(),
             ]);
 
             ContentSeo::create([
@@ -122,6 +122,7 @@ class SeedContentDebugCommand extends Command
         }
 
         $this->info("✅ {$count} contenidos creados con páginas, metadata y SEO.");
+
         return self::SUCCESS;
     }
 }

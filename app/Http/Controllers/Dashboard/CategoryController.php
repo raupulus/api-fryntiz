@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use JsonHelper;
+
 use function redirect;
 use function view;
 
@@ -29,36 +30,28 @@ class CategoryController extends BaseWithTableCrudController
 
     /**
      * Display a listing of the resource.
-     *
-     * @return View
      */
     public function index(): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.index')->with([
             'model' => self::getModel(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return View
      */
     public function create(): View
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.$model::getModuleName().'.add-edit')->with([
             'model' => $model,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param CategoryStoreRequest $request
-     *
-     * @return RedirectResponse
      */
     public function store(CategoryStoreRequest $request): RedirectResponse
     {
@@ -81,8 +74,7 @@ class CategoryController extends BaseWithTableCrudController
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -92,27 +84,18 @@ class CategoryController extends BaseWithTableCrudController
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param Category $model
-     *
-     * @return View
      */
     public function edit(Category $model): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.add-edit')->with([
             'model' => $model,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param CategoryUpdateRequest $request
-     * @param int|null                                          $id
-     *
-     * @return RedirectResponse
      */
-    public function update(CategoryUpdateRequest $request, int|null $id = null): RedirectResponse
+    public function update(CategoryUpdateRequest $request, ?int $id = null): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::find($id);
@@ -138,13 +121,8 @@ class CategoryController extends BaseWithTableCrudController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param CategoryDeleteRequest $request
-     * @param int|null                                          $id
-     *
-     * @return JsonResponse|RedirectResponse
      */
-    public function destroy(CategoryDeleteRequest $request, int|null $id = null): JsonResponse|RedirectResponse
+    public function destroy(CategoryDeleteRequest $request, ?int $id = null): JsonResponse|RedirectResponse
     {
         $deleted = false;
         $idRequest = $request->get('id');
@@ -161,18 +139,14 @@ class CategoryController extends BaseWithTableCrudController
         return redirect()->back();
     }
 
-
-    ############################################################
-    ##                       AJAX                             ##
-    ############################################################
-
+    // ###########################################################
+    // #                       AJAX                             ##
+    // ###########################################################
 
     /**
      * Devuelve una cadena con el html que corresponde a las subcategorías de la categoría recibida.
      * Utilizado para actualizar los checkbox cuando cambiamos de categoría o plataforma.
      *
-     * @param Category $category
-     * @return JsonResponse
      *
      * @throws \Throwable
      */

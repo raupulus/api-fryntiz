@@ -2,12 +2,16 @@
 
 namespace App\Console\Commands\Debug;
 
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwarePowerGenerator;
+use App\Models\Hardware\HardwarePowerGeneratorHistorical;
+use App\Models\Hardware\HardwarePowerGeneratorToday;
 use App\Models\Hardware\HardwarePowerLoad;
+use App\Models\Hardware\HardwarePowerLoadHistorical;
+use App\Models\Hardware\HardwarePowerLoadToday;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar dispositivos y registros de energía.
@@ -42,8 +46,8 @@ class SeedEnergyDebugCommand extends Command
             $device = HardwareDevice::create([
                 'user_id' => $userId,
                 'hardware_type_id' => 1,
-                'name' => ($deviceNames[$i % count($deviceNames)]) . ' #' . ($i + 1),
-                'name_friendly' => 'Debug Device ' . ($i + 1),
+                'name' => ($deviceNames[$i % count($deviceNames)]).' #'.($i + 1),
+                'name_friendly' => 'Debug Device '.($i + 1),
                 'description' => 'Dispositivo de debug para pruebas de energía',
                 'created_at' => $now,
             ]);
@@ -96,7 +100,72 @@ class SeedEnergyDebugCommand extends Command
 
         $bar->finish();
         $this->newLine();
-        $this->info("✅ {$devicesCount} dispositivos con {$recordsCount} registros cada uno insertados.");
+
+        // === Agregados *_today y *_historical (fix_10 / fase 02) ===
+        // Sin esto la vista /hardware/energy queda a 0.
+        $this->info('Generando agregados today + historical...');
+        $today = $now->copy()->startOfDay();
+        foreach ($devices as $device) {
+            HardwarePowerLoadToday::updateOrCreate(
+                ['hardware_device_id' => $device->id, 'date' => $today->toDateString()],
+                [
+                    'fan_min' => 0, 'fan_max' => 1,
+                    'temperature_min' => 25, 'temperature_max' => 48,
+                    'voltage_min' => 11.5, 'voltage_max' => 14.8,
+                    'battery_min' => 11.5, 'battery_max' => 14.8,
+                    'battery_percentage_min' => 20, 'battery_percentage_max' => 100,
+                    'read_at' => $now,
+                ]
+            );
+
+            HardwarePowerGeneratorToday::updateOrCreate(
+                ['hardware_device_id' => $device->id, 'date' => $today->toDateString()],
+                [
+                    'temperature_min' => 22, 'temperature_max' => 50,
+                    'voltage_min' => 12.0, 'voltage_max' => 24.0,
+                    'battery_min' => 11.5, 'battery_max' => 14.8,
+                    'battery_percentage_min' => 20, 'battery_percentage_max' => 100,
+                    'amperage_max' => 4.8,
+                    'power' => 45.0, 'power_max' => 95.0,
+                    'read_at' => $now,
+                ]
+            );
+
+            for ($d = 0; $d < 30; $d++) {
+                $day = $now->copy()->subDays($d);
+                HardwarePowerLoadHistorical::updateOrCreate(
+                    ['hardware_device_id' => $device->id, 'read_at' => $day],
+                    [
+                        'fan_min' => 0, 'fan_max' => 1,
+                        'temperature_min' => fake()->randomFloat(2, 22, 28),
+                        'temperature_max' => fake()->randomFloat(2, 40, 50),
+                        'voltage_min' => fake()->randomFloat(2, 11, 12),
+                        'voltage_max' => fake()->randomFloat(2, 13, 15),
+                        'battery_min' => fake()->randomFloat(2, 11, 12),
+                        'battery_max' => fake()->randomFloat(2, 13, 15),
+                        'amperage_min' => fake()->randomFloat(2, 0, 0.5),
+                        'amperage_max' => fake()->randomFloat(2, 2, 3),
+                        'amperage' => fake()->randomFloat(2, 0.5, 2),
+                        'power_min' => fake()->randomFloat(2, 0, 5),
+                        'power_max' => fake()->randomFloat(2, 50, 60),
+                        'power' => fake()->randomFloat(2, 10, 40),
+                        'days_operating' => $d + 1,
+                    ]
+                );
+
+                HardwarePowerGeneratorHistorical::updateOrCreate(
+                    ['hardware_device_id' => $device->id, 'read_at' => $day],
+                    [
+                        'days_operating' => $d + 1,
+                        'number_battery_over_discharges' => fake()->numberBetween(0, 3),
+                        'number_battery_full_charges' => fake()->numberBetween(0, 5),
+                        'power' => fake()->randomFloat(2, 10, 90),
+                    ]
+                );
+            }
+        }
+
+        $this->info("✅ {$devicesCount} dispositivos con {$recordsCount} registros cada uno + agregados today/historical insertados.");
 
         return self::SUCCESS;
     }

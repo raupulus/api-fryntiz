@@ -42,7 +42,7 @@ class PlatformPolicy
     public function delete(User $user, Platform $platform)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $platform->user_id === $user->id;
+        // return $platform->user_id === $user->id;
     }
 
     public function show(User $user, Platform $platform)
@@ -53,6 +53,6 @@ class PlatformPolicy
     public function update(User $user, Platform $platform)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $platform->user_id === $user->id;
+        // return $platform->user_id === $user->id;
     }
 }

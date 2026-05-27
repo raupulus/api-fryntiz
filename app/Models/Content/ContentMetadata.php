@@ -18,22 +18,18 @@ class ContentMetadata extends BaseModel
 
     /**
      * Devuelve la url para insertar el iframe.
-     *
-     * @return string|null
      */
     public function getYoutubeVideoIframeUrlAttribute(): ?string
     {
-        return $this->youtube_video_id ? 'https://www.youtube.com/embed/' . $this->youtube_video_id : null;
+        return $this->youtube_video_id ? 'https://www.youtube.com/embed/'.$this->youtube_video_id : null;
     }
 
     /**
      * Devuelve la url para ver el vídeo de youtube.
-     *
-     * @return string|null
      */
     public function getYoutubeVideoUrlAttribute(): ?string
     {
-        return $this->youtube_video_id ? 'https://www.youtube.com/watch?v=' . $this->youtube_video_id : null;
+        return $this->youtube_video_id ? 'https://www.youtube.com/watch?v='.$this->youtube_video_id : null;
     }
 
     /**
@@ -43,6 +39,6 @@ class ContentMetadata extends BaseModel
      */
     public function getUrlTwitterAttribute(): ?string
     {
-        return $this->twitter ? 'https://twitter.com/' . $this->twitter : null;
+        return $this->twitter ? 'https://twitter.com/'.$this->twitter : null;
     }
 }

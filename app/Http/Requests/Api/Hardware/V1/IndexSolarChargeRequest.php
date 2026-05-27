@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\Hardware\V1;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Models\Hardware\HardwareDevice;
+
 use function auth;
 
 /**

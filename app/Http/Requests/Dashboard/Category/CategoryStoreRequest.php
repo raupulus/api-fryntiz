@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Dashboard\Category;
 
 use App\Models\Category;
-use Illuminate\Support\Str;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
+
 use function auth;
 
 /**
@@ -32,7 +33,6 @@ class CategoryStoreRequest extends FormRequest
             'priority' => $this->get('priority') ?? ($this->get('parent_id') ? 2 : 1),
         ]);
     }
-
 
     /**
      * Get the validation rules that apply to the request.

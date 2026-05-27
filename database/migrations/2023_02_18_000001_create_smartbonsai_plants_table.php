@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateSmartbonsaiPlantsTable
@@ -11,6 +11,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateSmartbonsaiPlantsTable extends Migration
 {
     private $tableName = 'smartplant_plants';
+
     private $tableComment = 'Cada tipo de planta sobre la que se tomarán registros con sensores.';
 
     /**
@@ -21,10 +22,11 @@ class CreateSmartbonsaiPlantsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -46,8 +48,8 @@ class CreateSmartbonsaiPlantsTable extends Migration
                 ->comment('Imagen que representa a la planta');
             $table->timestamp('start_at')
                 ->comment('Momento en el que se ha sembrado');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

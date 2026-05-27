@@ -42,7 +42,7 @@ class TechnologyPolicy
     public function delete(User $user, Technology $category)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $category->user_id === $user->id;
+        // return $category->user_id === $user->id;
     }
 
     public function show(User $user, Technology $tag)
@@ -53,6 +53,6 @@ class TechnologyPolicy
     public function update(User $user, Technology $category)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $category->user_id === $user->id;
+        // return $category->user_id === $user->id;
     }
 }

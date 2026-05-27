@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentFilesTable extends Migration
 {
     private $tableName = 'content_files';
+
     private $tableComment = 'Archivos asociados al contenido';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentFilesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('file_id')
                 ->nullable()
                 ->comment('FK al al archivo');
@@ -39,8 +41,8 @@ class CreateContentFilesTable extends Migration
                 ->references('id')->on('contents')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

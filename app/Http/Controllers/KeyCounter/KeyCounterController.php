@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\KeyCounter;
 
 use App\Http\Controllers\Controller;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
 use JsonHelper;
 
 /**
  * Class KeyCounterController
- *
- * @package App\Http\Controllers\KeyCounter
  */
 class KeyCounterController extends Controller
 {
@@ -20,7 +23,7 @@ class KeyCounterController extends Controller
      * Vista con las estadísticas generales para el contador de pulsaciones
      * y clicks a modo de ejemplo o muestra.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Application|Factory|View
      */
     public function index(Request $request)
     {
@@ -30,8 +33,8 @@ class KeyCounterController extends Controller
         $statistics = Keyboard::getStatisticsPreparedToGraphics($month, $year);
 
         $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
-                   'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
-                   'Noviembre', 'Diciembre'];
+            'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+            'Noviembre', 'Diciembre'];
 
         // Resumen Keyboard (caché 1 hora)
         $keyboardSummary = Cache::remember('keycounter:keyboard:summary', 3600, function () {
@@ -78,18 +81,18 @@ class KeyCounterController extends Controller
         $widgets = Cache::remember('keycounter:widgets', 86400, function () {
             $totalGlobal = Keyboard::sum('pulsations');
 
-            $topYear = Keyboard::selectRaw("EXTRACT(YEAR FROM created_at) as year, SUM(pulsations) as total")
-                ->groupByRaw("EXTRACT(YEAR FROM created_at)")
+            $topYear = Keyboard::selectRaw('EXTRACT(YEAR FROM created_at) as year, SUM(pulsations) as total')
+                ->groupByRaw('EXTRACT(YEAR FROM created_at)')
                 ->orderByDesc('total')
                 ->first();
 
-            $topMonth = Keyboard::selectRaw("EXTRACT(YEAR FROM created_at) as year, EXTRACT(MONTH FROM created_at) as month, SUM(pulsations) as total")
-                ->groupByRaw("EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at)")
+            $topMonth = Keyboard::selectRaw('EXTRACT(YEAR FROM created_at) as year, EXTRACT(MONTH FROM created_at) as month, SUM(pulsations) as total')
+                ->groupByRaw('EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at)')
                 ->orderByDesc('total')
                 ->first();
 
-            $totalsByYear = Keyboard::selectRaw("EXTRACT(YEAR FROM created_at) as year, SUM(pulsations) as total")
-                ->groupByRaw("EXTRACT(YEAR FROM created_at)")
+            $totalsByYear = Keyboard::selectRaw('EXTRACT(YEAR FROM created_at) as year, SUM(pulsations) as total')
+                ->groupByRaw('EXTRACT(YEAR FROM created_at)')
                 ->orderByDesc('year')
                 ->get();
 
@@ -102,7 +105,7 @@ class KeyCounterController extends Controller
 
             $topDeviceName = null;
             if ($topDevice) {
-                $device = \App\Models\Hardware\HardwareDevice::find($topDevice->hardware_device_id);
+                $device = HardwareDevice::find($topDevice->hardware_device_id);
                 $topDeviceName = $device?->name_friendly ?? $device?->name ?? "Device #{$topDevice->hardware_device_id}";
             }
 
@@ -113,7 +116,8 @@ class KeyCounterController extends Controller
                 ->orderByDesc('total')
                 ->get()
                 ->map(function ($row) {
-                    $device = \App\Models\Hardware\HardwareDevice::find($row->hardware_device_id);
+                    $device = HardwareDevice::find($row->hardware_device_id);
+
                     return (object) [
                         'hardware_device_id' => $row->hardware_device_id,
                         'name' => $device?->name_friendly ?? $device?->name ?? "Device #{$row->hardware_device_id}",
@@ -153,9 +157,8 @@ class KeyCounterController extends Controller
     /**
      * Devuelve los datos en json para las pulsaciones de teclado.
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function getKeyboardDataAjax(Request $request)
     {

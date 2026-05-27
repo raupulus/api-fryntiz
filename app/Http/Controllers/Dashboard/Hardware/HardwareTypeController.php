@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Dashboard\Hardware;
 use App\Http\Controllers\Controller;
 use App\Models\Hardware\HardwareType;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class HardwareTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -21,7 +22,7 @@ class HardwareTypeController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -31,8 +32,7 @@ class HardwareTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -42,8 +42,8 @@ class HardwareTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
-     * @return \Illuminate\Http\Response
+     * @param  HardwareType  $hardwareType
+     * @return Response
      */
     public function show(HardwareTypeController $hardwareType)
     {
@@ -53,8 +53,8 @@ class HardwareTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
-     * @return \Illuminate\Http\Response
+     * @param  HardwareType  $hardwareType
+     * @return Response
      */
     public function edit(HardwareTypeController $hardwareType)
     {
@@ -64,9 +64,8 @@ class HardwareTypeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
-     * @return \Illuminate\Http\Response
+     * @param  HardwareType  $hardwareType
+     * @return Response
      */
     public function update(Request $request, HardwareTypeController $hardwareType)
     {
@@ -76,8 +75,8 @@ class HardwareTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Hardware\HardwareType  $hardwareType
-     * @return \Illuminate\Http\Response
+     * @param  HardwareType  $hardwareType
+     * @return Response
      */
     public function destroy(HardwareTypeController $hardwareType)
     {

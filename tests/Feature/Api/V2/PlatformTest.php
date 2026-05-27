@@ -15,7 +15,7 @@ class PlatformTest extends ApiTestCase
         Platform::factory()->count(2)->create();
         $response = $this->getJson($this->apiUrl('platform'));
         $response->assertStatus(200)
-                 ->assertJsonStructure(['data']);
+            ->assertJsonStructure(['data']);
     }
 
     /** @test */

@@ -44,7 +44,7 @@ class CurriculumSkill extends CurriculumBaseSection
      * @var string[]
      */
     public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.skill.index'
+        'index' => 'dashboard.curriculums.skill.index',
     ];
 
     /**
@@ -70,7 +70,7 @@ class CurriculumSkill extends CurriculumBaseSection
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {

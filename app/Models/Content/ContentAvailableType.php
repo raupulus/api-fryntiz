@@ -19,8 +19,6 @@ class ContentAvailableType extends BaseModel
 
     /**
      * Relación con la imagen principal asociada al tipo de contenido.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {
@@ -29,8 +27,6 @@ class ContentAvailableType extends BaseModel
 
     /**
      * Relación con los contenidos que utilizan este tipo de contenido.
-     *
-     * @return HasMany
      */
     public function contents(): HasMany
     {
@@ -39,22 +35,16 @@ class ContentAvailableType extends BaseModel
 
     /**
      * Relación con los contenidos activos que utilizan este tipo de contenido.
-     *
-     * @return HasMany
      */
     public function contentsActive(): HasMany
     {
         return $this->contents()
             ->where('is_active', true)
-            ->whereNotNull('published_at')
-            ;
+            ->whereNotNull('published_at');
     }
 
     /**
      * Obtenemos las estadísticas para un tipo de contenido concreto con base a la plataforma recibida.
-     *
-     * @param Platform $platform
-     * @return array
      */
     public function getStatsByPlatform(Platform $platform): array
     {

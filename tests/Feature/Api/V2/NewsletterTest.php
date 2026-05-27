@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Api\V2;
 
+use App\Models\Platform;
+use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Api\ApiTestCase;
 
 class NewsletterTest extends ApiTestCase
@@ -11,13 +13,13 @@ class NewsletterTest extends ApiTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        \App\Models\Platform::factory()->create();
+        Platform::factory()->create();
     }
 
     /** @test */
     public function can_subscribe_with_valid_email(): void
     {
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
         $response = $this->postJson($this->apiUrl('newsletter/subscribe'), [
             'email' => 'subscriber@example.com',
         ]);
@@ -28,7 +30,7 @@ class NewsletterTest extends ApiTestCase
     /** @test */
     public function subscribe_succeeds_with_name(): void
     {
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
         $response = $this->postJson($this->apiUrl('newsletter/subscribe'), [
             'email' => 'test@example.com',
             'name' => 'Nombre Test',

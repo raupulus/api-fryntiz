@@ -17,8 +17,6 @@ class ContentTechnology extends BaseModel
 
     /**
      * Contenido que asocia.
-     *
-     * @return BelongsTo
      */
     public function content(): BelongsTo
     {
@@ -27,8 +25,6 @@ class ContentTechnology extends BaseModel
 
     /**
      * Tecnología asociada.
-     *
-     * @return BelongsTo
      */
     public function technology(): BelongsTo
     {

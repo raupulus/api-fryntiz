@@ -6,8 +6,6 @@ use App\Events\WeatherStation\RainUpdateEvent;
 
 /**
  * Class Rain
- *
- * @package App\Models\WeatherStation
  */
 class Rain extends BaseWheaterStation
 {
@@ -17,7 +15,7 @@ class Rain extends BaseWheaterStation
         'rain_intensity',
         'rain_month',
         'moisture',
-        'created_at'
+        'created_at',
     ];
 
     protected $table = 'meteorology_rain';
@@ -43,7 +41,7 @@ class Rain extends BaseWheaterStation
      */
     public $name = 'Lluvia';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'rain';
     }
@@ -77,19 +75,12 @@ class Rain extends BaseWheaterStation
         return $query;
     }
 
-
-
-
-
-
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -97,8 +88,6 @@ class Rain extends BaseWheaterStation
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -112,8 +101,6 @@ class Rain extends BaseWheaterStation
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -123,7 +110,7 @@ class Rain extends BaseWheaterStation
             'rain_intensity' => 'mm/h',
             'rain_month' => 'Mensual (mm)',
             'moisture' => 'Humedad (g/m3)',
-            'created_at' => 'Instante'
+            'created_at' => 'Instante',
         ];
     }
 
@@ -132,7 +119,7 @@ class Rain extends BaseWheaterStation
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -146,8 +133,7 @@ class Rain extends BaseWheaterStation
             ],
             'rain_month' => [
                 'type' => 'float',
-            ]
-            ,'moisture' => [
+            ], 'moisture' => [
                 'type' => 'float',
             ],
             'created_at' => [

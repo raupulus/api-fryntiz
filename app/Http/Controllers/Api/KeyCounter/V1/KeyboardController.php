@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Api\KeyCounter\V1;
 
 use App\Http\Requests\Api\KeyCounter\V1\StoreKeyboardRequest;
 use App\Models\KeyCounter\Keyboard;
+use Illuminate\Http\JsonResponse;
 use JsonHelper;
 
 /**
  * Class KeyboardController
- *
- * @package App\Http\Controllers\KeyCounter
  */
 class KeyboardController extends KeyCounterController
 {
@@ -21,9 +20,8 @@ class KeyboardController extends KeyCounterController
     /**
      * Almacena un elemento en el modelo.
      *
-     * @param \App\Http\Requests\Api\KeyCounter\V1\StoreKeyboardRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(StoreKeyboardRequest $request)
     {

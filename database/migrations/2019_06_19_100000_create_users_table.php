@@ -17,10 +17,11 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de users');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('role_id')
                 ->default(3)
                 ->comment('Role principal del usuario, aunque pueda tener otros roles extras');
@@ -40,7 +41,7 @@ class CreateUsersTable extends Migration
                 ->nullable()
                 ->unique()
                 ->comment('Apodo del usuario, ha de ser único para permitir el login en la aplicación');
-            $table->text('profile_photo_path')->nullable();
+            $table->text('profile_photo_path')->nullable()->comment('Columna profile photo path');
             $table->string('email')
                 ->unique()
                 ->comment('Email del usuario, ha de ser único para permitir el login en la aplicación');
@@ -49,11 +50,11 @@ class CreateUsersTable extends Migration
                 ->comment('Momento en el que ha verificado el email');
             $table->string('password')
                 ->comment('Contraseña del usuario cifrada.');
-            $table->text('two_factor_secret')->nullable();
-            $table->text('two_factor_recovery_codes')->nullable();
-            $table->rememberToken();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->text('two_factor_secret')->nullable()->comment('Columna two factor secret');
+            $table->text('two_factor_recovery_codes')->nullable()->comment('Columna two factor recovery codes');
+            $table->rememberToken()->comment('Token de sesión para recordar usuario');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

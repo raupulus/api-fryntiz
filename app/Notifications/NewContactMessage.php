@@ -21,8 +21,8 @@ class NewContactMessage extends Notification
     {
         return (new MailMessage)
             ->subject('Nuevo mensaje de contacto')
-            ->line('Has recibido un nuevo mensaje de contacto de ' . ($this->data['name'] ?? 'Anonimo'))
-            ->line('Asunto: ' . ($this->data['subject'] ?? 'Sin asunto'))
+            ->line('Has recibido un nuevo mensaje de contacto de '.($this->data['name'] ?? 'Anonimo'))
+            ->line('Asunto: '.($this->data['subject'] ?? 'Sin asunto'))
             ->action('Ver en el panel', url('/admin'));
     }
 

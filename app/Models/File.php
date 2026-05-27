@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Intervention\Image\Laravel\Facades\Image;
+
 use function array_filter;
 use function asset;
 use function auth;
@@ -32,6 +33,7 @@ class File extends Model
         'normal' => 640,
         'large' => 1280,
     ];
+
     public static $genericImages = [
         'error' => 'error.png',
         'default' => 'default.png',
@@ -44,6 +46,7 @@ class File extends Model
         'not_allowed_type' => 'not_allowed_type.png',
         'not_available' => 'not_available.png',
     ];
+
     public static $imageMimeCanEdit = [
         'image/jpeg',
         'image/pjpeg',
@@ -54,15 +57,15 @@ class File extends Model
         'image/x-ms-bmp',
         'image/bmp',
     ];
+
     protected $table = 'files';
+
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     /**
      * Relación con el tipo de archivo asociado.
-     *
-     * @return BelongsTo
      */
     public function fileType(): BelongsTo
     {
@@ -71,16 +74,11 @@ class File extends Model
 
     /**
      * Devuelve la url de una imagen genérica.
-     *
-     * @param $size
-     *
-     * @return string
      */
     public static function urlDefaultImage($size = 'medium'): string
     {
 
         // TODO: Cambiar imágenes por defecto usando el formato webp
-
 
         switch ($size) {
             case 'micro':
@@ -103,30 +101,26 @@ class File extends Model
                 break;
         }
 
-        return asset('images/default/' . $name);
+        return asset('images/default/'.$name);
     }
 
     /**
      * Almacena y devuelve un archivo recibiendo el objeto de tipo UploadFile.
      * Lo devuelve una vez almacenado.
      *
-     * @param UploadedFile $uploadedFile
-     * @param string $path Directorio dónde guardarlo.
-     * @param bool $is_private Si es privado o público.
-     * @param int|null $file_id Id del archivo si existiera.
-     * @param bool $has_thumbnails Si tiene miniaturas.
-     *
-     * @return File|null
+     * @param  string  $path  Directorio dónde guardarlo.
+     * @param  bool  $is_private  Si es privado o público.
+     * @param  int|null  $file_id  Id del archivo si existiera.
+     * @param  bool  $has_thumbnails  Si tiene miniaturas.
      */
     public static function addFile(UploadedFile $uploadedFile,
-                                   string       $path = 'upload',
-                                   bool         $is_private = true,
-                                   int          $file_id = null,
-                                   bool         $has_thumbnails = true
-    ): ?File
-    {
+        string $path = 'upload',
+        bool $is_private = true,
+        ?int $file_id = null,
+        bool $has_thumbnails = true
+    ): ?File {
 
-        $fullPath = ($is_private ? 'private' : 'public') . '/' . $path;
+        $fullPath = ($is_private ? 'private' : 'public').'/'.$path;
 
         $imageFullPath = $uploadedFile->store($fullPath);
         $imageNameArray = explode('/', $imageFullPath);
@@ -135,10 +129,10 @@ class File extends Model
 
         $canEditImage = in_array($mime, self::$imageMimeCanEdit);
 
-        ## Obtengo el tipo de archivo o lo creo si no existe.
+        // # Obtengo el tipo de archivo o lo creo si no existe.
         $fileType = FileType::addFileType($uploadedFile->getClientMimeType(), $uploadedFile->getClientOriginalExtension());
 
-        ## Cuando se está reemplazando un archivo se borra del disco el anterior.
+        // # Cuando se está reemplazando un archivo se borra del disco el anterior.
         if ($file_id) {
             $oldFile = self::find($file_id);
 
@@ -147,7 +141,7 @@ class File extends Model
             }
         }
 
-        ## Redimensiono la imagen si supera el ancho máximo lógico para web.
+        // # Redimensiono la imagen si supera el ancho máximo lógico para web.
         if ($canEditImage) {
             // TODO → Máximo tamaño de archivo original si es imagen 2560x1800px
             // TODO → Borrar o cambiar metadatos de los archivos si es privado.
@@ -166,9 +160,9 @@ class File extends Model
         $module = explode('/', $path);
         $module = count($module) ? $module[0] : 'uploads';
 
-        ## Registro el archivo.
+        // # Registro el archivo.
         $file = self::updateOrCreate([
-            'id' => $file_id
+            'id' => $file_id,
         ], [
             'user_id' => auth()->id(),
             'file_type_id' => $fileType?->id,
@@ -185,8 +179,7 @@ class File extends Model
             'is_private' => $is_private,
         ]);
 
-
-        ## Registro las miniaturas.
+        // # Registro las miniaturas.
         if ($has_thumbnails && $file && $file->fileType && ($file->fileType->type === 'image')) {
             $thumbnails = self::createThumbnails($file);
         }
@@ -194,23 +187,20 @@ class File extends Model
         return $file;
     }
 
-
     /**
      * Recibe un string en base64 y lo convierte en un archivo.
      *
-     * @param string $base64 Cadena en base64
-     * @param string $path Directorio dónde se almacenará
-     * @param bool $is_private Indica si pertenece al espacio privado
-     * @param int|null $file_id Id del archivo si existiera
-     * @param bool $has_thumbnails Indica si se deben generar miniaturas
-     *
-     * @return File|null
+     * @param  string  $base64  Cadena en base64
+     * @param  string  $path  Directorio dónde se almacenará
+     * @param  bool  $is_private  Indica si pertenece al espacio privado
+     * @param  int|null  $file_id  Id del archivo si existiera
+     * @param  bool  $has_thumbnails  Indica si se deben generar miniaturas
      */
     public static function addFileFromBase64(string $base64,
-                                             string $path = 'upload',
-                                             bool   $is_private = true,
-                                             int    $file_id = null,
-                                             bool   $has_thumbnails = true): ?File
+        string $path = 'upload',
+        bool $is_private = true,
+        ?int $file_id = null,
+        bool $has_thumbnails = true): ?File
     {
         // Get file data base64 string
         $fileData = base64_decode(Arr::last(explode(',', $base64)));
@@ -222,7 +212,6 @@ class File extends Model
         // Save file data in file
         file_put_contents($tempFilePath, $fileData);
 
-
         $tempFileObject = new \Illuminate\Http\File($tempFilePath);
 
         $uploadedFile = new UploadedFile(
@@ -233,9 +222,7 @@ class File extends Model
             true // Mark it as test, since the file isn't from real HTTP POST.
         );
 
-
         $file = self::addFile($uploadedFile, $path, $is_private, $file_id, $has_thumbnails);
-
 
         // Close this file after response is sent.
         // Closing the file will cause to remove it from temp director!
@@ -243,17 +230,11 @@ class File extends Model
             fclose($tempFile);
         });
 
-
         return $file;
     }
 
-
     /**
      * Crea las miniaturas de un archivo.
-     *
-     * @param File $file
-     *
-     * @return array
      */
     public static function createThumbnails(File $file): array
     {
@@ -265,7 +246,7 @@ class File extends Model
         $module = explode('/', $file->path);
         $module = count($module) ? $module[0] : 'uploads';
 
-        ## Borro las miniaturas antiguas.
+        // # Borro las miniaturas antiguas.
         foreach ($oldThumbnails as $oldThumbnail) {
             if (file_exists($oldThumbnail->storagePathFile)) {
                 unlink($oldThumbnail->storagePathFile);
@@ -276,26 +257,25 @@ class File extends Model
 
         $canEditImage = $file->fileType && in_array($file->fileType?->mime, self::$imageMimeCanEdit);
 
-        ## Compruebo si es una imagen editable
-        if (!$canEditImage) {
+        // # Compruebo si es una imagen editable
+        if (! $canEditImage) {
             return $thumbnails;
         }
 
         $imgOriginal = Image::read($file->storagePathFile);
 
-
-        ## Genero las nuevas miniaturas.
+        // # Genero las nuevas miniaturas.
         foreach ($sizes as $key => $size) {
 
             if ($file->width > $size) {
 
-                $newPath = storage_path('app/' . $file->storage_path . '/' . $size);
+                $newPath = storage_path('app/'.$file->storage_path.'/'.$size);
 
-                $img = clone($imgOriginal);
+                $img = clone $imgOriginal;
 
                 $img->scale(width: $size);
 
-                if (!\File::isDirectory($newPath)) {
+                if (! \File::isDirectory($newPath)) {
                     \File::makeDirectory($newPath, 493, true);
                 }
 
@@ -306,22 +286,22 @@ class File extends Model
                 if ($file->fileType->mime === 'image/jpeg') {
                     $newName = preg_replace('/\.jpeg$/i', '.webp', $file->name);
                     $newName = preg_replace('/\.jpg$/i', '.webp', $newName);
-                    $img->toWebp(90)->save($newPath . '/' . $newName);
+                    $img->toWebp(90)->save($newPath.'/'.$newName);
                     $extension = 'webp';
                 } elseif ($file->fileType->mime === 'image/png') {
                     $newName = preg_replace('/\.png$/i', '.webp', $file->name);
-                    $img->toWebp(90)->save($newPath . '/' . $newName);
+                    $img->toWebp(90)->save($newPath.'/'.$newName);
                     $extension = 'webp';
                 } else {
                     $newName = $file->name;
-                    $img->save($newPath . '/' . $newName, quality: 90);
+                    $img->save($newPath.'/'.$newName, quality: 90);
                 }
 
-                ## Busco de nuevo el tipo mime, por si hubiera cambiado a webp.
+                // # Busco de nuevo el tipo mime, por si hubiera cambiado a webp.
                 $mime = 'image/webp';
 
                 if ($mime) {
-                    ## Obtengo el tipo de archivo o lo creo si no existe.
+                    // # Obtengo el tipo de archivo o lo creo si no existe.
                     $fileType = FileType::addFileType($mime, $extension);
                 } else {
                     $fileType = $file->fileType;
@@ -331,13 +311,13 @@ class File extends Model
                     'file_id' => $file->id,
                     'file_type_id' => $fileType->id,
                     'module' => $module,
-                    'path' => $file->path . '/' . $size,
-                    'storage_path' => $file->storage_path . '/' . $size,
+                    'path' => $file->path.'/'.$size,
+                    'storage_path' => $file->storage_path.'/'.$size,
                     'name' => $newName,
                     'key' => $key,
                     'width' => $img->width(),
                     'height' => $img->height(),
-                    'size' => filesize($newPath . '/' . $newName),
+                    'size' => filesize($newPath.'/'.$newName),
                 ]);
             }
         }
@@ -348,8 +328,7 @@ class File extends Model
     /**
      * Procesa el borrado por lote de un conjunto de archivos.
      *
-     * @param array $ids Ids de los archivos a borrar.
-     *
+     * @param  array  $ids  Ids de los archivos a borrar.
      * @return array[int]
      */
     public static function safeDeleteByIds(array $ids): array
@@ -358,26 +337,23 @@ class File extends Model
 
         $result = [];
 
-        ## Elimino cada archivo recibido.
+        // # Elimino cada archivo recibido.
         foreach ($files as $file) {
             $result[] = [
                 'id' => $file->id,
-                'success' => self::safeDeleteById($file->id)
+                'success' => self::safeDeleteById($file->id),
             ];
         }
 
         return $result;
     }
 
-
     /**
      * Devuelve la ruta hacia la imagen.
-     *
-     * @return string
      */
     public function getUrlAttribute(): string
     {
-        if ($this->path && $this->name && !$this->deleted_at) {
+        if ($this->path && $this->name && ! $this->deleted_at) {
             return route('file.get', [
                 'module' => $this->module,
                 'id' => $this->id,
@@ -390,13 +366,11 @@ class File extends Model
 
     /**
      * Devuelve la ruta hacia la imagen dentro del sistema de archivos.
-     *
-     * @return string
      */
     public function getStoragePathFileAttribute(): string
     {
         if ($this->storage_path) {
-            return storage_path('app/' . $this->storage_path . '/' . $this->name);
+            return storage_path('app/'.$this->storage_path.'/'.$this->name);
         }
 
         return '';
@@ -405,22 +379,20 @@ class File extends Model
     /**
      * Devuelve la url de una miniatura.
      *
-     * @param string $key Clave de la miniatura.
-     *
-     * @return string
+     * @param  string  $key  Clave de la miniatura.
      */
     public function thumbnail(string $key = 'small'): string
     {
-        ## En caso de no ser una imagen, devuelvo la url del archivo directamente.
-        if ($this->fileType && !($this->fileType->type === 'image')) {
+        // # En caso de no ser una imagen, devuelvo la url del archivo directamente.
+        if ($this->fileType && ! ($this->fileType->type === 'image')) {
             return $this->url;
         }
 
-        ## Obtenemos la miniatura en base a la clave.
+        // # Obtenemos la miniatura en base a la clave.
         $thumbnail = $this->thumbnails()->where('key', $key)->first();
 
-        ## Si no encontramos la miniatura, buscamos iterativamente la miniatura de menor tamaño
-        if (!$thumbnail) {
+        // # Si no encontramos la miniatura, buscamos iterativamente la miniatura de menor tamaño
+        if (! $thumbnail) {
             $keys = array_keys(self::$thumbnailsSizeWidth);
             $pos = array_search($key, $keys, true);
 
@@ -433,19 +405,17 @@ class File extends Model
             }
         }
 
-        ## Si encontramos la miniatura, devolvemos su URL.
+        // # Si encontramos la miniatura, devolvemos su URL.
         if ($thumbnail) {
             return $thumbnail->url;
         }
 
-        ## Si no se ha encontrado ninguna miniatura, devolvemos la URL de la imagen principal.
+        // # Si no se ha encontrado ninguna miniatura, devolvemos la URL de la imagen principal.
         return $this->url;
     }
 
     /**
      * Relación con las miniaturas asociadas a un archivo de tipo imagen.
-     *
-     * @return HasMany
      */
     public function thumbnails(): HasMany
     {
@@ -455,8 +425,6 @@ class File extends Model
     /**
      * Elimina de forma segura la instancia actual con todos sus datos
      * asociados como imágenes thumbnail y/o el propio archivo.
-     *
-     * @return bool
      */
     public function safeDelete(): bool
     {
@@ -466,19 +434,17 @@ class File extends Model
     /**
      * Elimina un archivo.
      *
-     * @param int $id Id del archivo a eliminar.
-     *
-     * @return bool
+     * @param  int  $id  Id del archivo a eliminar.
      */
     public static function safeDeleteById(int $id): bool
     {
         $file = self::find($id);
 
-        if (!$file) {
+        if (! $file) {
             return false;
         }
 
-        ## Elimino las miniaturas si tuviera.
+        // # Elimino las miniaturas si tuviera.
         $thumbnails = $file->thumbnails;
 
         foreach ($thumbnails as $thumbnail) {
@@ -489,7 +455,7 @@ class File extends Model
             $thumbnail->delete();
         }
 
-        ## Borro el archivo.
+        // # Borro el archivo.
         if (file_exists($file->storagePathFile)) {
             unlink($file->storagePathFile);
         }

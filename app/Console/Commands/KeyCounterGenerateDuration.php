@@ -8,8 +8,6 @@ use Illuminate\Console\Command;
 
 /**
  * Class KeyCounterGenerateDuration
- *
- * @package App\Console\Commands
  */
 class KeyCounterGenerateDuration extends Command
 {
@@ -47,12 +45,12 @@ class KeyCounterGenerateDuration extends Command
         $keyboard = Keyboard::whereNull('duration')->get();
 
         foreach ($keyboard as $k) {
-            ## Calculo la duración en segundos de la racha.
+            // # Calculo la duración en segundos de la racha.
             $start = new Carbon($k->start_at);
             $end = new Carbon($k->end_at);
             $duration = $start->diffInSeconds($end);
 
-            ## Almaceno la duración en segundos de la racha.
+            // # Almaceno la duración en segundos de la racha.
             $k->duration = $duration;
 
             $k->save();

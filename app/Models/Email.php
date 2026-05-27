@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Policies\EmailPolicy;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
-use \Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class Email
@@ -30,9 +30,28 @@ class Email extends BaseAbstractModelWithTableCrud
         'client_user_agent',
         'client_referer',
         'client_accept_language',
+        'captcha_score',
+        'priority',
+        'send',
+        'attempts',
+        'sent_at',
+        'error_code',
+        'error_at',
+        'error_message',
     ];
 
-    public static function  getModuleName(): string
+    protected $casts = [
+        'attributes' => 'array',
+        'client_accept_language' => 'array',
+        'privacity' => 'boolean',
+        'contactme' => 'boolean',
+        'send' => 'boolean',
+        'sent_at' => 'datetime',
+        'error_at' => 'datetime',
+        'captcha_score' => 'decimal:1',
+    ];
+
+    public static function getModuleName(): string
     {
         return 'email';
     }
@@ -50,8 +69,6 @@ class Email extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con el usuario.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -60,8 +77,6 @@ class Email extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con el idioma del usuario
-     *
-     * @return BelongsTo
      */
     public function language(): BelongsTo
     {
@@ -72,10 +87,8 @@ class Email extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return EmailPolicy::class;
     }
@@ -83,8 +96,6 @@ class Email extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -99,8 +110,6 @@ class Email extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -119,7 +128,7 @@ class Email extends BaseAbstractModelWithTableCrud
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -146,13 +155,9 @@ class Email extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve las rutas de acciones
-     *
-     * @return Collection
      */
     public static function getTableActionsInfo(): Collection
     {
         return collect([]);
     }
 }
-
-

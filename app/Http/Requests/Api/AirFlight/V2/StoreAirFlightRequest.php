@@ -17,15 +17,15 @@ class StoreAirFlightRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'icao'     => ['nullable', 'string', 'max:10'],
-            'flight'   => ['nullable', 'string', 'max:20'],
-            'squawk'   => ['nullable', 'string', 'max:10'],
-            'lat'      => ['nullable', 'numeric', 'between:-90,90'],
-            'lon'      => ['nullable', 'numeric', 'between:-180,180'],
+            'icao' => ['nullable', 'string', 'max:10'],
+            'flight' => ['nullable', 'string', 'max:20'],
+            'squawk' => ['nullable', 'string', 'max:10'],
+            'lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'lon' => ['nullable', 'numeric', 'between:-180,180'],
             'altitude' => ['nullable', 'numeric', 'min:0'],
-            'speed'    => ['nullable', 'numeric', 'min:0'],
-            'track'    => ['nullable', 'numeric', 'between:0,360'],
-            'seen'     => ['nullable', 'numeric'],
+            'speed' => ['nullable', 'numeric', 'min:0'],
+            'track' => ['nullable', 'numeric', 'between:0,360'],
+            'seen' => ['nullable', 'numeric'],
             'seen_pos' => ['nullable', 'numeric'],
             'messages' => ['nullable', 'integer', 'min:0'],
         ];

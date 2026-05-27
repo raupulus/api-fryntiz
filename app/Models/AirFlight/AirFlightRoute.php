@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
  * Class AirFlightRoute
  *
  * Representa las rutas que recorren los aviones.
- *
- * @package App\Models\AirFlight
  */
 class AirFlightRoute extends Model
 {
@@ -34,5 +32,4 @@ class AirFlightRoute extends Model
         'rssi',
         'emergency',
     ];
-
 }

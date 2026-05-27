@@ -4,6 +4,7 @@ namespace App\Http\Requests\Dashboard\Category;
 
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 use function trim;
 
@@ -46,8 +47,8 @@ class CategoryUpdateRequest extends FormRequest
     {
         return [
             'parent_id' => 'nullable|exists:categories,id',
-            'name' => 'required|string|max:255|unique:categories,name,' . $this->get('id'),
-            'slug' => 'required|max:255|unique:categories,slug,' . $this->get('id'),
+            'name' => 'required|string|max:255|unique:categories,name,'.$this->get('id'),
+            'slug' => 'required|max:255|unique:categories,slug,'.$this->get('id'),
             'description' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:255',
             'priority' => 'nullable|integer',

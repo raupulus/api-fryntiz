@@ -6,8 +6,6 @@ use App\Events\WeatherStation\WindUpdateEvent;
 
 /**
  * Class Wind
- *
- * @package App\Models\WeatherStation
  */
 class Wind extends BaseWheaterStation
 {
@@ -17,7 +15,7 @@ class Wind extends BaseWheaterStation
         'average',
         'min',
         'max',
-        'created_at'
+        'created_at',
     ];
 
     protected $table = 'meteorology_winter';
@@ -44,7 +42,7 @@ class Wind extends BaseWheaterStation
      */
     public $name = 'Viento';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'wind';
     }
@@ -64,7 +62,6 @@ class Wind extends BaseWheaterStation
         'created' => WindUpdateEvent::class,
     ];
 
-
     /**
      * Devuelve todos los elementos del modelo.
      */
@@ -74,23 +71,16 @@ class Wind extends BaseWheaterStation
         $query::whereNotNull('average')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return $query;
     }
-
-
-
-
-
-
 
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -98,8 +88,6 @@ class Wind extends BaseWheaterStation
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -113,8 +101,6 @@ class Wind extends BaseWheaterStation
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -124,7 +110,7 @@ class Wind extends BaseWheaterStation
             'average' => 'Media m/s',
             'min' => 'Mínimo m/s',
             'max' => 'Máximo m/s',
-            'created_at' => 'Instante'
+            'created_at' => 'Instante',
         ];
     }
 
@@ -133,7 +119,7 @@ class Wind extends BaseWheaterStation
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -147,8 +133,7 @@ class Wind extends BaseWheaterStation
             ],
             'min' => [
                 'type' => 'float',
-            ]
-            ,'max' => [
+            ], 'max' => [
                 'type' => 'float',
             ],
             'created_at' => [

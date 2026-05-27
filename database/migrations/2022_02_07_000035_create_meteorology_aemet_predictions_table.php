@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Schema;
  * Class CreateMeteorologyAemetAdverseEvents.
  *
  * Tabla para almacenar los fenómenos meteorológicos adversos.
- *
  */
 class CreateMeteorologyAemetPredictionsTable extends Migration
 {
     private $tableName = 'meteorology_aemet_predictions';
+
     private $tableComment = 'Predicción por horas de información de hora en hora hasta 48 horas. Se generan de forma automática mediante el tratamiento estadístico de los resultados de modelos numéricos de predicción';
 
     /**
@@ -24,10 +24,11 @@ class CreateMeteorologyAemetPredictionsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
 
             $table->string('city', 255)
                 ->nullable()
@@ -77,14 +78,13 @@ class CreateMeteorologyAemetPredictionsTable extends Migration
                 ->nullable()
                 ->comment('Valor de la humedad relativa (%)');
 
-
-            $table->timestamp('sunrise');
-            $table->timestamp('sunset');
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
-            $table->timestamp('day_start_at');
-            $table->timestamp('day_end_at');
-            $table->timestamps();
+            $table->timestamp('sunrise')->comment('Columna sunrise');
+            $table->timestamp('sunset')->comment('Columna sunset');
+            $table->timestamp('start_at')->comment('Columna start at');
+            $table->timestamp('end_at')->comment('Columna end at');
+            $table->timestamp('day_start_at')->comment('Columna day start at');
+            $table->timestamp('day_end_at')->comment('Columna day end at');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

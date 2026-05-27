@@ -63,25 +63,25 @@ class CurriculumAcademicTraining extends CurriculumBaseSection
             'Imagen' => 'image',
             'Título' => 'title',
             'Entidad emisora' => 'credential_id',
-            //'URL' => 'url',
+            // 'URL' => 'url',
             'Url' => 'credential_url',
-            //'Descripción' => 'description',
-            //'Notas' => 'note',
-            //'Conocimientos adquiridos' => 'learned',
+            // 'Descripción' => 'description',
+            // 'Notas' => 'note',
+            // 'Conocimientos adquiridos' => 'learned',
             'Horas' => 'hours',
-            //'Instructor de la formación' => 'instructor',
+            // 'Instructor de la formación' => 'instructor',
             '¿Expira?' => 'expires',
-            //'Fecha de expiración' => 'expires_at',
+            // 'Fecha de expiración' => 'expires_at',
             'Expedido en' => 'expedition_at',
-            //'Fecha de inicio' => 'start_at',
-            //'Fecha de fin' => 'end_at',
+            // 'Fecha de inicio' => 'start_at',
+            // 'Fecha de fin' => 'end_at',
         ];
     }
 
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {

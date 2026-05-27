@@ -36,7 +36,7 @@ class SeedHardwareDebugCommand extends Command
             HardwareDevice::create([
                 'user_id' => $userId,
                 'hardware_type_id' => $hardwareType->id,
-                'name' => 'debug-device-' . fake()->unique()->bothify('???-####'),
+                'name' => 'debug-device-'.fake()->unique()->bothify('???-####'),
                 'name_friendly' => fake()->words(2, true),
                 'ref' => strtoupper(fake()->bothify('REF-#####')),
                 'model' => fake()->word(),
@@ -53,6 +53,7 @@ class SeedHardwareDebugCommand extends Command
         }
 
         $this->info("✅ {$count} dispositivos hardware creados.");
+
         return self::SUCCESS;
     }
 }

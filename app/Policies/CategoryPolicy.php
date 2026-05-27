@@ -42,7 +42,7 @@ class CategoryPolicy
     public function delete(User $user, Category $category)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $category->user_id === $user->id;
+        // return $category->user_id === $user->id;
     }
 
     public function show(User $user, Category $tag)
@@ -53,6 +53,6 @@ class CategoryPolicy
     public function update(User $user, Category $category)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $category->user_id === $user->id;
+        // return $category->user_id === $user->id;
     }
 }

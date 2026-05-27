@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentSeoTable extends Migration
 {
     private $tableName = 'content_seo';
+
     private $tableComment = 'Información para SEO';
 
     /**
@@ -21,13 +22,14 @@ class CreateContentSeoTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('content_id')
                 ->index()
-                //->nullable()
+                // ->nullable()
                 ->comment('FK al contenido asociado');
             $table->foreign('content_id')
                 ->references('id')->on('contents')
@@ -66,7 +68,7 @@ class CreateContentSeoTable extends Migration
 
             $table->string('robots', 30)
                 ->default('index, follow')
-                ->nullable();
+                ->nullable()->comment('Columna robots');
 
             $table->string('og_title', 255)
                 ->nullable()
@@ -84,8 +86,8 @@ class CreateContentSeoTable extends Migration
                 ->nullable()
                 ->comment('Creador para Twitter - Redes sociales');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

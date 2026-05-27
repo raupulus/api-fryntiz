@@ -36,7 +36,7 @@ class SeedPlatformDebugCommand extends Command
             $platform = Platform::create([
                 'user_id' => $userId,
                 'title' => $title,
-                'slug' => Str::slug($title) . '-' . Str::random(5),
+                'slug' => Str::slug($title).'-'.Str::random(5),
                 'description' => fake()->sentence(),
                 'domain' => fake()->domainName(),
             ]);
@@ -59,6 +59,7 @@ class SeedPlatformDebugCommand extends Command
         }
 
         $this->info("✅ {$count} plataformas creadas con categorías y etiquetas.");
+
         return self::SUCCESS;
     }
 }

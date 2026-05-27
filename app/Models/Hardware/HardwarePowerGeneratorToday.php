@@ -4,6 +4,7 @@ namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use function array_filter;
 
 /**
@@ -24,10 +25,8 @@ class HardwarePowerGeneratorToday extends BaseModel
      * Prepara el modelo para ser guardado a partir de los datos de una
      * request.
      *
-     * @param \App\Models\Hardware\HardwareDevice $device
-     * @param                                     $request
      *
-     * @return \App\Models\Hardware\HardwarePowerGeneratorHistorical
+     * @return HardwarePowerGeneratorHistorical
      */
     public static function createModel(HardwareDevice $device, $request)
     {
@@ -61,7 +60,6 @@ class HardwarePowerGeneratorToday extends BaseModel
      * Prepara el modelo para ser actualizado a partir de los datos de una
      * request.
      *
-     * @param $request
      *
      * @return $this
      */

@@ -41,11 +41,10 @@ class AEMETEvery10mCommand extends Command
     {
         echo "\n\n Comenzando actualización de datos de AEMET \n\n";
 
-
         $this->guardedSave('contaminacion', fn () => \AEMETHelper::getContamination(), [AEMETContamination::class, 'saveFromApi']);
 
         /*********** Cada Lo mínimo que pueda ***********/
-        //$response = (new AEMET())->getPredictionDaily();  // NO PREPARADO MODELO/MIGRACION
+        // $response = (new AEMET())->getPredictionDaily();  // NO PREPARADO MODELO/MIGRACION
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

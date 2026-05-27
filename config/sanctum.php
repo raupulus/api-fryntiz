@@ -1,5 +1,7 @@
 <?php
 
+use Laravel\Sanctum\Http\Middleware\AuthenticateSession;
+
 return [
 
     /*
@@ -43,7 +45,7 @@ return [
     */
 
     'middleware' => [
-        'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
+        'authenticate_session' => AuthenticateSession::class,
     ],
 
 ];

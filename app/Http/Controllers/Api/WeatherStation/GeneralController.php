@@ -15,12 +15,11 @@ use App\Models\WeatherStation\WindDirection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+
 use function response;
 
 /**
  * Class GeneralController
- *
- * @package App\Http\Controllers\Api\WeatherStation
  */
 class GeneralController
 {
@@ -33,7 +32,7 @@ class GeneralController
 
         $data = Cache::remember('ws.resume', 60, function () {
             $now = Carbon::now();
-            $lastTenMinutes = (clone($now))->subMinutes(10);
+            $lastTenMinutes = (clone $now)->subMinutes(10);
 
             /*
             $temp = Temperature::select('meteorology_temperature.value as temperature')
@@ -77,7 +76,6 @@ class GeneralController
                 ->limit(1)
                 ->toSql();
 
-
             $lightning = Lightning::select('meteorology_lightning.created_at as last_lightning_at')
                 ->orderByDesc('created_at')
                 ->limit(1)
@@ -120,7 +118,7 @@ class GeneralController
                 DB::raw("($humidity) as humidity"),
                 DB::raw("($light) as light"),
                 DB::raw("($lightning) as last_lightning_at"),
-                //DB::raw("($lightningQuantityLastTenMinutes) as
+                // DB::raw("($lightningQuantityLastTenMinutes) as
                 // lightningQuantityLastTenMinutes"),
                 DB::raw("($pressure) as pressure"),
                 DB::raw("($tvoc) as tvoc"),
@@ -136,7 +134,7 @@ class GeneralController
                 ->first();
 
             // Si no hay datos de temperatura, devolver array vacío con valores por defecto
-            if (!$result) {
+            if (! $result) {
                 return [
                     'temperature' => null,
                     'air_quality' => null,
@@ -165,7 +163,7 @@ class GeneralController
                 ->pluck('qm')
                 ->first();
 
-            $d['lightningQuantityLastTenMinutes'] =  $lightningQuantityLastTenMinutes;
+            $d['lightningQuantityLastTenMinutes'] = $lightningQuantityLastTenMinutes;
 
             return $d;
         });
@@ -174,12 +172,12 @@ class GeneralController
         $now->tz = 'Europe/Madrid';
 
         $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
-                   'Diciembre'];
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
+            'Diciembre'];
 
         $days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-        ## Almaceno el momento de la comprobación
+        // # Almaceno el momento de la comprobación
         $data['instant'] = [
             'timestamp' => $now->format('Y-m-d H:i:s'),
             'year' => $now->format('Y'),
@@ -188,10 +186,10 @@ class GeneralController
             'day' => (int) $now->format('d'),
             'day_week' => $now->dayOfWeek,
             'day_name' => $days[$now->dayOfWeek],
-            'date_human_format' => $now->format('d') . ' ' .$months[$now->format('m') - 1] . ' ' . $now->format('Y'),
+            'date_human_format' => $now->format('d').' '.$months[$now->format('m') - 1].' '.$now->format('Y'),
             'time' => $now->format('H:i:s'),
 
-            //En el futuro mostrar tiempo: Muy Soleado, día, noche, lluvia...
+            // En el futuro mostrar tiempo: Muy Soleado, día, noche, lluvia...
             'day_status' => (($now->format('H') >= 20) || ($now->format('H') <= 8)) ?
                             'Noche' :
                             'Día',

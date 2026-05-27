@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\V1;
 
 use App\Models\Newsletter;
 use App\Models\Platform;
+use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Api\ApiTestCase;
 
 class NewsletterTest extends ApiTestCase
@@ -13,13 +14,13 @@ class NewsletterTest extends ApiTestCase
     /** @test */
     public function can_subscribe_with_valid_email(): void
     {
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
         Platform::factory()->create();
         $response = $this->postJson($this->apiUrl('newsletter/subscribe'), [
             'email' => 'test@example.com',
         ]);
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 
     /** @test */
@@ -35,7 +36,7 @@ class NewsletterTest extends ApiTestCase
         $newsletter = Newsletter::factory()->unverified()->create();
         $response = $this->getJson($this->apiUrl("newsletter/verify/{$newsletter->verification_token}"));
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 
     /** @test */
@@ -51,7 +52,7 @@ class NewsletterTest extends ApiTestCase
         $newsletter = Newsletter::factory()->create();
         $response = $this->getJson($this->apiUrl("newsletter/unsubscribe/{$newsletter->unsubscribe_token}"));
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 
     /** @test */

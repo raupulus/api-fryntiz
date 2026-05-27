@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Dashboard\Tag;
 
+use App\Models\Tag;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 
 /**
@@ -17,7 +19,7 @@ class TagStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->id() && auth()->user()->can('store', \App\Models\Tag::class);
+        return auth()->id() && auth()->user()->can('store', Tag::class);
     }
 
     /**

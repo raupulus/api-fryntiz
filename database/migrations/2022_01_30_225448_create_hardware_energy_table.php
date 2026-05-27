@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateHardwareEnergyTable extends Migration
 {
     private $tableName = 'hardware_energy';
+
     private $tableComment = 'Asocia dispositivos que monitorizan consumo o generación de energía con sus dispositivos monitorizados';
 
     /**
@@ -23,10 +24,11 @@ class CreateHardwareEnergyTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
                 ->comment('Dispositivo que se usa como monitor');
@@ -51,8 +53,8 @@ class CreateHardwareEnergyTable extends Migration
                 ->nullable()
                 ->comment('Posición del sensor en el dispositivo monitorizado');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

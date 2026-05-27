@@ -6,8 +6,6 @@ use App\Models\WeatherStation\Tvoc;
 
 /**
  * Class TvocController
- *
- * @package App\Http\Controllers\Api\WeatherStation
  */
 class TvocController extends BaseWheaterStationController
 {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Exception;
@@ -8,8 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Class RolesTableSeeder
- *
- * @package Database\Seeders
  */
 class RolesTableSeeder extends Seeder
 {
@@ -23,7 +22,7 @@ class RolesTableSeeder extends Seeder
     public function run()
     {
         try {
-            ## Creo rol para administrador principal.
+            // # Creo rol para administrador principal.
             DB::table('user_roles')->insert([
                 'name' => 'superadmin',
                 'display_name' => 'Super Admin',
@@ -31,7 +30,7 @@ class RolesTableSeeder extends Seeder
                 'description' => 'Administrador Principal',
             ]);
 
-            ## Creo rol para administradores.
+            // # Creo rol para administradores.
             DB::table('user_roles')->insert([
                 'name' => 'admin',
                 'display_name' => 'Admin',
@@ -39,7 +38,7 @@ class RolesTableSeeder extends Seeder
                 'description' => 'Administradores',
             ]);
 
-            ## Creo rol para usuario normal
+            // # Creo rol para usuario normal
             DB::table('user_roles')->insert([
                 'name' => 'user',
                 'display_name' => 'Usuario',

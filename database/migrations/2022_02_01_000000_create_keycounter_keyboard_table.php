@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateKeycounterKeyboardTable extends Migration
 {
     private $tableName = 'keycounter_keyboard';
+
     private $tableComment = 'Pulsaciones de teclado';
 
     /**
@@ -21,10 +22,11 @@ class CreateKeycounterKeyboardTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -55,7 +57,7 @@ class CreateKeycounterKeyboardTable extends Migration
                 ->comment('Puntuación conseguida en esta racha');
             $table->bigInteger('weekday')
                 ->comment('Día de la semana (0 es domingo)');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

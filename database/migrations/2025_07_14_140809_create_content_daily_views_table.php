@@ -9,11 +9,12 @@ class CreateContentDailyViewsTable extends Migration
     public function up()
     {
         Schema::create('content_daily_views', function (Blueprint $table) {
-            $table->id();
+            $table->comment('Tabla para almacenar información de content daily views');
+            $table->id()->comment('Identificador único');
             $table->unsignedBigInteger('content_id');
-            $table->date('date');
+            $table->date('date')->comment('Fecha');
             $table->unsignedInteger('views')->default(0);
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
 
             // Índices optimizados
             $table->unique(['content_id', 'date']);

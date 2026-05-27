@@ -2,12 +2,12 @@
 
 namespace App\Services\WeatherStation;
 
-use App\Models\WeatherStation\Temperature;
-use App\Models\WeatherStation\Humidity;
-use App\Models\WeatherStation\Pressure;
-use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\AirQuality;
+use App\Models\WeatherStation\Humidity;
+use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Lightning;
+use App\Models\WeatherStation\Pressure;
+use App\Models\WeatherStation\Temperature;
 use Illuminate\Support\Collection;
 
 class WeatherStationService
@@ -49,6 +49,7 @@ class WeatherStationService
                 }
             }
         }
+
         return $stored;
     }
 
@@ -62,6 +63,7 @@ class WeatherStationService
             'air_quality' => AirQuality::class,
             'lightning' => Lightning::class,
         ];
+
         return $map[$type] ?? null;
     }
 }

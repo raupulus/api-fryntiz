@@ -9,25 +9,20 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use JsonHelper;
+
 use function route;
 
 /**
  * Class RegisterController
- *
- * @package App\Http\Controllers\Api\Auth
  */
 class RegisterController extends Controller
 {
     /**
      * Create a new user instance after a valid registration.
-     *
-     * @param RegisterRequest $request
-     *
-     * @return JsonResponse
      */
     public function create(RegisterRequest $request): JsonResponse
     {
-        ## Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
+        // # Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
         return JsonHelper::forbidden();
 
         $data = $request->validated();
@@ -46,10 +41,6 @@ class RegisterController extends Controller
 
     /**
      * Elimina la cuenta de un usuario.
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
      */
     public function destroy(Request $request): JsonResponse
     {
@@ -64,10 +55,10 @@ class RegisterController extends Controller
 
         $user = $request->user();
 
-        ## Elimino tokens.
+        // # Elimino tokens.
         $user->tokens()->delete();
 
-        ## Elimino usuario y todos sus datos asociados.
+        // # Elimino usuario y todos sus datos asociados.
         $deleted = $user->safeDelete();
 
         if ($deleted) {
@@ -77,6 +68,6 @@ class RegisterController extends Controller
             ]);
         }
 
-        return JsonHelper::failed('Error deleting user account, contact the administrator',);
+        return JsonHelper::failed('Error deleting user account, contact the administrator');
     }
 }

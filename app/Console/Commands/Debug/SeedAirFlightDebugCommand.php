@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands\Debug;
 
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar aviones y registros de vuelo.
@@ -45,10 +45,21 @@ class SeedAirFlightDebugCommand extends Command
         $planes = [];
         for ($i = 0; $i < $planesCount; $i++) {
             $plane = AirFlightAirPlane::create([
+                'user_id' => $userId,
+                'hardware_device_id' => $hardwareDeviceId,
                 'icao' => strtoupper(fake()->bothify('######')),
+                'country' => fake()->randomElement(['Spain', 'France', 'UK', 'Germany', 'USA', 'Morocco', 'Portugal', 'Italy', 'Netherlands']),
                 'category' => fake()->randomElement(['A1', 'A2', 'A3', 'A5', 'B2', null]),
+                'flag' => fake()->randomElement([
+                    'https://flagcdn.com/w40/es.png',
+                    'https://flagcdn.com/w40/fr.png',
+                    'https://flagcdn.com/w40/gb.png',
+                    'https://flagcdn.com/w40/de.png',
+                    'https://flagcdn.com/w40/us.png',
+                ]),
                 'seen_first_at' => $now->copy()->subHours(fake()->numberBetween(1, 48)),
                 'seen_last_at' => $now->copy()->subMinutes(fake()->numberBetween(1, 30)),
+                'route_last_at' => $now->copy()->subMinutes(fake()->numberBetween(1, 30)),
             ]);
             $planes[] = $plane;
         }
@@ -77,7 +88,16 @@ class SeedAirFlightDebugCommand extends Command
                 'rssi' => fake()->randomFloat(1, -30, -5),
                 'emergency' => null,
                 'created_at' => $seenAt,
+                'updated_at' => $seenAt,
             ]);
+        }
+
+        // Re-calcular route_last_at por avión basado en sus rutas reales (fix_10 / fase 02).
+        foreach ($planes as $plane) {
+            $last = $plane->routes()->max('seen_at');
+            if ($last) {
+                $plane->update(['route_last_at' => $last]);
+            }
         }
 
         $this->info("✅ {$planesCount} aviones y {$routesCount} rutas insertadas.");

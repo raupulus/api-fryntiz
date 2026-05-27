@@ -31,7 +31,7 @@ class UpdateRequest extends BaseFormRequest
     {
         return [
             'name' => 'nullable|string|max:255',
-            'email' => 'nullable|string|email|max:255|unique:users,email,' . $this->user_id,
+            'email' => 'nullable|string|email|max:255|unique:users,email,'.$this->user_id,
         ];
     }
 }

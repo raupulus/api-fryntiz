@@ -6,8 +6,6 @@ use App\Events\WeatherStation\LightUpdateEvent;
 
 /**
  * Class Light
- *
- * @package App\Models\WeatherStation
  */
 class Light extends BaseWheaterStation
 {
@@ -20,7 +18,7 @@ class Light extends BaseWheaterStation
         'lux',
         'uva',
         'uvb',
-        'created_at'
+        'created_at',
     ];
 
     /**
@@ -46,7 +44,7 @@ class Light extends BaseWheaterStation
      */
     public $name = 'Luz';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'light';
     }
@@ -66,7 +64,6 @@ class Light extends BaseWheaterStation
         'created' => LightUpdateEvent::class,
     ];
 
-
     /**
      * Devuelve todos los elementos del modelo.
      */
@@ -76,21 +73,16 @@ class Light extends BaseWheaterStation
         $query::whereNotNull('lumens')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return $query;
     }
-
-
-
-
 
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -98,8 +90,6 @@ class Light extends BaseWheaterStation
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -113,8 +103,6 @@ class Light extends BaseWheaterStation
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -124,7 +112,7 @@ class Light extends BaseWheaterStation
             'index' => 'Índice',
             'uva' => 'UVA',
             'uvb' => 'UVB',
-            'created_at' => 'Instante'
+            'created_at' => 'Instante',
         ];
     }
 
@@ -133,7 +121,7 @@ class Light extends BaseWheaterStation
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

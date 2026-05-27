@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Enums;
+
 enum ContentTypeEnum: string
 {
     case Article = 'article';
@@ -7,9 +9,10 @@ enum ContentTypeEnum: string
     case Project = 'project';
     case Page = 'page';
     case Review = 'review';
+
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Article => 'Artículo',
             self::Tutorial => 'Tutorial',
             self::Project => 'Proyecto',

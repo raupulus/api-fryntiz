@@ -4,8 +4,6 @@ namespace App\Models\WeatherStation;
 
 /**
  * Class Tvoc
- *
- * @package App\Models\WeatherStation
  */
 class Tvoc extends BaseWheaterStation
 {
@@ -30,7 +28,7 @@ class Tvoc extends BaseWheaterStation
      */
     public $name = 'Calidad del aire (tvoc)';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'tvoc';
     }
@@ -46,14 +44,10 @@ class Tvoc extends BaseWheaterStation
         ];
     }
 
-
     /****************** Métodos para tablas dinámicas ******************/
-
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -67,9 +61,9 @@ class Tvoc extends BaseWheaterStation
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

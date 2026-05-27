@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Models\Content\Content;
 use App\Enums\ContentStatusEnum;
+use App\Models\Content\Content;
 
 class PublishContentAction
 {

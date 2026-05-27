@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands\Debug;
 
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar registros de prueba en KeyCounter.

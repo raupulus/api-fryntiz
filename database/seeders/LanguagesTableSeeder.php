@@ -5,12 +5,11 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+
 use function array_merge;
 
 /**
  * Class LanguagesTableSeeder
- *
- * @package Database\Seeders
  */
 class LanguagesTableSeeder extends Seeder
 {
@@ -47,12 +46,12 @@ class LanguagesTableSeeder extends Seeder
                 'icon32' => 'images/icons/flags/32x32/en.png',
                 'icon64' => 'images/icons/flags/64x64/en.png',
                 'created_at' => Carbon::now(),
-            ]
+            ],
         ];
 
         $now = Carbon::now();
 
-        ## Recorre idiomas y los inserta solo cuando no existen.
+        // # Recorre idiomas y los inserta solo cuando no existen.
         foreach ($datas as $data) {
             $exist = DB::table($this->tableName)
                 ->where('iso2', $data['iso2'])

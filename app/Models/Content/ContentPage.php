@@ -31,8 +31,6 @@ class ContentPage extends BaseModel
     /**
      * Relación con el contenido RAW desde el que se genera el código HTML final.
      * En caso de tener varios orígenes, se tomará el actualizado más recientemente.
-     *
-     * @return HasOne
      */
     public function raw(): HasOne
     {
@@ -42,8 +40,6 @@ class ContentPage extends BaseModel
 
     /**
      * Relación con la imagen principal de la página.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {
@@ -52,8 +48,6 @@ class ContentPage extends BaseModel
 
     /**
      * Relación con el contenido al que pertenece la página.
-     *
-     * @return BelongsTo
      */
     public function contentModel(): BelongsTo
     {
@@ -63,12 +57,11 @@ class ContentPage extends BaseModel
     /**
      * Obtiene el contenido según el tipo especificado
      *
-     * @param string $type
      * @return mixed
      */
     public function getContentByType(string $type = 'html'): string
     {
-        if (!$type || $type === 'html') {
+        if (! $type || $type === 'html') {
             return $this->content;
         }
 
@@ -82,30 +75,26 @@ class ContentPage extends BaseModel
 
     /**
      * Devuelve la ruta para actualizar la imagen de la página.
-     *
-     * @return string
      */
     public function getUrlStoreImageAttribute(): string
     {
-        //return route('content.page.store.image', ['content_page' => $this->id]);
+        // return route('content.page.store.image', ['content_page' => $this->id]);
         return route('dashboard.content.ajax.page.upload.image.update', ['contentPage' => $this->id]);
     }
 
     /**
      * Elimina de forma segura la página y cualquier elemento asociado, incluso del storage.
-     *
-     * @return bool
      */
     public function safeDelete(): bool
     {
         $content = $this->contentModel;
 
-        ## Contenido en bruto asociado a esta página.
+        // # Contenido en bruto asociado a esta página.
         $raws = ContentPageRaw::where('content_page_id', $this->id)->get();
 
         foreach ($raws as $raw) {
 
-            ## Cuando es un JSON, proviene del editor.js
+            // # Cuando es un JSON, proviene del editor.js
             if ($raw->available_page_raw_id === 2) {
                 $jsonRaw = json_decode($raw->content, true);
 
@@ -114,7 +103,7 @@ class ContentPage extends BaseModel
                 if ($blocks && count($blocks)) {
                     $blocksToDelete = TextFormatParseHelper::searchBlocks($blocks, [
                         'attaches',
-                        'image'
+                        'image',
                     ]);
 
                     $filesId = $blocksToDelete->pluck('data.file.file_id')->toArray();
@@ -131,33 +120,30 @@ class ContentPage extends BaseModel
             }
         }
 
-        ## Borro la imagen principal de la página.
+        // # Borro la imagen principal de la página.
         $this->image?->safeDelete();
 
-        ## Reordeno todas las páginas.
+        // # Reordeno todas las páginas.
         $content->pages()->where('order', '>', $this->order)->get()->map(function ($page) {
-            --$page->order;
+            $page->order--;
             $page->save();
         });
 
         return $this->delete();
     }
 
-
     /**
      * Limpia una cadena de texto, elimina html, entidades y espacios innecesarios.
      * También capitaliza la primera letra del texto.
      *
-     * @param string $text Cadena de texto a limpiar.
-     *
-     * @return string
+     * @param  string  $text  Cadena de texto a limpiar.
      */
     public static function sanitizeTitle(string $text): string
     {
         $title = trim(str_replace(['&amp;', '&nbsp;', '&#160;', '<p>', '<br>'], '', $text));
         $title = trim(strip_tags(html_entity_decode($title)));
         $title = trim(str_replace(['&amp;', '&nbsp;', '&#160;', '<p>', '<br>'], '', $title));
-        $title = trim(strip_tags(html_entity_decode(preg_replace("/&#?[a-z0-9]+;/i",'',$title))));
+        $title = trim(strip_tags(html_entity_decode(preg_replace('/&#?[a-z0-9]+;/i', '', $title))));
         $title = trim(preg_replace("/\s+/", ' ', $title));
 
         return ucfirst($title);

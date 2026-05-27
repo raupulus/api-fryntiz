@@ -2,11 +2,10 @@
 
 namespace App\Models\Hardware;
 
-use App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest;
 use App\Models\BaseModels\BaseModel;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Request;
+
 use function array_filter;
 
 /**
@@ -22,15 +21,12 @@ class HardwarePowerGenerator extends BaseModel
         'battery_percentage', 'charging_status', 'charging_status_label', 'amperage',
         'voltage', 'power', 'light_status', 'light_brightness', 'read_at'];
 
-
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
      * request.
      *
-     * @param \App\Models\Hardware\HardwareDevice $device
-     * @param                                     $request
      *
-     * @return \App\Models\Hardware\HardwarePowerGenerator
+     * @return HardwarePowerGenerator
      */
     public static function createModel(HardwareDevice $device, $request)
     {
@@ -56,7 +52,6 @@ class HardwarePowerGenerator extends BaseModel
      * Prepara el modelo para ser actualizado a partir de los datos de una
      * request.
      *
-     * @param $request
      *
      * @return $this
      */

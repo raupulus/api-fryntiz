@@ -14,16 +14,16 @@ class NewsletterFactory extends Factory
     public function definition(): array
     {
         return [
-            'platform_id'        => Platform::factory(),
-            'email'              => $this->faker->unique()->safeEmail(),
-            'name'               => $this->faker->name(),
-            'is_verified'        => true,
+            'platform_id' => Platform::factory(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'is_verified' => true,
             'verification_token' => Str::random(60),
-            'verified_at'        => now(),
-            'unsubscribe_token'  => Str::random(60),
-            'status'             => 'active',
+            'verified_at' => now(),
+            'unsubscribe_token' => Str::random(60),
+            'status' => 'active',
             'subscription_source' => 'api',
-            'language'           => 'es',
+            'language' => 'es',
         ];
     }
 
@@ -32,7 +32,7 @@ class NewsletterFactory extends Factory
         return $this->state([
             'is_verified' => false,
             'verified_at' => null,
-            'status'      => 'inactive',
+            'status' => 'inactive',
         ]);
     }
 }

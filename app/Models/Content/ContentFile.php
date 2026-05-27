@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class ContentGallery
- *
- * @package App\Models\Content
  */
 class ContentFile extends BaseModel
 {
@@ -20,8 +18,4 @@ class ContentFile extends BaseModel
         'content_id',
         'file_id',
     ];
-
-
-
-
 }

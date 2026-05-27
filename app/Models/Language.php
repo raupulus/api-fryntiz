@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use function array_key_exists;
 use function asset;
 
@@ -42,7 +43,7 @@ class Language extends Model
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {
@@ -67,13 +68,12 @@ class Language extends Model
     /**
      * Devuelve los resultados para una página.
      *
-     * @param number $size Tamaño de cada página
-     * @param number $page Página a la que buscar.
-     *
+     * @param  number  $size  Tamaño de cada página
+     * @param  number  $page  Página a la que buscar.
      * @return array
      */
     public static function getTableRowsByPage($size, $page, $columns,
-                                              $orderBy, $orderDirection = 'ASC')
+        $orderBy, $orderDirection = 'ASC')
     {
         return self::select($columns)
             ->offset(($page * $size) - $size)
@@ -97,10 +97,11 @@ class Language extends Model
         $attributes = $this->getAttributes();
 
         foreach ($columns as $column) {
-            if (!array_key_exists($column, $attributes)) {
+            if (! array_key_exists($column, $attributes)) {
                 $attributes[$column] = null;
             }
         }
+
         return $attributes;
     }
 }

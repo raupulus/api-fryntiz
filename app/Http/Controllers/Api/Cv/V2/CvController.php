@@ -23,7 +23,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -37,7 +37,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -57,7 +57,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -75,7 +75,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -89,7 +89,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -103,7 +103,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -117,7 +117,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -131,7 +131,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -145,7 +145,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -159,7 +159,7 @@ class CvController extends BaseApiController
     {
         $cv = $this->getMainCurriculum();
 
-        if (!$cv) {
+        if (! $cv) {
             return $this->notFoundResponse('Curriculum no encontrado');
         }
 
@@ -173,7 +173,7 @@ class CvController extends BaseApiController
     {
         $user = User::where('role_id', 1)->first();
 
-        if (!$user) {
+        if (! $user) {
             return null;
         }
 

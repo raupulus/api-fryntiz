@@ -42,9 +42,9 @@ class StoreCvAcademicComplementaryRequest extends FormRequest
                 ->replaceMatches('/\s\s+/', '')->__toString(),
             'note' => Str::of($this->description)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
-            'url' => Str::of($this->url)->trim()->replaceMatches('/\s+/','')
+            'url' => Str::of($this->url)->trim()->replaceMatches('/\s+/', '')
                 ->__toString(),
-            'credential_url' => Str::of($this->url)->trim()->replaceMatches('/\s+/','')
+            'credential_url' => Str::of($this->url)->trim()->replaceMatches('/\s+/', '')
                 ->__toString(),
             'hours' => $this->hours ? (int) $this->hours : null,
             'expires' => $this->expires ? (bool) $this->expires : false,

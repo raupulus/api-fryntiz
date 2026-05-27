@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateUserSocialTable
@@ -17,10 +17,11 @@ class CreateUserSocialTable extends Migration
     public function up()
     {
         Schema::create('user_social', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de user social');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')->on('users')
@@ -35,9 +36,9 @@ class CreateUserSocialTable extends Migration
                 ->index()
                 ->nullable()
                 ->comment('Nick o usuario dentro de la red social');
-            $table->string('url');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->string('url')->comment('Enlace o URL');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

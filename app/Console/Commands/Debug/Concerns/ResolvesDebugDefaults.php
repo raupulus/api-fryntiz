@@ -27,6 +27,7 @@ trait ResolvesDebugDefaults
         if (! $device) {
             $this->error('❌ No existe ningún HardwareDevice en la base de datos.');
             $this->warn('   Crea uno con `php artisan debug:seed-energy` o desde el panel /admin.');
+
             return null;
         }
 
@@ -49,6 +50,7 @@ trait ResolvesDebugDefaults
         if (! $user) {
             $this->error('❌ No existe ningún User en la base de datos.');
             $this->warn('   Crea uno con `php artisan tinker` o ejecuta los seeders por defecto.');
+
             return null;
         }
 
@@ -58,6 +60,7 @@ trait ResolvesDebugDefaults
 
         return $user->id;
     }
+
     /**
      * Aborta si APP_ENV es 'production'.
      *
@@ -67,6 +70,7 @@ trait ResolvesDebugDefaults
     {
         if (app()->environment('production')) {
             $this->error('❌ Este comando NO puede ejecutarse en producción.');
+
             return false;
         }
 

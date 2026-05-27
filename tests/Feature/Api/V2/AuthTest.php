@@ -13,7 +13,7 @@ class AuthTest extends ApiTestCase
     {
         $user = $this->createAuthenticatedUser();
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
         $this->assertSuccessResponse($response);
@@ -24,7 +24,7 @@ class AuthTest extends ApiTestCase
     public function login_fails_with_invalid_credentials(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => 'noexiste@example.com',
+            'email' => 'noexiste@example.com',
             'password' => 'wrongpassword',
         ]);
         $this->assertErrorResponse($response, 401);
@@ -43,7 +43,7 @@ class AuthTest extends ApiTestCase
     public function login_rejects_invalid_email_format(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => 'not-an-email',
+            'email' => 'not-an-email',
             'password' => 'password123',
         ]);
         $this->assertErrorResponse($response, 422);
@@ -54,7 +54,7 @@ class AuthTest extends ApiTestCase
     public function login_rejects_short_password(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => 'test@test.com',
+            'email' => 'test@test.com',
             'password' => '123',
         ]);
         $this->assertErrorResponse($response, 422);
@@ -66,7 +66,7 @@ class AuthTest extends ApiTestCase
     {
         $user = $this->createAuthenticatedUser();
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
         $response->assertJsonStructure([
@@ -79,9 +79,9 @@ class AuthTest extends ApiTestCase
     public function can_signup_with_valid_data(): void
     {
         $response = $this->postJson($this->apiUrl('auth/signup'), [
-            'name'                  => 'Nuevo Usuario',
-            'email'                 => 'nuevo@test.com',
-            'password'              => 'password123',
+            'name' => 'Nuevo Usuario',
+            'email' => 'nuevo@test.com',
+            'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
         $this->assertSuccessResponse($response, 201);
@@ -166,7 +166,7 @@ class AuthTest extends ApiTestCase
         $response = $this->postJson($this->apiUrl('auth/delete-account'), [], $headers);
         $this->assertSuccessResponse($response);
         $response->assertJson(['message' => 'Cuenta eliminada correctamente']);
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 
     /** @test */

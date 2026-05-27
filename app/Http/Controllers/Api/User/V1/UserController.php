@@ -9,28 +9,27 @@ use App\Http\Requests\Api\User\IndexRequest;
 use App\Http\Requests\Api\User\ShowRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use JsonHelper;
 
 /**
  * Class UserController
- * @package App\Http\Controllers\Api\User
  */
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Http\Requests\Api\User\IndexRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function index(IndexRequest $request)
     {
-        //TODO → Implementar paginación
+        // TODO → Implementar paginación
 
-        //$users = User::all(['id', 'name', 'surname', 'created_at']);
+        // $users = User::all(['id', 'name', 'surname', 'created_at']);
         $users = UserResource::collection(User::all());
 
         return JsonHelper::success(['users' => $users]);
@@ -39,13 +38,12 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param \App\Http\Requests\Api\User\CreateRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function create(CreateRequest $request)
     {
-        ## Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
+        // # Bloqueo registro de usuarios hasta tener roles definidos en toda la aplicación
         return JsonHelper::forbidden();
 
         $data = $request->validated();
@@ -53,24 +51,23 @@ class UserController extends Controller
 
         $user = User::create($data);
 
-        //$newToken = $user->createToken('login');
+        // $newToken = $user->createToken('login');
 
         // TODO → Enviar email de confirmación al usuario
 
         return JsonHelper::created([
             'message' => 'User created successfully',
             'user' => $user,
-            //'password' => $request->password,
-            //'token' => $newToken->plainTextToken,
+            // 'password' => $request->password,
+            // 'token' => $newToken->plainTextToken,
         ]);
     }
 
     /**
      * Devuelve los datos de un usuario.
      *
-     * @param \App\Http\Requests\Api\User\ShowRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function show(ShowRequest $request)
     {
@@ -82,10 +79,8 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  User  $user
+     * @return JsonResponse
      */
     public function update(Request $request)
     {
@@ -99,9 +94,8 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Http\Requests\Api\User\DeleteRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function destroy(DeleteRequest $request)
     {

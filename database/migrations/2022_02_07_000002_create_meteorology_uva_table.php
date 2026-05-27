@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateMeteorologyUvaTable
@@ -11,6 +11,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateMeteorologyUvaTable extends Migration
 {
     private $tableName = 'meteorology_uva';
+
     private $tableComment = 'Dato meteorologico UV';
 
     /**
@@ -21,10 +22,11 @@ class CreateMeteorologyUvaTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -39,8 +41,8 @@ class CreateMeteorologyUvaTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->decimal('value', 14, 4);
-            $table->timestamp('created_at')->nullable();
+            $table->decimal('value', 14, 4)->comment('Valor registrado');
+            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

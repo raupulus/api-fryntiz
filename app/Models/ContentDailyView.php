@@ -16,12 +16,9 @@ class ContentDailyView extends Model
     /**
      * Devuelve el contenido más visto en un periodo de tiempo
      *
-     * @param Carbon $startDate Fecha de inicio
-     * @param Carbon $endDate
-     * @param int|null $limit
-     * @return Collection
+     * @param  Carbon  $startDate  Fecha de inicio
      */
-    public static function getMostViewedInPeriod(Carbon $startDate, Carbon $endDate, int|null $limit = 10): Collection
+    public static function getMostViewedInPeriod(Carbon $startDate, Carbon $endDate, ?int $limit = 10): Collection
     {
         return self::select('content_id', DB::raw('SUM(views) as total_views'))
             ->whereBetween('date', [$startDate, $endDate])
@@ -34,12 +31,11 @@ class ContentDailyView extends Model
     /**
      * Devuelve el contenido más visto en un periodo de tiempo
      *
-     * @param int $contentId El ID del contenido a buscar
-     * @param Carbon|null $startDate Fecha de inicio
-     * @param Carbon|null $endDate Fecha de fin
-     * @return int
+     * @param  int  $contentId  El ID del contenido a buscar
+     * @param  Carbon|null  $startDate  Fecha de inicio
+     * @param  Carbon|null  $endDate  Fecha de fin
      */
-    public static function getViewsForContent(int $contentId, Carbon|null $startDate = null, Carbon|null $endDate = null): int
+    public static function getViewsForContent(int $contentId, ?Carbon $startDate = null, ?Carbon $endDate = null): int
     {
         $query = self::where('content_id', $contentId);
 

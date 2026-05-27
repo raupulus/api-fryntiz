@@ -6,6 +6,7 @@ use App\Models\BaseModels\BaseModel;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+
 use function array_filter;
 
 /**
@@ -23,15 +24,9 @@ class HardwarePowerLoadHistorical extends BaseModel
         'battery_min', 'battery_max', 'amperage_min', 'amperage_max', 'amperage',
         'read_at'];
 
-
     /**
      * Prepara el modelo para ser guardado a partir de los datos de una
      * request.
-     *
-     * @param \App\Models\Hardware\HardwareDevice $device
-     * @param                                     $request
-     *
-     * @return self
      */
     public static function createModel(HardwareDevice $device, $request): self
     {
@@ -69,7 +64,6 @@ class HardwarePowerLoadHistorical extends BaseModel
      * Prepara el modelo para ser actualizado a partir de los datos de una
      * request.
      *
-     * @param $request
      *
      * @return $this
      */
@@ -138,16 +132,6 @@ class HardwarePowerLoadHistorical extends BaseModel
 
         return $this;
     }
-
-
-
-
-
-
-
-
-
-
 
     public static function calculateHistoricalFromTodays(int $hardwareDeviceId): ?self
     {

@@ -4,6 +4,8 @@ namespace App\Models\CV;
 
 use App\Models\File;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use function array_key_exists;
 
 /**
@@ -44,13 +46,13 @@ abstract class CurriculumBaseSection extends Model
      * @var string[] Campos que se pueden llenar mediante el uso de mass-assignment.
      */
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     /**
      * Relaciona con el curriculum.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function curriculum()
     {
@@ -60,7 +62,7 @@ abstract class CurriculumBaseSection extends Model
     /**
      * Relación con la imagen asociada.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function image()
     {
@@ -80,7 +82,6 @@ abstract class CurriculumBaseSection extends Model
     /**
      * Devuelve el thumbnail de la imagen asociada.
      *
-     * @param $size
      *
      * @return mixed
      */
@@ -100,7 +101,7 @@ abstract class CurriculumBaseSection extends Model
      */
     public function safeDelete()
     {
-        ## Elimino la imagen asociada al curriculum y todas las miniaturas.
+        // # Elimino la imagen asociada al curriculum y todas las miniaturas.
         if ($this->image) {
             $this->image->safeDelete();
         }
@@ -121,7 +122,7 @@ abstract class CurriculumBaseSection extends Model
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {
@@ -131,13 +132,12 @@ abstract class CurriculumBaseSection extends Model
     /**
      * Devuelve los resultados para una página.
      *
-     * @param number $size Tamaño de cada página
-     * @param number $page Página a la que buscar.
-     *
+     * @param  number  $size  Tamaño de cada página
+     * @param  number  $page  Página a la que buscar.
      * @return array
      */
     public static function getTableRowsByPage($size, $page, $columns,
-                                              $orderBy, $orderDirection = 'ASC')
+        $orderBy, $orderDirection = 'ASC')
     {
         return self::select($columns)
             ->offset(($page * $size) - $size)
@@ -161,10 +161,11 @@ abstract class CurriculumBaseSection extends Model
         $attributes = $this->getAttributes();
 
         foreach ($columns as $column) {
-            if (!array_key_exists($column, $attributes)) {
+            if (! array_key_exists($column, $attributes)) {
                 $attributes[$column] = null;
             }
         }
+
         return $attributes;
     }
 }

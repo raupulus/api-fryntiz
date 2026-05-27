@@ -28,7 +28,7 @@ class ReferredPlatformsSeeder extends Seeder
                 'url' => 'https://afiliados.amazon.es',
                 'url_panel' => 'https://afiliados.amazon.es/home',
                 'url_register' => 'https://afiliados.amazon.es/signup',
-            ]
+            ],
 
         ];
 

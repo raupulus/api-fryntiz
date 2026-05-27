@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Cv\V2\CvController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

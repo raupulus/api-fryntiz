@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreatePrintersTable extends Migration
 {
     private $tableName = 'printers';
+
     private $tableComment = 'Impresoras';
 
     /**
@@ -21,10 +22,11 @@ class CreatePrintersTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario propietario de la impresora');
             $table->foreign('user_id')
@@ -52,7 +54,7 @@ class CreatePrintersTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

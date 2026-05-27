@@ -12,11 +12,11 @@ use App\Models\Hardware\HardwarePowerLoad;
 use App\Models\Hardware\HardwarePowerLoadHistorical;
 use App\Models\Hardware\HardwarePowerLoadToday;
 use App\Models\Hardware\SolarCharge;
-use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Response;
 use JsonHelper;
-use function array_keys;
+
 use function auth;
 use function request;
 use function response;
@@ -29,7 +29,7 @@ class SolarChargeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -39,9 +39,8 @@ class SolarChargeController extends Controller
     /**
      * Procesa el guardado de los datos de la carga solar.
      *
-     * @param \App\Http\Requests\Api\Hardware\V1\StoreSolarChargeRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(StoreSolarChargeRequest $request)
     {
@@ -51,23 +50,23 @@ class SolarChargeController extends Controller
 
         $device_id = $request->get('device_id');
 
-        ## Usuario logueado.
+        // # Usuario logueado.
         $user = auth()->user();
 
-        ## Dispositivo sobre el que se guardan los registros.
+        // # Dispositivo sobre el que se guardan los registros.
         $device = HardwareDevice::where('id', $device_id)
             ->where('user_id', $user->id)
             ->first();
 
-        ## Actualizo los datos del dispositivo (HardwareDeviceController).
+        // # Actualizo los datos del dispositivo (HardwareDeviceController).
         $device = $device->updateModel($request);
         $device->save();
 
-        ## Guardo los datos para la carga de energía.
+        // # Guardo los datos para la carga de energía.
         $hardwarePowerGenerator = HardwarePowerGenerator::createModel($device, $requestValidated);
         $hardwarePowerGenerator->save();
 
-        ## Actualizo el histórico diario
+        // # Actualizo el histórico diario
         $hardwarePowerGeneratorToday = HardwarePowerGeneratorToday::where('hardware_device_id', $device->id)
             ->where('date', $date)
             ->first();
@@ -82,21 +81,20 @@ class SolarChargeController extends Controller
 
         $hardwarePowerGeneratorToday->save();
 
-
-        ## Guardo los datos para el Historial de generar de energía.
+        // # Guardo los datos para el Historial de generar de energía.
         $hardwarePowerGeneratorHistorical =
             HardwarePowerGeneratorHistorical::where('hardware_device_id', $device->id)
                 ->orderByDesc('read_at')
                 ->first();
 
-        ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
+        // # Actualizo el historial de este dispositivo solo si es posterior al último registro.
         if ($hardwarePowerGeneratorHistorical) {
-            $generatorContinueDays = $requestValidated->get('days_operating') >=  $hardwarePowerGeneratorHistorical->days_operating;
+            $generatorContinueDays = $requestValidated->get('days_operating') >= $hardwarePowerGeneratorHistorical->days_operating;
             $generatorNewRead = $readAt > $hardwarePowerGeneratorHistorical->read_at;
 
             if ($generatorContinueDays && $generatorNewRead) {
                 $hardwarePowerGeneratorHistorical->updateModel($requestValidated);
-            } else if (! $generatorContinueDays && $generatorNewRead) {
+            } elseif (! $generatorContinueDays && $generatorNewRead) {
                 $hardwarePowerGeneratorHistorical = HardwarePowerGeneratorHistorical::createModel($device, $requestValidated);
             }
         } else {
@@ -105,11 +103,11 @@ class SolarChargeController extends Controller
 
         $hardwarePowerGeneratorHistorical->save();
 
-        ## HardwarePowerLoad
+        // # HardwarePowerLoad
         $hardwarePowerLoad = HardwarePowerLoad::createModel($device, $requestValidated);
         $hardwarePowerLoad->save();
 
-        ## HardwarePowerLoadToday
+        // # HardwarePowerLoadToday
         $hardwarePowerLoadToday = HardwarePowerLoadToday::where('hardware_device_id', $device->id)
             ->where('date', $date)
             ->first();
@@ -124,21 +122,21 @@ class SolarChargeController extends Controller
 
         $hardwarePowerLoadToday->save();
 
-        ## HardwarePowerLoadHistorical datos para el Historial de consumo.
+        // # HardwarePowerLoadHistorical datos para el Historial de consumo.
         $hardwarePowerLoadHistorical =
             HardwarePowerLoadHistorical::where('hardware_device_id',
                 $device->id)
                 ->orderByDesc('read_at')
                 ->first();
 
-        ## Actualizo el historial de este dispositivo solo si es posterior al último registro.
+        // # Actualizo el historial de este dispositivo solo si es posterior al último registro.
         if ($hardwarePowerLoadHistorical) {
-            $loadContinueDays = $requestValidated->get('days_operating') >=  $hardwarePowerLoadHistorical->days_operating;
+            $loadContinueDays = $requestValidated->get('days_operating') >= $hardwarePowerLoadHistorical->days_operating;
             $loadNewRead = $readAt > $hardwarePowerLoadHistorical->read_at;
 
             if ($loadContinueDays && $loadNewRead) {
                 $hardwarePowerLoadHistorical->updateModel($requestValidated);
-            } else if (! $loadContinueDays && $loadNewRead) {
+            } elseif (! $loadContinueDays && $loadNewRead) {
                 $hardwarePowerLoadHistorical = HardwarePowerLoadHistorical::createModel($device, $requestValidated);
             }
         } else {
@@ -157,8 +155,8 @@ class SolarChargeController extends Controller
                 'hardwarePowerLoad' => $hardwarePowerLoad->id,
                 'hardwarePowerLoadToday' => $hardwarePowerLoadToday->id,
                 'hardwarePowerLoadHistorical' => $hardwarePowerLoadHistorical->id,
-            ]
-            //'request' => $request->validated()
+            ],
+            // 'request' => $request->validated()
         ]);
 
     }
@@ -166,9 +164,8 @@ class SolarChargeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Hardware\SolarCharge $solarCharge
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(SolarCharge $solarCharge)
     {
@@ -178,10 +175,8 @@ class SolarChargeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request         $request
-     * @param \App\Models\Hardware\SolarCharge $solarCharge
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, SolarCharge $solarCharge)
     {
@@ -191,9 +186,8 @@ class SolarChargeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Hardware\SolarCharge $solarCharge
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(SolarCharge $solarCharge)
     {

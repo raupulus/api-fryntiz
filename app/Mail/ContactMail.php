@@ -20,7 +20,7 @@ class ContactMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nuevo mensaje de contacto - ' . ($this->data['subject'] ?? 'Sin asunto'),
+            subject: 'Nuevo mensaje de contacto - '.($this->data['subject'] ?? 'Sin asunto'),
         );
     }
 

@@ -37,8 +37,9 @@ public/mix-manifest.json
 /public/fonts/vendor
 /public/fonts/filament
 
-# Ignorar planes locales del IDE Junie
+# Ignorar carpetas de configuración de agentes IA
 .junie/
+.claude/
 
 # Ignorar archivo de caché de generar código
 /code-generator

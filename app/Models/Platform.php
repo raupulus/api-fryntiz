@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App;
+use App\Http\Resources\ContentFeaturedResource;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use App\Models\Content\Content;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,30 +14,27 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+
 use function route;
-use App\Models\Content\Content;
-use App\Helpers\ContentHelper;
-use App\Http\Resources\ContentFeaturedResource;
 
 /**
  * Class Platform
  */
 class Platform extends BaseAbstractModelWithTableCrud
 {
-    use ImageTrait, HasFactory;
+    use HasFactory, ImageTrait;
 
     protected $table = 'platforms';
 
-    //protected $with = ['image'];
+    // protected $with = ['image'];
     protected $appends = ['urlImageMicro', 'urlImageSmall'];
 
     protected $fillable = ['user_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
-        'instagram'
-        ];
+        'instagram',
+    ];
 
-
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'platform';
     }
@@ -57,21 +56,19 @@ class Platform extends BaseAbstractModelWithTableCrud
 
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function ($model) {
-            //$model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
-            //\Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
+            // $model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
+            // \Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
         });
 
         // Evento "updated": Solo se dispara cuando el modelo es actualizado
         static::updated(function ($model) {
-            //$model->cleanAllCache();
-            //\Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
+            // $model->cleanAllCache();
+            // \Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
         });
     }
 
     /**
      * Asocia con el usuario al que pertenece la plataforma.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -80,8 +77,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Asocia todos los contenidos creados para la plataforma.
-     *
-     * @return HasMany
      */
     public function contents(): HasMany
     {
@@ -92,21 +87,16 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Asocia todos los contenidos creados para la plataforma.
-     *
-     * @return HasMany
      */
     public function contentsActive(): HasMany
     {
         return $this->contents()
             ->where('contents.is_active', true)
-            ->whereNotNull('contents.published_at')
-            ;
+            ->whereNotNull('contents.published_at');
     }
 
     /**
      * Devuelve el contenido de tipo páginas asociado a la plataforma actual.
-     *
-     * @return HasMany
      */
     public function contentPages(): HasMany
     {
@@ -115,8 +105,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Asocia todos los tags para la plataforma.
-     *
-     * @return BelongsToMany
      */
     public function tags(): BelongsToMany
     {
@@ -125,8 +113,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Asocia todas las categorías para la plataforma.
-     *
-     * @return BelongsToMany
      */
     public function categories(): BelongsToMany
     {
@@ -135,8 +121,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Asocia a la imagen principal.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {
@@ -145,8 +129,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve todos los dominios asignados a las plataformas.
-     *
-     * @return array
      */
     public static function getAllDomains(): array
     {
@@ -156,56 +138,45 @@ class Platform extends BaseAbstractModelWithTableCrud
             ->toArray();
     }
 
-
     /**
      * Limpia y renueva el caché para las categorías asociadas a la plataforma.
-     *
-     * @return void
      */
     public function cleanApiCategoryCache(): void
     {
-        Cache::forget('api-categories-' . $this->slug);
+        Cache::forget('api-categories-'.$this->slug);
         $this->getApiCategories();
     }
 
     /**
      * Limpia y renueva el caché para los contenidos destacados asociados a la plataforma.
-     *
-     * @return void
      */
     public function cleanContentFeaturedCache(): void
     {
-        Cache::forget('api-content-featured-' . $this->slug);
+        Cache::forget('api-content-featured-'.$this->slug);
         $this->getContentFeatured();
     }
 
     /**
      * Limpia y renueva el caché para los últimos contenidos asociados a la plataforma.
-     *
-     * @return void
      */
     public function cleanContentLatestCache(): void
     {
-        Cache::forget('api-content-latest-' . $this->slug);
+        Cache::forget('api-content-latest-'.$this->slug);
         $this->getContentLatest();
     }
 
     /**
      * Limpia y renueva el caché para los últimos contenidos en tendencia por visitas.
-     *
-     * @return void
      */
     public function cleanContentTrendCache(): void
     {
-        Cache::forget('api-content-trend-' . $this->slug);
+        Cache::forget('api-content-trend-'.$this->slug);
         $this->getContentTrend();
     }
 
     /**
      * Limpia y renueva aquello que se haya cacheado para la plataforma, útil para recomponer datos después
      * de crear o actualizar una.
-     *
-     * @return void
      */
     public function cleanAllCache(): void
     {
@@ -224,7 +195,7 @@ class Platform extends BaseAbstractModelWithTableCrud
 
         return $this->contentsActive()
             ->select($fields)
-            //->addSelect(DB::raw('content_available_types.name as type'))
+            // ->addSelect(DB::raw('content_available_types.name as type'))
             ->addSelect(DB::raw('COALESCE(SUM(content_daily_views.views), 0) as total_views'))
             ->leftJoin('content_daily_views', function ($join) use ($threeDaysAgo) {
                 $join->on('contents.id', '=', 'content_daily_views.content_id')
@@ -242,12 +213,10 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve el contenido destacado formateado para consumirla a través de api.
-     *
-     * @return array
      */
     public function getContentTrend(): array
     {
-        return Cache::remember('api-content-trend-' . $this->slug, 60*60, function () {
+        return Cache::remember('api-content-trend-'.$this->slug, 60 * 60, function () {
             $posts = $this->getContentTrendByType('blog');
             $news = $this->getContentTrendByType('news');
             $guides = $this->getContentTrendByType('guide');
@@ -270,7 +239,7 @@ class Platform extends BaseAbstractModelWithTableCrud
                 $query->where('slug', $type);
             })
             ->whereIn('contents.is_featured', [true])
-            //->orderByDesc('contents.is_featured')
+            // ->orderByDesc('contents.is_featured')
             ->orderByDesc('contents.updated_at')
             ->limit($limit)
             ->get();
@@ -278,12 +247,10 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve el contenido destacado formateado para consumirla a través de api.
-     *
-     * @return array
      */
     public function getContentFeatured(): array
     {
-        return Cache::rememberForever('api-content-featured-' . $this->slug, function () {
+        return Cache::rememberForever('api-content-featured-'.$this->slug, function () {
             $posts = $this->getContentFeaturedByType('blog');
             $news = $this->getContentFeaturedByType('news');
             $guides = $this->getContentFeaturedByType('guide');
@@ -298,10 +265,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve el último contenido
-     *
-     * @param string $type
-     * @param int $limit
-     * @return Collection
      */
     public function getContentLatestByType(string $type, int $limit = 6): Collection
     {
@@ -320,12 +283,10 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve el contenido destacado formateado para consumirla a través de api.
-     *
-     * @return array
      */
     public function getContentLatest(): array
     {
-        return Cache::rememberForever('api-content-latest-' . $this->slug, function () {
+        return Cache::rememberForever('api-content-latest-'.$this->slug, function () {
             $posts = $this->getContentLatestByType('blog');
             $news = $this->getContentLatestByType('news');
             $guides = $this->getContentLatestByType('guide');
@@ -341,12 +302,10 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve todas las categorías formateadas para consumirla a través de api.
      * Estas categorías se cachean automáticamente al editarlas.
-     *
-     * @return Collection
      */
     public function getApiCategories(): Collection
     {
-        return Cache::rememberForever('api-categories-' . $this->slug, function () {
+        return Cache::rememberForever('api-categories-'.$this->slug, function () {
             $categories = $this->categories()
                 ->select('categories.id', 'categories.parent_id', 'categories.slug', 'categories.name', 'categories.description', 'categories.icon', 'categories.color', 'categories.image_id')
                 ->where('parent_id', null)
@@ -355,8 +314,7 @@ class Platform extends BaseAbstractModelWithTableCrud
                 })
                 ->with('image')
                 ->orderBy('categories.name')
-                ->get()
-            ;
+                ->get();
 
             // TODO: Revisar la forma de obtener subcategorías para optimizar esta parte y quitar esos unset.
             $categories->map(function ($category) {
@@ -390,15 +348,12 @@ class Platform extends BaseAbstractModelWithTableCrud
         });
     }
 
-
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return App\Policies\PlatformPolicy::class;
     }
@@ -406,8 +361,6 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -420,8 +373,6 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -439,9 +390,9 @@ class Platform extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -473,9 +424,8 @@ class Platform extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve las rutas de acciones
-     *
      */
-    public static function getTableActionsInfo():Collection
+    public static function getTableActionsInfo(): Collection
     {
         // TODO Crear policies para devolver solo acciones permitidas ahora.
 
@@ -496,8 +446,8 @@ class Platform extends BaseAbstractModelWithTableCrud
                 'name' => 'Eliminar',
                 'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
-                'ajax' => true
-            ]
+                'ajax' => true,
+            ],
         ]);
     }
 }

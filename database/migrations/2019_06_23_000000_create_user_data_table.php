@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateUserDataTable
@@ -17,10 +17,11 @@ class CreateUserDataTable extends Migration
     public function up()
     {
         Schema::create('user_data', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de user data');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario');
             $table->foreign('user_id')
@@ -36,8 +37,8 @@ class CreateUserDataTable extends Migration
             $table->text('bio')
                 ->nullable()
                 ->comment('Biografía acerca del usuario.');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

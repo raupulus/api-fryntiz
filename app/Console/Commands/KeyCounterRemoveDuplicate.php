@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Class KeyCounterRemoveDuplicate
- *
- * @package App\Console\Commands
  */
 class KeyCounterRemoveDuplicate extends Command
 {
@@ -38,8 +36,6 @@ class KeyCounterRemoveDuplicate extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     public function handle(): void
     {
@@ -49,11 +45,6 @@ class KeyCounterRemoveDuplicate extends Command
 
     /**
      * Remove duplicates accordingly
-     *
-     * @param string $table
-     * @param array $groupByColumns
-     *
-     * @return void
      */
     private function removeDuplicates(string $table, array $groupByColumns): void
     {

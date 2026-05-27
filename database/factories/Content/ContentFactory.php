@@ -24,14 +24,14 @@ class ContentFactory extends Factory
         );
 
         return [
-            'platform_id'  => Platform::factory(),
-            'author_id'    => User::factory(),
-            'title'        => $title,
-            'slug'         => Str::slug($title),
-            'excerpt'      => $this->faker->paragraph(),
-            'is_active'    => true,
+            'platform_id' => Platform::factory(),
+            'author_id' => User::factory(),
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'excerpt' => $this->faker->paragraph(),
+            'is_active' => true,
             'published_at' => now()->subDays(rand(1, 30)),
-            'type_id'      => $type->id,
+            'type_id' => $type->id,
         ];
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateFileTypesTable
@@ -17,10 +17,11 @@ class CreateFileTypesTable extends Migration
     public function up()
     {
         Schema::create('file_types', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de file types');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -35,12 +36,12 @@ class CreateFileTypesTable extends Migration
                 ->comment('Tipo mime que representa el tipo de archivo');
             $table->string('extension', 12)
                 ->comment('Extensión con la que se representa de forma mayoritaria.');
-            $table->text('icon16')->nullable();
-            $table->text('icon32')->nullable();
-            $table->text('icon64')->nullable();
-            $table->text('icon128')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->text('icon16')->nullable()->comment('Columna icon16');
+            $table->text('icon32')->nullable()->comment('Columna icon32');
+            $table->text('icon64')->nullable()->comment('Columna icon64');
+            $table->text('icon128')->nullable()->comment('Columna icon128');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

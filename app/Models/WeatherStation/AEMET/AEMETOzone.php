@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation\AEMET;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
@@ -31,13 +32,11 @@ class AEMETOzone extends Model
         'ozone_probe_launch_at',
     ];
 
-
     /**
      * Ejecuta la validación sobre los datos recibidos y devuelve un obejto
      * "Validator".
      *
-     * @param array $datas Un array de datos que debe coincidir con $fillable
-     *
+     * @param  array  $datas  Un array de datos que debe coincidir con $fillable
      * @return Validator
      */
     public static function validation(array $datas): \Illuminate\Validation\Validator
@@ -65,21 +64,18 @@ class AEMETOzone extends Model
     /**
      * Comprueba si los datos recibidos contienen errores.
      *
-     * @param array $datas Un array de datos que debe coincidir con $fillable
-     *
-     * @return bool
+     * @param  array  $datas  Un array de datos que debe coincidir con $fillable
      */
     public static function isValid(array $datas): bool
     {
-        return !( (bool)self::validation($datas)->fails() );
+        return ! ((bool) self::validation($datas)->fails());
     }
 
     /**
      * Recibe la respuesta de la api y procesa todos los elementos a guardar.
      *
-     * @param array $apiResponse Una matriz con los elementos a guardar
-     *
-     * @return \Illuminate\Database\Eloquent\Collection|null
+     * @param  array  $apiResponse  Una matriz con los elementos a guardar
+     * @return Collection|null
      */
     public static function saveFromApi(array $apiResponseArray): ?array
     {

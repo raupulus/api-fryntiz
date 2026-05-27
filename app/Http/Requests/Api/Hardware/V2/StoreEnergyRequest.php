@@ -18,9 +18,9 @@ class StoreEnergyRequest extends BaseFormRequest
     {
         return [
             'hardware_device' => ['required', 'integer', 'exists:hardware_devices,id'],
-            'cpu_avg'         => ['nullable', 'numeric'],
-            'intensity'       => ['nullable', 'array'],
-            'intensity.*'     => ['nullable', 'array'],
+            'cpu_avg' => ['nullable', 'numeric'],
+            'intensity' => ['nullable', 'array'],
+            'intensity.*' => ['nullable', 'array'],
         ];
     }
 

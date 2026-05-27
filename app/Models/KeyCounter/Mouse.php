@@ -4,8 +4,6 @@ namespace App\Models\KeyCounter;
 
 /**
  * Class Mouse
- *
- * @package App\Models\KeyCounter
  */
 class Mouse extends Keyboard
 {
@@ -39,6 +37,7 @@ class Mouse extends Keyboard
             ->where('weekday', '!=', null)
             ->where('created_at', '!=', null)
             ->sortByDesc('created_at');
+
         return $query;
     }
 }

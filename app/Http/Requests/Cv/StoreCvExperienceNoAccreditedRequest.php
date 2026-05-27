@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 /**
  * Class StoreCvExperienceOtherRequest
- * @package App\Http\Requests\Cv
  */
 class StoreCvExperienceNoAccreditedRequest extends FormRequest
 {

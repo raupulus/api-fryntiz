@@ -33,13 +33,11 @@ class AEMETPrediction extends Model
         'day_end_at',
     ];
 
-
     /**
      * Ejecuta la validación sobre los datos recibidos y devuelve un obejto
      * "Validator".
      *
-     * @param array $datas Un array de datos que debe coincidir con $fillable
-     *
+     * @param  array  $datas  Un array de datos que debe coincidir con $fillable
      * @return Validator
      */
     public static function validation(array $datas): \Illuminate\Validation\Validator
@@ -69,21 +67,17 @@ class AEMETPrediction extends Model
     /**
      * Comprueba si los datos recibidos contienen errores.
      *
-     * @param array $datas Un array de datos que debe coincidir con $fillable
-     *
-     * @return bool
+     * @param  array  $datas  Un array de datos que debe coincidir con $fillable
      */
     public static function isValid(array $datas): bool
     {
-        return !( (bool)self::validation($datas)->fails() );
+        return ! ((bool) self::validation($datas)->fails());
     }
 
     /**
      * Recibe la respuesta de la api y procesa todos los elementos a guardar.
      *
-     * @param array $apiResponse Una matriz con los elementos a guardar
-     *
-     * @return array|null
+     * @param  array  $apiResponse  Una matriz con los elementos a guardar
      */
     public static function saveFromApi(array $apiResponse): ?array
     {

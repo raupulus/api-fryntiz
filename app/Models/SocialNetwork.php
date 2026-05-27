@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SocialNetwork extends Model
 {
-    //use ImageTrait;
+    // use ImageTrait;
 
     protected $table = 'social_networks';
-
 
     /**
     public function image(): BelongsTo

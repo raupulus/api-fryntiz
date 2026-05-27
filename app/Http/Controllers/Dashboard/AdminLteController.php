@@ -14,8 +14,6 @@ class AdminLteController extends Controller
 {
     /**
      * Muestra el listado con todos los tipos de archivos que hay en la plataforma.
-     *
-     * @return View
      */
     public function fileTypesIndex(): View
     {
@@ -29,7 +27,6 @@ class AdminLteController extends Controller
             ->orderBy('mime')
             ->get();
 
-
         $types = $fileTypes->pluck('type')->unique();
 
         return view('dashboard.adminlte.file_types', [
@@ -41,10 +38,7 @@ class AdminLteController extends Controller
     /**
      * Actualiza el icono de un tipo de archivo.
      *
-     * @param Request $request
-     * @param FileType $fileType Tipo de archivo a actualizar.
-     *
-     * @return JsonResponse
+     * @param  FileType  $fileType  Tipo de archivo a actualizar.
      */
     public function fileTypesIconUpdate(Request $request, FileType $fileType): JsonResponse
     {
@@ -52,16 +46,16 @@ class AdminLteController extends Controller
             'image' => 'required|image',
         ]);
 
-        ## Borro imágenes anteriores que ya no se usan
+        // # Borro imágenes anteriores que ya no se usan
         if ($fileType->icon128) {
-            $storagePath32 = storage_path('app/public/' . $fileType->icon32);
-            $storagePath16 = storage_path('app/public/' . $fileType->icon16);
+            $storagePath32 = storage_path('app/public/'.$fileType->icon32);
+            $storagePath16 = storage_path('app/public/'.$fileType->icon16);
 
             $oldFilesPath = [
-                storage_path('app/public/' . $fileType->icon128),
-                storage_path('app/public/' . $fileType->icon64),
-                storage_path('app/public/' . $fileType->icon32),
-                storage_path('app/public/' . $fileType->icon16),
+                storage_path('app/public/'.$fileType->icon128),
+                storage_path('app/public/'.$fileType->icon64),
+                storage_path('app/public/'.$fileType->icon32),
+                storage_path('app/public/'.$fileType->icon16),
             ];
 
             foreach ($oldFilesPath as $oldFilePath) {
@@ -80,7 +74,7 @@ class AdminLteController extends Controller
 
             $tmpPath = $image->getRealPath();
             $path = 'icons/file_types';
-            $fullPath = storage_path('app/public/' . $path);
+            $fullPath = storage_path('app/public/'.$path);
 
             $name = \Str::random(32);
 
@@ -89,7 +83,7 @@ class AdminLteController extends Controller
 
             $mime = $image->getMimeType();
 
-            if (!$extension) {
+            if (! $extension) {
                 $extension = explode('/', $mime)[1];
             }
 
@@ -98,31 +92,31 @@ class AdminLteController extends Controller
                 $format = 'webp';
             }
 
-            $name128 = $name . '_128.' . $extension;
-            $name64 = $name . '_64.' . $extension;
-            $name32 = $name . '_32.' . $extension;
-            $name16 = $name . '_16.' . $extension;
+            $name128 = $name.'_128.'.$extension;
+            $name64 = $name.'_64.'.$extension;
+            $name32 = $name.'_32.'.$extension;
+            $name16 = $name.'_16.'.$extension;
 
             // 1 - Redimensionar a 128
             $image128 = Image::read($tmpPath)->resize(128, 128)
-                ->save($fullPath . '/' . $name128, quality: 90);
+                ->save($fullPath.'/'.$name128, quality: 90);
 
             // 2 - Redimensionar a 64
             $image64 = Image::read($tmpPath)->resize(64, 64)
-                ->save($fullPath . '/' . $name64, quality: 90);
+                ->save($fullPath.'/'.$name64, quality: 90);
 
             // 3 - Redimensionar a 32
             $image32 = Image::read($tmpPath)->resize(32, 32)
-                ->save($fullPath . '/' . $name32, quality: 90);
+                ->save($fullPath.'/'.$name32, quality: 90);
 
             // 4 - Redimensionar a 16
             $image16 = Image::read($tmpPath)->resize(16, 16)
-                ->save($fullPath . '/' . $name16, quality: 90);
+                ->save($fullPath.'/'.$name16, quality: 90);
 
-            $fileType->icon128 = $path . '/' . $name128;
-            $fileType->icon64 = $path . '/' . $name64;
-            $fileType->icon32 = $path . '/' . $name32;
-            $fileType->icon16 = $path . '/' . $name16;
+            $fileType->icon128 = $path.'/'.$name128;
+            $fileType->icon64 = $path.'/'.$name64;
+            $fileType->icon32 = $path.'/'.$name32;
+            $fileType->icon16 = $path.'/'.$name16;
             $fileType->save();
         }
 

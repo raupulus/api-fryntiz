@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\KeyCounter\V2\KeyboardController;
 use App\Http\Controllers\Api\KeyCounter\V2\MouseController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

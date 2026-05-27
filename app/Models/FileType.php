@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,7 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class FileType extends Model
 {
+    use BelongsToUser;
+
     protected $table = 'file_types';
+
     protected $guarded = [
         'id',
         'icon128',
@@ -21,8 +24,6 @@ class FileType extends Model
 
     /**
      * Devuelve la url para actualizar el icono del tipo de archivo.
-     *
-     * @return string
      */
     public function getUrlIconUpdateAttribute(): string
     {
@@ -31,34 +32,30 @@ class FileType extends Model
 
     /**
      * Devuelve la url hacia el icono principal del tipo de archivo.
-     *
-     * @return string
      */
     public function getUrlImageAttribute(): string
     {
-        if (!$this->icon128) {
+        if (! $this->icon128) {
             return asset('images/icons/file_128x128.webp');
         }
 
-        return asset('storage/' . $this->icon128);
+        return asset('storage/'.$this->icon128);
     }
-
 
     /**
      * Añade un nuevo tipo de archivo a la base de datos.
      *
-     * @param string $mime Tipo mime del archivo, por ejemplo: image/png
-     * @param string $extension Extensión del archivo, por ejemplo: png
-     * @param string|null $type Tipo de archivo, por ejemplo: image
-     * @return FileType|null
+     * @param  string  $mime  Tipo mime del archivo, por ejemplo: image/png
+     * @param  string  $extension  Extensión del archivo, por ejemplo: png
+     * @param  string|null  $type  Tipo de archivo, por ejemplo: image
      */
     public static function addFileType(string $mime, string $extension, ?string $type = null): ?FileType
     {
-        if (!$mime || (count(explode('/', $mime)) !== 2)) {
+        if (! $mime || (count(explode('/', $mime)) !== 2)) {
             return null;
         }
 
-        if (!$extension) {
+        if (! $extension) {
             $extension = explode('/', $mime)[1];
         }
 
@@ -72,7 +69,7 @@ class FileType extends Model
 
         return self::firstOrCreate([
             'mime' => $mime,
-        ],[
+        ], [
             'user_id' => auth()->id(),
             'mime' => $mime,
             'extension' => $extension,
@@ -80,5 +77,3 @@ class FileType extends Model
         ]);
     }
 }
-
-

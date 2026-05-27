@@ -32,7 +32,7 @@ class StoreCvServiceRequest extends FormRequest
                 ->replaceMatches('/\s\s+/', '')->__toString(),
             'description' => Str::of($this->description)->trim()->ucfirst()
                 ->replaceMatches('/\s\s+/', '')->__toString(),
-            'url' => Str::of($this->url)->trim()->replaceMatches('/\s+/','')
+            'url' => Str::of($this->url)->trim()->replaceMatches('/\s+/', '')
                 ->__toString(),
         ]);
     }

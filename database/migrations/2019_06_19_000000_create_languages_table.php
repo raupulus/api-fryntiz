@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateLanguagesTable
@@ -17,10 +17,11 @@ class CreateLanguagesTable extends Migration
     public function up()
     {
         Schema::create('languages', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de languages');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->char('locale', 8)
                 ->unique()
                 ->comment('Código del país e idioma: es_ES');
@@ -44,7 +45,7 @@ class CreateLanguagesTable extends Migration
             $table->string('icon64', 511)
                 ->nullable()
                 ->comment('Icono a 64x64 píxeles');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
     }
 

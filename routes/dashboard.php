@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Dashboard\AdminLteController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\Content\ContentController;
+use App\Http\Controllers\Dashboard\Content\ContentPageController;
 use App\Http\Controllers\Dashboard\CurriculumController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumAcademicComplementaryOnlineController;
@@ -19,29 +21,25 @@ use App\Http\Controllers\Dashboard\Cv\CurriculumProjectController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumRepositoryController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumServiceController;
 use App\Http\Controllers\Dashboard\Cv\CurriculumSkillController;
+use App\Http\Controllers\Dashboard\EmailController;
 use App\Http\Controllers\Dashboard\Hardware\HardwareDeviceController;
 use App\Http\Controllers\Dashboard\Hardware\HardwareEnergyController;
 use App\Http\Controllers\Dashboard\LanguageController;
 use App\Http\Controllers\Dashboard\PlatformController;
 use App\Http\Controllers\Dashboard\TagController;
+use App\Http\Controllers\Dashboard\TechnologyController;
 use App\Http\Controllers\Dashboard\Users\UserController;
-use App\Http\Controllers\Dashboard\EmailController;
 use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\Dashboard\Content\ContentPageController;
-use \App\Http\Controllers\Dashboard\AdminLteController;
-use \App\Http\Controllers\Dashboard\TechnologyController;
 
-
-############################################################
-##                      Dashboard                         ##
-############################################################
+// ###########################################################
+// #                      Dashboard                         ##
+// ###########################################################
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function () {
     Route::get('/', function () {
         return view('dashboard.index');
     })->name('dashboard.index');
 
-
-    ## Listado con todos los tipos de archivos que hay en la plataforma.
+    // # Listado con todos los tipos de archivos que hay en la plataforma.
     Route::get('/app/file-types', [AdminLteController::class, 'fileTypesIndex'])
         ->name('dashboard.app.file_types.index');
 
@@ -49,30 +47,29 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function (
         ->name('dashboard.app.file_types.update.icon');
 });
 
-############################################################
-##                      Emails                            ##
-############################################################
+// ###########################################################
+// #                      Emails                            ##
+// ###########################################################
 Route::group(['prefix' => '/emails', 'middleware' => ['auth', 'verified']],
     function () {
 
         Route::get('/index', [EmailController::class, 'index'])
             ->name('dashboard.email.index');
 
-
         Route::group(['prefix' => '/ajax'], function () {
             Route::post('/table/get', [EmailController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.email.ajax.table.get');
 
-            ## Acciones sobre datos de la tabla [update, create...]
+            // # Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [EmailController::class, 'ajaxTableActions'])
                 ->name('dashboard.email.ajax.table.actions');
         });
 
     });
 
-############################################################
-##                      Energía                           ##
-############################################################
+// ###########################################################
+// #                      Energía                           ##
+// ###########################################################
 Route::group(['prefix' => '/energy', 'middleware' => ['auth', 'verified']],
     function () {
 
@@ -95,9 +92,9 @@ Route::group(['prefix' => '/energy', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.energy.destroy');
     });
 
-############################################################
-##                    Plataformas                         ##
-############################################################
+// ###########################################################
+// #                    Plataformas                         ##
+// ###########################################################
 Route::group(['prefix' => '/platform', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [PlatformController::class, 'index'])
@@ -117,15 +114,15 @@ Route::group(['prefix' => '/platform', 'middleware' => ['auth', 'verified']],
             Route::post('/table/get', [PlatformController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.platform.ajax.table.get');
 
-            ## Acciones sobre datos de la tabla [update, create...]
+            // # Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [PlatformController::class, 'ajaxTableActions'])
                 ->name('dashboard.platform.ajax.table.actions');
         });
     });
 
-############################################################
-##                     Etiquetas                          ##
-############################################################
+// ###########################################################
+// #                     Etiquetas                          ##
+// ###########################################################
 Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [TagController::class, 'index'])
@@ -151,15 +148,15 @@ Route::group(['prefix' => '/tag', 'middleware' => ['auth', 'verified']],
             Route::post('/table/get', [TagController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.tag.ajax.table.get');
 
-            ## Acciones sobre datos de la tabla [update, create...]
+            // # Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [TagController::class, 'ajaxTableActions'])
                 ->name('dashboard.tag.ajax.table.actions');
         });
     });
 
-############################################################
-##                     Categorías                         ##
-############################################################
+// ###########################################################
+// #                     Categorías                         ##
+// ###########################################################
 Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [CategoryController::class, 'index'])
@@ -188,15 +185,15 @@ Route::group(['prefix' => '/category', 'middleware' => ['auth', 'verified']],
             Route::post('/table/get', [CategoryController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.category.ajax.table.get');
 
-            ## Acciones sobre datos de la tabla [update, create...]
+            // # Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [CategoryController::class, 'ajaxTableActions'])
                 ->name('dashboard.category.ajax.table.actions');
         });
     });
 
-############################################################
-##                     Tecnologías                        ##
-############################################################
+// ###########################################################
+// #                     Tecnologías                        ##
+// ###########################################################
 Route::group(['prefix' => '/technology', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [TechnologyController::class, 'index'])
@@ -216,15 +213,15 @@ Route::group(['prefix' => '/technology', 'middleware' => ['auth', 'verified']],
             Route::post('/table/get', [TechnologyController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.technology.ajax.table.get');
 
-            ## Acciones sobre datos de la tabla [update, create...]
+            // # Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [TechnologyController::class, 'ajaxTableActions'])
                 ->name('dashboard.technology.ajax.table.actions');
         });
     });
 
-############################################################
-##                      Usuarios                          ##
-############################################################
+// ###########################################################
+// #                      Usuarios                          ##
+// ###########################################################
 Route::group(['prefix' => '/users', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [UserController::class, 'index'])
@@ -243,9 +240,9 @@ Route::group(['prefix' => '/users', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.users.destroy');
     });
 
-############################################################
-##                      Hardware                          ##
-############################################################
+// ###########################################################
+// #                      Hardware                          ##
+// ###########################################################
 Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
     function () {
         Route::group(['prefix' => '/device', 'middleware' => ['auth', 'verified']],
@@ -265,9 +262,9 @@ Route::group(['prefix' => '/hardware', 'middleware' => ['auth', 'verified']],
             });
     });
 
-############################################################
-##                      Contenido                         ##
-############################################################
+// ###########################################################
+// #                      Contenido                         ##
+// ###########################################################
 Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index/{platform?}/{slug?}', [ContentController::class, 'index'])
@@ -284,111 +281,97 @@ Route::group(['prefix' => '/content', 'middleware' => ['auth', 'verified']],
         Route::match(['post', 'delete'], '/destroy/{content?}', [ContentController::class, 'destroy'])
             ->name('dashboard.content.destroy');
 
-        ## Crea una nueva página
+        // # Crea una nueva página
         Route::post('/{content}/add/page', [ContentController::class, 'addPage'])
             ->name('dashboard.content.add.page');
 
-        ## Guarda SEO de un contenido
+        // # Guarda SEO de un contenido
         Route::match(['put', 'patch'], '/seo/store/{content}', [ContentController::class, 'seoStore'])
             ->name('dashboard.content.seo.store');
 
-        ## Guarda metadatos de un contenido
+        // # Guarda metadatos de un contenido
         Route::match(['put', 'patch'], '/metadata/store/{content}', [ContentController::class, 'metadataStore'])
             ->name('dashboard.content.metadata.store');
 
-        ## Guarda Metadatos de un contenido
+        // # Guarda Metadatos de un contenido
         Route::match(['put', 'patch'], '/metadata/store/{content}', [ContentController::class, 'metadataStore'])
             ->name('dashboard.content.metadata.store');
 
-
-        ## Ruta para previsualizar el contenido
+        // # Ruta para previsualizar el contenido
         Route::get('/preview/full/{content}', [ContentController::class, 'preview'])
             ->name('dashboard.content.preview.full');
 
-        ## Elimina una página
+        // # Elimina una página
         Route::post('/delete/{page}/{content?}', [ContentPageController::class, 'safeDestroy'])
             ->name('dashboard.content.page.delete');
 
-
-
         Route::group(['prefix' => '/ajax'], function () {
 
-            ## Devuelve información del contenido por plataforma (etiquetas, categorías, contenidos...)
+            // # Devuelve información del contenido por plataforma (etiquetas, categorías, contenidos...)
             Route::match(['put', 'patch', 'post'], '/get/select/info/from/{platform}/platform', [ContentController::class, 'ajaxGetSelectInfoFromPlataform'])
                 ->name('dashboard.content.ajax.get.select.info.from.platform');
 
             Route::match(['put', 'patch', 'post'], '/get/{platform}/content-related/filtered', [ContentController::class, 'ajaxGetContentRelatedFiltered'])
                 ->name('dashboard.content.ajax.get.content.related.filtered');
 
-
             Route::post('/table/get', [ContentController::class, 'ajaxTableGetQuery'])
                 ->name('dashboard.content.ajax.table.get');
 
-            ## Acciones sobre datos de la tabla [update, create...]
+            // # Acciones sobre datos de la tabla [update, create...]
             Route::match(['put', 'patch', 'post'], '/table/action', [ContentController::class, 'ajaxTableActions'])
                 ->name('dashboard.content.ajax.table.actions');
 
-            ## Crea una nueva etiqueta/s asociada al contenido
+            // # Crea una nueva etiqueta/s asociada al contenido
             Route::post('/tag/create', [ContentController::class, 'ajaxTagCreate'])
                 ->name('dashboard.content.ajax.tag.create');
 
-            ## Crea una nueva categoría/s asociada al contenido
+            // # Crea una nueva categoría/s asociada al contenido
             Route::post('/category/create', [ContentController::class, 'ajaxCategoryCreate'])
                 ->name('dashboard.content.ajax.category.create');
 
-
-
-            ## Sube un archivo asociado a un contenido
+            // # Sube un archivo asociado a un contenido
             Route::post('/upload/file/{contentModel?}', [ContentController::class, 'ajaxStoreFile'])
                 ->name('dashboard.content.ajax.upload.file');
 
-            ## Actualiza los metadatos de un archivo asociado a un contenido
+            // # Actualiza los metadatos de un archivo asociado a un contenido
             Route::patch('/update/metadata/file/{contentFile}/{file}', [ContentController::class, 'ajaxUpdateMetadataFile'])
                 ->name('dashboard.content.ajax.update.metadata.file');
 
-            ## Elimina un archivo asociado a un contenido
+            // # Elimina un archivo asociado a un contenido
             Route::post('/upload/remove/file', [ContentController::class, 'ajaxRemoveFile'])
                 ->name('dashboard.content.ajax.upload.remove.file');
 
-
-
             /******* Páginas ********/
 
-            ## Crea una nueva página asociada al contenido
+            // # Crea una nueva página asociada al contenido
             Route::post('/page/create/{content}', [ContentController::class, 'ajaxPageCreate'])
                 ->name('dashboard.content.ajax.page.create');
 
-            ## Actualiza el contenido de una página existente
+            // # Actualiza el contenido de una página existente
             Route::post('/page/{contentPage}/{contentType}/update', [ContentController::class, 'ajaxPageUpdate'])
                 ->name('dashboard.content.ajax.page.update');
 
-            ## Devuelve el contenido RAW de una página
+            // # Devuelve el contenido RAW de una página
             Route::get('/page/{contentPage}/get', [ContentController::class, 'ajaxPageGetContent'])
-                    ->name('dashboard.content.ajax.page.get.content');
+                ->name('dashboard.content.ajax.page.get.content');
 
-            ## Añade/Actualiza una imagen de una página
+            // # Añade/Actualiza una imagen de una página
             Route::post('/page/upload/image/{contentPage}/update', [ContentPageController::class, 'ajaxUpdateImage'])
                 ->name('dashboard.content.ajax.page.upload.image.update');
 
-            ## Comprueba si es un slug válido para la página dentro de la plataforma
+            // # Comprueba si es un slug válido para la página dentro de la plataforma
             Route::post('/page/check/slug/{page?}', [ContentPageController::class, 'ajaxCheckSlug'])
                 ->name('dashboard.content.ajax.page.check.slug');
 
-            ## Obtiene metadatos de una página externa
+            // # Obtiene metadatos de una página externa
             Route::get('/external/page/get/metadata', [ContentPageController::class, 'ajaxGetUrlMetadata'])
                 ->name('dashboard.content.ajax.external.page.get.metadata');
         });
     });
 
-
-
-
-
-
-
-############################################################
-##                       Idiomas                          ##
-############################################################
+// ###########################################################
+// #                       Idiomas                          ##
+// ###########################################################
 Route::group(['prefix' => '/language', 'middleware' => ['auth', 'verified']],
     function () {
         Route::get('/index', [LanguageController::class, 'index'])
@@ -405,13 +388,13 @@ Route::group(['prefix' => '/language', 'middleware' => ['auth', 'verified']],
             ->name('dashboard.language.destroy');
     });
 
-############################################################
-##                     Curriculum                         ##
-############################################################
+// ###########################################################
+// #                     Curriculum                         ##
+// ###########################################################
 // https://laravel.com/docs/8.x/controllers#actions-handled-by-resource-controller
 Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
     function () {
-        ## Curriculums
+        // # Curriculums
         Route::get('/index', [CurriculumController::class, 'index'])
             ->name('dashboard.cv.index');
         Route::get('/create', [CurriculumController::class, 'create'])
@@ -425,7 +408,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
         Route::post('/destroy', [CurriculumController::class, 'destroy'])
             ->name('dashboard.cv.destroy');
 
-        ## Tipos de repositorios disponibles.
+        // # Tipos de repositorios disponibles.
         Route::group(['prefix' => '/repository-available-type'], function () {
             Route::get('/index',
                 [CurriculumAvailableRepositoryTypeController::class, 'index'])
@@ -444,7 +427,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.repository_available_type.destroy');
         });
 
-        ## Repositorios
+        // # Repositorios
         Route::group(['prefix' => '/repository'], function () {
             Route::get('/index/{id}', [CurriculumRepositoryController::class, 'index'])
                 ->name('dashboard.cv.repository.index');
@@ -460,7 +443,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.repository.destroy');
         });
 
-        ## Servicios
+        // # Servicios
         Route::group(['prefix' => '/service'], function () {
             Route::get('/index/{id}', [CurriculumServiceController::class, 'index'])
                 ->name('dashboard.cv.service.index');
@@ -476,7 +459,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.service.destroy');
         });
 
-        ## Formación Académica Complementaria
+        // # Formación Académica Complementaria
         Route::group(['prefix' => '/academic-complementary'], function () {
             Route::get('/index/{id}', [CurriculumAcademicComplementaryController::class, 'index'])
                 ->name('dashboard.cv.academic_complementary.index');
@@ -492,7 +475,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.academic_complementary.destroy');
         });
 
-        ## Formación Académica Online
+        // # Formación Académica Online
         Route::group(['prefix' => '/academic-complementary-online'], function () {
             Route::get('/index/{id}', [CurriculumAcademicComplementaryOnlineController::class, 'index'])
                 ->name('dashboard.cv.academic_complementary_online.index');
@@ -508,7 +491,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.academic_complementary_online.destroy');
         });
 
-        ## Formación Académica
+        // # Formación Académica
         Route::group(['prefix' => '/academic-training'], function () {
             Route::get('/index/{id}', [CurriculumAcademicTrainingController::class,
                 'index'])
@@ -525,7 +508,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.academic_training.destroy');
         });
 
-        ## Colaboraciones
+        // # Colaboraciones
         Route::group(['prefix' => '/collaboration'], function () {
             Route::get('/index/{id}', [CurriculumCollaborationController::class, 'index'])
                 ->name('dashboard.cv.collaboration.index');
@@ -541,7 +524,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.collaboration.destroy');
         });
 
-        ## Experiencia Laboral Acreditada
+        // # Experiencia Laboral Acreditada
         Route::group(['prefix' => '/experience-accredited'], function () {
             Route::get('/index/{id}', [CurriculumExperienceAccreditedController::class, 'index'])
                 ->name('dashboard.cv.experience_accredited.index');
@@ -557,7 +540,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_accredited.destroy');
         });
 
-        ## Experiencia Laboral Adicional
+        // # Experiencia Laboral Adicional
         Route::group(['prefix' => '/experience-additional'], function () {
             Route::get('/index/{id}', [CurriculumExperienceAdditionalController::class, 'index'])
                 ->name('dashboard.cv.experience_additional.index');
@@ -573,7 +556,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_additional.destroy');
         });
 
-        ## Experiencia Laboral No Acreditada
+        // # Experiencia Laboral No Acreditada
         Route::group(['prefix' => '/experience-no-accredited'], function () {
             Route::get('/index/{id}', [CurriculumExperienceNoAccreditedController::class, 'index'])
                 ->name('dashboard.cv.experience_no_accredited.index');
@@ -589,7 +572,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_no_accredited.destroy');
         });
 
-        ## Experiencia Laboral Otros
+        // # Experiencia Laboral Otros
         Route::group(['prefix' => '/experience-other'], function () {
             Route::get('/index/{id}', [CurriculumExperienceOtherController::class, 'index'])
                 ->name('dashboard.cv.experience_other.index');
@@ -605,7 +588,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_other.destroy');
         });
 
-        ## Experiencia Laboral Autoempleado (Autónomo o freelance)
+        // # Experiencia Laboral Autoempleado (Autónomo o freelance)
         Route::group(['prefix' => '/experience-selfemployed'], function () {
             Route::get('/index/{id}', [CurriculumExperienceSelfEmployedController::class, 'index'])
                 ->name('dashboard.cv.experience_selfemployed.index');
@@ -621,7 +604,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.experience_selfemployed.destroy');
         });
 
-        ## Aficciones
+        // # Aficciones
         Route::group(['prefix' => '/hobby'], function () {
             Route::get('/index/{id}', [CurriculumHobbyController::class, 'index'])
                 ->name('dashboard.cv.hobby.index');
@@ -637,7 +620,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.hobby.destroy');
         });
 
-        ## Trabajos
+        // # Trabajos
         Route::group(['prefix' => '/job'], function () {
             Route::get('/index/{id}', [CurriculumJobController::class, 'index'])
                 ->name('dashboard.cv.job.index');
@@ -653,7 +636,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.job.destroy');
         });
 
-        ## Proyectos
+        // # Proyectos
         Route::group(['prefix' => '/project'], function () {
             Route::get('/index/{id}', [CurriculumProjectController::class, 'index'])
                 ->name('dashboard.cv.project.index');
@@ -669,7 +652,7 @@ Route::group(['prefix' => '/cv', 'middleware' => ['auth', 'verified']],
                 ->name('dashboard.cv.project.destroy');
         });
 
-        ## Habilidades
+        // # Habilidades
         Route::group(['prefix' => '/skill'], function () {
             Route::get('/index/{id}', [CurriculumSkillController::class, 'index'])
                 ->name('dashboard.cv.skill.index');

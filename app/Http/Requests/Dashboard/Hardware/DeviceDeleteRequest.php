@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Dashboard\Hardware;
 
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 
 class DeviceDeleteRequest extends FormRequest

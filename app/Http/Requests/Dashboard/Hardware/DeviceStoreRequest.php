@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Dashboard\Hardware;
 
+use App\Models\Hardware\HardwareDevice;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 use function trim;
 
@@ -15,7 +17,7 @@ class DeviceStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->id() && auth()->user()->can('store', \App\Models\Hardware\HardwareDevice::class);
+        return auth()->id() && auth()->user()->can('store', HardwareDevice::class);
     }
 
     public function prepareForValidation()
@@ -49,7 +51,6 @@ class DeviceStoreRequest extends FormRequest
             'battery_nominal_capacity' => 'nullable|integer',
             'url_company' => 'nullable|string|max:255',
             'buy_at' => 'nullable|date',
-
 
         ];
     }

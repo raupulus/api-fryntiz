@@ -10,7 +10,12 @@ use App\Http\Requests\Dashboard\Hardware\DeviceStoreRequest;
 use App\Http\Requests\Dashboard\Hardware\DeviceUpdateRequest;
 use App\Models\File;
 use App\Models\Hardware\HardwareDevice;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
+
 use function dd;
 use function redirect;
 use function view;
@@ -20,9 +25,8 @@ class HardwareDeviceController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Http\Requests\Dashboard\Hardware\DeviceIndexRequest $request
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index(DeviceIndexRequest $request)
     {
@@ -36,10 +40,8 @@ class HardwareDeviceController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param \App\Http\Requests\Dashboard\Hardware\DeviceCreateRequest $request
-     * @param \App\Models\Hardware\HardwareDevice                       $device
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function create(DeviceCreateRequest $request, HardwareDevice $device)
     {
@@ -51,21 +53,20 @@ class HardwareDeviceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Hardware\DeviceStoreRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(DeviceStoreRequest $request)
     {
-        //dd($request->validated(), $request->all());
+        // dd($request->validated(), $request->all());
 
         $device = HardwareDevice::create($request->validated());
 
-        ## Compruebo si se ha subido una imagen y la guardo.
+        // # Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $file = File::addFile($request->file('image'), 'hardware-devices', true, $device->image_id);
 
-            if (!$device->image_id && $file) {
+            if (! $device->image_id && $file) {
                 $device->image_id = $file->id;
                 $device->save();
             }
@@ -77,8 +78,8 @@ class HardwareDeviceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Hardware\HardwareDevice  $hardwareDevice
-     * @return \Illuminate\Http\Response
+     * @param  HardwareDevice  $hardwareDevice
+     * @return Response
      */
     public function show(HardwareDeviceController $hardwareDevice)
     {
@@ -88,9 +89,8 @@ class HardwareDeviceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Hardware\HardwareDevice $device
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function edit(HardwareDevice $device)
     {
@@ -102,21 +102,19 @@ class HardwareDeviceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\Dashboard\Hardware\DeviceUpdateRequest $request
-     * @param \App\Models\Hardware\HardwareDevice                       $device
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function update(DeviceUpdateRequest $request, HardwareDevice $device)
     {
         $device->fill($request->validated());
         $device->save();
 
-        ## Compruebo si se ha subido una imagen y la guardo.
+        // # Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $file = File::addFile($request->file('image'), 'hardware-devices', true, $device->image_id);
 
-            if (!$device->image_id && $file) {
+            if (! $device->image_id && $file) {
                 $device->image_id = $file->id;
                 $device->save();
             }
@@ -128,10 +126,8 @@ class HardwareDeviceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Http\Requests\Dashboard\Hardware\DeviceDeleteRequest $request
-     * @param \App\Models\Hardware\HardwareDevice                       $device
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function destroy(DeviceDeleteRequest $request, HardwareDevice $device)
     {

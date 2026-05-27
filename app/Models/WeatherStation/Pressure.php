@@ -3,12 +3,9 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\PressureUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 
 /**
  * Class Pressure
- *
- * @package App\Models\WeatherStation
  */
 class Pressure extends BaseWheaterStation
 {
@@ -33,7 +30,7 @@ class Pressure extends BaseWheaterStation
      */
     public $name = 'Presión';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'pressure';
     }
@@ -53,16 +50,10 @@ class Pressure extends BaseWheaterStation
         'created' => PressureUpdateEvent::class,
     ];
 
-
-
-
     /****************** Métodos para tablas dinámicas ******************/
-
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -76,9 +67,9 @@ class Pressure extends BaseWheaterStation
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

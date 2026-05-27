@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentsTable extends Migration
 {
     private $tableName = 'contents';
+
     private $tableComment = 'Contenido';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('author_id')
                 ->index()
                 ->nullable()
@@ -119,7 +121,7 @@ class CreateContentsTable extends Migration
                 ->default(false)
                 ->comment('Indica si el contenido está visible en el sitemap de noticias');
 
-           $table->timestamp('published_at')
+            $table->timestamp('published_at')
                 ->nullable()
                 ->comment('Fecha de publicación del contenido');
 
@@ -127,8 +129,8 @@ class CreateContentsTable extends Migration
                 ->nullable()
                 ->comment('Momento en la que está programada la publicación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvRepositoryTypesTable
@@ -17,10 +17,11 @@ class CreateCvAvailableRepositoryTypesTable extends Migration
     public function up()
     {
         Schema::create('cv_available_repository_types', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv available repository types');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('image_id')
                 ->nullable()
                 ->comment('Relación con la imagen asociada');
@@ -40,7 +41,7 @@ class CreateCvAvailableRepositoryTypesTable extends Migration
             $table->text('url')
                 ->nullable()
                 ->comment('Dirección al repositorio');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
     }
 

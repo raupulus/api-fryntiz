@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateFilesTable
@@ -17,10 +17,11 @@ class CreateFileThumbnailsTable extends Migration
     public function up()
     {
         Schema::create('file_thumbnails', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de file thumbnails');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('file_id')
                 ->nullable()
                 ->comment('Imagen Asociada');
@@ -35,7 +36,6 @@ class CreateFileThumbnailsTable extends Migration
                 ->references('id')->on('file_types')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-
 
             $table->string('module', 255)
                 ->nullable()
@@ -68,8 +68,8 @@ class CreateFileThumbnailsTable extends Migration
                 ->default(0)
                 ->comment('Tamaño de la imagen');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateSocialNetworksTable
@@ -17,10 +17,11 @@ class CreateSocialNetworksTable extends Migration
     public function up()
     {
         Schema::create('social_networks', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de social networks');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->string('name', 255)
                 ->unique()
                 ->comment('Nombre de la red social');
@@ -46,8 +47,8 @@ class CreateSocialNetworksTable extends Migration
             $table->text('image')
                 ->nullable()
                 ->comment('Imagen de la red social a 120x120px');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

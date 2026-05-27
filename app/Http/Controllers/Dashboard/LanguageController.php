@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use function array_keys;
-use function response;
 
 /**
  * Class LanguageController
@@ -24,7 +21,7 @@ class LanguageController extends Controller
 
     public function store()
     {
-        //TODO
+        // TODO
         return redirect()->route('dashboard.languages.index');
     }
 
@@ -35,13 +32,13 @@ class LanguageController extends Controller
 
     public function update()
     {
-        //TODO
+        // TODO
         return redirect()->route('dashboard.languages.index');
     }
 
     public function destroy()
     {
-        //TODO
+        // TODO
         return redirect()->route('dashboard.languages.index');
     }
 }

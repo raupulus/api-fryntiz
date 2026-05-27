@@ -4,6 +4,7 @@ namespace App\Http\Requests\Dashboard\Tag;
 
 use App\Models\Tag;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 use function trim;
 
@@ -44,7 +45,7 @@ class TagUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|max:255|unique:tags,slug,' . $this->get('id'),
+            'slug' => 'required|max:255|unique:tags,slug,'.$this->get('id'),
             'description' => 'nullable|string|max:255',
         ];
     }

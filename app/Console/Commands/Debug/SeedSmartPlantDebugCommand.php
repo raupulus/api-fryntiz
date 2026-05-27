@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands\Debug;
 
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 
 /**
  * Comando de debug para insertar plantas y registros de sensores.
@@ -48,8 +48,8 @@ class SeedSmartPlantDebugCommand extends Command
         for ($i = 0; $i < $plantsCount; $i++) {
             $plant = SmartPlantPlant::create([
                 'user_id' => $userId,
-                'name' => $plantNames[$i % count($plantNames)] . ' #' . ($i + 1),
-                'name_scientific' => $plantNames[$i % count($plantNames)] . ' scientificus',
+                'name' => $plantNames[$i % count($plantNames)].' #'.($i + 1),
+                'name_scientific' => $plantNames[$i % count($plantNames)].' scientificus',
                 'description' => 'Planta de debug generada automáticamente',
                 'details' => 'Detalles avanzados de la planta de debug',
                 'start_at' => $now->copy()->subDays(fake()->numberBetween(30, 365)),

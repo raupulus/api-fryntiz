@@ -2,15 +2,11 @@
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\AirQualityUpdateEvent;
 use App\Events\WeatherStation\HumidityUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 use Illuminate\Notifications\Notifiable;
 
 /**
  * Class Humidity
- *
- * @package App\Models\WeatherStation
  */
 class Humidity extends BaseWheaterStation
 {
@@ -37,7 +33,7 @@ class Humidity extends BaseWheaterStation
      */
     public $name = 'Humedad';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'humidity';
     }
@@ -57,15 +53,10 @@ class Humidity extends BaseWheaterStation
         'created' => HumidityUpdateEvent::class,
     ];
 
-
-
     /****************** Métodos para tablas dinámicas ******************/
-
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -79,9 +70,9 @@ class Humidity extends BaseWheaterStation
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

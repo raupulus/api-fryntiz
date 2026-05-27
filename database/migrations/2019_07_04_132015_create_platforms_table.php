@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Schema;
  * Tabla para distinguir en secciones cada tipo de contenido, por ejemplo el que
  * se crea para una web de informática, para el curriculum, para los vuelos,
  * para la estación meteorológica...
- *
  */
 class CreatePlatformsTable extends Migration
 {
     private $tableName = 'platforms';
+
     private $tableComment = 'Almacena las distintas plataformas en las que se agruparán los contenidos';
 
     /**
@@ -26,10 +26,11 @@ class CreatePlatformsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario');
             $table->foreign('user_id')
@@ -86,8 +87,8 @@ class CreatePlatformsTable extends Migration
             $table->string('instagram', 255)
                 ->nullable()
                 ->comment('Usuario en instagram');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

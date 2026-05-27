@@ -6,31 +6,33 @@ use App\Http\Traits\ImageTrait;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use RoleHelper;
+
 use function asset;
 
 /**
  * Class User
- *
- * @package App\Models
  */
 class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
     use HasFactory;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
     use ImageTrait;
+    use Notifiable;
+    use SoftDeletes;
+    use TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -38,10 +40,14 @@ class User extends Authenticatable implements FilamentUser
      * @var array
      */
     protected $fillable = [
+        'role_id',
         'name',
         'surname',
+        'nickname',
         'email',
         'password',
+        'profile_photo_path',
+        'email_verified_at',
     ];
 
     /**
@@ -77,11 +83,8 @@ class User extends Authenticatable implements FilamentUser
         'profile_photo_url',
     ];
 
-
     /**
      * Devuelve todos los datos de redes sociales para el usuario.
-     *
-     * @return HasMany
      */
     public function socials(): HasMany
     {
@@ -89,9 +92,23 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Detalles ampliados del perfil (profesión, web, etc.).
+     */
+    public function details(): HasOne
+    {
+        return $this->hasOne(UserDetail::class);
+    }
+
+    /**
+     * Preferencias de notificación.
+     */
+    public function settings(): HasOne
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    /**
      * Relación con el role del usuario.
-     *
-     * @return BelongsTo
      */
     public function role(): BelongsTo
     {
@@ -100,8 +117,6 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Obtiene los datos para la red social de Twitter.
-     *
-     * @return UserSocial|null
      */
     public function getTwitterAttribute(): ?UserSocial
     {
@@ -110,28 +125,22 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Obtiene los datos para la red social de Facebook.
-     *
-     * @return UserSocial|null
      */
     public function getFacebookAttribute(): ?UserSocial
     {
         return $this->socials()->where('social_network_id', 1)->first();
     }
 
-
-
     /**
      * Devuelve el nombre completo del usuario (nombre y apellido).
-     *
-     * @return string
      */
     public function getFullNameAttribute(): string
     {
-        if (!$this->surname) {
+        if (! $this->surname) {
             return $this->name;
         }
 
-        return $this->name . ' ' . $this->surname;
+        return $this->name.' '.$this->surname;
     }
 
     public function urlAvatarIcon()
@@ -159,7 +168,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function urlProfile()
     {
-        //return route('users.show', $this);
+        // return route('users.show', $this);
         return route('dashboard.users.show', $this->id);
     }
 
@@ -197,9 +206,6 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Determina si el usuario puede acceder al panel de Filament indicado.
-     *
-     * @param Panel $panel
-     * @return bool
      */
     public function canAccessPanel(Panel $panel): bool
     {
@@ -212,8 +218,6 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Comprueba si el usuario es SuperAdmin (role_id = 1).
-     *
-     * @return bool
      */
     public function isSuperAdmin(): bool
     {
@@ -222,8 +226,6 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Comprueba si el usuario es Admin o SuperAdmin (role_id = 1 o 2).
-     *
-     * @return bool
      */
     public function isAdmin(): bool
     {
@@ -237,7 +239,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function safeDelete()
     {
-        ## Elimino la imagen asociada al tipo de repositorio y todas las miniaturas.
+        // # Elimino la imagen asociada al tipo de repositorio y todas las miniaturas.
         /*
         if ($this->image) {
             $this->image->safeDelete();
@@ -250,7 +252,6 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Rellena los datos en el modelo de usuario y lo devuelve.
      *
-     * @param \Illuminate\Http\Request $request
      *
      * @return mixed
      */
@@ -270,7 +271,6 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Actualiza los datos para en el modelo de usuario y lo devuelve.
      *
-     * @param $request
      *
      * @return $this
      */
@@ -280,7 +280,7 @@ class User extends Authenticatable implements FilamentUser
             'name',
             'surname',
             'email',
-            ])
+        ])
         );
 
         if ($request->has('password')) {
@@ -299,7 +299,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function toggleActive()
     {
-        ## Controlo que exista usuario y además sea distinto al role superadmin.
+        // # Controlo que exista usuario y además sea distinto al role superadmin.
         if ($this->role_id == 1) {
             return null;
         }
@@ -313,17 +313,16 @@ class User extends Authenticatable implements FilamentUser
      * Obtiene todos los modelos de la base de datos filtrando por roles.
      *
      * @param  array|mixed  $columns
-     *
-     * @return \Illuminate\Database\Eloquent\Collection|\App\Models\User[]
+     * @return Collection|User[]
      */
     public static function all($columns = ['*'])
     {
         $users = parent::all();
 
-        ## Usuarios Activos que según el role del actual puede ver.
+        // # Usuarios Activos que según el role del actual puede ver.
         if (RoleHelper::isSuperAdmin()) {
             return $users;
-        } else if (RoleHelper::isAdmin()) {
+        } elseif (RoleHelper::isAdmin()) {
             return $users->whereNotIn('role_id', [1]);
         }
 
@@ -333,7 +332,7 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Devuelve todos los usuarios activos de la plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Foundation\Auth\User[]
+     * @return Collection|Authenticatable[]
      */
     public static function getAllActive()
     {
@@ -353,7 +352,7 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Devuelve todos los usuarios inactivos de la plataforma.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Foundation\Auth\User[]
+     * @return Collection|Authenticatable[]
      */
     public static function getAllInactive()
     {
@@ -387,19 +386,17 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Devuelve información básica sobre el usuario.
-     *
-     * @return array
      */
     public function basicInfo(): array
     {
         return [
-            'name' => $this->fullName ,
+            'name' => $this->fullName,
             'nick' => $this->nickname,
             'url_image_micro' => $this->urlImageMicro,
             'url_image_small' => $this->urlImageSmall,
             'profession' => 'Developer', // Tablas user_details
             'web' => 'raupulus.dev', // Tabla user_details
-            'social_networks' => $this->socials->map(function($ele) {
+            'social_networks' => $this->socials->map(function ($ele) {
                 $sn = $ele->socialNetwork;
 
                 return [
@@ -408,7 +405,7 @@ class User extends Authenticatable implements FilamentUser
                     'color' => $sn->color,
                     'nick' => $ele->nick,
                     'url' => $ele->url,
-                    //'url_image' => $sn->urlImage,
+                    // 'url_image' => $sn->urlImage,
                     'url_image' => 'http://localhost:8000/images/default/small.jpg', // TODO->Terminar imágenes en SocialNetwork
                 ];
             }),

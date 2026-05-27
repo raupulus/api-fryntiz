@@ -2,12 +2,13 @@
 
 namespace App\Models\CV;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 /**
  * Class CurriculumRepository.
  */
 class CurriculumRepository extends CurriculumBaseSection
 {
-
     /**
      * @var string Nombre del modelo en singular.
      */
@@ -43,7 +44,7 @@ class CurriculumRepository extends CurriculumBaseSection
      * @var string[]
      */
     public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.repositories.index'
+        'index' => 'dashboard.curriculums.repositories.index',
     ];
 
     /**
@@ -70,7 +71,7 @@ class CurriculumRepository extends CurriculumBaseSection
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {
@@ -101,7 +102,7 @@ class CurriculumRepository extends CurriculumBaseSection
     /**
      * Asociación con el tipo de repositorio.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function type()
     {

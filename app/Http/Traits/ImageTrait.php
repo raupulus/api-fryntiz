@@ -1,18 +1,16 @@
 <?php
+
 namespace App\Http\Traits;
 
 use App\Models\File;
 
 /**
  * Trait ImageTrait
- * @package App\Http\Traits
  */
 trait ImageTrait
 {
     /**
      * Devuelve la ruta hacia la foto asociada al curriculum.
-     *
-     * @return string
      */
     public function getUrlImageAttribute(): string
     {
@@ -22,9 +20,7 @@ trait ImageTrait
     /**
      * Devuelve el thumbnail de la imagen asociada.
      *
-     * @param string $size Clave con el tamaño del thumbnail, o se devuelve por defecto.
-     *
-     * @return string
+     * @param  string  $size  Clave con el tamaño del thumbnail, o se devuelve por defecto.
      */
     public function urlThumbnail(string $size = 'medium'): string
     {
@@ -37,28 +33,22 @@ trait ImageTrait
 
     /**
      * Devuelve la imagen en tamaño 50px de ancho.
-     *
-     * @return string
      */
     public function getUrlImageMicroAttribute(): string
     {
         return $this->image?->thumbnail('micro') ?? File::urlDefaultImage('micro');
     }
 
-
     /**
      * Devuelve la imagen en tamaño 160px de ancho.
-     *
-     * @return string
-     */    public function getUrlImageSmallAttribute(): string
+     */
+    public function getUrlImageSmallAttribute(): string
     {
         return $this->image?->thumbnail('small') ?? File::urlDefaultImage('small');
     }
 
     /**
      * Devuelve la imagen en tamaño 320px de ancho.
-     *
-     * @return string
      */
     public function getUrlImageMediumAttribute(): string
     {
@@ -67,8 +57,6 @@ trait ImageTrait
 
     /**
      * Devuelve la imagen en tamaño 640px de ancho.
-     *
-     * @return string
      */
     public function getUrlImageNormalAttribute(): string
     {
@@ -77,8 +65,6 @@ trait ImageTrait
 
     /**
      * Devuelve la imagen en tamaño 1280px de ancho.
-     *
-     * @return string
      */
     public function getUrlImageLargeAttribute(): string
     {

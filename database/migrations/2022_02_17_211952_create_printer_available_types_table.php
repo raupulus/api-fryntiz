@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreatePrinterAvailableTypesTable extends Migration
 {
     private $tableName = 'printer_available_types';
+
     private $tableComment = 'Tipos de impresoras';
 
     /**
@@ -21,10 +22,11 @@ class CreatePrinterAvailableTypesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->string('name', 255)
                 ->comment('Nombre del tipo de impresora');
             $table->string('slug', 255)
@@ -32,7 +34,7 @@ class CreatePrinterAvailableTypesTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

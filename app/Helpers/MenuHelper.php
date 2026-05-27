@@ -5,7 +5,6 @@
  *
  * Helper para ayudar a generar menús o devolver menús usados en distintos
  * lugares de la aplicación centralizando su mantenimiento.
- *
  */
 class MenuHelper
 {

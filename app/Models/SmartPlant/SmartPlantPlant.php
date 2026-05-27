@@ -4,15 +4,12 @@ namespace App\Models\SmartPlant;
 
 use App\Models\BaseModels\BaseModel;
 use App\Traits\BelongsToUser;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class SmartPlantPlant
  *
  * Representa una planta que será asociada desde los registros de lecturas
  * subidos a la API.
- *
- * @package App\Models\SmartPlant
  */
 class SmartPlantPlant extends BaseModel
 {
@@ -33,6 +30,7 @@ class SmartPlantPlant extends BaseModel
 
     /**
      * Relación con todos los registros de lecturas asociados a una planta.
+     *
      * @return mixed
      */
     public function registers()
@@ -49,7 +47,7 @@ class SmartPlantPlant extends BaseModel
     {
         $image = $this->image ?? 'smartplant/default.jpg';
 
-        return asset('storage/' . $image);
+        return asset('storage/'.$image);
     }
 
     /**

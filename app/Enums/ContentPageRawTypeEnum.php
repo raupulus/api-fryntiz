@@ -11,7 +11,7 @@ enum ContentPageRawTypeEnum: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Html => 'HTML',
             self::Markdown => 'Markdown',
             self::PlainText => 'Texto plano',

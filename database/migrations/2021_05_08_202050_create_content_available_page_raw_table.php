@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentAvailablePageRawTable extends Migration
 {
     private $tableName = 'content_available_page_raw';
+
     private $tableComment = 'Formatos de edición para el contenido sin procesar (con el que se generará el html de cada página para el contenido.';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentAvailablePageRawTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
 
             $table->string('name', 255)
                 ->comment('Nombre del formato de edición');
@@ -36,7 +38,7 @@ class CreateContentAvailablePageRawTable extends Migration
             $table->string('extension', 255)
                 ->comment('Extensión del formato de edición. Ej md, html, txt, doc, docx, xls, xlsx, json...');
 
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

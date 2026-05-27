@@ -43,16 +43,13 @@ class AEMETCommand extends Command
         $now = Carbon::now();
         $lastMonth = Carbon::now()->subMonth();
 
-
-
         // Plantear para en el futuro obtener todos los registros entre
         // 1980-2010
-        //$response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
+        // $response = (new AEMET())->getPeriodClimatologiaPasada($lastMonth, $now);
 
         // Imágenes, por si en el futuro las usara
-        //$response = (new AEMET())->getImageMarTemperature();
-        //$response = (new AEMET())->getImageVegetation();
-
+        // $response = (new AEMET())->getImageMarTemperature();
+        // $response = (new AEMET())->getImageVegetation();
 
         echo "\n\n Fin actualización de datos de AEMET \n\n";
     }

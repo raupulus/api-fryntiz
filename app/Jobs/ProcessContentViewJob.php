@@ -14,6 +14,7 @@ class ProcessContentViewJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $contentId;
+
     public $viewedAt;
 
     public function __construct($contentId, $viewedAt)
@@ -33,7 +34,7 @@ class ProcessContentViewJob implements ShouldQueue
                 ->where('date', $date)
                 ->update([
                     'views' => DB::raw('views + 1'),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
 
             // Si no se actualizó ninguna fila, creo nueva
@@ -43,7 +44,7 @@ class ProcessContentViewJob implements ShouldQueue
                     'date' => $date,
                     'views' => 1,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
             }
         } catch (\Exception $e) {
@@ -54,10 +55,10 @@ class ProcessContentViewJob implements ShouldQueue
                     ->where('date', $date)
                     ->update([
                         'views' => DB::raw('views + 1'),
-                        'updated_at' => now()
+                        'updated_at' => now(),
                     ]);
             } else {
-                \Log::error('Error processing view: ' . $e->getMessage());
+                \Log::error('Error processing view: '.$e->getMessage());
             }
         }
     }

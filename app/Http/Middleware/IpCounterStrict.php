@@ -13,8 +13,6 @@ use Illuminate\Support\Str;
  * Cuenta las repeticiones de ip en un periodo de tiempo.
  *
  * Limita a 5 peticiones de contacto por ip en un minuto
- *
- * @package App\Http\Middleware
  */
 class IpCounterStrict
 {
@@ -23,12 +21,11 @@ class IpCounterStrict
         $ip = $request->ip();
         $ipSlug = Str::slug($ip, '_');
 
-
-        $ipCount = Cache::remember('ipCount_' . $ipSlug, 60, function () {
+        $ipCount = Cache::remember('ipCount_'.$ipSlug, 60, function () {
             return 0;
         });
 
-        Cache::put('ipCount_' . $ipSlug, $ipCount + 1, 60);
+        Cache::put('ipCount_'.$ipSlug, $ipCount + 1, 60);
 
         if ($ipCount > 10) {
             // TODO: Si pasa de 10 peticiones en un minuto, bloquear la ip durante 1 hora? reportar? crear panel
@@ -36,13 +33,13 @@ class IpCounterStrict
             // Guardar todo lo que venga de la request para poder analizarlo.
         }
 
-        if (!config('app.debug') && $ipCount > 5) {
+        if (! config('app.debug') && $ipCount > 5) {
             if ($request->isJson()) {
                 return \response()->json([
                     'messages' => [
                         'errors' => [
-                            'Demasiadas peticiones desde tu ip, la situación ha sido reportada al administrador. Si el envío es legítimo por favor, espera un minuto antes de volver a intentarlo.'
-                        ]
+                            'Demasiadas peticiones desde tu ip, la situación ha sido reportada al administrador. Si el envío es legítimo por favor, espera un minuto antes de volver a intentarlo.',
+                        ],
                     ],
                 ], 429);
             }

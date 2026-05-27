@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Api\User;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Models\User;
+
 use function auth;
 
 /**
@@ -17,7 +19,7 @@ class CreateRequest extends BaseFormRequest
      */
     public function authorize()
     {
-        return auth()->id() && auth()->user()->can('create', \App\Models\User::class);
+        return auth()->id() && auth()->user()->can('create', User::class);
     }
 
     /**

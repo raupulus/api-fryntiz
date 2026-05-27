@@ -14,25 +14,18 @@ use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class GenericWSController
 {
-
     /**
      * Guarda una colección de datos.
-     *
-     * @param Collection $datas
-     * @return bool
      */
-    private function storeData(Collection $datas): bool
-    {
-
-    }
+    private function storeData(Collection $datas): bool {}
 
     /**
-     *
      * 'hardware_device_id' => 9, // 9 = Esp32
      * 'temperature' => 11.8, // 11.8ºC
      * 'humidity' => 77, // 77%
@@ -46,9 +39,8 @@ class GenericWSController
      * 'rain' => 243, // 243 mm  (0.243m) (0.243L) Puede ser lluvia acumulada o caída en el último periodo de tiempo
      * 'moisture' => ?????? Puede ser el nivel de lluvia actual, vigilar
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function add(Request $request)
     {
@@ -75,8 +67,7 @@ class GenericWSController
 
         // TODO: Preparar store en modelos
 
-
-        if (!$request->has('hardware_device_id')) {
+        if (! $request->has('hardware_device_id')) {
             return response()->json([
                 'message' => 'hardware_device_id is required',
             ], 400);
@@ -84,7 +75,7 @@ class GenericWSController
 
         $hardwareDevice = HardwareDevice::find($request->get('hardware_device_id'));
 
-        if (!$hardwareDevice || $hardwareDevice->user_id != auth()->id()) {
+        if (! $hardwareDevice || $hardwareDevice->user_id != auth()->id()) {
             return response()->json([
                 'message' => 'hardware_device_id is required and must be valid for your user',
             ], 400);
@@ -166,7 +157,7 @@ class GenericWSController
                 'moisture' => $moisture,
             ]);
 
-            //Log::debug('Rain: ' . $rain);
+            // Log::debug('Rain: ' . $rain);
 
             $stored['rain']->hardware_device_id = $hardwareDevice->id;
             $stored['rain']->user_id = auth()->id();
@@ -190,7 +181,6 @@ class GenericWSController
             $index = $request->get('uv_index');
             $uva = $request->get('uva');
             $uvb = $request->get('uvb');
-
 
             $stored['light'] = new Light([
                 'lumens' => $lumens,
@@ -258,12 +248,7 @@ class GenericWSController
             $stored['lightning']->save();
         }
 
-
-
-        //Log::debug($request->all());
-
-
-
+        // Log::debug($request->all());
 
         return response()->json([
             'message' => 'OK',

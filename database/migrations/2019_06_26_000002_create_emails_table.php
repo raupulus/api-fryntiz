@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateEmailsTable
@@ -17,10 +17,11 @@ class CreateEmailsTable extends Migration
     public function up()
     {
         Schema::create('emails', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de emails');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario al que se le envía el mensaje');
@@ -36,9 +37,9 @@ class CreateEmailsTable extends Migration
                 ->references('id')->on('languages')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('email', 511);
-            $table->string('subject', 511);
-            $table->text('message');
+            $table->string('email', 511)->comment('Correo electrónico');
+            $table->string('subject', 511)->comment('Columna subject');
+            $table->text('message')->comment('Columna message');
             $table->boolean('privacity')
                 ->default(0)
                 ->comment('Indica si acepta políticas de privacidad desde el apartado que envía el mensaje de contacto.');
@@ -94,8 +95,8 @@ class CreateEmailsTable extends Migration
                 ->nullable()
                 ->comment('Mensaje de error en caso de que el mensaje no se haya enviado correctamente.');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

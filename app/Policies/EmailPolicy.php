@@ -2,55 +2,56 @@
 
 namespace App\Policies;
 
-use App\Models\Platform;
+use App\Models\Email;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
- * Class PlatformPolicy
+ * Policy de Email.
+ *
+ * Reescrito en fix_10 — los argumentos previos usaban Platform en lugar de Email.
  */
 class EmailPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    protected function isAdmin(User $user): bool
     {
-        //
+        return $user->role && in_array($user->role->slug, ['admin', 'superadmin'], true);
     }
 
-    public function index(User $user)
+    public function viewAny(User $user): bool
     {
-        return true;
+        return $this->isAdmin($user);
     }
 
-    public function create(User $user)
+    public function view(User $user, Email $email): bool
     {
-        return false;
+        return $this->isAdmin($user);
     }
 
-    public function store(User $user)
+    public function create(User $user): bool
     {
-        return false;
+        return $this->isAdmin($user);
     }
 
-    public function delete(User $user, Platform $platform)
+    public function update(User $user, Email $email): bool
     {
-        return false;
-        //return $platform->user_id === $user->id;
+        return $this->isAdmin($user);
     }
 
-    public function show(User $user, Platform $platform)
+    public function delete(User $user, Email $email): bool
     {
-        return false;
+        return $this->isAdmin($user);
     }
 
-    public function update(User $user, Platform $platform)
+    public function restore(User $user, Email $email): bool
     {
-        return false;
+        return $this->isAdmin($user);
+    }
+
+    public function forceDelete(User $user, Email $email): bool
+    {
+        return $this->isAdmin($user);
     }
 }

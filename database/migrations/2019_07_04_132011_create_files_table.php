@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateFilesTable
@@ -17,10 +17,11 @@ class CreateFilesTable extends Migration
     public function up()
     {
         Schema::create('files', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de files');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -64,13 +65,13 @@ class CreateFilesTable extends Migration
             $table->integer('size')
                 ->default(0)
                 ->comment('Tamaño de la imagen');
-            $table->string('alt', 511);
-            $table->string('title', 511);
+            $table->string('alt', 511)->comment('Columna alt');
+            $table->string('title', 511)->comment('Título principal');
             $table->boolean('is_private')
                 ->default(0)
                 ->comment('Indica si es privado el archivo o pertenece al espacio público de la aplicación');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

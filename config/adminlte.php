@@ -1,5 +1,13 @@
 <?php
 
+use JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter;
+use JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter;
+use JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter;
+use JeroenNoten\LaravelAdminLte\Menu\Filters\GateFilter;
+use JeroenNoten\LaravelAdminLte\Menu\Filters\HrefFilter;
+use JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter;
+use JeroenNoten\LaravelAdminLte\Menu\Filters\SearchFilter;
+
 return [
 
     /*
@@ -231,8 +239,8 @@ return [
             'text' => 'Búsqueda',
             'search' => true,
             'topnav_right' => true,
-            //'method' => 'POST',
-            //'route' => 'dashboard.search'
+            // 'method' => 'POST',
+            // 'route' => 'dashboard.search'
         ],
         [
             'text' => 'Inicio',
@@ -249,7 +257,7 @@ return [
         [
             'text' => 'Link 1',
             'url' => '#',
-            'topnav_user' => 'true'
+            'topnav_user' => 'true',
         ],
 
         // Sidebar items:
@@ -262,9 +270,8 @@ return [
             'route' => 'dashboard.index',
             'icon' => 'fas fa-w fa-home',
             'label' => 'test',
-            'label_color' => 'danger'
+            'label_color' => 'danger',
         ],
-
 
     ],
 
@@ -281,13 +288,13 @@ return [
     */
 
     'filters' => [
-        JeroenNoten\LaravelAdminLte\Menu\Filters\GateFilter::class,
-        JeroenNoten\LaravelAdminLte\Menu\Filters\HrefFilter::class,
-        JeroenNoten\LaravelAdminLte\Menu\Filters\SearchFilter::class,
-        JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter::class,
-        JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
-        JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
-        JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
+        GateFilter::class,
+        HrefFilter::class,
+        SearchFilter::class,
+        ActiveFilter::class,
+        ClassesFilter::class,
+        LangFilter::class,
+        DataFilter::class,
     ],
 
     /*
@@ -524,7 +531,7 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    //'location' => 'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
+                    // 'location' => 'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
                     'location' => '/vendor/moment/moment.min.js',
                 ],
             ],
@@ -592,7 +599,6 @@ return [
                 ],
             ],
         ],
-
 
         'editorjs' => [
             'active' => false,
@@ -747,7 +753,7 @@ return [
                     'location' => '/dashboard/js/editors.js',
                 ],
             ],
-        ]
+        ],
 
     ],
 

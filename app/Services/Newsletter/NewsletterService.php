@@ -1,20 +1,19 @@
 <?php
- 
+
 namespace App\Services\Newsletter;
- 
+
 use App\Mail\NewsletterVerification;
 use App\Models\Newsletter;
 use App\Models\Platform;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
- 
+
 class NewsletterService
 {
     public function subscribe(string $email, ?string $name = null): Newsletter
     {
         // Resolve platform_id
         $platformId = request('platform_id');
-        if (!$platformId) {
+        if (! $platformId) {
             $platformId = Platform::where('domain', request()->getHost())->first()?->id
                 ?? (Platform::first()?->id ?? 1);
         }
@@ -42,22 +41,24 @@ class NewsletterService
 
         return $newsletter;
     }
- 
+
     public function verify(string $token): bool
     {
         $newsletter = Newsletter::findByVerificationToken($token);
-        if (!$newsletter) {
+        if (! $newsletter) {
             return false;
         }
+
         return $newsletter->verifyEmail();
     }
- 
+
     public function unsubscribe(string $token): bool
     {
         $newsletter = Newsletter::findByUnsubscribeToken($token);
-        if (!$newsletter) {
+        if (! $newsletter) {
             return false;
         }
+
         return $newsletter->unsubscribe();
     }
 }

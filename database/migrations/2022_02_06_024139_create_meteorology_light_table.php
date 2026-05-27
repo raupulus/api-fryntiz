@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateMeteorologyLightTable extends Migration
 {
     private $tableName = 'meteorology_light';
+
     private $tableComment = 'Datos de la luz del sol';
 
     /**
@@ -21,10 +22,11 @@ class CreateMeteorologyLightTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -52,7 +54,7 @@ class CreateMeteorologyLightTable extends Migration
             $table->decimal('uvb', 10, 2)
                 ->nullable()
                 ->comment('Rayos UVB');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

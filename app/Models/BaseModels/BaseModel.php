@@ -7,20 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class BaseModel
  * Modelo mínimo con funciones comunes a todos los modelos.
- *
- * @package App
  */
 class BaseModel extends Model
 {
-
     /**
      * Elimina de forma segura este elemento y sus datos asociados.
-     *
-     * @return bool
      */
     public function safeDelete(): bool
     {
-        ## Elimino la imagen asociada y todas las miniaturas.
+        // # Elimino la imagen asociada y todas las miniaturas.
         if ($this->image) {
             $this->image->safeDelete();
         }

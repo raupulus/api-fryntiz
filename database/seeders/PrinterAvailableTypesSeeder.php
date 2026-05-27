@@ -56,7 +56,7 @@ class PrinterAvailableTypesSeeder extends Seeder
                     'slug' => $data['slug'],
                     'description' => $data['description'],
                     'created_at' => $now,
-                    'updated_at' => $now
+                    'updated_at' => $now,
                 ]);
             }
         }

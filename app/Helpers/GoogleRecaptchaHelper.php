@@ -2,17 +2,14 @@
 
 namespace App\Helpers;
 
-use \ReCaptcha\ReCaptcha;
+use ReCaptcha\ReCaptcha;
 use ReCaptcha\Response;
 
 /**
  * Class GoogleRecaptchaHelper
- *
- * @package App\Helpers
  */
 class GoogleRecaptchaHelper
 {
-
     /**
      * Almacena las acciones que están habilitadas para el captcha de google.
      */
@@ -27,14 +24,11 @@ class GoogleRecaptchaHelper
         'raupulus.dev',
         'fryntiz.es',
         'fryntiz.dev',
-        'api.fryntiz.dev'
+        'api.fryntiz.dev',
     ];
-
 
     /**
      * Devuelve la clave privada de Google Recaptcha.
-     *
-     * @return string
      */
     private static function getGoogleRecaptchaSecret(): string
     {
@@ -43,8 +37,6 @@ class GoogleRecaptchaHelper
 
     /**
      * Devuelve la clave pública de Google Recaptcha.
-     *
-     * @return string
      */
     private static function getGoogleRecaptchaKey(): string
     {
@@ -54,13 +46,11 @@ class GoogleRecaptchaHelper
     /**
      * Comprueba si el nombre del host es válido, contemplado en la lista de hosts.
      *
-     * @param string $hostName Nombre del host.
-     *
-     * @return bool
+     * @param  string  $hostName  Nombre del host.
      */
     private static function validateHostName(string $hostName): bool
     {
-        $filter =  filter_var($hostName, FILTER_VALIDATE_URL);
+        $filter = filter_var($hostName, FILTER_VALIDATE_URL);
 
         if ($filter === false) {
             return false;
@@ -69,13 +59,10 @@ class GoogleRecaptchaHelper
         return in_array($hostName, self::HOSTS);
     }
 
-
     /**
      * Comprueba si la acción es válida, contemplada en la lista de acciones.
      *
-     * @param string $action Nombre de la acción.
-     *
-     * @return bool
+     * @param  string  $action  Nombre de la acción.
      */
     private static function validateAction(string $action): bool
     {
@@ -85,11 +72,10 @@ class GoogleRecaptchaHelper
     /**
      * Devuelve la validación del captcha para el formulario de contacto recibido.
      *
-     * @param string $token Token de google captcha
-     * @param string $scope Ámbito a validar
-     * @param string $requestIp Ip del cliente
-     * @param float $scoreThreshold úmbral/puntuación de corte para validar
-     * @return Response
+     * @param  string  $token  Token de google captcha
+     * @param  string  $scope  Ámbito a validar
+     * @param  string  $requestIp  Ip del cliente
+     * @param  float  $scoreThreshold  úmbral/puntuación de corte para validar
      */
     public static function checkCaptcha(string $token, string $scope, string $requestIp, float $scoreThreshold = 0.5): Response
     {

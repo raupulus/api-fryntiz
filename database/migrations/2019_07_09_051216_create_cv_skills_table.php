@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvSkillsTable
@@ -17,10 +17,11 @@ class CreateCvSkillsTable extends Migration
     public function up()
     {
         Schema::create('cv_skills', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv skills');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
@@ -42,7 +43,7 @@ class CreateCvSkillsTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción del skill');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
     }
 

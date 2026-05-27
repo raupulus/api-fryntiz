@@ -3,50 +3,39 @@
 namespace App\Http\Controllers\Dashboard\Content;
 
 use App\Http\Controllers\Controller;
-use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 /**
  * Class ContentAvailableCategoryController
- * @package App\Http\Controllers\Dashboard\Content
  */
 class ContentPageController extends Controller
 {
-
     /**
      * Elimina de forma segura una página y redirecciona al editor.
-     *
-     * @param ContentPage $page
-     * @return RedirectResponse
      */
     public function safeDestroy(ContentPage $page): RedirectResponse
     {
         $content = $page->contentModel;
 
-        ## Almaceno si elimina correctamente la página.
+        // # Almaceno si elimina correctamente la página.
         $deleted = $page->safeDelete();
 
         $firstPage = $content->pages->first();
 
-        if (!$firstPage) {
+        if (! $firstPage) {
             $firstPage = $content->addPage();
         }
 
-        return redirect()->to(route('dashboard.content.edit', $content->id) . '?currentPage=' . $firstPage->id);
+        return redirect()->to(route('dashboard.content.edit', $content->id).'?currentPage='.$firstPage->id);
     }
-
 
     /**
      * Procesa la petición AJAX para actualizar la imagen de la página.
-     *
-     * @param Request $request
-     * @param ContentPage $contentPage
-     *
-     * @return JsonResponse
      */
     public function ajaxUpdateImage(Request $request, ContentPage $contentPage): JsonResponse
     {
@@ -54,13 +43,12 @@ class ContentPageController extends Controller
             'image' => 'required|image',
         ]);
 
-        $isValid = $request->file('image')?->isValid() && (($request->file('image') instanceof \Illuminate\Http\UploadedFile));
+        $isValid = $request->file('image')?->isValid() && (($request->file('image') instanceof UploadedFile));
 
         if ($contentPage && $contentPage->id && $isValid) {
-            $image = File::addFile($request->file('image'), 'pages', false,  $contentPage->image_id);
+            $image = File::addFile($request->file('image'), 'pages', false, $contentPage->image_id);
 
-
-            if ($image && $image->id && ($image->id != $contentPage->image_id))  {
+            if ($image && $image->id && ($image->id != $contentPage->image_id)) {
                 $contentPage->image_id = $image->id;
                 $contentPage->save();
             }
@@ -79,12 +67,8 @@ class ContentPageController extends Controller
      * Comprueba que el slug sea único.
      * En caso de que el slug sea válido, devuelve un JSON con el slug y un mensaje de éxito.
      * Si se recibe la página actual, se comprueba que el slug sea distinto al actual.
-     *
-     * @param Request $request
-     * @param ContentPage|null $page
-     * @return JsonResponse
      */
-    public function ajaxCheckSlug(Request $request, ContentPage|null $page = null): JsonResponse
+    public function ajaxCheckSlug(Request $request, ?ContentPage $page = null): JsonResponse
     {
         $slug = \Str::slug($request->get('slug'));
 
@@ -100,7 +84,7 @@ class ContentPageController extends Controller
             'is_valid' => false,
         ]);
 
-        if (!$slug) {
+        if (! $slug) {
             return $responseInvalid;
         }
 
@@ -122,12 +106,9 @@ class ContentPageController extends Controller
     /**
      * Comprueba una URL y devuelve los metadatos de la misma.
      *
-     * @param Request $request
-     * @param ContentPage|null $page Página a la que se quiere asociar la URL.
-     *
-     * @return JsonResponse
+     * @param  ContentPage|null  $page  Página a la que se quiere asociar la URL.
      */
-    public function ajaxGetUrlMetadata(Request $request, ContentPage|null $page = null): JsonResponse
+    public function ajaxGetUrlMetadata(Request $request, ?ContentPage $page = null): JsonResponse
     {
         $url = $request->get('url');
 
@@ -136,7 +117,7 @@ class ContentPageController extends Controller
             'meta' => [],
         ]);
 
-        if (!$url) {
+        if (! $url) {
             return $responseInvalid;
         }
 
@@ -164,45 +145,43 @@ class ContentPageController extends Controller
             $keywords = preg_match('!<meta content="(.*?)" name="keywords"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta content="(.*?)" name="og:image"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="twitter:image" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="twitter:image:src" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta content="(.*?)"(.*?) name="twitter:image"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta itemprop="image" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="image" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="thumbnail" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="thumbnailUrl" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="og:image:url" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
-        if (!$imageUrl) {
+        if (! $imageUrl) {
             $imageUrl = preg_match('!<meta name="og:image:secure_url" content="(.*?)"(.*?)>!i', $result, $matches) ? $matches[1] : '';
         }
 
@@ -221,12 +200,12 @@ class ContentPageController extends Controller
                 $domain = parse_url($url, PHP_URL_HOST);
 
                 if (strpos($image, 'http') !== 0) {
-                    $images[$key] = 'https://' . $domain . $image;
+                    $images[$key] = 'https://'.$domain.$image;
                 }
             }
         }
 
-        if (!$imageUrl && count($images) > 0) {
+        if (! $imageUrl && count($images) > 0) {
             $imageUrl = $images[0];
         }
 
@@ -236,11 +215,11 @@ class ContentPageController extends Controller
             $domain = parse_url($url, PHP_URL_HOST);
 
             if (strpos($imageUrl, 'http') !== 0) {
-                $imageUrl = 'https://' . $domain . $imageUrl;
+                $imageUrl = 'https://'.$domain.$imageUrl;
             }
         }
 
-        //dd($title, $description, $keywords, $imageUrl, $images, $result);
+        // dd($title, $description, $keywords, $imageUrl, $images, $result);
 
         if (! $title || ! $imageUrl) {
             return $responseInvalid;
@@ -257,8 +236,8 @@ class ContentPageController extends Controller
                 'images' => $images,
                 'image' => [
                     'url' => trim($imageUrl),
-                    //'width' => 1200,
-                    //'height' => 630,
+                    // 'width' => 1200,
+                    // 'height' => 630,
                 ],
             ],
         ]);

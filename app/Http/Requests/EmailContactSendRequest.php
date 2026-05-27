@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Language;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+
 use function auth;
 
 /**
@@ -22,19 +23,17 @@ class EmailContactSendRequest extends FormRequest
 
         return true;
 
-        //return auth()->id() && auth()->user()->can('store', \App\Models\Tag::class);
+        // return auth()->id() && auth()->user()->can('store', \App\Models\Tag::class);
     }
 
     /**
      * Comprueba si el idioma es válido, además lo busca de la request en caso de no recibirlo.
      * En la base de datos se busca en este orden: 'locale', 'iso_locale', 'iso2' (es_ES, es-ES, es)
      *
-     * @param array|null $acceptLanguages Idiomas recibidos por el navegador del cliente en un array.
-     * @param string|null $language Idioma a comprobar.
-     *
-     * @return int|null
+     * @param  array|null  $acceptLanguages  Idiomas recibidos por el navegador del cliente en un array.
+     * @param  string|null  $language  Idioma a comprobar.
      */
-    public function searchLanguageHelper(array|null $acceptLanguages, string|null $language): ?int
+    public function searchLanguageHelper(?array $acceptLanguages, ?string $language): ?int
     {
         if ($language) {
             foreach (['locale', 'iso_locale', 'iso2'] as $field) {
@@ -46,7 +45,7 @@ class EmailContactSendRequest extends FormRequest
             }
         }
 
-        if (!empty($acceptLanguages)) {
+        if (! empty($acceptLanguages)) {
             foreach ($acceptLanguages as $tupleLang) {
 
                 $lang = Language::where('locale', $tupleLang['locale'])
@@ -67,20 +66,18 @@ class EmailContactSendRequest extends FormRequest
     /**
      * Busca en la cadena recibida el idioma y su puntuación.
      *
-     * @param string $value Cadena con el idioma y su puntuación.
-     *
-     * @return array|null
+     * @param  string  $value  Cadena con el idioma y su puntuación.
      */
     public function mapExtractLanguages(string $value): ?array
     {
         $explode = explode(';', $value);
 
-        if (!$explode || !is_array($explode) || !count($explode)) {
+        if (! $explode || ! is_array($explode) || ! count($explode)) {
             return null;
         }
 
-        ## Cuando no hay puntuación, se asigna 1.0 https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
-        $score = count($explode) === 2 ? (float)trim($explode[1]) : 1.0;
+        // # Cuando no hay puntuación, se asigna 1.0 https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
+        $score = count($explode) === 2 ? (float) trim($explode[1]) : 1.0;
 
         $isoLocale = mb_strtolower(trim($explode[0]));
 
@@ -91,10 +88,10 @@ class EmailContactSendRequest extends FormRequest
         $iso2 = trim(substr($isoLocale, 0, 2));
 
         if (strlen($isoLocale) === 5) {
-            $locale = $iso2 . '_' . strtoupper(substr($isoLocale, 3, 5));
+            $locale = $iso2.'_'.strtoupper(substr($isoLocale, 3, 5));
         } else {
-            $locale = $iso2 . '_' . strtoupper($iso2);
-            $isoLocale = $iso2 . '-' . $iso2;
+            $locale = $iso2.'_'.strtoupper($iso2);
+            $isoLocale = $iso2.'-'.$iso2;
         }
 
         return [
@@ -109,9 +106,7 @@ class EmailContactSendRequest extends FormRequest
      * Devuelve un array con los idiomas que envía el cliente en la petición.
      * Esto lo hace a partir de la cabecera HTTP_ACCEPT_LANGUAGE que envía el cliente (Navegador).
      *
-     * @param Request $request Petición a comprobar.
-     *
-     * @return array
+     * @param  Request  $request  Petición a comprobar.
      */
     public function getClientLanguagesFromRequest(Request $request): array
     {
@@ -124,7 +119,7 @@ class EmailContactSendRequest extends FormRequest
         $array = explode(',', $languages); // ['en-us', 'en;q=0.8', 'es-es;q=0.5', 'zh-cn;q=0.3', 'fr;q=0.1']
 
         try {
-            $arrayPrepared = array_map(fn ($value): array => $this->mapExtractLanguages($value) , $array);
+            $arrayPrepared = array_map(fn ($value): array => $this->mapExtractLanguages($value), $array);
 
             $arrayFilter = collect(array_filter($arrayPrepared));
 
@@ -148,8 +143,8 @@ class EmailContactSendRequest extends FormRequest
         $this->merge([
             'user_id' => auth()->id(),
             'language_id' => $this->searchLanguageHelper($arrayLanguagesFromRequest, $this->language ?? null) ?? 1,
-            'privacity' => (bool)$this->privacity,
-            'contactme' => (bool)$this->contactme,
+            'privacity' => (bool) $this->privacity,
+            'contactme' => (bool) $this->contactme,
             'message' => trim($this->message),
             'subject' => trim($this->subject),
             'email' => trim($this->email),
@@ -158,9 +153,9 @@ class EmailContactSendRequest extends FormRequest
             'app_name' => trim($this->app_name),
             'app_domain' => trim($this->app_domain),
 
-            //'attributes' => $this->attributes ? json_encode($this->attributes) : null,
+            // 'attributes' => $this->attributes ? json_encode($this->attributes) : null,
 
-            //'server_ip' => null,
+            // 'server_ip' => null,
             'client_ip' => $request->ip(),
             'client_user_agent' => $request->userAgent(),
             'client_referer' => $request->server('HTTP_REFERER'),

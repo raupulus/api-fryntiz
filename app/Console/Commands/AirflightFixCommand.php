@@ -3,15 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\AirFlight\AirFlightAirPlane;
-use App\Models\KeyCounter\Keyboard;
-use Carbon\Carbon;
-use Carbon\Traits\Creator;
 use Illuminate\Console\Command;
 
 /**
  * Class KeyCounterGenerateDuration
- *
- * @package App\Console\Commands
  */
 class AirflightFixCommand extends Command
 {
@@ -49,22 +44,22 @@ class AirflightFixCommand extends Command
 
         $airflightsCount = $query->count();
 
-        echo "\nSe van a actualizar: " . $airflightsCount . " aviones.\n";
+        echo "\nSe van a actualizar: ".$airflightsCount." aviones.\n";
 
         $position = 0;
         $updated = 0;
 
-        while($airflightsCount > $position) {
+        while ($airflightsCount > $position) {
             $airflights = $query->limit(100)->get();
 
-            echo "\nConsultando nuevos aviones: " . $airflights->count() . " \n";
+            echo "\nConsultando nuevos aviones: ".$airflights->count()." \n";
 
             foreach ($airflights as $airflight) {
                 $hex = AirFlightAirPlane::searchHex($airflight->icao);
 
                 if ($hex) {
-                    echo "\nActualizando avión con id: " . $airflight->id .
-                        " código ICAO: " . $airflight->icao . "\n";
+                    echo "\nActualizando avión con id: ".$airflight->id.
+                        ' código ICAO: '.$airflight->icao."\n";
 
                     $airflight->flag = $hex['flag_image'];
                     $airflight->country = $hex['country'];
@@ -78,7 +73,7 @@ class AirflightFixCommand extends Command
             $position += 100;
         }
 
-        echo "\nSe han actualizado: " . $updated . " aviones de " . $airflightsCount . ".\n";
+        echo "\nSe han actualizado: ".$updated.' aviones de '.$airflightsCount.".\n";
     }
 
     /**

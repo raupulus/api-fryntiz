@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Schema;
  * Class CreateMeteorologyAemetAdverseEvents.
  *
  * Tabla para almacenar los fenómenos meteorológicos adversos.
- *
  */
 class CreateMeteorologyAemetPredictionBeachsTable extends Migration
 {
     private $tableName = 'meteorology_aemet_prediction_beachs';
+
     private $tableComment = 'Predicciones para las playas';
 
     /**
@@ -25,10 +25,11 @@ class CreateMeteorologyAemetPredictionBeachsTable extends Migration
     {
 
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
 
             $table->integer('beach_id')
                 ->comment('Almacena el identificador que tiene la playa');
@@ -85,7 +86,6 @@ class CreateMeteorologyAemetPredictionBeachsTable extends Migration
                 ->nullable()
                 ->comment('Datos extra sobre la información del viento');
 
-
             $table->smallInteger('wave_morning_status_code')
                 ->default(0)
                 ->comment('Código de estado para las olas por la mañana');
@@ -113,7 +113,6 @@ class CreateMeteorologyAemetPredictionBeachsTable extends Migration
                 ->nullable()
                 ->comment('Información extra para la temperatura máxima');
 
-
             $table->smallInteger('thermal_sensation_status_code')
                 ->comment('Código de estado para la temperatura máxima');
 
@@ -138,9 +137,9 @@ class CreateMeteorologyAemetPredictionBeachsTable extends Migration
                 ->nullable()
                 ->comment('Información extra sobre la radiación UV máxima');
 
-            $table->date('date');
-            $table->timestamp('read_at');
-            $table->timestamps();
+            $table->date('date')->comment('Fecha');
+            $table->timestamp('read_at')->comment('Columna read at');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

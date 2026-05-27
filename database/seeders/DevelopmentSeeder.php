@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Platform;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -33,7 +33,7 @@ class DevelopmentSeeder extends Seeder
                     'user_id' => 1,
                     'name' => $name,
                     'slug' => Str::slug($name),
-                    'domain' => Str::slug($name) . '.test',
+                    'domain' => Str::slug($name).'.test',
                 ]
             );
         }

@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+
 use function App\Models\WeatherStation\extractRange;
 
 class AEMETHelper
@@ -37,9 +38,8 @@ class AEMETHelper
      * Los datos devueltos pueden devolverse en json o en raw según hayan sido
      * recibidos.
      *
-     * @param string $url  Recibe la url con el endpoint completo de la API.
-     * @param bool   $json Recibe si la respuesta será en JSON o RAW.
-     *
+     * @param  string  $url  Recibe la url con el endpoint completo de la API.
+     * @param  bool  $json  Recibe si la respuesta será en JSON o RAW.
      * @return bool|string|null
      */
     public static function getCurl(string $url, bool $json = true)
@@ -53,13 +53,13 @@ class AEMETHelper
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
-            //CURLOPT_FOLLOWLOCATION => true,
+            // CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => [
                 'cache-control: no-cache',
                 'Accept: application/json',
-                'api_key: ' . config('aemet.AEMET_API_KEY'),
+                'api_key: '.config('aemet.AEMET_API_KEY'),
             ],
         ]);
 
@@ -87,13 +87,11 @@ class AEMETHelper
      * Devuelve la url completa a partir de la clave para el endpoint/path
      * recibido como parámetro.
      *
-     * @param string $path Clave del path a utilizar.
-     *
-     * @return string
+     * @param  string  $path  Clave del path a utilizar.
      */
     public static function getUrl(string $path): string
     {
-        return self::$URL . '/' . self::$PATHS[ $path ];
+        return self::$URL.'/'.self::$PATHS[$path];
     }
 
     /**
@@ -108,7 +106,7 @@ class AEMETHelper
     {
         $tempDir = '/tmp/api-fryntiz/weather-station/aemet';
         $fileName = 'pack_avisos_cap.tar';
-        $tempPath = $tempDir . '/' . $fileName;
+        $tempPath = $tempDir.'/'.$fileName;
 
         $url = self::getUrl('avisos_cap');
         $curl = self::getCurl($url);
@@ -119,7 +117,7 @@ class AEMETHelper
             'litoral_de_huelva',
             'litoral_gaditano',
             'costa_litoral_gaditano',
-            'campina_gaditana'
+            'campina_gaditana',
         ];
 
         $avisos = [];
@@ -129,65 +127,62 @@ class AEMETHelper
 
                 $curl2 = file_get_contents($curl['datos']);
 
-                ## Compruebo si existe el directorio temporal para crearlo
-                if (!file_exists($tempDir)) {
-                    if (!mkdir($tempDir, 0777, true)) {
-                        die('Failed to create directories...');
+                // # Compruebo si existe el directorio temporal para crearlo
+                if (! file_exists($tempDir)) {
+                    if (! mkdir($tempDir, 0777, true)) {
+                        exit('Failed to create directories...');
                     }
                 }
 
-
-                ## Guardo el contenido en un fichero temporal
+                // # Guardo el contenido en un fichero temporal
                 $save = file_put_contents($tempPath, $curl2);
 
                 if ($save && file_exists($tempPath)) {
-                    $tar = new \PharData($tempPath);
+                    $tar = new PharData($tempPath);
                     $tar->extractTo($tempDir, null, true);
 
                     $files = scandir($tempDir);
 
-                    ## Recorro cada archivo xml para sacar los datos que necesito.
+                    // # Recorro cada archivo xml para sacar los datos que necesito.
                     foreach ($files as $file) {
                         $jsonFromXml = null;
 
                         if (str_contains($file, '.xml')) {
-                            $content = file_get_contents($tempDir . '/' . $file);
+                            $content = file_get_contents($tempDir.'/'.$file);
 
                             $xml = simplexml_load_string($content);
                             $json = json_encode($xml);
                             $jsonFromXml = json_decode($json, true);
 
-                            if (file_exists($tempDir . '/' . $file)) {
-                                unlink($tempDir . '/' . $file);
+                            if (file_exists($tempDir.'/'.$file)) {
+                                unlink($tempDir.'/'.$file);
                             }
                         }
 
-                        if (!$jsonFromXml || !count($jsonFromXml)) {
+                        if (! $jsonFromXml || ! count($jsonFromXml)) {
                             continue;
                         }
 
                         $sentTimestampRaw = $jsonFromXml['sent'];
 
-                        if (!$sentTimestampRaw) {
+                        if (! $sentTimestampRaw) {
                             continue;
                         }
 
                         $sentTimestampParse = strtotime($sentTimestampRaw);
                         $sentTimestamp = Carbon::parse($sentTimestampParse);
 
-                        if (!$sentTimestamp) {
+                        if (! $sentTimestamp) {
                             continue;
                         }
 
                         $sentTimestampSlug = $sentTimestamp->format('Y-m-d_H-i-s');
 
-
-                        ##Recorre cada Info
+                        // #Recorre cada Info
                         foreach ($jsonFromXml['info'] as $info) {
 
-                            ##Recorre cada área
+                            // #Recorre cada área
                             foreach ($info['area'] as $area) {
-
 
                                 // TODO: comprobar que haya más información de la que se muestra, buscar también en metadatos de la api.
 
@@ -195,23 +190,19 @@ class AEMETHelper
                                 $polygon = isset($area['polygon']) ? $area['polygon'] : null;
                                 $geocode = isset($area['geocode']['value']) ? $area['geocode']['value'] : null;
 
-
-                                if (!$name) {
+                                if (! $name) {
                                     continue;
                                 }
 
-
                                 $slug = Str::slug($name, '_');
-
 
                                 $otherFields = [];
 
                                 foreach ($area as $f_idx => $f) {
-                                    if (!in_array($f_idx, ['areaDesc', 'polygon', 'geocode'])) {
-                                        $otherFields[ $f_idx ] = $f;
+                                    if (! in_array($f_idx, ['areaDesc', 'polygon', 'geocode'])) {
+                                        $otherFields[$f_idx] = $f;
                                     }
                                 }
-
 
                                 $otherFieldsJson = null;
 
@@ -221,7 +212,6 @@ class AEMETHelper
 
                                 if (in_array($slug, $zoneValidSlugs)) {
 
-
                                     // TODO: Comprobar en unas semanas si ha quedado registrando datos que aún no conozco. Faltaría "type" de alerta y grado de peligro.
 
                                     $avisos[] = [
@@ -230,7 +220,7 @@ class AEMETHelper
                                         'polygon' => $polygon,
                                         'geocode' => $geocode,
                                         'read_at' => $sentTimestamp,
-                                        'others_fields_json' => $otherFieldsJson
+                                        'others_fields_json' => $otherFieldsJson,
                                     ];
 
                                 }
@@ -262,10 +252,11 @@ class AEMETHelper
     {
         if ($beachId == 1101602) {
             $url = self::getUrl('playaCruzDelMarChipiona');
-        } else if ($beachId == 1101604) {
+        } elseif ($beachId == 1101604) {
             $url = self::getUrl('playaReglaChipiona');
         } else {
-            \Log::error('No existe la playa con ID ' . $beachId);
+            \Log::error('No existe la playa con ID '.$beachId);
+
             return null;
         }
 
@@ -286,8 +277,7 @@ class AEMETHelper
                 $slug = Str::slug($name, '_');
                 $cityCode = $register['localidad'];
 
-
-                ## Recorro cada predicción por cada día
+                // # Recorro cada predicción por cada día
                 foreach ($register['prediccion']['dia'] as $prediction) {
 
                     $predictionDateRaw = $prediction['fecha'];
@@ -347,7 +337,6 @@ class AEMETHelper
                         ],
                     ];
 
-
                     $thermalSensationStatus = [
                         '410' => [
                             'description' => 'Muy frío',
@@ -383,13 +372,13 @@ class AEMETHelper
                         ],
                     ];
 
-                    $skyMorningStatusCode = isset($skyStatus[ $prediction['estadoCielo']['f1']]) ? $skyStatus[ $prediction['estadoCielo']['f1']]['code'] : $prediction['estadoCielo']['f1'];
+                    $skyMorningStatusCode = isset($skyStatus[$prediction['estadoCielo']['f1']]) ? $skyStatus[$prediction['estadoCielo']['f1']]['code'] : $prediction['estadoCielo']['f1'];
 
-                    $skyMorningStatus = isset($skyStatus[ $prediction['estadoCielo']['f1']]) ? $skyStatus[ $prediction['estadoCielo']['f1']]['description'] : $prediction['estadoCielo']['f1'];
+                    $skyMorningStatus = isset($skyStatus[$prediction['estadoCielo']['f1']]) ? $skyStatus[$prediction['estadoCielo']['f1']]['description'] : $prediction['estadoCielo']['f1'];
 
-                    $skyAfternoonStatusCode = isset($skyStatus[ $prediction['estadoCielo']['f2']]) ? $skyStatus[ $prediction['estadoCielo']['f2']]['code'] : $prediction['estadoCielo']['f2'];
+                    $skyAfternoonStatusCode = isset($skyStatus[$prediction['estadoCielo']['f2']]) ? $skyStatus[$prediction['estadoCielo']['f2']]['code'] : $prediction['estadoCielo']['f2'];
 
-                    $skyAfternoonStatus = isset($skyStatus[ $prediction['estadoCielo']['f2']]) ? $skyStatus[ $prediction['estadoCielo']['f2']]['description'] : $prediction['estadoCielo']['f2'];
+                    $skyAfternoonStatus = isset($skyStatus[$prediction['estadoCielo']['f2']]) ? $skyStatus[$prediction['estadoCielo']['f2']]['description'] : $prediction['estadoCielo']['f2'];
 
                     $predictionFinal = [
                         'beach_id' => $beachId,
@@ -398,57 +387,50 @@ class AEMETHelper
                         'city_code' => $cityCode,
                         'read_at' => $sendAt,
 
-
                         'sky_morning_status_code' => $skyMorningStatusCode,
                         'sky_morning_status' => $skyMorningStatus,
                         'sky_afternoon_status_code' => $skyAfternoonStatusCode,
                         'sky_afternoon_status' => $skyAfternoonStatus,
                         'sky_extra_info' => isset($prediction['estadoCielo']) && isset($prediction['estadoCielo']['value']) ? $prediction['estadoCielo']['value'] : null,
-          /*
+                        /*
                         'sky_morning_status_code' => $skyStatus[ $prediction['estadoCielo']['f1'] ]['code'],
                         'sky_morning_status' => $skyStatus[ $prediction['estadoCielo']['f1'] ]['description'],
                         'sky_afternoon_status_code' => $skyStatus[ $prediction['estadoCielo']['f2'] ]['code'],
                         'sky_afternoon_status' => $skyStatus[ $prediction['estadoCielo']['f2'] ]['description'],
                         'sky_extra_info' => $prediction['estadoCielo']['value'],
         */
-                        'wind_morning_status_code' => $windStatus[ $prediction['viento']['f1'] ]['code'],
-                        'wind_morning_status' => $windStatus[ $prediction['viento']['f1'] ]['description'],
-                        'wind_afternoon_status_code' => $windStatus[ $prediction['viento']['f2'] ]['code'],
-                        'wind_afternoon_status' => $windStatus[ $prediction['viento']['f2'] ]['description'],
+                        'wind_morning_status_code' => $windStatus[$prediction['viento']['f1']]['code'],
+                        'wind_morning_status' => $windStatus[$prediction['viento']['f1']]['description'],
+                        'wind_afternoon_status_code' => $windStatus[$prediction['viento']['f2']]['code'],
+                        'wind_afternoon_status' => $windStatus[$prediction['viento']['f2']]['description'],
                         'wind_extra_info' => $prediction['viento']['value'],
 
-
-                        'wave_morning_status_code' => $waveStatus[ $prediction['oleaje']['f1'] ]['code'],
-                        'wave_morning_status' => $waveStatus[ $prediction['oleaje']['f1'] ]['description'],
-                        'wave_afternoon_status_code' => $waveStatus[ $prediction['oleaje']['f2'] ]['code'],
-                        'wave_afternoon_status' => $waveStatus[ $prediction['oleaje']['f2'] ]['description'],
+                        'wave_morning_status_code' => $waveStatus[$prediction['oleaje']['f1']]['code'],
+                        'wave_morning_status' => $waveStatus[$prediction['oleaje']['f1']]['description'],
+                        'wave_afternoon_status_code' => $waveStatus[$prediction['oleaje']['f2']]['code'],
+                        'wave_afternoon_status' => $waveStatus[$prediction['oleaje']['f2']]['description'],
                         'wave_extra_info' => $prediction['oleaje']['value'],
-
 
                         'temperature_max' => $prediction['tMaxima']['valor1'],
                         'temperature_max_extra_info' => $prediction['tMaxima']['value'],
 
-
-                        'thermal_sensation_status_code' => $thermalSensationStatus[ $prediction['sTermica']['valor1'] ]['code'],
-                        'thermal_sensation_status' => $thermalSensationStatus[ $prediction['sTermica']['valor1'] ]['description'],
+                        'thermal_sensation_status_code' => $thermalSensationStatus[$prediction['sTermica']['valor1']]['code'],
+                        'thermal_sensation_status' => $thermalSensationStatus[$prediction['sTermica']['valor1']]['description'],
                         'thermal_sensation_extra_info' => $prediction['tMaxima']['value'],
-
 
                         'water_temperature' => $prediction['tAgua']['valor1'],
                         'water_temperature_extra_info' => $prediction['tAgua']['value'],
-
 
                         // Uv máximo para cielo "despejado"
                         'uv_max' => $prediction['uvMax']['valor1'],
                         'uv_max_extra_info' => $prediction['uvMax']['value'],
                     ];
 
-
                     $predictionDateString = $predictionDate->format('Y-m-d');
 
                     $predictionFinal['date'] = $predictionDateString;
 
-                    $finalArray[ $predictionDateString ] = $predictionFinal;
+                    $finalArray[$predictionDateString] = $predictionFinal;
 
                 }
 
@@ -497,7 +479,7 @@ class AEMETHelper
                         $cadiz = $value;
 
                         break;
-                    } else if (str_contains($value, 'Validez')) {
+                    } elseif (str_contains($value, 'Validez')) {
 
                         $tmpTimestampArray = explode(',', $value);
 
@@ -517,7 +499,7 @@ class AEMETHelper
                 $cadizClean = explode(',', $cadiz)[1];
                 $cadizClean = str_replace(['"', "\r"], '', $cadizClean);
 
-                if (!$cadizClean || !$timestamp) {
+                if (! $cadizClean || ! $timestamp) {
                     return null;
                 }
 
@@ -526,8 +508,8 @@ class AEMETHelper
                     'province_uv_radiation_max' => $cadizClean,
                 ];
             }
-        } catch (\Exception $e) {
-            \Log::error('Error al obtener la información de la UV: ' . $e->getMessage());
+        } catch (Exception $e) {
+            \Log::error('Error al obtener la información de la UV: '.$e->getMessage());
 
             return null;
         }
@@ -562,8 +544,8 @@ class AEMETHelper
                         break;
                     }
                 }
-            } catch (\Exception $e) {
-                \Log::error('Error al obtener la información de la altamar: ' . $e->getMessage());
+            } catch (Exception $e) {
+                \Log::error('Error al obtener la información de la altamar: '.$e->getMessage());
 
                 return null;
             }
@@ -572,7 +554,7 @@ class AEMETHelper
                 'zone_code' => $cadiz['id'],
                 'start_at' => Carbon::parse($start_at),
                 'end_at' => Carbon::parse($end_at),
-                'text' => $cadiz['texto']
+                'text' => $cadiz['texto'],
             ];
         }
 
@@ -587,23 +569,22 @@ class AEMETHelper
      *
      * @return bool|mixed|string|null
      */
-    public static function getCostaPrediction() //shore forecast
+    public static function getCostaPrediction() // shore forecast
     {
         $url = self::getUrl('costaPrediction');
         $curl = self::getCurl($url);
 
-
         if ($curl && isset($curl['datos']) && $curl['datos']) {
             $curl2 = self::getCurl($curl['datos']);
 
-            if (!$curl2 || !isset($curl2[0]['prediccion']) || !$curl2[0]['prediccion']) {
+            if (! $curl2 || ! isset($curl2[0]['prediccion']) || ! $curl2[0]['prediccion']) {
                 return null;
             }
 
             $predictions = $curl2[0]['prediccion'];
             $status = $curl2[0]['situacion'];
 
-            if (!$predictions) {
+            if (! $predictions) {
                 return null;
             }
 
@@ -614,25 +595,23 @@ class AEMETHelper
             $generalName = $status['nombre'];
             $generalSlug = Str::slug($generalName);
 
-            ## Recorro todas las predicciones.
+            // # Recorro todas las predicciones.
 
-            if (!isset($predictions['zona'])) {
+            if (! isset($predictions['zona'])) {
                 return null;
             }
-
 
             $startAt = $predictions['inicio'];
             $endAt = $predictions['fin'];
 
             $zones = $predictions['zona'];
 
-
             foreach ($zones as $zone) {
                 $zoneId = $zone['id'];
                 $zoneName = $zone['nombre'];
                 $zoneSlug = Str::slug($zoneName);
 
-                if (!isset($zone['subzona'])) {
+                if (! isset($zone['subzona'])) {
                     continue;
                 }
 
@@ -644,10 +623,9 @@ class AEMETHelper
                     $subzoneName = $subzone['nombre'];
                     $subzoneSlug = Str::slug($subzoneName);
 
-
                     // TODO: Textos y slugs dan problemas.
 
-                    //TODO: Revisar curl!!!
+                    // TODO: Revisar curl!!!
 
                     // TODO: ChekZone == Cádiz o Chipiona!!
                     if ($zoneName || $subzoneName) {
@@ -702,7 +680,7 @@ class AEMETHelper
         if ($curl && isset($curl['datos']) && $curl['datos']) {
             $curl2 = self::getCurl($curl['datos'], false);
 
-            if (!$curl2) {
+            if (! $curl2) {
                 return;
             }
         }
@@ -711,14 +689,12 @@ class AEMETHelper
         Ficheros diarios con datos diezminutales de la estación de la red de contaminación de fondo EMEP/VAG/CAMP pasada por parámetro, de temperatura, presión, humedad, viento (dirección y velocidad), radiación global, precipitación y 4 componentes químicos: O3,SO2,NO,NO2 y PM10. Los datos se encuentran en formato FINN (propio del Ministerio de Medio Ambiente). Periodicidad: cada hora.
         */
 
-
         /*
          Cadena que viene del documento - api
 
         18-01-2023 00:10 SO2(001): +00000.42 ug/m3 CV: V FC: 2.66 NO(007):
         +00000.20 ug/m3 CV: V FC: 1.248 NO2(008): +00000.24 ug/m3 CV: V FC: 1.91 O3(014): +00089.69 ug/m3 CV: V FC: 1.99 VEL(081): +00002.72 m/s CV: V FC: 1 DIR(082): +00275.95 GRA CV: V FC: 1 TEM(083): +00010.82 GC CV: V FC: 1 HUM(086): +00083.67 % CV: V FC: 1 PRE(087): +01016.82 hPa CV: V FC: 1 RAD(088): +00000.93 W/m2 CV: V FC: 1 LLU(089): +00000.00 mm CV: V FC: 1 PM10(010): +00000.00 ug/m3 CV: N FC: 1
          */
-
 
         $positionsValuesRange = [];
 
@@ -731,7 +707,7 @@ class AEMETHelper
 
                         if (isset($field['posición_txt'])) {
                             $position = $field['posición_txt'];
-                        } else if (isset($field['posicion_txt'])) {
+                        } elseif (isset($field['posicion_txt'])) {
                             $position = $field['posicion_txt'];
                         } else {
                             $position = null;
@@ -748,7 +724,7 @@ class AEMETHelper
                                 }
                             }
 
-                            if (!$position) {
+                            if (! $position) {
                                 continue;
                             }
                         }
@@ -756,12 +732,12 @@ class AEMETHelper
                         $range = explode('-', $position);
 
                         if (count($range) === 2) {
-                            $positionsValuesRange[ trim($field['id']) ] = [
-                                'start' => (int)( $range[0] - 1 ),
-                                'end' => (int)$range[1],
-                                'size' => (int)( $range[1] - $range[0] + 1 ),
+                            $positionsValuesRange[trim($field['id'])] = [
+                                'start' => (int) ($range[0] - 1),
+                                'end' => (int) $range[1],
+                                'size' => (int) ($range[1] - $range[0] + 1),
                             ];
-                        } else if (count($range) === 1) {
+                        } elseif (count($range) === 1) {
 
                             $id = trim($field['id']);
 
@@ -778,9 +754,9 @@ class AEMETHelper
                                 }
                             }
 
-                            $positionsValuesRange[ $id ] = [
-                                'start' => (int)( $range[0] - 1 ),
-                                'end' => (int)$range[0],
+                            $positionsValuesRange[$id] = [
+                                'start' => (int) ($range[0] - 1),
+                                'end' => (int) $range[0],
                                 'size' => 1,
                             ];
                         } else {
@@ -792,7 +768,6 @@ class AEMETHelper
             }
         }
 
-
         // Aquí tendría todas las posiciones para sacar valores por línea
         if ($positionsValuesRange && count($positionsValuesRange)) {
 
@@ -803,20 +778,20 @@ class AEMETHelper
                 'Hora' => 'time', // Hora (UTC)  hh:mm
                 'SO2' => 'so2', // Componente químico, SO2 en microgramos/m3
                 'Codigo_validacion_SO2' => 'so2_validation', // V (válido), O (corregido), J (calma).
-                'NO' => 'no', //Componente químico, NO en microgramos/m3
+                'NO' => 'no', // Componente químico, NO en microgramos/m3
                 'Codigo_validacion_NO' => 'no_validation', // V (válido), O (corregido), J (calma)
                 'NO2' => 'no2', // Componente químico, NO2 en microgramos/m3
                 'Codigo_validacion_NO2' => 'no2_validation', // V (válido), O (corregido), J (calma)
                 'O3' => 'o3', // Componente químico, O3 en microgramos/m3
                 'Codigo_validacion_O3' => 'o3_validation', // V (válido), O (corregido), J (calma)
                 'Velocidad_viento' => 'wind_speed', // Velocidad del viento en m/s
-                'Codigo_validacion_velocidad_viento' => 'wind_speed_validation', //V (válido), O (corregido), J (calma)
+                'Codigo_validacion_velocidad_viento' => 'wind_speed_validation', // V (válido), O (corregido), J (calma)
                 'Direccion_viento' => 'wind_direction', // Dirección del viento en grados
                 'Codigo_validacion_direccion_viento' => 'wind_direction_validation', // V (válido), O (corregido), J (calma)
-                'Temperatura' => 'temperature', //Temperatura en grados celsius
+                'Temperatura' => 'temperature', // Temperatura en grados celsius
                 'Codigo_validacion_temperatura' => 'temperature_validation', // V (válido), O (corregido), J (calma)
-                'Humedad' => 'humidity', //Humedad en %
-                'Codigo_validacion_humedad' => 'humidity_validation', //V (válido), O (corregido), J (calma)
+                'Humedad' => 'humidity', // Humedad en %
+                'Codigo_validacion_humedad' => 'humidity_validation', // V (válido), O (corregido), J (calma)
                 'Presion' => 'pressure', // Presión en hPa
                 'Codigo_validacion_presion' => 'pressure_validation', // V (válido), O (corregido), J (calma)
                 'Raciacion_global' => 'radiation_global', // Radiación global en W/m2
@@ -827,35 +802,27 @@ class AEMETHelper
                 'Codigo_validacion_PM' => 'pm10_validation', // V (válido), O (corregido), J (calma)
             ];
 
-
             $finalResponseArray = [];
 
             $realDataArray = explode("\n", $curl2);
 
-            if (!$realDataArray) {
+            if (! $realDataArray) {
                 return null;
             }
 
             /**
              * Devuelve un rango desde el string.
-             *
-             * @param string $string
-             * @param int    $start
-             * @param        $size
-             *
-             * @return string
              */
             function getCharsRangeFromString(string $string, int $start,
-                                                    $size): string
+                $size): string
             {
                 return substr($string, $start, $size);
             }
 
-
             foreach ($realDataArray as $position => $realDataLine) {
 
                 foreach ($positionsValuesRange as $idx => $range) {
-                    $realField = $rangeIdConversion[ $idx ];
+                    $realField = $rangeIdConversion[$idx];
 
                     if (str_contains($realField, '_validation')) {
                         continue;
@@ -867,35 +834,35 @@ class AEMETHelper
 
                     $subString = getCharsRangeFromString($realDataLine, $start, $size);
 
-                    if (!$subString) {
+                    if (! $subString) {
                         continue;
                     }
 
                     if ($realField === 'date' || $realField === 'time') {
-                        $finalResponseArray[ $position ][ $realField ] = $subString;
+                        $finalResponseArray[$position][$realField] = $subString;
+
                         continue;
                     }
 
-                    $contains = in_array($realField . '_validation',
+                    $contains = in_array($realField.'_validation',
                         array_values($rangeIdConversion));
 
-                    if (!$contains) {
+                    if (! $contains) {
                         return;
                     }
 
-                    $validationRangeKey = array_search($realField . '_validation',
+                    $validationRangeKey = array_search($realField.'_validation',
                         $rangeIdConversion);
 
-                    $validationRange = $positionsValuesRange[ $validationRangeKey ];
+                    $validationRange = $positionsValuesRange[$validationRangeKey];
 
-                    if (!$validationRange) {
+                    if (! $validationRange) {
                         continue;
                     }
 
                     $start2 = $validationRange['start'];
                     $end2 = $validationRange['end'];
                     $size2 = $validationRange['size'];
-
 
                     $subStringValidation = getCharsRangeFromString($realDataLine,
                         $start2, $size2);
@@ -904,12 +871,11 @@ class AEMETHelper
                         $validationArraySuccess);
 
                     if ($validation) {
-                        $finalResponseArray[ $position ][ $realField ] = (float)$subString;
+                        $finalResponseArray[$position][$realField] = (float) $subString;
                     }
                 }
             }
         }
-
 
         if (isset($finalResponseArray) && $finalResponseArray) {
             $finalResponseArray = array_map(function ($ele) {
@@ -917,13 +883,12 @@ class AEMETHelper
                 if (isset($ele['date']) && $ele['date'] &&
                     isset($ele['time']) && $ele['time']) {
 
-                    $timeStr = $ele['date'] . ' ' . $ele['time'];
+                    $timeStr = $ele['date'].' '.$ele['time'];
                     $timeCarbon = Carbon::createFromFormat('d-m-Y H:i',
                         $timeStr);
 
-
-                    $ele['date'] = (clone($timeCarbon))->format('Y-m-d');
-                    $ele['time'] = (clone($timeCarbon))->format('H:i:s');
+                    $ele['date'] = (clone $timeCarbon)->format('Y-m-d');
+                    $ele['time'] = (clone $timeCarbon)->format('H:i:s');
 
                     $ele['read_at'] = $timeCarbon;
 
@@ -935,8 +900,6 @@ class AEMETHelper
 
         return isset($finalResponseArray) ? $finalResponseArray : null;
     }
-
-
 
     /**
      * Devuelve los datos registrados para la capa de ozono.
@@ -982,16 +945,16 @@ class AEMETHelper
 
                     $arrayClean = [];
 
-                    ## Obtengo fecha del lanzamiento de la ozonosonda
+                    // # Obtengo fecha del lanzamiento de la ozonosonda
                     $ozoneProbeLaunchAt = null;
 
-                    ## Ozono integrado (Concentración de ozono medido en Dobson)
+                    // # Ozono integrado (Concentración de ozono medido en Dobson)
                     $ozoneIntegrated = null;
 
-                    ## Ozono residual (Ozono residual de la columna)
+                    // # Ozono residual (Ozono residual de la columna)
                     $ozoneResidual = null;
 
-                    ## Extraigo datos generales como inicio, integrated/residual ozono
+                    // # Extraigo datos generales como inicio, integrated/residual ozono
                     foreach ($documentToArray as $idx => $line) {
                         $cleanLine = mb_strtolower(trim($line));
                         $cleanLine = preg_replace('/\s+/', ' ', $cleanLine);
@@ -1009,7 +972,7 @@ class AEMETHelper
                             $dataArray = explode(':', $cleanLine);
 
                             if ($dataArray && is_array($dataArray) && count($dataArray) === 2) {
-                                $ozoneIntegrated = (float)trim($dataArray[1]);
+                                $ozoneIntegrated = (float) trim($dataArray[1]);
                             }
                         }
 
@@ -1017,7 +980,7 @@ class AEMETHelper
                             $dataArray = explode(':', $cleanLine);
 
                             if ($dataArray && is_array($dataArray) && count($dataArray) === 2) {
-                                $ozoneResidual = (float)trim($dataArray[1]);
+                                $ozoneResidual = (float) trim($dataArray[1]);
                             }
                         }
 
@@ -1028,7 +991,6 @@ class AEMETHelper
                             break;
                         }
                     }
-
 
                     if (! ($ozoneProbeLaunchAt instanceof Carbon)) {
                         Log::error('AEMET getOzone() No se ha podido parsear la fecha de lanzamiento para la ozonosonda');
@@ -1049,20 +1011,20 @@ class AEMETHelper
                                     $tmpArray
                                 );
 
-                                $fArrayClean['time_min'] = (int)$fArrayClean['time_min'];
-                                $fArrayClean['time_s'] = (int)$fArrayClean['time_s'];
-                                $fArrayClean['pressure'] = (float)$fArrayClean['pressure'];
-                                $fArrayClean['height'] = (int)$fArrayClean['height'];
-                                $fArrayClean['temperature'] = (float)$fArrayClean['temperature'];
-                                $fArrayClean['humidity'] = (int)$fArrayClean['humidity'];
-                                $fArrayClean['temperature_virtual'] = (float)$fArrayClean['temperature_virtual'];
-                                $fArrayClean['diff_temperature_dew_point'] = (float)$fArrayClean['diff_temperature_dew_point'];
-                                $fArrayClean['diff_temperature_per_height_km'] = (float)$fArrayClean['diff_temperature_per_height_km'];
-                                $fArrayClean['rate_of_elevation'] = (float)$fArrayClean['rate_of_elevation'];
-                                $fArrayClean['ozone_partial_pressure'] = (float)$fArrayClean['ozone_partial_pressure'];
-                                $fArrayClean['device_internal_temperature'] = (float)$fArrayClean['device_internal_temperature'];
+                                $fArrayClean['time_min'] = (int) $fArrayClean['time_min'];
+                                $fArrayClean['time_s'] = (int) $fArrayClean['time_s'];
+                                $fArrayClean['pressure'] = (float) $fArrayClean['pressure'];
+                                $fArrayClean['height'] = (int) $fArrayClean['height'];
+                                $fArrayClean['temperature'] = (float) $fArrayClean['temperature'];
+                                $fArrayClean['humidity'] = (int) $fArrayClean['humidity'];
+                                $fArrayClean['temperature_virtual'] = (float) $fArrayClean['temperature_virtual'];
+                                $fArrayClean['diff_temperature_dew_point'] = (float) $fArrayClean['diff_temperature_dew_point'];
+                                $fArrayClean['diff_temperature_per_height_km'] = (float) $fArrayClean['diff_temperature_per_height_km'];
+                                $fArrayClean['rate_of_elevation'] = (float) $fArrayClean['rate_of_elevation'];
+                                $fArrayClean['ozone_partial_pressure'] = (float) $fArrayClean['ozone_partial_pressure'];
+                                $fArrayClean['device_internal_temperature'] = (float) $fArrayClean['device_internal_temperature'];
 
-                                $ozoneProbeReadAt = clone($ozoneProbeLaunchAt);
+                                $ozoneProbeReadAt = clone $ozoneProbeLaunchAt;
                                 $ozoneProbeReadAt->addMinutes($fArrayClean['time_min']);
                                 $ozoneProbeReadAt->addSeconds($fArrayClean['time_s']);
 
@@ -1080,8 +1042,8 @@ class AEMETHelper
                     return $arrayClean;
                 }
             }
-        } catch (\Exception $e) {
-            \Log::error('Error al obtener la información de la capa de ozono: ' . $e->getMessage());
+        } catch (Exception $e) {
+            \Log::error('Error al obtener la información de la capa de ozono: '.$e->getMessage());
 
             return null;
         }
@@ -1105,22 +1067,20 @@ class AEMETHelper
             $curl2 = self::getCurl($curl['datos'], false);
             $curlMetadata = self::getCurl($curl['metadatos']);
 
-            if (!$curl2 || !$curlMetadata || !isset($curlMetadata['campos'])) {
+            if (! $curl2 || ! $curlMetadata || ! isset($curlMetadata['campos'])) {
                 return;
             }
 
             $arrayRaw = explode("\r\n", $curl2);
             $targetArray = null;
 
-
-            ## Operación especial, chapuza para obtener fecha y prevenir que pueda estar en otra línea distinta. Compruebo primero línea 1 y después entre las 5 primeras líneas.
+            // # Operación especial, chapuza para obtener fecha y prevenir que pueda estar en otra línea distinta. Compruebo primero línea 1 y después entre las 5 primeras líneas.
             $subSubLines = array_slice($arrayRaw, 0, 5);
 
             /**
              * Intenta comprobar si la línea recibida es un patrón que se
              * puede convertir a fecha.
              *
-             * @param $l
              *
              * @return array|string|string[]|null
              */
@@ -1133,12 +1093,11 @@ class AEMETHelper
 
                 $containsDash = str_contains($strClean, '-');
 
-                if (!$containsDash) {
+                if (! $containsDash) {
                     return null;
                 }
 
                 $hasThreePositions = count(explode('-', $strClean)) === 3;
-
 
                 if ($hasThreePositions) {
                     return $strClean;
@@ -1149,8 +1108,8 @@ class AEMETHelper
 
             $dateRead = extractDateFromUnknownLine($arrayRaw[0]);
 
-            ## Si la fecha está en una posición distinta pues directamente la busco entre las primeras 5 líneas del documento.
-            if (!$dateRead) {
+            // # Si la fecha está en una posición distinta pues directamente la busco entre las primeras 5 líneas del documento.
+            if (! $dateRead) {
                 foreach ($subSubLines as $subSubLine) {
                     $dateRead = extractDateFromUnknownLine($subSubLine);
 
@@ -1160,17 +1119,16 @@ class AEMETHelper
                 }
             }
 
-            if (!$dateRead) {
+            if (! $dateRead) {
                 Log::error('AEMET getSunRadiation(): Error al obtener la fecha del documento recibido.');
+
                 return null;
             }
 
-
             $timestamp = Carbon::createFromFormat('d-m-y', $dateRead);
 
-            $startAt = (clone($timestamp))->setTime(0,0);
-            $endAt = (clone($timestamp))->setTime(23,59, 59, 999999);
-
+            $startAt = (clone $timestamp)->setTime(0, 0);
+            $endAt = (clone $timestamp)->setTime(23, 59, 59, 999999);
 
             // Estación más cercana "Huelva"
             foreach ($arrayRaw as $line) {
@@ -1184,7 +1142,6 @@ class AEMETHelper
                     $attrClean = trim($attribute);
                     $attrClean = str_replace('"', '', $attrClean);
 
-
                     if (str_contains($attrClean, 'Huelva')) {
                         $cleanArray = $arrayRawExplode;
                         $isHuelva = true;
@@ -1193,8 +1150,8 @@ class AEMETHelper
 
                 if ($isHuelva) {
                     foreach ($cleanArray as $idx => $huelvaAttr) {
-                        $cleanArray[ $idx ] = trim($huelvaAttr);
-                        $cleanArray[ $idx ] = str_replace('"', '', $cleanArray[ $idx ]);
+                        $cleanArray[$idx] = trim($huelvaAttr);
+                        $cleanArray[$idx] = str_replace('"', '', $cleanArray[$idx]);
                     }
 
                     $targetArray = $cleanArray;
@@ -1206,9 +1163,9 @@ class AEMETHelper
             $fieldsRaw = $curlMetadata['campos'];
             $positionsArray = [];
 
-            ## Sacamos las posiciones del array como otro array parseando cadenas
+            // # Sacamos las posiciones del array como otro array parseando cadenas
             foreach ($fieldsRaw as $field) {
-                if (!isset($field['posicion_csv'])) {
+                if (! isset($field['posicion_csv'])) {
                     Log::error('AEMET: getSunRadiation() NO EXISTE POSICION_CSV');
 
                     continue;
@@ -1227,24 +1184,24 @@ class AEMETHelper
 
                         if (count($tmp) !== 2) {
                             Log::error('AEMET: getSunRadiation() ERROR EN POSICION');
+
                             continue;
                         }
 
                         $newRange = range($tmp[0] - 1, $tmp[1] - 1);
 
-
                         if ($newRange && count($newRange)) {
                             $postions[] = $newRange;
                         }
                     } else {
-                        $postions[] = ( (float)trim($position) ) - 1;
+                        $postions[] = ((float) trim($position)) - 1;
                     }
                 }
 
-                $positionsArray[ $field['id'] ]['positions'] = $postions;
+                $positionsArray[$field['id']]['positions'] = $postions;
 
                 if (isset($field['validacion'])) {
-                    $positionsArray[ $field['id'] ]['validation'] = $field['validacion'];
+                    $positionsArray[$field['id']]['validation'] = $field['validacion'];
                 }
 
             }
@@ -1252,7 +1209,7 @@ class AEMETHelper
             $finalArray = [];
 
             $namesArray = [
-                "Estación" => [ // Nombre Estación
+                'Estación' => [ // Nombre Estación
                     'station_name',
                 ],
                 'Indicativo' => [ // Indicativo Climatológico Estación
@@ -1263,7 +1220,7 @@ class AEMETHelper
                     'type_diffuse',
                     'type_direct',
                     'type_uv_eritematica',
-                    'type_infrarroja'
+                    'type_infrarroja',
                 ],
                 'Hora Solar Verdadera GL/DF/DT' => [ // Radiación horaria acumulada entre: (hora indicada -1) y (hora indicada) entre las 5 y las 20 Hora Solar Verdadera. Variables: Global/Difusa/Directa", "unidad": "10*kJ/m2"
                     'real_solar_hour_global',
@@ -1275,55 +1232,51 @@ class AEMETHelper
                     'sum_diffuse',
                     'sum_direct',
                 ],
-                'Hora Solar Verdadera UVER' => [ //Radiación semihoraria acumulada entre: (hora:minutos indicados - 30 minutos y (hora:minutos indicados) entre las 4:30 y las 20 Hora  Solar Verdadera. Variables: Radiación Ultravioleta Eritemática "unidad": "J/m2",
-                    'real_solar_hour_uver'
+                'Hora Solar Verdadera UVER' => [ // Radiación semihoraria acumulada entre: (hora:minutos indicados - 30 minutos y (hora:minutos indicados) entre las 4:30 y las 20 Hora  Solar Verdadera. Variables: Radiación Ultravioleta Eritemática "unidad": "J/m2",
+                    'real_solar_hour_uver',
                 ],
                 'Suma UVER' => [
-                    'sum_uver'
+                    'sum_uver',
                 ],
-                'Hora Solar Verdadera INFRARROJA' => [ //Radiación horaria acumulada entre (hora indicada -1) y (hora indicada) entre las 1 y las 24 Hora Solar Verdadera. Variables: Radiación Infrarroja. "unidad": "10*kJ/m2",
-                    'real_solar_hour_infrared'
+                'Hora Solar Verdadera INFRARROJA' => [ // Radiación horaria acumulada entre (hora indicada -1) y (hora indicada) entre las 1 y las 24 Hora Solar Verdadera. Variables: Radiación Infrarroja. "unidad": "10*kJ/m2",
+                    'real_solar_hour_infrared',
                 ],
                 'Suma IR' => [ // Radiación diaria acumulada. Variables: Radiación Infrarroja. "unidad": "10*kJ/m2",
-                    'sum_infrared'
+                    'sum_infrared',
                 ],
             ];
-
 
             if ($targetArray && count($targetArray) && $positionsArray && count($positionsArray)) {
                 foreach ($positionsArray as $id => $positions) {
 
                     $datas = [];
 
+                    if (isset($namesArray[$id])) {
 
-                    if (isset($namesArray[ $id ])) {
-
-                        foreach ($namesArray[ $id ] as $i => $name) {
+                        foreach ($namesArray[$id] as $i => $name) {
 
                             foreach ($positions['positions'] as $idx => $position) {
                                 if (is_array($position)) {
                                     $tmp = [];
 
                                     foreach ($position as $p) {
-                                        $tmp[] = $targetArray[ $p ];
+                                        $tmp[] = $targetArray[$p];
                                     }
 
-                                    $datas[ $idx ] = json_encode($tmp);
+                                    $datas[$idx] = json_encode($tmp);
                                 } else {
-                                    $datas[ $idx ] = $targetArray[ $position ];
+                                    $datas[$idx] = $targetArray[$position];
                                 }
 
                             }
 
-                            if (isset($datas[ $i ])) {
-                                $finalArray[ $name ] = $datas[ $i ];
+                            if (isset($datas[$i])) {
+                                $finalArray[$name] = $datas[$i];
                             }
                         }
                     }
 
                 }
-
-
 
                 $finalArray['start_at'] = $startAt;
                 $finalArray['end_at'] = $endAt;
@@ -1334,24 +1287,6 @@ class AEMETHelper
 
         return null;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Devuelve los datos emitidos por la estación convencional de Chipiona.
@@ -1415,18 +1350,17 @@ class AEMETHelper
      * },
      * ]
      *
-     * @param \Carbon\Carbon $startCarbon Fecha de inicio del periodo.
-     * @param \Carbon\Carbon $endCarbon   Fecha de fin del periodo.
-     *
+     * @param  Carbon  $startCarbon  Fecha de inicio del periodo.
+     * @param  Carbon  $endCarbon  Fecha de fin del periodo.
      * @return bool|mixed|string|null
      */
     public static function getPeriodClimatologiaPasada(Carbon $startCarbon,
-                                                Carbon $endCarbon)
+        Carbon $endCarbon)
     {
         $url = self::getUrl('periodClimatologiaPasada');
 
-        $start = $startCarbon->format('Y-m-d\TH:i:s') . 'UTC';
-        $end = $endCarbon->format('Y-m-d\TH:i:s') . 'UTC';
+        $start = $startCarbon->format('Y-m-d\TH:i:s').'UTC';
+        $end = $endCarbon->format('Y-m-d\TH:i:s').'UTC';
 
         $url = str_replace('{start}', $start, $url);
         $url = str_replace('{end}', $end, $url);
@@ -1489,7 +1423,7 @@ class AEMETHelper
         if ($curl && isset($curl['datos'])) {
             $curl2 = self::getCurl($curl['datos']);
 
-            if (!$curl2 || !count($curl2) || !isset($curl2[0]['elaborado'])) {
+            if (! $curl2 || ! count($curl2) || ! isset($curl2[0]['elaborado'])) {
                 return null;
             }
         } else {
@@ -1497,9 +1431,9 @@ class AEMETHelper
         }
 
         $json = $curl2[0];
-        //$readAt = $json['elaborado'];
+        // $readAt = $json['elaborado'];
         $city = $json['nombre'];
-        //$province = $json['provincia'];
+        // $province = $json['provincia'];
         $days = $json['prediccion']['dia'];
 
         $convertionArray = [
@@ -1517,7 +1451,7 @@ class AEMETHelper
                 'value' => 'storm_prob', // Probabilidad de tormenta (%)
             ],
             'nieve' => [
-                'value' => 'snow' // Nieve la hora anterior (mm)
+                'value' => 'snow', // Nieve la hora anterior (mm)
             ],
             'probNieve' => [
                 'value' => 'snow_prob', // Probabilidad de precipitación (%)
@@ -1537,52 +1471,51 @@ class AEMETHelper
             ],
             'rachaMax' => [
                 'value' => 'wind_max', // Valor de la racha máxima (km/h)
-            ]
+            ],
         ];
 
-        ## Aquí almaceno la respuesta final del método.
+        // # Aquí almaceno la respuesta final del método.
         $arrayFinal = [];
 
-        ## Recorro el array de días con las predicciones.
+        // # Recorro el array de días con las predicciones.
         foreach ($days as $day) {
             $timestampStrRaw = $day['fecha'];
             $timestampStr = str_replace('T', ' ', $timestampStrRaw);
 
-            ## Inicio y Final del día
+            // # Inicio y Final del día
             $dayStartAt = Carbon::parse($timestampStr);
-            $dayEndAt = ( clone( $dayStartAt ) )->endOfDay();
+            $dayEndAt = (clone  $dayStartAt)->endOfDay();
 
-            ## Salida del sol y ocaso
+            // # Salida del sol y ocaso
             $sunriseArray = explode(':', $day['orto']);
             $sunsetArray = explode(':', $day['ocaso']);
-            $sunrise = ( clone( $dayStartAt ) )
+            $sunrise = (clone  $dayStartAt)
                 ->setHour($sunriseArray[0])
                 ->setMinute($sunriseArray[1])
                 ->setSecond(0);
-            $sunset = ( clone( $dayStartAt ) )
+            $sunset = (clone  $dayStartAt)
                 ->setHour($sunsetArray[0])
                 ->setMinute($sunsetArray[1])
                 ->setSecond(0);
 
-
-            ## Aquí almaceno el array final para el día en la iteración actual
+            // # Aquí almaceno el array final para el día en la iteración actual
             $dayFinalArray = [];
 
-            ## Recorro el array de conversión de campos para obtener atributos.
+            // # Recorro el array de conversión de campos para obtener atributos.
             foreach ($convertionArray as $idx => $keys) {
-                if (!isset($day[$idx])) {
+                if (! isset($day[$idx])) {
                     continue;
                 }
 
                 $predictions = $day[$idx];
 
-                ## Recorro todas las predicciones para el día/elemento
+                // # Recorro todas las predicciones para el día/elemento
                 foreach ($predictions as $prediction) {
 
-                    ## Recorro los atributos para convertirlos a los nuevos.
+                    // # Recorro los atributos para convertirlos a los nuevos.
                     foreach ($keys as $att => $newAtt) {
 
-                        if (!isset($prediction[$att])) {
+                        if (! isset($prediction[$att])) {
                             continue;
                         }
 
@@ -1590,7 +1523,7 @@ class AEMETHelper
                             continue;
                         }
 
-                        ## Aquí compruebo si es un rango u hora individual
+                        // # Aquí compruebo si es un rango u hora individual
                         if (strlen($prediction['periodo']) == 4) {
                             $startHour = (int) substr($prediction['periodo'], 0, 2);
                             $endHour = (int) substr($prediction['periodo'], 2, 4);
@@ -1598,13 +1531,13 @@ class AEMETHelper
                             if ($startHour > $endHour) {
                                 $diffHours = (24 - $startHour) + $endHour;
 
-                                foreach (range(0, $diffHours - 1 ) as $h) {
-                                    $predictionStartAt = (clone($dayStartAt))->addHours($startHour + $h);
+                                foreach (range(0, $diffHours - 1) as $h) {
+                                    $predictionStartAt = (clone $dayStartAt)->addHours($startHour + $h);
 
-                                    $predictionEndAt = (clone($dayStartAt))->setHour(($startHour + $h) + 1);
+                                    $predictionEndAt = (clone $dayStartAt)->setHour(($startHour + $h) + 1);
                                     $predictionStartAtString = $predictionStartAt->format('Y-m-d_H-i-s');
 
-                                    $dayFinalArray[$predictionStartAtString][$newAtt] = is_numeric($prediction[$att]) ? (float)$prediction[$att] : $prediction[$att];
+                                    $dayFinalArray[$predictionStartAtString][$newAtt] = is_numeric($prediction[$att]) ? (float) $prediction[$att] : $prediction[$att];
                                     $dayFinalArray[$predictionStartAtString]['start_at'] = $predictionStartAt;
                                     $dayFinalArray[$predictionStartAtString]['end_at'] = $predictionEndAt;
                                 }
@@ -1613,22 +1546,22 @@ class AEMETHelper
                                 $rangeHours = range($startHour, $endHour);
 
                                 foreach ($rangeHours as $h) {
-                                    $predictionStartAt = (clone($dayStartAt))->setHour((int)$h);
-                                    $predictionEndAt = (clone($dayStartAt))->setHour((int)$h + 1);
+                                    $predictionStartAt = (clone $dayStartAt)->setHour((int) $h);
+                                    $predictionEndAt = (clone $dayStartAt)->setHour((int) $h + 1);
                                     $predictionStartAtString = $predictionStartAt->format('Y-m-d_H-i-s');
 
-                                    $dayFinalArray[$predictionStartAtString][$newAtt] = is_numeric($prediction[$att]) ? (float)$prediction[$att] : $prediction[$att];
+                                    $dayFinalArray[$predictionStartAtString][$newAtt] = is_numeric($prediction[$att]) ? (float) $prediction[$att] : $prediction[$att];
                                     $dayFinalArray[$predictionStartAtString]['start_at'] = $predictionStartAt;
                                     $dayFinalArray[$predictionStartAtString]['end_at'] = $predictionEndAt;
                                 }
                             }
 
-                        } else if (strlen($prediction['periodo']) == 2) {
-                            $predictionStartAt = (clone($dayStartAt))->setHour((int)$prediction['periodo']);
-                            $predictionEndAt = (clone($dayStartAt))->setHour((int)$prediction['periodo'] + 1);
+                        } elseif (strlen($prediction['periodo']) == 2) {
+                            $predictionStartAt = (clone $dayStartAt)->setHour((int) $prediction['periodo']);
+                            $predictionEndAt = (clone $dayStartAt)->setHour((int) $prediction['periodo'] + 1);
                             $predictionStartAtString = $predictionStartAt->format('Y-m-d_H-i-s');
 
-                            $dayFinalArray[$predictionStartAtString][$newAtt] = is_numeric($prediction[$att]) ? (float)$prediction[$att] : $prediction[$att];
+                            $dayFinalArray[$predictionStartAtString][$newAtt] = is_numeric($prediction[$att]) ? (float) $prediction[$att] : $prediction[$att];
                             $dayFinalArray[$predictionStartAtString]['start_at'] = $predictionStartAt;
                             $dayFinalArray[$predictionStartAtString]['end_at'] = $predictionEndAt;
                         }
@@ -1636,12 +1569,12 @@ class AEMETHelper
                 }
             }
 
-            ## Recorro la matriz final para añadir en cada subarray timestamp
+            // # Recorro la matriz final para añadir en cada subarray timestamp
             foreach ($dayFinalArray as $hour => $arrayHour) {
                 $arrayHour['sunrise'] = $sunrise;
                 $arrayHour['sunset'] = $sunset;
                 $arrayHour['city'] = $city;
-                $arrayHour['province'] = 'Cádiz'; //$province;
+                $arrayHour['province'] = 'Cádiz'; // $province;
                 $arrayHour['day_start_at'] = $dayStartAt;
                 $arrayHour['day_end_at'] = $dayEndAt;
 
@@ -1654,14 +1587,12 @@ class AEMETHelper
         return $arrayFinal;
     }
 
-
     /**
      * Busca la información de una ciudad en concreto.
      *
      *         // No terminado de preparar
      *
-     * @param string $name Nombre de la ciudad a buscar.
-     *
+     * @param  string  $name  Nombre de la ciudad a buscar.
      * @return mixed|void
      */
     public static function getCityInfoByName(string $name = 'Chipiona')
@@ -1676,11 +1607,11 @@ class AEMETHelper
         }
     }
 
-
     /**
      * Devuelve la predicción diaria para la ciudad de Chipiona.
      *
      *         // No terminado de preparar
+     *
      * @return array
      */
     /*

@@ -4,18 +4,19 @@ namespace App\Http\Controllers\SmartPlant;
 
 use App\Http\Controllers\Controller;
 use App\Models\SmartPlant\SmartPlantPlant;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 /**
  * Class SmartPlantController
- *
- * @package App\Http\Controllers\SmartPlantController
  */
 class SmartPlantController extends Controller
 {
     /**
      * LLeva a la vista resumen con datos para depurar subidas.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index()
     {

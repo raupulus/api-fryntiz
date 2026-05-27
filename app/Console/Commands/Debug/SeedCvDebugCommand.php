@@ -47,7 +47,7 @@ class SeedCvDebugCommand extends Command
             'email_verified_at' => now(),
         ]);
 
-        $this->info("Creando curriculum base...");
+        $this->info('Creando curriculum base...');
 
         $cv = Curriculum::firstOrCreate(['user_id' => $user->id], [
             'title' => 'Curriculum de Raúl Caro',
@@ -58,7 +58,7 @@ class SeedCvDebugCommand extends Command
             'is_public' => true,
         ]);
 
-        $this->info("Creando formación académica de prueba...");
+        $this->info('Creando formación académica de prueba...');
         for ($i = 0; $i < 3; $i++) {
             CurriculumAcademicTraining::create([
                 'curriculum_id' => $cv->id,
@@ -89,13 +89,13 @@ class SeedCvDebugCommand extends Command
             ]);
         }
 
-        $this->info("Creando experiencia laboral de prueba...");
+        $this->info('Creando experiencia laboral de prueba...');
         $experiences = [
             CurriculumExperienceAccredited::class,
             CurriculumExperienceNoAccredited::class,
             CurriculumExperienceSelfEmployed::class,
             CurriculumExperienceAdditional::class,
-            CurriculumExperienceOther::class
+            CurriculumExperienceOther::class,
         ];
 
         foreach ($experiences as $expClass) {
@@ -111,7 +111,7 @@ class SeedCvDebugCommand extends Command
             }
         }
 
-        $this->info("Creando proyectos, repositorios y habilidades...");
+        $this->info('Creando proyectos, repositorios y habilidades...');
         for ($i = 0; $i < 3; $i++) {
             CurriculumProject::create([
                 'curriculum_id' => $cv->id,
@@ -144,7 +144,7 @@ class SeedCvDebugCommand extends Command
             ]);
         }
 
-        $this->info("Creando servicios, colaboraciones, hobbies y trabajos...");
+        $this->info('Creando servicios, colaboraciones, hobbies y trabajos...');
         for ($i = 0; $i < 3; $i++) {
             CurriculumService::create([
                 'curriculum_id' => $cv->id,
@@ -173,7 +173,8 @@ class SeedCvDebugCommand extends Command
             ]);
         }
 
-        $this->info("✅ Curriculum de prueba e items asociados creados.");
+        $this->info('✅ Curriculum de prueba e items asociados creados.');
+
         return self::SUCCESS;
     }
 }

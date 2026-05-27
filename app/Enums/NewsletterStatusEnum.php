@@ -10,7 +10,7 @@ enum NewsletterStatusEnum: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Pending => 'Pendiente de verificacion',
             self::Verified => 'Verificado',
             self::Unsubscribed => 'Dado de baja',

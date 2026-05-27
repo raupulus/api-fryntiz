@@ -4,21 +4,22 @@ namespace App\Http\Controllers\Api\SmartPlant\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SmartPlant\V1\StoreRegisterRequest;
-use App\Models\SmartPlant\SmartPlantRegister;
 use App\Models\SmartPlant\SmartPlantPlant;
+use App\Models\SmartPlant\SmartPlantRegister;
+use Illuminate\Http\JsonResponse;
 use JsonHelper;
+
 use function response;
 
 /**
  * Class SmartPlantController
- *
- * @package App\Http\Controllers\SmartPlant
  */
 class SmartPlantRegisterController extends Controller
 {
     /**
      * Devuelve todos los elementos del modelo.
-     * @return \Illuminate\Http\JsonResponse
+     *
+     * @return JsonResponse
      */
     public function all()
     {
@@ -34,15 +35,14 @@ class SmartPlantRegisterController extends Controller
     /**
      * Almacena un elemento en el modelo.
      *
-     * @param \App\Http\Requests\Api\SmartPlant\V1\StoreRegisterRequest $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(StoreRegisterRequest $request)
     {
         $plant = SmartPlantPlant::find($request->plant_id);
 
-        if (!$plant) {
+        if (! $plant) {
             return JsonHelper::notFound();
         }
 

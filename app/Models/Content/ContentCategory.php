@@ -16,13 +16,11 @@ class ContentCategory extends BaseModel
     protected $fillable = [
         'content_id',
         'platform_category_id',
-        'is_main'
+        'is_main',
     ];
 
     /**
      * Define a many-to-one relationship with the PlatformCategory model.
-     *
-     * @return BelongsTo
      */
     public function platformCategory(): BelongsTo
     {

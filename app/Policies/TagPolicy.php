@@ -42,7 +42,7 @@ class TagPolicy
     public function delete(User $user, Tag $tag)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $tag->user_id === $user->id;
+        // return $tag->user_id === $user->id;
     }
 
     public function show(User $user, Tag $tag)
@@ -53,6 +53,6 @@ class TagPolicy
     public function update(User $user, Tag $tag)
     {
         return RoleHelper::isAdmin($user->role_id);
-        //return $tag->user_id === $user->id;
+        // return $tag->user_id === $user->id;
     }
 }

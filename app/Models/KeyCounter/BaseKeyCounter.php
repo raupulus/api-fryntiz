@@ -5,9 +5,10 @@ namespace App\Models\KeyCounter;
 use App\Models\Hardware\HardwareDevice;
 use App\Traits\BelongsToUser;
 use Carbon\Carbon;
-use Carbon\Traits\Creator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+
 use function array_key_exists;
 use function array_unique;
 use function count;
@@ -16,8 +17,6 @@ use function json_encode;
 
 /**
  * Class KeyCounter
- *
- * @package App\Models\Keycounter
  */
 class BaseKeyCounter extends Model
 {
@@ -39,7 +38,7 @@ class BaseKeyCounter extends Model
     /**
      * Relación con el hardware asociado.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function hardware()
     {
@@ -47,13 +46,23 @@ class BaseKeyCounter extends Model
     }
 
     /**
+     * Alias para compatibilidad con Filament Resources.
+     *
+     * @return BelongsTo
+     */
+    public function device()
+    {
+        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
+    }
+
+    /**
      * Sobreescribo la actualización del updated_at para no hacerle nada.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      */
     public function setUpdatedAt($value)
     {
-        //Do-nothing
+        // Do-nothing
     }
 
     /**
@@ -70,13 +79,12 @@ class BaseKeyCounter extends Model
 
         $attributes = $this->getAttributes();
 
-        foreach ($columns as $column)
-        {
-            if (!array_key_exists($column, $attributes))
-            {
+        foreach ($columns as $column) {
+            if (! array_key_exists($column, $attributes)) {
                 $attributes[$column] = null;
             }
         }
+
         return $attributes;
     }
 
@@ -95,6 +103,7 @@ class BaseKeyCounter extends Model
             ->where('weekday', '!=', null)
             ->where('created_at', '!=', null)
             ->sortByDesc('created_at');
+
         return $query;
     }
 
@@ -104,12 +113,11 @@ class BaseKeyCounter extends Model
      *
      * By Raúl Caro
      *
-     * @param array $filter Recibe una matriz con los tipos de filtros dentro:
-     *                      where => ['campo' => 'condicion'],
-     *                      orWhere => ['campo' => 'condicion'],
-     *                      whereNull => ['campo'],
-     *                      whereNotNull => ['campo'],
-     *
+     * @param  array  $filter  Recibe una matriz con los tipos de filtros dentro:
+     *                         where => ['campo' => 'condicion'],
+     *                         orWhere => ['campo' => 'condicion'],
+     *                         whereNull => ['campo'],
+     *                         whereNotNull => ['campo'],
      * @return mixed
      */
     public static function getAllFiltered($filter = [])
@@ -118,7 +126,7 @@ class BaseKeyCounter extends Model
             ->whereNotNull('end_at')
             ->where('pulsations', '>=', 1);
 
-        ## Proceso el filtro de condiciones obligatorias.
+        // # Proceso el filtro de condiciones obligatorias.
         if (isset($filter['where']) && count($filter['where'])) {
             foreach ($filter['where'] as $idx => $filtro) {
                 if ($filtro != null) {
@@ -127,21 +135,21 @@ class BaseKeyCounter extends Model
             }
         }
 
-        ## Proceso el filtro de condiciones para no null.
+        // # Proceso el filtro de condiciones para no null.
         if (isset($filter['whereNotNull']) && count($filter['whereNotNull'])) {
             foreach ($filter['whereNotNull'] as $ele) {
                 $model->whereNotNull($ele);
             }
         }
 
-        ## Proceso el filtro de condiciones para obligar campos null.
+        // # Proceso el filtro de condiciones para obligar campos null.
         if (isset($filter['whereNull']) && count($filter['whereNull'])) {
             foreach ($filter['whereNull'] as $ele) {
                 $model->whereNull($ele);
             }
         }
 
-        ## Proceso el filtro de condiciones opcionales
+        // # Proceso el filtro de condiciones opcionales
         if (isset($filter['orWhere']) && count($filter['orWhere'])) {
             $model->where(function ($query) use ($filter) {
                 foreach ($filter['orWhere'] as $idx => $filtro) {
@@ -168,35 +176,35 @@ class BaseKeyCounter extends Model
         $now->setDay(1);
         $now->setTime(0, 0);
 
-        ## Establezco mes si se ha indicado.
+        // # Establezco mes si se ha indicado.
         if ($month) {
             $now->setMonth($month);
         }
 
-        ## Establezco año si se ha indicado.
+        // # Establezco año si se ha indicado.
         if ($year) {
             $now->setYear($year);
         }
 
-        ## Inicio del mes.
-        $start = (clone($now))->format('Y-m-d H:i:s');
+        // # Inicio del mes.
+        $start = (clone $now)->format('Y-m-d H:i:s');
 
-        ## Final del mes.
-        $end = clone($now);
+        // # Final del mes.
+        $end = clone $now;
         $end->addMonth();
         $end->subDay();
         $end->setTime(23, 59, 59);
         $end = $end->format('Y-m-d H:i:s');
 
-        ## Obtengo la consulta con los datos filtrados.
+        // # Obtengo la consulta con los datos filtrados.
         $count = self::getAllFiltered()
             ->whereBetween('created_at', [$start, $end])
             ->count();
 
-        ## Obtengo las estadísticas agrupadas por cada dispositivo
+        // # Obtengo las estadísticas agrupadas por cada dispositivo
         $data = self::getAllFiltered()
             ->select([
-                DB::Raw('count(id) as spurts'), # Cantidad de rachas
+                DB::Raw('count(id) as spurts'), // Cantidad de rachas
                 DB::Raw('sum(duration) as duration'),
                 DB::Raw('DATE(created_at) as day'),
                 DB::Raw('sum(pulsations) as total_pulsations'),
@@ -210,19 +218,19 @@ class BaseKeyCounter extends Model
             ->orderBy('day')
             ->get();
 
-        ## Extraigo el id de todos los dispositivos para este mes.
+        // # Extraigo el id de todos los dispositivos para este mes.
         $devices_ids = array_unique($data->pluck('hardware_device_id')->toArray());
 
         $total_puntuations = $data->sum('total_pulsations');
 
         return [
-            'devices_ids' => $devices_ids,  ## Ids de todos los dispositivos.
-            'period_start' => $start,  ## Comienzo del periodo
-            'period_end' => $end,  ## Final del periodo
-            'period_count' => $count,  ## Total de registros/rachas este periodo
+            'devices_ids' => $devices_ids,  // # Ids de todos los dispositivos.
+            'period_start' => $start,  // # Comienzo del periodo
+            'period_end' => $end,  // # Final del periodo
+            'period_count' => $count,  // # Total de registros/rachas este periodo
             'period_total_pulsations' => $total_puntuations,
-             #'period_max_pulsations' => $day_max_puntuations,
-            'data' => $data,  ## Los datos devueltos como resultado
+            // 'period_max_pulsations' => $day_max_puntuations,
+            'data' => $data,  // # Los datos devueltos como resultado
         ];
     }
 
@@ -239,10 +247,10 @@ class BaseKeyCounter extends Model
         $dataset = [];
         $datasetTMP = [];
 
-        ## Array temporal de días con el valor de las pulsaciones por día de todos los dispositivos.
+        // # Array temporal de días con el valor de las pulsaciones por día de todos los dispositivos.
         $totalTMP = [];
 
-        ## Recorro todos los días y genero por cada dispositivo un array con los datos.
+        // # Recorro todos los días y genero por cada dispositivo un array con los datos.
         foreach ($days as $day) {
             $labels[] = (new Carbon($day))->format('d');
 
@@ -255,33 +263,33 @@ class BaseKeyCounter extends Model
 
                 $s = $stats->where('day', $day)->where('hardware_device_id', $device)->first();
 
-                ## Compruebo que haya registro para este dispositivo este día o seteo 0.
+                // # Compruebo que haya registro para este dispositivo este día o seteo 0.
                 if ($s && isset($datasetTMP[$device])) {
-                    if (!isset($datasetTMP[$device]['label'])) {
+                    if (! isset($datasetTMP[$device]['label'])) {
                         $datasetTMP[$device]['label'] = $s->hardware->name;
                     }
 
-                    if (!isset($datasetTMP[$device]['borderColor'])) {
+                    if (! isset($datasetTMP[$device]['borderColor'])) {
                         $datasetTMP[$device]['borderColor'] = $color;
                     }
 
-                    if (!isset($datasetTMP[$device]['fill'])) {
+                    if (! isset($datasetTMP[$device]['fill'])) {
                         $datasetTMP[$device]['fill'] = 'false';
                     }
 
                     $datasetTMP[$device]['data'][] = $s->total_pulsations;
-                } else if ($s) {
+                } elseif ($s) {
                     $datasetTMP[$device] = [
                         'data' => [$s->total_pulsations],
                         'label' => $s->hardware->name,
                         'borderColor' => $color,
-                        'fill' => 'false'
+                        'fill' => 'false',
                     ];
                 } else {
                     $datasetTMP[$device]['data'][] = 0;
                 }
 
-                ## Añado al array total el valor actual.
+                // # Añado al array total el valor actual.
                 if ($s) {
                     $totalTMP[$day] = isset($totalTMP[$day]) ? $totalTMP[$day] +
                         $s->total_pulsations :
@@ -290,7 +298,7 @@ class BaseKeyCounter extends Model
             }
         }
 
-        ## Añado un nuevo elemento que agrupe todos los dispositivos con el total por día.
+        // # Añado un nuevo elemento que agrupe todos los dispositivos con el total por día.
         $total = [];
         foreach ($totalTMP as $t) {
             $total[] = $t;
@@ -300,15 +308,15 @@ class BaseKeyCounter extends Model
             'data' => $total,
             'label' => 'Total',
             'borderColor' => '#ff0000',
-            'fill' => 'false'
+            'fill' => 'false',
         ];
 
-        ## Añado todos los datos por días y dispositivos al array final.
+        // # Añado todos los datos por días y dispositivos al array final.
         foreach ($datasetTMP as $d) {
             $dataset[] = $d;
         }
 
-        ## Convierto los datos a string y json para luego extraerlos en javascript.
+        // # Convierto los datos a string y json para luego extraerlos en javascript.
         $labelsString = implode(',', array_unique($labels));
         $datasetJson = json_encode($dataset);
 

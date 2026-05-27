@@ -1,8 +1,10 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * Date: 22/05/2021
  * Time: 18:19
+ *
  * @author Raúl Caro Pastorino
  * @copyright Copyright © 2021 Raúl Caro Pastorino
  * @license https://www.gnu.org/licenses/gpl-3.0-standalone.html
@@ -96,20 +98,17 @@ class JsonHelper
         ];
     }
 
-
     /**
      * Prepara un mensaje de respuesta cuando se ha llevado a cabo correctamente
      * la petición.
      *
-     * @param array       $data Datos de la respuesta.
-     *
-     * @return array
+     * @param  array  $data  Datos de la respuesta.
      */
-    private static function prepareSuccess(Array $data): array
+    private static function prepareSuccess(array $data): array
     {
         return array_merge(
             self::$success,
-            //self::siteData(),
+            // self::siteData(),
             $data,
         );
     }
@@ -117,17 +116,15 @@ class JsonHelper
     /**
      * Prepara un mensaje de error para una acción fallida.
      *
-     * @param String     $message Mensaje en formato humano.
-     * @param Int             $httpCode Código http del error.
-     * @param Exception|null $exception Excepción de seguimiento.
-     * @param Int|null        $codeError Id del error dentro de la aplicación.
-     *
-     * @return array
+     * @param  string  $message  Mensaje en formato humano.
+     * @param  int  $httpCode  Código http del error.
+     * @param  Exception|null  $exception  Excepción de seguimiento.
+     * @param  int|null  $codeError  Id del error dentro de la aplicación.
      */
-    private static function prepareError(String $message = 'Error',
-                                 Int $httpCode = 400,
-                                 ?Exception $exception = null,
-                                 ?Int $codeError = null): array
+    private static function prepareError(string $message = 'Error',
+        int $httpCode = 400,
+        ?Exception $exception = null,
+        ?int $codeError = null): array
     {
         return array_merge(
             self::$error,
@@ -146,17 +143,15 @@ class JsonHelper
     /**
      * Prepara un mensaje de respuesta cuando se reciben parámetros mal.
      *
-     * @param String $message Mensaje de error.
-     * @param array  $errors Array con los errores de validación.
-     * @param Int    $httpCode Código http de la respuesta.
-     * @param Int    $codeError Código de error interno para la aplicación.
-     *
-     * @return array
+     * @param  string  $message  Mensaje de error.
+     * @param  array  $errors  Array con los errores de validación.
+     * @param  int  $httpCode  Código http de la respuesta.
+     * @param  int  $codeError  Código de error interno para la aplicación.
      */
-    private static function prepareFail(String $message = 'The given data was invalid.',
-                                       Array $errors = [],
-                                       Int $httpCode = 422,
-                                       Int $codeError = 0): array
+    private static function prepareFail(string $message = 'The given data was invalid.',
+        array $errors = [],
+        int $httpCode = 422,
+        int $codeError = 0): array
     {
         return array_merge(
             self::$fail,
@@ -173,11 +168,10 @@ class JsonHelper
     /**
      * Respuesta genérica para devolver algo correctamente.
      *
-     * @param array $data
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function success(Array $data = []): JsonResponse
+    public static function success(array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 200);
     }
@@ -185,11 +179,10 @@ class JsonHelper
     /**
      * Respuesta indicando que se ha creado un elemento correctamente.
      *
-     * @param array $data
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function created(Array $data = []): JsonResponse
+    public static function created(array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 201);
     }
@@ -197,11 +190,10 @@ class JsonHelper
     /**
      * Respuesta indicando que se ha insertado un elemento correctamente.
      *
-     * @param array $data
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function updated(Array $data = []): JsonResponse
+    public static function updated(array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 202);
     }
@@ -209,11 +201,10 @@ class JsonHelper
     /**
      * Respuesta indicando que se ha eliminado correctamente.
      *
-     * @param array $data
      *
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function deleted(Array $data = []): JsonResponse
+    public static function deleted(array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 200);
     }
@@ -221,11 +212,10 @@ class JsonHelper
     /**
      * Respuesta indicando que la petición ha sido aceptada.
      *
-     * @param array $data Datos de la respuesta.
-     *
+     * @param  array  $data  Datos de la respuesta.
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function accepted(Array $data = []): JsonResponse
+    public static function accepted(array $data = []): JsonResponse
     {
         return response()->json(self::prepareSuccess($data), 202);
     }
@@ -233,72 +223,67 @@ class JsonHelper
     /**
      * Respuesta indicando que la petición contiene parámetros erróneos.
      *
-     * @param String $message Mensaje de error.
-     * @param array  $errors Array con los errores de validación.
-     * @param Int    $httpCode Código http de la respuesta.
-     * @param Int    $codeError Código de error interno para la aplicación.
-     *
+     * @param  string  $message  Mensaje de error.
+     * @param  array  $errors  Array con los errores de validación.
+     * @param  int  $httpCode  Código http de la respuesta.
+     * @param  int  $codeError  Código de error interno para la aplicación.
      * @return JsonResponse Devuelve la respuesta final.
      */
-    public static function failed(String $message = 'The given data was invalid.',
-                                  Array $errors = [],
-                                  Int $httpCode = 422,
-                                  Int $codeError = 0): JsonResponse
+    public static function failed(string $message = 'The given data was invalid.',
+        array $errors = [],
+        int $httpCode = 422,
+        int $codeError = 0): JsonResponse
     {
         return response()->json(self::prepareFail(
-                $message,
-                $errors,
-                $httpCode,
-                $codeError
-            ),
+            $message,
+            $errors,
+            $httpCode,
+            $codeError
+        ),
             $httpCode);
     }
 
     /**
      * Respuesta indicando que no se encuentra el elemento
      *
-     * @param String $message Mensaje de error.
-     *
-     * @return JsonResponse
+     * @param  string  $message  Mensaje de error.
      */
-    public static function notFound(String $message = '404 This resource does not exist'): JsonResponse
+    public static function notFound(string $message = '404 This resource does not exist'): JsonResponse
     {
         $httpCode = 404;
         $exception = new NotFoundHttpException($message);
         $codeError = 0;
 
         return response()->json(self::prepareError(
-                $message,
-                $httpCode,
-                $exception,
-                $codeError
-            ),
+            $message,
+            $httpCode,
+            $exception,
+            $codeError
+        ),
             $httpCode);
     }
 
     /**
      * Acceso Prohibido, 401|403.
      *
-     * @param String          $message Mensaje de error.
-     * @param Int             $httpCode Código http de la respuesta.
-     * @param Int             $codeError Código de error interno para la aplicación.
-     * @param Exception|null $exception Excepción.
-     *
-     * @return JsonResponse
+     * @param  string  $message  Mensaje de error.
+     * @param  int  $httpCode  Código http de la respuesta.
+     * @param  int  $codeError  Código de error interno para la aplicación.
+     * @param  Exception|null  $exception  Excepción.
      */
-    public static function forbidden(String $message = '403 Forbidden Access',
-                                     Int $httpCode = 403,
-                                     Int $codeError = 0,
-                                     ?Exception $exception = null): JsonResponse
+    public static function forbidden(string $message = '403 Forbidden Access',
+        int $httpCode = 403,
+        int $codeError = 0,
+        ?Exception $exception = null): JsonResponse
     {
         $exception = $exception ?? new AccessDeniedHttpException($message);
 
         return response()->json(self::prepareError(
-                $message,
-                $httpCode,
-                $exception,
-                $codeError
-            ),
+            $message,
+            $httpCode,
+            $exception,
+            $codeError
+        ),
             $httpCode);
     }
 }

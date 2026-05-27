@@ -15,8 +15,6 @@ class NewsletterUnsubscribe extends Mailable
 
     /**
      * Create a new message instance.
-     *
-     * @param Newsletter $newsletter
      */
     public function __construct(Newsletter $newsletter)
     {
@@ -30,7 +28,7 @@ class NewsletterUnsubscribe extends Mailable
      */
     public function build()
     {
-        return $this->subject('Confirmación de desuscripción - ' . config('app.name'))
+        return $this->subject('Confirmación de desuscripción - '.config('app.name'))
             ->view('mail.newsletter')
             ->with([
                 'type' => 'unsubscribe',

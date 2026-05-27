@@ -309,7 +309,7 @@ return [
         'text' => 'Configuración',
         'icon_color' => 'cyan',
         'url' => '#',
-        'rightsidebar' => true
+        'rightsidebar' => true,
     ],
     [
         'text' => 'API',

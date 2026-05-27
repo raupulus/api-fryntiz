@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Log;
 trait ValidatesAemetPayload
 {
     /**
-     * @param  string  $label       Etiqueta legible para los logs.
-     * @param  callable $producer   Cierre que devuelve el payload (suele invocar a AEMETHelper).
-     * @param  callable $persistor  Cierre o [Model::class, 'saveFromApi'] que persiste el payload.
+     * @param  string  $label  Etiqueta legible para los logs.
+     * @param  callable  $producer  Cierre que devuelve el payload (suele invocar a AEMETHelper).
+     * @param  callable  $persistor  Cierre o [Model::class, 'saveFromApi'] que persiste el payload.
      */
     protected function guardedSave(string $label, callable $producer, callable $persistor): void
     {
@@ -29,6 +29,7 @@ trait ValidatesAemetPayload
             if (method_exists($this, 'warn')) {
                 $this->warn("[{$label}] error al obtener datos. Ver logs.");
             }
+
             return;
         }
 
@@ -37,6 +38,7 @@ trait ValidatesAemetPayload
             if (method_exists($this, 'warn')) {
                 $this->warn("[{$label}] payload vacío. Se omite la persistencia.");
             }
+
             return;
         }
 

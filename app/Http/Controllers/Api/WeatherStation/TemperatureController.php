@@ -6,8 +6,6 @@ use App\Models\WeatherStation\Temperature;
 
 /**
  * Class TemperatureController
- *
- * @package App\Http\Controllers\Api\WeatherStation
  */
 class TemperatureController extends BaseWheaterStationController
 {

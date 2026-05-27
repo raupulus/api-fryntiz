@@ -4,8 +4,6 @@ namespace App\Models\KeyCounter;
 
 /**
  * Class Keyboard
- *
- * @package App\Models\Keycounter
  */
 class Keyboard extends BaseKeyCounter
 {

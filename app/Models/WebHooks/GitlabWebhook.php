@@ -6,18 +6,16 @@ use function config;
 
 /**
  * Class GitlabWebhook
- *
- * @package App\Models\WebHooks
  */
 class GitlabWebhook extends SimpleWebhookModel
 {
-    ## Token que viene de GitLab
+    // # Token que viene de GitLab
     public $token;
 
-    ## Request Completa
+    // # Request Completa
     public $request;
 
-    ## Token local extraido del .env
+    // # Token local extraido del .env
     public $localToken;
 
     protected $fillable = [

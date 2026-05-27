@@ -4,6 +4,7 @@ namespace App\Http\Requests\Dashboard\Platform;
 
 use App\Models\Platform;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 use function trim;
 
@@ -55,7 +56,7 @@ class PlatformUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:511',
-            'slug' => 'required|max:255|unique:platforms,slug,' . $this->get('id'),
+            'slug' => 'required|max:255|unique:platforms,slug,'.$this->get('id'),
             'description' => 'nullable|string|max:1023',
             'domain' => 'nullable|string|max:255',
             'url_about' => 'nullable|string|max:255',

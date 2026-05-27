@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Language;
 use Illuminate\Http\Request;
+
 use function array_keys;
 use function asset;
 use function response;
@@ -13,10 +14,7 @@ use function response;
  */
 class LanguageController extends Controller
 {
-
     /***************** AJAX *****************/
-
-
 
     public function ajaxGetLanguages(Request $request)
     {
@@ -44,8 +42,7 @@ class LanguageController extends Controller
                 'totalElements' => $totalElements,
                 'size' => $size,
                 'cellsInfo' => $cellsInfo,
-            ]
+            ],
         ]);
     }
-
 }

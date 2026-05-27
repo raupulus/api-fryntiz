@@ -4,6 +4,8 @@ namespace App\Models\CV;
 
 use App\Models\File;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 use function array_key_exists;
 
 /**
@@ -14,8 +16,22 @@ class Curriculum extends Model
     protected $table = 'cv';
 
     protected $guarded = [
-        'id'
+        'id',
     ];
+
+    /**
+     * Al guardar, asegurar que solo un CV por usuario sea is_default.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Curriculum $cv) {
+            if ($cv->is_default) {
+                self::where('user_id', $cv->user_id)
+                    ->where('id', '!=', $cv->id ?? 0)
+                    ->update(['is_default' => false]);
+            }
+        });
+    }
 
     public function repositories()
     {
@@ -95,7 +111,7 @@ class Curriculum extends Model
     /**
      * Relación con la imagen asociada al curriculum.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function image()
     {
@@ -111,7 +127,6 @@ class Curriculum extends Model
     {
         return $this->image ? $this->image->url : File::urlDefaultImage('large');
     }
-
 
     // BORRAR desde aquí (refactorizando antes)
 
@@ -145,7 +160,6 @@ class Curriculum extends Model
     /**
      * Devuelve el thumbnail de la imagen asociada.
      *
-     * @param $size
      *
      * @return mixed
      */
@@ -158,7 +172,6 @@ class Curriculum extends Model
         return File::urlDefaultImage($size);
     }
 
-
     /**
      * Elimina de forma segura un curriculum y los datos asociados.
      *
@@ -166,7 +179,7 @@ class Curriculum extends Model
      */
     public function safeDelete()
     {
-        ## Elimino la imagen asociada al curriculum y todas las miniaturas.
+        // # Elimino la imagen asociada al curriculum y todas las miniaturas.
         if ($this->image) {
             $this->image->safeDelete();
         }
@@ -191,7 +204,7 @@ class Curriculum extends Model
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {
@@ -214,13 +227,12 @@ class Curriculum extends Model
     /**
      * Devuelve los resultados para una página.
      *
-     * @param number $size Tamaño de cada página
-     * @param number $page Página a la que buscar.
-     *
+     * @param  number  $size  Tamaño de cada página
+     * @param  number  $page  Página a la que buscar.
      * @return array
      */
     public static function getTableRowsByPage($size, $page, $columns,
-                                              $orderBy, $orderDirection = 'ASC')
+        $orderBy, $orderDirection = 'ASC')
     {
         return self::select($columns)
             ->offset(($page * $size) - $size)
@@ -244,10 +256,11 @@ class Curriculum extends Model
         $attributes = $this->getAttributes();
 
         foreach ($columns as $column) {
-            if (!array_key_exists($column, $attributes)) {
+            if (! array_key_exists($column, $attributes)) {
                 $attributes[$column] = null;
             }
         }
+
         return $attributes;
     }
 }

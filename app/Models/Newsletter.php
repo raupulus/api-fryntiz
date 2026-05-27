@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class Newsletter extends Model
 {
@@ -42,14 +40,20 @@ class Newsletter extends Model
 
     // Estados disponibles
     const STATUS_ACTIVE = 'active';
+
     const STATUS_INACTIVE = 'inactive';
+
     const STATUS_UNSUBSCRIBED = 'unsubscribed';
+
     const STATUS_BOUNCED = 'bounced';
 
     // Fuentes de suscripción
     const SOURCE_WEB = 'web';
+
     const SOURCE_API = 'api';
+
     const SOURCE_IMPORT = 'import';
+
     const SOURCE_ADMIN = 'admin';
 
     /**
@@ -162,7 +166,7 @@ class Newsletter extends Model
      */
     public function changeStatus(string $status): bool
     {
-        if (!in_array($status, [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_UNSUBSCRIBED, self::STATUS_BOUNCED])) {
+        if (! in_array($status, [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_UNSUBSCRIBED, self::STATUS_BOUNCED])) {
             return false;
         }
 
@@ -333,7 +337,6 @@ class Newsletter extends Model
     /**
      * Crear o actualizar suscriptor
      *
-     * @param array $data
      * @return array Retorna un array con el objeto newsletter y un booleano indicando si es nuevo
      */
     public static function createOrUpdate(array $data): array
@@ -360,7 +363,7 @@ class Newsletter extends Model
 
         return [
             'newsletter' => $newsletter,
-            'isNew' => $isNew
+            'isNew' => $isNew,
         ];
     }
 

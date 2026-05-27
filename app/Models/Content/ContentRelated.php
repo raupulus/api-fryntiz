@@ -16,6 +16,6 @@ class ContentRelated extends BaseModel
 
     protected $fillable = [
         'content_id',
-        'content_related_id'
+        'content_related_id',
     ];
 }

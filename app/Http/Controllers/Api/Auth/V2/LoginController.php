@@ -21,7 +21,7 @@ class LoginController extends BaseApiController
     {
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return $this->errorResponse('Credenciales invalidas', 401);
         }
 

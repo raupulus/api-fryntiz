@@ -11,7 +11,7 @@ class FallbackTest extends ApiTestCase
     {
         $response = $this->getJson('/api/v1/endpoint-que-no-existe');
         $response->assertStatus(404)
-                 ->assertJsonStructure(['message']);
+            ->assertJsonStructure(['message']);
     }
 
     /** @test */
@@ -19,7 +19,7 @@ class FallbackTest extends ApiTestCase
     {
         $response = $this->getJson('/api/airflight/v1/no-existe');
         $response->assertStatus(404)
-                 ->assertJsonStructure(['message']);
+            ->assertJsonStructure(['message']);
     }
 
     /** @test */
@@ -27,7 +27,7 @@ class FallbackTest extends ApiTestCase
     {
         $response = $this->getJson('/api/hardware/v1/no-existe');
         $response->assertStatus(404)
-                 ->assertJsonStructure(['message']);
+            ->assertJsonStructure(['message']);
     }
 
     /** @test */
@@ -35,6 +35,6 @@ class FallbackTest extends ApiTestCase
     {
         $response = $this->getJson('/api/weatherstation/v1/no-existe');
         $response->assertStatus(404)
-                 ->assertJsonStructure(['message']);
+            ->assertJsonStructure(['message']);
     }
 }

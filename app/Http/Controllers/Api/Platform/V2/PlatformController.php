@@ -36,7 +36,7 @@ class PlatformController extends BaseApiController
     {
         $platform = $this->service->getBySlug($slug);
 
-        if (!$platform) {
+        if (! $platform) {
             return $this->notFoundResponse('Plataforma no encontrada');
         }
 
@@ -50,7 +50,7 @@ class PlatformController extends BaseApiController
     {
         $platform = $this->service->getBySlug($slug);
 
-        if (!$platform) {
+        if (! $platform) {
             return $this->notFoundResponse('Plataforma no encontrada');
         }
 

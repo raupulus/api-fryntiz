@@ -33,6 +33,7 @@ class KeyCounterService
     public function getUserKeyboardStats(int $userId, int $days = 30): array
     {
         $records = Keyboard::forUser($userId)->lastDays($days)->get();
+
         return [
             'total_keystrokes' => $records->sum('pulsations') ?: 0,
             'average_per_day' => $days > 0 ? round(($records->sum('pulsations') ?: 0) / $days) : 0,

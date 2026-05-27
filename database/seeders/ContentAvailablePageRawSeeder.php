@@ -82,7 +82,6 @@ class ContentAvailablePageRawSeeder extends Seeder
                 'extension' => 'txt',
             ],
 
-
         ];
 
         $now = Carbon::now();

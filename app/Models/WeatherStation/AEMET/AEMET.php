@@ -46,9 +46,8 @@ class AEMET extends Model
      * Los datos devueltos pueden devolverse en json o en raw según hayan sido
      * recibidos.
      *
-     * @param string $url  Recibe la url con el endpoint completo de la API.
-     * @param bool   $json Recibe si la respuesta será en JSON o RAW.
-     *
+     * @param  string  $url  Recibe la url con el endpoint completo de la API.
+     * @param  bool  $json  Recibe si la respuesta será en JSON o RAW.
      * @return bool|string|null
      */
     public function getCurl(string $url, bool $json = true)
@@ -62,14 +61,14 @@ class AEMET extends Model
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
-            //CURLOPT_FOLLOWLOCATION => true,
+            // CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_ENCODING => "",
+            CURLOPT_ENCODING => '',
             CURLOPT_HTTPHEADER => [
                 'cache-control: no-cache',
                 'Accept: application/json',
-                'api_key: ' . $this->API_KEY
+                'api_key: '.$this->API_KEY,
             ],
         ]);
 
@@ -97,16 +96,11 @@ class AEMET extends Model
      * Devuelve la url completa a partir de la clave para el endpoint/path
      * recibido como parámetro.
      *
-     * @param string $path Clave del path a utilizar.
-     *
+     * @param  string  $path  Clave del path a utilizar.
      * @return string
      */
     public function getUrl(string $path)
     {
-        return $this->URL . '/' . $this->PATHS[ $path ];
+        return $this->URL.'/'.$this->PATHS[$path];
     }
-
-
-
-
 }

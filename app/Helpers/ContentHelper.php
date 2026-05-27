@@ -7,9 +7,9 @@ use Illuminate\Support\Collection;
 
 class ContentHelper
 {
-    public static function contentPrepare(Content $content): Object
+    public static function contentPrepare(Content $content): object
     {
-        return (Object) [
+        return (object) [
             'title' => $content->title,
             'slug' => $content->slug,
             'excerpt' => $content->excerpt,
@@ -63,12 +63,11 @@ class ContentHelper
     /**
      * Procesa un contenido destacado para obtener solo los datos necesarios en una previsualización.
      *
-     * @param Content $content
      * @return Content
      */
-    public static function contentFeaturedPrepare(Content $content): Object
+    public static function contentFeaturedPrepare(Content $content): object
     {
-        return (Object) [
+        return (object) [
             'title' => $content->title,
             'slug' => $content->slug,
             'excerpt' => $content->excerpt,

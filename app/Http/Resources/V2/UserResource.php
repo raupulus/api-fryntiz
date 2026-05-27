@@ -15,7 +15,7 @@ class UserResource extends JsonResource
             'nickname' => $this->nickname,
             'email' => $this->when($this->isOwner($request), $this->email),
             'role' => $this->role?->name,
-            'email_verified' => !is_null($this->email_verified_at),
+            'email_verified' => ! is_null($this->email_verified_at),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

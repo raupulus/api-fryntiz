@@ -2,6 +2,7 @@
 
 namespace App\Models\WeatherStation\AEMET;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
@@ -14,13 +15,10 @@ class AEMETAdverseEvents extends Model
 
     protected $table = 'meteorology_aemet_adverse_events';
 
-
     /**
      * Comprueba si los datos coinciden con lo que puede guardarse en el modelo.
      *
-     * @param array $datas Un array de datos que debe coincidir con $fillable
-     *
-     * @return bool
+     * @param  array  $datas  Un array de datos que debe coincidir con $fillable
      */
     public static function validation(array $datas): bool
     {
@@ -38,9 +36,8 @@ class AEMETAdverseEvents extends Model
     /**
      * Recibe la respuesta de la api y procesa todos los elementos a guardar.
      *
-     * @param array $apiResponse Una matriz con los elementos a guardar
-     *
-     * @return \Illuminate\Database\Eloquent\Collection|null
+     * @param  array  $apiResponse  Una matriz con los elementos a guardar
+     * @return Collection|null
      */
     public static function saveFromApi(array $apiResponse): ?array
     {
@@ -53,7 +50,7 @@ class AEMETAdverseEvents extends Model
                 $result[] = self::updateOrCreate(
                     [
                         'slug' => $register['slug'],
-                        'read_at' => $register['read_at']
+                        'read_at' => $register['read_at'],
                     ],
                     $register
                 );

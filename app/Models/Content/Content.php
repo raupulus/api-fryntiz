@@ -15,22 +15,21 @@ use App\Models\User;
 use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+
 use function route;
 use function url;
-use \Illuminate\Database\Eloquent\Relations\BelongsTo;
-use \Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use \Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Content
- *
- * @package App\Models\Content
  */
 class Content extends BaseAbstractModelWithTableCrud
 {
-    use ImageTrait, HasFactory;
+    use HasFactory, ImageTrait;
 
     protected $table = 'contents';
 
@@ -80,7 +79,6 @@ class Content extends BaseAbstractModelWithTableCrud
         'processed_at' => 'datetime',
     ];
 
-
     public static function getModuleName(): string
     {
         return 'content';
@@ -103,8 +101,8 @@ class Content extends BaseAbstractModelWithTableCrud
 
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function ($model) {
-            //$model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
-            //\Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
+            // $model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
+            // \Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
 
             $platform = $model->platform;
 
@@ -115,16 +113,13 @@ class Content extends BaseAbstractModelWithTableCrud
 
         // Evento "updated": Solo se dispara cuando el modelo es actualizado
         static::updated(function ($model) {
-            //$model->cleanAllCache();
-            //\Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
+            // $model->cleanAllCache();
+            // \Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
         });
     }
 
-
     /**
      * Devuelve la relación con el autor/usuario que ha creado el contenido.
-     *
-     * @return BelongsTo
      */
     public function author(): BelongsTo
     {
@@ -133,8 +128,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve la relación con el autor/usuario que ha creado el contenido.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -143,8 +136,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve la relación con el estado del contenido.
-     *
-     * @return BelongsTo
      */
     public function status(): BelongsTo
     {
@@ -153,8 +144,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve la relación al tipo de contenido.
-     *
-     * @return BelongsTo
      */
     public function type(): BelongsTo
     {
@@ -163,8 +152,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con la tabla "files" que contiene la imagen principal.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {
@@ -173,8 +160,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con las páginas asociadas al contenido.
-     *
-     * @return HasMany
      */
     public function pages(): HasMany
     {
@@ -183,8 +168,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con el contenido que el actual asocia a otros.
-     *
-     * @return BelongsToMany
      */
     public function contentsRelated(): BelongsToMany
     {
@@ -195,8 +178,6 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Relación con el contenido actual asociado a otros de cualquier
      * plataforma.
-     *
-     * @return BelongsToMany
      */
     public function contentsRelatedAllPlatforms(): BelongsToMany
     {
@@ -205,8 +186,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con el contenido asociado al actual en la plataforma actual.
-     *
-     * @return BelongsToMany
      */
     public function contentsRelatedMe(): BelongsToMany
     {
@@ -216,8 +195,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con el contenido asociado al actual para cualquier plataforma.
-     *
-     * @return BelongsToMany
      */
     public function contentsRelatedMeAllPlatforms(): BelongsToMany
     {
@@ -226,8 +203,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con los colaboradores asociados al contenido.
-     *
-     * @return BelongsToMany
      */
     public function contributors(): BelongsToMany
     {
@@ -236,8 +211,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con los colaboradores asociados al contenido.
-     *
-     * @return HasMany
      */
     public function contributorsJoin(): HasMany
     {
@@ -246,8 +219,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con las tecnologías.
-     *
-     * @return BelongsToMany
      */
     public function technologies(): BelongsToMany
     {
@@ -256,19 +227,14 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con la tabla intermedia de las tecnologías.
-     *
-     * @return HasMany
      */
     public function technologiesJoin(): HasMany
     {
         return $this->hasMany(ContentTechnology::class, 'content_id', 'id');
     }
 
-
     /**
      * Relación con las galerías asociadas.
-     *
-     * @return HasMany
      */
     public function galleries(): HasMany
     {
@@ -277,8 +243,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación al seo asociado.
-     *
-     * @return HasOne
      */
     public function seo(): HasOne
     {
@@ -287,8 +251,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación a los metadatos asociados al contenido.
-     *
-     * @return HasOne
      */
     public function metadata(): HasOne
     {
@@ -297,7 +259,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Creo consulta personalizada para las categorías, NO ES UNA RELACIÓN
-     *
      */
     public function getCategoriesAttribute()
     {
@@ -307,16 +268,14 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
-     * @param int|null $platformId Id de la plataforma
-     *
-     * @return Builder
+     * @param  int|null  $platformId  Id de la plataforma
      */
     public function categoriesQuery(?int $platformId = null): Builder
     {
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
             ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
-            //->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
+            // ->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
             ->where('content_categories.content_id', $this->id)
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
@@ -337,23 +296,19 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
-     * @param int|null $platformId Id de la plataforma
-     *
-     * @return Builder
+     * @param  int|null  $platformId  Id de la plataforma
      */
     public function subcategoriesQuery(?int $platformId = null): Builder
     {
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
             ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
-            //->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
+            // ->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
             ->where('content_categories.content_id', $this->id)
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
             ->whereNotNull('categories.parent_id')
             ->pluck('categories.id');
-
-
 
         // Falla al obtener las categorías, el leftJoin de platform_categories duplica las categorías
 
@@ -373,8 +328,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con las categorías asociadas.
-     *
-     * @return HasMany
      */
     public function categoriesJoin(): HasMany
     {
@@ -383,7 +336,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Creo consulta personalizada para las etiquetas, NO ES UNA RELACIÓN
-     *
      */
     public function getTagsAttribute()
     {
@@ -393,7 +345,7 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
-     * @param int|null $platformId Id de la plataforma
+     * @param  int|null  $platformId  Id de la plataforma
      */
     public function tagsQuery(?int $platformId = null)
     {
@@ -401,7 +353,7 @@ class Content extends BaseAbstractModelWithTableCrud
             ->leftJoin('platform_tags', 'platform_tags.tag_id', '=',
                 'tags.id')
             ->leftJoin('content_tags', 'content_tags.platform_tag_id', '=', 'platform_tags.id')
-            //->leftJoin('contents', 'contents.platform_id', '=', 'content_categories.content_id')
+            // ->leftJoin('contents', 'contents.platform_id', '=', 'content_categories.content_id')
             ->where('content_tags.content_id', $this->id)
             ->where('platform_tags.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('tags.id')
@@ -412,8 +364,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con las etiquetas asociadas.
-     *
-     * @return HasMany
      */
     public function tagsJoin(): HasMany
     {
@@ -422,8 +372,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con las etiquetas asociadas a través de la tabla de join.
-     *
-     * @return BelongsToMany
      */
     public function tagsPlatform(): BelongsToMany
     {
@@ -432,8 +380,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con la plataforma asociada al contenido
-     *
-     * @return BelongsTo
      */
     public function platform(): BelongsTo
     {
@@ -448,7 +394,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function getUrlPreviewAttribute()
     {
-        return url('TEMPORAL/URL/PAGINA/TMP/' . $this->slug);
+        return url('TEMPORAL/URL/PAGINA/TMP/'.$this->slug);
     }
 
     /**
@@ -459,7 +405,7 @@ class Content extends BaseAbstractModelWithTableCrud
      */
     public function getUrlAttribute()
     {
-        return url('TEMPORAL/URL/PAGINA/' . $this->slug);
+        return url('TEMPORAL/URL/PAGINA/'.$this->slug);
     }
 
     /**
@@ -475,8 +421,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Añade una nueva página al contenido.
-     *
-     * @return ContentPage
      */
     public function addPage(): ContentPage
     {
@@ -495,11 +439,10 @@ class Content extends BaseAbstractModelWithTableCrud
      * Almacena los contribuidores del contenido, previamente borrará los
      * existentes si los hubiera.
      *
-     * @param array $contributors Es un array con los ids de los usuarios.
-     *
+     * @param  array  $contributors  Es un array con los ids de los usuarios.
      * @return void
      */
-    public function saveContributors(Array $contributors)
+    public function saveContributors(array $contributors)
     {
         $contributors = array_unique(array_filter($contributors));
 
@@ -541,14 +484,12 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Almacena las etiquetas asociadas al contenido.
      *
-     * @param array $tags Es un array con los ids de las etiquetas.
-     *
-     * @return void
+     * @param  array  $tags  Es un array con los ids de las etiquetas.
      */
-    public function saveTags(Array $tags): void
+    public function saveTags(array $tags): void
     {
 
-        ## Limpio etiquetas vacías y duplicadas.
+        // # Limpio etiquetas vacías y duplicadas.
         $tags = array_unique(array_filter($tags));
 
         $platformTags = $this->platform->tags()
@@ -556,38 +497,37 @@ class Content extends BaseAbstractModelWithTableCrud
             ->pluck('tag_id')
             ->toArray();
 
-        ## Almacena las etiquetas que aún no están asociadas a la plataforma.
+        // # Almacena las etiquetas que aún no están asociadas a la plataforma.
         $platformTagsDiff = array_diff($tags, $platformTags);
 
-        ## Creamos las etiquetas que no estén asociadas a la plataforma.
+        // # Creamos las etiquetas que no estén asociadas a la plataforma.
         foreach ($platformTagsDiff as $platformTag) {
             $this->platform->tags()->create([
                 'tag_id' => $platformTag,
             ]);
         }
 
-        ## Etiquetas ya asociadas al contenido
+        // # Etiquetas ya asociadas al contenido
         $contentTags = $this->tagsJoin()
             ->pluck('platform_tag_id')
             ->toArray();
 
-
-        ## Borramos las etiquetas que no estén en el array, ya no forma parte del contenido.
-        foreach ($contentTags as $contentTag ) {
-            if (!in_array($contentTag, $tags)) {
+        // # Borramos las etiquetas que no estén en el array, ya no forma parte del contenido.
+        foreach ($contentTags as $contentTag) {
+            if (! in_array($contentTag, $tags)) {
                 ContentTag::where('content_id', $this->id)
                     ->where('platform_tag_id', $contentTag)
                     ->delete();
             }
         }
 
-        ## Vuelvo a buscar las etiquetas asociadas al contenido, ya que puede haber cambiado
+        // # Vuelvo a buscar las etiquetas asociadas al contenido, ya que puede haber cambiado
         $platformTags = PlatformTag::select(['id', 'tag_id'])
             ->whereIn('tag_id', $tags)
             ->where('platform_id', $this->platform_id)
             ->get();
 
-        ## Cada etiqueta que no esté asociada al contenido, la creamos.
+        // # Cada etiqueta que no esté asociada al contenido, la creamos.
         foreach ($tags as $tag) {
             if (in_array($tag, $contentTags)) {
                 continue;
@@ -595,8 +535,7 @@ class Content extends BaseAbstractModelWithTableCrud
 
             $platformTag = $platformTags->where('tag_id', $tag)->first();
 
-
-            if (!$platformTag) {
+            if (! $platformTag) {
                 continue;
             }
 
@@ -612,29 +551,27 @@ class Content extends BaseAbstractModelWithTableCrud
      * Almacena las categorías del contenido, previamente borrará los
      * existentes si los hubiera.
      *
-     * @param array $categories Es un array con los ids de las categorías.
-     *
+     * @param  array  $categories  Es un array con los ids de las categorías.
      * @return void
      */
-    public function saveCategories(Array $categories, Array $subcategories = [])
+    public function saveCategories(array $categories, array $subcategories = [])
     {
-        ## Limpio categorías vacías y duplicadas.
+        // # Limpio categorías vacías y duplicadas.
         $categories = array_unique(array_filter($categories));
         $subcategories = array_unique(array_filter($subcategories));
 
         $allCategories = array_merge($categories, $subcategories);
 
-        ## Categorías ya asociadas al contenido
+        // # Categorías ya asociadas al contenido
         $contentCategories = $this->categoriesJoin()
             ->pluck('platform_category_id')
             ->toArray();
 
-        //dd($allCategories, $contentCategories);
+        // dd($allCategories, $contentCategories);
 
-
-        ## Borramos las categorías que no estén en el array, ya no forma parte del contenido.
+        // # Borramos las categorías que no estén en el array, ya no forma parte del contenido.
         foreach ($contentCategories as $contentCategory) {
-            if (!in_array($contentCategory, $allCategories)) {
+            if (! in_array($contentCategory, $allCategories)) {
 
                 ContentCategory::where('content_id', $this->id)
                     ->where('platform_category_id', $contentCategory)
@@ -642,13 +579,13 @@ class Content extends BaseAbstractModelWithTableCrud
             }
         }
 
-        ## Vuelvo a buscar las categorías asociadas al contenido, ya que puede haber cambiado
+        // # Vuelvo a buscar las categorías asociadas al contenido, ya que puede haber cambiado
         $platformCategories = PlatformCategory::select(['id', 'category_id'])
             ->whereIn('category_id', $allCategories)
             ->where('platform_id', $this->platform_id)
             ->get();
 
-        ## Cada categoría que no esté asociada al contenido, la creamos en la tabla de join.
+        // # Cada categoría que no esté asociada al contenido, la creamos en la tabla de join.
         foreach ($allCategories as $category) {
             if (in_array($category, $contentCategories)) {
                 continue;
@@ -656,7 +593,7 @@ class Content extends BaseAbstractModelWithTableCrud
 
             $platformCategory = $platformCategories->where('category_id', $category)->first();
 
-            if (!$platformCategory) {
+            if (! $platformCategory) {
                 continue;
             }
 
@@ -670,8 +607,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Elimina el contenido de la plataforma y lo que tenga asociado.
-     *
-     * @return bool
      */
     public function safeDelete(): bool
     {
@@ -692,10 +627,8 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return ContentPolicy::class;
     }
@@ -703,8 +636,6 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -717,8 +648,6 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -736,9 +665,9 @@ class Content extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -771,9 +700,8 @@ class Content extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve las rutas de acciones
-     *
      */
-    public static function getTableActionsInfo():Collection
+    public static function getTableActionsInfo(): Collection
     {
         // TODO Crear policies para devolver solo acciones permitidas ahora.
 
@@ -794,8 +722,8 @@ class Content extends BaseAbstractModelWithTableCrud
                 'name' => 'Eliminar',
                 'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
-                'ajax' => true
-            ]
+                'ajax' => true,
+            ],
         ]);
     }
 

@@ -4,8 +4,6 @@ namespace App\Models\WeatherStation;
 
 /**
  * Class Eco2
- *
- * @package App\Models\WeatherStation
  */
 class Eco2 extends BaseWheaterStation
 {
@@ -30,7 +28,7 @@ class Eco2 extends BaseWheaterStation
      */
     public $name = 'Calidad del aire (eCO2)';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'eco2';
     }
@@ -46,15 +44,10 @@ class Eco2 extends BaseWheaterStation
         ];
     }
 
-
-
     /****************** Métodos para tablas dinámicas ******************/
-
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -68,9 +61,9 @@ class Eco2 extends BaseWheaterStation
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -86,5 +79,4 @@ class Eco2 extends BaseWheaterStation
 
         ];
     }
-
 }

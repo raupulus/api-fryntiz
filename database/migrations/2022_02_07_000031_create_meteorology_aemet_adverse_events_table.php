@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Schema;
  * Class CreateMeteorologyAemetAdverseEvents.
  *
  * Tabla para almacenar los fenómenos meteorológicos adversos.
- *
  */
 class CreateMeteorologyAemetAdverseEventsTable extends Migration
 {
     private $tableName = 'meteorology_aemet_adverse_events';
+
     private $tableComment = 'Datos de fenómenos meteorológicos adversos';
 
     /**
@@ -25,10 +25,11 @@ class CreateMeteorologyAemetAdverseEventsTable extends Migration
     {
 
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
 
             $table->string('name', 255)
                 ->comment('Nombre de la zona sobre la que guardamos los datos');
@@ -44,8 +45,8 @@ class CreateMeteorologyAemetAdverseEventsTable extends Migration
                 ->nullable()
                 ->comment('Estos son campos que no están definidos en la api pero pueden llegar, hasta ahora no hay forma de identificar un fenómeno con valores númericos para interpretarlos');
 
-            $table->timestamp('read_at');
-            $table->timestamps();
+            $table->timestamp('read_at')->comment('Columna read at');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

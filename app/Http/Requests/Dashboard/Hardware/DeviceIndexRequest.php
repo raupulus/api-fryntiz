@@ -4,6 +4,7 @@ namespace App\Http\Requests\Dashboard\Hardware;
 
 use App\Models\Hardware\HardwareDevice;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 
 class DeviceIndexRequest extends FormRequest

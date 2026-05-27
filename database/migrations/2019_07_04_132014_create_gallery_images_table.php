@@ -17,10 +17,11 @@ class CreateGalleryImagesTable extends Migration
     public function up()
     {
         Schema::create('gallery_images', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de gallery images');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('gallery_id')
                 ->nullable()
                 ->comment('FK al a la galería que pertenezca');
@@ -35,8 +36,8 @@ class CreateGalleryImagesTable extends Migration
                 ->references('id')->on('files')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
             $table->unique(['gallery_id', 'image_id']);
             $table->index(['gallery_id', 'image_id']);

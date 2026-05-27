@@ -24,12 +24,12 @@ Route::get('/about', function () {
     return redirect()->route('home');
 })->name('about');
 
-## Documentación
+// # Documentación
 Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
     return view('documentation');
 })->name('documentation');
 
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['prefix' => '/languages'], function () {
     Route::group(['prefix' => '/ajax'], function () {
@@ -44,7 +44,6 @@ Route::group(['prefix' => '/file'], function () {
         Route::get('/get/{module}/{id}/{slug?}', [FileThumbnailController::class, 'get'])
             ->name('file.thumbnail.get');
     });
-
 
     Route::get('/get/{module}/{id}/{slug?}', [FileController::class, 'get'])
         ->name('file.get');
@@ -76,10 +75,9 @@ Route::any('/register/{any}', fn () => abort(404))->where('any', '.*');
 Route::any('/panel/register', fn () => abort(404));
 Route::any('/panel/register/{any}', fn () => abort(404))->where('any', '.*');
 
-
 /**
  * Ruta por defecto cuando no se encuentra una petición.
  */
 Route::fallback(function () {
-    return abort(404); //default 404
+    return abort(404); // default 404
 });

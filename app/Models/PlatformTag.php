@@ -14,12 +14,9 @@ class PlatformTag extends Model
 
     /**
      * Relación con la tabla de etiquetas para las plataformas.
-     *
-     * @return BelongsTo
      */
     public function tag(): BelongsTo
     {
         return $this->belongsTo(Tag::class, 'tag_id');
     }
-
 }

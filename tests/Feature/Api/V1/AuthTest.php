@@ -13,7 +13,7 @@ class AuthTest extends ApiTestCase
     {
         $response = $this->getJson($this->apiUrl('auth/csrf-cookie'));
         $response->assertStatus(200)
-                 ->assertJsonStructure(['status', 'csrf_token']);
+            ->assertJsonStructure(['status', 'csrf_token']);
     }
 
     /** @test */
@@ -21,22 +21,22 @@ class AuthTest extends ApiTestCase
     {
         $user = $this->createAuthenticatedUser();
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
         $response->assertStatus(200)
-                 ->assertJsonStructure(['token', 'message']);
+            ->assertJsonStructure(['token', 'message']);
     }
 
     /** @test */
     public function login_fails_with_invalid_credentials(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
-            'email'    => 'nadie@example.com',
+            'email' => 'nadie@example.com',
             'password' => 'incorrecta',
         ]);
         $response->assertStatus(401)
-                 ->assertJson(['message' => 'Unauthorized']);
+            ->assertJson(['message' => 'Unauthorized']);
     }
 
     /** @test */
@@ -44,7 +44,7 @@ class AuthTest extends ApiTestCase
     {
         $response = $this->postJson($this->apiUrl('auth/login'), []);
         $response->assertStatus(422)
-                 ->assertJsonStructure(['message', 'errors']);
+            ->assertJsonStructure(['message', 'errors']);
     }
 
     /** @test */
@@ -64,7 +64,7 @@ class AuthTest extends ApiTestCase
         $headers = $this->authenticatedHeaders($user);
         $response = $this->postJson($this->apiUrl('auth/logout'), [], $headers);
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 
     /** @test */

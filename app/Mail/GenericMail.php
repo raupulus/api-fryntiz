@@ -2,17 +2,26 @@
 
 namespace App\Mail;
 
-use function array_merge;
-use function config;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+
+use function array_merge;
+use function config;
 
 class GenericMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data, $view, $to, $from, $subject;
+    public $data;
+
+    public $view;
+
+    public $to;
+
+    public $from;
+
+    public $subject;
 
     /**
      * Create a new message instance. Generic use.
@@ -23,15 +32,14 @@ class GenericMail extends Mailable
      * name: nombre del archivo al ser adjuntado
      * mime: tipo mime del archivo
      *
-     * @param      $config
-     * @param null $data
+     * @param  null  $data
      */
     public function __construct($config, $data = null)
     {
         $config = array_merge([
             'to' => config('mail.from.address'),
             'from' => config('mail.from.address'),
-            'subject' => 'Mensaje desde ' . config('app.name'),
+            'subject' => 'Mensaje desde '.config('app.name'),
             'view' => 'mail.mail_generic',  // Vista que procesará el email
         ], $config);
 
@@ -44,7 +52,7 @@ class GenericMail extends Mailable
                 ]
             );
         }
-        
+
         $this->data = $data;
         $this->subject = $config['subject'];
         $this->view = $config['view'];
@@ -55,7 +63,7 @@ class GenericMail extends Mailable
     /**
      * Email Genérico para complementar o uso rápido/general al enviar email.
      *
-     * @return \App\Mail\GenericMail
+     * @return GenericMail
      */
     public function build()
     {

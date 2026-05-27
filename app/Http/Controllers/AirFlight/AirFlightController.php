@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers\AirFlight;
 
-use App\Models\AirFlight\AirFlightAirPlane;
 use App\Http\Controllers\Controller;
+use App\Models\AirFlight\AirFlightAirPlane;
 use Carbon\Carbon;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 /**
  * Class AirFlightController
- *
- * @package App\Http\Controllers\AirFlightController
  */
 class AirFlightController extends Controller
 {
     /**
      * Lleva a la vista de resumen para visualizar la depuración.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index()
     {
         $now = Carbon::now();
-        $lastHour = (clone($now))->subHour();
+        $lastHour = (clone $now)->subHour();
 
         $planes = AirFlightAirPlane::where('seen_last_at', '>=', $lastHour)
             ->orderByDesc('seen_last_at')

@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ContentPageResource extends JsonResource
@@ -9,8 +11,8 @@ class ContentPageResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param  Request  $request
+     * @return array|Arrayable|\JsonSerializable
      */
     public function toArray($request)
     {
@@ -24,7 +26,7 @@ class ContentPageResource extends JsonResource
             ];
         }
 
-        ## Obtener el tipo de contenido desde additional data o desde el request
+        // # Obtener el tipo de contenido desde additional data o desde el request
         $contentType = $this->additional['content_type'] ?? $request->get('content_type') ?? 'html';
 
         return [

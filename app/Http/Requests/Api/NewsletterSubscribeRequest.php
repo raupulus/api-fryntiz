@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Api;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 use App\Models\Language;
 use App\Models\Platform;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class NewsletterSubscribeRequest extends FormRequest
 {
@@ -23,12 +23,10 @@ class NewsletterSubscribeRequest extends FormRequest
      * Comprueba si el idioma es válido, además lo busca de la request en caso de no recibirlo.
      * En la base de datos se busca en este orden: 'locale', 'iso_locale', 'iso2' (es_ES, es-ES, es)
      *
-     * @param array|null $acceptLanguages Idiomas recibidos por el navegador del cliente en un array.
-     * @param string|null $language Idioma a comprobar.
-     *
-     * @return string
+     * @param  array|null  $acceptLanguages  Idiomas recibidos por el navegador del cliente en un array.
+     * @param  string|null  $language  Idioma a comprobar.
      */
-    public function searchLanguageHelper(array|null $acceptLanguages, string|null $language): string
+    public function searchLanguageHelper(?array $acceptLanguages, ?string $language): string
     {
         if ($language) {
             foreach (['locale', 'iso_locale', 'iso2'] as $field) {
@@ -40,7 +38,7 @@ class NewsletterSubscribeRequest extends FormRequest
             }
         }
 
-        if (!empty($acceptLanguages)) {
+        if (! empty($acceptLanguages)) {
             foreach ($acceptLanguages as $tupleLang) {
                 $lang = Language::where('locale', $tupleLang['locale'])
                     ->orWhere('iso_locale', $tupleLang['iso_locale'])
@@ -59,19 +57,17 @@ class NewsletterSubscribeRequest extends FormRequest
     /**
      * Busca en la cadena recibida el idioma y su puntuación.
      *
-     * @param string $value Cadena con el idioma y su puntuación.
-     *
-     * @return array|null
+     * @param  string  $value  Cadena con el idioma y su puntuación.
      */
     public function mapExtractLanguages(string $value): ?array
     {
         $explode = explode(';', $value);
 
-        if (!$explode || !is_array($explode) || !count($explode)) {
+        if (! $explode || ! is_array($explode) || ! count($explode)) {
             return null;
         }
 
-        $score = count($explode) === 2 ? (float)trim($explode[1]) : 1.0;
+        $score = count($explode) === 2 ? (float) trim($explode[1]) : 1.0;
         $isoLocale = mb_strtolower(trim($explode[0]));
 
         if ($isoLocale === '*') {
@@ -81,10 +77,10 @@ class NewsletterSubscribeRequest extends FormRequest
         $iso2 = trim(substr($isoLocale, 0, 2));
 
         if (strlen($isoLocale) === 5) {
-            $locale = $iso2 . '_' . strtoupper(substr($isoLocale, 3, 5));
+            $locale = $iso2.'_'.strtoupper(substr($isoLocale, 3, 5));
         } else {
-            $locale = $iso2 . '_' . strtoupper($iso2);
-            $isoLocale = $iso2 . '-' . $iso2;
+            $locale = $iso2.'_'.strtoupper($iso2);
+            $isoLocale = $iso2.'-'.$iso2;
         }
 
         return [
@@ -98,9 +94,7 @@ class NewsletterSubscribeRequest extends FormRequest
     /**
      * Devuelve un array con los idiomas que envía el cliente en la petición.
      *
-     * @param Request $request Petición a comprobar.
-     *
-     * @return array
+     * @param  Request  $request  Petición a comprobar.
      */
     public function getClientLanguagesFromRequest(Request $request): array
     {
@@ -113,7 +107,7 @@ class NewsletterSubscribeRequest extends FormRequest
         $array = explode(',', $languages);
 
         try {
-            $arrayPrepared = array_map(fn ($value): ?array => $this->mapExtractLanguages($value) , $array);
+            $arrayPrepared = array_map(fn ($value): ?array => $this->mapExtractLanguages($value), $array);
             $arrayFilter = collect(array_filter($arrayPrepared));
 
             return $arrayFilter->sortByDesc('score')->unique('locale')->toArray();
@@ -149,15 +143,12 @@ class NewsletterSubscribeRequest extends FormRequest
 
     /**
      * Obtener platform_id basado en el dominio
-     *
-     * @param string $domain
-     * @return int|null
      */
     private function getPlatformIdFromDomain(string $domain): ?int
     {
         $platform = Platform::where('domain', $domain)->first();
 
-        if (!$platform) {
+        if (! $platform) {
             // Si no encuentra la plataforma por dominio, usa la primera disponible
             $platform = Platform::first();
         }

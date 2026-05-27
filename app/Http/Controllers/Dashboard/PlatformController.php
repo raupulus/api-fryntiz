@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use JsonHelper;
+
 use function redirect;
 use function view;
 
@@ -28,26 +29,22 @@ class PlatformController extends BaseWithTableCrudController
 
     /**
      * Display a listing of the resource.
-     *
-     * @return View
      */
     public function index(): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.index')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.index')->with([
             'model' => self::getModel(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return View
      */
     public function create(): View
     {
         $model = new (self::getModel())();
 
-        return view('dashboard.' . $model::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.$model::getModuleName().'.add-edit')->with([
             'model' => $model,
             'categories' => Category::all(),
         ]);
@@ -55,17 +52,13 @@ class PlatformController extends BaseWithTableCrudController
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param PlatformStoreRequest $request
-     *
-     * @return RedirectResponse
      */
     public function store(PlatformStoreRequest $request): RedirectResponse
     {
         $modelString = $this::getModel();
         $model = $modelString::create($request->validated());
 
-        ## Guarda la imagen desde base64
+        // # Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'platform', false, $model->image?->id);
 
@@ -79,8 +72,7 @@ class PlatformController extends BaseWithTableCrudController
             }
         }
 
-
-        //TODO: Unificar esta parte con la del update si se ve rentable en tiempo
+        // TODO: Unificar esta parte con la del update si se ve rentable en tiempo
 
         $subcategories = [];
         $categories = $request->get('categories') ?? [];
@@ -102,7 +94,7 @@ class PlatformController extends BaseWithTableCrudController
             ]);
         }
 
-        ## Refresca el caché asociado a la plataforma
+        // # Refresca el caché asociado a la plataforma
         $model->refresh();
         $model->cleanAllCache();
 
@@ -111,8 +103,6 @@ class PlatformController extends BaseWithTableCrudController
 
     /**
      * Display the specified resource.
-     *
-     * @param Platform $platform
      */
     public function show(Platform $platform)
     {
@@ -121,14 +111,10 @@ class PlatformController extends BaseWithTableCrudController
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param Platform $model
-     *
-     * @return View
      */
     public function edit(Platform $model): View
     {
-        return view('dashboard.' . self::getModel()::getModuleName() . '.add-edit')->with([
+        return view('dashboard.'.self::getModel()::getModuleName().'.add-edit')->with([
             'model' => $model,
             'categories' => Category::all(),
         ]);
@@ -136,11 +122,6 @@ class PlatformController extends BaseWithTableCrudController
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param PlatformUpdateRequest $request
-     * @param Platform $model
-     *
-     * @return RedirectResponse
      */
     public function update(PlatformUpdateRequest $request, Platform $model): RedirectResponse
     {
@@ -148,7 +129,7 @@ class PlatformController extends BaseWithTableCrudController
         $model->fill($request->validated());
         $model->save();
 
-        ## Guarda la imagen desde base64
+        // # Guarda la imagen desde base64
         if ($request->has('image') && $request->get('image')) {
             $image = File::addFileFromBase64($request->get('image'), 'platform', false, $model->image?->id);
 
@@ -162,7 +143,7 @@ class PlatformController extends BaseWithTableCrudController
             }
         }
 
-        //TODO: Unificar esta parte con la del store si se ve rentable en tiempo
+        // TODO: Unificar esta parte con la del store si se ve rentable en tiempo
 
         $subcategories = [];
         $categories = $request->get('categories') ?? [];
@@ -179,14 +160,14 @@ class PlatformController extends BaseWithTableCrudController
 
         $currentIds = $model->categories->pluck('id')->toArray();
 
-        ## IDs a eliminarse
+        // # IDs a eliminarse
         $idsToRemove = array_diff($currentIds, $categoriesWithSubcategories);
 
-        ## IDs para añadirse
+        // # IDs para añadirse
         $idsToAdd = array_diff($categoriesWithSubcategories, $currentIds);
 
-        ## Elimino relaciones que no están en los nuevos IDs
-        if (!empty($idsToRemove)) {
+        // # Elimino relaciones que no están en los nuevos IDs
+        if (! empty($idsToRemove)) {
             $model->categories()->detach($idsToRemove);
         }
 
@@ -197,7 +178,7 @@ class PlatformController extends BaseWithTableCrudController
             ]);
         }
 
-        ## Refresca el caché asociado a la plataforma
+        // # Refresca el caché asociado a la plataforma
         $model->refresh();
         $model->cleanAllCache();
 
@@ -206,17 +187,11 @@ class PlatformController extends BaseWithTableCrudController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param PlatformDeleteRequest $request
-     * @param int|null $id
-     *
-     * @return JsonResponse|RedirectResponse
      */
-    public function destroy(PlatformDeleteRequest $request, int|null $id = null): JsonResponse|RedirectResponse
+    public function destroy(PlatformDeleteRequest $request, ?int $id = null): JsonResponse|RedirectResponse
     {
 
         // TODO: Revisar si recibir ID o inyectar modelo Platform
-
 
         $deleted = false;
         $idRequest = $request->get('id');
@@ -233,9 +208,8 @@ class PlatformController extends BaseWithTableCrudController
         return redirect()->back();
     }
 
-
-    ############################################################
-    ##                       AJAX                             ##
-    ############################################################
+    // ###########################################################
+    // #                       AJAX                             ##
+    // ###########################################################
 
 }

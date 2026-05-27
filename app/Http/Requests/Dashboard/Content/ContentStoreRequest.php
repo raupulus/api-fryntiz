@@ -5,6 +5,7 @@ namespace App\Http\Requests\Dashboard\Content;
 use App\Models\Content\Content;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 
 /**
@@ -30,7 +31,7 @@ class ContentStoreRequest extends FormRequest
 
         if ($scheduledAt) {
             try {
-                $scheduledAt = \Carbon\Carbon::parse($scheduledAt)->setTimezone('UTC');
+                $scheduledAt = Carbon::parse($scheduledAt)->setTimezone('UTC');
             } catch (\Exception $e) {
                 $scheduledAt = null;
             }
@@ -38,7 +39,7 @@ class ContentStoreRequest extends FormRequest
             $scheduledAt = null;
         }
 
-        $publishedAt = (!$scheduledAt || ($scheduledAt && $scheduledAt <= $now)) ? $now : null;
+        $publishedAt = (! $scheduledAt || ($scheduledAt && $scheduledAt <= $now)) ? $now : null;
 
         $this->merge([
             'title' => trim($this->get('title')),
@@ -82,7 +83,7 @@ class ContentStoreRequest extends FormRequest
             'author_id' => 'required|exists:users,id',
             'platform_id' => 'required|exists:platforms,id',
             'type_id' => 'required|exists:content_available_types,id',
-            //'is_copyright_valid' => 'required|boolean', // Revisar si dejar aquí o en página individual.
+            // 'is_copyright_valid' => 'required|boolean', // Revisar si dejar aquí o en página individual.
             'is_active' => 'required|boolean',
             'is_featured' => 'required|boolean',
             'is_comment_enabled' => 'required|boolean',
@@ -99,7 +100,6 @@ class ContentStoreRequest extends FormRequest
             'is_visible_on_rss' => 'required|boolean',
             'is_visible_on_sitemap' => 'required|boolean',
             'is_visible_on_sitemap_news' => 'required|boolean',
-
 
             // Relaciones
             'contributors.*' => 'nullable|exists:users,id',

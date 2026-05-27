@@ -18,12 +18,13 @@ class ProjectInstallCommand extends Command
         $this->info('=== Api Raupulus - Project Install ===');
         $this->newLine();
 
-        if (!$this->option('force') && !$this->confirm('Deseas inicializar el proyecto?', true)) {
+        if (! $this->option('force') && ! $this->confirm('Deseas inicializar el proyecto?', true)) {
             $this->warn('Instalacion cancelada.');
+
             return self::SUCCESS;
         }
 
-        if (!file_exists(base_path('.env'))) {
+        if (! file_exists(base_path('.env'))) {
             $this->warn('No se encontro archivo .env. Copiando .env.example...');
             copy(base_path('.env.example'), base_path('.env'));
             $this->info('Archivo .env creado');
@@ -49,6 +50,7 @@ class ProjectInstallCommand extends Command
 
         $this->newLine();
         $this->info('Proyecto instalado correctamente. Ejecuta: php artisan serve');
+
         return self::SUCCESS;
     }
 }

@@ -17,6 +17,6 @@ class ContentPageRaw extends BaseModel
     protected $fillable = [
         'content_page_id',
         'available_page_raw_id',
-        'content'
+        'content',
     ];
 }

@@ -17,10 +17,11 @@ class CreateCvHobbiesTable extends Migration
     public function up()
     {
         Schema::create('cv_hobbies', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv hobbies');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
@@ -43,7 +44,7 @@ class CreateCvHobbiesTable extends Migration
             $table->string('url', 511)
                 ->nullable()
                 ->comment('URL del hobby');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
     }
 

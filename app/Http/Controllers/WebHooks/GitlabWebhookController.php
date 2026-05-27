@@ -4,9 +4,11 @@ namespace App\Http\Controllers\WebHooks;
 
 use App\Http\Controllers\Controller;
 use App\Models\WebHooks\GitlabWebhook;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
+
 use function response;
 
 /**
@@ -20,8 +22,6 @@ use function response;
  * peticiones.
  * Esto se lleva a cabo con la propiedad $except. Pero solo cuando se hace
  * bajo web.php, si usas un espacio propio no es necesario.
- *
- * @package App\Http\Controllers\WebHooks
  */
 class GitlabWebhookController extends Controller
 {
@@ -29,26 +29,25 @@ class GitlabWebhookController extends Controller
      * Despliega la última versión del master para la API
      * php artisan down
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function apiDeploy(Request $request)
     {
-        //Log::info('Entra en apiDeploy');
-        $gitLabWebHook = new GitlabWebhook();
+        // Log::info('Entra en apiDeploy');
+        $gitLabWebHook = new GitlabWebhook;
         $gitLabWebHook->token = $request->header('X-Gitlab-Token');
         $gitLabWebHook->request = $request->all();
 
-        ## Si coinciden los hashs lanza el comando bash para desplegar
+        // # Si coinciden los hashs lanza el comando bash para desplegar
         if ($gitLabWebHook->isValidHash()) {
             Log::info('Hash de Gitlab validado, ver log del despliegue en storage/logs/script-api-deploy.log');
             $root_path = base_path();
-            //Log::info(['base_path()', base_path()]);
+            // Log::info(['base_path()', base_path()]);
 
             $process = Process::fromShellCommandline(
-                'cd ' . $root_path . ' &&' .
-                'bash ' . $root_path . '/scripts/webhooks/api-deploy.sh &'
+                'cd '.$root_path.' &&'.
+                'bash '.$root_path.'/scripts/webhooks/api-deploy.sh &'
             );
 
             try {
@@ -57,8 +56,8 @@ class GitlabWebhookController extends Controller
                 Log::error('Fallo al ejecutar WebHook para desplegar API');
             }
 
-            //Log::info(['webhooks/api-deploy - getOutput: ',$process->getOutput()]);
-            //Log::info(['webhooks/api-deploy - getErrorOutput: ',$process->getErrorOutput()]);
+            // Log::info(['webhooks/api-deploy - getOutput: ',$process->getOutput()]);
+            // Log::info(['webhooks/api-deploy - getErrorOutput: ',$process->getErrorOutput()]);
             return response()->json('ok', 200);
         }
 
@@ -69,8 +68,5 @@ class GitlabWebhookController extends Controller
      * Procesa las notificaciones de eventos realizados en gitlab como
      * un bot, correo, procesar dato... etc...
      */
-    public function apiNotification(Request $request)
-    {
-
-    }
+    public function apiNotification(Request $request) {}
 }

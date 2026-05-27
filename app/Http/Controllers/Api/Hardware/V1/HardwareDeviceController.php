@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class HardwareDeviceController extends Controller
 {
-
     /**
      * Devuelve información sobre un dispositivo de hardware recibido.
      */
@@ -54,7 +53,7 @@ class HardwareDeviceController extends Controller
 
         $devices = HardwareDevice::select(['hardware_devices.id', 'hardware_devices.name_friendly', 'hardware_types.name'])
             ->leftJoin('hardware_types', 'hardware_types.id', '=', 'hardware_devices.hardware_type_id')
-            ->whereIn('hardware_devices.hardware_type_id', [3,4,5])
+            ->whereIn('hardware_devices.hardware_type_id', [3, 4, 5])
             ->get();
 
         return \JsonHelper::success([

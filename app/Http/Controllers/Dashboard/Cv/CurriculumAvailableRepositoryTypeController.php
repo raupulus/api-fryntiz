@@ -6,7 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest;
 use App\Models\CV\CurriculumAvailableRepositoryType;
 use App\Models\File;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+
 use function redirect;
 use function view;
 
@@ -18,7 +23,7 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Muestra el listado de todos los tipos de repositorios.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index()
     {
@@ -35,13 +40,13 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Muestra el formulario para crear un tipo de repositorio.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function create()
     {
         // TODO → Check if is admin and can modify repositories type
 
-        $repositoryType = new CurriculumAvailableRepositoryType();
+        $repositoryType = new CurriculumAvailableRepositoryType;
 
         return view('dashboard.curriculums.repository-available-add-edit')->with([
             'repositoryType' => $repositoryType,
@@ -51,32 +56,31 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Guarda un tipo de repositorio en la base de datos.
      *
-     * @param \App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(StoreCvAvailableRepositoryTypeRequest $request)
     {
         // TODO → Check if is admin and can modify repositories type
 
-        ## Compruebo si está editando o creando un curriculum.
+        // # Compruebo si está editando o creando un curriculum.
         if ($request->has('repositoryType_id') && ($request->get('repositoryType_id') > 0)) {
             $repositoryType = CurriculumAvailableRepositoryType::find($request->get('repositoryType_id'));
         } else {
-            $repositoryType = new CurriculumAvailableRepositoryType();
+            $repositoryType = new CurriculumAvailableRepositoryType;
         }
 
-        ## Guardo todos los campos que han pasado validación.
+        // # Guardo todos los campos que han pasado validación.
         $repositoryType->fill($request->validated());
         $repositoryType->save();
 
-        ## Compruebo si se ha subido una imagen y la guardo.
+        // # Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $file = File::addFile($request->file('image'), 'cv_repository_type',
                 false,
                 $repositoryType->image_id);
 
-            if (!$repositoryType->image_id && $file) {
+            if (! $repositoryType->image_id && $file) {
                 $repositoryType->image_id = $file->id;
                 $repositoryType->save();
             }
@@ -88,9 +92,8 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Muestra un formulario para editar un tipo de repositorio.
      *
-     * @param int $id
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     * @return Application|Factory|View|RedirectResponse
      */
     public function edit(int $id)
     {
@@ -98,7 +101,7 @@ class CurriculumAvailableRepositoryTypeController extends Controller
 
         $repositoryType = CurriculumAvailableRepositoryType::find($id);
 
-        if ( ! $repositoryType) {
+        if (! $repositoryType) {
             return redirect()->back()->with('error', 'Curriculum not found.');
         }
 
@@ -110,9 +113,8 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Procesa el guardado de las modificaciones sobre un tipo de repositorio.
      *
-     * @param \App\Http\Requests\Cv\StoreCvAvailableRepositoryTypeRequest $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function update(StoreCvAvailableRepositoryTypeRequest $request)
     {
@@ -124,7 +126,7 @@ class CurriculumAvailableRepositoryTypeController extends Controller
     /**
      * Elimina un tipo de repositorio.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function destroy(Request $request)
     {
@@ -138,7 +140,7 @@ class CurriculumAvailableRepositoryTypeController extends Controller
 
         $repositoryType = CurriculumAvailableRepositoryType::find($id);
 
-        if (!$repositoryType) {
+        if (! $repositoryType) {
             return redirect()->back()->with('error', 'Curriculum not found.');
         }
 

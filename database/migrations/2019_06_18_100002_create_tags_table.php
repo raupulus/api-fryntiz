@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateTagsTable extends Migration
 {
     private $tableName = 'tags';
+
     private $tableComment = 'tags disponibles para toda la plataforma.';
 
     /**
@@ -17,10 +18,11 @@ class CreateTagsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->id();
+            $table->id()->comment('Identificador único');
             /*
             $table->bigInteger('file_id')
                 ->nullable()
@@ -45,8 +47,8 @@ class CreateTagsTable extends Migration
             $table->string('color', 255)
                 ->default('#000000')
                 ->comment('Código Hexadecimal del color');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
         });
 
@@ -62,7 +64,7 @@ class CreateTagsTable extends Migration
     public function down()
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
-            //$table->dropForeign(['file_id']);
+            // $table->dropForeign(['file_id']);
         });
     }
 }

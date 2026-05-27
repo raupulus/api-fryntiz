@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Schema;
  * Class CreateMeteorologyAemetAdverseEvents.
  *
  * Tabla para almacenar los fenómenos meteorológicos adversos.
- *
  */
 class CreateMeteorologyAemetSunRadiationTable extends Migration
 {
     private $tableName = 'meteorology_aemet_sun_radiation';
+
     private $tableComment = 'Datos horarios (HORA SOLAR VERDADERA) acumulados de radiación  global, directa, difusa e infrarroja, y datos semihorarios  (HORA SOLAR VERDADERA) acumulados de radiación ultravioleta eritemática.Datos diarios acumulados  de radiación global, directa, difusa, ultravioleta eritemática e infrarroja. Datos sometidos a controles automáticos de calidad en tiempo real, no puede garantizarse la ausencia de errores';
 
     /**
@@ -24,10 +24,11 @@ class CreateMeteorologyAemetSunRadiationTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
 
             $table->string('station_code', 255)
                 ->comment('Código de la estación, indicativo Climatológico Estación');
@@ -83,10 +84,9 @@ class CreateMeteorologyAemetSunRadiationTable extends Migration
                 ->nullable()
                 ->comment('Radiación diaria acumulada. Variables: Radiación Infrarroja. Unidad de medida 10*kJ/m2');
 
-
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
-            $table->timestamps();
+            $table->timestamp('start_at')->comment('Columna start at');
+            $table->timestamp('end_at')->comment('Columna end at');
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

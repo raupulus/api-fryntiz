@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateHardwarePowerLoadsTable extends Migration
 {
-
     private $tableName = 'hardware_power_loads';
+
     private $tableComment = 'Almacena el consumo de energía de un dispositivo';
 
     /**
@@ -25,10 +25,11 @@ class CreateHardwarePowerLoadsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
                 ->comment('Dispositivo asociado');
@@ -42,7 +43,7 @@ class CreateHardwarePowerLoadsTable extends Migration
             $table->decimal('temperature', 6, 3)
                 ->nullable()
                 ->comment('Temperatura del dispositivo en grados centígrados, EJ:38.31.');
-            $table->decimal('voltage', 8,3)
+            $table->decimal('voltage', 8, 3)
                 ->nullable()
                 ->comment('Voltaje de la batería en voltios, EJ:12.37.');
             $table->double('amperage')
@@ -61,7 +62,7 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->nullable()
                 ->comment('Fecha y hora de lectura');
 
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
 
         });
 

@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /**
  * Class CreateContentCategoriesTable
@@ -11,6 +11,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateContentCategoriesTable extends Migration
 {
     private $tableName = 'content_categories';
+
     private $tableComment = 'Categorías asociadas a un contenido';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentCategoriesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('content_id')
                 ->index()
                 ->nullable()
@@ -41,13 +43,13 @@ class CreateContentCategoriesTable extends Migration
                 ->references('id')->on('platform_categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->boolean('is_main')->default(false);
+            $table->boolean('is_main')->default(false)->comment('Indicador de tipo booleano para is main');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
             $table->unique(['content_id', 'platform_category_id']);
-            //$table->index(['content_id', 'platform_category_id']);
+            // $table->index(['content_id', 'platform_category_id']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

@@ -29,7 +29,7 @@ class StoreCvAvailableRepositoryTypeRequest extends FormRequest
     {
         $this->merge([
             'slug' => Str::slug($this->slug),
-            //'url' => ,  // TODO → Parse protocol?? http/https
+            // 'url' => ,  // TODO → Parse protocol?? http/https
         ]);
     }
 
@@ -44,8 +44,8 @@ class StoreCvAvailableRepositoryTypeRequest extends FormRequest
             'image' => 'nullable|image|max:2048',
             'title' => 'required|string|min:3|max:511',
             'name' => 'required|string|min:3|max:511',
-            'slug' => 'required|alpha_dash|max:511|unique:cv_available_repository_types,slug' .
-                ($this->id ? (',' . $this->id) : ''),
+            'slug' => 'required|alpha_dash|max:511|unique:cv_available_repository_types,slug'.
+                ($this->id ? (','.$this->id) : ''),
             'url' => 'required|string|min:12|max:511|url',
         ];
     }

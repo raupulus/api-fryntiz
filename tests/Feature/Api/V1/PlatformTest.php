@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Http\Middleware\DomainCheckMiddleware;
 use App\Models\Platform;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -12,7 +13,7 @@ class PlatformTest extends ApiTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\DomainCheckMiddleware::class);
+        $this->withoutMiddleware(DomainCheckMiddleware::class);
     }
 
     /** @test */
@@ -21,8 +22,8 @@ class PlatformTest extends ApiTestCase
         Platform::factory()->count(2)->create();
         $response = $this->getJson($this->apiUrl('platform/all'));
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok')
-                 ->assertJsonStructure(['data' => ['platforms', 'total']]);
+            ->assertJsonPath('status', 'ok')
+            ->assertJsonStructure(['data' => ['platforms', 'total']]);
     }
 
     /** @test */
@@ -31,8 +32,8 @@ class PlatformTest extends ApiTestCase
         $platform = Platform::factory()->create();
         $response = $this->getJson($this->apiUrl("platform/{$platform->slug}/info"));
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok')
-                 ->assertJsonPath('data.slug', $platform->slug);
+            ->assertJsonPath('status', 'ok')
+            ->assertJsonPath('data.slug', $platform->slug);
     }
 
     /** @test */
@@ -56,6 +57,6 @@ class PlatformTest extends ApiTestCase
         $platform = Platform::factory()->create();
         $response = $this->getJson($this->apiUrl("platform/{$platform->slug}/get/categories"));
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\Dashboard\Hardware;
 
-use App\Models\Hardware\HardwareDevice;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
-use function dd;
 use function trim;
 
 class DeviceUpdateRequest extends FormRequest

@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Schema;
  * Class CreateMeteorologyAemetAdverseEvents.
  *
  * Tabla para almacenar los fenómenos meteorológicos adversos.
- *
  */
 class CreateMeteorologyAemetPredictionCoastsTable extends Migration
 {
     private $tableName = 'meteorology_aemet_prediction_coasts';
+
     private $tableComment = 'Datos de predicción para las costas';
 
     /**
@@ -24,10 +24,11 @@ class CreateMeteorologyAemetPredictionCoastsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
 
             $table->timestamp('start_at')
                 ->nullable()
@@ -55,7 +56,6 @@ class CreateMeteorologyAemetPredictionCoastsTable extends Migration
                 ->nullable()
                 ->comment('Código de la zona de playa');
 
-
             $table->string('zone_name', 255)
                 ->nullable()
                 ->comment('Nombre de la zona de playa');
@@ -64,10 +64,8 @@ class CreateMeteorologyAemetPredictionCoastsTable extends Migration
                 ->nullable()
                 ->comment('Slug de la zona de playa');
 
-
             $table->string('subzone_id', 255)
                 ->comment('Código de la subzona de playa');
-
 
             $table->string('subzone_name', 255)
                 ->nullable()
@@ -81,7 +79,7 @@ class CreateMeteorologyAemetPredictionCoastsTable extends Migration
                 ->nullable()
                 ->comment('Texto de la subzona de playa');
 
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

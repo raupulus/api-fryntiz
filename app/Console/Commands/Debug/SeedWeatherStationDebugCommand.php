@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Debug;
 
+use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
@@ -13,7 +14,6 @@ use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
-use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 

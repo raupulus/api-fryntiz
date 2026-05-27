@@ -24,7 +24,7 @@ class ContentController extends BaseApiController
     {
         $content = $this->service->getBySlug($platformSlug, $contentSlug);
 
-        if (!$content) {
+        if (! $content) {
             return $this->notFoundResponse('Contenido no encontrado');
         }
 
@@ -38,7 +38,7 @@ class ContentController extends BaseApiController
     {
         $content = Content::with('pages')->where('slug', $contentSlug)->first();
 
-        if (!$content) {
+        if (! $content) {
             return $this->notFoundResponse('Contenido no encontrado');
         }
 
@@ -54,7 +54,7 @@ class ContentController extends BaseApiController
     {
         $content = Content::where('slug', $contentSlug)->first();
 
-        if (!$content) {
+        if (! $content) {
             return $this->notFoundResponse('Contenido no encontrado');
         }
 

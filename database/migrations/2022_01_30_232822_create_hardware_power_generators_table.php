@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateHardwarePowerGeneratorsTable extends Migration
 {
     private $tableName = 'hardware_power_generators';
+
     private $tableComment = 'Carga de energía generada por dispositivo de hardware en el momento.';
 
     /**
@@ -23,10 +24,11 @@ class CreateHardwarePowerGeneratorsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
                 ->comment('Dispositivo asociado');
@@ -79,8 +81,8 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->nullable()
                 ->comment('Fecha y hora de lectura');
 
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

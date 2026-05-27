@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateCategoriesTable extends Migration
 {
     private $tableName = 'categories';
+
     private $tableComment = 'Categorías disponibles para toda la plataforma.';
 
     /**
@@ -17,10 +18,11 @@ class CreateCategoriesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->id();
+            $table->id()->comment('Identificador único');
             /*
             $table->bigInteger('file_id')
                 ->nullable()
@@ -38,7 +40,6 @@ class CreateCategoriesTable extends Migration
                 ->references('id')->on('categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-
 
             // TODO: Usar la prioridad para indicar la posición en la
             // descendencia, de esta forma poder consultar el último elemento
@@ -71,8 +72,8 @@ class CreateCategoriesTable extends Migration
             $table->string('color', 255)
                 ->default('#000000')
                 ->comment('Código Hexadecimal del color');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
@@ -87,7 +88,7 @@ class CreateCategoriesTable extends Migration
     public function down()
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
-            //$table->dropForeign(['file_id']);
+            // $table->dropForeign(['file_id']);
         });
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 
 /**
  * Class ContentAvailableCategoryController
- * @package App\Http\Controllers\Dashboard\Content
  */
 class ContentGalleryController extends Controller
 {

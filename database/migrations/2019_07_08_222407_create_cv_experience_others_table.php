@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvExperienceOthersTable
@@ -17,10 +17,11 @@ class CreateCvExperienceOthersTable extends Migration
     public function up()
     {
         Schema::create('cv_experience_others', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv experience others');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
@@ -54,7 +55,7 @@ class CreateCvExperienceOthersTable extends Migration
             $table->dateTime('end_at')
                 ->nullable()
                 ->comment('Fecha de fin');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
     }
 

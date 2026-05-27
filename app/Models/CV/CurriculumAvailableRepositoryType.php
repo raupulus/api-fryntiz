@@ -3,7 +3,11 @@
 namespace App\Models\CV;
 
 use App\Models\File;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 use function func_get_args;
 use function is_array;
 
@@ -15,13 +19,13 @@ class CurriculumAvailableRepositoryType extends Model
     protected $table = 'cv_available_repository_types';
 
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     /**
      * Relación con la imagen asociada al tipo de repositorio.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function image()
     {
@@ -41,7 +45,6 @@ class CurriculumAvailableRepositoryType extends Model
     /**
      * Devuelve el thumbnail de la imagen asociada.
      *
-     * @param $size
      *
      * @return mixed
      */
@@ -61,7 +64,7 @@ class CurriculumAvailableRepositoryType extends Model
      */
     public function safeDelete()
     {
-        ## Elimino la imagen asociada al tipo de repositorio y todas las miniaturas.
+        // # Elimino la imagen asociada al tipo de repositorio y todas las miniaturas.
         if ($this->image) {
             $this->image->safeDelete();
         }
@@ -73,9 +76,8 @@ class CurriculumAvailableRepositoryType extends Model
      * Devuelve todos los elementos filtrados y ordenados en una colección de
      * eloquent.
      *
-     * @param $columns
      *
-     * @return \App\Models\CV\CurriculumAvailableRepositoryType[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return CurriculumAvailableRepositoryType[]|Builder[]|Collection
      */
     public static function all($columns = ['*'])
     {

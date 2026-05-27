@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use function route;
 use function storage_path;
 
@@ -12,8 +13,9 @@ use function storage_path;
 class FileThumbnail extends Model
 {
     protected $table = 'file_thumbnails';
+
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     public static $genericImages = [
@@ -37,7 +39,7 @@ class FileThumbnail extends Model
     public function getUrlAttribute()
     {
 
-        if ($this->path && $this->name && !$this->deleted_at) {
+        if ($this->path && $this->name && ! $this->deleted_at) {
             return route('file.thumbnail.get', [
                 'module' => $this->module,
                 'id' => $this->id,
@@ -56,7 +58,7 @@ class FileThumbnail extends Model
     public function getStoragePathFileAttribute()
     {
         if ($this->storage_path) {
-            return storage_path('app/' . $this->storage_path . '/' . $this->name);
+            return storage_path('app/'.$this->storage_path.'/'.$this->name);
         }
 
         return '';

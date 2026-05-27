@@ -4,6 +4,7 @@ namespace App\Http\Requests\Dashboard\Content;
 
 use App\Models\Content\Content;
 use Illuminate\Foundation\Http\FormRequest;
+
 use function auth;
 
 /**

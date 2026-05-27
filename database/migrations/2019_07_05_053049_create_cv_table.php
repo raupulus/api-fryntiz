@@ -17,10 +17,11 @@ class CreateCvTable extends Migration
     public function up()
     {
         Schema::create('cv', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario');
             $table->foreign('user_id')
@@ -55,8 +56,8 @@ class CreateCvTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Indica si su visibilidad es pública');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
     }
 

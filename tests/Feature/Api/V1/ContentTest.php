@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Http\Middleware\DomainCheckMiddleware;
 use App\Models\Content\Content;
 use App\Models\Platform;
 use Tests\Feature\Api\ApiTestCase;
@@ -13,7 +14,7 @@ class ContentTest extends ApiTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\App\Http\Middleware\DomainCheckMiddleware::class);
+        $this->withoutMiddleware(DomainCheckMiddleware::class);
     }
 
     /** @test */
@@ -30,7 +31,7 @@ class ContentTest extends ApiTestCase
             $this->apiUrl("content/{$platform->slug}/{$content->slug}/get")
         );
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 
     /** @test */
@@ -49,6 +50,6 @@ class ContentTest extends ApiTestCase
         ]);
         $response = $this->getJson($this->apiUrl("content/{$content->slug}/get/related"));
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok');
+            ->assertJsonPath('status', 'ok');
     }
 }

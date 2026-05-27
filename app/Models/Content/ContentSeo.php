@@ -10,8 +10,6 @@ use Illuminate\Support\Collection;
 
 /**
  * Class ContentSeo
- *
- * @package App\Models\Content
  */
 class ContentSeo extends BaseModel
 {
@@ -34,11 +32,8 @@ class ContentSeo extends BaseModel
         'twitter_creator',
     ];
 
-
     /**
      * Relación con el contenido al que pertenece.
-     *
-     * @return BelongsTo
      */
     public function content(): BelongsTo
     {
@@ -47,8 +42,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Relación con el autor del contenido.
-     *
-     * @return BelongsTo
      */
     public function author(): BelongsTo
     {
@@ -57,19 +50,14 @@ class ContentSeo extends BaseModel
 
     /**
      * Relación con la imagen asociada al seo.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {
         return $this->belongsTo(File::class, 'image_id', 'id');
     }
 
-
     /**
      * Devuelve todas las etiquetas genéricas.
-     *
-     * @return Collection
      */
     public function getGenericTags(): Collection
     {
@@ -90,8 +78,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las etiquetas sociales.
-     *
-     * @return Collection
      */
     public function getSocialTags(): Collection
     {
@@ -103,9 +89,9 @@ class ContentSeo extends BaseModel
             'og:image:alt' => $this->image_alt,
             'og:image:url' => $urlImageMedium,
             'og:image:secure_url' => $urlImageMedium,
-            //'og:image:type' => '', // TODO: Obtener desde relación con Files
-            //'og:image:width' => '', // TODO: Obtener desde relación con Files
-            //'og:image:height' => '', // TODO: Obtener desde relación con Files
+            // 'og:image:type' => '', // TODO: Obtener desde relación con Files
+            // 'og:image:width' => '', // TODO: Obtener desde relación con Files
+            // 'og:image:height' => '', // TODO: Obtener desde relación con Files
             'og:type' => $this->og_type,
             'og:description' => $this->description,
         ]);
@@ -113,8 +99,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las etiquetas de Twitter.
-     *
-     * @return Collection
      */
     public function getTwitterTags(): Collection
     {
@@ -131,8 +115,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las metaetiquetas del contenido.
-     *
-     * @return Collection
      */
     public function getMetaTags(): Collection
     {
@@ -143,8 +125,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las metaetiquetas del contenido en formato HTML.
-     *
-     * @return string
      */
     public function getHtmlGenericMetatags(): string
     {
@@ -153,7 +133,7 @@ class ContentSeo extends BaseModel
         $html = '';
 
         $tags->each(function ($value, $key) use (&$html) {
-            $html .= '<meta property="' . $key . '" content="' . $value . '">';
+            $html .= '<meta property="'.$key.'" content="'.$value.'">';
         });
 
         return $html;
@@ -161,8 +141,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las metaetiquetas para Redes Sociales en formato HTML.
-     *
-     * @return string
      */
     public function getHtmlMetatagsOpenGraph(): string
     {
@@ -171,7 +149,7 @@ class ContentSeo extends BaseModel
         $html = '';
 
         $tags->each(function ($value, $key) use (&$html) {
-            $html .= '<meta property="' . $key . '" content="' . $value . '">';
+            $html .= '<meta property="'.$key.'" content="'.$value.'">';
         });
 
         return $html;
@@ -179,8 +157,6 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las metaetiquetas para Twitter en formato HTML.
-     *
-     * @return string
      */
     public function getHtmlMetatagsTwitter(): string
     {
@@ -189,7 +165,7 @@ class ContentSeo extends BaseModel
         $html = '';
 
         $tags->each(function ($value, $key) use (&$html) {
-            $html .= '<meta property="' . $key . '" content="' . $value . '">';
+            $html .= '<meta property="'.$key.'" content="'.$value.'">';
         });
 
         return $html;
@@ -197,11 +173,9 @@ class ContentSeo extends BaseModel
 
     /**
      * Devuelve todas las metaetiquetas del contenido en formato HTML.
-     *
-     * @return string
      */
     public function getHtmlMetatags(): string
     {
-        return $this->getGenericTags() . $this->getHtmlMetatagsOpenGraph() . $this->getHtmlMetatagsTwitter();
+        return $this->getGenericTags().$this->getHtmlMetatagsOpenGraph().$this->getHtmlMetatagsTwitter();
     }
 }

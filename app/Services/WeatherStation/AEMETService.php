@@ -2,7 +2,9 @@
 
 namespace App\Services\WeatherStation;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -18,8 +20,11 @@ use Illuminate\Support\Facades\Log;
 class AEMETService
 {
     private string $apiKey;
+
     private string $baseUrl;
+
     private int $retryAttempts;
+
     private int $retryBaseDelayMs;
 
     public function __construct()
@@ -38,6 +43,7 @@ class AEMETService
     public function getDailyPrediction(?string $municipioCode = null): ?array
     {
         $code = $municipioCode ?? config('aemet.default_municipio');
+
         return $this->cachedRequest(
             "/prediccion/especifica/municipio/diaria/{$code}",
             'daily_prediction',
@@ -51,6 +57,7 @@ class AEMETService
     public function getBeachPrediction(?string $beachCode = null): ?array
     {
         $code = $beachCode ?? config('aemet.default_playa');
+
         return $this->cachedRequest(
             "/prediccion/especifica/playa/{$code}",
             'prediction_beach',
@@ -64,6 +71,7 @@ class AEMETService
     public function getCoastPrediction(?string $coastCode = null): ?array
     {
         $code = $coastCode ?? config('aemet.default_costa');
+
         return $this->cachedRequest(
             "/prediccion/maritima/costera/costa/{$code}",
             'coast',
@@ -77,6 +85,7 @@ class AEMETService
     public function getHighSeaPrediction(?string $areaCode = null): ?array
     {
         $code = $areaCode ?? config('aemet.default_area');
+
         return $this->cachedRequest(
             "/prediccion/maritima/altamar/area/{$code}",
             'high_sea',
@@ -130,6 +139,7 @@ class AEMETService
     public function getAdverseEvents(?string $areaCode = null): ?array
     {
         $code = $areaCode ?? config('aemet.default_area');
+
         return $this->cachedRequest(
             "/avisos_cap/ultimoelaborado/area/{$code}",
             'adverse_events',
@@ -145,6 +155,7 @@ class AEMETService
     private function cachedRequest(string $endpoint, string $ttlKey, string $cacheKey): ?array
     {
         $ttl = (int) config("aemet.cache_ttl.{$ttlKey}", 600);
+
         return Cache::remember($cacheKey, $ttl, fn () => $this->makeRequest($endpoint));
     }
 
@@ -156,19 +167,21 @@ class AEMETService
     {
         if (empty($this->apiKey)) {
             Log::warning('AEMET: no se ha configurado AEMET_API_KEY.');
+
             return null;
         }
 
         try {
             $primary = $this->httpWithRetry()
                 ->withHeaders(['api_key' => $this->apiKey])
-                ->get($this->baseUrl . $endpoint);
+                ->get($this->baseUrl.$endpoint);
 
             if (! $primary->successful()) {
                 Log::warning('AEMET: respuesta no exitosa', [
                     'endpoint' => $endpoint,
                     'status' => $primary->status(),
                 ]);
+
                 return null;
             }
 
@@ -177,6 +190,7 @@ class AEMETService
                 Log::warning('AEMET: envelope sin clave "datos"', [
                     'endpoint' => $endpoint,
                 ]);
+
                 return null;
             }
 
@@ -186,12 +200,14 @@ class AEMETService
                     'datos_url' => $envelope['datos'],
                     'status' => $secondary->status(),
                 ]);
+
                 return null;
             }
 
             $data = $secondary->json();
             if (! is_array($data)) {
                 Log::warning('AEMET: payload no es JSON array', ['endpoint' => $endpoint]);
+
                 return null;
             }
 
@@ -201,6 +217,7 @@ class AEMETService
                 'endpoint' => $endpoint,
                 'message' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -215,11 +232,13 @@ class AEMETService
             $this->retryAttempts,
             $this->retryBaseDelayMs,
             function (\Throwable $exception) {
-                if ($exception instanceof \Illuminate\Http\Client\RequestException) {
+                if ($exception instanceof RequestException) {
                     $status = $exception->response?->status();
+
                     return $status === 429 || ($status >= 500 && $status < 600);
                 }
-                return $exception instanceof \Illuminate\Http\Client\ConnectionException;
+
+                return $exception instanceof ConnectionException;
             },
             throw: false
         );

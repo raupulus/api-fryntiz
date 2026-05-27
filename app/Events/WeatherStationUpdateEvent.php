@@ -27,19 +27,18 @@ class WeatherStationUpdateEvent implements ShouldBroadcast
         $this->datas = $datas->prepareApiResponse();
     }
 
-
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
     public function broadcastOn()
     {
         // https://github.com/beyondcode/laravel-websockets-demo/blob/master/app/Events/MessageSent.php
 
-        //\Log::info('Evento broadcastOn weather-station');
+        // \Log::info('Evento broadcastOn weather-station');
         return new Channel('weather-station');
-        //return new PrivateChannel('weather-station');
-        //return new PresenceChannel('weater-station-update');
+        // return new PrivateChannel('weather-station');
+        // return new PresenceChannel('weater-station-update');
     }
 }

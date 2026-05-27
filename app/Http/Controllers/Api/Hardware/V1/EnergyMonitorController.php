@@ -15,24 +15,21 @@ use Illuminate\Support\Facades\Log;
  * Class EnergyMonitorController
  *
  * Procesa los datos de los sensores de energía.
- *
- * @package App\Http\Controllers\Api\Hardware\V1
  */
 class EnergyMonitorController extends Controller
 {
-
     // TODO: Crear validación request
     public function store(Request $request)
     {
         $hardwareDeviceId = $request->get('hardware_device');
 
-        if (!$hardwareDeviceId) {
+        if (! $hardwareDeviceId) {
             return \JsonHelper::failed('Dispositivo no encontrado');
         }
 
         $hardwareDevice = HardwareDevice::find($hardwareDeviceId);
 
-        if (!$hardwareDevice) {
+        if (! $hardwareDevice) {
             return \JsonHelper::failed('Dispositivo no encontrado');
         }
 
@@ -40,50 +37,49 @@ class EnergyMonitorController extends Controller
         $now = Carbon::now();
         $date = $now->format('Y-m-d');
 
-
-        ## Solo el propietario del hardware monitor puede guardar datos
-        if ((int)$hardwareDevice->user_id !== auth()->id()) {
+        // # Solo el propietario del hardware monitor puede guardar datos
+        if ((int) $hardwareDevice->user_id !== auth()->id()) {
             return \JsonHelper::failed();
         }
 
-        ## Obtengo array con todos los registros de consumo
+        // # Obtengo array con todos los registros de consumo
         $sensors = collect($request->get('intensity'));
 
-        if (!$sensors || !$sensors->count()) {
+        if (! $sensors || ! $sensors->count()) {
             Log::debug('No hay datos de intensidad');
-            //Log::debug($sensors);
+            // Log::debug($sensors);
 
             return \JsonHelper::failed('No hay datos de intensidad');
         }
 
-        ## Obtengo todos los dispositivos hardware monitorizados
+        // # Obtengo todos los dispositivos hardware monitorizados
         $hardwaresEnergy = $hardwareDevice->hardwareEnergy;
 
-        if (!$hardwaresEnergy || !$hardwaresEnergy->count()) {
+        if (! $hardwaresEnergy || ! $hardwaresEnergy->count()) {
             Log::debug('No hay dispositivos de energía asociados');
-            //Log::debug($hardwaresEnergy);
+            // Log::debug($hardwaresEnergy);
 
             return \JsonHelper::failed('No hay dispositivos de energía asociados');
         }
 
-        ## Recorro cada dispositivo monitorizado y guardo sus registros.
+        // # Recorro cada dispositivo monitorizado y guardo sus registros.
         foreach ($hardwaresEnergy as $hardwareEnergy) {
             $pos = $hardwareEnergy->sensor_position;
 
-            ## Obtengo los registros usando la posición asignada al dar de alta el dispositivo monitorizado para asociar sus registros.
+            // # Obtengo los registros usando la posición asignada al dar de alta el dispositivo monitorizado para asociar sus registros.
             $sensor = $sensors->where('pos', $pos)->first();
 
-            if (!$sensor || !count($sensor)) {
+            if (! $sensor || ! count($sensor)) {
                 continue;
             }
 
-            ## Obtengo el dispositivo de hardware que está monitorizado.
+            // # Obtengo el dispositivo de hardware que está monitorizado.
             $hardwareEnergyMonitorized = $hardwareEnergy->monitorized;
 
-            ## Compruebo si el dispositivo monitorizado es un generador de energía.
+            // # Compruebo si el dispositivo monitorizado es un generador de energía.
             $isGenerator = $hardwareEnergy->is_generator;
 
-            ## Almaceno estadísticas.
+            // # Almaceno estadísticas.
             $voltage = $request->get('voltage_avg');
             $amperage = $sensor['avg'];
             $power = isset($sensor['power']) ? $sensor['power'] : $voltage * $amperage;
@@ -91,9 +87,8 @@ class EnergyMonitorController extends Controller
             $batterVoltage = isset($sensor['battery_voltage']) ? $sensor['battery_voltage'] : null;
             $batterPorcentage = isset($sensor['battery_porcentage']) ? $sensor['battery_porcentage'] : null;
 
-
-            ## Amperaje consumido, para ello paso a amperios/segundos y multiplico por la duración para sacar la estimación. No debería llamarse amperios por horas ya que eso es lo que recibe, lo que pretendo sacar es la intensidad consumida en el tiempo de monitorización (1Ah = 18000As, 1As = 0.00027777777777778 Ah).
-            ## Finalmente, lo que realizo es sacar el amperaje proporcional a la hora según la media de consumo, es decir si está consumiendo 5ah durante un periodo de 10 segundos tenemos "0,013888888888889" A consumidos, al multiplicar por 6 tenemos ese consumo de 10 segundos en 1 minuto, volvemos a multiplicar por 60 y debería darnos el amperaje recibido (5). Si cambia la intensidad podemos de esta forma ir sumando en los históricos para estimar el consumo durante esos periodos.
+            // # Amperaje consumido, para ello paso a amperios/segundos y multiplico por la duración para sacar la estimación. No debería llamarse amperios por horas ya que eso es lo que recibe, lo que pretendo sacar es la intensidad consumida en el tiempo de monitorización (1Ah = 18000As, 1As = 0.00027777777777778 Ah).
+            // # Finalmente, lo que realizo es sacar el amperaje proporcional a la hora según la media de consumo, es decir si está consumiendo 5ah durante un periodo de 10 segundos tenemos "0,013888888888889" A consumidos, al multiplicar por 6 tenemos ese consumo de 10 segundos en 1 minuto, volvemos a multiplicar por 60 y debería darnos el amperaje recibido (5). Si cambia la intensidad podemos de esta forma ir sumando en los históricos para estimar el consumo durante esos periodos.
             $duration = $request->get('duration');
 
             if ($duration) {
@@ -102,10 +97,9 @@ class EnergyMonitorController extends Controller
                 $amperageHour = 0;
             }
 
-
-            ##TODO: La parte de generador, por ahora no la uso. Queda en pausa hasta terminar de crear los sistemas autoabastecidos para implementar esta funcionalidad primero en la raspberry pi pico y tener clara la refactorización de las tablas, modelos, controladores...
+            // #TODO: La parte de generador, por ahora no la uso. Queda en pausa hasta terminar de crear los sistemas autoabastecidos para implementar esta funcionalidad primero en la raspberry pi pico y tener clara la refactorización de las tablas, modelos, controladores...
             if ($isGenerator) {
-                //HardwarePowerGenerator::createModel($hardwareEnergyMonitorized, $requestFinal)->save();
+                // HardwarePowerGenerator::createModel($hardwareEnergyMonitorized, $requestFinal)->save();
             } else {
                 $requestFinal = new Request([
                     'fan' => $fan,

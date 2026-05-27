@@ -3,20 +3,16 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\TemperatureUpdateEvent;
-use App\Events\WeatherStationUpdateEvent;
 use Illuminate\Notifications\Notifiable;
 
 /**
  * Class Temperature
- *
- * @package App\Models\WeatherStation
  */
 class Temperature extends BaseWheaterStation
 {
     use Notifiable;
 
     protected $table = 'meteorology_temperature';
-
 
     /**
      * @var string[] Campos que se pueden devolver por api.
@@ -37,7 +33,7 @@ class Temperature extends BaseWheaterStation
      */
     public $name = 'Temperatura';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'temperature';
     }
@@ -57,18 +53,10 @@ class Temperature extends BaseWheaterStation
         'created' => TemperatureUpdateEvent::class,
     ];
 
-
-
-
-
-
     /****************** Métodos para tablas dinámicas ******************/
-
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -82,9 +70,9 @@ class Temperature extends BaseWheaterStation
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [

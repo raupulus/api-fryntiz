@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateContentAvailableStatusTable extends Migration
 {
     private $tableName = 'content_available_status';
+
     private $tableComment = 'Estados disponibles para el contenido';
 
     /**
@@ -21,10 +22,11 @@ class CreateContentAvailableStatusTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->bigInteger('file_id')
                 ->nullable()
                 ->comment('FK a la imagen en la tabla files');
@@ -46,8 +48,8 @@ class CreateContentAvailableStatusTable extends Migration
             $table->string('color', 255)
                 ->default('#000000')
                 ->comment('Código Hexadecimal del color');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

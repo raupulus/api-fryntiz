@@ -9,10 +9,10 @@ Api Raupulus es una plataforma multi-API desarrollada con Laravel 13 que central
 - **Patrón:** MVC con Service Layer
 - **API:** Versionada (V1 legacy + V2 actual), respuestas JSON con JsonResources
 - **Admin:** Dos paneles Filament 5 (Admin para superadmin, Tenant para usuarios)
-- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js
+- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js (Vite 6, prefiere usar pnpm)
 - **Build:** Vite 6 con `laravel-vite-plugin` y `@tailwindcss/vite`
 - **Excepciones API:** Excepciones JSON personalizadas (`JsonValidationException`, `JsonAuthorizationException`) en `app/Exceptions/`, configuradas en `bootstrap/app.php`
-- **Eventos:** WeatherStation broadcast events (`app/Events/`) con listeners (`app/Listeners/`)
+- **Eventos y WebSockets:** Eventos broadcast (`app/Events/`) con listeners (`app/Listeners/`), con soporte preparado para Laravel Reverb
 - **Jobs:** `ProcessContentViewJob` para vistas de contenido asíncronas
 - **Notificaciones:** `NewContactMessage` para formulario de contacto
 
@@ -36,7 +36,7 @@ Api Raupulus es una plataforma multi-API desarrollada con Laravel 13 que central
 ## Comandos de Desarrollo
 
 ```bash
-# Frontend
+# Frontend (usar pnpm preferentemente)
 pnpm dev              # Servidor Vite en desarrollo
 pnpm build            # Build de producción
 
@@ -49,6 +49,9 @@ php artisan test --testsuite=Unit   # Solo tests unitarios
 ./vendor/bin/pint     # Formatear código con Laravel Pint (PSR-12)
 
 # Comandos Artisan del proyecto
+php artisan project:install         # Inicializa proyecto completo (keys, BD, storage)
+php artisan project:clear           # Limpia cachés (optimizado)
+php artisan debug:seed-all          # Poblar la base de datos de datos de prueba
 php artisan content:publish         # Publicar contenidos programados
 php artisan sitemap:generate        # Generar sitemap
 php artisan aemet:*                 # Múltiples comandos AEMET (ver app/Console/Commands/AEMET/)
@@ -183,6 +186,7 @@ keycounter:maintenance   → weekly
 
 ## Convenciones
 
+- **Package Manager:** Referencia principal de frontend es `pnpm`, usarlo en lugar de npm/yarn.
 - **Idioma del código:** Inglés (variables, métodos, clases)
 - **Idioma de documentación:** Español (PHPDoc, comments de migraciones, mensajes de validación)
 - **Estilo:** PSR-12, principios SOLID — formatear con `./vendor/bin/pint`
@@ -228,6 +232,10 @@ La documentación técnica de cada módulo se encuentra en `docs/info/`. **Es ob
 | `contact.md` | Formulario de Contacto (email + recaptcha) |
 | `files.md` | Gestión de Archivos (uploads, thumbnails, redimensión) |
 | `common.md` | Entidades Comunes (categorías, tags, tecnologías, idiomas) |
+| `debug-commands.md` | Comandos de Debug (inserción de datos de prueba) |
+| `commands.md` | Catálogo completo de comandos Artisan |
+| `websockets.md` | WebSockets con Laravel Reverb |
+| `apis/aemet.md` | API AEMET OpenData (integración técnica) |
 
 ### Reglas de actualización de `docs/info/`
 

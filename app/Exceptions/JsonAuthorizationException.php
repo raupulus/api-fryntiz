@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Http\JsonResponse;
 use JsonHelper;
 
 /**
@@ -23,9 +24,8 @@ class JsonAuthorizationException extends Exception
     /**
      * Render the exception as an HTTP response.
      *
-     * @param $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function render($request)
     {

@@ -17,12 +17,13 @@ class CreateSessionsTable extends Migration
     public function up()
     {
         Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->text('payload');
-            $table->integer('last_activity')->index();
+            $table->comment('Tabla para almacenar información de sessions');
+            $table->string('id')->primary()->comment('Identificador único');
+            $table->foreignId('user_id')->nullable()->index()->comment('Identificador del usuario asociado');
+            $table->string('ip_address', 45)->nullable()->comment('Columna ip address');
+            $table->text('user_agent')->nullable()->comment('Navegador o agente de usuario');
+            $table->text('payload')->comment('Datos o carga útil');
+            $table->integer('last_activity')->index()->comment('Columna last activity');
         });
     }
 

@@ -7,12 +7,11 @@ use App\Traits\HasTimestampScopes;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+
 use function array_key_exists;
 
 /**
  * Class BaseWheaterStation
- *
- * @package App\Models\WeatherStation
  */
 class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 {
@@ -21,20 +20,20 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
     protected $fillable = [
         'hardware_device_id',
         'value',
-        'created_at'
+        'created_at',
     ];
 
     /**
      * Sobreescribo la actualización del updated_at para no hacerle nada.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      */
     public function setUpdatedAt($value)
     {
-        //Do-nothing
+        // Do-nothing
     }
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'weater_station';
     }
@@ -50,27 +49,15 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
         ];
     }
 
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Devuelve los resultados para una página.
      *
-     * @param number $size Tamaño de cada página
-     * @param number $page Página a la que buscar.
-     *
+     * @param  number  $size  Tamaño de cada página
+     * @param  number  $page  Página a la que buscar.
      * @return array
      */
     public static function getTableRowsByPage($size, $page, $columns,
-                                              $orderBy, $orderDirection = 'ASC')
+        $orderBy, $orderDirection = 'ASC')
     {
         return self::select($columns)
             ->offset(($page * $size) - $size)
@@ -94,13 +81,12 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 
         $attributes = $this->getAttributes();
 
-        foreach ($columns as $column)
-        {
-            if (!array_key_exists($column, $attributes))
-            {
+        foreach ($columns as $column) {
+            if (! array_key_exists($column, $attributes)) {
                 $attributes[$column] = null;
             }
         }
+
         return $attributes;
     }
 
@@ -113,6 +99,7 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
         $query::whereNotNull('value')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return $query;
     }
 
@@ -122,7 +109,6 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
      * El caché es de unos minutos, tiene sentido al ser una consulta
      * recurrente entre periodos con valores inmutables.
      *
-     * @param int $hours
      *
      * @return mixed
      */
@@ -136,18 +122,18 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
             ->setSecond(0)
             ->setMicrosecond(0);
 
-        $lastHours = (clone($now))->subHours($hours);
-        $initialHours = (clone($now))->subHours($hours - 1);
+        $lastHours = (clone $now)->subHours($hours);
+        $initialHours = (clone $now)->subHours($hours - 1);
 
         $nowString = $initialHours->format('Y-m-d-H-i-s');
-        $keyName = 'ws-' . $slug . '-hours-' . $hours .'_' . $nowString;
+        $keyName = 'ws-'.$slug.'-hours-'.$hours.'_'.$nowString;
 
         $rest = Cache::remember($keyName, 600, function () use ($fields, $lastHours, $initialHours) {
             $query = self::where('created_at', '>=', $lastHours)
                 ->where('created_at', '<=', $initialHours);
 
             foreach ($fields as $field) {
-                $query->addSelect($query->raw('ROUND( AVG(' . $field . ')::numeric, 1 ) as ' . $field));
+                $query->addSelect($query->raw('ROUND( AVG('.$field.')::numeric, 1 ) as '.$field));
             }
 
             return $query->first();
@@ -161,7 +147,7 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
      * Estos datos constan del valor actual para la lectura del registro en
      * el que estamos y además un histórico de las últimas 4 horas hacia atrás.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function prepareApiResponse()
     {
@@ -177,33 +163,32 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
                 $this->averageLast(1),
                 [
                     'last_hours' => 1, // 1 - Resumen de la última hora
-                    'created_at' => (clone($now))->subHours(1)->format('Y-m-d H:i:s'),
+                    'created_at' => (clone $now)->subHours(1)->format('Y-m-d H:i:s'),
                 ])),
             collect(array_merge($generic,
                 $this->averageLast(2),
 
                 [
                     'last_hours' => 2, // 2 - Resumen de las 2 últimas horas
-                    'created_at' => (clone($now))->subHours(2)->format('Y-m-d H:i:s'),
+                    'created_at' => (clone $now)->subHours(2)->format('Y-m-d H:i:s'),
                 ])),
             collect(array_merge($generic,
                 $this->averageLast(3),
                 [
                     'last_hours' => 3, // 3 - Resumen de las 3 últimas horas
-                    'created_at' => (clone($now))->subHours(3)->format('Y-m-d H:i:s'),
+                    'created_at' => (clone $now)->subHours(3)->format('Y-m-d H:i:s'),
                 ])),
             collect(array_merge($generic,
                 $this->averageLast(4),
                 [
-                    'last_hours' => 4,// 4 - Resumen de las 4 últimas horas
-                    'created_at' => (clone($now))->subHours(4)->format('Y-m-d H:i:s'),
+                    'last_hours' => 4, // 4 - Resumen de las 4 últimas horas
+                    'created_at' => (clone $now)->subHours(4)->format('Y-m-d H:i:s'),
                 ])),
         ]);
 
         $datas = [];
 
-        foreach ($this->apiFields as $field)
-        {
+        foreach ($this->apiFields as $field) {
             $datas[$field] = round($this->{$field}, 1);
         }
 
@@ -228,7 +213,7 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
                 if ($windDirectionDatas && $windDirectionDatas['historical'] &&
                     count($windDirectionDatas['historical'])) {
 
-                    foreach ($windDirectionDatas['historical'] as $key =>  $historical) {
+                    foreach ($windDirectionDatas['historical'] as $key => $historical) {
 
                         if (isset($result['historical'][$key])) {
 
@@ -251,10 +236,6 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
                 ->orderByDesc('created_at')
                 ->first();
 
-
-
-
-
             if ($airQualityEco2) {
                 $result['eco2'] = $airQualityEco2->value;
             }
@@ -269,7 +250,7 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
             if ($airQualityEco2Datas && $airQualityEco2Datas['historical'] &&
                 count($airQualityEco2Datas['historical'])) {
 
-                foreach ($airQualityEco2Datas['historical'] as $key =>  $historical) {
+                foreach ($airQualityEco2Datas['historical'] as $key => $historical) {
                     if (isset($result['historical'][$key])) {
                         $result['historical'][$key]['eco2'] = $historical['value'];
                     }
@@ -280,7 +261,7 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
             if ($airQualityTvocDatas && $airQualityTvocDatas['historical'] &&
                 count($airQualityTvocDatas['historical'])) {
 
-                foreach ($airQualityTvocDatas['historical'] as $key =>  $historical) {
+                foreach ($airQualityTvocDatas['historical'] as $key => $historical) {
                     if (isset($result['historical'][$key])) {
                         $result['historical'][$key]['tvoc'] = $historical['value'];
                     }
@@ -289,29 +270,16 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
             }
         }
 
-
         return $result;
 
     }
-
-
-
-
-
-
-
-
-
-
 
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -319,8 +287,6 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -331,8 +297,6 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -346,9 +310,9 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -367,9 +331,8 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve las rutas de acciones
-     *
      */
-    public static function getTableActionsInfo():Collection
+    public static function getTableActionsInfo(): Collection
     {
         // TODO Crear policies para devolver solo acciones permitidas ahora.
 
@@ -390,8 +353,8 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
                 'name' => 'Eliminar',
                 'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
-                'ajax' => true
-            ]
+                'ajax' => true,
+            ],
         ]);
     }
 }

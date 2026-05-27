@@ -10,7 +10,7 @@ enum PlatformStatusEnum: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Active => 'Activa',
             self::Inactive => 'Inactiva',
             self::Maintenance => 'En mantenimiento',

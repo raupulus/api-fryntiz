@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Hardware\V2\HardwareDeviceController;
 use App\Http\Controllers\Api\Hardware\V2\EnergyMonitorController;
+use App\Http\Controllers\Api\Hardware\V2\HardwareDeviceController;
 use App\Http\Controllers\Api\Hardware\V2\SolarChargeController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

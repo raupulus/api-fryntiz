@@ -1,0 +1,24 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+@source "../../../../vendor/filament/**/*.blade.php";
+@source "../../../../app/Filament/**/*.php";
+@source "../../../../resources/views/filament/**/*.blade.php";
+:root {
+    --primary-50: 238 242 255;
+    --primary-500: 99 102 241;
+    --primary-600: 79 70 229;
+}
+.fi-section {
+    @apply rounded-2xl shadow-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900/50;
+}
+.fi-section-header { @apply px-6 py-4; }
+.fi-section-content { @apply px-6 py-6; }
+.fi-fo-section .fi-input,
+.fi-fo-section .fi-select-input,
+.fi-fo-section .fi-textarea {
+    @apply rounded-lg;
+}
+.fi-ta-text { @apply leading-relaxed; }
+.fi-page > div.gap-y-8 { @apply gap-y-6; }
+@media (max-width: 640px) {
+    .fi-tabs-list { @apply gap-1 overflow-x-auto; }
+}

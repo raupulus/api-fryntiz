@@ -1,6 +1,5 @@
 <?php
 
-
 return [
     ['header' => 'Contenido'],
     [
@@ -9,4 +8,3 @@ return [
         'icon' => 'far fa-fw fa-eye',
     ],
 ];
-

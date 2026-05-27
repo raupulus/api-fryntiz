@@ -16,8 +16,6 @@ class PlatformController extends Controller
 {
     /**
      * Devuelve un listado con todas las plataformas.
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -27,23 +25,20 @@ class PlatformController extends Controller
             'data' => [
                 'platforms' => $platforms,
                 'total' => $platforms->count(),
-            ]
+            ],
         ]);
     }
 
     /**
      * Devuelve toda la información acerca de una plataforma concreta.
-     *
-     * @param Platform $platform
-     * @return JsonResponse
      */
     public function info(Platform $platform): JsonResponse
     {
         $version = '0.0.1';
 
-        ## Tecnologías
+        // # Tecnologías
         $technologies = Technology::select(['technologies.name', 'technologies.slug', 'technologies.color', 'technologies.image_id'])
-            //->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id')
+            // ->leftJoin('technologies', 'content_technologies.technology_id', 'technologies.id')
             ->leftJoin('content_technologies', 'technologies.id', 'content_technologies.technology_id')
             ->leftJoin('contents', 'content_technologies.content_id', 'contents.id')
             ->leftJoin('platforms', 'contents.platform_id', 'platforms.id')
@@ -55,21 +50,20 @@ class PlatformController extends Controller
             ->groupBy('technologies.name')
             ->groupBy('technologies.image_id')
             ->groupBy('technologies.color')
-            ->get()
-        ;
+            ->get();
 
         $technologies = $technologies->map(function ($ele) {
             return [
                 'name' => $ele->name,
                 'slug' => $ele->slug,
                 'color' => $ele->color,
-                'urlImageSmall' => $ele->urlImageSmall
+                'urlImageSmall' => $ele->urlImageSmall,
             ];
         });
 
         $contentTypes = ContentAvailableType::select(['id', 'plural_name', 'slug', 'name', 'description'])->get();
 
-        ## Contenidos y páginas (Contador con cantidad total de contenidos por cada tipo de la plataforma)
+        // # Contenidos y páginas (Contador con cantidad total de contenidos por cada tipo de la plataforma)
         $contents = [
             'total' => $platform->contentsActive()->count(),
             'types' => $contentTypes->map(function ($ele) use ($platform) {
@@ -77,7 +71,7 @@ class PlatformController extends Controller
             }),
         ];
 
-        ## Páginas
+        // # Páginas
         $pages = $platform->contentPages->map(function ($ele) {
             return [
                 'title' => $ele->title,
@@ -88,7 +82,7 @@ class PlatformController extends Controller
             ];
         });
 
-        ## Autor de la plataforma, creador de esta plataforma de contenidos.
+        // # Autor de la plataforma, creador de esta plataforma de contenidos.
         $author = $platform->user?->basicInfo();
 
         return \JsonHelper::success([
@@ -111,7 +105,7 @@ class PlatformController extends Controller
                     'tiktok' => $platform->tiktok,
                     'instagram' => $platform->instagram,
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -119,21 +113,18 @@ class PlatformController extends Controller
      * Devuelve el contenido por tipo de contenido y plataforma.
      * - Máximo 50 elementos
      *
-     * @param Request $request
-     * @param Platform $platform Plataforma sobre la que se pide el contenido
-     * @param string $contentType Tipo de contenido (noticia, proyecto, página...)
-     *
-     * @return JsonResponse
+     * @param  Platform  $platform  Plataforma sobre la que se pide el contenido
+     * @param  string  $contentType  Tipo de contenido (noticia, proyecto, página...)
      */
     public function getContentByType(Request $request, Platform $platform, string $contentType): JsonResponse
     {
         $contentAvailableType = ContentAvailableType::where('slug', $contentType)->first();
 
-        if (!$contentAvailableType) {
+        if (! $contentAvailableType) {
             return \JsonHelper::failed('!Tipo de Contenido no reconocido, un saludo!');
         }
 
-        if (!$platform->id) {
+        if (! $platform->id) {
             return \JsonHelper::failed('!Tipo de Plataforma no reconocida, un saludo!');
         }
 
@@ -147,8 +138,7 @@ class PlatformController extends Controller
         $page = $request->get('page') ?? 1;
         $quantity = $request->get('quantity') ?? 10; // Debe ser menor a 50
 
-
-        //$platform->contentsActive()
+        // $platform->contentsActive()
 
         $query = Content::select('contents.*')
             ->where('contents.type_id', $contentAvailableType->id)
@@ -156,7 +146,6 @@ class PlatformController extends Controller
             ->where('contents.is_active', true)
             ->where('contents.published_at', '<=', now())
             ->whereNotNull('contents.published_at');
-
 
         if ($search || $technology || $technology_id) {
             $query->leftJoin('content_technologies', 'contents.id', 'content_technologies.content_id');
@@ -171,7 +160,7 @@ class PlatformController extends Controller
             $query->where('technologies.id', $technology_id);
         }
 
-        if (($category || $category_id) && !$subcategory && !$subcategory_id) {
+        if (($category || $category_id) && ! $subcategory && ! $subcategory_id) {
             $query->leftJoin('content_categories', 'contents.id', 'content_categories.content_id');
             $query->leftJoin('platform_categories', 'content_categories.platform_category_id', 'platform_categories.id');
             $query->leftJoin('categories', 'platform_categories.category_id', 'categories.id');
@@ -199,30 +188,29 @@ class PlatformController extends Controller
         if ($search) {
             // TODO: Pensar si vamos a buscar también en etiquetas, tecnología, descripción y si lleva orden.
             $query->where(function ($q) use ($search) {
-                return $q->orWhere('contents.title', 'iLike', '%' . $search . '%')
-                    ->orWhere('contents.slug', 'iLike', '%' . $search . '%')
-                    ->orWhere('contents.excerpt', 'iLike', '%' . $search . '%')
-                    ->orWhere('technologies.slug', 'iLike', '%' . $search . '%');
+                return $q->orWhere('contents.title', 'iLike', '%'.$search.'%')
+                    ->orWhere('contents.slug', 'iLike', '%'.$search.'%')
+                    ->orWhere('contents.excerpt', 'iLike', '%'.$search.'%')
+                    ->orWhere('technologies.slug', 'iLike', '%'.$search.'%');
             });
         }
 
         $query->groupBy('contents.id');
 
-        $totalQuery = (clone($query));
+        $totalQuery = (clone $query);
 
         $total = $totalQuery->select([
             DB::raw('COUNT(*) as total'),
         ])
             ->get()->count();
 
-
-        ## Límite debe ser menor a 50 contenidos.
+        // # Límite debe ser menor a 50 contenidos.
         $quantity = ($quantity > 50) ? 50 : $quantity;
 
         $query->offset($quantity * ($page - 1))->limit($quantity);
 
-        ## Orden
-        //$query->orderBy('contents.updated_at', 'desc')->orderBy('contents.published_at', 'desc');
+        // # Orden
+        // $query->orderBy('contents.updated_at', 'desc')->orderBy('contents.published_at', 'desc');
         $query->orderByDesc('contents.is_featured')->orderBy('contents.published_at', 'desc');
 
         Carbon::setLocale(config('app.locale'));
@@ -272,15 +260,14 @@ class PlatformController extends Controller
             ]);
         });
 
-        ## Calculo total de páginas.
+        // # Calculo total de páginas.
         if ($total === 0) {
             $totalPages = 0;
         } elseif ($total <= $quantity) { // Se piden más elementos por página de los que hay.
             $totalPages = 1;
         } else {
-            $totalPages = (($total % $quantity) !== 0) ? (((int)($total / $quantity)) + 1) : ($total / $quantity);
+            $totalPages = (($total % $quantity) !== 0) ? (((int) ($total / $quantity)) + 1) : ($total / $quantity);
         }
-
 
         return \JsonHelper::success([
             'pagination' => [
@@ -309,19 +296,13 @@ class PlatformController extends Controller
         ]);
     }
 
-
     /**
      * Devuelve el contenido de la plataforma destacado y/o los últimos añadidos
-     *
-     * @param Request $request
-     * @param Platform $platform
-     *
-     * @return JsonResponse
      */
     public function getContentFeatured(Request $request, Platform $platform): JsonResponse
     {
         $type = $request->get('type') ?? 'all';
-        //$quantity = $request->get('quantity') ?? 6; // Creo que no interesa, al menos por ahora
+        // $quantity = $request->get('quantity') ?? 6; // Creo que no interesa, al menos por ahora
 
         $featured = $latest = $trend = null;
 
@@ -349,4 +330,3 @@ class PlatformController extends Controller
         ]);
     }
 }
-

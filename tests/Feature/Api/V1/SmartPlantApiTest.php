@@ -22,7 +22,7 @@ class SmartPlantApiTest extends TestCase
 
         $this->assertTrue(
             in_array($response->status(), [404, 405]),
-            'El endpoint antiguo /api/smart_plant/v1/register/store debería devolver 404 o 405, pero devolvió ' . $response->status()
+            'El endpoint antiguo /api/smart_plant/v1/register/store debería devolver 404 o 405, pero devolvió '.$response->status()
         );
     }
 }

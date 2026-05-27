@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateCvProjectsTable
@@ -17,10 +17,11 @@ class CreateCvProjectTagsTable extends Migration
     public function up()
     {
         Schema::create('cv_project_tags', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv project tags');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('project_id')
                 ->comment('Relación con el proyecto del curriculum');
             $table->foreign('project_id')
@@ -33,7 +34,7 @@ class CreateCvProjectTagsTable extends Migration
                 ->references('id')->on('tags')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
     }
 

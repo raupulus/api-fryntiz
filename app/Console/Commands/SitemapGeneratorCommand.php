@@ -18,12 +18,14 @@ class SitemapGeneratorCommand extends Command
     protected $description = 'Genera el sitemap del sitio completo con metadatos optimizados';
 
     private const CACHE_KEY = 'sitemap_generation_lock';
+
     private const CACHE_TTL = 3600; // 1 hora
 
     public function handle()
     {
-        if (!$this->option('force') && Cache::has(self::CACHE_KEY)) {
+        if (! $this->option('force') && Cache::has(self::CACHE_KEY)) {
             $this->warn('Generación de sitemap ya en progreso o reciente. Use --force para omitir.');
+
             return self::SUCCESS;
         }
 
@@ -41,6 +43,7 @@ class SitemapGeneratorCommand extends Command
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->handleError($e);
+
             return self::FAILURE;
         } finally {
             Cache::forget(self::CACHE_KEY);
@@ -51,7 +54,7 @@ class SitemapGeneratorCommand extends Command
     {
         $sitemap = Sitemap::create();
 
-        ## URLs estáticas con prioridades y frecuencia de actualización
+        // # URLs estáticas con prioridades y frecuencia de actualización
         $staticUrls = [
             ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly'],
         ];
@@ -75,7 +78,7 @@ class SitemapGeneratorCommand extends Command
         $sitemapPath = public_path('sitemap.xml');
         $backupPath = public_path('sitemap_backup.xml');
 
-        ## Creo backup del sitemap anterior si existe
+        // # Creo backup del sitemap anterior si existe
         if (file_exists($sitemapPath)) {
             copy($sitemapPath, $backupPath);
         }
@@ -83,12 +86,12 @@ class SitemapGeneratorCommand extends Command
         try {
             $sitemap->writeToFile($sitemapPath);
 
-            ## Verifico que el archivo se escribió correctamente
-            if (!file_exists($sitemapPath) || filesize($sitemapPath) === 0) {
+            // # Verifico que el archivo se escribió correctamente
+            if (! file_exists($sitemapPath) || filesize($sitemapPath) === 0) {
                 throw new \Exception('El archivo sitemap.xml está vacío o no se pudo crear');
             }
 
-            ## Elimino backup si todo salió bien
+            // # Elimino backup si todo salió bien
             if (file_exists($backupPath)) {
                 unlink($backupPath);
             }
@@ -96,7 +99,7 @@ class SitemapGeneratorCommand extends Command
             $this->info('   ✓ Sitemap escrito correctamente');
 
         } catch (\Exception $e) {
-            ## Restaura backup si algo sale mal
+            // # Restaura backup si algo sale mal
             if (file_exists($backupPath)) {
                 copy($backupPath, $sitemapPath);
                 unlink($backupPath);
@@ -107,7 +110,7 @@ class SitemapGeneratorCommand extends Command
 
     private function handleError(\Exception $e): void
     {
-        $this->error('❌ Error al generar el sitemap: ' . $e->getMessage());
+        $this->error('❌ Error al generar el sitemap: '.$e->getMessage());
 
         Log::error('SitemapGeneratorCommand: Error al generar el sitemap', [
             'message' => $e->getMessage(),

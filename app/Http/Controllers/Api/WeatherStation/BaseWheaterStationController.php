@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api\WeatherStation;
 
 use App\Http\Controllers\BaseWithTableCrudController;
-use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+
 use function array_keys;
 use function auth;
 use function get_object_vars;
@@ -16,8 +17,6 @@ use function response;
 
 /**
  * Class BaseWheaterStationController
- *
- * @package App\Http\Controllers\Api\WeatherStation
  */
 abstract class BaseWheaterStationController extends BaseWithTableCrudController
 {
@@ -36,15 +35,9 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
         $model = $this->model::whereNotNull('value')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return response()->json($model);
     }
-
-
-
-
-
-
-
 
     /*
     public function getTableDataSearchJson(Request $request)
@@ -72,15 +65,12 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
 
     */
 
-
-
-
     /**
      * Devuelve un conjunto de datos filtrados.
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     *
      * @throws \Exception
      */
     public function find(Request $request)
@@ -89,27 +79,27 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
 
         $model = $this->model::whereNotNull('value');
 
-        ## Filtra por fecha mínima (desde).
+        // # Filtra por fecha mínima (desde).
         if ($filter['date_min']) {
             $model->where('created_at', '>=', $filter['date_min']);
         }
 
-        ## Filtra por fecha máxima (hasta).
+        // # Filtra por fecha máxima (hasta).
         if ($filter['date_max']) {
             $model->where('created_at', '<=', $filter['date_max']);
         }
 
-        ## Filtra por valor mínimo (desde).
+        // # Filtra por valor mínimo (desde).
         if ($filter['value_min']) {
             $model->where('value', '>=', $filter['value_min']);
         }
 
-        ## Filtra por valor máximo (hasta).
+        // # Filtra por valor máximo (hasta).
         if ($filter['value_max']) {
             $model->where('value', '<=', $filter['value_max']);
         }
 
-        ## Filtra por el día según una fecha concreta
+        // # Filtra por el día según una fecha concreta
         if ($filter['date']) {
             $date = new Carbon($filter['date']);
             $date->hour = 0;
@@ -133,9 +123,8 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
     /**
      * Añade una nueva entrada de la medición desde el sensor.
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse|void
+     * @return JsonResponse|void
      */
     public function add(Request $request)
     {
@@ -146,7 +135,7 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
 
         $model->user_id = auth()->id();
 
-        ## Respuesta cuando se ha guardado el modelo correctamente
+        // # Respuesta cuando se ha guardado el modelo correctamente
         if ($model->save()) {
             // response bien
 
@@ -162,9 +151,9 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
     /**
      * Recibe JSON con datos para guardar por lote.
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     *
      * @throws \Exception
      */
     public function addJson(Request $request)
@@ -173,15 +162,15 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
 
         $fallidos = 0;
 
-        ## Proceso cada dato recibido mediante JSON.
+        // # Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
             try {
                 $model = new $this->model;
 
-                ## Parseo la fecha
+                // # Parseo la fecha
                 $d->created_at = (new \DateTime($d->created_at))->format('Y-m-d H:i:s');
 
-                ## Obtengo atributos y los válidos para excluir posible basura.
+                // # Obtengo atributos y los válidos para excluir posible basura.
                 $attributes = $this->addValidate(get_object_vars($d));
 
                 $model->fill($attributes);
@@ -196,11 +185,11 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
             }
         }
 
-        ## Respuesta cuando se ha guardado el modelo correctamente
+        // # Respuesta cuando se ha guardado el modelo correctamente
         if ($fallidos == 0) {
             return response()->json('Guardado Correctamente', 201);
-        } else if ($fallidos >= 1) {
-            return response()->json('Fallidos: ' . $fallidos, 200);
+        } elseif ($fallidos >= 1) {
+            return response()->json('Fallidos: '.$fallidos, 200);
         }
 
         return response()->json('No se ha guardado nada', 500);
@@ -209,8 +198,7 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
     /**
      * Reglas de validación a la hora de insertar datos.
      *
-     * @param $request
-     *
+     * @param  $request
      * @return mixed
      */
     public function addValidate($data)
@@ -225,7 +213,6 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
     /**
      * Reglas de validación para las peticiones de búsqueda.
      *
-     * @param $request
      *
      * @return array
      */
@@ -242,16 +229,16 @@ abstract class BaseWheaterStationController extends BaseWithTableCrudController
 
         $validate = $request->validate($rules);
 
-        ## Saneo los valores que no existan para convertirlos en nulos.
+        // # Saneo los valores que no existan para convertirlos en nulos.
         $valuesNull = array_fill_keys(array_keys($rules), null);
+
         return array_merge($valuesNull, $validate);
     }
-
 
     public function getPrepareData()
     {
         $modelClass = $this->model;
-        $fields = (new $modelClass())->apiFields;
+        $fields = (new $modelClass)->apiFields;
 
         $model = $modelClass::orderBy('created_at', 'DESC');
 

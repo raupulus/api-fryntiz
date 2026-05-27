@@ -4,21 +4,17 @@ namespace App\Models;
 
 use App;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+
 use function route;
 
-/**
- *
- */
 class Tag extends BaseAbstractModelWithTableCrud
 {
     protected $table = 'tags';
 
-    protected $fillable = ['name', 'slug', 'description'];
+    protected $fillable = ['name', 'slug', 'description', 'icon', 'color'];
 
-
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'tag';
     }
@@ -36,32 +32,24 @@ class Tag extends BaseAbstractModelWithTableCrud
 
     /**
      * Elimina de forma segura la instancia actual.
-     *
-     * @return bool
      */
     public function safeDelete(): bool
     {
         return (bool) $this->delete();
     }
 
-
-
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return App\Policies\TagPolicy::class;
     }
 
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -74,8 +62,6 @@ class Tag extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -90,9 +76,9 @@ class Tag extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -115,9 +101,8 @@ class Tag extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve las rutas de acciones
-     *
      */
-    public static function getTableActionsInfo():Collection
+    public static function getTableActionsInfo(): Collection
     {
         // TODO Crear policies para devolver solo acciones permitidas ahora.
 
@@ -138,8 +123,8 @@ class Tag extends BaseAbstractModelWithTableCrud
                 'name' => 'Eliminar',
                 'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
-                'ajax' => true
-            ]
+                'ajax' => true,
+            ],
         ]);
     }
 }

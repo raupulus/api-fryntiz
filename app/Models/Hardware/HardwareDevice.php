@@ -9,17 +9,19 @@ use App\Models\File;
 use App\Traits\BelongsToUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Request;
+
 use function array_filter;
 
 /**
  * Class HardwareDeviceController
- *
- * @package App\Models\Hardware
  */
 class HardwareDevice extends BaseModel
 {
-    use HasFactory, ImageTrait, BelongsToUser;
+    use BelongsToUser, HasFactory, ImageTrait;
 
     protected $table = 'hardware_devices';
 
@@ -30,11 +32,10 @@ class HardwareDevice extends BaseModel
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'buy_at'];
 
-
     /**
      * Relación con el tipo de hardware.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function type()
     {
@@ -42,9 +43,27 @@ class HardwareDevice extends BaseModel
     }
 
     /**
+     * Alias para compatibilidad con Filament Resources.
      *
+     * @return BelongsTo
+     */
+    public function hardwareType()
+    {
+        return $this->belongsTo(HardwareType::class, 'hardware_type_id', 'id');
+    }
+
+    /**
+     * Componentes instalados en el dispositivo.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
+     */
+    public function components()
+    {
+        return $this->hasMany(HardwareComponent::class, 'hardware_device_id', 'id');
+    }
+
+    /**
+     * @return HasMany
      */
     public function powerGenerators()
     {
@@ -52,9 +71,7 @@ class HardwareDevice extends BaseModel
     }
 
     /**
-     *
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function powerGeneratorToday()
     {
@@ -62,9 +79,7 @@ class HardwareDevice extends BaseModel
     }
 
     /**
-     *
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function powerGeneratorsHistorical()
     {
@@ -72,9 +87,7 @@ class HardwareDevice extends BaseModel
     }
 
     /**
-     *
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function powerLoads()
     {
@@ -82,9 +95,7 @@ class HardwareDevice extends BaseModel
     }
 
     /**
-     *
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function powerLoadsToday()
     {
@@ -92,9 +103,7 @@ class HardwareDevice extends BaseModel
     }
 
     /**
-     *
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function powerLoadsHistorical()
     {
@@ -105,7 +114,7 @@ class HardwareDevice extends BaseModel
      * Devuelve todos los dispositivos de energía asociados al dispositivo.
      * Sin distinguir entre generador y carga (consumo de energía)
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function hardwareEnergy()
     {
@@ -116,7 +125,7 @@ class HardwareDevice extends BaseModel
      * Devuelve todos los dispositivos de energía asociados al dispositivo.
      * Filtrando solo por los que son de tipo generador.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function hardwareEnergyGenerator()
     {
@@ -129,7 +138,7 @@ class HardwareDevice extends BaseModel
      * Devuelve solo los dispositivos de energía que consumen carga (energía).
      * Se descartan los que son generadores.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function hardwareEnergyLoad()
     {
@@ -138,26 +147,21 @@ class HardwareDevice extends BaseModel
             ->orderBy('sensor_position');
     }
 
-
     /**
      * Relación con la imagen asociada al curriculum.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function image()
     {
         return $this->hasOne(File::class, 'id', 'image_id');
     }
 
-
-    public static function createModel(HardwareDevice $device, $request)
-    {
-
-    }
+    public static function createModel(HardwareDevice $device, $request) {}
 
     public function updateModel(Request|StoreSolarChargeRequest $request)
     {
-        //$dataFromSolar = $request->only(['hardware', 'version',
+        // $dataFromSolar = $request->only(['hardware', 'version',
         //    'serial_number','battery_type', 'nominal_battery_capacity']);
 
         $data = [
@@ -194,7 +198,6 @@ class HardwareDevice extends BaseModel
         ];
     }
 
-
     public function getCurrentEnergyStatisticsAttribute()
     {
         $now = Carbon::now();
@@ -222,7 +225,7 @@ class HardwareDevice extends BaseModel
         $generatorsHistorical = $this->powerGeneratorsHistorical()->get();
         $loadsHistorical = $this->powerLoadsHistorical()->get();
 
-        return (object)[
+        return (object) [
             'generatorCurrent' => $generatorCurrent,
             'loadCurrent' => $loadCurrent,
             'generatorToday' => $generatorToday,
@@ -231,5 +234,4 @@ class HardwareDevice extends BaseModel
             'loadsHistorical' => $loadsHistorical,
         ];
     }
-
 }

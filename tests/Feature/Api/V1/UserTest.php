@@ -14,8 +14,8 @@ class UserTest extends ApiTestCase
         $headers = $this->asUser();
         $response = $this->getJson($this->apiUrl('user/index'), $headers);
         $response->assertStatus(200)
-                 ->assertJsonPath('status', 'ok')
-                 ->assertJsonStructure(['users']);
+            ->assertJsonPath('status', 'ok')
+            ->assertJsonStructure(['users']);
     }
 
     /** @test */

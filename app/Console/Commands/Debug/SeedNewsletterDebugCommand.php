@@ -49,6 +49,7 @@ class SeedNewsletterDebugCommand extends Command
         }
 
         $this->info("✅ {$count} suscripciones newsletter creadas.");
+
         return self::SUCCESS;
     }
 }

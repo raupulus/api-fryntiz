@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 class CreatePrinterStackTable extends Migration
 {
     private $tableName = 'printer_stack';
+
     private $tableComment = 'Cola de impresión';
 
     /**
@@ -23,10 +24,11 @@ class CreatePrinterStackTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario que creó el registro');
             $table->foreign('user_id')
@@ -45,7 +47,7 @@ class CreatePrinterStackTable extends Migration
             $table->text('content')
                 ->nullable()
                 ->comment('content');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

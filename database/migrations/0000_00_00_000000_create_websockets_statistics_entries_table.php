@@ -14,11 +14,12 @@ class CreateWebSocketsStatisticsEntriesTable extends Migration
     public function up()
     {
         Schema::create('websockets_statistics_entries', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('app_id');
-            $table->integer('peak_connection_count');
-            $table->integer('websocket_message_count');
-            $table->integer('api_message_count');
+            $table->comment('Tabla para almacenar información de websockets statistics entries');
+            $table->increments('id')->comment('Identificador único');
+            $table->string('app_id')->comment('Identificador asociado a app');
+            $table->integer('peak_connection_count')->comment('Columna peak connection count');
+            $table->integer('websocket_message_count')->comment('Columna websocket message count');
+            $table->integer('api_message_count')->comment('Columna api message count');
             $table->nullableTimestamps();
         });
     }

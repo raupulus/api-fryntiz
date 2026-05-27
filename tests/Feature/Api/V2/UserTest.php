@@ -14,7 +14,7 @@ class UserTest extends ApiTestCase
         $headers = $this->asSuperAdmin();
         $response = $this->getJson($this->apiUrl('user'), $headers);
         $response->assertStatus(200)
-                 ->assertJsonStructure(['data']);
+            ->assertJsonStructure(['data']);
     }
 
     /** @test */

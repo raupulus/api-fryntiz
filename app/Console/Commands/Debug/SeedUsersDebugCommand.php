@@ -42,6 +42,7 @@ class SeedUsersDebugCommand extends Command
         }
 
         $this->info("✅ {$count} usuarios creados.");
+
         return self::SUCCESS;
     }
 }

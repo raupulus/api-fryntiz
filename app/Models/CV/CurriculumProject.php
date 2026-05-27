@@ -44,7 +44,7 @@ class CurriculumProject extends CurriculumBaseSection
      * @var string[]
      */
     public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.project.index'
+        'index' => 'dashboard.curriculums.project.index',
     ];
 
     /**
@@ -66,14 +66,14 @@ class CurriculumProject extends CurriculumBaseSection
             'URL' => 'url',
             'URL Info' => 'urlinfo',
             'Repositorio' => 'repository',
-            'Role' => 'role'
+            'Role' => 'role',
         ];
     }
 
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
     public static function getTableCellsInfo()
     {

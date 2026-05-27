@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class ContentGallery
- *
- * @package App\Models\Content
  */
 class ContentContributor extends BaseModel
 {

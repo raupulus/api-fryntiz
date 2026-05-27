@@ -8,8 +8,6 @@ use JsonHelper;
 
 /**
  * Class JsonValidationException
- *
- * @package App\Exceptions
  */
 class JsonValidationException extends Exception
 {

@@ -17,10 +17,11 @@ class CreateCvCollaborationsTable extends Migration
     public function up()
     {
         Schema::create('cv_collaborations', function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de cv collaborations');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
@@ -52,7 +53,7 @@ class CreateCvCollaborationsTable extends Migration
             $table->string('role', 255)
                 ->nullable()
                 ->comment('Rol en el proyecto');
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
     }
 

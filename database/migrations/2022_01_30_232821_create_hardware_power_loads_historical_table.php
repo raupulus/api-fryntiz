@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateHardwarePowerLoadsHistoricalTable extends Migration
 {
     private $tableName = 'hardware_power_loads_historical';
+
     private $tableComment = 'Carga de energía consumida por dispositivo de hardware en el total.';
 
     /**
@@ -23,10 +24,11 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
                 ->comment('Dispositivo asociado');
@@ -94,7 +96,7 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
                 ->nullable()
                 ->comment('Fecha y hora de la última lectura');
 
-            $table->timestamps();
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
 
         });
 

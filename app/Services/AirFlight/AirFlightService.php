@@ -3,6 +3,7 @@
 namespace App\Services\AirFlight;
 
 use App\Models\AirFlight\AirFlightAirPlane;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class AirFlightService
 {
@@ -17,10 +18,11 @@ class AirFlightService
         foreach ($records as $record) {
             $stored[] = AirFlightAirPlane::create($record);
         }
+
         return $stored;
     }
 
-    public function getAircraftHistory(int $perPage = 50): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getAircraftHistory(int $perPage = 50): LengthAwarePaginator
     {
         return AirFlightAirPlane::with('routes')
             ->orderByDesc('created_at')

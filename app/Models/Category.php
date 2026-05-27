@@ -8,6 +8,7 @@ use App\Policies\CategoryPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+
 use function collect;
 use function route;
 
@@ -22,7 +23,7 @@ class Category extends BaseAbstractModelWithTableCrud
 
     protected $fillable = ['name', 'slug', 'description', 'parent_id', 'image_id', 'icon', 'color', 'priority'];
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'category';
     }
@@ -38,7 +39,6 @@ class Category extends BaseAbstractModelWithTableCrud
         ];
     }
 
-
     protected static function boot()
     {
         parent::boot();
@@ -46,7 +46,7 @@ class Category extends BaseAbstractModelWithTableCrud
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function ($model) {
 
-            ## Actualiza el caché de categorías para todas las plataformas
+            // # Actualiza el caché de categorías para todas las plataformas
             $platforms = Platform::all();
             foreach ($platforms as $platform) {
                 $platform->cleanAllCache();
@@ -56,8 +56,6 @@ class Category extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve la categoría padre si la tuviera.
-     *
-     * @return BelongsTo
      */
     public function parentCategory(): BelongsTo
     {
@@ -66,8 +64,6 @@ class Category extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve todas las subcategorías asociadas a la categoría actual.
-     *
-     * @return HasMany
      */
     public function subcategories(): HasMany
     {
@@ -76,8 +72,6 @@ class Category extends BaseAbstractModelWithTableCrud
 
     /**
      * Relación con la tabla "files" que contiene la imagen principal.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {
@@ -86,12 +80,10 @@ class Category extends BaseAbstractModelWithTableCrud
 
     /**
      * Elimina de forma segura la instancia actual.
-     *
-     * @return bool
      */
     public function safeDelete(): bool
     {
-        ## Elimino la imagen asociada y todas las miniaturas.
+        // # Elimino la imagen asociada y todas las miniaturas.
         if ($this->image) {
             $this->image->safeDelete();
         }
@@ -99,24 +91,18 @@ class Category extends BaseAbstractModelWithTableCrud
         return $this->delete();
     }
 
-
-
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return CategoryPolicy::class;
     }
 
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -129,8 +115,6 @@ class Category extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -145,9 +129,9 @@ class Category extends BaseAbstractModelWithTableCrud
     /**
      * Devuelve un array con información sobre los atributos de la tabla.
      *
-     * @return \string[][]
+     * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -170,9 +154,8 @@ class Category extends BaseAbstractModelWithTableCrud
 
     /**
      * Devuelve las rutas de acciones
-     *
      */
-    public static function getTableActionsInfo():Collection
+    public static function getTableActionsInfo(): Collection
     {
         // TODO Crear policies para devolver solo acciones permitidas ahora.
 
@@ -193,8 +176,8 @@ class Category extends BaseAbstractModelWithTableCrud
                 'name' => 'Eliminar',
                 'url' => route(self::getCrudRoutes()['destroy']),
                 'method' => 'DELETE',
-                'ajax' => true
-            ]
+                'ajax' => true,
+            ],
         ]);
     }
 }

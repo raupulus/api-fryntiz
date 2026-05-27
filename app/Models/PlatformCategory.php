@@ -14,8 +14,6 @@ class PlatformCategory extends Model
 
     /**
      * Relación con la tabla de categorías para las plataformas.
-     *
-     * @return BelongsTo
      */
     public function category(): BelongsTo
     {

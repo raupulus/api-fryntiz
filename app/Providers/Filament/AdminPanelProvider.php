@@ -2,13 +2,21 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\Dashboard;
+use App\Filament\Admin\Pages\Login;
+use App\Filament\Admin\Pages\Profile;
+use App\Models\Platform;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,15 +32,21 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login(\App\Filament\Admin\Pages\Login::class)
+            ->login(Login::class)
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::Sky,
+                'gray' => Color::Zinc,
+                'danger' => Color::Rose,
+                'info' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
+            ->discoverClusters(in: app_path('Filament/Admin/Clusters'), for: 'App\\Filament\\Admin\\Clusters')
             ->pages([
-                \App\Filament\Admin\Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -51,9 +65,32 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Sistema',
                 'Contenido',
-                'Módulos IoT',
-                'Módulos Datos',
-                'Herramientas',
+                'Hardware',
+                'Gestión',
+                'Módulos',
+                'Configuración',
+            ])
+            ->defaultThemeMode(ThemeMode::Dark)
+            ->font('Figtree')
+            ->navigationItems(
+                (function () {
+                    try {
+                        return Platform::query()->orderBy('title')->get()->map(fn ($p) => NavigationItem::make($p->title)
+                            ->icon('heroicon-o-rectangle-stack')
+                            ->group('Contenido')
+                            ->sort(10 + $p->id)
+                            ->url('/admin/content/contents?filters[platform_id][value]='.$p->id)
+                        )->all();
+                    } catch (\Throwable) {
+                        return [];
+                    }
+                })()
+            )
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->label('Editar perfil')
+                    ->icon(Heroicon::OutlinedUserCircle)
+                    ->url(fn () => Profile::getUrl()),
             ]);
     }
 }

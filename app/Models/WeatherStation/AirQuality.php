@@ -3,12 +3,9 @@
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\AirQualityUpdateEvent;
-use Illuminate\Support\Collection;
 
 /**
  * Class AirQuality
- *
- * @package App\Models\WeatherStation
  */
 class AirQuality extends BaseWheaterStation
 {
@@ -16,7 +13,7 @@ class AirQuality extends BaseWheaterStation
         'hardware_device_id',
         'gas_resistance',
         'air_quality',
-        'created_at'
+        'created_at',
     ];
 
     protected $table = 'meteorology_air_quality';
@@ -40,7 +37,7 @@ class AirQuality extends BaseWheaterStation
      */
     public $name = 'Calidad del aire';
 
-    public static function  getModuleName(): string
+    public static function getModuleName(): string
     {
         return 'air_quality';
     }
@@ -60,7 +57,6 @@ class AirQuality extends BaseWheaterStation
         'created' => AirQualityUpdateEvent::class,
     ];
 
-
     /**
      * Devuelve todos los elementos del modelo.
      */
@@ -71,20 +67,16 @@ class AirQuality extends BaseWheaterStation
             ->whereNotNull('air_quality')
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return $query;
     }
-
-
-
 
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
      * Devuelve el modelo de la política asociada.
-     *
-     * @return string|null
      */
-    protected static function getPolicy(): string|null
+    protected static function getPolicy(): ?string
     {
         return null;
     }
@@ -92,8 +84,6 @@ class AirQuality extends BaseWheaterStation
     /**
      * Devuelve un array con el nombre del atributo y la validación aplicada.
      * Esto está pensado para usarlo en el frontend
-     *
-     * @return array
      */
     public static function getFieldsValidation(): array
     {
@@ -105,8 +95,6 @@ class AirQuality extends BaseWheaterStation
 
     /**
      * Devuelve un array con todos los títulos de una tabla.
-     *
-     * @return array
      */
     public static function getTableHeads(): array
     {
@@ -114,7 +102,7 @@ class AirQuality extends BaseWheaterStation
             'id' => 'ID',
             'gas_resistance' => 'Resistencia',
             'air_quality' => 'Calidad del aire %',
-            'created_at' => 'Instante'
+            'created_at' => 'Instante',
         ];
     }
 
@@ -123,7 +111,7 @@ class AirQuality extends BaseWheaterStation
      *
      * @return string[][]
      */
-    public static function getTableCellsInfo():array
+    public static function getTableCellsInfo(): array
     {
         return [
             'id' => [
@@ -142,5 +130,4 @@ class AirQuality extends BaseWheaterStation
 
         ];
     }
-
 }

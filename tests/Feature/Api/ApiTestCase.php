@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\ContentAvailableStatusSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -9,7 +10,7 @@ use Tests\Traits\AuthenticatesForApi;
 
 abstract class ApiTestCase extends TestCase
 {
-    use RefreshDatabase, AuthenticatesForApi;
+    use AuthenticatesForApi, RefreshDatabase;
 
     /**
      * Prefijo base de la API. Las subclases lo definen para su módulo.
@@ -27,7 +28,7 @@ abstract class ApiTestCase extends TestCase
     private function seedContentStatuses(): void
     {
         if (DB::table('content_available_status')->count() === 0) {
-            (new \Database\Seeders\ContentAvailableStatusSeeder())->run();
+            (new ContentAvailableStatusSeeder)->run();
         }
     }
 
@@ -36,7 +37,7 @@ abstract class ApiTestCase extends TestCase
      */
     protected function apiUrl(string $path): string
     {
-        return '/' . ltrim($this->apiPrefix, '/') . '/' . ltrim($path, '/');
+        return '/'.ltrim($this->apiPrefix, '/').'/'.ltrim($path, '/');
     }
 
     /**

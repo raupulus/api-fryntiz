@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateMeteorologyRainTable extends Migration
 {
     private $tableName = 'meteorology_rain';
+
     private $tableComment = 'Datos para registros de lluvia';
 
     /**
@@ -21,10 +22,11 @@ class CreateMeteorologyRainTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->comment('Tabla para almacenar información de $la tabla');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id');
+            $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
@@ -52,12 +54,10 @@ class CreateMeteorologyRainTable extends Migration
                 ->default(0)
                 ->comment('Lluvia acumulada en el mes en mm');
 
-
-
             $table->decimal('moisture', 11, 1)
                 ->comment('Vapor de agua en el aire (g/m3)');
 
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

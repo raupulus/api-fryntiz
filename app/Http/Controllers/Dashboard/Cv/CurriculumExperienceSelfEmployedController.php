@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Dashboard\Cv;
 use App\Http\Requests\Cv\StoreCvExperienceSelfEmployedRequest as StoreRequest;
 use App\Models\CV\Curriculum;
 use App\Models\File;
+use Illuminate\Http\RedirectResponse;
+
 use function abort;
 use function auth;
 use function redirect;
@@ -19,19 +21,17 @@ class CurriculumExperienceSelfEmployedController extends CurriculumBaseSectionCo
     /**
      * Almacena un nuevo registro para el usuario actual.
      *
-     * @param \App\Http\Requests\Cv\StoreCvExperienceSelfEmployedRequest $request
-     * @param int          $cv_id ID del CV
-     *
-     * @return \Illuminate\Http\RedirectResponse|never
+     * @param  int  $cv_id  ID del CV
+     * @return RedirectResponse|never
      */
     public function store(StoreRequest $request, int $cv_id)
     {
-        ## Busco el curriculum para el usuario actual.
+        // # Busco el curriculum para el usuario actual.
         $cv = Curriculum::where('id', $cv_id)
             ->where('user_id', auth()->id())
             ->first();
 
-        if (!$cv) {
+        if (! $cv) {
             return abort(404);
         }
 
@@ -47,7 +47,7 @@ class CurriculumExperienceSelfEmployedController extends CurriculumBaseSectionCo
         $model->fill($request->validated());
         $model->save();
 
-        ## Compruebo si se ha subido una imagen y la guardo.
+        // # Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $imagePath = ($this->modelName)::$imagePath;
 
@@ -55,7 +55,7 @@ class CurriculumExperienceSelfEmployedController extends CurriculumBaseSectionCo
                 true,
                 $model->image_id);
 
-            if (!$model->image_id && $file) {
+            if (! $model->image_id && $file) {
                 $model->image_id = $file->id;
                 $model->save();
             }
@@ -67,30 +67,28 @@ class CurriculumExperienceSelfEmployedController extends CurriculumBaseSectionCo
     /**
      * Guarda los cambios de un registro.
      *
-     * @param \App\Http\Requests\Cv\StoreCvExperienceSelfEmployedRequest $request
-     * @param                                             $id
      *
-     * @return \Illuminate\Http\RedirectResponse|never
+     * @return RedirectResponse|never
      */
     public function update(StoreRequest $request, $id)
     {
         $model = $this->modelName::find($id);
 
-        if (!$model) {
+        if (! $model) {
             return abort(404);
         }
 
-        ## Busco el curriculum para el usuario actual.
+        // # Busco el curriculum para el usuario actual.
         $cv = $model->curriculum;
 
-        if (!$cv || ($cv->user_id !== auth()->id())) {
+        if (! $cv || ($cv->user_id !== auth()->id())) {
             return abort(404);
         }
 
         $model->fill($request->validated());
         $model->save();
 
-        ## Compruebo si se ha subido una imagen y la guardo.
+        // # Compruebo si se ha subido una imagen y la guardo.
         if ($request->hasFile('image')) {
             $imagePath = ($this->modelName)::$imagePath;
 
@@ -98,7 +96,7 @@ class CurriculumExperienceSelfEmployedController extends CurriculumBaseSectionCo
                 true,
                 $model->image_id);
 
-            if (!$model->image_id && $file) {
+            if (! $model->image_id && $file) {
                 $model->image_id = $file->id;
                 $model->save();
             }

@@ -6,8 +6,6 @@ use App\Models\WeatherStation\Humidity;
 
 /**
  * Class HumidityController
- *
- * @package App\Http\Controllers\Api\WeatherStation
  */
 class HumidityController extends BaseWheaterStationController
 {

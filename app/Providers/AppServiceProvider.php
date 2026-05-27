@@ -2,13 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\ApiToken;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 /**
  * Class AppServiceProvider
@@ -32,10 +38,33 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Soporte para comentarios en colecciones (e.g. $table->timestamps()->comment(...)) en Laravel 11/12/13
+        Collection::macro('comment', function ($value) {
+            return $this->each(fn ($column) => method_exists($column, 'comment') ? $column->comment($value) : null);
+        });
+
+        // Global styling for Filament buttons
+        CreateAction::configureUsing(function (CreateAction $action) {
+            $action->color('success');
+        });
+        EditAction::configureUsing(function (EditAction $action) {
+            $action->color('primary');
+        });
+
+        // Custom Save action configuration (they usually are primary, turn them success)
+        Action::configureUsing(function (Action $action) {
+            if (in_array($action->getName(), ['save', 'create'])) {
+                $action->color('success');
+            }
+        });
+
+        // Usar modelo ApiToken personalizado para Filament Resource (fix_10 / fase 13).
+        Sanctum::usePersonalAccessTokenModel(ApiToken::class);
+
         // Registrar lazy loading como advertencia en desarrollo (sin lanzar excepción)
         // TODO: Corregir queries N+1 y activar preventLazyLoading estricto
         Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation) {
-            Log::warning("Lazy loading [{$relation}] on model [" . get_class($model) . "]");
+            Log::warning("Lazy loading [{$relation}] on model [".get_class($model).']');
         });
 
         // Gate global: superadmin tiene acceso a todo

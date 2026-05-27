@@ -14,6 +14,7 @@ use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
+use Illuminate\View\View;
 
 /**
  * Class WeatherStationController
@@ -60,8 +61,8 @@ class WeatherStationController extends Controller
     /**
      * Muestra la página de datos de un sensor individual con tabla paginada.
      *
-     * @param string $type Tipo de sensor (temperature, humidity, pressure, etc.)
-     * @return \Illuminate\View\View
+     * @param  string  $type  Tipo de sensor (temperature, humidity, pressure, etc.)
+     * @return View
      */
     public function sensor(string $type)
     {

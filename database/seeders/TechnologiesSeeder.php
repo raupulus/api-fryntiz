@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Technology;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class ContentAvailableCategoriesSeeder
@@ -181,7 +180,7 @@ class TechnologiesSeeder extends Seeder
             ],
         ];
 
-        //$now = Carbon::now();
+        // $now = Carbon::now();
 
         foreach ($datas as $data) {
             Technology::firstOrCreate(['slug' => $data['slug']], $data);

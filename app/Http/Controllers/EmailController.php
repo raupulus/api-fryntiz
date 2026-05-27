@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 // TODO: Crear configuración para captcha de google v3 en el archivo .env y en el archivo config/app.php
 // permitiendo que se pueda trabajar con un token privado por cada plataforma. Además de la principal para este dominio.
 // Esto quizás se podría dinamizar en el futuro dentro de "plataformas", pero por ahora no es necesario.
@@ -42,13 +41,10 @@ class EmailController extends Controller
         'laguialinux.com',
     ];
 
-
     /**
      * Comprueba si el email es válido.
      *
-     * @param string $email Cadena con el email a comprobar.
-     *
-     * @return bool
+     * @param  string  $email  Cadena con el email a comprobar.
      */
     private function checkEmail(string $email): bool
     {
@@ -58,9 +54,7 @@ class EmailController extends Controller
     /**
      * Compueba si la aplicación es válida.
      *
-     * @param string $app Nombre de la aplicación a comprobar.
-     *
-     * @return bool
+     * @param  string  $app  Nombre de la aplicación a comprobar.
      */
     private function checkApp(string $app): bool
     {
@@ -70,9 +64,7 @@ class EmailController extends Controller
     /**
      * Comprueba si el dominio es válido.
      *
-     * @param string $domain Nombre del dominio a comprobar.
-     *
-     * @return bool
+     * @param  string  $domain  Nombre del dominio a comprobar.
      */
     private function checkDomain(string $domain): bool
     {
@@ -81,10 +73,6 @@ class EmailController extends Controller
 
     /**
      * Extrae los atributos secundarios de una petición para almacenarlos en el campo de "attributes" como json.
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse|null
      */
     public function getAttributesJson(Request $request): ?JsonResponse
     {
@@ -96,14 +84,12 @@ class EmailController extends Controller
     /**
      * Comprueba si la ip está bloqueada por demasiados intentos o en listas de sospechosos habituales.
      *
-     * @param string $ip Dirección ip a comprobar.
-     *
-     * @return bool
+     * @param  string  $ip  Dirección ip a comprobar.
      */
     private function checkIpIsAllowed(string $ip): bool
     {
         $ipSlug = Str::slug($ip, '_');
-        $intents = Cache::get('ipCount_' . $ipSlug, 0);
+        $intents = Cache::get('ipCount_'.$ipSlug, 0);
 
         return config('app.debug') ?? ($intents <= 5);
     }
@@ -111,8 +97,7 @@ class EmailController extends Controller
     /**
      * Comprueba la calidad de las palabras del texto y devuelve si pasa los filtros establecidos.
      *
-     * @param string $text Texto a analizar.
-     *
+     * @param  string  $text  Texto a analizar.
      * @return float Puntuación del texto, rango 0-10.
      */
     public function checkWordsQuality(string $text): float
@@ -127,7 +112,6 @@ class EmailController extends Controller
     /**
      * Recibe los datos desde una petición api Post, almacena y envía el email.
      *
-     * @param EmailContactSendRequest $request
      * @return JsonResponse
      */
     public function sendFromForm(EmailContactSendRequest $request)
@@ -136,14 +120,13 @@ class EmailController extends Controller
         $checkApp = $this->checkApp($request->get('app_name'));
         $checkDomain = $this->checkDomain($request->get('app_domain'));
 
-        if (!$checkIp || !$checkApp || !$checkDomain) {
+        if (! $checkIp || ! $checkApp || ! $checkDomain) {
             return \JsonHelper::forbidden('Origen erróneo, petición mal formada o ip bloqueada. Enviada alerta de seguridad al administrador');
         }
 
         $email = new Email($request->validated());
 
         $errors = [];
-
 
         $checkLastFromEmail = Email::where('email', $email->email)
             ->where('created_at', '>=', Carbon::now()->subMinutes(2))
@@ -165,36 +148,36 @@ class EmailController extends Controller
             $errors['subject_message'] = 'Ya se ha recibido una solicitud de email con el mismo asunto o mensaje en las últimas 24 horas.';
         }
 
-        if (!$checkLastFromEmail && !$checkSubjectAndMessage) {
+        if (! $checkLastFromEmail && ! $checkSubjectAndMessage) {
             $captchaToken = $request->get('captcha_token');
             $captchaValid = GoogleRecaptchaHelper::checkCaptcha($captchaToken, 'contact', $request->ip());
         }
 
-        if (!$checkLastFromEmail && !$checkSubjectAndMessage && $captchaValid->isSuccess()) {
+        if (! $checkLastFromEmail && ! $checkSubjectAndMessage && $captchaValid->isSuccess()) {
             // Verified!
             $email->captcha_score = $captchaValid->getScore();
             $qualityCaptcha = $captchaValid->getScore() <= 0.5 ? 0 : ($captchaValid->getScore() - 0.5) * 8;
 
-            $priority = (int)collect([
+            $priority = (int) collect([
                 'captcha' => $qualityCaptcha,
                 'words' => $this->checkWordsQuality($email->message) / 2,
                 'attempts' => $this->checkIpIsAllowed($request->ip()) ? 1 : 0,
             ])->sum();
 
-            $email->send = $priority >= 4; ## Umbral mínimo para enviar 4/10
+            $email->send = $priority >= 4; // # Umbral mínimo para enviar 4/10
             $email->priority = $priority;
-        } else if (!$checkLastFromEmail && !$checkSubjectAndMessage && !$captchaValid->isSuccess()) {
-                $email->send = false;
-                $email->priority = 0;
+        } elseif (! $checkLastFromEmail && ! $checkSubjectAndMessage && ! $captchaValid->isSuccess()) {
+            $email->send = false;
+            $email->priority = 0;
 
-                $errors['captcha'] = $captchaValid->getErrorCodes();
+            $errors['captcha'] = $captchaValid->getErrorCodes();
         } else {
             $email->send = false;
             $email->priority = 0;
         }
 
-        ## En caso de mensaje idéntico o parecido descartar guardar
-        if (!$checkLastFromEmail && !$checkSubjectAndMessage) {
+        // # En caso de mensaje idéntico o parecido descartar guardar
+        if (! $checkLastFromEmail && ! $checkSubjectAndMessage) {
             $email->attempts = $email->send ?? true;
             $email->save();
         }
@@ -220,21 +203,14 @@ class EmailController extends Controller
     /**
      * Realiza el envío del email, solo si la puntuación es alta.
      *
-     * @param Email $email Email a enviar.
-     * @param string $template Plantilla a utilizar para el email, la vista dentro del directorio.
-     *
-     * @return bool
+     * @param  Email  $email  Email a enviar.
+     * @param  string  $template  Plantilla a utilizar para el email, la vista dentro del directorio.
      */
     private function sendEmail(Email $email, string $template = 'generic'): bool
     {
 
-
-
         // TODO: Terminar de implementar el envío de emails.
-
-
 
         return true;
     }
-
 }

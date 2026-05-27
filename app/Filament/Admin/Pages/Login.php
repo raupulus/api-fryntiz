@@ -2,9 +2,10 @@
 
 namespace App\Filament\Admin\Pages;
 
-use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use Filament\Auth\Pages\Login as BaseLogin;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
@@ -23,7 +24,7 @@ class Login extends BaseLogin
             ]);
 
             return $result;
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             Log::warning('[Admin Login] Fallo de validación/credenciales', [
                 'email' => $this->data['email'] ?? 'sin email',
                 'errors' => $e->errors(),
@@ -31,12 +32,12 @@ class Login extends BaseLogin
 
             throw $e;
         } catch (\Throwable $e) {
-            Log::error('[Admin Login] Error inesperado: ' . $e->getMessage(), [
+            Log::error('[Admin Login] Error inesperado: '.$e->getMessage(), [
                 'email' => $this->data['email'] ?? 'sin email',
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->addError('data.email', 'Error interno: ' . $e->getMessage());
+            $this->addError('data.email', 'Error interno: '.$e->getMessage());
 
             return null;
         }

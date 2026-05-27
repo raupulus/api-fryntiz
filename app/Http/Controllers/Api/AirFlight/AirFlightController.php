@@ -2,45 +2,44 @@
 
 namespace App\Http\Controllers\Api\AirFlight;
 
+use App\Http\Controllers\Controller;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
-use App\Http\Controllers\Controller;
 use App\Models\Hardware\HardwareDevice;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 use function auth;
 use function GuzzleHttp\json_decode;
 use function in_array;
 use function public_path;
 use function response;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class AirFlightController
- *
- * @package App\Http\Controllers\AirFlight
- *
  */
 class AirFlightController extends Controller
 {
     /**
      * Devuelve el historial para la página del historial solicitada.
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function getAircraftHistoryJson(Request $request)
     {
         $now = Carbon::now();
         $lastCheckTimestampMs = $request->get('_');
 
-        ## Cantidad de archivos históricos.
+        // # Cantidad de archivos históricos.
         $historyLength = AirFlightRoute::HISTORY_LENGTH;
 
-        ## Página actual del histórico para devolver
+        // # Página actual del histórico para devolver
         $historyPage = $request->get('history') ?? 1;
 
         if ($historyPage > AirFlightRoute::HISTORY_LENGTH) {
@@ -51,10 +50,10 @@ class AirFlightController extends Controller
             ]);
         }
 
-        ## Rango de segundos para cada histórico en 10 minutos.
+        // # Rango de segundos para cada histórico en 10 minutos.
         $historySeconds = (int) round(600 / $historyLength);
 
-        $checkFrom = clone($now);
+        $checkFrom = clone $now;
         $checkTo = null;
 
         if ($lastCheckTimestampMs) {
@@ -72,10 +71,9 @@ class AirFlightController extends Controller
         $subSeconds = $historyPage * $historySeconds;
         $addSeconds = $historySeconds;
 
-
         if ($historyPage && $historyPage >= 1) {
             $checkFrom = $checkFrom->subSeconds($subSeconds);
-            $checkTo = (clone($checkFrom))->addSeconds($addSeconds);
+            $checkTo = (clone $checkFrom)->addSeconds($addSeconds);
         }
 
         $aircrafts = AirFlightAirPlane::getRecentsAircrafts($checkFrom, $checkTo);
@@ -90,25 +88,24 @@ class AirFlightController extends Controller
     /**
      * Devuelve datos de la db para los vuelos.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param                string    $data Temporalmente el archivo a
-     *                                       devolver.
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @param  string  $data  Temporalmente el archivo a
+     *                        devolver.
+     * @return BinaryFileResponse
      */
     public function getFromDb(Request $request, $data)
     {
-        $path = public_path('resources/airflight/db/' . $data . '.json');
-        if (!file_exists($path)) {
+        $path = public_path('resources/airflight/db/'.$data.'.json');
+        if (! file_exists($path)) {
             abort(404);
         }
+
         return response()->file($path);
     }
 
     /**
      * Devuelve información del receptor emulado
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function getReceiverInformation()
     {
@@ -117,20 +114,20 @@ class AirFlightController extends Controller
             'lat' => 36.7381,
             'lon' => -6.4301,
             'refresh' => 5000,
-            'version' => 'api raupulus v1'
+            'version' => 'api raupulus v1',
         ]);
     }
 
     /**
      * Devuelve los últimos aviones en una respuesta json.
      *
-     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function getAircraftjson(Request $request) {
+    public function getAircraftjson(Request $request)
+    {
         $now = Carbon::now();
-        $checkFrom = (clone($now))->subMinutes(10);
+        $checkFrom = (clone $now)->subMinutes(10);
         $lastCheckTimestampMs = $request->get('_');
 
         if ($lastCheckTimestampMs) {
@@ -155,27 +152,28 @@ class AirFlightController extends Controller
         ]);
     }
 
-    public function addJson(Request $request) {
+    public function addJson(Request $request)
+    {
         $hardware_id = $request->get('hardware_device_id');
         $hardware = $hardware_id ? HardwareDevice::find($hardware_id) : null;
         $data = json_decode($request->get('data'));
 
-        //return response()->json(['ok' => true]);
+        // return response()->json(['ok' => true]);
         $fails = 0;
 
-        ## Proceso cada dato recibido mediante JSON.
+        // # Proceso cada dato recibido mediante JSON.
         foreach ($data as $d) {
             try {
-                ## Parseo la fecha
+                // # Parseo la fecha
                 if ($d->seen_at) {
                     $d->seen_at = (new \DateTime($d->seen_at))->format('Y-m-d H:i:s');
                 }
 
                 // TODO → Corregir fallo al subir cuando se está validando
 
-                ## Obtengo atributos y los validos para excluir posible basura.
-                //$attributes = $this->addValidate(get_object_vars($d));
-                //$model->fill($attributes);
+                // # Obtengo atributos y los validos para excluir posible basura.
+                // $attributes = $this->addValidate(get_object_vars($d));
+                // $model->fill($attributes);
                 // TEMPORAL:
                 $z = get_object_vars($d);
                 if (is_array($z)) {
@@ -185,11 +183,11 @@ class AirFlightController extends Controller
                         ]
                     );
 
-                    if ($hardware && $airflight && !$airflight->hardware_device_id) {
+                    if ($hardware && $airflight && ! $airflight->hardware_device_id) {
                         $airflight->hardware_device_id = $hardware->id;
                     }
 
-                    ## Compruebo si no tiene el país o la bandera para buscarlos.
+                    // # Compruebo si no tiene el país o la bandera para buscarlos.
                     if (! $airflight->country || ! $airflight->flag) {
                         $hex = AirFlightAirPlane::searchHex($airflight->icao);
 
@@ -199,30 +197,30 @@ class AirFlightController extends Controller
                         }
                     }
 
-                    ## Añade o actualiza la última vez que se vió si es mayor a la actual
+                    // # Añade o actualiza la última vez que se vió si es mayor a la actual
                     if (! $airflight->seen_last_at || ($airflight->seen_last_at < $d->seen_at)) {
                         $airflight->seen_last_at = $d->seen_at;
                     }
 
-                    if (!$airflight->category || ($airflight->category == 'null')) {
+                    if (! $airflight->category || ($airflight->category == 'null')) {
                         $airflight->category = $d->category == 'null' ? null : $d->category;
                     }
 
-                    if (!$airflight->user_id) {
+                    if (! $airflight->user_id) {
                         $airflight->user_id = auth()->id();
                     }
 
-                    ## Comprueba si no se marcó al verse por primera vez o hay fecha anterior.
+                    // # Comprueba si no se marcó al verse por primera vez o hay fecha anterior.
                     if (! $airflight->seen_first_at || ($airflight->seen_first_at > $d->seen_at)) {
                         $airflight->seen_first_at = $d->seen_at;
                     }
 
                     $airflight->save();
 
-                    ## Solo almaceno rutas cuando hay latitud y longitud.
+                    // # Solo almaceno rutas cuando hay latitud y longitud.
                     if ($d->lat && ($d->lat != 0) && $d->lon && ($d->lon != 0)) {
                         $lastHour = (Carbon::now())->subHour()->format('Y-m-d H:i:s');
-                        $lastSeenRoute = AirFlightRoute::where('seen_at', '<=', $lastHour )
+                        $lastSeenRoute = AirFlightRoute::where('seen_at', '<=', $lastHour)
                             ->where('airplane_id', $airflight->id)
                             ->where('lat', $d->lat)
                             ->where('lon', $d->lon)
@@ -240,7 +238,7 @@ class AirFlightController extends Controller
                         }
 
                         if (! $d->messages || in_array($d->messages, ['null', 'none',  ''])) {
-                            $d->messages = $lastSeenRoute && $lastSeenRoute->messages ?  $lastSeenRoute->messages + 1 : null;
+                            $d->messages = $lastSeenRoute && $lastSeenRoute->messages ? $lastSeenRoute->messages + 1 : null;
                         }
 
                         if (in_array($d->emergency, ['null', 'none', '', null])) {
@@ -270,7 +268,7 @@ class AirFlightController extends Controller
                             ]
                         );
 
-                        ## Marco el momento de la última ruta en el avión.
+                        // # Marco el momento de la última ruta en el avión.
                         if ($route && $airflight) {
                             $airflight->route_last_at = $route->seen_at;
                             $airflight->save();
@@ -285,11 +283,11 @@ class AirFlightController extends Controller
             }
         }
 
-        ## Respuesta cuando se ha guardado el modelo correctamente
+        // # Respuesta cuando se ha guardado el modelo correctamente
         if ($fails == 0) {
             return response()->json('Guardado Correctamente', 201);
-        } else if ($fails >= 1) {
-            return response()->json('Fallidos: ' . $fails, 200);
+        } elseif ($fails >= 1) {
+            return response()->json('Fallidos: '.$fails, 200);
         }
 
         return response()->json('No se ha guardado nada', 500);
@@ -298,18 +296,17 @@ class AirFlightController extends Controller
     /**
      * Reglas de validación a la hora de insertar datos.
      *
-     * @param $request
-     *
+     * @param  $request
      * @return mixed
      */
     public function addValidate($data)
     {
         return Validator::make($data, [
-            ## Avión
+            // # Avión
             'icao' => 'required|string',
             'category' => 'nullable|string',
 
-            ## Vuelo
+            // # Vuelo
             'squawk' => 'nullable|string',
             'flight' => 'nullable|string',
             'lat' => 'nullable|string',

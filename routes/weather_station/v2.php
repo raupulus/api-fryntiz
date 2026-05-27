@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\WeatherStation\V2\GeneralController;
 use App\Http\Controllers\Api\WeatherStation\V2\GenericController;
-use App\Http\Controllers\Api\WeatherStation\V2\TemperatureController;
 use App\Http\Controllers\Api\WeatherStation\V2\HumidityController;
 use App\Http\Controllers\Api\WeatherStation\V2\PressureController;
+use App\Http\Controllers\Api\WeatherStation\V2\TemperatureController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

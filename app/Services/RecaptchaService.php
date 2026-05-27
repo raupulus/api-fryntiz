@@ -12,6 +12,7 @@ class RecaptchaService
             'secret' => config('services.recaptcha.secret_key'),
             'response' => $token,
         ]);
+
         return $response->successful() && $response->json('success') === true;
     }
 }

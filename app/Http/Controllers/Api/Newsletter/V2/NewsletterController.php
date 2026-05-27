@@ -31,7 +31,7 @@ class NewsletterController extends BaseApiController
     {
         $result = $this->service->verify($token);
 
-        if (!$result) {
+        if (! $result) {
             return $this->notFoundResponse('Token invalido');
         }
 
@@ -45,7 +45,7 @@ class NewsletterController extends BaseApiController
     {
         $result = $this->service->unsubscribe($token);
 
-        if (!$result) {
+        if (! $result) {
             return $this->notFoundResponse('Token invalido');
         }
 

@@ -42,9 +42,9 @@ class SeedAllDebugCommand extends Command
 
         foreach ($commands as [$name, $args]) {
             $this->newLine();
-            $this->line("════════════════════════════════════════════");
+            $this->line('════════════════════════════════════════════');
             $this->line("▶ Ejecutando: {$name}");
-            $this->line("════════════════════════════════════════════");
+            $this->line('════════════════════════════════════════════');
 
             $exitCode = $this->call($name, $args);
 
@@ -55,6 +55,7 @@ class SeedAllDebugCommand extends Command
 
         $this->newLine();
         $this->info('✅ Seed-all completado.');
+
         return self::SUCCESS;
     }
 }

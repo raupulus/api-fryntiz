@@ -23,7 +23,7 @@ class ContactController extends BaseApiController
      */
     public function send(ContactSendRequest $request): JsonResponse
     {
-        if (!$this->recaptchaService->verify($request->validated()['g-recaptcha-response'])) {
+        if (! $this->recaptchaService->verify($request->validated()['g-recaptcha-response'])) {
             return $this->errorResponse('Verificacion de seguridad fallida', 422);
         }
 
