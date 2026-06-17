@@ -4,15 +4,40 @@
 
 Api Raupulus es una plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (estación meteorológica, plantas inteligentes, contador de pulsaciones, registro de vuelos, energía solar), gestión de contenidos multi-plataforma, currículum vitae y newsletter.
 
+## Skills del proyecto — carga automática
+
+Este repo incluye **skills específicas** en `.claude/skills/<nombre>/SKILL.md`
+(versionadas en git). Cada skill encapsula las **convenciones reales** de su
+dominio en este proyecto. En Claude Code se auto-activan por su campo
+`description`; cualquier otro agente que lea este AGENTS.md debe **cargar la skill
+correspondiente al empezar a trabajar en ese contexto** según esta tabla:
+
+| Skill | Ruta | Cárgala cuando trabajes en… |
+|-------|------|------------------------------|
+| `laravel-backend` | `.claude/skills/laravel-backend/SKILL.md` | Models, Services, Actions, Jobs, Events/Listeners, Enums, Helpers, Policies, Traits; lógica de negocio bajo `app/` (skill base del backend) |
+| `api-rest-v2` | `.claude/skills/api-rest-v2/SKILL.md` | Endpoints API: controladores `Api/…/V2`, Resources `V2`, FormRequests `Api`, rutas `*/v2.php`, Sanctum, tokens IoT/abilities, envelope JSON |
+| `postgresql-migrations` | `.claude/skills/postgresql-migrations/SKILL.md` | `database/migrations/`, esquema, índices, FKs, tipos de columna, rendimiento de consultas |
+| `filament-admin` | `.claude/skills/filament-admin/SKILL.md` | `app/Filament/`: Resources, Pages, Widgets, Clusters, componentes y paneles Admin/Tenant |
+| `vue-tailwind-frontend` | `.claude/skills/vue-tailwind-frontend/SKILL.md` | `resources/js/`, `resources/css/`, componentes `.vue`, vistas Blade, Tailwind 4, Vite/pnpm, Alpine |
+| `design-system` | `.claude/skills/design-system/SKILL.md` | Criterio visual: paleta, tipografía, jerarquía, look&feel, diseñar/revisar pantallas (Raupulus Slate / Obsidian Flux) |
+| `seo` | `.claude/skills/seo/SKILL.md` | `ContentSeo`, meta/OG/Twitter en `head.blade.php`, sitemap, JSON-LD, hreflang, canonicals, posicionamiento |
+| `mcp-server` | `.claude/skills/mcp-server/SKILL.md` | `app/Mcp/` (Servers/Tools/Resources/Prompts), `routes/ai.php`, comandos `mcp:*`/`make:mcp-*`, exponer contexto del proyecto a LLMs (`laravel/mcp`) |
+| `printers` | `.claude/skills/printers/SKILL.md` | Módulo Impresoras: modelos `Printer`/`PrinterStack`/`PrinterAvailableType`, cola de impresión, `PrinterResource` |
+
+Regla práctica: si una tarea cae en uno de esos contextos, **consulta primero la
+skill** antes de escribir código, para respetar las convenciones del proyecto.
+Varias pueden aplicar a la vez (p. ej. un endpoint nuevo con su migración usa
+`api-rest-v2` + `postgresql-migrations` + `laravel-backend`).
+
 ## Arquitectura
 
 - **Patrón:** MVC con Service Layer
-- **API:** Versionada (V1 legacy + V2 actual), respuestas JSON con JsonResources
+- **API:** Única versión **V2 FULL REST** (la V1 legacy fue eliminada en fix_1), respuestas JSON con JsonResources
 - **Admin:** Dos paneles Filament 5 (Admin para superadmin, Tenant para usuarios)
-- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js (Vite 6, prefiere usar pnpm)
-- **Build:** Vite 6 con `laravel-vite-plugin` y `@tailwindcss/vite`
+- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js + Vue.js 3 (Vite 6, prefiere usar pnpm)
+- **Build:** Vite 6 con `laravel-vite-plugin`, `@tailwindcss/vite` y `@vitejs/plugin-vue` — entrypoints: `resources/css/app.css`, `resources/js/app.js`, `resources/js/vue.js`, `resources/css/filament/admin/theme.css`
 - **Excepciones API:** Excepciones JSON personalizadas (`JsonValidationException`, `JsonAuthorizationException`) en `app/Exceptions/`, configuradas en `bootstrap/app.php`
-- **Eventos y WebSockets:** Eventos broadcast (`app/Events/`) con listeners (`app/Listeners/`), con soporte preparado para Laravel Reverb
+- **Eventos y WebSockets:** Eventos broadcast (`app/Events/`) con listeners (`app/Listeners/`), con soporte preparado para Laravel Reverb. Sub-eventos granulares en `app/Events/WeatherStation/` (Temperature, Humidity, Pressure, Light, Wind, Rain, Lightning, AirQuality)
 - **Jobs:** `ProcessContentViewJob` para vistas de contenido asíncronas
 - **Notificaciones:** `NewContactMessage` para formulario de contacto
 
@@ -25,13 +50,20 @@ Api Raupulus es una plataforma multi-API desarrollada con Laravel 13 que central
 | `laravel/sanctum` | ^4.0 | Autenticación API (tokens) |
 | `laravel/fortify` | ^1.24 | Autenticación web |
 | `intervention/image` | ^3.0 | Procesamiento de imágenes |
+| `intervention/image-laravel` | ^1.5 | Integración Laravel de Intervention |
+| `guzzlehttp/guzzle` | ^7.9 | Cliente HTTP (AEMET, etc.) |
 | `spatie/laravel-sitemap` | ^8.0 | Generación de sitemap |
 | `google/recaptcha` | ^1.3 | Validación reCAPTCHA |
+| `laravel/tinker` | ^3.0 | REPL interactivo |
 | `laravel/pint` | ^1.18 | Linting/formatting (dev) |
 | `phpunit/phpunit` | ^11.0 | Tests (dev) |
 | `barryvdh/laravel-debugbar` | ^4.0 | Debug toolbar (dev) |
+| `vue` | ^3.5 | Framework JS reactivo (frontend) |
+| `@vitejs/plugin-vue` | ^6.0 | Plugin Vite para Vue SFC |
+| `alpinejs` | ^3.14 | Interactividad ligera Blade |
 
 **PHP requerido:** ^8.4
+**Node.js requerido:** >=20 <=26 (pnpm@11)
 
 ## Comandos de Desarrollo
 
@@ -69,12 +101,14 @@ app/
 ├── Console/Commands/   # Comandos Artisan
 │   ├── AEMET/          # 7 comandos AEMET por frecuencia (Daily, Every10m, Every30m, Every4h, etc.)
 │   └── Content/        # PublishContentCommand
-├── Enums/              # PHP 8.4 backed enums (UserRoleEnum, ContentStatusEnum, ContentTypeEnum, etc.)
-├── Events/             # Eventos de dominio (WeatherStationUpdateEvent)
+├── Enums/              # PHP 8.4 backed enums (UserRoleEnum, ContentStatusEnum, ContentTypeEnum, ContentPageRawTypeEnum, CvRepositoryTypeEnum, FileTypeEnum, HardwareTypeEnum, NewsletterStatusEnum, PlatformStatusEnum)
+├── Events/             # Eventos de dominio (WeatherStationUpdateEvent) + WeatherStation/ (8 sub-eventos granulares por sensor)
 ├── Exceptions/         # Excepciones JSON personalizadas (JsonValidationException, JsonAuthorizationException)
 ├── Filament/
-│   ├── Admin/          # Panel Admin: Resources (Content, User), Pages, Widgets
-│   └── Tenant/         # Panel Tenant: Resources, Pages, Widgets (en desarrollo)
+│   ├── Admin/          # Panel Admin: Resources (16 módulos), Pages, Widgets, Clusters (AirFlight, Energy, KeyCounter, SmartPlant)
+│   ├── Tenant/         # Panel Tenant: Resources, Pages, Widgets (en desarrollo)
+│   ├── Components/     # Campos Filament personalizados (EditorJsField, ImageCropperUpload, YoutubeVideoField)
+│   └── Concerns/       # Traits Filament (HasImageFileUpload)
 ├── Helpers/            # Clases helper globales (AEMETHelper, ContentHelper, GoogleRecaptchaHelper, JsonHelper*, MenuHelper, RoleHelper, TextFormatParseHelper)
 ├── Http/
 │   ├── Controllers/Api/    # Controladores API por módulo + V2/
@@ -84,17 +118,18 @@ app/
 │   └── Resources/          # JsonResources (raíz: Content*, User) + V2/ por módulo
 ├── Jobs/               # Jobs asíncronos (ProcessContentViewJob)
 ├── Listeners/          # Event listeners (BroadcastWeatherStationUpdate)
-├── Mail/               # Mailables (ContactMail, GenericMail, NewsletterVerification, NewsletterUnsubscribe)
+├── Mail/               # Mailables (ContactMail, GenericMail, NewsletterVerification, NewsletterUnsubscribe, RetryEmailMessage)
 ├── Models/             # Eloquent models organizados por módulo
 │   ├── BaseModels/     # BaseModel, BaseAbstractModelWithTableCrud
-│   ├── WeatherStation/ # 21 modelos (sensores + AEMET)
+│   ├── WeatherStation/ # 18 modelos de sensores + AEMET/ (9 modelos AEMET)
 │   ├── Hardware/       # 12 modelos (dispositivos, energía, cargas solares)
 │   ├── Content/        # 16 modelos (CMS completo)
 │   ├── CV/             # 18 modelos (currículum)
 │   ├── KeyCounter/     # 3 modelos (BaseKeyCounter, Keyboard, Mouse)
 │   ├── SmartPlant/     # 2 modelos (SmartPlantPlant, SmartPlantRegister)
 │   ├── AirFlight/      # 2 modelos (AirFlightAirPlane, AirFlightRoute)
-│   └── WebHooks/       # 2 modelos (GitlabWebhook, SimpleWebhookModel)
+│   ├── WebHooks/       # 2 modelos (GitlabWebhook, SimpleWebhookModel)
+│   └── (raíz)          # Printer, PrinterAvailableType, PrinterStack, User, File, Platform, Newsletter, Category, Tag, Technology, etc.
 ├── Notifications/      # Notificaciones (NewContactMessage)
 ├── Policies/           # Authorization policies (16 policies por módulo)
 ├── Providers/          # Service providers
@@ -102,26 +137,26 @@ app/
 │   ├── AppServiceProvider.php
 │   ├── AuthServiceProvider.php
 │   └── FortifyServiceProvider.php
-├── Services/           # Service Layer por módulo (10 subdirectorios + RecaptchaService)
+├── Services/           # Service Layer por módulo (11 subdirectorios + RecaptchaService)
+├── Support/            # Clases de soporte (FilamentValidationRules — reglas de validación reutilizables para Filament)
 └── Traits/             # Traits compartidos (HasSlug, HasStatus, Filterable, HasTimestampScopes, ApiResponseTrait, BelongsToUser, BelongsToHardwareDevice)
 
 routes/
 ├── web.php             # Rutas frontend público
 ├── api/
-│   ├── v1.php          # API V1 (legacy)
-│   └── v2.php          # API V2 (actual, prefijo /api/v2)
+│   └── v2.php          # API V2 (única, prefijo /api/v2)
 ├── console.php         # Scheduler (tareas programadas)
 ├── dashboard.php       # Panel legacy AdminLTE (prefijo /dashboard)
 ├── webhook.php         # Webhooks (GitLab, etc.)
-├── hardware/           # v1.php, v2.php, web.php
-├── keycounter/         # v1.php, v2.php, web.php
-├── smart_plant/        # v1.php, v2.php, web.php
-├── weather_station/    # v1.php, v2.php, web.php
-├── airflight/          # v1.php, v2.php, web.php
-└── cv/                 # v1.php, v2.php, web.php
+├── hardware/           # v2.php, web.php
+├── keycounter/         # v2.php, web.php
+├── smart_plant/        # v2.php, web.php
+├── weather_station/    # v2.php, web.php
+├── airflight/          # v2.php, web.php
+└── cv/                 # v2.php, web.php
 ```
 
-**Nota:** `JsonHelper.php` se autocarga globalmente vía `composer.json` → `autoload.files`.
+**Nota:** `JsonHelper.php`, `RoleHelper.php`, `AEMETHelper.php` y `MenuHelper.php` son clases globales (sin namespace) y se autocargan vía `composer.json` → `autoload.files` desde `support/helpers/` (fuera del raíz PSR-4 `app/` para no romper el estándar PSR-4).
 
 ## Middleware
 
@@ -195,12 +230,13 @@ keycounter:maintenance   → weekly
 - **Traits:** Reutilizar traits de `app/Traits/` antes de duplicar lógica (`HasSlug`, `HasStatus`, `Filterable`, `HasTimestampScopes`, `ApiResponseTrait`, `BelongsToUser`, `BelongsToHardwareDevice`)
 - **Modelos base:** Extender `BaseModel` o `BaseAbstractModelWithTableCrud` de `app/Models/BaseModels/`
 - **API Responses:** Las excepciones de API se manejan globalmente en `bootstrap/app.php` — devuelven JSON con estructura `{success, message}` o `{success, message, errors}`
-- **Resources:** V1 legacy en `app/Http/Resources/` raíz, V2 en `app/Http/Resources/V2/` organizados por módulo
+- **Resources:** Todos en `app/Http/Resources/V2/` organizados por módulo (los legacy de raíz se eliminaron con la V1)
 
 ## Autenticación
 
 - Web: Laravel Fortify (login, registro, reset password, verificación email)
 - API: Laravel Sanctum (tokens)
+- **IoT (dispositivos):** token Sanctum **por dispositivo** con **abilities/scopes** por módulo (`weatherstation:write`, `hardware:write`, `keycounter:write`, `smartplant:write`, `airflight:write`) y expiración. Emisión con `php artisan iot:device-token <id> --abilities=... [--expires=días]`. Alias de middleware `ability`/`abilities` registrados en `bootstrap/app.php`. Endpoints de escritura protegidos con `auth:sanctum` + `ability:<scope>` + `throttle:api-store`.
 - Roles: 1=SuperAdmin, 2=Admin, 3=User
 - Panel Admin: solo SuperAdmin
 - Panel Tenant: cualquier usuario autenticado
@@ -221,6 +257,7 @@ La documentación técnica de cada módulo se encuentra en `docs/info/`. **Es ob
 |---------|--------|
 | `weather-station.md` | Estación Meteorológica (sensores + AEMET) |
 | `hardware.md` | Hardware y Energía (dispositivos, cargas solares, generadores) |
+| `printers.md` | Impresoras (gestión de impresoras y cola de impresión) |
 | `keycounter.md` | Contador de Pulsaciones (teclado y ratón) |
 | `smart-plant.md` | Plantas Inteligentes (sensores de plantas) |
 | `airflight.md` | Registro de Vuelos (aviones detectados) |
@@ -232,9 +269,11 @@ La documentación técnica de cada módulo se encuentra en `docs/info/`. **Es ob
 | `contact.md` | Formulario de Contacto (email + recaptcha) |
 | `files.md` | Gestión de Archivos (uploads, thumbnails, redimensión) |
 | `common.md` | Entidades Comunes (categorías, tags, tecnologías, idiomas) |
+| `default-images.md` | Imágenes por defecto (catálogo por módulo) |
 | `debug-commands.md` | Comandos de Debug (inserción de datos de prueba) |
 | `commands.md` | Catálogo completo de comandos Artisan |
 | `websockets.md` | WebSockets con Laravel Reverb |
+| `mcp.md` | Model Context Protocol (MCP) (servidores y herramientas de IA) |
 | `apis/aemet.md` | API AEMET OpenData (integración técnica) |
 
 ### Reglas de actualización de `docs/info/`

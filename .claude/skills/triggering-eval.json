@@ -1,0 +1,28 @@
+{
+  "description": "Set de evaluación de enrutado para las skills de Api Raupulus. expected_skill = skill(s) que deberían activarse; null = ninguna. Usar con el optimizador de descripciones (skill-creator) o para validación manual tras editar descripciones.",
+  "evals": [
+    { "query": "Necesito un endpoint para que la estación meteorológica envíe la temperatura usando su token de dispositivo IoT", "expected_skill": ["api-rest-v2"] },
+    { "query": "Crea un JsonResource V2 para devolver los datos de carga solar con fechas en ISO 8601", "expected_skill": ["api-rest-v2"] },
+    { "query": "Añade validación en español al formulario de contacto de la API", "expected_skill": ["api-rest-v2"] },
+    { "query": "Crea un Resource de Filament para gestionar las plantas inteligentes en el panel admin", "expected_skill": ["filament-admin"] },
+    { "query": "Configura el tema y el branding del panel de administración", "expected_skill": ["filament-admin"] },
+    { "query": "Crea la migración de una tabla de lecturas de sensores con índice por device_id y fecha", "expected_skill": ["postgresql-migrations"] },
+    { "query": "Esta migración legacy pone engine InnoDB y charset utf8, ¿está bien para nuestra base de datos?", "expected_skill": ["postgresql-migrations"] },
+    { "query": "Añade un scope al modelo Content para filtrar por estado publicado y un método para los relacionados", "expected_skill": ["laravel-backend"] },
+    { "query": "Mete la lógica de envío del newsletter en un service y dispárala desde un job", "expected_skill": ["laravel-backend"] },
+    { "query": "Quiero cambiar la paleta de colores de la web y elegir una tipografía mejor para los títulos", "expected_skill": ["design-system"] },
+    { "query": "La home se ve muy genérica y plana, dale identidad y jerarquía", "expected_skill": ["design-system"] },
+    { "query": "Aplica el color primario y el radio pill a este botón en la vista Blade con clases de Tailwind", "expected_skill": ["vue-tailwind-frontend"] },
+    { "query": "Crea un componente Vue 3 que pinte una tabla de datos de energía consumiendo la API", "expected_skill": ["vue-tailwind-frontend"] },
+    { "query": "Añade og:image, descripción meta y canonical a las páginas de artículos", "expected_skill": ["seo"] },
+    { "query": "Genera el sitemap y mete las nuevas rutas de contenido", "expected_skill": ["seo"] },
+    { "query": "¿Por qué mis tutoriales no aparecen en Google? Revisa el SEO", "expected_skill": ["seo"] },
+    { "query": "Expón una herramienta MCP que devuelva el estado del sistema a Claude Desktop", "expected_skill": ["mcp-server"] },
+    { "query": "Registra un nuevo tool en el servidor MCP y arráncalo con mcp:start", "expected_skill": ["mcp-server"] },
+    { "query": "Gestiona la cola de impresión y añade un tipo de impresora térmica", "expected_skill": ["printers"] },
+    { "query": "Crea el endpoint y su tabla para un módulo nuevo de notificaciones push", "expected_skill": ["api-rest-v2", "postgresql-migrations", "laravel-backend"] },
+    { "query": "¿Qué framework PHP recomiendas, Laravel o Symfony, para un proyecto nuevo?", "expected_skill": null },
+    { "query": "Escribe un script de Python que procese un CSV de mi escritorio", "expected_skill": null },
+    { "query": "Explícame en general cómo funciona la inyección de dependencias", "expected_skill": null }
+  ]
+}

@@ -39,7 +39,9 @@ public/mix-manifest.json
 
 # Ignorar carpetas de configuración de agentes IA
 .junie/
-.claude/
+.claude/*
+# Excepción: las skills del proyecto SÍ se versionan (uso compartido por equipo/agentes)
+!.claude/skills/
 
 # Ignorar archivo de caché de generar código
 /code-generator
