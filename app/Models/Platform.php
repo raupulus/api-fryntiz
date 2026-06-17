@@ -19,6 +19,70 @@ use function route;
 
 /**
  * Class Platform
+ *
+ * @property int $id
+ * @property int $user_id Relación con el usuario
+ * @property int|null $image_id Relación con la imagen asociada
+ * @property string $title Título de la sección
+ * @property string $slug Slug para el URL
+ * @property string|null $description Descripción breve de la sección
+ * @property string|null $domain Dominio principal hacia la plataforma
+ * @property string|null $url_about Página con información del proyecto
+ * @property string|null $youtube_channel_id Identificador del canal en youtube
+ * @property string|null $youtube_presentation_video_id Vídeo principal con la presentación del proyecto en youtube
+ * @property string|null $twitter Usuario en twitter
+ * @property string|null $twitter_token Token para la api de twitter
+ * @property string|null $mastodon Usuario en mastodon
+ * @property string|null $mastodon_token Token para la api de mastodon
+ * @property string|null $twitch Usuario en twitch
+ * @property string|null $tiktok Usuario en tiktok
+ * @property string|null $instagram Usuario en instagram
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Category> $categories
+ * @property-read int|null $categories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentPages
+ * @property-read int|null $content_pages_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contents
+ * @property-read int|null $contents_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsActive
+ * @property-read int|null $contents_active_count
+ * @property-read string $url_image
+ * @property-read string $url_image_large
+ * @property-read string $url_image_medium
+ * @property-read string $url_image_micro
+ * @property-read string $url_image_normal
+ * @property-read string $url_image_small
+ * @property-read \App\Models\File|null $image
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tag> $tags
+ * @property-read int|null $tags_count
+ * @property-read \App\Models\User|null $user
+ * @method static \Database\Factories\PlatformFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereDomain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereInstagram($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereMastodon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereMastodonToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereTiktok($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereTwitch($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereTwitter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereTwitterToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereUrlAbout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereYoutubeChannelId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereYoutubePresentationVideoId($value)
+ * @mixin \Eloquent
  */
 class Platform extends BaseAbstractModelWithTableCrud
 {

@@ -5,13 +5,13 @@ namespace App\Filament\Admin\Resources\Platforms;
 use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\Platform;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -43,9 +43,9 @@ class PlatformResource extends Resource
     {
         return $schema->components([
             Section::make('Imagen principal')->schema([
-                FileUpload::make('image_path')
-                    ->image()->imageEditor()->imageEditorAspectRatios(['1:1', '16:9', '4:3'])
-                    ->directory('platforms')->visibility('public')->maxSize(4096)
+                ImageCropperUpload::makeImage('image_path')
+                    ->logo()
+                    ->directory('platforms')
                     ->hiddenLabel()
                     ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                     ->columnSpanFull()

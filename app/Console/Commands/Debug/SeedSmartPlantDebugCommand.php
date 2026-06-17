@@ -40,7 +40,21 @@ class SeedSmartPlantDebugCommand extends Command
         $registersCount = (int) $this->option('registers');
         $now = Carbon::now();
 
-        $plantNames = ['Albahaca', 'Tomate Cherry', 'Menta', 'Lavanda', 'Romero', 'Cactus', 'Aloe Vera', 'Perejil'];
+        $plantNames = [
+            'Albahaca', 'Tomate Cherry', 'Menta', 'Lavanda', 'Romero',
+            'Cactus', 'Aloe Vera', 'Perejil', 'Orégano', 'Cilantro',
+            'Pimiento', 'Fresa', 'Girasol', 'Rosa', 'Suculenta',
+            'Helecho', 'Pothos', 'Monstera', 'Ficus', 'Bambú',
+        ];
+
+        $scientificNames = [
+            'Ocimum basilicum', 'Solanum lycopersicum var. cerasiforme', 'Mentha spicata',
+            'Lavandula angustifolia', 'Salvia rosmarinus', 'Cactaceae', 'Aloe barbadensis',
+            'Petroselinum crispum', 'Origanum vulgare', 'Coriandrum sativum',
+            'Capsicum annuum', 'Fragaria × ananassa', 'Helianthus annuus', 'Rosa gallica',
+            'Echeveria elegans', 'Nephrolepis exaltata', 'Epipremnum aureum',
+            'Monstera deliciosa', 'Ficus elastica', 'Bambusa vulgaris',
+        ];
 
         $this->info("Insertando {$plantsCount} plantas...");
 
@@ -49,8 +63,8 @@ class SeedSmartPlantDebugCommand extends Command
             $plant = SmartPlantPlant::create([
                 'user_id' => $userId,
                 'name' => $plantNames[$i % count($plantNames)].' #'.($i + 1),
-                'name_scientific' => $plantNames[$i % count($plantNames)].' scientificus',
-                'description' => 'Planta de debug generada automáticamente',
+                'name_scientific' => $scientificNames[$i % count($scientificNames)],
+                'description' => 'Planta de debug: '.$plantNames[$i % count($plantNames)],
                 'details' => 'Detalles avanzados de la planta de debug',
                 'start_at' => $now->copy()->subDays(fake()->numberBetween(30, 365)),
                 'created_at' => $now,

@@ -6,10 +6,32 @@ use App\Events\WeatherStation\AirQualityUpdateEvent;
 
 /**
  * Class AirQuality
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $gas_resistance Valor de la resistencia del sensor
+ * @property numeric $air_quality Resultado del algoritmo para calcular porcentaje de calidad del aire según resistencia, medida en frio y compensación por humedad
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereAirQuality($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereGasResistance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereUserId($value)
+ * @mixin \Eloquent
  */
 class AirQuality extends BaseWheaterStation
 {
     protected $fillable = [
+        'user_id',
         'hardware_device_id',
         'gas_resistance',
         'air_quality',

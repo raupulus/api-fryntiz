@@ -17,25 +17,25 @@ class CreateFilesTable extends Migration
     public function up()
     {
         Schema::create('files', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de files');
+            $table->comment('Almacena los registros correspondientes a files para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario asociado');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
+                ->onDelete('CASCADE')->comment('Clave foránea que relaciona este registro con el user al que pertenece.');
             $table->unsignedBigInteger('file_type_id')
                 ->nullable()
-                ->comment('FK al tipo de archivo');
+                ->comment('Clave foránea que relaciona este registro con el file type al que pertenece.');
             $table->foreign('file_type_id')
                 ->references('id')->on('file_types')
                 ->onUpdate('cascade')
-                ->onDelete('set null');
+                ->onDelete('set null')->comment('Clave foránea que relaciona este registro con el file type al que pertenece.');
 
             $table->string('module', 255)
                 ->nullable()
@@ -65,13 +65,13 @@ class CreateFilesTable extends Migration
             $table->integer('size')
                 ->default(0)
                 ->comment('Tamaño de la imagen');
-            $table->string('alt', 511)->comment('Columna alt');
+            $table->string('alt', 511)->comment('Texto alternativo descriptivo para accesibilidad (a11y) y SEO de la imagen');
             $table->string('title', 511)->comment('Título principal');
             $table->boolean('is_private')
                 ->default(0)
                 ->comment('Indica si es privado el archivo o pertenece al espacio público de la aplicación');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
+            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

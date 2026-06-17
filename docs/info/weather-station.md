@@ -155,3 +155,26 @@ Cada tarjeta de sensor usa un icono representativo definido en `SENSOR_MAP` del 
 ```bash
 php artisan debug:seed-weatherstation --count=20
 ```
+
+El comando rellena todas las tablas de sensores incluyendo `user_id`, además de
+los resúmenes y datos UV (ver modelos nuevos abajo).
+
+## Modelos de resumen y UV (fix_11)
+
+Añadidos para representar tablas que ya existían sin modelo Eloquent
+(`app/Models/WeatherStation/`):
+
+| Modelo | Tabla | Campos clave |
+|--------|-------|--------------|
+| `MeteorologyResumeToday` | `meteorology_resume_today` | resumen agregado del día actual (todos los sensores) |
+| `MeteorologyResumeHistorical` | `meteorology_resume_historical` | resumen agregado por día histórico |
+| `MeteorologyUvIndex` | `meteorology_uv_index` | `value` (índice UV) |
+| `MeteorologyUva` | `meteorology_uva` | `value` (radiación UVA) |
+| `MeteorologyUvb` | `meteorology_uvb` | `value` (radiación UVB) |
+
+Todos extienden `BaseModel`, usan `public $timestamps = false` (solo `created_at`)
+y tienen relaciones `user()` y `hardwareDevice()`.
+
+> **Nota fix_11:** todos los modelos de sensores tienen ahora `user_id` en su
+> `$fillable` (añadido en `BaseWheaterStation` y en los modelos que sobrescriben
+> `$fillable`).

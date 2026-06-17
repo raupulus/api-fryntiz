@@ -2,10 +2,10 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -71,9 +71,9 @@ class Profile extends Page implements HasForms
                 TextInput::make('email')->email()->required()
                     ->unique('users', 'email', ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->ignore(Auth::id()))
                     ->label('Email'),
-                FileUpload::make('profile_photo_path')
-                    ->image()->avatar()->imageEditor()->imageEditorAspectRatios(['1:1'])
-                    ->directory('profile-photos')->visibility('public')->maxSize(2048)
+                ImageCropperUpload::makeImage('profile_photo_path')
+                    ->avatar()
+                    ->directory('profile-photos')
                     ->columnSpanFull()->label('Foto de perfil'),
             ]),
             Section::make('Detalles')->columns(2)->schema([

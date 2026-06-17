@@ -6,6 +6,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class CurriculumRepository.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen asociada
+ * @property int|null $repository_type_id Relación con el tipo de repositorios
+ * @property string $url Dirección al repositorio
+ * @property string $title Título para el repositorio
+ * @property string|null $description Descripción del repositorio
+ * @property string $name Nombre del repositorio
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @property-read \App\Models\CV\CurriculumAvailableRepositoryType|null $type
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereRepositoryTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereUrl($value)
+ * @mixin \Eloquent
  */
 class CurriculumRepository extends CurriculumBaseSection
 {
@@ -104,7 +133,7 @@ class CurriculumRepository extends CurriculumBaseSection
      *
      * @return BelongsTo
      */
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(CurriculumAvailableRepositoryType::class, 'repository_type_id', 'id');
     }

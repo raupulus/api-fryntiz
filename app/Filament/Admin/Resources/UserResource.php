@@ -2,8 +2,10 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\User;
 use BackedEnum;
+use Filament\Actions\Action as FormAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -13,12 +15,11 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -61,18 +62,15 @@ class UserResource extends Resource
         return $schema->components([
             Section::make('Foto de perfil')
                 ->schema([
-                    FileUpload::make('profile_photo_path')
-                        ->image()
+                    ImageCropperUpload::makeImage('profile_photo_path')
                         ->avatar()
-                        ->imageEditor()
-                        ->imageEditorAspectRatios(['1:1'])
                         ->directory('profile-photos')
-                        ->visibility('public')
-                        ->maxSize(2048)
-                        ->extraAttributes(['class' => 'flex justify-center mx-auto'])
+                        ->extraAttributes(['class' => 'flex justify-center items-center [&_.filepond--root]:mx-auto'])
                         ->hiddenLabel()
                         ->columnSpanFull(),
-                ])->columnSpanFull(),
+                ])
+                ->extraAttributes(['class' => 'flex justify-center items-center'])
+                ->columnSpanFull(),
 
             Section::make('Perfil')
                 ->columns(2)
@@ -120,13 +118,37 @@ class UserResource extends Resource
                     Toggle::make('send_email')->default(true)->label('Permitir emails'),
                     Toggle::make('send_notification')->default(true)->label('Notificaciones'),
                     Toggle::make('send_notification_push')->default(true)->label('Push'),
-                ]),
+                ])
+                ->columnSpanFull(),
 
             Section::make('Verificación')
-                ->columns(2)
                 ->schema([
-                    DateTimePicker::make('email_verified_at')->label('Email verificado'),
+                    Toggle::make('is_email_verified')
+                        ->label('Email verificado')
+                        ->helperText('Indica si el email del usuario ha sido verificado.')
+                        ->dehydrated(false)
+                        ->afterStateHydrated(function (Toggle $component, $record) {
+                            $component->state($record?->email_verified_at !== null);
+                        })
+                        ->disabled(fn ($record) => $record?->email_verified_at !== null),
+
+                    Actions::make([
+                        FormAction::make('verify_email')
+                            ->label('Verificar email ahora')
+                            ->icon('heroicon-o-check-circle')
+                            ->color('success')
+                            ->requiresConfirmation()
+                            ->modalHeading('¿Verificar email?')
+                            ->modalDescription('Esta acción no se puede deshacer. Se marcará el email como verificado con la fecha y hora actuales.')
+                            ->modalSubmitActionLabel('Sí, verificar')
+                            ->action(function ($record, $set) {
+                                $record->update(['email_verified_at' => now()]);
+                                $set('is_email_verified', true);
+                            })
+                            ->visible(fn ($record) => $record && $record->email_verified_at === null),
+                    ]),
                 ])
+                ->columnSpanFull()
                 ->hiddenOn('create'),
         ]);
     }
@@ -135,7 +157,7 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('profile_photo_path')->circular()->label('Foto'),
+                ImageColumn::make('profile_photo_path')->circular()->disk('public')->label('Foto'),
                 TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
                 TextColumn::make('nickname')->searchable()->toggleable()->label('Nick'),

@@ -5,12 +5,13 @@ namespace App\Filament\Admin\Resources\CV\Curricula;
 use App\Filament\Admin\Resources\CV\Curricula\Pages\CreateCurriculum;
 use App\Filament\Admin\Resources\CV\Curricula\Pages\EditCurriculum;
 use App\Filament\Admin\Resources\CV\Curricula\Pages\ListCurricula;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\CV\Curriculum;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -39,19 +40,24 @@ class CurriculumResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                FileUpload::make('image_id')
-                    ->image(),
+                Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->required()->searchable()->preload()
+                    ->default(fn () => auth()->id())
+                    ->label('Usuario'),
+                ImageCropperUpload::makeImage('image_id')
+                    ->cover16x9()
+                    ->storeFiles(false)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->label('Imagen'),
                 TextInput::make('title')
-                    ->required(),
+                    ->required()->label('Título'),
                 Textarea::make('presentation')
-                    ->columnSpanFull(),
-                Toggle::make('is_active'),
-                Toggle::make('is_downloadable'),
-                Toggle::make('is_default'),
-                Toggle::make('is_public'),
+                    ->columnSpanFull()->label('Presentación'),
+                Toggle::make('is_active')->label('Activo'),
+                Toggle::make('is_downloadable')->label('Descargable'),
+                Toggle::make('is_default')->label('Por defecto'),
+                Toggle::make('is_public')->label('Público'),
             ]);
     }
 

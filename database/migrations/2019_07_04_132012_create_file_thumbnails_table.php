@@ -17,25 +17,25 @@ class CreateFileThumbnailsTable extends Migration
     public function up()
     {
         Schema::create('file_thumbnails', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de file thumbnails');
+            $table->comment('Almacena los registros correspondientes a file thumbnails para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('file_id')
                 ->nullable()
                 ->comment('Imagen Asociada');
             $table->foreign('file_id')
                 ->references('id')->on('files')
                 ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
+                ->onDelete('CASCADE')->comment('Clave foránea que relaciona este registro con el file al que pertenece.');
             $table->unsignedBigInteger('file_type_id')
                 ->nullable()
-                ->comment('FK al tipo de archivo');
+                ->comment('Clave foránea que relaciona este registro con el file type al que pertenece.');
             $table->foreign('file_type_id')
                 ->references('id')->on('file_types')
                 ->onUpdate('cascade')
-                ->onDelete('set null');
+                ->onDelete('set null')->comment('Clave foránea que relaciona este registro con el file type al que pertenece.');
 
             $table->string('module', 255)
                 ->nullable()
@@ -68,8 +68,8 @@ class CreateFileThumbnailsTable extends Migration
                 ->default(0)
                 ->comment('Tamaño de la imagen');
 
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
+            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

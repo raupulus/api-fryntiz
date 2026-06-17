@@ -6,6 +6,52 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string $title Título obtenido
+ * @property string|null $entity Entidad o empresa emisora
+ * @property string|null $credential_id Identificador de la Credencial obtenida
+ * @property string|null $credential_url Url hacia la Credencial obtenida
+ * @property string|null $learned Conocimientos adquiridos
+ * @property string|null $description Descripción
+ * @property string|null $note Notas
+ * @property int|null $hours Horas de formación
+ * @property string|null $instructor Instructor de la formación
+ * @property bool $expires ¿Expira la validez?
+ * @property string|null $expires_at Fecha de expiración
+ * @property string|null $expedition_at Fecha de expedición
+ * @property string|null $start_at Fecha de inicio
+ * @property string|null $end_at Fecha de fin
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereCredentialId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereCredentialUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereExpeditionAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereExpires($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereInstructor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereLearned($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicComplementaryOnline whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class CurriculumAcademicComplementaryOnline extends CurriculumBaseSection
 {

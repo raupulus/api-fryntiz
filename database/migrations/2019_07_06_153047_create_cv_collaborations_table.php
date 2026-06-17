@@ -17,24 +17,24 @@ class CreateCvCollaborationsTable extends Migration
     public function up()
     {
         Schema::create('cv_collaborations', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de cv collaborations');
+            $table->comment('Almacena los datos del apartado de collaborations para la generación del currículum vitae de los usuarios.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('curriculum_id')
                 ->comment('Relación con el curriculum');
             $table->foreign('curriculum_id')
                 ->references('id')->on('cv')
                 ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
+                ->onDelete('CASCADE')->comment('Clave foránea que relaciona este registro con el curriculum al que pertenece.');
             $table->unsignedBigInteger('image_id')
                 ->nullable()
                 ->comment('Relación con la imagen');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
+                ->onDelete('CASCADE')->comment('Clave foránea que relaciona este registro con el image al que pertenece.');
             $table->string('title', 511)
                 ->comment('Título de la colaboración');
             $table->text('description')
@@ -53,7 +53,7 @@ class CreateCvCollaborationsTable extends Migration
             $table->string('role', 255)
                 ->nullable()
                 ->comment('Rol en el proyecto');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
         });
     }
 

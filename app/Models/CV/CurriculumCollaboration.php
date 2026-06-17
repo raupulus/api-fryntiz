@@ -6,6 +6,36 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string $title Título de la colaboración
+ * @property string|null $description Descripción del proyecto
+ * @property string|null $url Url principal hacia el sitio oficial
+ * @property string|null $urlinfo Url de información sobre el proyecto
+ * @property string|null $repository Url del repositorio
+ * @property string|null $role Rol en el proyecto
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereRepository($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereUrlinfo($value)
+ * @mixin \Eloquent
  */
 class CurriculumCollaboration extends CurriculumBaseSection
 {

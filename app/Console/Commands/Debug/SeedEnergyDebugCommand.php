@@ -4,6 +4,7 @@ namespace App\Console\Commands\Debug;
 
 use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\Hardware\HardwareDevice;
+use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorToday;
@@ -165,7 +166,55 @@ class SeedEnergyDebugCommand extends Command
             }
         }
 
-        $this->info("✅ {$devicesCount} dispositivos con {$recordsCount} registros cada uno + agregados today/historical insertados.");
+        // === Asociaciones en hardware_energy ===
+        // Define qué dispositivo monitoriza a cuál (necesario para las vistas de energía).
+        $this->info('Asociando dispositivos en hardware_energy...');
+
+        foreach ($devices as $index => $device) {
+            // Caso 1: Auto-monitorización — cada dispositivo se monitoriza a sí mismo.
+            HardwareEnergy::firstOrCreate(
+                [
+                    'hardware_device_id' => $device->id,
+                    'hardware_device_monitorized_id' => $device->id,
+                ],
+                [
+                    'is_generator' => $index % 2 === 0,
+                    'sensor_position' => 0,
+                ]
+            );
+        }
+
+        // Caso 2: Monitorización cruzada — el primer dispositivo monitoriza a los demás.
+        if (count($devices) >= 2) {
+            $monitorDevice = $devices[0];
+
+            for ($i = 1; $i < count($devices); $i++) {
+                HardwareEnergy::firstOrCreate(
+                    [
+                        'hardware_device_id' => $monitorDevice->id,
+                        'hardware_device_monitorized_id' => $devices[$i]->id,
+                    ],
+                    [
+                        'is_generator' => $i % 2 === 0,
+                        'sensor_position' => $i,
+                    ]
+                );
+            }
+
+            // Caso 3: El segundo dispositivo también monitoriza al primero (bidireccional).
+            HardwareEnergy::firstOrCreate(
+                [
+                    'hardware_device_id' => $devices[1]->id,
+                    'hardware_device_monitorized_id' => $devices[0]->id,
+                ],
+                [
+                    'is_generator' => true,
+                    'sensor_position' => 0,
+                ]
+            );
+        }
+
+        $this->info("✅ {$devicesCount} dispositivos con {$recordsCount} registros cada uno + agregados today/historical + asociaciones hardware_energy insertados.");
 
         return self::SUCCESS;
     }

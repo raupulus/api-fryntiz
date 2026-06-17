@@ -7,6 +7,27 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * Class Temperature
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereValue($value)
+ * @mixin \Eloquent
  */
 class Temperature extends BaseWheaterStation
 {

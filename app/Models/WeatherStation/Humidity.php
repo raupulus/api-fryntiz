@@ -7,6 +7,27 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * Class Humidity
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereValue($value)
+ * @mixin \Eloquent
  */
 class Humidity extends BaseWheaterStation
 {

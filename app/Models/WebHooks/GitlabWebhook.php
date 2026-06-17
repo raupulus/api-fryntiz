@@ -6,6 +6,11 @@ use function config;
 
 /**
  * Class GitlabWebhook
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GitlabWebhook newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GitlabWebhook newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GitlabWebhook query()
+ * @mixin \Eloquent
  */
 class GitlabWebhook extends SimpleWebhookModel
 {

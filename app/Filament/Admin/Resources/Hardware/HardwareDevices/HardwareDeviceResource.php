@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Hardware\HardwareDevices;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\CreateHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\EditHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\ListHardwareDevices;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\Hardware\HardwareDevice;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -12,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -44,8 +44,10 @@ class HardwareDeviceResource extends Resource
             ->components([
                 Section::make('Imagen principal')
                     ->schema([
-                        FileUpload::make('image_id')
-                            ->image()
+                        ImageCropperUpload::makeImage('image_id')
+                            ->cover16x9()
+                            ->storeFiles(false)
+                            ->dehydrated(fn ($state) => filled($state))
                             ->hiddenLabel()
                             ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                             ->columnSpanFull(),

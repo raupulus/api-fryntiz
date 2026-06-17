@@ -131,6 +131,18 @@ Muchos modelos del proyecto (Category, Tag, Technology, Platform, BaseWheaterSta
 - **Email** → usa `Language` (vía `language_id`)
 - **Múltiples modelos** → usan `ImageTrait` con relación a `File`
 
+## Seeders (fix_11)
+
+| Seeder | Contenido |
+|--------|-----------|
+| `SocialNetworkSeeder` | ~20 redes sociales (slug, type, color, url, icono). Requiere `$fillable` en `SocialNetwork`. |
+| `CategoriesSeeder` | 17 categorías con descripciones. |
+| `TagsSeeder` | 35 tags con descripciones. |
+| `TechnologiesSeeder` | Actualizado con descripciones completas y colores reales; corregido el slug de Nuxt; añadidos MicroPython y Swift. |
+
+Todos son idempotentes (`firstOrCreate` por `slug`) y están registrados en
+`DatabaseSeeder` en el orden correcto.
+
 ## Rutas Web
 
 | Ruta | Descripción |

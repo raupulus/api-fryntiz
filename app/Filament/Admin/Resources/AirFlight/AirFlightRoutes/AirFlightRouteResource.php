@@ -12,6 +12,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -37,33 +38,35 @@ class AirFlightRouteResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
-                    ->numeric(),
-                TextInput::make('airplane_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('hardware_device_id')
-                    ->numeric(),
-                TextInput::make('squawk'),
-                TextInput::make('flight'),
+                Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->searchable()->preload()->label('Usuario'),
+                Select::make('airplane_id')
+                    ->relationship('airplane', 'name_friendly')
+                    ->required()->searchable()->preload()->label('Avión'),
+                Select::make('hardware_device_id')
+                    ->relationship('hardwareDevice', 'name')
+                    ->searchable()->preload()->label('Dispositivo'),
+                TextInput::make('squawk')->label('Squawk'),
+                TextInput::make('flight')->label('Vuelo'),
                 TextInput::make('lat')
-                    ->numeric(),
+                    ->numeric()->label('Latitud'),
                 TextInput::make('lon')
-                    ->numeric(),
+                    ->numeric()->label('Longitud'),
                 TextInput::make('altitude')
-                    ->numeric(),
+                    ->numeric()->label('Altitud'),
                 TextInput::make('vert_rate')
-                    ->numeric(),
+                    ->numeric()->label('Tasa vertical'),
                 TextInput::make('track')
-                    ->numeric(),
+                    ->numeric()->label('Rumbo'),
                 TextInput::make('speed')
-                    ->numeric(),
-                DateTimePicker::make('seen_at'),
+                    ->numeric()->label('Velocidad'),
+                DateTimePicker::make('seen_at')->label('Visto el'),
                 TextInput::make('messages')
-                    ->numeric(),
+                    ->numeric()->label('Mensajes'),
                 TextInput::make('rssi')
-                    ->numeric(),
-                TextInput::make('emergency'),
+                    ->numeric()->label('RSSI'),
+                TextInput::make('emergency')->label('Emergencia'),
             ]);
     }
 

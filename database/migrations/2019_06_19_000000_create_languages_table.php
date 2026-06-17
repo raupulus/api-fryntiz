@@ -17,11 +17,11 @@ class CreateLanguagesTable extends Migration
     public function up()
     {
         Schema::create('languages', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de languages');
+            $table->comment('Almacena los registros correspondientes a languages para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->char('locale', 8)
                 ->unique()
                 ->comment('Código del país e idioma: es_ES');

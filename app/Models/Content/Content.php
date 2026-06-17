@@ -5,6 +5,7 @@ namespace App\Models\Content;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Models\Category;
+use App\Models\ContentDailyView;
 use App\Models\File;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
@@ -26,6 +27,121 @@ use function url;
 
 /**
  * Class Content
+ *
+ * @property int $id
+ * @property int|null $author_id FK al usuario propietario del post
+ * @property int|null $platform_id FK a la plataforma que se asocia este contenido
+ * @property int|null $status_id FK al estado en la tabla content_status
+ * @property int|null $type_id FK al tipo de contenido en la tabla content_type
+ * @property int|null $image_id FK a la imagen en la tabla files
+ * @property string $title Título de la página
+ * @property string $slug Slug para el URL
+ * @property string|null $excerpt Descripción breve del contenido
+ * @property bool|null $is_copyright_valid Indica si se ha comprobado que el contenido no contiene copyright. Si es null, no se ha comprobado
+ * @property bool $is_active Indica si el contenido está activo
+ * @property bool $is_comment_enabled Indica si los comentarios están habilitados
+ * @property bool $is_comment_anonymous Indica si se permiten comentarios anónimos
+ * @property bool $is_featured Indica si el contenido es destacado
+ * @property bool $is_visible_on_home Indica si el contenido está visible en la página principal
+ * @property bool $is_visible_on_menu Indica si el contenido está visible en el menú
+ * @property bool $is_visible_on_footer Indica si el contenido está visible en el footer
+ * @property bool $is_visible_on_sidebar Indica si el contenido está visible en el sidebar
+ * @property bool $is_visible_on_search Indica si el contenido está visible en la búsqueda
+ * @property bool $is_visible_on_archive Indica si el contenido está visible en el archivo
+ * @property bool $is_visible_on_rss Indica si el contenido está visible en el RSS
+ * @property bool $is_visible_on_sitemap Indica si el contenido está visible en el sitemap
+ * @property bool $is_visible_on_sitemap_news Indica si el contenido está visible en el sitemap de noticias
+ * @property \Illuminate\Support\Carbon|null $published_at Fecha de publicación del contenido
+ * @property \Illuminate\Support\Carbon|null $scheduled_at Momento en la que está programada la publicación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read User|null $author
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentCategory> $categoriesJoin
+ * @property-read int|null $categories_join_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelated
+ * @property-read int|null $contents_related_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelatedAllPlatforms
+ * @property-read int|null $contents_related_all_platforms_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelatedMe
+ * @property-read int|null $contents_related_me_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelatedMeAllPlatforms
+ * @property-read int|null $contents_related_me_all_platforms_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $contributors
+ * @property-read int|null $contributors_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentContributor> $contributorsJoin
+ * @property-read int|null $contributors_join_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentDailyView> $dailyViews
+ * @property-read int|null $daily_views_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentGallery> $galleries
+ * @property-read int|null $galleries_count
+ * @property-read mixed $categories
+ * @property-read mixed $subcategories
+ * @property-read mixed $tags
+ * @property-read mixed $url
+ * @property-read string $url_edit
+ * @property-read string $url_image
+ * @property-read string $url_image_large
+ * @property-read string $url_image_medium
+ * @property-read string $url_image_micro
+ * @property-read string $url_image_normal
+ * @property-read string $url_image_small
+ * @property-read mixed $url_preview
+ * @property-read File|null $image
+ * @property-read \App\Models\Content\ContentMetadata|null $metadata
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentPage> $pages
+ * @property-read int|null $pages_count
+ * @property-read Platform|null $platform
+ * @property-read \App\Models\Content\ContentSeo|null $seo
+ * @property-read \App\Models\Content\ContentAvailableStatus|null $status
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentTag> $tagsJoin
+ * @property-read int|null $tags_join_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PlatformTag> $tagsPlatform
+ * @property-read int|null $tags_platform_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Technology> $technologies
+ * @property-read int|null $technologies_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentTechnology> $technologiesJoin
+ * @property-read int|null $technologies_join_count
+ * @property-read \App\Models\Content\ContentAvailableType|null $type
+ * @property-read User|null $user
+ * @method static \Database\Factories\Content\ContentFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Content featured()
+ * @method static Builder<static>|Content forPlatform(int $platformId)
+ * @method static Builder<static>|Content newModelQuery()
+ * @method static Builder<static>|Content newQuery()
+ * @method static Builder<static>|Content ofType(int $typeId)
+ * @method static Builder<static>|Content published()
+ * @method static Builder<static>|Content query()
+ * @method static Builder<static>|Content scheduled()
+ * @method static Builder<static>|Content whereAuthorId($value)
+ * @method static Builder<static>|Content whereCreatedAt($value)
+ * @method static Builder<static>|Content whereDeletedAt($value)
+ * @method static Builder<static>|Content whereExcerpt($value)
+ * @method static Builder<static>|Content whereId($value)
+ * @method static Builder<static>|Content whereImageId($value)
+ * @method static Builder<static>|Content whereIsActive($value)
+ * @method static Builder<static>|Content whereIsCommentAnonymous($value)
+ * @method static Builder<static>|Content whereIsCommentEnabled($value)
+ * @method static Builder<static>|Content whereIsCopyrightValid($value)
+ * @method static Builder<static>|Content whereIsFeatured($value)
+ * @method static Builder<static>|Content whereIsVisibleOnArchive($value)
+ * @method static Builder<static>|Content whereIsVisibleOnFooter($value)
+ * @method static Builder<static>|Content whereIsVisibleOnHome($value)
+ * @method static Builder<static>|Content whereIsVisibleOnMenu($value)
+ * @method static Builder<static>|Content whereIsVisibleOnRss($value)
+ * @method static Builder<static>|Content whereIsVisibleOnSearch($value)
+ * @method static Builder<static>|Content whereIsVisibleOnSidebar($value)
+ * @method static Builder<static>|Content whereIsVisibleOnSitemap($value)
+ * @method static Builder<static>|Content whereIsVisibleOnSitemapNews($value)
+ * @method static Builder<static>|Content wherePlatformId($value)
+ * @method static Builder<static>|Content wherePublishedAt($value)
+ * @method static Builder<static>|Content whereScheduledAt($value)
+ * @method static Builder<static>|Content whereSlug($value)
+ * @method static Builder<static>|Content whereStatusId($value)
+ * @method static Builder<static>|Content whereTitle($value)
+ * @method static Builder<static>|Content whereTypeId($value)
+ * @method static Builder<static>|Content whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Content extends BaseAbstractModelWithTableCrud
 {
@@ -59,15 +175,6 @@ class Content extends BaseAbstractModelWithTableCrud
         'is_visible_on_sitemap',
         'is_visible_on_sitemap_news',
 
-        'processed_at',
-        'published_at',
-        'scheduled_at',
-    ];
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
         'processed_at',
         'published_at',
         'scheduled_at',
@@ -164,6 +271,14 @@ class Content extends BaseAbstractModelWithTableCrud
     public function pages(): HasMany
     {
         return $this->hasMany(ContentPage::class, 'content_id', 'id')->orderBy('order');
+    }
+
+    /**
+     * Vistas diarias del contenido.
+     */
+    public function dailyViews(): HasMany
+    {
+        return $this->hasMany(ContentDailyView::class, 'content_id', 'id');
     }
 
     /**

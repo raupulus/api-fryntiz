@@ -12,6 +12,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Support\Facades\Route;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -22,35 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            // === API V1 (existentes — compatibilidad) ===
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api/v1.php'));
-
-            Route::middleware('api')
-                ->prefix('api/hardware/v1')
-                ->group(base_path('routes/hardware/v1.php'));
-
-            Route::middleware('api')
-                ->prefix('api/keycounter/v1')
-                ->group(base_path('routes/keycounter/v1.php'));
-
-            Route::middleware('api')
-                ->prefix('api/smartplant/v1')
-                ->group(base_path('routes/smart_plant/v1.php'));
-
-            Route::middleware('api')
-                ->prefix('api/weatherstation/v1')
-                ->group(base_path('routes/weather_station/v1.php'));
-
-            Route::middleware('api')
-                ->prefix('api/airflight/v1')
-                ->group(base_path('routes/airflight/v1.php'));
-
-            Route::middleware('api')
-                ->prefix('api/cv/v1')
-                ->group(base_path('routes/cv/v1.php'));
-
+            // === Webhooks ===
             Route::middleware('api')
                 ->prefix('')
                 ->group(base_path('routes/webhook.php'));
@@ -100,6 +74,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'cors.allow.all' => CorsAllowAll::class,
             'check.domain' => DomainCheckMiddleware::class,
             'ip.counter.strict' => IpCounterStrict::class,
+            // Sanctum: control de abilities por token de dispositivo IoT (fix_1 fase 05).
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
         ]);
 
         $middleware->statefulApi();

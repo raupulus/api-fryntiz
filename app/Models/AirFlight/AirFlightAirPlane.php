@@ -20,6 +20,40 @@ use function file_exists;
  * Class AirFlightAirPlane
  *
  * Representa un avión concreto.
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property string|null $icao Código ICAO 24 bits (6 dígitos hexadecimales)
+ * @property string|null $country País de origen del avión
+ * @property string|null $category Categoría del avión
+ * @property string|null $seen_first_at Indica momento en el que se ha visto por primera vez
+ * @property string|null $seen_last_at Indica momento en el que se ha visto por última vez
+ * @property string|null $route_last_at El momento del último registro con ruta válida
+ * @property string|null $flag Imagen de la bandera
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read HardwareDevice|null $device
+ * @property-read string $url_flag
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AirFlight\AirFlightRoute> $routes
+ * @property-read int|null $routes_count
+ * @property-read User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereFlag($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereIcao($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereRouteLastAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereSeenFirstAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereSeenLastAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUserId($value)
+ * @mixin \Eloquent
  */
 class AirFlightAirPlane extends Model
 {

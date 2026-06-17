@@ -12,6 +12,55 @@ use function array_filter;
  * Class HardwarePowerLoadToday
  *
  * Model for the hardware power load today table
+ *
+ * @property int $id
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property int|null $fan_min Velocidad mínima de ventilador (rpm)
+ * @property int|null $fan_max Velocidad máxima de ventilador (rpm)
+ * @property numeric|null $temperature_min Temperatura mínima (°C)
+ * @property numeric|null $temperature_max Temperatura máxima (°C)
+ * @property numeric|null $voltage_min Volts mínimo (V)
+ * @property numeric|null $voltage_max Voltaje máximo (V)
+ * @property numeric|null $battery_min Voltaje mínimo de batería (V)
+ * @property numeric|null $battery_max Voltaje máximo de batería (V)
+ * @property int|null $battery_percentage_min Porcentaje de batería mínimo (%)
+ * @property int|null $battery_percentage_max Porcentaje de batería máximo (%)
+ * @property float|null $amperage_min Amperaje mínimo (A)
+ * @property float|null $amperage_max Amperaje máximo (A)
+ * @property float|null $amperage Amperaje total (Ah)
+ * @property float|null $power_min Potencia mínima (W)
+ * @property float|null $power_max Potencia máxima (W)
+ * @property float|null $power Potencia total (W)
+ * @property string|null $date Fecha de medición
+ * @property string|null $read_at Fecha y hora de la última lectura
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereAmperage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereAmperageMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereAmperageMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereBatteryMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereBatteryMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereBatteryPercentageMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereBatteryPercentageMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereFanMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereFanMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday wherePower($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday wherePowerMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday wherePowerMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereTemperatureMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereTemperatureMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereVoltageMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadToday whereVoltageMin($value)
+ * @mixin \Eloquent
  */
 class HardwarePowerLoadToday extends BaseModel
 {

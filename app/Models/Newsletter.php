@@ -2,10 +2,64 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property int $platform_id
+ * @property string $email
+ * @property string|null $name
+ * @property bool $is_verified
+ * @property string|null $verification_token
+ * @property \Illuminate\Support\Carbon|null $verified_at
+ * @property string $unsubscribe_token
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $unsubscribed_at
+ * @property string|null $subscription_source
+ * @property string $language
+ * @property array<array-key, mixed>|null $preferences
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property array<array-key, mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read bool $can_receive_emails
+ * @property-read string $status_label
+ * @property-read \App\Models\Platform $platform
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter byEmail(string $email)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter byLanguage(string $language)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter byPlatform($platformId)
+ * @method static \Database\Factories\NewsletterFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter subscribed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter verified()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereIsVerified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter wherePlatformId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter wherePreferences($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereSubscriptionSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereUnsubscribeToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereUnsubscribedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereUserAgent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereVerificationToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereVerifiedAt($value)
+ * @mixin \Eloquent
+ */
 class Newsletter extends Model
 {
     use HasFactory;
@@ -59,7 +113,7 @@ class Newsletter extends Model
     /**
      * Relación con la plataforma
      */
-    public function platform()
+    public function platform(): BelongsTo
     {
         return $this->belongsTo(Platform::class);
     }

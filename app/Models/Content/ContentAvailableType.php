@@ -10,6 +10,38 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Content\ContentAvailableType
+ *
+ * @property int $id
+ * @property int|null $file_id FK a la imagen en la tabla files
+ * @property string $name Nombre del tipo de contenido
+ * @property string $plural_name Nombre en plural para los tipos de contenido
+ * @property string $slug Slug para el URL
+ * @property string|null $description Descripción acerca del tipo de contenido
+ * @property string|null $icon Clase css para el icono
+ * @property string $color Código Hexadecimal del color
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\Content> $contents
+ * @property-read int|null $contents_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\Content> $contentsActive
+ * @property-read int|null $contents_active_count
+ * @property-read File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereFileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType wherePluralName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ContentAvailableType extends BaseModel
 {

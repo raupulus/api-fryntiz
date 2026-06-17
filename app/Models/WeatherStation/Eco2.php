@@ -4,6 +4,25 @@ namespace App\Models\WeatherStation;
 
 /**
  * Class Eco2
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $value Valor entre 400ppm y 8192ppm
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereValue($value)
+ * @mixin \Eloquent
  */
 class Eco2 extends BaseWheaterStation
 {

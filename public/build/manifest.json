@@ -1,27 +1,35 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-DwEZcP1z.css",
+    "file": "assets/app-CFYJRRQE.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-DYK-9Lt1.css",
+    "file": "assets/theme-DWbureBN.css",
+    "name": "theme",
+    "names": [
+      "theme.css"
+    ],
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Di2um9cZ.js",
+    "file": "assets/app-B1XIIJfj.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/js/vue.js": {
-    "file": "assets/vue-DeV0VWIb.js",
+    "file": "assets/vue-DkLrM6va.js",
     "name": "vue",
     "src": "resources/js/vue.js",
     "isEntry": true,
     "css": [
-      "assets/vue-BQ0r-fpx.css"
+      "assets/vue-CfnC02Mj.css"
     ],
     "assets": [
       "assets/chipiona-BKWz67is.webp"

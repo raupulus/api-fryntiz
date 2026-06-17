@@ -168,3 +168,41 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 php artisan debug:seed-content --count=10
 ```
 
+> El comando ya **no crea categorías** (deben existir vía `CategoriesSeeder`) y
+> ahora genera registros en `content_daily_views` (últimos 7 días + hoy).
+
+## Estadísticas de vistas (fix_11)
+
+- Modelo `ContentDailyView` (`content_daily_views`): vistas diarias por contenido.
+- Relaciones: `Content::dailyViews()` (hasMany) y `ContentDailyView::content()` (belongsTo).
+- Al consultar un contenido por API v2 (`ContentController::show`) se despacha
+  `ProcessContentViewJob` que hace upsert de la vista del día. No se registran
+  vistas en `pages()` ni `related()`.
+- La FK `content_daily_views.content_id` tiene `onDelete('cascade')` (migración
+  `2026_05_28_000001_add_cascade_delete_to_content_daily_views`): al hacer
+  `forceDelete` de un contenido se eliminan sus vistas; el soft delete las conserva.
+
+## Buscador de vídeos de YouTube (fix_11)
+
+Recupera el plugin JS original (`public/dashboard/js/youtube_video_search.js` +
+`public/css/youtube_video_search.css`) en el panel Filament v2.
+
+- Componente `app/Filament/Components/YoutubeVideoField.php` + vista
+  `resources/views/filament/components/youtube-video-field.blade.php`.
+- Integrado en `ContentResource`, pestaña **«Vídeo y enlaces»**, dentro de un
+  `Group->relationship('metadata')` (tabla `content_metadata`).
+- El estado del campo es `youtube_video_id`. La URL `youtube_video` se deriva
+  automáticamente al guardar (hook `saving` en `ContentMetadata`).
+- El canal de búsqueda se resuelve según la plataforma seleccionada
+  (`Platform.youtube_channel_id`); la API key se toma de `config('google.google_api_key')`.
+- Los scripts/estilos se inyectan vía el render hook `SCRIPTS_AFTER` (igual que Editor.js).
+
+## Editor.js en Filament (fix_11)
+
+- Componente reutilizable `app/Filament/Components/EditorJsField.php` + vista
+  `resources/views/filament/components/editorjs-field.blade.php`.
+- Carga Editor.js desde `public/vendor/editorjs/`; los scripts se inyectan vía
+  `renderHook(PanelsRenderHook::SCRIPTS_AFTER)` en `AdminPanelProvider`.
+- Integrado en `PagesRelationManager` (pestañas «Editor Visual (JSON)» / «HTML»).
+  El JSON se persiste en la relación `raw()` (`content_page_raw`, tipo `json`).
+

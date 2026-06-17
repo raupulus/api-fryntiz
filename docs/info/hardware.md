@@ -150,3 +150,14 @@ php artisan debug:seed-hardware --count=5
 php artisan debug:seed-energy --devices=5 --records=100
 ```
 
+> **fix_11:** `debug:seed-energy` crea ahora asociaciones en `hardware_energy`
+> (tabla pivote monitor ↔ monitorizado): auto-monitorización, monitorización
+> cruzada y bidireccional. Sin estas asociaciones las vistas de energía no pueden
+> resolver qué dispositivo monitoriza a cuál.
+
+## Impresoras
+
+El submódulo de impresoras (modelos `Printer`, `PrinterStack`,
+`PrinterAvailableType`) se documenta aparte en [printers.md](printers.md). Su
+Resource Filament aparece bajo el grupo de navegación **Hardware**.
+

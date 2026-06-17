@@ -89,3 +89,16 @@ El módulo File es referenciado por:
 - `ContentAvailableType.file_id` — Icono del tipo
 - `Technology.image_id` — Icono de la tecnología
 - Múltiples modelos vía `ImageTrait`
+
+## Subida de imágenes en Filament (fix_11)
+
+- Componente centralizado `app/Filament/Components/ImageCropperUpload.php` (extiende
+  `FileUpload`). Métodos: `makeImage()` (disco `public`, cropper, jpeg/png/webp) y
+  presets `avatar()`, `cover16x9()`, `logo()`, `icon($size)`.
+- Todos los Resources de imágenes usan este componente en lugar de `FileUpload`
+  directo (User, Profile, Content, Category, Platform, Technology, HardwareDevice,
+  FileType, páginas de contenido, CV).
+- Para campos `*_id` que son FK a `files` (HardwareDevice, CV), las Pages usan el
+  trait `app/Filament/Concerns/HasImageFileUpload.php` (`resolveImageUpload`), que
+  convierte el upload temporal en un registro `File` vía `File::addFile()` y guarda
+  su id. El campo usa `->storeFiles(false)` para conservar el `UploadedFile`.

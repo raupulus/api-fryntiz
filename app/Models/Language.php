@@ -9,6 +9,34 @@ use function asset;
 
 /**
  * App\Models\Language
+ *
+ * @property int $id
+ * @property string $locale Código del país e idioma: es_ES
+ * @property string $iso_locale Código del país e idioma: es-ES
+ * @property string $iso2 Código del país con longitud 2: es
+ * @property string $iso3 Código del país con longitud 3: esp
+ * @property string $name Nombre del idioma en su propio idioma
+ * @property string $iso_language Nombre del idioma en inglés: spanish
+ * @property string|null $icon16 Icono a 16x16 píxeles
+ * @property string|null $icon32 Icono a 32x32 píxeles
+ * @property string|null $icon64 Icono a 64x64 píxeles
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read string $url_icon64
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIcon16($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIcon32($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIcon64($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIso2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIso3($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIsoLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIsoLocale($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereLocale($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
+ * @mixin \Eloquent
  */
 class Language extends Model
 {

@@ -6,6 +6,38 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string $title Título de la experiencia
+ * @property string|null $position Puesto ocupado en la experiencia
+ * @property string|null $company Empresa donde trabajó
+ * @property string|null $description Descripción
+ * @property string|null $note Notas
+ * @property string|null $start_at Fecha de inicio
+ * @property string|null $end_at Fecha de fin
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereCompany($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther wherePosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumExperienceOther whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class CurriculumExperienceOther extends CurriculumBaseSection
 {

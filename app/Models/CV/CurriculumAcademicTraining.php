@@ -6,6 +6,52 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string $title Título obtenido
+ * @property string|null $entity Entidad o empresa emisora
+ * @property string|null $credential_id Identificador de la Credencial obtenida
+ * @property string|null $credential_url Url hacia la Credencial obtenida
+ * @property string|null $learned Conocimientos adquiridos
+ * @property string|null $description Descripción
+ * @property string|null $note Notas
+ * @property int|null $hours Horas de formación
+ * @property string|null $instructor Instructor de la formación
+ * @property bool $expires ¿Expira la validez?
+ * @property string|null $expires_at Fecha de expiración
+ * @property string|null $expedition_at Fecha de expedición
+ * @property string|null $start_at Fecha de inicio
+ * @property string|null $end_at Fecha de fin
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereCredentialId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereCredentialUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereExpeditionAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereExpires($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereInstructor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereLearned($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class CurriculumAcademicTraining extends CurriculumBaseSection
 {

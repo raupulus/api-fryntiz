@@ -20,11 +20,14 @@ class DatabaseSeeder extends Seeder
         $this->call(LanguagesTableSeeder::class);
         $this->call(RolesTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+        $this->call(SocialNetworkSeeder::class);
         $this->call(HardwareAvailableComponentsTableSeeder::class);
         $this->call(CurriculumAvailableRepositoryTypeSeeder::class);
         $this->call(ContentAvailableTypesSeeder::class);
         $this->call(ContentAvailableStatusSeeder::class);
         $this->call(ContentAvailablePageRawSeeder::class);
+        $this->call(CategoriesSeeder::class);
+        $this->call(TagsSeeder::class);
         $this->call(TechnologiesSeeder::class);
         $this->call(PrinterAvailableTypesSeeder::class);
         $this->call(ReferredPlatformsSeeder::class);

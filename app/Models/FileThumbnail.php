@@ -9,6 +9,41 @@ use function storage_path;
 
 /**
  * Class FileThumbnail
+ *
+ * @property int $id
+ * @property int|null $file_id Imagen Asociada
+ * @property int|null $file_type_id FK al tipo de archivo
+ * @property string|null $module Nombre del módulo para acceder por path
+ * @property string|null $path Ruta que tiene la aplicación hacia el archivo, por ejemplo: users/avatar
+ * @property string|null $storage_path Ruta hacia el archivo en el storage
+ * @property string $name Nombre asignado de forma interna en la aplicación, por ejemplo: fg7s97hg98hjsd8gh0d0.jpg
+ * @property string|null $key Almacena la clave del tipo de thumbnail (small, medium...)
+ * @property int|null $width Ancho de la imagen
+ * @property int|null $height Alto de la imagen
+ * @property int $size Tamaño de la imagen
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read string $storage_path_file
+ * @property-read string $url
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereFileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereFileTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereHeight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereModule($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereStoragePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereWidth($value)
+ * @mixin \Eloquent
  */
 class FileThumbnail extends Model
 {

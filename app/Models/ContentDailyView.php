@@ -2,16 +2,46 @@
 
 namespace App\Models;
 
+use App\Models\Content\Content;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property int $id
+ * @property int $content_id
+ * @property string $date
+ * @property int $views
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Content $content
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereContentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereViews($value)
+ * @mixin \Eloquent
+ */
 class ContentDailyView extends Model
 {
     protected $fillable = ['content_id', 'date', 'views'];
 
-    protected $dates = ['date'];
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+    /**
+     * Contenido al que pertenecen las vistas.
+     */
+    public function content(): BelongsTo
+    {
+        return $this->belongsTo(Content::class, 'content_id', 'id');
+    }
 
     /**
      * Devuelve el contenido más visto en un periodo de tiempo

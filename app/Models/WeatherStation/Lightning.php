@@ -6,6 +6,29 @@ use App\Events\WeatherStation\LightningUpdateEvent;
 
 /**
  * Class Lightning
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property int $distance Distancia estimada de la caída del rayo
+ * @property int $energy Energía detectada para detectar el rayo
+ * @property int|null $noise_floor Ruido de fondo compensado para diferenciar el rayo
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereDistance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereEnergy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereNoiseFloor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereUserId($value)
+ * @mixin \Eloquent
  */
 class Lightning extends BaseWheaterStation
 {

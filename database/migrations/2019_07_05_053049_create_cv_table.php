@@ -17,24 +17,24 @@ class CreateCvTable extends Migration
     public function up()
     {
         Schema::create('cv', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de cv');
+            $table->comment('Almacena los registros correspondientes a cv para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('user_id')
                 ->comment('Relación con el usuario');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el user al que pertenece.');
             $table->unsignedBigInteger('image_id')
                 ->nullable()
                 ->comment('Relación con la imagen asociada');
             $table->foreign('image_id')
                 ->references('id')->on('files')
                 ->onUpdate('CASCADE')
-                ->onDelete('SET NULL');
+                ->onDelete('SET NULL')->comment('Clave foránea que relaciona este registro con el image al que pertenece.');
             $table->string('title', 511)
                 ->comment('Título para el curriculum');
             $table->text('presentation')
@@ -56,8 +56,8 @@ class CreateCvTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Indica si su visibilidad es pública');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
+            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

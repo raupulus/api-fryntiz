@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Technologies;
 use App\Filament\Admin\Resources\Technologies\Pages\CreateTechnology;
 use App\Filament\Admin\Resources\Technologies\Pages\EditTechnology;
 use App\Filament\Admin\Resources\Technologies\Pages\ListTechnologies;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\Technology;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -12,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -44,9 +44,9 @@ class TechnologyResource extends Resource
     {
         return $schema->components([
             Section::make('Logo')->schema([
-                FileUpload::make('image_path')
-                    ->image()->imageEditor()->imageEditorAspectRatios(['1:1'])
-                    ->directory('technologies')->visibility('public')->maxSize(2048)
+                ImageCropperUpload::makeImage('image_path')
+                    ->icon(128)
+                    ->directory('technologies')
                     ->hiddenLabel()
                     ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                     ->columnSpanFull(),

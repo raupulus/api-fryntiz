@@ -13,6 +13,29 @@ use function is_array;
 
 /**
  * Class CurriculumAvailableRepositoryType
+ *
+ * @property int $id
+ * @property int|null $image_id Relación con la imagen asociada
+ * @property string|null $title Título para el repositorio
+ * @property string|null $name Nombre del repositorio
+ * @property string $slug Identificador único para el repositorio
+ * @property string|null $url Dirección al repositorio
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string $url_image
+ * @property-read File|null $image
+ * @method static Builder<static>|CurriculumAvailableRepositoryType newModelQuery()
+ * @method static Builder<static>|CurriculumAvailableRepositoryType newQuery()
+ * @method static Builder<static>|CurriculumAvailableRepositoryType query()
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereCreatedAt($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereId($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereImageId($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereName($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereSlug($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereTitle($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereUpdatedAt($value)
+ * @method static Builder<static>|CurriculumAvailableRepositoryType whereUrl($value)
+ * @mixin \Eloquent
  */
 class CurriculumAvailableRepositoryType extends Model
 {
@@ -27,7 +50,7 @@ class CurriculumAvailableRepositoryType extends Model
      *
      * @return HasOne
      */
-    public function image()
+    public function image(): HasOne
     {
         return $this->hasOne(File::class, 'id', 'image_id');
     }

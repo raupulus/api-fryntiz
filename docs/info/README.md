@@ -10,6 +10,7 @@
 |---------|--------|-------------|
 | [weather-station.md](weather-station.md) | Estación Meteorológica | Sensores meteorológicos + integración AEMET |
 | [hardware.md](hardware.md) | Hardware y Energía | Dispositivos, cargas solares, generadores, consumos |
+| [printers.md](printers.md) | Impresoras | Gestión de impresoras y cola de impresión |
 | [keycounter.md](keycounter.md) | Contador de Pulsaciones | Teclado y ratón: pulsaciones, clicks, estadísticas |
 | [smart-plant.md](smart-plant.md) | Plantas Inteligentes | Sensores de humedad, luz, temperatura en plantas |
 | [airflight.md](airflight.md) | Registro de Vuelos | Detección y tracking de aviones |
@@ -21,9 +22,11 @@
 | [contact.md](contact.md) | Formulario de Contacto | Email de contacto con reCAPTCHA |
 | [files.md](files.md) | Gestión de Archivos | Uploads, thumbnails, redimensión de imágenes |
 | [common.md](common.md) | Entidades Comunes | Categorías, tags, tecnologías, idiomas |
+| [default-images.md](default-images.md) | Imágenes por defecto | Catálogo de imágenes por defecto por módulo |
 | [debug-commands.md](debug-commands.md) | Comandos de Debug | Inserción de datos de prueba para desarrollo |
 | [commands.md](commands.md) | Catálogo de comandos | Todos los comandos Artisan personalizados |
 | [websockets.md](websockets.md) | WebSockets (Reverb) | Configuración de Reverb + Laravel Echo |
+| [mcp.md](mcp.md) | Model Context Protocol (MCP) | Integración con MCP (servidores y herramientas de IA) |
 | [apis/aemet.md](apis/aemet.md) | API AEMET OpenData | Integración técnica con AEMET (rate-limit, retry, caché) |
 | [../deploys/deploy-vps.md](../deploys/deploy-vps.md) | Despliegue en VPS | Guía paso a paso Docker / bare-metal |
 

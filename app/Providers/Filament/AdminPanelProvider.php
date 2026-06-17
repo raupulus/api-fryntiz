@@ -17,6 +17,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -70,6 +71,10 @@ class AdminPanelProvider extends PanelProvider
                 'Módulos',
                 'Configuración',
             ])
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): string => view()->yieldPushContent('scripts'),
+            )
             ->defaultThemeMode(ThemeMode::Dark)
             ->font('Figtree')
             ->navigationItems(

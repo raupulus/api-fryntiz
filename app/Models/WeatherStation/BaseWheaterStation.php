@@ -12,12 +12,22 @@ use function array_key_exists;
 
 /**
  * Class BaseWheaterStation
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation today()
+ * @mixin \Eloquent
  */
 class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 {
     use HasTimestampScopes;
 
     protected $fillable = [
+        'user_id',
         'hardware_device_id',
         'value',
         'created_at',

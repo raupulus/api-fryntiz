@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\Newsletter\V2;
 
 use App\Http\Controllers\Api\V2\BaseApiController;
+use App\Http\Requests\Api\Newsletter\V2\NewsletterResendRequest;
 use App\Http\Requests\Api\Newsletter\V2\NewsletterSubscribeRequest;
 use App\Services\Newsletter\NewsletterService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Controlador de newsletter para API V2.
@@ -50,5 +52,32 @@ class NewsletterController extends BaseApiController
         }
 
         return $this->successResponse(message: 'Suscripcion cancelada correctamente');
+    }
+
+    /**
+     * Reenvía el email de verificación de una suscripción.
+     */
+    public function resendVerification(NewsletterResendRequest $request): JsonResponse
+    {
+        $newsletter = $this->service->resendVerification(
+            $request->validated('email'),
+            (int) $request->validated('platform_id')
+        );
+
+        if (! $newsletter) {
+            return $this->notFoundResponse('Suscripcion no encontrada');
+        }
+
+        return $this->successResponse(message: 'Email de verificacion reenviado correctamente');
+    }
+
+    /**
+     * Estadísticas de la newsletter (opcional ?platform_id=).
+     */
+    public function stats(Request $request): JsonResponse
+    {
+        $platformId = $request->integer('platform_id') ?: null;
+
+        return $this->successResponse($this->service->stats($platformId));
     }
 }

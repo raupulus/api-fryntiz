@@ -60,7 +60,62 @@ Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de per
 
 ---
 
-## 6. Debug — Datos de prueba
+## 6. IoT — Tokens de dispositivo
+
+Emite tokens Sanctum con abilities limitadas para que un dispositivo IoT pueda escribir datos en la API sin credenciales de usuario completas.
+
+```bash
+php artisan iot:device-token {device_id} --abilities={scope} [--expires={días}]
+```
+
+**Parámetros:**
+
+| Parámetro | Requerido | Descripción |
+|-----------|-----------|-------------|
+| `device_id` | Sí | ID del `HardwareDevice` al que se asocia el token. |
+| `--abilities` | Sí | Scope(s) del token. Repetible para múltiples abilities. |
+| `--expires` | No | Días hasta la expiración. Sin este flag el token no expira. |
+
+**Abilities disponibles (ejemplos):**
+
+| Ability | Módulo |
+|---------|--------|
+| `weatherstation:write` | Estación meteorológica |
+| `energy:write` | Energía |
+| `hardware:write` | Hardware genérico |
+| `smartplant:write` | Smart Plant |
+
+**Ejemplos de uso:**
+
+```bash
+# Token para estación meteorológica con expiración de 1 año
+php artisan iot:device-token 10 --abilities=weatherstation:write --expires=365
+
+# Token con múltiples abilities, sin expiración
+php artisan iot:device-token 7 --abilities=energy:write --abilities=hardware:write
+
+# Token permanente para dispositivo concreto
+php artisan iot:device-token 3 --abilities=smartplant:write
+```
+
+**Salida esperada:**
+
+```
+Token emitido correctamente para el dispositivo #10
+Abilities: weatherstation:write
+Expira: 2027-06-17 16:18:29
+
+Guarda este token ahora (no se volverá a mostrar):
+5|jYQ5lOukVw1izffYl2a2408i48WalBXg6jK6BG5i161f6026
+```
+
+> ⚠️ El token en texto plano **solo se muestra una vez**. Guárdalo en el `.env` del dispositivo o en el gestor de secretos antes de cerrar la terminal.
+
+El token se registra en Sanctum como `device:{id}` para facilitar la trazabilidad en la tabla `personal_access_tokens`. El propietario del token es el usuario asociado al `HardwareDevice`.
+
+---
+
+## 7. Debug — Datos de prueba
 
 > ⚠️ Solo para entornos de desarrollo. **No ejecutar en producción.**
 
@@ -84,7 +139,7 @@ Todos los comandos `debug:seed-*` usan el trait `ResolvesDebugDefaults` para res
 
 ---
 
-## 7. Comandos del scheduler
+## 8. Comandos del scheduler
 
 El scheduler está definido en `bootstrap/app.php` (sustituye a `app/Console/Kernel.php` en Laravel 11+). Cron debe estar configurado en el host con:
 
@@ -100,7 +155,7 @@ php artisan schedule:list
 
 ---
 
-## 8. Comandos estándar de Laravel más usados
+## 9. Comandos estándar de Laravel más usados
 
 Comandos del framework que se usan habitualmente en este proyecto:
 
@@ -118,7 +173,7 @@ Comandos del framework que se usan habitualmente en este proyecto:
 
 ---
 
-## 9. Cómo añadir un comando nuevo
+## 10. Cómo añadir un comando nuevo
 
 1. Generar:
    ```bash

@@ -7,6 +7,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @property int $id
+ * @property int $zone_code Código de la zona de altamar
+ * @property string|null $start_at Momento de inicio para el periodo de validez de la lectura
+ * @property string $end_at Momento de fin para el periodo de validez de la lectura
+ * @property string|null $text Contiene la información de la predicción
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETHighSea whereZoneCode($value)
+ * @mixin \Eloquent
+ */
 class AEMETHighSea extends Model
 {
     use HasFactory;

@@ -4,6 +4,25 @@ namespace App\Models\WeatherStation;
 
 /**
  * Class Tvoc
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $value Valor entre  0ppb y 1187ppb
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereValue($value)
+ * @mixin \Eloquent
  */
 class Tvoc extends BaseWheaterStation
 {

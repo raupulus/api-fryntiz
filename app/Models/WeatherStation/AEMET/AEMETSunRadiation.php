@@ -6,6 +6,54 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @property int $id
+ * @property string $station_code Código de la estación, indicativo Climatológico Estación
+ * @property string $type_global Variable medida global
+ * @property string $type_diffuse Variable medida difusa
+ * @property string $type_direct Variable medida directa
+ * @property string $type_uv_eritematica Variable medida UV Eritemática
+ * @property string $type_infrarroja Variable medida Infrarroja
+ * @property string $real_solar_hour_global Radiación horaria acumulada entre: (hora indicada -1) y (hora indicada) entre las 5 y las 20 Hora Solar Verdadera. Global. Unidad de medida 10*kJ/m2
+ * @property string $real_solar_hour_diffuse Radiación horaria acumulada entre: (hora indicada -1) y (hora indicada) entre las 5 y las 20 Hora Solar Verdadera. Difusa. Unidad de medida 10*kJ/m2
+ * @property string $real_solar_hour_direct Radiación horaria acumulada entre: (hora indicada -1) y (hora indicada) entre las 5 y las 20 Hora Solar Verdadera. Directa. Unidad de medida 10*kJ/m2
+ * @property string|null $sum_global Radiación diaria acumulada. Suma Global. Unidad de medida 10*kJ/m2
+ * @property string|null $sum_diffuse Radiación diaria acumulada. Suma Difusa. Unidad de medida 10*kJ/m2
+ * @property string|null $sum_direct Radiación diaria acumulada. Suma Directa. Unidad de medida 10*kJ/m2
+ * @property string $real_solar_hour_uver Radiación semihoraria acumulada entre: (hora:minutos indicados - 30 minutos y (hora:minutos indicados) entre las 4:30 y las 20 Hora  Solar Verdadera. Variables: Radiación Ultravioleta Eritemática. Unidad de medida J/m2
+ * @property string|null $sum_uver Radiación diaria acumulada. Variables: Radiación Ultravioleta Eritemática.  Unidad de medida J/m2
+ * @property string|null $real_solar_hour_infrared Radiación horaria acumulada entre (hora indicada -1) y (hora indicada) entre las 1 y las 24 Hora Solar Verdadera. Variables: Radiación Infrarroja. Unidad de medida 10*kJ/m2
+ * @property string|null $sum_infrared Radiación diaria acumulada. Variables: Radiación Infrarroja. Unidad de medida 10*kJ/m2
+ * @property string $start_at
+ * @property string $end_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereRealSolarHourDiffuse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereRealSolarHourDirect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereRealSolarHourGlobal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereRealSolarHourInfrared($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereRealSolarHourUver($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereStationCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereSumDiffuse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereSumDirect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereSumGlobal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereSumInfrared($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereSumUver($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereTypeDiffuse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereTypeDirect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereTypeGlobal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereTypeInfrarroja($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereTypeUvEritematica($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETSunRadiation whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AEMETSunRadiation extends Model
 {
     use HasFactory;

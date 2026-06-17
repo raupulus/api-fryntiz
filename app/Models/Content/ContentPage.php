@@ -11,6 +11,43 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class ContentPage
+ *
+ * @property int $id
+ * @property int|null $content_id FK al usuario propietario del post
+ * @property int|null $image_id FK a la imagen en la tabla files
+ * @property int|null $current_page_raw_id FK al tipo de contenido desde el que se ha procesado el html actual para el campo "content". En caso de ser NULL, se está utilizando directamente el campo "content"
+ * @property string|null $title Título de la página
+ * @property string|null $slug Slug de la página
+ * @property string|null $content Contenido de la página en html procesado
+ * @property int|null $order Orden de la página al mostrarse
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \App\Models\Content\Content|null $contentModel
+ * @property-read string $url_image
+ * @property-read string $url_image_large
+ * @property-read string $url_image_medium
+ * @property-read string $url_image_micro
+ * @property-read string $url_image_normal
+ * @property-read string $url_image_small
+ * @property-read string $url_store_image
+ * @property-read File|null $image
+ * @property-read \App\Models\Content\ContentPageRaw|null $raw
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereContentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereCurrentPageRawId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ContentPage extends BaseModel
 {

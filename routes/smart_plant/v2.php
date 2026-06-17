@@ -9,6 +9,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('smartplant')->middleware(['auth:sanctum', 'throttle:api-store'])->group(function () {
+Route::prefix('smartplant')->middleware(['auth:sanctum', 'ability:smartplant:write', 'throttle:api-store'])->group(function () {
     Route::post('/register', [SmartPlantRegisterController::class, 'store'])->name('api.v2.smartplant.register.store');
 });

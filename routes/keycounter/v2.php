@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('keycounter')->middleware(['auth:sanctum', 'throttle:api-store'])->group(function () {
+Route::prefix('keycounter')->middleware(['auth:sanctum', 'ability:keycounter:write', 'throttle:api-store'])->group(function () {
     Route::post('/keyboard', [KeyboardController::class, 'store'])->name('api.v2.keycounter.keyboard.store');
     Route::post('/mouse', [MouseController::class, 'store'])->name('api.v2.keycounter.mouse.store');
 });

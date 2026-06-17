@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Categories;
 use App\Filament\Admin\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Admin\Resources\Categories\Pages\EditCategory;
 use App\Filament\Admin\Resources\Categories\Pages\ListCategories;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\Category;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -12,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -45,9 +45,9 @@ class CategoryResource extends Resource
     {
         return $schema->components([
             Section::make('Logo')->schema([
-                FileUpload::make('image_path')
-                    ->image()->imageEditor()->imageEditorAspectRatios(['1:1', '16:9'])
-                    ->directory('categories')->visibility('public')->maxSize(2048)
+                ImageCropperUpload::makeImage('image_path')
+                    ->logo()
+                    ->directory('categories')
                     ->hiddenLabel()
                     ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                     ->columnSpanFull(),

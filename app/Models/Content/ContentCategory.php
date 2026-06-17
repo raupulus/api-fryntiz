@@ -8,6 +8,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Content\ContentCategory
+ *
+ * @property int $id
+ * @property int|null $content_id FK al contenido asociado
+ * @property int|null $platform_category_id FK a la plataforma asociada
+ * @property bool $is_main
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read PlatformCategory|null $platformCategory
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory whereContentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory whereIsMain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory wherePlatformCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentCategory whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ContentCategory extends BaseModel
 {

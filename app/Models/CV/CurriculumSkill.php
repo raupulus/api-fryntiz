@@ -6,6 +6,30 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string $name Nombre del skill
+ * @property int|null $level Nivel de conocimiento del 1 al 10
+ * @property string|null $description Descripción del skill
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class CurriculumSkill extends CurriculumBaseSection
 {

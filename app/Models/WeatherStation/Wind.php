@@ -6,10 +6,36 @@ use App\Events\WeatherStation\WindUpdateEvent;
 
 /**
  * Class Wind
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $speed Velocidad del viento m/s
+ * @property numeric $average Velocidad promedio del viento m/s
+ * @property numeric $min Velocidad mínima del viento m/s
+ * @property numeric $max Velocidad máxima del viento m/s
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereAverage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereSpeed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereUserId($value)
+ * @mixin \Eloquent
  */
 class Wind extends BaseWheaterStation
 {
     protected $fillable = [
+        'user_id',
         'hardware_device_id',
         'speed',
         'average',

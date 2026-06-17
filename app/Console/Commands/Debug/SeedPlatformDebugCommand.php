@@ -29,6 +29,15 @@ class SeedPlatformDebugCommand extends Command
         }
 
         $count = (int) $this->option('count');
+
+        // Las categorías y etiquetas deben provenir de sus seeders, nunca de un
+        // comando de debug. Si no existen, abortamos pidiendo ejecutar el seed.
+        if (Category::query()->doesntExist() || Tag::query()->doesntExist()) {
+            $this->error('No hay categorías/etiquetas. Ejecuta primero los seeders (php artisan db:seed).');
+
+            return self::FAILURE;
+        }
+
         $this->info("Creando {$count} plataformas de prueba...");
 
         for ($i = 0; $i < $count; $i++) {
@@ -41,20 +50,12 @@ class SeedPlatformDebugCommand extends Command
                 'domain' => fake()->domainName(),
             ]);
 
-            // Asociar categoría
-            $category = Category::query()->inRandomOrder()->first() ?? Category::create([
-                'name' => fake()->unique()->word(),
-                'slug' => fake()->unique()->slug(),
-                'description' => fake()->sentence(),
-            ]);
+            // Asociar categoría existente (creadas por el seeder, nunca aquí)
+            $category = Category::query()->inRandomOrder()->first();
             $platform->categories()->syncWithoutDetaching([$category->id]);
 
-            // Asociar etiqueta
-            $tag = Tag::query()->inRandomOrder()->first() ?? Tag::create([
-                'name' => fake()->unique()->word(),
-                'slug' => fake()->unique()->slug(),
-                'description' => fake()->sentence(),
-            ]);
+            // Asociar etiqueta existente (creadas por el seeder, nunca aquí)
+            $tag = Tag::query()->inRandomOrder()->first();
             $platform->tags()->syncWithoutDetaching([$tag->id]);
         }
 

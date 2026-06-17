@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Api\V2;
 
+use PHPUnit\Framework\Attributes\Test;
+
 use App\Models\Platform;
 use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Api\ApiTestCase;
@@ -16,7 +18,7 @@ class NewsletterTest extends ApiTestCase
         Platform::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function can_subscribe_with_valid_email(): void
     {
         Mail::fake();
@@ -27,7 +29,7 @@ class NewsletterTest extends ApiTestCase
         $response->assertJson(['message' => 'Suscripcion creada. Revisa tu email para verificar.']);
     }
 
-    /** @test */
+    #[Test]
     public function subscribe_succeeds_with_name(): void
     {
         Mail::fake();
@@ -38,7 +40,7 @@ class NewsletterTest extends ApiTestCase
         $this->assertSuccessResponse($response, 201);
     }
 
-    /** @test */
+    #[Test]
     public function subscribe_fails_without_email(): void
     {
         $response = $this->postJson($this->apiUrl('newsletter/subscribe'), []);
@@ -46,7 +48,7 @@ class NewsletterTest extends ApiTestCase
         $response->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function subscribe_fails_with_invalid_email(): void
     {
         $response = $this->postJson($this->apiUrl('newsletter/subscribe'), ['email' => 'invalid']);
@@ -54,7 +56,7 @@ class NewsletterTest extends ApiTestCase
         $response->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function verify_fails_with_invalid_token(): void
     {
         $response = $this->getJson($this->apiUrl('newsletter/verify/token-invalido'));
@@ -62,7 +64,7 @@ class NewsletterTest extends ApiTestCase
         $response->assertJson(['message' => 'Token invalido']);
     }
 
-    /** @test */
+    #[Test]
     public function unsubscribe_fails_with_invalid_token(): void
     {
         $response = $this->getJson($this->apiUrl('newsletter/unsubscribe/token-invalido'));

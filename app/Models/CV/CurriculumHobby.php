@@ -6,6 +6,30 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string|null $title Título del hobby
+ * @property string|null $description Descripción del hobby
+ * @property string|null $url URL del hobby
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumHobby whereUrl($value)
+ * @mixin \Eloquent
  */
 class CurriculumHobby extends CurriculumBaseSection
 {

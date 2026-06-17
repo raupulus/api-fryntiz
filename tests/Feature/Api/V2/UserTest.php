@@ -2,13 +2,15 @@
 
 namespace Tests\Feature\Api\V2;
 
+use PHPUnit\Framework\Attributes\Test;
+
 use Tests\Feature\Api\ApiTestCase;
 
 class UserTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
-    /** @test */
+    #[Test]
     public function admin_can_list_users(): void
     {
         $headers = $this->asSuperAdmin();
@@ -17,7 +19,7 @@ class UserTest extends ApiTestCase
             ->assertJsonStructure(['data']);
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_list_users(): void
     {
         $headers = $this->asUser();
@@ -25,14 +27,14 @@ class UserTest extends ApiTestCase
         $this->assertErrorResponse($response, 403);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_get_user_list_unauthenticated(): void
     {
         $response = $this->getJson($this->apiUrl('user'), $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_user_show_authenticated(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -42,21 +44,21 @@ class UserTest extends ApiTestCase
         $response->assertJsonStructure(['data' => ['id', 'name']]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_get_user_show_unauthenticated(): void
     {
         $response = $this->getJson($this->apiUrl('user/1'), $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_update_user_unauthenticated(): void
     {
         $response = $this->putJson($this->apiUrl('user/1'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_destroy_user_unauthenticated(): void
     {
         $response = $this->deleteJson($this->apiUrl('user/1'), [], $this->guestHeaders());

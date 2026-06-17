@@ -17,6 +17,15 @@ use function json_encode;
 
 /**
  * Class KeyCounter
+ *
+ * @property-read HardwareDevice|null $device
+ * @property-read HardwareDevice|null $hardware
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter forUser(int $userId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter query()
+ * @mixin \Eloquent
  */
 class BaseKeyCounter extends Model
 {
@@ -40,7 +49,7 @@ class BaseKeyCounter extends Model
      *
      * @return BelongsTo
      */
-    public function hardware()
+    public function hardware(): BelongsTo
     {
         return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
     }
@@ -50,7 +59,7 @@ class BaseKeyCounter extends Model
      *
      * @return BelongsTo
      */
-    public function device()
+    public function device(): BelongsTo
     {
         return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
     }

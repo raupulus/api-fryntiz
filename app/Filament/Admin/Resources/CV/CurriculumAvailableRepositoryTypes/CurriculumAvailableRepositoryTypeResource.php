@@ -5,12 +5,12 @@ namespace App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes;
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\CreateCurriculumAvailableRepositoryType;
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\EditCurriculumAvailableRepositoryType;
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\ListCurriculumAvailableRepositoryTypes;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\CV\CurriculumAvailableRepositoryType;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -39,8 +39,10 @@ class CurriculumAvailableRepositoryTypeResource extends Resource
         return $schema
             ->components([
                 Section::make('Logo')->schema([
-                    FileUpload::make('image_id')
-                        ->image()
+                    ImageCropperUpload::makeImage('image_id')
+                        ->icon(128)
+                        ->storeFiles(false)
+                        ->dehydrated(fn ($state) => filled($state))
                         ->hiddenLabel()
                         ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                         ->columnSpanFull(),

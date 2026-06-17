@@ -85,15 +85,9 @@ php artisan debug:seed-energy --devices=10 --records=200
 
 **Archivo:** `app/Console/Commands/Debug/SeedEnergyDebugCommand.php`
 
-## Users
-
-Crea usuarios de prueba con roles aleatorios:
-
-```bash
-php artisan debug:seed-users --count=5
-```
-
-**Archivo:** `app/Console/Commands/Debug/SeedUsersDebugCommand.php`
+> **Eliminado en fix_11:** el comando `debug:seed-users` se ha retirado. Los 3
+> usuarios creados por `UsersTableSeeder` (superadmin, admin, user) son suficientes
+> para probar la plataforma. `debug:seed-all` ya no lo invoca.
 
 ## Hardware (Dispositivos sueltos)
 
@@ -175,4 +169,16 @@ php artisan debug:seed-all --small
 - Los timestamps se generan en orden descendente desde el momento actual.
 - Los valores son aleatorios pero dentro de rangos realistas para cada sensor/lectura.
 - El directorio de comandos de debug es `app/Console/Commands/Debug/`.
+
+### Cambios fix_11
+
+- `debug:seed-users` **eliminado**; `debug:seed-all` ya no lo referencia.
+- `debug:seed-content`: ya no crea categorías (deben existir vía `CategoriesSeeder`);
+  ahora inserta registros en `content_daily_views` (7 días + hoy).
+- `debug:seed-energy`: crea asociaciones en `hardware_energy` (auto-monitorización,
+  monitorización cruzada y bidireccional).
+- `debug:seed-smartplant`: 20 nombres de plantas variados con nombres científicos.
+- `debug:seed-weatherstation`: añade `user_id` a todas las inserciones y rellena
+  `meteorology_resume_today`, `meteorology_resume_historical`, `meteorology_uv_index`,
+  `meteorology_uva` y `meteorology_uvb`.
 

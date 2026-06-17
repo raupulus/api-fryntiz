@@ -26,7 +26,6 @@ class SeedAllDebugCommand extends Command
         $scale = $this->option('small') ? 0.2 : 1.0;
 
         $commands = [
-            ['debug:seed-users', ['--count' => max(1, (int) (5 * $scale))]],
             ['debug:seed-hardware', ['--count' => max(1, (int) (5 * $scale))]],
             ['debug:seed-platform', ['--count' => max(1, (int) (3 * $scale))]],
             ['debug:seed-content', ['--count' => max(1, (int) (10 * $scale))]],

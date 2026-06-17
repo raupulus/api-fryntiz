@@ -54,7 +54,7 @@ abstract class CurriculumBaseSection extends Model
      *
      * @return BelongsTo
      */
-    public function curriculum()
+    public function curriculum(): BelongsTo
     {
         return $this->belongsTo(Curriculum::class, 'curriculum_id', 'id');
     }
@@ -64,7 +64,7 @@ abstract class CurriculumBaseSection extends Model
      *
      * @return BelongsTo
      */
-    public function image()
+    public function image(): BelongsTo
     {
         return $this->belongsTo(File::class, 'image_id', 'id');
     }

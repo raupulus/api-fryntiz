@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Api\V2;
 
+use PHPUnit\Framework\Attributes\Test;
+
 use Tests\Feature\Api\ApiTestCase;
 
 class WeatherStationTest extends ApiTestCase
@@ -10,7 +12,7 @@ class WeatherStationTest extends ApiTestCase
 
     // ─── GET públicos ───
 
-    /** @test */
+    #[Test]
     public function can_get_resume(): void
     {
         $response = $this->getJson($this->apiUrl('weatherstation/resume'));
@@ -18,14 +20,14 @@ class WeatherStationTest extends ApiTestCase
         $response->assertJsonStructure(['data', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_temperature(): void
     {
         $response = $this->getJson($this->apiUrl('weatherstation/temperature'));
         $this->assertSuccessResponse($response);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_humidity(): void
     {
         $response = $this->getJson($this->apiUrl('weatherstation/humidity'));
@@ -33,7 +35,7 @@ class WeatherStationTest extends ApiTestCase
         $response->assertJsonStructure(['data']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_pressure(): void
     {
         $response = $this->getJson($this->apiUrl('weatherstation/pressure'));
@@ -41,7 +43,7 @@ class WeatherStationTest extends ApiTestCase
         $response->assertJsonStructure(['data']);
     }
 
-    /** @test */
+    #[Test]
     public function temperature_index_accepts_date_range_filter(): void
     {
         $response = $this->getJson($this->apiUrl('weatherstation/temperature?from=2025-01-01&to=2025-01-31'));
@@ -50,35 +52,35 @@ class WeatherStationTest extends ApiTestCase
 
     // ─── POST stores (auth required) ───
 
-    /** @test */
+    #[Test]
     public function cannot_store_temperature_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('weatherstation/temperature/store'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_store_humidity_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('weatherstation/humidity/store'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_store_pressure_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('weatherstation/pressure/store'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_store_generic_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('weatherstation/generic/store'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function store_temperature_validates_required_device(): void
     {
         $headers = $this->asUser();
@@ -89,7 +91,7 @@ class WeatherStationTest extends ApiTestCase
         $response->assertJsonValidationErrors(['hardware_device_id']);
     }
 
-    /** @test */
+    #[Test]
     public function store_temperature_validates_value_required(): void
     {
         $headers = $this->asUser();
@@ -100,7 +102,7 @@ class WeatherStationTest extends ApiTestCase
         $response->assertJsonValidationErrors(['value']);
     }
 
-    /** @test */
+    #[Test]
     public function store_generic_validates_data_required(): void
     {
         $headers = $this->asUser();

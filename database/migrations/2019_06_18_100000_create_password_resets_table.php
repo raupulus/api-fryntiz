@@ -17,12 +17,12 @@ class CreatePasswordResetsTable extends Migration
     public function up()
     {
         Schema::create('password_resets', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de password resets');
+            $table->comment('Almacena los registros correspondientes a password resets para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->string('email')->index()->comment('Correo electrónico');
-            $table->string('token')->comment('Columna token');
+            $table->string('token')->comment('Campo que almacena el token específico para este registro según la lógica de negocio.');
             $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
     }

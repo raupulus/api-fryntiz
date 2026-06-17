@@ -17,18 +17,18 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de users');
+            $table->comment('Almacena los usuarios registrados en el sistema, habilitando la autenticación, gestión de roles y relación con entidades.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('role_id')
                 ->default(3)
                 ->comment('Role principal del usuario, aunque pueda tener otros roles extras');
             $table->foreign('role_id')
                 ->references('id')->on('user_roles')
                 ->onUpdate('CASCADE')
-                ->onDelete('SET NULL');
+                ->onDelete('SET NULL')->comment('Clave foránea que relaciona este registro con el role al que pertenece.');
             $table->foreignId('current_team_id')
                 ->nullable()
                 ->comment('Identificador del equipo al que pertenece.');
@@ -41,7 +41,7 @@ class CreateUsersTable extends Migration
                 ->nullable()
                 ->unique()
                 ->comment('Apodo del usuario, ha de ser único para permitir el login en la aplicación');
-            $table->text('profile_photo_path')->nullable()->comment('Columna profile photo path');
+            $table->text('profile_photo_path')->nullable()->comment('Ruta en el sistema de archivos o enlace donde reside la imagen de perfil asociada.');
             $table->string('email')
                 ->unique()
                 ->comment('Email del usuario, ha de ser único para permitir el login en la aplicación');
@@ -50,11 +50,11 @@ class CreateUsersTable extends Migration
                 ->comment('Momento en el que ha verificado el email');
             $table->string('password')
                 ->comment('Contraseña del usuario cifrada.');
-            $table->text('two_factor_secret')->nullable()->comment('Columna two factor secret');
-            $table->text('two_factor_recovery_codes')->nullable()->comment('Columna two factor recovery codes');
+            $table->text('two_factor_secret')->nullable()->comment('Clave o código secreto empleado de manera interna para soportar el factor de doble autenticación.');
+            $table->text('two_factor_recovery_codes')->nullable()->comment('Clave o código secreto empleado de manera interna para soportar el factor de doble autenticación.');
             $table->rememberToken()->comment('Token de sesión para recordar usuario');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
+            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

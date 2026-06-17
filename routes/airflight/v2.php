@@ -12,8 +12,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('airflight')->group(function () {
     Route::get('/aircrafts', [AirFlightController::class, 'aircrafts'])->name('api.v2.airflight.aircrafts');
     Route::get('/history', [AirFlightController::class, 'history'])->name('api.v2.airflight.history');
+    Route::get('/receiver', [AirFlightController::class, 'receiver'])->name('api.v2.airflight.receiver');
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'ability:airflight:write'])->group(function () {
         Route::post('/register', [AirFlightController::class, 'store'])->middleware('throttle:api-store')->name('api.v2.airflight.store');
         Route::post('/register/batch', [AirFlightController::class, 'storeBatch'])->middleware('throttle:api-store-batch')->name('api.v2.airflight.store_batch');
     });

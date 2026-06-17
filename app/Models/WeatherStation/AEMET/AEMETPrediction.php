@@ -6,6 +6,54 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @property int $id
+ * @property string|null $city Ciudad sobre la que se piden las predicciones
+ * @property string|null $province Provincia en la que se encuentra la ciudad
+ * @property string|null $sky_status Descripción del estado del cielo
+ * @property string|null $sky_status_code Código del estado del Cielo
+ * @property numeric|null $rain Cantidad total de precipitación durante la hora anterior (mm)
+ * @property int|null $rain_prob Valor de la probabilidad de precipitación (%)
+ * @property int|null $storm_prob Valor de la probabilidad de tormenta (%)
+ * @property numeric|null $snow Cantidad total de nieve que se prevé que caiga durante la hora anterior (mm)
+ * @property int|null $snow_prob Valor de la probabilidad de precipitación de nieve (%)
+ * @property numeric|null $temperature Valor de la temperatura (ºC)
+ * @property numeric|null $thermal_sensation Sensación térmica (ºC)
+ * @property int|null $humidity Valor de la humedad relativa (%)
+ * @property string $sunrise
+ * @property string $sunset
+ * @property string $start_at
+ * @property string $end_at
+ * @property string $day_start_at
+ * @property string $day_end_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereDayEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereDayStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereHumidity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereProvince($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereRain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereRainProb($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereSkyStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereSkyStatusCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereSnow($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereSnowProb($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereStormProb($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereSunrise($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereSunset($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereTemperature($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereThermalSensation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AEMETPrediction extends Model
 {
     use HasFactory;

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\AirFlight\V2\StoreAirFlightRequest;
 use App\Http\Requests\Api\AirFlight\V2\StoreBatchAirFlightRequest;
 use App\Http\Resources\V2\AirFlight\AirFlightResource;
+use App\Models\AirFlight\AirFlightRoute;
 use App\Services\AirFlight\AirFlightService;
 use Illuminate\Http\JsonResponse;
 
@@ -15,6 +16,20 @@ use Illuminate\Http\JsonResponse;
 class AirFlightController extends BaseApiController
 {
     public function __construct(private AirFlightService $service) {}
+
+    /**
+     * Información del receptor (posición, refresco, historial).
+     */
+    public function receiver(): JsonResponse
+    {
+        return $this->successResponse([
+            'history' => AirFlightRoute::HISTORY_LENGTH,
+            'lat' => 36.7381,
+            'lon' => -6.4301,
+            'refresh' => 5000,
+            'version' => 'api raupulus v2',
+        ]);
+    }
 
     /**
      * Lista aviones detectados recientemente.

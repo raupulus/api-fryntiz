@@ -2,13 +2,15 @@
 
 namespace Tests\Feature\Api\V2;
 
+use PHPUnit\Framework\Attributes\Test;
+
 use Tests\Feature\Api\ApiTestCase;
 
 class CvTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
-    /** @test */
+    #[Test]
     public function can_get_cv_index(): void
     {
         $response = $this->getJson($this->apiUrl('cv'));
@@ -16,7 +18,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_experience(): void
     {
         $response = $this->getJson($this->apiUrl('cv/experience'));
@@ -24,7 +26,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_education(): void
     {
         $response = $this->getJson($this->apiUrl('cv/education'));
@@ -32,7 +34,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_skills(): void
     {
         $response = $this->getJson($this->apiUrl('cv/skills'));
@@ -40,7 +42,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_projects(): void
     {
         $response = $this->getJson($this->apiUrl('cv/projects'));
@@ -48,7 +50,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_repositories(): void
     {
         $response = $this->getJson($this->apiUrl('cv/repositories'));
@@ -56,7 +58,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_services(): void
     {
         $response = $this->getJson($this->apiUrl('cv/services'));
@@ -64,7 +66,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_collaborations(): void
     {
         $response = $this->getJson($this->apiUrl('cv/collaborations'));
@@ -72,7 +74,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_hobbies(): void
     {
         $response = $this->getJson($this->apiUrl('cv/hobbies'));
@@ -80,7 +82,7 @@ class CvTest extends ApiTestCase
         $response->assertJsonStructure(['success', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_cv_jobs(): void
     {
         $response = $this->getJson($this->apiUrl('cv/jobs'));

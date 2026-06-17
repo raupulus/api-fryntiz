@@ -17,18 +17,18 @@ class CreateEmailsTable extends Migration
     public function up()
     {
         Schema::create('emails', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de emails');
+            $table->comment('Almacena los registros correspondientes a emails para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario al que se le envía el mensaje');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el user al que pertenece.');
             $table->unsignedBigInteger('language_id')
                 ->default(1)
                 ->nullable()
@@ -36,10 +36,10 @@ class CreateEmailsTable extends Migration
             $table->foreign('language_id')
                 ->references('id')->on('languages')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el language al que pertenece.');
             $table->string('email', 511)->comment('Correo electrónico');
-            $table->string('subject', 511)->comment('Columna subject');
-            $table->text('message')->comment('Columna message');
+            $table->string('subject', 511)->comment('Asunto del mensaje o correo electrónico');
+            $table->text('message')->comment('Campo que almacena el message específico para este registro según la lógica de negocio.');
             $table->boolean('privacity')
                 ->default(0)
                 ->comment('Indica si acepta políticas de privacidad desde el apartado que envía el mensaje de contacto.');

@@ -16,6 +16,7 @@ class ImageCropperUpload extends FileUpload
         return static::make($name)
             ->image()
             ->imageEditor()
+            ->disk('public')
             ->visibility('public')
             ->maxSize(4096)
             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']);

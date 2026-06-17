@@ -11,6 +11,51 @@ use function array_filter;
 
 /**
  * Class HardwarePowerLoadHistorical
+ *
+ * @property int $id
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property int|null $fan_min Velocidad mínima de ventilador (rpm)
+ * @property int|null $fan_max Velocidad máxima de ventilador (rpm)
+ * @property numeric|null $temperature_min Temperatura mínima (°C)
+ * @property numeric|null $temperature_max Temperatura máxima (°C)
+ * @property numeric|null $voltage_min Volts mínimo (V)
+ * @property numeric|null $voltage_max Voltaje máximo (V)
+ * @property numeric|null $battery_min Voltaje mínimo de batería (V)
+ * @property numeric|null $battery_max Voltaje máximo de batería (V)
+ * @property numeric|null $amperage_min Amperaje mínimo (A)
+ * @property numeric|null $amperage_max Amperaje máximo (A)
+ * @property numeric|null $amperage Amperaje total (A)
+ * @property numeric|null $power_min Potencia mínima (W)
+ * @property numeric|null $power_max Potencia máxima (W)
+ * @property numeric|null $power Potencia total (W)
+ * @property int|null $days_operating Número de días que el dispositivo ha estado operativo
+ * @property string|null $read_at Fecha y hora de la última lectura
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereAmperage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereAmperageMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereAmperageMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereBatteryMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereBatteryMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereDaysOperating($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereFanMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereFanMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical wherePower($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical wherePowerMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical wherePowerMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereTemperatureMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereTemperatureMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereVoltageMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereVoltageMin($value)
+ * @mixin \Eloquent
  */
 class HardwarePowerLoadHistorical extends BaseModel
 {

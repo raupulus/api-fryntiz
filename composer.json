@@ -13,17 +13,20 @@
         "intervention/image-laravel": "^1.5",
         "laravel/fortify": "^1.24",
         "laravel/framework": "^13.0",
+        "laravel/mcp": "^0.8.1",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "spatie/laravel-sitemap": "^8.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.0",
+        "barryvdh/laravel-ide-helper": "^3.7",
         "fakerphp/faker": "^1.24",
         "laravel/pint": "^1.18",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "phpunit/phpunit": "^11.0"
+        "phpunit/phpunit": "^11.0",
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
@@ -32,10 +35,10 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/JsonHelper.php",
-            "app/Helpers/RoleHelper.php",
-            "app/Helpers/AEMETHelper.php",
-            "app/Helpers/MenuHelper.php"
+            "support/helpers/JsonHelper.php",
+            "support/helpers/RoleHelper.php",
+            "support/helpers/AEMETHelper.php",
+            "support/helpers/MenuHelper.php"
         ]
     },
     "autoload-dev": {

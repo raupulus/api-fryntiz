@@ -23,6 +23,50 @@ use function storage_path;
 
 /**
  * Class File
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $file_type_id FK al tipo de archivo
+ * @property string|null $module Nombre del módulo para acceder por path
+ * @property string $path Ruta que tiene la aplicación hacia el archivo, por ejemplo: users/avatar
+ * @property string|null $storage_path Ruta hacia el archivo en el storage
+ * @property string $name Nombre asignado de forma interna en la aplicación, por ejemplo: fg7s97hg98hjsd8gh0d0.jpg
+ * @property int|null $width Ancho de la imagen
+ * @property int|null $height Alto de la imagen
+ * @property string|null $original_name Nombre original del archivo, el nombre que lleva al subirse
+ * @property int $size Tamaño de la imagen
+ * @property string $alt
+ * @property string $title
+ * @property bool $is_private Indica si es privado el archivo o pertenece al espacio público de la aplicación
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \App\Models\FileType|null $fileType
+ * @property-read string $storage_path_file
+ * @property-read string $url
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileThumbnail> $thumbnails
+ * @property-read int|null $thumbnails_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereAlt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereFileTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereHeight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereIsPrivate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereModule($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereOriginalName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereStoragePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereWidth($value)
+ * @mixin \Eloquent
  */
 class File extends Model
 {

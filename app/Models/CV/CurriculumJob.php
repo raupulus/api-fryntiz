@@ -6,6 +6,36 @@ namespace App\Models\CV;
  * Class CurriculumService
  *
  * Representa los servicios del usuario asociados a un curriculum.
+ *
+ * @property int $id
+ * @property int $curriculum_id Relación con el curriculum
+ * @property int|null $image_id Relación con la imagen
+ * @property string $title Título de la colaboración
+ * @property string|null $description Descripción del proyecto
+ * @property string|null $url Url principal hacia el sitio oficial
+ * @property string|null $urlinfo Url de información sobre el proyecto
+ * @property string|null $repository Url del repositorio
+ * @property string|null $role Rol en el proyecto
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property-read string $url_image
+ * @property-read \App\Models\File|null $image
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereCurriculumId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereRepository($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumJob whereUrlinfo($value)
+ * @mixin \Eloquent
  */
 class CurriculumJob extends CurriculumBaseSection
 {

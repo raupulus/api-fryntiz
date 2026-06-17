@@ -17,11 +17,11 @@ class CreateUserRolesTable extends Migration
     public function up()
     {
         Schema::create('user_roles', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de user roles');
+            $table->comment('Almacena los registros correspondientes a user roles para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->string('name', '255')
                 ->unique()
                 ->comment('Nombre para control del role en permisos.');
@@ -34,8 +34,8 @@ class CreateUserRolesTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción del funcionamiento del role.');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
+            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

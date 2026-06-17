@@ -11,6 +11,7 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -38,13 +39,17 @@ class HardwareEnergyResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('hardware_device_id')
-                    ->numeric(),
-                TextInput::make('hardware_device_monitorized_id')
-                    ->numeric(),
-                Toggle::make('is_generator'),
+                Select::make('hardware_device_id')
+                    ->relationship('hardware', 'name')
+                    ->required()->searchable()->preload()
+                    ->label('Dispositivo monitor'),
+                Select::make('hardware_device_monitorized_id')
+                    ->relationship('monitorized', 'name')
+                    ->required()->searchable()->preload()
+                    ->label('Dispositivo monitorizado'),
+                Toggle::make('is_generator')->label('Es generador'),
                 TextInput::make('sensor_position')
-                    ->numeric(),
+                    ->numeric()->label('Posición del sensor'),
             ]);
     }
 
@@ -52,15 +57,17 @@ class HardwareEnergyResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('hardware_device_id')
-                    ->numeric()
+                TextColumn::make('hardware.name')
+                    ->label('Dispositivo monitor')
                     ->sortable(),
-                TextColumn::make('hardware_device_monitorized_id')
-                    ->numeric()
+                TextColumn::make('monitorized.name')
+                    ->label('Dispositivo monitorizado')
                     ->sortable(),
                 IconColumn::make('is_generator')
+                    ->label('Generador')
                     ->boolean(),
                 TextColumn::make('sensor_position')
+                    ->label('Posición sensor')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

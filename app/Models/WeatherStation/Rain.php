@@ -6,10 +6,36 @@ use App\Events\WeatherStation\RainUpdateEvent;
 
 /**
  * Class Rain
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $rain Agua caída en el último periodo de tiempo (mm)
+ * @property numeric|null $rain_intensity Intensidad de la lluvia en mm/h
+ * @property numeric|null $rain_month Lluvia acumulada en el mes en mm
+ * @property numeric $moisture Vapor de agua en el aire (g/m3)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereMoisture($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRainIntensity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRainMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereUserId($value)
+ * @mixin \Eloquent
  */
 class Rain extends BaseWheaterStation
 {
     protected $fillable = [
+        'user_id',
         'hardware_device_id',
         'rain',
         'rain_intensity',

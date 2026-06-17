@@ -7,6 +7,44 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @property int $id
+ * @property string|null $start_at Momento de inicio para el periodo de validez de la lectura
+ * @property string $end_at Momento de fin para el periodo de validez de la lectura
+ * @property string $general_id Código de la zona de playa
+ * @property string|null $general_name Nombre de la zona de playa
+ * @property string|null $general_slug Slug de la zona de playa
+ * @property string|null $general_text Texto de la zona de playa
+ * @property string|null $zone_id Código de la zona de playa
+ * @property string|null $zone_name Nombre de la zona de playa
+ * @property string|null $zone_slug Slug de la zona de playa
+ * @property string $subzone_id Código de la subzona de playa
+ * @property string|null $subzone_name Nombre de la subzona de playa
+ * @property string|null $subzone_slug Slug de la subzona de playa
+ * @property string|null $subzone_text Texto de la subzona de playa
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereGeneralId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereGeneralName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereGeneralSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereGeneralText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereSubzoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereSubzoneName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereSubzoneSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereSubzoneText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereZoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereZoneName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETCoast whereZoneSlug($value)
+ * @mixin \Eloquent
+ */
 class AEMETCoast extends Model
 {
     use HasFactory;

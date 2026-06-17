@@ -7,6 +7,39 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\FileType
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property string $type Tipo de archivo
+ * @property string $mime Tipo mime que representa el tipo de archivo
+ * @property string $extension Extensión con la que se representa de forma mayoritaria.
+ * @property string|null $icon16
+ * @property string|null $icon32
+ * @property string|null $icon64
+ * @property string|null $icon128
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read string $url_icon_update
+ * @property-read string $url_image
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType forUser(int $userId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereExtension($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereIcon128($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereIcon16($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereIcon32($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereIcon64($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereMime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FileType whereUserId($value)
+ * @mixin \Eloquent
  */
 class FileType extends Model
 {

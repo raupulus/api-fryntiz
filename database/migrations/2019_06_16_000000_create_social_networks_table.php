@@ -17,11 +17,11 @@ class CreateSocialNetworksTable extends Migration
     public function up()
     {
         Schema::create('social_networks', function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de social networks');
+            $table->comment('Almacena los registros correspondientes a social networks para su integración y uso general en el sistema.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
-            $table->bigIncrements('id')->comment('Identificador único');
+            $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->string('name', 255)
                 ->unique()
                 ->comment('Nombre de la red social');
@@ -47,8 +47,8 @@ class CreateSocialNetworksTable extends Migration
             $table->text('image')
                 ->nullable()
                 ->comment('Imagen de la red social a 120x120px');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
+            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

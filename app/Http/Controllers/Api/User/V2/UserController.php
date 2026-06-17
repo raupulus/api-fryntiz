@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\User\V2;
 
 use App\Http\Controllers\Api\V2\BaseApiController;
+use App\Http\Requests\Api\User\V2\StoreUserRequest;
 use App\Http\Requests\Api\User\V2\UpdateUserRequest;
 use App\Http\Resources\V2\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Controlador de usuarios para API V2.
@@ -23,6 +25,22 @@ class UserController extends BaseApiController
         $users = User::paginate(15);
 
         return UserResource::collection($users)->response();
+    }
+
+    /**
+     * Crea un nuevo usuario (solo admin/superadmin).
+     */
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+
+        $user = User::create($data);
+
+        return $this->createdResponse(
+            new UserResource($user),
+            'Usuario creado correctamente'
+        );
     }
 
     /**

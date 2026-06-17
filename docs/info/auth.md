@@ -171,9 +171,24 @@ Vía Laravel Fortify:
 - Verificación email
 - Two-Factor Authentication (2FA)
 
-## Comando de debug
+## Usuarios de prueba
 
-```bash
-php artisan debug:seed-users --count=5
-```
+Los usuarios de prueba se crean con el seeder `UsersTableSeeder` (superadmin,
+admin, user). El comando `debug:seed-users` fue **eliminado en fix_11**.
+
+## UserResource en Filament (correcciones fix_11)
+
+`app/Filament/Admin/Resources/UserResource.php`:
+
+- **Email vacío al editar**: el campo `email` está en `$hidden` del modelo `User`,
+  por lo que `attributesToArray()` lo omitía. Se inyecta en
+  `EditUser::mutateFormDataBeforeFill()`.
+- **Mass assignment UserSocial**: `UserSocial` tiene ahora `$fillable`
+  (`user_id`, `social_network_id`, `nick`, `url`) y relación `user()`.
+- **Verificación de email**: ya no es un `DateTimePicker`. Es un `Toggle`
+  (indicador, deshabilitado si ya verificado) + un `Action` con confirmación que
+  establece `email_verified_at = now()`. El campo virtual `is_email_verified` se
+  descarta en `EditUser::mutateFormDataBeforeSave()`.
+- **Imagen de perfil**: usa `ImageCropperUpload` (disco `public`); avatar centrado.
+- **Notificaciones**: la sección ocupa el 100% del ancho (`columnSpanFull`).
 

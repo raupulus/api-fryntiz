@@ -6,8 +6,10 @@ use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Resources\V2\Content\ContentPageResource;
 use App\Http\Resources\V2\Content\ContentRelatedResource;
 use App\Http\Resources\V2\Content\ContentResource;
+use App\Jobs\ProcessContentViewJob;
 use App\Models\Content\Content;
 use App\Services\Content\ContentService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -28,6 +30,9 @@ class ContentController extends BaseApiController
             return $this->notFoundResponse('Contenido no encontrado');
         }
 
+        // Registra la vista de forma asíncrona (upsert en content_daily_views).
+        ProcessContentViewJob::dispatch($content->id, Carbon::now());
+
         return $this->successResponse(new ContentResource($content));
     }
 
@@ -45,6 +50,26 @@ class ContentController extends BaseApiController
         return $this->successResponse(
             ContentPageResource::collection($content->pages)
         );
+    }
+
+    /**
+     * Devuelve una página concreta de un contenido por su orden.
+     */
+    public function page(string $contentSlug, int $order): JsonResponse
+    {
+        $content = Content::where('slug', $contentSlug)->first();
+
+        if (! $content) {
+            return $this->notFoundResponse('Contenido no encontrado');
+        }
+
+        $page = $content->pages()->where('order', $order)->first();
+
+        if (! $page) {
+            return $this->notFoundResponse('Pagina no encontrada');
+        }
+
+        return $this->successResponse(new ContentPageResource($page));
     }
 
     /**

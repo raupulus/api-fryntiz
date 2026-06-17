@@ -2,13 +2,15 @@
 
 namespace Tests\Feature\Api\V2;
 
+use PHPUnit\Framework\Attributes\Test;
+
 use Tests\Feature\Api\ApiTestCase;
 
 class AuthTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
-    /** @test */
+    #[Test]
     public function can_login_with_valid_credentials(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -20,7 +22,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonStructure(['data' => ['token', 'user']]);
     }
 
-    /** @test */
+    #[Test]
     public function login_fails_with_invalid_credentials(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
@@ -31,7 +33,7 @@ class AuthTest extends ApiTestCase
         $response->assertJson(['message' => 'Credenciales invalidas']);
     }
 
-    /** @test */
+    #[Test]
     public function login_validates_required_fields(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), []);
@@ -39,7 +41,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonStructure(['errors' => ['email', 'password']]);
     }
 
-    /** @test */
+    #[Test]
     public function login_rejects_invalid_email_format(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
@@ -50,7 +52,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function login_rejects_short_password(): void
     {
         $response = $this->postJson($this->apiUrl('auth/login'), [
@@ -61,7 +63,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonValidationErrors(['password']);
     }
 
-    /** @test */
+    #[Test]
     public function login_response_has_standard_structure(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -75,7 +77,7 @@ class AuthTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_signup_with_valid_data(): void
     {
         $response = $this->postJson($this->apiUrl('auth/signup'), [
@@ -88,7 +90,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonStructure(['data' => ['token', 'user']]);
     }
 
-    /** @test */
+    #[Test]
     public function signup_validates_required_fields(): void
     {
         $response = $this->postJson($this->apiUrl('auth/signup'), []);
@@ -96,7 +98,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 
-    /** @test */
+    #[Test]
     public function signup_rejects_duplicate_email(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -108,7 +110,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function signup_rejects_short_password(): void
     {
         $response = $this->postJson($this->apiUrl('auth/signup'), [
@@ -119,7 +121,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonValidationErrors(['password']);
     }
 
-    /** @test */
+    #[Test]
     public function signup_rejects_mismatched_password_confirmation(): void
     {
         $response = $this->postJson($this->apiUrl('auth/signup'), [
@@ -130,7 +132,7 @@ class AuthTest extends ApiTestCase
         $response->assertJsonValidationErrors(['password']);
     }
 
-    /** @test */
+    #[Test]
     public function signup_creates_user_with_role_3(): void
     {
         $response = $this->postJson($this->apiUrl('auth/signup'), [
@@ -141,7 +143,7 @@ class AuthTest extends ApiTestCase
         $this->assertDatabaseHas('users', ['email' => 'nuevo@test.com', 'role_id' => 3]);
     }
 
-    /** @test */
+    #[Test]
     public function can_logout_authenticated(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -151,14 +153,14 @@ class AuthTest extends ApiTestCase
         $response->assertJson(['message' => 'Sesion cerrada correctamente']);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_logout_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('auth/logout'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function can_delete_account_authenticated(): void
     {
         $user = $this->createAuthenticatedUser();
@@ -169,7 +171,7 @@ class AuthTest extends ApiTestCase
         $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_delete_account_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('auth/delete-account'), [], $this->guestHeaders());

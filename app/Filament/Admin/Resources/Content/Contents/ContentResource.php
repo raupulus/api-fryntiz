@@ -5,7 +5,10 @@ namespace App\Filament\Admin\Resources\Content\Contents;
 use App\Filament\Admin\Resources\Content\Contents\Pages\CreateContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ListContents;
+use App\Filament\Components\ImageCropperUpload;
+use App\Filament\Components\YoutubeVideoField;
 use App\Models\Content\Content;
+use App\Models\Platform;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -14,13 +17,13 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -75,9 +78,9 @@ class ContentResource extends Resource
                     ]),
                     Textarea::make('excerpt')->maxLength(1023)->rows(2)
                         ->columnSpanFull()->label('Extracto'),
-                    FileUpload::make('image_path')
-                        ->image()->imageEditor()->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
-                        ->directory('contents')->visibility('public')->maxSize(4096)
+                    ImageCropperUpload::makeImage('image_path')
+                        ->cover16x9()
+                        ->directory('contents')
                         ->columnSpanFull()->label('Imagen principal'),
                 ]),
 
@@ -110,6 +113,31 @@ class ContentResource extends Resource
                     // Nota: tags/categories del módulo Content están filtradas por platform,
                     // gestionarlas exige seleccionar primero la plataforma. Se exponen a
                     // través de los RelationManagers en una iteración posterior.
+                ]),
+
+                Tab::make('Vídeo y enlaces')->icon('heroicon-o-film')->schema([
+                    Group::make()
+                        ->relationship('metadata')
+                        ->schema([
+                            YoutubeVideoField::make('youtube_video_id')
+                                ->label('Vídeo de YouTube')
+                                ->helperText('Busca un vídeo en el canal de la plataforma seleccionada y selecciónalo. La URL se genera automáticamente al guardar.')
+                                ->apiKey(config('google.google_api_key'))
+                                ->channels(fn () => Platform::query()
+                                    ->whereNotNull('youtube_channel_id')
+                                    ->pluck('youtube_channel_id', 'id')
+                                    ->toArray())
+                                ->columnSpanFull(),
+                            Grid::make(2)->schema([
+                                TextInput::make('web')->url()->maxLength(255)->label('Web'),
+                                TextInput::make('youtube_channel')->maxLength(255)->label('Canal de YouTube'),
+                                TextInput::make('github')->maxLength(255)->label('GitHub'),
+                                TextInput::make('gitlab')->maxLength(255)->label('GitLab'),
+                                TextInput::make('telegram_channel')->maxLength(255)->label('Canal de Telegram'),
+                                TextInput::make('mastodon')->maxLength(255)->label('Mastodon'),
+                                TextInput::make('twitter')->maxLength(255)->label('Twitter / X'),
+                            ]),
+                        ]),
                 ]),
             ]),
         ]);

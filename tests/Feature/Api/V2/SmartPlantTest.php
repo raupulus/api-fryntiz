@@ -2,20 +2,22 @@
 
 namespace Tests\Feature\Api\V2;
 
+use PHPUnit\Framework\Attributes\Test;
+
 use Tests\Feature\Api\ApiTestCase;
 
 class SmartPlantTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
-    /** @test */
+    #[Test]
     public function cannot_store_register_unauthenticated(): void
     {
         $response = $this->postJson($this->apiUrl('smartplant/register'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
-    /** @test */
+    #[Test]
     public function store_register_validates_required_fields(): void
     {
         $headers = $this->asUser();
@@ -23,7 +25,7 @@ class SmartPlantTest extends ApiTestCase
         $this->assertErrorResponse($response, 422);
     }
 
-    /** @test */
+    #[Test]
     public function store_register_validates_soil_humidity_required(): void
     {
         $headers = $this->asUser();

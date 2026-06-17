@@ -13,7 +13,9 @@ use App\Models\Content\ContentPage;
 use App\Models\Content\ContentSeo;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SeedContentDebugCommand extends Command
@@ -45,12 +47,13 @@ class SeedContentDebugCommand extends Command
             'description' => 'Plataforma de prueba',
         ]);
 
-        // Asegurar categoría y platform_category
-        $category = Category::query()->first() ?? Category::create([
-            'name' => 'General',
-            'slug' => 'general',
-            'description' => 'Categoría general de prueba',
-        ]);
+        // Asegurar categoría y platform_category (las categorías se gestionan en CategoriesSeeder)
+        $category = Category::query()->first();
+        if (! $category) {
+            $this->error('No hay categorías en la BD. Ejecuta primero: php artisan db:seed --class=CategoriesSeeder');
+
+            return self::FAILURE;
+        }
 
         $platformCategory = PlatformCategory::query()
             ->where('platform_id', $platform->id)
@@ -119,6 +122,19 @@ class SeedContentDebugCommand extends Command
                 'description' => fake()->sentence(15),
                 'keywords' => implode(',', fake()->words(5)),
             ]);
+
+            // Vistas diarias (última semana + hoy)
+            $today = Carbon::today();
+            for ($d = 0; $d <= 7; $d++) {
+                $date = $today->copy()->subDays($d);
+                DB::table('content_daily_views')->insert([
+                    'content_id' => $content->id,
+                    'date' => $date->toDateString(),
+                    'views' => fake()->numberBetween(1, $d === 0 ? 500 : 200),
+                    'created_at' => $date,
+                    'updated_at' => now(),
+                ]);
+            }
         }
 
         $this->info("✅ {$count} contenidos creados con páginas, metadata y SEO.");

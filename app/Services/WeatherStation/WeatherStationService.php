@@ -3,11 +3,16 @@
 namespace App\Services\WeatherStation;
 
 use App\Models\WeatherStation\AirQuality;
+use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\Pressure;
+use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
+use App\Models\WeatherStation\Tvoc;
+use App\Models\WeatherStation\Wind;
+use App\Models\WeatherStation\WindDirection;
 use Illuminate\Support\Collection;
 
 class WeatherStationService
@@ -60,6 +65,11 @@ class WeatherStationService
             'humidity' => Humidity::class,
             'pressure' => Pressure::class,
             'light' => Light::class,
+            'wind' => Wind::class,
+            'wind_direction' => WindDirection::class,
+            'rain' => Rain::class,
+            'eco2' => Eco2::class,
+            'tvoc' => Tvoc::class,
             'air_quality' => AirQuality::class,
             'lightning' => Lightning::class,
         ];

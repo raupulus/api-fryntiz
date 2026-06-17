@@ -61,4 +61,36 @@ class NewsletterService
 
         return $newsletter->unsubscribe();
     }
+
+    /**
+     * Reenvía el email de verificación para una suscripción existente.
+     * Devuelve null si no existe la suscripción.
+     */
+    public function resendVerification(string $email, int $platformId): ?Newsletter
+    {
+        $newsletter = Newsletter::where('email', $email)
+            ->where('platform_id', $platformId)
+            ->first();
+
+        if (! $newsletter) {
+            return null;
+        }
+
+        if ($newsletter->is_verified) {
+            return $newsletter;
+        }
+
+        $newsletter->regenerateVerificationToken();
+        Mail::to($newsletter->email)->send(new NewsletterVerification($newsletter));
+
+        return $newsletter;
+    }
+
+    /**
+     * Estadísticas de la newsletter, opcionalmente filtradas por plataforma.
+     */
+    public function stats(?int $platformId = null): array
+    {
+        return Newsletter::getStats($platformId);
+    }
 }

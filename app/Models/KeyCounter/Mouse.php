@@ -4,6 +4,43 @@ namespace App\Models\KeyCounter;
 
 /**
  * Class Mouse
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property string $start_at Momento de iniciar la racha
+ * @property string $end_at Momento del final de la racha
+ * @property int $duration Duración en Segundos de la racha
+ * @property int $clicks_left Cantidad de clicks derecho
+ * @property int $clicks_right Cantidad de clicks izquierdo
+ * @property int $clicks_middle Cantidad de clicks centrales
+ * @property int $total_clicks Cantidad de clicks total de la racha
+ * @property numeric $clicks_average Cantidad de cliks medio de la racha
+ * @property int $weekday Día de la semana (0 es domingo)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Hardware\HardwareDevice|null $device
+ * @property-read \App\Models\Hardware\HardwareDevice|null $hardware
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse forUser(int $userId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereClicksAverage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereClicksLeft($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereClicksMiddle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereClicksRight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereTotalClicks($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereWeekday($value)
+ * @mixin \Eloquent
  */
 class Mouse extends Keyboard
 {

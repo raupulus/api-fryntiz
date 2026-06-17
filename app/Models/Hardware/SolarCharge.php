@@ -9,5 +9,10 @@ use App\Models\BaseModels\BaseModel;
  *
  * Representa un tipo de hardware concreto más complejo, un cargador solar
  * que tendrá tanto consumo, batería y generación de energía.
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SolarCharge newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SolarCharge newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SolarCharge query()
+ * @mixin \Eloquent
  */
 class SolarCharge extends BaseModel {}

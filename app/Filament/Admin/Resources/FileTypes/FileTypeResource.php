@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\FileTypes;
 use App\Filament\Admin\Resources\FileTypes\Pages\CreateFileType;
 use App\Filament\Admin\Resources\FileTypes\Pages\EditFileType;
 use App\Filament\Admin\Resources\FileTypes\Pages\ListFileTypes;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\FileType;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -12,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -66,21 +66,17 @@ class FileTypeResource extends Resource
                 Section::make('Iconos')
                     ->description('Cada icono debe ser cuadrado (1:1). Se recortarán automáticamente.')
                     ->columns(4)->schema([
-                        FileUpload::make('icon16')
-                            ->image()->imageEditor()->imageEditorAspectRatios(['1:1'])
-                            ->imageResizeMode('cover')->imageResizeTargetWidth('16')->imageResizeTargetHeight('16')
+                        ImageCropperUpload::makeImage('icon16')
+                            ->icon(16)
                             ->directory('file-types/icons/16')->maxSize(256)->label('16×16'),
-                        FileUpload::make('icon32')
-                            ->image()->imageEditor()->imageEditorAspectRatios(['1:1'])
-                            ->imageResizeMode('cover')->imageResizeTargetWidth('32')->imageResizeTargetHeight('32')
+                        ImageCropperUpload::makeImage('icon32')
+                            ->icon(32)
                             ->directory('file-types/icons/32')->maxSize(256)->label('32×32'),
-                        FileUpload::make('icon64')
-                            ->image()->imageEditor()->imageEditorAspectRatios(['1:1'])
-                            ->imageResizeMode('cover')->imageResizeTargetWidth('64')->imageResizeTargetHeight('64')
-                            ->directory('file-types/icons/64')->maxSize(512)->label('64×64'),
-                        FileUpload::make('icon128')
-                            ->image()->imageEditor()->imageEditorAspectRatios(['1:1'])
-                            ->imageResizeMode('cover')->imageResizeTargetWidth('128')->imageResizeTargetHeight('128')
+                        ImageCropperUpload::makeImage('icon64')
+                            ->icon(64)
+                            ->directory('file-types/icons/64')->label('64×64'),
+                        ImageCropperUpload::makeImage('icon128')
+                            ->icon(128)
                             ->directory('file-types/icons/128')->maxSize(1024)->label('128×128'),
                     ]),
             ]);

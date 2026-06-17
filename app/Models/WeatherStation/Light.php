@@ -6,12 +6,40 @@ use App\Events\WeatherStation\LightUpdateEvent;
 
 /**
  * Class Light
+ *
+ * @property int $id
+ * @property int|null $user_id Usuario asociado
+ * @property int|null $hardware_device_id Dispositivo asociado
+ * @property numeric $lumens Lumens
+ * @property numeric $lux lux
+ * @property numeric|null $index Índice
+ * @property numeric|null $uva Rayos UVA
+ * @property numeric|null $uvb Rayos UVB
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereHardwareDeviceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereIndex($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereLumens($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereLux($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUva($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUvb($value)
+ * @mixin \Eloquent
  */
 class Light extends BaseWheaterStation
 {
     protected $table = 'meteorology_light';
 
     protected $fillable = [
+        'user_id',
         'hardware_device_id',
         'lumens',
         'index',
