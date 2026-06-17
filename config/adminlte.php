@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter;
 use JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter;
 use JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter;

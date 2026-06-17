@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Tenant\Pages;
 
 use Filament\Pages\Dashboard as BaseDashboard;

@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Feature\Api\V2;
+declare(strict_types=1);
 
-use PHPUnit\Framework\Attributes\Test;
+namespace Tests\Feature\Api\V2;
 
 use App\Services\Contact\ContactService;
 use App\Services\RecaptchaService;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
 class ContactTest extends ApiTestCase

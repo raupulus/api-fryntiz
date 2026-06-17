@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\CV;
+
+use App\Models\File;
+use Illuminate\Support\Carbon;
 
 /**
  * Class CurriculumService
@@ -24,11 +29,12 @@ namespace App\Models\CV;
  * @property string|null $expedition_at Fecha de expedición
  * @property string|null $start_at Fecha de inicio
  * @property string|null $end_at Fecha de fin
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Curriculum $curriculum
  * @property-read string $url_image
- * @property-read \App\Models\File|null $image
+ * @property-read File|null $image
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining query()
@@ -51,6 +57,7 @@ namespace App\Models\CV;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereStartAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumAcademicTraining whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CurriculumAcademicTraining extends CurriculumBaseSection

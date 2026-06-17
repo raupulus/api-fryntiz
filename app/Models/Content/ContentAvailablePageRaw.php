@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 /**
  * Class ContentAvailableStatus
@@ -13,8 +16,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $description Descripción del formato de edición
  * @property string $type Tipo de formato de edición. Ej: texto plano, markdown, html, latex, json, hoja de cálculo...
  * @property string $extension Extensión del formato de edición. Ej md, html, txt, doc, docx, xls, xlsx, json...
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailablePageRaw newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailablePageRaw newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailablePageRaw query()
@@ -25,6 +29,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailablePageRaw whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailablePageRaw whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailablePageRaw whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContentAvailablePageRaw extends BaseModel

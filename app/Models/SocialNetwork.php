@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,9 +20,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $url_privacity Url a la política de privacidad de la red social
  * @property string|null $icon Icono para la red social
  * @property string|null $image Imagen de la red social a 120x120px
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SocialNetwork newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SocialNetwork newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SocialNetwork query()
@@ -36,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SocialNetwork whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SocialNetwork whereUrlPrivacity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SocialNetwork whereUrlUser($value)
+ *
  * @mixin \Eloquent
  */
 class SocialNetwork extends Model

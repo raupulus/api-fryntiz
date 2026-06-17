@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\SmartPlant;
 
 use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Representa los registros de sensores para las lecturas tomadas a las
@@ -22,9 +25,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $full_water_tank Indica si hay agua en el tanque de agua
  * @property bool $waterpump_enabled Indica si se ha activado la bomba de agua
  * @property bool $vaporizer_enabled Indica si se ha activado el vaporizador
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  * @property-read HardwareDevice|null $device
- * @property-read \App\Models\SmartPlant\SmartPlantPlant $plant
+ * @property-read SmartPlantPlant $plant
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister query()
@@ -41,6 +45,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister whereUv($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister whereVaporizerEnabled($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister whereWaterpumpEnabled($value)
+ *
  * @mixin \Eloquent
  */
 class SmartPlantRegister extends BaseModel

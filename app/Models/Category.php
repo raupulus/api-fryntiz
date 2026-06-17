@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
@@ -7,6 +9,7 @@ use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Policies\CategoryPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 use function collect;
@@ -24,8 +27,8 @@ use function route;
  * @property string|null $description Descripción acerca de lo que contendrá esta etiqueta
  * @property string|null $icon Clase css para el icono
  * @property string $color Código Hexadecimal del color
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read string $url_image
  * @property-read string $url_image_large
@@ -33,10 +36,11 @@ use function route;
  * @property-read string $url_image_micro
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
- * @property-read \App\Models\File|null $image
+ * @property-read File|null $image
  * @property-read Category|null $parentCategory
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Category> $subcategories
  * @property-read int|null $subcategories_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category query()
@@ -52,6 +56,7 @@ use function route;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category wherePriority($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Category extends BaseAbstractModelWithTableCrud

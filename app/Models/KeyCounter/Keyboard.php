@@ -1,6 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\KeyCounter;
+
+use App\Models\Hardware\HardwareDevice;
+use App\Models\User;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Keyboard
@@ -16,11 +22,12 @@ namespace App\Models\KeyCounter;
  * @property numeric $pulsation_average Velocidad media de pulsaciones para la racha
  * @property int $score Puntuación conseguida en esta racha
  * @property int $weekday Día de la semana (0 es domingo)
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Hardware\HardwareDevice|null $device
- * @property-read \App\Models\Hardware\HardwareDevice|null $hardware
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read HardwareDevice|null $device
+ * @property-read HardwareDevice|null $hardware
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard newQuery()
@@ -38,6 +45,7 @@ namespace App\Models\KeyCounter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard whereWeekday($value)
+ *
  * @mixin \Eloquent
  */
 class Keyboard extends BaseKeyCounter

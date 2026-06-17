@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\AirFlight;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,9 +38,10 @@ use function file_exists;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read HardwareDevice|null $device
  * @property-read string $url_flag
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AirFlight\AirFlightRoute> $routes
+ * @property-read Collection<int, AirFlightRoute> $routes
  * @property-read int|null $routes_count
  * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane query()
@@ -53,6 +57,7 @@ use function file_exists;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereSeenLastAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class AirFlightAirPlane extends Model

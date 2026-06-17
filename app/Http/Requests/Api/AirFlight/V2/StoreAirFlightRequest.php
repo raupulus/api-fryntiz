@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Api\AirFlight\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;

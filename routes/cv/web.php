@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Archivo de rutas para la api de curriculum con sus
  * condiciones con él sufijo /cv/*

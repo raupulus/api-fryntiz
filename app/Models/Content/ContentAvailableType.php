@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\Platform;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Content\ContentAvailableType
@@ -19,14 +23,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $description Descripción acerca del tipo de contenido
  * @property string|null $icon Clase css para el icono
  * @property string $color Código Hexadecimal del color
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\Content> $contents
+ * @property-read Collection<int, Content> $contents
  * @property-read int|null $contents_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\Content> $contentsActive
+ * @property-read Collection<int, Content> $contentsActive
  * @property-read int|null $contents_active_count
  * @property-read File|null $image
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType query()
@@ -41,6 +46,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType wherePluralName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentAvailableType whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContentAvailableType extends BaseModel

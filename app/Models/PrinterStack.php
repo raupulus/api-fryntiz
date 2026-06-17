@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Modelo para la cola de impresión.
@@ -13,10 +16,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $printer_id Relación la impresora
  * @property string|null $note Notas sobre la impresión
  * @property string|null $content content
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Printer $printer
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Printer $printer
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterStack newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterStack newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterStack query()
@@ -27,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterStack wherePrinterId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterStack whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterStack whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class PrinterStack extends BaseModel

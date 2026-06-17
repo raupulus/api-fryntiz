@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Helpers\TextFormatParseHelper;
@@ -8,6 +10,7 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /**
  * Class ContentPage
@@ -20,10 +23,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $slug Slug de la página
  * @property string|null $content Contenido de la página en html procesado
  * @property int|null $order Orden de la página al mostrarse
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\Content\Content|null $contentModel
+ * @property-read Content|null $contentModel
  * @property-read string $url_image
  * @property-read string $url_image_large
  * @property-read string $url_image_medium
@@ -32,7 +35,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read string $url_image_small
  * @property-read string $url_store_image
  * @property-read File|null $image
- * @property-read \App\Models\Content\ContentPageRaw|null $raw
+ * @property-read ContentPageRaw|null $raw
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage query()
@@ -47,6 +51,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContentPage extends BaseModel

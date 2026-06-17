@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $platform_id Relación con la plataforma
  * @property int $tag_id Relación con la etiqueta
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\Tag $tag
+ * @property-read Tag $tag
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformTag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformTag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformTag query()
@@ -22,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformTag wherePlatformId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformTag whereTagId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformTag whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PlatformTag extends Model

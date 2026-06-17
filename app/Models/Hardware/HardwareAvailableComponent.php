@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -11,9 +14,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $type Tipo de componente (gpu, cpu, ram..)
  * @property string $slug Slug para el tipo
  * @property string|null $description Descripción del componente
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareAvailableComponent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareAvailableComponent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareAvailableComponent query()
@@ -25,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareAvailableComponent whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareAvailableComponent whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareAvailableComponent whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class HardwareAvailableComponent extends Model

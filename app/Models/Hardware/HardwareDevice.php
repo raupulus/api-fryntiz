@@ -1,18 +1,22 @@
 <?php
 
-namespace App\Models\Hardware;
+declare(strict_types=1);
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+namespace App\Models\Hardware;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
+use App\Models\User;
 use App\Traits\BelongsToUser;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Http\Request;
 
 use function array_filter;
 
@@ -43,7 +47,7 @@ use function array_filter;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwareComponent> $components
+ * @property-read Collection<int, HardwareComponent> $components
  * @property-read int|null $components_count
  * @property-read mixed $current_energy_statistics
  * @property-read mixed $energy_statistics
@@ -53,28 +57,29 @@ use function array_filter;
  * @property-read string $url_image_micro
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwareEnergy> $hardwareEnergy
+ * @property-read Collection<int, HardwareEnergy> $hardwareEnergy
  * @property-read int|null $hardware_energy_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, HardwareDevice> $hardwareEnergyGenerator
+ * @property-read Collection<int, HardwareDevice> $hardwareEnergyGenerator
  * @property-read int|null $hardware_energy_generator_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, HardwareDevice> $hardwareEnergyLoad
+ * @property-read Collection<int, HardwareDevice> $hardwareEnergyLoad
  * @property-read int|null $hardware_energy_load_count
- * @property-read \App\Models\Hardware\HardwareType|null $hardwareType
+ * @property-read HardwareType|null $hardwareType
  * @property-read File|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwarePowerGeneratorToday> $powerGeneratorToday
+ * @property-read Collection<int, HardwarePowerGeneratorToday> $powerGeneratorToday
  * @property-read int|null $power_generator_today_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwarePowerGenerator> $powerGenerators
+ * @property-read Collection<int, HardwarePowerGenerator> $powerGenerators
  * @property-read int|null $power_generators_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwarePowerGeneratorHistorical> $powerGeneratorsHistorical
+ * @property-read Collection<int, HardwarePowerGeneratorHistorical> $powerGeneratorsHistorical
  * @property-read int|null $power_generators_historical_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwarePowerLoad> $powerLoads
+ * @property-read Collection<int, HardwarePowerLoad> $powerLoads
  * @property-read int|null $power_loads_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwarePowerLoadHistorical> $powerLoadsHistorical
+ * @property-read Collection<int, HardwarePowerLoadHistorical> $powerLoadsHistorical
  * @property-read int|null $power_loads_historical_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Hardware\HardwarePowerLoadToday> $powerLoadsToday
+ * @property-read Collection<int, HardwarePowerLoadToday> $powerLoadsToday
  * @property-read int|null $power_loads_today_count
- * @property-read \App\Models\Hardware\HardwareType|null $type
- * @property-read \App\Models\User|null $user
+ * @property-read HardwareType|null $type
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice newQuery()
@@ -103,6 +108,7 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereUrlCompany($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class HardwareDevice extends BaseModel
@@ -119,10 +125,9 @@ class HardwareDevice extends BaseModel
     protected $casts = [
         'buy_at' => 'datetime',
     ];
+
     /**
      * Relación con el tipo de hardware.
-     *
-     * @return BelongsTo
      */
     public function type(): BelongsTo
     {
@@ -131,8 +136,6 @@ class HardwareDevice extends BaseModel
 
     /**
      * Alias para compatibilidad con Filament Resources.
-     *
-     * @return BelongsTo
      */
     public function hardwareType(): BelongsTo
     {
@@ -141,57 +144,37 @@ class HardwareDevice extends BaseModel
 
     /**
      * Componentes instalados en el dispositivo.
-     *
-     * @return HasMany
      */
     public function components(): HasMany
     {
         return $this->hasMany(HardwareComponent::class, 'hardware_device_id', 'id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function powerGenerators(): HasMany
     {
         return $this->hasMany(HardwarePowerGenerator::class, 'hardware_device_id', 'id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function powerGeneratorToday(): HasMany
     {
         return $this->hasMany(HardwarePowerGeneratorToday::class, 'hardware_device_id', 'id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function powerGeneratorsHistorical(): HasMany
     {
         return $this->hasMany(HardwarePowerGeneratorHistorical::class, 'hardware_device_id', 'id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function powerLoads(): HasMany
     {
         return $this->hasMany(HardwarePowerLoad::class, 'hardware_device_id', 'id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function powerLoadsToday(): HasMany
     {
         return $this->hasMany(HardwarePowerLoadToday::class, 'hardware_device_id', 'id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function powerLoadsHistorical(): HasMany
     {
         return $this->hasMany(HardwarePowerLoadHistorical::class, 'hardware_device_id', 'id');
@@ -200,8 +183,6 @@ class HardwareDevice extends BaseModel
     /**
      * Devuelve todos los dispositivos de energía asociados al dispositivo.
      * Sin distinguir entre generador y carga (consumo de energía)
-     *
-     * @return HasMany
      */
     public function hardwareEnergy(): HasMany
     {
@@ -236,8 +217,6 @@ class HardwareDevice extends BaseModel
 
     /**
      * Relación con la imagen asociada al curriculum.
-     *
-     * @return HasOne
      */
     public function image(): HasOne
     {
@@ -246,7 +225,7 @@ class HardwareDevice extends BaseModel
 
     public static function createModel(HardwareDevice $device, $request) {}
 
-    public function updateModel(\Illuminate\Http\Request $request)
+    public function updateModel(Request $request)
     {
         // $dataFromSolar = $request->only(['hardware', 'version',
         //    'serial_number','battery_type', 'nominal_battery_capacity']);

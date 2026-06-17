@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\WeatherStation\V2\AirQualityController;
 use App\Http\Controllers\Api\WeatherStation\V2\Eco2Controller;
 use App\Http\Controllers\Api\WeatherStation\V2\GeneralController;

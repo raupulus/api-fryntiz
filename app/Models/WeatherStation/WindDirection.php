@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
+
+use Illuminate\Support\Carbon;
 
 /**
  * Class WindDirection
@@ -11,7 +15,8 @@ namespace App\Models\WeatherStation;
  * @property int $grades Grados según puntos cardinales basados en resistencia, 0 es Norte, 90 es Este, 180 es Sur, 270 es Oeste
  * @property numeric|null $resistance Valor de la resistencia usado para calcular la posición del viento, valor entre 0 y 65535
  * @property string $direction Dirección del viento (N, S, E, O, NE, NO, SE, SO)
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection latestRecord()
@@ -26,6 +31,7 @@ namespace App\Models\WeatherStation;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereResistance($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class WindDirection extends BaseWheaterStation

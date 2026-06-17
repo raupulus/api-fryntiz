@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
@@ -32,6 +34,7 @@ use function array_filter;
  * @property string|null $read_at Fecha y hora de la última lectura
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical query()
@@ -55,6 +58,7 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereVoltageMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoadHistorical whereVoltageMin($value)
+ *
  * @mixin \Eloquent
  */
 class HardwarePowerLoadHistorical extends BaseModel

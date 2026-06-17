@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\Debug;
 
 use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;

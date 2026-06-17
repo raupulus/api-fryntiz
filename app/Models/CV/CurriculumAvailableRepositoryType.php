@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\CV;
 
 use App\Models\File;
@@ -7,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 use function func_get_args;
 use function is_array;
@@ -20,10 +23,11 @@ use function is_array;
  * @property string|null $name Nombre del repositorio
  * @property string $slug Identificador único para el repositorio
  * @property string|null $url Dirección al repositorio
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read string $url_image
  * @property-read File|null $image
+ *
  * @method static Builder<static>|CurriculumAvailableRepositoryType newModelQuery()
  * @method static Builder<static>|CurriculumAvailableRepositoryType newQuery()
  * @method static Builder<static>|CurriculumAvailableRepositoryType query()
@@ -35,6 +39,7 @@ use function is_array;
  * @method static Builder<static>|CurriculumAvailableRepositoryType whereTitle($value)
  * @method static Builder<static>|CurriculumAvailableRepositoryType whereUpdatedAt($value)
  * @method static Builder<static>|CurriculumAvailableRepositoryType whereUrl($value)
+ *
  * @mixin \Eloquent
  */
 class CurriculumAvailableRepositoryType extends Model
@@ -47,8 +52,6 @@ class CurriculumAvailableRepositoryType extends Model
 
     /**
      * Relación con la imagen asociada al tipo de repositorio.
-     *
-     * @return HasOne
      */
     public function image(): HasOne
     {

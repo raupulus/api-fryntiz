@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\CV;
+
+use App\Models\File;
+use Illuminate\Support\Carbon;
 
 /**
  * Class CurriculumService
@@ -13,11 +18,12 @@ namespace App\Models\CV;
  * @property string $name Nombre del skill
  * @property int|null $level Nivel de conocimiento del 1 al 10
  * @property string|null $description Descripción del skill
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Curriculum $curriculum
  * @property-read string $url_image
- * @property-read \App\Models\File|null $image
+ * @property-read File|null $image
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill query()
@@ -29,6 +35,7 @@ namespace App\Models\CV;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumSkill whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CurriculumSkill extends CurriculumBaseSection

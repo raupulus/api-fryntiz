@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
+
+use Illuminate\Support\Carbon;
 
 /**
  * Class Eco2
@@ -9,7 +13,8 @@ namespace App\Models\WeatherStation;
  * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value Valor entre 400ppm y 8192ppm
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 latestRecord()
@@ -22,6 +27,7 @@ namespace App\Models\WeatherStation;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereValue($value)
+ *
  * @mixin \Eloquent
  */
 class Eco2 extends BaseWheaterStation

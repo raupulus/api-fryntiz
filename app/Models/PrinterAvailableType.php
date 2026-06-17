@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use Illuminate\Support\Carbon;
 
 /**
  * Modelo para tipos de impresora disponibles.
@@ -11,8 +14,9 @@ use App\Models\BaseModels\BaseModel;
  * @property string $name Nombre del tipo de impresora
  * @property string $slug Nombre del tipo de impresora
  * @property string|null $description Descripción
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterAvailableType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterAvailableType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterAvailableType query()
@@ -22,6 +26,7 @@ use App\Models\BaseModels\BaseModel;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterAvailableType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterAvailableType whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PrinterAvailableType whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PrinterAvailableType extends BaseModel

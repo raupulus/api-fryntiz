@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\SmartPlant\SmartPlantPlants\Widgets;
 
 use App\Models\SmartPlant\SmartPlantRegister;

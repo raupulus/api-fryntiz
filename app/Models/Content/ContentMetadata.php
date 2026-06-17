@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
+use Illuminate\Support\Carbon;
 
 /**
  * Metadatos asociados al contenido.
@@ -18,12 +21,13 @@ use App\Models\BaseModels\BaseModel;
  * @property string|null $github Url del repositorio asociado en Github
  * @property string|null $mastodon Cuenta de Mastodon
  * @property string|null $twitter Cuenta de Twitter
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read string|null $url_twitter
  * @property-read string|null $youtube_video_iframe_url
  * @property-read string|null $youtube_video_url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentMetadata newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentMetadata newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentMetadata query()
@@ -41,6 +45,7 @@ use App\Models\BaseModels\BaseModel;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentMetadata whereYoutubeChannel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentMetadata whereYoutubeVideo($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentMetadata whereYoutubeVideoId($value)
+ *
  * @mixin \Eloquent
  */
 class ContentMetadata extends BaseModel

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation\AEMET;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -26,8 +29,9 @@ use Illuminate\Support\Facades\Validator;
  * @property string $end_at
  * @property string $day_start_at
  * @property string $day_end_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction query()
@@ -52,6 +56,7 @@ use Illuminate\Support\Facades\Validator;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereTemperature($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereThermalSensation($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETPrediction whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AEMETPrediction extends Model

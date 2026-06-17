@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\AirQualityUpdateEvent;
+use Illuminate\Support\Carbon;
 
 /**
  * Class AirQuality
@@ -12,7 +15,8 @@ use App\Events\WeatherStation\AirQualityUpdateEvent;
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $gas_resistance Valor de la resistencia del sensor
  * @property numeric $air_quality Resultado del algoritmo para calcular porcentaje de calidad del aire según resistencia, medida en frio y compensación por humedad
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality latestRecord()
@@ -26,6 +30,7 @@ use App\Events\WeatherStation\AirQualityUpdateEvent;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class AirQuality extends BaseWheaterStation

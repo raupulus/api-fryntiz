@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\WindUpdateEvent;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Wind
@@ -14,7 +17,8 @@ use App\Events\WeatherStation\WindUpdateEvent;
  * @property numeric $average Velocidad promedio del viento m/s
  * @property numeric $min Velocidad mínima del viento m/s
  * @property numeric $max Velocidad máxima del viento m/s
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind latestRecord()
@@ -30,6 +34,7 @@ use App\Events\WeatherStation\WindUpdateEvent;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereSpeed($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Wind extends BaseWheaterStation

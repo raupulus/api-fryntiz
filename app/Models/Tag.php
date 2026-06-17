@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 use function route;
@@ -15,9 +18,10 @@ use function route;
  * @property string|null $description Descripción acerca de lo que contendrá esta etiqueta
  * @property string|null $icon Clase css para el icono
  * @property string $color Código Hexadecimal del color
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag query()
@@ -30,6 +34,7 @@ use function route;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Tag extends BaseAbstractModelWithTableCrud

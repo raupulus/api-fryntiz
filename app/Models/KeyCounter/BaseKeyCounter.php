@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\KeyCounter;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Models\User;
 use App\Traits\BelongsToUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -20,11 +23,13 @@ use function json_encode;
  *
  * @property-read HardwareDevice|null $device
  * @property-read HardwareDevice|null $hardware
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter query()
+ *
  * @mixin \Eloquent
  */
 class BaseKeyCounter extends Model
@@ -46,8 +51,6 @@ class BaseKeyCounter extends Model
 
     /**
      * Relación con el hardware asociado.
-     *
-     * @return BelongsTo
      */
     public function hardware(): BelongsTo
     {
@@ -56,8 +59,6 @@ class BaseKeyCounter extends Model
 
     /**
      * Alias para compatibilidad con Filament Resources.
-     *
-     * @return BelongsTo
      */
     public function device(): BelongsTo
     {

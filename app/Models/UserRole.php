@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -10,9 +13,10 @@ use App\Models\BaseModels\BaseModel;
  * @property string $display_name Nombre a mostrar
  * @property string $slug Nombre interno del role.
  * @property string|null $description Descripción del funcionamiento del role.
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserRole newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserRole newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserRole query()
@@ -24,6 +28,7 @@ use App\Models\BaseModels\BaseModel;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserRole whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserRole whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserRole whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class UserRole extends BaseModel

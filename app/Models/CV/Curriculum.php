@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Models\CV;
+declare(strict_types=1);
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
+namespace App\Models\CV;
 
 use App\Models\File;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 use function array_key_exists;
 
@@ -24,26 +27,26 @@ use function array_key_exists;
  * @property bool|null $is_downloadable Indica si permite descargar el curriculum
  * @property bool|null $is_default Indica si es el curriculum por defecto
  * @property bool|null $is_public Indica si su visibilidad es pública
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumAcademicComplementary> $academicComplementary
+ * @property-read Collection<int, CurriculumAcademicComplementary> $academicComplementary
  * @property-read int|null $academic_complementary_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumAcademicComplementaryOnline> $academicComplementaryOnline
+ * @property-read Collection<int, CurriculumAcademicComplementaryOnline> $academicComplementaryOnline
  * @property-read int|null $academic_complementary_online_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumAcademicTraining> $academicTraining
+ * @property-read Collection<int, CurriculumAcademicTraining> $academicTraining
  * @property-read int|null $academic_training_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumCollaboration> $collaborations
+ * @property-read Collection<int, CurriculumCollaboration> $collaborations
  * @property-read int|null $collaborations_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumExperienceAccredited> $experienceAccredited
+ * @property-read Collection<int, CurriculumExperienceAccredited> $experienceAccredited
  * @property-read int|null $experience_accredited_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumExperienceAdditional> $experienceAdditional
+ * @property-read Collection<int, CurriculumExperienceAdditional> $experienceAdditional
  * @property-read int|null $experience_additional_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumExperienceNoAccredited> $experienceNoAccredited
+ * @property-read Collection<int, CurriculumExperienceNoAccredited> $experienceNoAccredited
  * @property-read int|null $experience_no_accredited_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumExperienceOther> $experienceOther
+ * @property-read Collection<int, CurriculumExperienceOther> $experienceOther
  * @property-read int|null $experience_other_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumExperienceSelfEmployed> $experienceSelfEmployed
+ * @property-read Collection<int, CurriculumExperienceSelfEmployed> $experienceSelfEmployed
  * @property-read int|null $experience_self_employed_count
  * @property-read string $url_image
  * @property-read mixed $url_image_thumbnail_large
@@ -51,20 +54,21 @@ use function array_key_exists;
  * @property-read mixed $url_image_thumbnail_micro
  * @property-read mixed $url_image_thumbnail_normal
  * @property-read mixed $url_image_thumbnail_small
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumHobby> $hobbies
+ * @property-read Collection<int, CurriculumHobby> $hobbies
  * @property-read int|null $hobbies_count
  * @property-read File|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumJob> $jobs
+ * @property-read Collection<int, CurriculumJob> $jobs
  * @property-read int|null $jobs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumProject> $projects
+ * @property-read Collection<int, CurriculumProject> $projects
  * @property-read int|null $projects_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumRepository> $repositories
+ * @property-read Collection<int, CurriculumRepository> $repositories
  * @property-read int|null $repositories_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumService> $services
+ * @property-read Collection<int, CurriculumService> $services
  * @property-read int|null $services_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CV\CurriculumSkill> $skills
+ * @property-read Collection<int, CurriculumSkill> $skills
  * @property-read int|null $skills_count
  * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Curriculum newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Curriculum newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Curriculum query()
@@ -80,6 +84,7 @@ use function array_key_exists;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Curriculum whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Curriculum whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Curriculum whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Curriculum extends Model
@@ -189,8 +194,6 @@ class Curriculum extends Model
 
     /**
      * Relación con la imagen asociada al curriculum.
-     *
-     * @return HasOne
      */
     public function image(): HasOne
     {

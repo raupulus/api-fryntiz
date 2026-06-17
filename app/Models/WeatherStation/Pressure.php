@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\PressureUpdateEvent;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Pressure
@@ -11,7 +14,8 @@ use App\Events\WeatherStation\PressureUpdateEvent;
  * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure latestRecord()
@@ -24,6 +28,7 @@ use App\Events\WeatherStation\PressureUpdateEvent;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereValue($value)
+ *
  * @mixin \Eloquent
  */
 class Pressure extends BaseWheaterStation

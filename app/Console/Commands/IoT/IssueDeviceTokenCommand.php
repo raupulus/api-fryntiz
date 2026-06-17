@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\IoT;
 
 use App\Models\Hardware\HardwareDevice;

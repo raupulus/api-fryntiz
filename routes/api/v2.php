@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\Auth\V2\LoginController;
 use App\Http\Controllers\Api\Auth\V2\RegisterController;
 use App\Http\Controllers\Api\Contact\V2\ContactController;

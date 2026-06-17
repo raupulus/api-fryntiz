@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 use function array_filter;
 
@@ -26,8 +29,9 @@ use function array_filter;
  * @property numeric|null $power_max Potencia máxima (W)
  * @property string|null $date Fecha de medición
  * @property string|null $read_at Fecha y hora de la última lectura
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorToday newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorToday newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorToday query()
@@ -49,6 +53,7 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorToday whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorToday whereVoltageMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorToday whereVoltageMin($value)
+ *
  * @mixin \Eloquent
  */
 class HardwarePowerGeneratorToday extends BaseModel

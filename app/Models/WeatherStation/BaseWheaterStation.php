@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
@@ -20,6 +22,7 @@ use function array_key_exists;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation today()
+ *
  * @mixin \Eloquent
  */
 class BaseWheaterStation extends BaseAbstractModelWithTableCrud

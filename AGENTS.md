@@ -77,8 +77,12 @@ php artisan test                    # Ejecutar todos los tests
 php artisan test --testsuite=Unit   # Solo tests unitarios
 # BD de test: api_raupulus_testing (PostgreSQL)
 
-# Linting
+# Linting y Análisis Estático
 ./vendor/bin/pint     # Formatear código con Laravel Pint (PSR-12)
+./vendor/bin/phpstan analyse # Ejecutar análisis estático (Obligatorio tras crear o editar código)
+
+# Documentación API
+php artisan scribe:generate         # Generar/actualizar documentación de API (Obligatorio tras tocar V2)
 
 # Comandos Artisan del proyecto
 php artisan project:install         # Inicializa proyecto completo (keys, BD, storage)

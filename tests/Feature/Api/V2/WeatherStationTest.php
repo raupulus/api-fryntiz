@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Api\V2;
 
 use PHPUnit\Framework\Attributes\Test;
-
 use Tests\Feature\Api\ApiTestCase;
 
 class WeatherStationTest extends ApiTestCase

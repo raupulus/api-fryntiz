@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Policies\EmailPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -30,15 +33,16 @@ use Illuminate\Support\Collection;
  * @property int $priority Prioridad del mensaje, cuanto más alto más prioridad. Menor a 3 no se envía.
  * @property bool $send Indica si el mensaje se debe enviar o no.
  * @property int $attempts Número de intentos de envío de este mensaje.
- * @property \Illuminate\Support\Carbon|null $sent_at Fecha y hora en la que se envió el mensaje.
+ * @property Carbon|null $sent_at Fecha y hora en la que se envió el mensaje.
  * @property int|null $error_code Código de error en caso de que el mensaje no se haya enviado correctamente.
- * @property \Illuminate\Support\Carbon|null $error_at Fecha y hora en la que se produjo el error.
+ * @property Carbon|null $error_at Fecha y hora en la que se produjo el error.
  * @property string|null $error_message Mensaje de error en caso de que el mensaje no se haya enviado correctamente.
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\Language|null $language
- * @property-read \App\Models\User|null $user
+ * @property-read Language|null $language
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Email newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Email newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Email query()
@@ -69,6 +73,7 @@ use Illuminate\Support\Collection;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Email whereSubject($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Email whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Email whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Email extends BaseAbstractModelWithTableCrud

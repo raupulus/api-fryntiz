@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use BeyondCode\LaravelWebSockets\Apps\ConfigAppProvider;
 use BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize;
 use BeyondCode\LaravelWebSockets\Statistics\Logger\HttpStatisticsLogger;

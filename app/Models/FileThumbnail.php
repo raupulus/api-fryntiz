@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 use function route;
 use function storage_path;
@@ -21,11 +24,12 @@ use function storage_path;
  * @property int|null $width Ancho de la imagen
  * @property int|null $height Alto de la imagen
  * @property int $size Tamaño de la imagen
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read string $storage_path_file
  * @property-read string $url
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail query()
@@ -43,6 +47,7 @@ use function storage_path;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereStoragePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail whereWidth($value)
+ *
  * @mixin \Eloquent
  */
 class FileThumbnail extends Model

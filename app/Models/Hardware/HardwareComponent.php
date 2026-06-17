@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * Componente instalado en un dispositivo hardware.
@@ -19,11 +22,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $power Potencia, consumo en watios
  * @property string|null $description Descripción del componente
  * @property string|null $buy_at Fecha de adquisición, el momento de compra o inicio de posesión
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Hardware\HardwareAvailableComponent|null $availableComponent
- * @property-read \App\Models\Hardware\HardwareDevice|null $device
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read HardwareAvailableComponent|null $availableComponent
+ * @property-read HardwareDevice|null $device
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent onlyTrashed()
@@ -43,6 +47,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class HardwareComponent extends BaseModel

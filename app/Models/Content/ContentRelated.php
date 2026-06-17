@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 /**
  * Class ContentRelated
@@ -11,9 +14,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $id
  * @property int|null $content_id FK al contenido desde el que se asocia
  * @property int|null $content_related_id FK al contenido asociado
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentRelated newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentRelated newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentRelated query()
@@ -23,6 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentRelated whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentRelated whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentRelated whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContentRelated extends BaseModel

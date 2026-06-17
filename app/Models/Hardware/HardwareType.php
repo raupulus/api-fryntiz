@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $name Nombre del tipo de hardware (EJ: Portátil).
  * @property string|null $description Descripción del tipo de hardware.
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareType query()
@@ -21,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareType whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class HardwareType extends Model

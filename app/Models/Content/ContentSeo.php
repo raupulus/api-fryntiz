@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -24,10 +27,10 @@ use Illuminate\Support\Collection;
  * @property string $og_type Tipo de contenido para Open Graph - Redes sociales
  * @property string|null $twitter_card Tipo de tarjeta para Twitter - Redes sociales
  * @property string|null $twitter_creator Creador para Twitter - Redes sociales
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\Content\Content $content
+ * @property-read Content $content
  * @property-read string $url_image
  * @property-read string $url_image_large
  * @property-read string $url_image_medium
@@ -35,6 +38,7 @@ use Illuminate\Support\Collection;
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
  * @property-read File|null $image
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentSeo newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentSeo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentSeo query()
@@ -54,6 +58,7 @@ use Illuminate\Support\Collection;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentSeo whereTwitterCard($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentSeo whereTwitterCreator($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentSeo whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContentSeo extends BaseModel

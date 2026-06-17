@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\LightningUpdateEvent;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Lightning
@@ -13,7 +16,8 @@ use App\Events\WeatherStation\LightningUpdateEvent;
  * @property int $distance Distancia estimada de la caída del rayo
  * @property int $energy Energía detectada para detectar el rayo
  * @property int|null $noise_floor Ruido de fondo compensado para diferenciar el rayo
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning latestRecord()
@@ -28,6 +32,7 @@ use App\Events\WeatherStation\LightningUpdateEvent;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereNoiseFloor($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Lightning extends BaseWheaterStation

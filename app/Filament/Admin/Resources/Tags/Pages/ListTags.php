@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Tags\Pages;
 
 use App\Filament\Admin\Resources\Tags\TagResource;

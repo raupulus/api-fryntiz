@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Models\BaseModels\BaseModel;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $created_at
  * @property-read HardwareDevice|null $hardwareDevice
  * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUva newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUva newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUva query()
@@ -25,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUva whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUva whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUva whereValue($value)
+ *
  * @mixin \Eloquent
  */
 class MeteorologyUva extends BaseModel

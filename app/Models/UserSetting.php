@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * Preferencias de notificación del usuario.
@@ -14,10 +17,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property bool|null $send_email Indica si permite el envío de emails con información no prioritaria
  * @property bool|null $send_notification Indica si quiere notificaciones.
  * @property bool|null $send_notification_push Indica si permite notificaciones push
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting onlyTrashed()
@@ -32,6 +36,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSetting withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class UserSetting extends BaseModel

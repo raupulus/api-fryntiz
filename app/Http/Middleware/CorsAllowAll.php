@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @author Raúl Caro Pastorino
  * @copyright Copyright © 2017 Raúl Caro Pastorino

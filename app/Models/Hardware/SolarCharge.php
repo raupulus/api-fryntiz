@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
@@ -13,6 +15,7 @@ use App\Models\BaseModels\BaseModel;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SolarCharge newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SolarCharge newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SolarCharge query()
+ *
  * @mixin \Eloquent
  */
 class SolarCharge extends BaseModel {}

@@ -1,6 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\KeyCounter;
+
+use App\Models\Hardware\HardwareDevice;
+use App\Models\User;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Mouse
@@ -17,11 +23,12 @@ namespace App\Models\KeyCounter;
  * @property int $total_clicks Cantidad de clicks total de la racha
  * @property numeric $clicks_average Cantidad de cliks medio de la racha
  * @property int $weekday Día de la semana (0 es domingo)
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Hardware\HardwareDevice|null $device
- * @property-read \App\Models\Hardware\HardwareDevice|null $hardware
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read HardwareDevice|null $device
+ * @property-read HardwareDevice|null $hardware
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse newQuery()
@@ -40,6 +47,7 @@ namespace App\Models\KeyCounter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereWeekday($value)
+ *
  * @mixin \Eloquent
  */
 class Mouse extends Keyboard

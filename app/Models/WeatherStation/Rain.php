@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\RainUpdateEvent;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Rain
@@ -14,7 +17,8 @@ use App\Events\WeatherStation\RainUpdateEvent;
  * @property numeric|null $rain_intensity Intensidad de la lluvia en mm/h
  * @property numeric|null $rain_month Lluvia acumulada en el mes en mm
  * @property numeric $moisture Vapor de agua en el aire (g/m3)
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain latestRecord()
@@ -30,6 +34,7 @@ use App\Events\WeatherStation\RainUpdateEvent;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRainIntensity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRainMonth($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Rain extends BaseWheaterStation

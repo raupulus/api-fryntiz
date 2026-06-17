@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\SmartPlant\V2\SmartPlantRegisterController;
 use Illuminate\Support\Facades\Route;
 

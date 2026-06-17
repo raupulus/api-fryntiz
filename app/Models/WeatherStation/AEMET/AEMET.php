@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation\AEMET;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMET newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMET newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMET query()
+ *
  * @mixin \Eloquent
  */
 class AEMET extends Model

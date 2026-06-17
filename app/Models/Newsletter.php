@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Models;
+declare(strict_types=1);
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -15,21 +17,22 @@ use Illuminate\Support\Str;
  * @property string|null $name
  * @property bool $is_verified
  * @property string|null $verification_token
- * @property \Illuminate\Support\Carbon|null $verified_at
+ * @property Carbon|null $verified_at
  * @property string $unsubscribe_token
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $unsubscribed_at
+ * @property Carbon|null $unsubscribed_at
  * @property string|null $subscription_source
  * @property string $language
  * @property array<array-key, mixed>|null $preferences
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property array<array-key, mixed>|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read bool $can_receive_emails
  * @property-read string $status_label
- * @property-read \App\Models\Platform $platform
+ * @property-read Platform $platform
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter active()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter byEmail(string $email)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter byLanguage(string $language)
@@ -58,6 +61,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereVerificationToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Newsletter whereVerifiedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Newsletter extends Model

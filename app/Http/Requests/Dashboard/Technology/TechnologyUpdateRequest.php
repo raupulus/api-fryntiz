@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Dashboard\Technology;
 
 use App\Models\Technology;

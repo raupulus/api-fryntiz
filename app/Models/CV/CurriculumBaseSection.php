@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\CV;
 
 use App\Models\File;
@@ -51,8 +53,6 @@ abstract class CurriculumBaseSection extends Model
 
     /**
      * Relaciona con el curriculum.
-     *
-     * @return BelongsTo
      */
     public function curriculum(): BelongsTo
     {
@@ -61,8 +61,6 @@ abstract class CurriculumBaseSection extends Model
 
     /**
      * Relación con la imagen asociada.
-     *
-     * @return BelongsTo
      */
     public function image(): BelongsTo
     {

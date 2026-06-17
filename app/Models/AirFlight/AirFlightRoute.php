@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\AirFlight;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class AirFlightRoute
@@ -28,11 +31,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $messages Número total de mensajes de modo s recibidos desde esta aeronave
  * @property float|null $rssi rssi promedio reciente (potencia de señal), en dbfs; esto siempre será negativo.
  * @property string|null $emergency Indica si hay señal de emergencia
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AirFlight\AirFlightAirPlane $airplane
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AirFlightAirPlane $airplane
  * @property-read HardwareDevice|null $hardwareDevice
  * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute query()
@@ -54,6 +58,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute whereVertRate($value)
+ *
  * @mixin \Eloquent
  */
 class AirFlightRoute extends Model

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Http\Traits\ImageTrait;
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 use function route;
@@ -51,13 +54,13 @@ use function url;
  * @property bool $is_visible_on_rss Indica si el contenido está visible en el RSS
  * @property bool $is_visible_on_sitemap Indica si el contenido está visible en el sitemap
  * @property bool $is_visible_on_sitemap_news Indica si el contenido está visible en el sitemap de noticias
- * @property \Illuminate\Support\Carbon|null $published_at Fecha de publicación del contenido
- * @property \Illuminate\Support\Carbon|null $scheduled_at Momento en la que está programada la publicación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $published_at Fecha de publicación del contenido
+ * @property Carbon|null $scheduled_at Momento en la que está programada la publicación del contenido, deberá ser previamente visible. Si es null, no está programada y estará visible en cualquier momento
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read User|null $author
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentCategory> $categoriesJoin
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentCategory> $categoriesJoin
  * @property-read int|null $categories_join_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelated
  * @property-read int|null $contents_related_count
@@ -69,11 +72,11 @@ use function url;
  * @property-read int|null $contents_related_me_all_platforms_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $contributors
  * @property-read int|null $contributors_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentContributor> $contributorsJoin
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentContributor> $contributorsJoin
  * @property-read int|null $contributors_join_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentDailyView> $dailyViews
  * @property-read int|null $daily_views_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentGallery> $galleries
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentGallery> $galleries
  * @property-read int|null $galleries_count
  * @property-read mixed $categories
  * @property-read mixed $subcategories
@@ -88,22 +91,23 @@ use function url;
  * @property-read string $url_image_small
  * @property-read mixed $url_preview
  * @property-read File|null $image
- * @property-read \App\Models\Content\ContentMetadata|null $metadata
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentPage> $pages
+ * @property-read ContentMetadata|null $metadata
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentPage> $pages
  * @property-read int|null $pages_count
  * @property-read Platform|null $platform
- * @property-read \App\Models\Content\ContentSeo|null $seo
- * @property-read \App\Models\Content\ContentAvailableStatus|null $status
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentTag> $tagsJoin
+ * @property-read ContentSeo|null $seo
+ * @property-read ContentAvailableStatus|null $status
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentTag> $tagsJoin
  * @property-read int|null $tags_join_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PlatformTag> $tagsPlatform
  * @property-read int|null $tags_platform_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Technology> $technologies
  * @property-read int|null $technologies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content\ContentTechnology> $technologiesJoin
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentTechnology> $technologiesJoin
  * @property-read int|null $technologies_join_count
- * @property-read \App\Models\Content\ContentAvailableType|null $type
+ * @property-read ContentAvailableType|null $type
  * @property-read User|null $user
+ *
  * @method static \Database\Factories\Content\ContentFactory factory($count = null, $state = [])
  * @method static Builder<static>|Content featured()
  * @method static Builder<static>|Content forPlatform(int $platformId)
@@ -141,6 +145,7 @@ use function url;
  * @method static Builder<static>|Content whereTitle($value)
  * @method static Builder<static>|Content whereTypeId($value)
  * @method static Builder<static>|Content whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Content extends BaseAbstractModelWithTableCrud

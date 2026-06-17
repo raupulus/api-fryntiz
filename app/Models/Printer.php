@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Modelo para impresoras.
@@ -17,13 +21,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name Nombre del tipo de impresora
  * @property string|null $code Código identificador de la impresora
  * @property string|null $description Descripción
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read HardwareDevice|null $hardwareDevice
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PrinterStack> $printStack
+ * @property-read Collection<int, PrinterStack> $printStack
  * @property-read int|null $print_stack_count
- * @property-read \App\Models\PrinterAvailableType $printerType
- * @property-read \App\Models\User|null $user
+ * @property-read PrinterAvailableType $printerType
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer query()
@@ -36,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer wherePrinterTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Printer extends BaseModel

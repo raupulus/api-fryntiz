@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 /**
  * Class ContentGallery
@@ -11,9 +14,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $id
  * @property int|null $file_id FK al al archivo
  * @property int|null $content_id FK al contenido que se asocia con el archivo
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentFile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentFile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentFile query()
@@ -23,6 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentFile whereFileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentFile whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentFile whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContentFile extends BaseModel

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation\AEMET;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -14,8 +17,9 @@ use Illuminate\Support\Facades\Validator;
  * @property string|null $polygon Array de Coordenadas para polígonos
  * @property string|null $others_fields_json Estos son campos que no están definidos en la api pero pueden llegar, hasta ahora no hay forma de identificar un fenómeno con valores númericos para interpretarlos
  * @property string $read_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETAdverseEvents newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETAdverseEvents newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETAdverseEvents query()
@@ -27,6 +31,7 @@ use Illuminate\Support\Facades\Validator;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETAdverseEvents whereReadAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETAdverseEvents whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETAdverseEvents whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AEMETAdverseEvents extends Model

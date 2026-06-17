@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\WeatherStation\V2;
 
 use App\Http\Controllers\Api\V2\BaseApiController;

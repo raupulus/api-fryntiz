@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -11,11 +14,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $social_network_id
  * @property string|null $nick Nick o usuario dentro de la red social
  * @property string $url
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\SocialNetwork $socialNetwork
- * @property-read \App\Models\User|null $user
+ * @property-read SocialNetwork $socialNetwork
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSocial newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSocial newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSocial query()
@@ -27,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSocial whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSocial whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSocial whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserSocial extends Model

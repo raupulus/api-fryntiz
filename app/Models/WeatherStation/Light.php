@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Events\WeatherStation\LightUpdateEvent;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Light
@@ -15,7 +18,8 @@ use App\Events\WeatherStation\LightUpdateEvent;
  * @property numeric|null $index Índice
  * @property numeric|null $uva Rayos UVA
  * @property numeric|null $uvb Rayos UVB
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light latestRecord()
@@ -32,6 +36,7 @@ use App\Events\WeatherStation\LightUpdateEvent;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUva($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUvb($value)
+ *
  * @mixin \Eloquent
  */
 class Light extends BaseWheaterStation

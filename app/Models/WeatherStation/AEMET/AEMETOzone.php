@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation\AEMET;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -25,8 +28,9 @@ use Illuminate\Support\Facades\Validator;
  * @property int $time_s Segundos desde el lanzamiento del sondeo
  * @property string $ozone_probe_read_at Fecha y hora de la lectura de la ozonosonda
  * @property string $ozone_probe_launch_at Fecha y hora del lanzamiento de la ozonosonda
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETOzone newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETOzone newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETOzone query()
@@ -49,6 +53,7 @@ use Illuminate\Support\Facades\Validator;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETOzone whereTimeMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETOzone whereTimeS($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMETOzone whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AEMETOzone extends Model

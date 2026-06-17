@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Api\V2;
 
 use App\Models\Hardware\HardwareDevice;

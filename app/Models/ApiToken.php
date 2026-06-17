@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\PersonalAccessToken;
 
 /**
@@ -14,12 +18,13 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property string $name
  * @property string $token
  * @property array<array-key, mixed>|null $abilities
- * @property \Illuminate\Support\Carbon|null $last_used_at
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $last_used_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read string|null $user_name
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $tokenable
+ * @property-read Model|\Eloquent $tokenable
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApiToken newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApiToken newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApiToken query()
@@ -33,6 +38,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApiToken whereTokenableId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApiToken whereTokenableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApiToken whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ApiToken extends PersonalAccessToken

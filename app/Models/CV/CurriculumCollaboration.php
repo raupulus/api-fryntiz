@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\CV;
+
+use App\Models\File;
+use Illuminate\Support\Carbon;
 
 /**
  * Class CurriculumService
@@ -16,11 +21,12 @@ namespace App\Models\CV;
  * @property string|null $urlinfo Url de información sobre el proyecto
  * @property string|null $repository Url del repositorio
  * @property string|null $role Rol en el proyecto
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Curriculum $curriculum
  * @property-read string $url_image
- * @property-read \App\Models\File|null $image
+ * @property-read File|null $image
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration query()
@@ -35,6 +41,7 @@ namespace App\Models\CV;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumCollaboration whereUrlinfo($value)
+ *
  * @mixin \Eloquent
  */
 class CurriculumCollaboration extends CurriculumBaseSection

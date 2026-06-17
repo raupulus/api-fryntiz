@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 use function array_filter;
 
@@ -18,8 +21,9 @@ use function array_filter;
  * @property float|null $amperage Carga total en Ah que ha sido almacenado en la batería
  * @property numeric|null $power Potencia (W) generada acumulada en el tiempo
  * @property string|null $read_at Fecha y hora de lectura
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical query()
@@ -33,6 +37,7 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical wherePower($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereReadAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class HardwarePowerGeneratorHistorical extends BaseModel

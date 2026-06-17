@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Content\Content;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\DB;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Content $content
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView query()
@@ -26,6 +29,7 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentDailyView whereViews($value)
+ *
  * @mixin \Eloquent
  */
 class ContentDailyView extends Model
@@ -35,6 +39,7 @@ class ContentDailyView extends Model
     protected $casts = [
         'date' => 'datetime',
     ];
+
     /**
      * Contenido al que pertenecen las vistas.
      */

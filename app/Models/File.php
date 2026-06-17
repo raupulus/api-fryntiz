@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Intervention\Image\Laravel\Facades\Image;
 
 use function array_filter;
@@ -38,14 +42,15 @@ use function storage_path;
  * @property string $alt
  * @property string $title
  * @property bool $is_private Indica si es privado el archivo o pertenece al espacio público de la aplicación
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \App\Models\FileType|null $fileType
+ * @property-read FileType|null $fileType
  * @property-read string $storage_path_file
  * @property-read string $url
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileThumbnail> $thumbnails
+ * @property-read Collection<int, FileThumbnail> $thumbnails
  * @property-read int|null $thumbnails_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|File newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|File newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|File query()
@@ -66,6 +71,7 @@ use function storage_path;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereWidth($value)
+ *
  * @mixin \Eloquent
  */
 class File extends Model

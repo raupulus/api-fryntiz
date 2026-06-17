@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Request;
 
 use function array_filter;
@@ -24,9 +27,10 @@ use function array_filter;
  * @property bool|null $light_status Indica si hay luz de calle mediante booleano 0|1.
  * @property int|null $light_brightness Devuelve el porcentaje brillo de la luz de calle (0-100%).
  * @property string|null $read_at Fecha y hora de lectura
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGenerator newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGenerator newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGenerator query()
@@ -46,6 +50,7 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGenerator whereReadAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGenerator whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGenerator whereVoltage($value)
+ *
  * @mixin \Eloquent
  */
 class HardwarePowerGenerator extends BaseModel

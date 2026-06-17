@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WebHooks;
 
 use function config;
@@ -10,6 +12,7 @@ use function config;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GitlabWebhook newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GitlabWebhook newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GitlabWebhook query()
+ *
  * @mixin \Eloquent
  */
 class GitlabWebhook extends SimpleWebhookModel

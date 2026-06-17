@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
@@ -14,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -41,25 +45,26 @@ use function asset;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\UserDetail|null $details
- * @property-read \App\Models\UserSocial|null $facebook
+ * @property-read UserDetail|null $details
+ * @property-read UserSocial|null $facebook
  * @property-read string $full_name
  * @property-read mixed $profile_photo_url
- * @property-read \App\Models\UserSocial|null $twitter
+ * @property-read UserSocial|null $twitter
  * @property-read string $url_image
  * @property-read string $url_image_large
  * @property-read string $url_image_medium
  * @property-read string $url_image_micro
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \App\Models\UserRole $role
- * @property-read \App\Models\UserSetting|null $settings
- * @property-read Collection<int, \App\Models\UserSocial> $socials
+ * @property-read UserRole $role
+ * @property-read UserSetting|null $settings
+ * @property-read Collection<int, UserSocial> $socials
  * @property-read int|null $socials_count
- * @property-read Collection<int, \App\Models\ApiToken> $tokens
+ * @property-read Collection<int, ApiToken> $tokens
  * @property-read int|null $tokens_count
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -83,6 +88,7 @@ use function asset;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements FilamentUser

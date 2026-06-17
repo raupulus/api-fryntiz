@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Feature\Api\V2;
+declare(strict_types=1);
 
-use PHPUnit\Framework\Attributes\Test;
+namespace Tests\Feature\Api\V2;
 
 use App\Models\Platform;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
 class NewsletterTest extends ApiTestCase

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -37,10 +40,10 @@ use function route;
  * @property string|null $twitch Usuario en twitch
  * @property string|null $tiktok Usuario en tiktok
  * @property string|null $instagram Usuario en instagram
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Category> $categories
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Category> $categories
  * @property-read int|null $categories_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentPages
  * @property-read int|null $content_pages_count
@@ -54,10 +57,11 @@ use function route;
  * @property-read string $url_image_micro
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
- * @property-read \App\Models\File|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tag> $tags
+ * @property-read File|null $image
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Tag> $tags
  * @property-read int|null $tags_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
+ *
  * @method static \Database\Factories\PlatformFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform newQuery()
@@ -82,6 +86,7 @@ use function route;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereYoutubeChannelId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Platform whereYoutubePresentationVideoId($value)
+ *
  * @mixin \Eloquent
  */
 class Platform extends BaseAbstractModelWithTableCrud

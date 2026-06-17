@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\Hardware\V2\EnergyMonitorController;
 use App\Http\Controllers\Api\Hardware\V2\HardwareDeviceController;
 use App\Http\Controllers\Api\Hardware\V2\SolarChargeController;

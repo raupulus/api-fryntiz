@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Dashboard\Cv;
 
 use App\Http\Requests\Cv\StoreCvHobbyRequest as StoreRequest;

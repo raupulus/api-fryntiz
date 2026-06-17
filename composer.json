@@ -22,6 +22,8 @@
         "barryvdh/laravel-debugbar": "^4.0",
         "barryvdh/laravel-ide-helper": "^3.7",
         "fakerphp/faker": "^1.24",
+        "knuckleswtf/scribe": "^5.11",
+        "larastan/larastan": "^3.10",
         "laravel/pint": "^1.18",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
@@ -57,6 +59,9 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "phpstan": [
+            "./vendor/bin/phpstan analyse"
         ]
     },
     "extra": {

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 use function array_key_exists;
 use function asset;
@@ -20,8 +23,9 @@ use function asset;
  * @property string|null $icon16 Icono a 16x16 píxeles
  * @property string|null $icon32 Icono a 32x32 píxeles
  * @property string|null $icon64 Icono a 64x64 píxeles
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  * @property-read string $url_icon64
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
@@ -36,6 +40,7 @@ use function asset;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereIsoLocale($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereLocale($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
+ *
  * @mixin \Eloquent
  */
 class Language extends Model

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Archivo de rutas para la web de estación meteorológica accesible desde el
  * sufijo /hardware/*

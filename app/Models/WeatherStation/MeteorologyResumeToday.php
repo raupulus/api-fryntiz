@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
 
 use App\Models\BaseModels\BaseModel;
@@ -35,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $created_at
  * @property-read HardwareDevice|null $hardwareDevice
  * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday query()
@@ -61,6 +64,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereWindSpeed($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereWindSpeedMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereWindSpeedMin($value)
+ *
  * @mixin \Eloquent
  */
 class MeteorologyResumeToday extends BaseModel

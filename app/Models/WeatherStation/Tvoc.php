@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\WeatherStation;
+
+use Illuminate\Support\Carbon;
 
 /**
  * Class Tvoc
@@ -9,7 +13,8 @@ namespace App\Models\WeatherStation;
  * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value Valor entre  0ppb y 1187ppb
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc betweenDates(string $from, string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc lastDays(int $days)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc latestRecord()
@@ -22,6 +27,7 @@ namespace App\Models\WeatherStation;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereValue($value)
+ *
  * @mixin \Eloquent
  */
 class Tvoc extends BaseWheaterStation

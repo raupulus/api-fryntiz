@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\CV;
 
+use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class CurriculumRepository.
@@ -15,12 +19,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $title Título para el repositorio
  * @property string|null $description Descripción del repositorio
  * @property string $name Nombre del repositorio
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\CV\Curriculum $curriculum
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Curriculum $curriculum
  * @property-read string $url_image
- * @property-read \App\Models\File|null $image
- * @property-read \App\Models\CV\CurriculumAvailableRepositoryType|null $type
+ * @property-read File|null $image
+ * @property-read CurriculumAvailableRepositoryType|null $type
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository query()
@@ -34,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CurriculumRepository whereUrl($value)
+ *
  * @mixin \Eloquent
  */
 class CurriculumRepository extends CurriculumBaseSection
@@ -130,8 +136,6 @@ class CurriculumRepository extends CurriculumBaseSection
 
     /**
      * Asociación con el tipo de repositorio.
-     *
-     * @return BelongsTo
      */
     public function type(): BelongsTo
     {

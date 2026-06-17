@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
@@ -23,6 +25,7 @@ use function array_filter;
  * @property string|null $read_at Fecha y hora de lectura
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoad newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoad newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoad query()
@@ -38,6 +41,7 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoad whereTemperature($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoad whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerLoad whereVoltage($value)
+ *
  * @mixin \Eloquent
  */
 class HardwarePowerLoad extends BaseModel

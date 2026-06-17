@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'total_pulsations' => 'Total pulsations',
     'best_year' => 'Best year',

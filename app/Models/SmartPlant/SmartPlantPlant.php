@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\SmartPlant;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
 use App\Models\BaseModels\BaseModel;
+use App\Models\User;
 use App\Traits\BelongsToUser;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Class SmartPlantPlant
@@ -21,13 +25,14 @@ use App\Traits\BelongsToUser;
  * @property string $details Descripción avanzada con detalles de la planta
  * @property string|null $image Imagen que representa a la planta
  * @property string $start_at Momento en el que se ha sembrado
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read string $url_image
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SmartPlant\SmartPlantRegister> $registers
+ * @property-read Collection<int, SmartPlantRegister> $registers
  * @property-read int|null $registers_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantPlant forUser(int $userId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantPlant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantPlant newQuery()
@@ -43,6 +48,7 @@ use App\Traits\BelongsToUser;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantPlant whereStartAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantPlant whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantPlant whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class SmartPlantPlant extends BaseModel
