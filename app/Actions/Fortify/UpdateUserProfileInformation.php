@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
+/**
+ * Acción de Fortify responsable de actualizar el perfil de información principal de un usuario.
+ */
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
     /**

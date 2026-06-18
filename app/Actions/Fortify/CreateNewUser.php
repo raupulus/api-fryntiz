@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
+/**
+ * Acción de Fortify para la creación y validación de un nuevo usuario en el sistema.
+ */
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;

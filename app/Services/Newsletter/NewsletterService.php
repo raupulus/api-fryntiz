@@ -9,8 +9,18 @@ use App\Models\Newsletter;
 use App\Models\Platform;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * Servicio de gestión de la Newsletter: suscripciones, verificaciones y cancelaciones.
+ */
 class NewsletterService
 {
+    /**
+     * Inscribe un nuevo email en la newsletter y emite un correo de verificación.
+     *
+     * @param string $email Dirección de correo electrónico.
+     * @param string|null $name Nombre opcional del suscriptor.
+     * @return \App\Models\Newsletter Modelo de la suscripción generada.
+     */
     public function subscribe(string $email, ?string $name = null): Newsletter
     {
         // Resolve platform_id
@@ -44,6 +54,12 @@ class NewsletterService
         return $newsletter;
     }
 
+    /**
+     * Valida y activa una suscripción usando un token de verificación.
+     *
+     * @param string $token Token criptográfico único.
+     * @return bool True si se verificó con éxito, False en caso contrario.
+     */
     public function verify(string $token): bool
     {
         $newsletter = Newsletter::findByVerificationToken($token);
@@ -54,6 +70,12 @@ class NewsletterService
         return $newsletter->verifyEmail();
     }
 
+    /**
+     * Da de baja y cancela la suscripción en base a su token de cancelación.
+     *
+     * @param string $token Token criptográfico de desuscripción.
+     * @return bool True si se canceló correctamente, False de lo contrario.
+     */
     public function unsubscribe(string $token): bool
     {
         $newsletter = Newsletter::findByUnsubscribeToken($token);

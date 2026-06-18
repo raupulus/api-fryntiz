@@ -6,6 +6,9 @@ namespace App\Actions\Fortify;
 
 use Laravel\Fortify\Rules\Password;
 
+/**
+ * Trait de Fortify que contiene las reglas de validación estandarizadas para contraseñas.
+ */
 trait PasswordValidationRules
 {
     /**
