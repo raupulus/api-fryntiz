@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App;
 use App\Http\Resources\V2\Content\ContentFeaturedResource;
 use App\Http\Traits\ImageTrait;
-use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use App\Models\BaseModels\BaseModel;
 use App\Models\Content\Content;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,8 +16,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-
-use function route;
 
 /**
  * Class Platform
@@ -89,7 +86,7 @@ use function route;
  *
  * @mixin \Eloquent
  */
-class Platform extends BaseAbstractModelWithTableCrud
+class Platform extends BaseModel
 {
     use HasFactory, ImageTrait;
 
@@ -102,22 +99,6 @@ class Platform extends BaseAbstractModelWithTableCrud
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
         'instagram',
     ];
-
-    public static function getModuleName(): string
-    {
-        return 'platform';
-    }
-
-    public static function getModelTitles(): array
-    {
-        return [
-            'singular' => 'Plataforma',
-            'plural' => 'Plataformas',
-            'add' => 'Agregar plataforma',
-            'edit' => 'Editar plataforma',
-            'delete' => 'Eliminar plataforma',
-        ];
-    }
 
     protected static function boot()
     {
@@ -415,108 +396,5 @@ class Platform extends BaseAbstractModelWithTableCrud
 
             return $categories;
         });
-    }
-
-    /****************** Métodos para tablas dinámicas ******************/
-
-    /**
-     * Devuelve el modelo de la política asociada.
-     */
-    protected static function getPolicy(): ?string
-    {
-        return App\Policies\PlatformPolicy::class;
-    }
-
-    /**
-     * Devuelve un array con el nombre del atributo y la validación aplicada.
-     * Esto está pensado para usarlo en el frontend
-     */
-    public static function getFieldsValidation(): array
-    {
-        return [
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:tags,slug,{id}',
-            'description' => 'nullable|string|max:255',
-        ];
-    }
-
-    /**
-     * Devuelve un array con todos los títulos de una tabla.
-     */
-    public static function getTableHeads(): array
-    {
-        return [
-            'id' => 'ID',
-            'image_id' => 'Imagen ID',
-            'urlImage' => 'Imagen',
-            'title' => 'Título',
-            'slug' => 'Slug',
-            'domain' => 'Dominio',
-            'description' => 'Descripción',
-        ];
-    }
-
-    /**
-     * Devuelve un array con información sobre los atributos de la tabla.
-     *
-     * @return string[][]
-     */
-    public static function getTableCellsInfo(): array
-    {
-        return [
-            'id' => [
-                'type' => 'integer',
-            ],
-            'image_id' => [
-                'type' => 'hidden',
-            ],
-            'urlImage' => [
-                'type' => 'image',
-            ],
-            'title' => [
-                'type' => 'text',
-                'wrapper' => 'span',
-                'class' => 'text-weight-bold',
-            ],
-            'slug' => [
-                'type' => 'text',
-            ],
-            'domain' => [
-                'type' => 'text',
-            ],
-            'description' => [
-                'type' => 'text',
-            ],
-
-        ];
-    }
-
-    /**
-     * Devuelve las rutas de acciones
-     */
-    public static function getTableActionsInfo(): Collection
-    {
-        // TODO Crear policies para devolver solo acciones permitidas ahora.
-
-        return collect([
-            [
-                'type' => 'update',
-                'name' => 'Editar',
-                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
-                'method' => 'GET',
-                /*
-                'params' => [
-
-                ]
-                */
-            ],
-            [
-                'type' => 'delete',
-                'name' => 'Eliminar',
-                'url' => route(self::getCrudRoutes()['destroy']),
-                'method' => 'DELETE',
-                'ajax' => true,
-            ],
-        ]);
     }
 }

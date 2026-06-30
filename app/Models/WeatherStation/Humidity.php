@@ -36,7 +36,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class Humidity extends BaseWheaterStation
+class Humidity extends BaseWeatherStation
 {
     use Notifiable;
 

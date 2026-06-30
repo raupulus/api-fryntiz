@@ -21,3 +21,4 @@ parameters:
         - vendor/
         - tests/
         - resources/
+        - database/migrations/

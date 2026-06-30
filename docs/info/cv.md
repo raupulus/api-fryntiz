@@ -31,8 +31,6 @@ Módulo para gestionar un currículum vitae completo con 16 secciones organizada
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Cv/V2/CvController.php` | API V2 | 10 endpoints públicos de lectura |
 | `app/Http/Controllers/Cv/CurriculumController.php` | Web | Frontend público + generación PDF |
-| `app/Http/Controllers/Dashboard/Cv/*.php` | Dashboard | 17 controladores admin legacy |
-| `app/Http/Controllers/Dashboard/CurriculumController.php` | Dashboard | CV general admin |
 
 ### Servicios
 | Archivo | Descripción |

@@ -23,7 +23,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read string $url_icon_update
  * @property-read string $url_image
  * @property-read User|null $user
  *
@@ -59,14 +58,6 @@ class FileType extends BaseModel
         'icon32',
         'icon16',
     ];
-
-    /**
-     * Devuelve la url para actualizar el icono del tipo de archivo.
-     */
-    public function getUrlIconUpdateAttribute(): string
-    {
-        return route('dashboard.app.file_types.update.icon', $this->id);
-    }
 
     /**
      * Devuelve la url hacia el icono principal del tipo de archivo.

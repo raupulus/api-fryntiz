@@ -64,27 +64,6 @@ class CurriculumJob extends CurriculumBaseSection
     public static $imagePath = 'cv_jobs';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.job.edit',
-        'delete' => 'dashboard.cv.job.destroy',
-        'destroy' => 'dashboard.cv.job.destroy',
-        'store' => 'dashboard.cv.job.store',
-        'update' => 'dashboard.cv.job.update',
-        'index' => 'dashboard.cv.job.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.job.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_jobs';

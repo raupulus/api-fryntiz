@@ -66,27 +66,6 @@ class CurriculumExperienceAccredited extends CurriculumBaseSection
     public static $imagePath = 'cv_experience_accredited';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.experience_accredited.edit',
-        'delete' => 'dashboard.cv.experience_accredited.destroy',
-        'destroy' => 'dashboard.cv.experience_accredited.destroy',
-        'store' => 'dashboard.cv.experience_accredited.store',
-        'update' => 'dashboard.cv.experience_accredited.update',
-        'index' => 'dashboard.cv.experience_accredited.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.experience-accredited.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_experience_accredited';

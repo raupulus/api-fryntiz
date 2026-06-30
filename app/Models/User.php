@@ -232,44 +232,6 @@ class User extends Authenticatable implements FilamentUser
         return $this->urlAvatar();
     }
 
-    public function urlProfile()
-    {
-        // return route('users.show', $this);
-        return route('dashboard.users.show', $this->id);
-    }
-
-    public function adminlte_image()
-    {
-        return $this->urlAvatarIcon();
-    }
-
-    public function adminlte_desc()
-    {
-        return 'Role_X';
-    }
-
-    public function adminlte_profile_url()
-    {
-        return $this->urlProfile();
-    }
-
-    /*
-     public function adminlte_image()
-    {
-        return 'https://picsum.photos/300/300';
-    }
-
-    public function adminlte_desc()
-    {
-        return 'That\'s a nice guy';
-    }
-
-    public function adminlte_profile_url()
-    {
-        return 'profile/username';
-    }
-     */
-
     /**
      * Determina si el usuario puede acceder al panel de Filament indicado.
      */

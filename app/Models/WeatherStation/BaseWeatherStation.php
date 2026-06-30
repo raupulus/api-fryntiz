@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use App\Models\BaseModels\BaseModel;
 use App\Traits\HasTimestampScopes;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -13,19 +13,19 @@ use Illuminate\Support\Facades\Cache;
 use function array_key_exists;
 
 /**
- * Class BaseWheaterStation
+ * Class BaseWeatherStation
  *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation betweenDates(string $from, string $to)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation lastDays(int $days)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation latestRecord()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWheaterStation today()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation betweenDates(string $from, string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation lastDays(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation latestRecord()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseWeatherStation today()
  *
  * @mixin \Eloquent
  */
-class BaseWheaterStation extends BaseAbstractModelWithTableCrud
+class BaseWeatherStation extends BaseModel
 {
     use HasTimestampScopes;
 
@@ -44,22 +44,6 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
     public function setUpdatedAt($value)
     {
         // Do-nothing
-    }
-
-    public static function getModuleName(): string
-    {
-        return 'weater_station';
-    }
-
-    public static function getModelTitles(): array
-    {
-        return [
-            'singular' => 'Estación Meteorológica',
-            'plural' => 'Estaciones Meteorológicas',
-            'add' => 'Agregar Estación Meteorológica',
-            'edit' => 'Editar Estación Meteorológica',
-            'delete' => 'Eliminar Estación Meteorológica',
-        ];
     }
 
     /**
@@ -285,89 +269,5 @@ class BaseWheaterStation extends BaseAbstractModelWithTableCrud
 
         return $result;
 
-    }
-
-    /****************** Métodos para tablas dinámicas ******************/
-
-    /**
-     * Devuelve el modelo de la política asociada.
-     */
-    protected static function getPolicy(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * Devuelve un array con el nombre del atributo y la validación aplicada.
-     * Esto está pensado para usarlo en el frontend
-     */
-    public static function getFieldsValidation(): array
-    {
-        return [
-            'value' => 'required|integer',
-        ];
-    }
-
-    /**
-     * Devuelve un array con todos los títulos de una tabla.
-     */
-    public static function getTableHeads(): array
-    {
-        return [
-            'id' => 'ID',
-            'value' => 'Valor',
-            'created_at' => 'Instante',
-        ];
-    }
-
-    /**
-     * Devuelve un array con información sobre los atributos de la tabla.
-     *
-     * @return string[][]
-     */
-    public static function getTableCellsInfo(): array
-    {
-        return [
-            'id' => [
-                'type' => 'integer',
-            ],
-            'value' => [
-                'type' => 'integer',
-            ],
-            'created_at' => [
-                'type' => 'datetime',
-                'format' => 'd/m/Y',
-            ],
-
-        ];
-    }
-
-    /**
-     * Devuelve las rutas de acciones
-     */
-    public static function getTableActionsInfo(): Collection
-    {
-        // TODO Crear policies para devolver solo acciones permitidas ahora.
-
-        return collect([
-            [
-                'type' => 'update',
-                'name' => 'Editar',
-                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
-                'method' => 'GET',
-                /*
-                'params' => [
-
-                ]
-                */
-            ],
-            [
-                'type' => 'delete',
-                'name' => 'Eliminar',
-                'url' => route(self::getCrudRoutes()['destroy']),
-                'method' => 'DELETE',
-                'ajax' => true,
-            ],
-        ]);
     }
 }

@@ -33,7 +33,6 @@ use Illuminate\Support\Carbon;
  * @property-read string $url_image_micro
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
- * @property-read string $url_store_image
  * @property-read File|null $image
  * @property-read ContentPageRaw|null $raw
  *
@@ -113,15 +112,6 @@ class ContentPage extends BaseModel
             ->first();
 
         return $contentRaw?->content ?? $this->content;
-    }
-
-    /**
-     * Devuelve la ruta para actualizar la imagen de la página.
-     */
-    public function getUrlStoreImageAttribute(): string
-    {
-        // return route('content.page.store.image', ['content_page' => $this->id]);
-        return route('dashboard.content.ajax.page.upload.image.update', ['contentPage' => $this->id]);
     }
 
     /**

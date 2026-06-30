@@ -31,7 +31,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class Pressure extends BaseWheaterStation
+class Pressure extends BaseWeatherStation
 {
     protected $table = 'meteorology_pressure';
 

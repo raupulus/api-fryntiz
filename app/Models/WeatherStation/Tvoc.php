@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class Tvoc extends BaseWheaterStation
+class Tvoc extends BaseWeatherStation
 {
     protected $table = 'meteorology_tvoc';
 

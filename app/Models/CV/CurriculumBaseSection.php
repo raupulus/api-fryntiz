@@ -33,18 +33,6 @@ abstract class CurriculumBaseSection extends BaseModel
     public static $imagePath;
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [];
-
-    /**
      * @var string[] Campos que se pueden llenar mediante el uso de mass-assignment.
      */
     protected $guarded = [

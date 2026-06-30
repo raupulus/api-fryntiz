@@ -106,7 +106,7 @@ class HardwarePowerLoadHistorical extends BaseModel
             'power' => $request->get('historical_load_power'),
         ];
 
-        return new self(array_filter($data, 'strlen'));
+        return new self(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
     }
 
     /**
@@ -177,7 +177,7 @@ class HardwarePowerLoadHistorical extends BaseModel
             'days_operating' => $request->get('days_operating') ?? $this->days_operating,
         ];
 
-        $this->fill(array_filter($data, 'strlen'));
+        $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
 
         return $this;
     }

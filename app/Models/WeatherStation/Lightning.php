@@ -35,7 +35,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class Lightning extends BaseWheaterStation
+class Lightning extends BaseWeatherStation
 {
     protected $table = 'meteorology_lightning';
 

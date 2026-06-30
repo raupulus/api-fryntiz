@@ -30,7 +30,6 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Content/V2/ContentController.php` | API V2 | show, pages, related |
 | `app/Http/Controllers/Content/*.php` | Web | Controladores frontend (12 archivos) |
-| `app/Http/Controllers/Dashboard/Content/*.php` | Dashboard | Controladores admin legacy (17 archivos) |
 
 ### Servicios
 | Archivo | Descripción |
@@ -183,7 +182,7 @@ php artisan debug:seed-content --count=10
 
 ## Buscador de vídeos de YouTube (fix_11)
 
-Recupera el plugin JS original (`public/dashboard/js/youtube_video_search.js` +
+Recupera el plugin JS original (`public/js/youtube_video_search.js` +
 `public/css/youtube_video_search.css`) en el panel Filament v2.
 
 - Componente `app/Filament/Components/YoutubeVideoField.php` + vista

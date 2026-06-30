@@ -80,27 +80,6 @@ class CurriculumAcademicComplementaryOnline extends CurriculumBaseSection
     public static $imagePath = 'cv_academic_complementary_online';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.academic_complementary_online.edit',
-        'delete' => 'dashboard.cv.academic_complementary_online.destroy',
-        'destroy' => 'dashboard.cv.academic_complementary_online.destroy',
-        'store' => 'dashboard.cv.academic_complementary_online.store',
-        'update' => 'dashboard.cv.academic_complementary_online.update',
-        'index' => 'dashboard.cv.academic_complementary_online.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.academic-online.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_academic_complementary_online';

@@ -66,27 +66,6 @@ class CurriculumExperienceOther extends CurriculumBaseSection
     public static $imagePath = 'cv_experience_others';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.experience_other.edit',
-        'delete' => 'dashboard.cv.experience_other.destroy',
-        'destroy' => 'dashboard.cv.experience_other.destroy',
-        'store' => 'dashboard.cv.experience_other.store',
-        'update' => 'dashboard.cv.experience_other.update',
-        'index' => 'dashboard.cv.experience_other.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.experience-other.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_experience_others';

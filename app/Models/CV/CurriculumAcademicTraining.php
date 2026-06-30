@@ -80,27 +80,6 @@ class CurriculumAcademicTraining extends CurriculumBaseSection
     public static $imagePath = 'cv_academic_training';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.academic_training.edit',
-        'delete' => 'dashboard.cv.academic_training.destroy',
-        'destroy' => 'dashboard.cv.academic_training.destroy',
-        'store' => 'dashboard.cv.academic_training.store',
-        'update' => 'dashboard.cv.academic_training.update',
-        'index' => 'dashboard.cv.academic_training.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.academic.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_academic_training';

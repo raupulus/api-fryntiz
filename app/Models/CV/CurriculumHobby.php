@@ -58,27 +58,6 @@ class CurriculumHobby extends CurriculumBaseSection
     public static $imagePath = 'cv_hobbies';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.hobby.edit',
-        'delete' => 'dashboard.cv.hobby.destroy',
-        'destroy' => 'dashboard.cv.hobby.destroy',
-        'store' => 'dashboard.cv.hobby.store',
-        'update' => 'dashboard.cv.hobby.update',
-        'index' => 'dashboard.cv.hobby.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.hobby.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_hobbies';

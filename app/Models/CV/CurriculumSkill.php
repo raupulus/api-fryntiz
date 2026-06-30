@@ -58,27 +58,6 @@ class CurriculumSkill extends CurriculumBaseSection
     public static $imagePath = 'cv_skills';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.skill.edit',
-        'delete' => 'dashboard.cv.skill.destroy',
-        'destroy' => 'dashboard.cv.skill.destroy',
-        'store' => 'dashboard.cv.skill.store',
-        'update' => 'dashboard.cv.skill.update',
-        'index' => 'dashboard.cv.skill.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.skill.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_skills';

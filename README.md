@@ -11,7 +11,7 @@ Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (es
 | **Backend** | PHP 8.4, Laravel 13 |
 | **Panel Admin** | Filament 5 (Livewire 4) |
 | **Frontend** | Blade + Tailwind CSS 4 + Alpine.js 3 |
-| **Bundler** | Vite 6 |
+| **Bundler** | Vite 8 |
 | **Base de datos** | PostgreSQL 17 |
 | **Caché** | Redis 7 |
 | **Autenticación Web** | Laravel Fortify |

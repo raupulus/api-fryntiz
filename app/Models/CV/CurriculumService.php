@@ -58,27 +58,6 @@ class CurriculumService extends CurriculumBaseSection
     public static $imagePath = 'cv_services';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.service.edit',
-        'delete' => 'dashboard.cv.service.destroy',
-        'destroy' => 'dashboard.cv.service.destroy',
-        'store' => 'dashboard.cv.service.store',
-        'update' => 'dashboard.cv.service.update',
-        'index' => 'dashboard.cv.service.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.services.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_services';

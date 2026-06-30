@@ -99,7 +99,7 @@ class HardwarePowerGeneratorToday extends BaseModel
             'battery_percentage_max' => $request->get('battery_percentage'),
         ];
 
-        return new self(array_filter($data, 'strlen'));
+        return new self(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
     }
 
     /**
@@ -134,7 +134,7 @@ class HardwarePowerGeneratorToday extends BaseModel
             'power_max' => $request->get('today_energy_power_max'),
         ];
 
-        $this->fill(array_filter($data, 'strlen'));
+        $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
 
         return $this;
     }

@@ -88,7 +88,7 @@ class HardwarePowerLoad extends BaseModel
             'read_at' => $request->get('read_at') ?? Carbon::now(),
         ];
 
-        return new self(array_filter($data, 'strlen'));
+        return new self(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
     }
 
     /**
@@ -128,7 +128,7 @@ class HardwarePowerLoad extends BaseModel
             'read_at' => $request->get('read_at') ?? Carbon::now(),
         ];
 
-        $this->fill(array_filter($data, 'strlen'));
+        $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
 
         return $this;
     }

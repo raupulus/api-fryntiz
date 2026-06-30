@@ -259,306 +259,6 @@ parameters:
 			path: app/Helpers/GoogleRecaptchaHelper.php
 
 		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\CategoryController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/CategoryController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Dashboard/Content/ContentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image_alt\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Dashboard/Content/ContentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Dashboard/Content/ContentController.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: app/Http/Controllers/Dashboard/Content/ContentController.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 2
-			path: app/Http/Controllers/Dashboard/Content/ContentController.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: app/Http/Controllers/Dashboard/Content/ContentPageController.php
-
-		-
-			message: '#^Offset 2 on array\{list\<string\>, list\<string\>, list\<string\>, list\<string\>\} in isset\(\) always exists and is not nullable\.$#'
-			identifier: isset.offset
-			count: 1
-			path: app/Http/Controllers/Dashboard/Content/ContentPageController.php
-
-		-
-			message: '#^Parameter \#3 \$value of function curl_setopt expects bool, int given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Http/Controllers/Dashboard/Content/ContentPageController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$request with type App\\Http\\Requests\\Cv\\StoreCvServiceRequest is incompatible with native type App\\Http\\Requests\\Cv\\StoreCvAcademicComplementaryRequest\.$#'
-			identifier: parameter.phpDocType
-			count: 2
-			path: app/Http/Controllers/Dashboard/Cv/CurriculumAcademicComplementaryController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$request with type App\\Http\\Requests\\Cv\\StoreCvServiceRequest is incompatible with native type App\\Http\\Requests\\Cv\\StoreCvAcademicComplementaryOnlineRequest\.$#'
-			identifier: parameter.phpDocType
-			count: 2
-			path: app/Http/Controllers/Dashboard/Cv/CurriculumAcademicComplementaryOnlineController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Cv\\CurriculumBaseSectionController\:\:destroy\(\) with return type void returns Illuminate\\Http\\RedirectResponse but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: app/Http/Controllers/Dashboard/Cv/CurriculumBaseSectionController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Cv\\CurriculumBaseSectionController\:\:destroy\(\) with return type void returns never but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: app/Http/Controllers/Dashboard/Cv/CurriculumBaseSectionController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:index\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$hardwareAvailableComponent with type App\\Models\\Hardware\\HardwareAvailableComponent is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\.$#'
-			identifier: parameter.phpDocType
-			count: 4
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:index\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$hardwareComponent with type App\\Models\\Hardware\\HardwareComponent is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\.$#'
-			identifier: parameter.phpDocType
-			count: 4
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareDeviceController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareDeviceController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$hardwareDevice with type App\\Models\\Hardware\\HardwareDevice is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareDeviceController\.$#'
-			identifier: parameter.phpDocType
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareDeviceController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:index\(\) should return Illuminate\\Http\\Response but returns Illuminate\\View\\View\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$hardwareType with type App\\Models\\Hardware\\HardwareType is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\.$#'
-			identifier: parameter.phpDocType
-			count: 4
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:index\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^PHPDoc tag @param for parameter \$hardwareType with type App\\Models\\Hardware\\HardwareType is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\.$#'
-			identifier: parameter.phpDocType
-			count: 4
-			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\TagController\:\:destroy\(\) should return Illuminate\\Http\\RedirectResponse but returns Illuminate\\Http\\JsonResponse\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Dashboard/TagController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\TagController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/TagController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Dashboard\\TechnologyController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/Dashboard/TechnologyController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\File\:\:\$type\.$#'
 			identifier: property.notFound
 			count: 1
@@ -677,42 +377,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Requests/Api/User/V2/UpdateUserRequest.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 2
-			path: app/Http/Requests/Dashboard/Category/CategoryUpdateRequest.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: app/Http/Requests/Dashboard/Content/ContentStoreRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Platform\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Platform\>\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Dashboard/Platform/PlatformUpdateRequest.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 2
-			path: app/Http/Requests/Dashboard/Platform/PlatformUpdateRequest.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 2
-			path: app/Http/Requests/Dashboard/Tag/TagUpdateRequest.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 2
-			path: app/Http/Requests/Dashboard/Technology/TechnologyUpdateRequest.php
 
 		-
 			message: '#^Call to function is_array\(\) with non\-empty\-list\<string\> will always evaluate to true\.$#'
@@ -2047,54 +1711,6 @@ parameters:
 			path: app/Models/AirFlight/AirFlightAirPlane.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$urlImage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:urlThumbnail\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^PHPDoc tag @return with type mixed is not subtype of native type Illuminate\\Database\\Eloquent\\Builder\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^Parameter \#2 \$replacement of function preg_replace expects array\<float\|int\|string\>\|string, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^Right side of && is always true\.$#'
-			identifier: booleanAnd.rightAlwaysTrue
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^Static method App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\:\:getTableHeads\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
-			message: '#^Variable \$value on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.variable
-			count: 1
-			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\BaseModels\\BaseModel\:\:\$image\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2317,40 +1933,10 @@ parameters:
 			path: app/Models/Hardware/HardwareDevice.php
 
 		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/Hardware/HardwareDevice.php
-
-		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Models/Hardware/HardwarePowerGenerator.php
-
-		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Models/Hardware/HardwarePowerGeneratorHistorical.php
-
-		-
 			message: '#^Method App\\Models\\Hardware\\HardwarePowerGeneratorToday\:\:createModel\(\) should return App\\Models\\Hardware\\HardwarePowerGeneratorHistorical but returns App\\Models\\Hardware\\HardwarePowerGeneratorToday\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/Hardware/HardwarePowerGeneratorToday.php
-
-		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Models/Hardware/HardwarePowerGeneratorToday.php
-
-		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Models/Hardware/HardwarePowerLoad.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadHistorical\:\:\$battery_max_voltage\.$#'
@@ -2362,12 +1948,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadHistorical\:\:\$battery_min_voltage\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
-
-		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
 
 		-
@@ -2386,12 +1966,6 @@ parameters:
 			message: '#^Method App\\Models\\Hardware\\HardwarePowerLoadToday\:\:recalculateToday\(\) should return static\(App\\Models\\Hardware\\HardwarePowerLoadToday\)\|null but returns App\\Models\\Hardware\\HardwarePowerLoadToday\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadToday.php
-
-		-
-			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Models/Hardware/HardwarePowerLoadToday.php
 
 		-
@@ -2659,151 +2233,151 @@ parameters:
 			path: app/Models/WeatherStation/AEMET/AEMETSunRadiation.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/WeatherStation/AirQuality.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\AirQuality\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\AirQuality\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\AirQuality\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\AirQuality\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/WeatherStation/AirQuality.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:whereNotNull\(\)\.$#'
 			identifier: method.staticCall
 			count: 1
 			path: app/Models/WeatherStation/AirQuality.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$apiFields\.$#'
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWeatherStation\:\:\$apiFields\.$#'
 			identifier: property.notFound
 			count: 2
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$created_at\.$#'
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWeatherStation\:\:\$created_at\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$name\.$#'
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWeatherStation\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$slug\.$#'
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWeatherStation\:\:\$slug\.$#'
 			identifier: property.notFound
 			count: 2
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\>\:\:orderBy\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseModel\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
 			message: '#^Left side of && is always true\.$#'
 			identifier: booleanAnd.leftAlwaysTrue
 			count: 5
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\BaseWheaterStation\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\BaseWheaterStation\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\>\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\BaseWeatherStation\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\BaseWeatherStation\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseModel\>\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\BaseWheaterStation\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\WeatherStation\\BaseWheaterStation\) but return statement is missing\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\BaseWeatherStation\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\WeatherStation\\BaseWeatherStation\) but return statement is missing\.$#'
 			identifier: return.missing
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
 			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\WeatherStation\\WindDirection\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''DESC'' given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\>\:\:whereNotNull\(\)\.$#'
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\BaseModels\\BaseModel\>\:\:whereNotNull\(\)\.$#'
 			identifier: method.staticCall
 			count: 1
-			path: app/Models/WeatherStation/BaseWheaterStation.php
+			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/WeatherStation/Light.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\Light\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Light\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\Light\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Light\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/WeatherStation/Light.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:whereNotNull\(\)\.$#'
 			identifier: method.staticCall
 			count: 1
 			path: app/Models/WeatherStation/Light.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/WeatherStation/Rain.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\Rain\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Rain\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\Rain\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Rain\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/WeatherStation/Rain.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:whereNotNull\(\)\.$#'
 			identifier: method.staticCall
 			count: 1
 			path: app/Models/WeatherStation/Rain.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/WeatherStation/Wind.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\Wind\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Wind\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\Wind\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Wind\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/WeatherStation/Wind.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:whereNotNull\(\)\.$#'
 			identifier: method.staticCall
 			count: 1
 			path: app/Models/WeatherStation/Wind.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:orderBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/WeatherStation/WindDirection.php
 
 		-
-			message: '#^Method App\\Models\\WeatherStation\\WindDirection\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\WindDirection\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			message: '#^Method App\\Models\\WeatherStation\\WindDirection\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\WindDirection\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWeatherStation\>\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/WeatherStation/WindDirection.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWeatherStation\>\:\:whereNotNull\(\)\.$#'
 			identifier: method.staticCall
 			count: 1
 			path: app/Models/WeatherStation/WindDirection.php
@@ -2819,12 +2393,6 @@ parameters:
 			identifier: booleanAnd.leftAlwaysTrue
 			count: 1
 			path: app/Policies/EmailPolicy.php
-
-		-
-			message: '#^Class App\\Models\\KeyCounter\\Keyboard referenced with incorrect case\: App\\Models\\Keycounter\\Keyboard\.$#'
-			identifier: class.nameCase
-			count: 6
-			path: app/Policies/KeyCounterKeyboardPolicy.php
 
 		-
 			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:delete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
@@ -2861,12 +2429,6 @@ parameters:
 			identifier: return.missing
 			count: 1
 			path: app/Policies/KeyCounterKeyboardPolicy.php
-
-		-
-			message: '#^Class App\\Models\\KeyCounter\\Mouse referenced with incorrect case\: App\\Models\\Keycounter\\Mouse\.$#'
-			identifier: class.nameCase
-			count: 6
-			path: app/Policies/KeyCounterMousePolicy.php
 
 		-
 			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:delete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
@@ -2953,76 +2515,16 @@ parameters:
 			path: app/Traits/HasStatus.php
 
 		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\ActiveFilter not found\.$#'
+			message: '#^PHPDoc tag @extends has invalid type App\\Models\\WeatherStation\\BaseWheaterStation\.$#'
 			identifier: class.notFound
 			count: 1
-			path: config/adminlte.php
+			path: database/factories/BaseWheaterStationFactory.php
 
 		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\ClassesFilter not found\.$#'
-			identifier: class.notFound
+			message: '#^Type App\\Models\\WeatherStation\\BaseWheaterStation in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Models\\WeatherStation\\BaseWheaterStation\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
 			count: 1
-			path: config/adminlte.php
-
-		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\DataFilter not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/adminlte.php
-
-		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\GateFilter not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/adminlte.php
-
-		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\HrefFilter not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/adminlte.php
-
-		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\LangFilter not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/adminlte.php
-
-		-
-			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\SearchFilter not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/adminlte.php
-
-		-
-			message: '#^Class BeyondCode\\LaravelWebSockets\\Apps\\ConfigAppProvider not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/websockets.php
-
-		-
-			message: '#^Class BeyondCode\\LaravelWebSockets\\Dashboard\\Http\\Middleware\\Authorize not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/websockets.php
-
-		-
-			message: '#^Class BeyondCode\\LaravelWebSockets\\Statistics\\Logger\\HttpStatisticsLogger not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/websockets.php
-
-		-
-			message: '#^Class BeyondCode\\LaravelWebSockets\\Statistics\\Models\\WebSocketsStatisticsEntry not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/websockets.php
-
-		-
-			message: '#^Class BeyondCode\\LaravelWebSockets\\WebSockets\\Channels\\ChannelManagers\\ArrayChannelManager not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/websockets.php
+			path: database/factories/BaseWheaterStationFactory.php
 
 		-
 			message: '#^Call to static method factory\(\) on an unknown class App\\Models\\Team\.$#'
@@ -3047,744 +2549,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: database/factories/UserFactory.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_18_100002_create_tags_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_18_100003_create_categories_table.php
-
-		-
-			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
-			identifier: argument.type
-			count: 3
-			path: database/migrations/2019_06_19_000000_create_user_roles_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2019_06_19_100000_create_users_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_19_100000_create_users_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2019_06_21_000000_create_user_details_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_21_000000_create_user_details_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2019_06_23_000000_create_user_data_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_23_000000_create_user_data_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2019_06_24_000000_create_user_settings_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_24_000000_create_user_settings_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_06_26_000001_create_user_social_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_26_000001_create_user_social_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_06_26_000002_create_emails_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_06_26_000002_create_emails_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2019_07_03_203128_create_file_types_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_04_132011_create_files_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132011_create_files_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_04_132012_create_file_thumbnails_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132012_create_file_thumbnails_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_04_132013_create_galleries_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132013_create_galleries_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_04_132014_create_gallery_images_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132014_create_gallery_images_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132015_create_platforms_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132016_create_platform_tags_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_132017_create_platform_categories_table.php
-
-		-
-			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
-			identifier: argument.type
-			count: 3
-			path: database/migrations/2019_07_04_232014_create_referred_platforms_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_232014_create_referred_platforms_table.php
-
-		-
-			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
-			identifier: argument.type
-			count: 2
-			path: database/migrations/2019_07_04_232015_create_referred_users_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_232015_create_referred_users_table.php
-
-		-
-			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
-			identifier: argument.type
-			count: 2
-			path: database/migrations/2019_07_04_232016_create_referred_things_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_232016_create_referred_things_table.php
-
-		-
-			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
-			identifier: argument.type
-			count: 3
-			path: database/migrations/2019_07_04_232017_create_technologies_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_04_232017_create_technologies_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_05_053049_create_cv_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_05_053049_create_cv_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2019_07_05_053050_create_cv_available_repository_types_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_05_053050_create_cv_available_repository_types_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: database/migrations/2019_07_05_053051_create_cv_repositories_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_05_053051_create_cv_repositories_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_143711_create_cv_services_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_143711_create_cv_services_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_153047_create_cv_collaborations_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_153047_create_cv_collaborations_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_155816_create_cv_hobbies_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_155816_create_cv_hobbies_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_163628_create_cv_jobs_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_163628_create_cv_jobs_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_164233_create_cv_projects_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_164233_create_cv_projects_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_164234_create_cv_project_tags_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_164234_create_cv_project_tags_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_06_164235_create_cv_project_categories_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_06_164235_create_cv_project_categories_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_07_215101_create_cv_academic_training_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_07_215101_create_cv_academic_training_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_050854_create_cv_academic_complementary_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_050854_create_cv_academic_complementary_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_052258_create_cv_academic_complementary_online_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_052258_create_cv_academic_complementary_online_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_154309_create_cv_experience_accredited_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_154309_create_cv_experience_accredited_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_204716_create_cv_experience_no_accredited_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_204716_create_cv_experience_no_accredited_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_214409_create_cv_experience_self_employed_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_214409_create_cv_experience_self_employed_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_220115_create_cv_experience_additional_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_220115_create_cv_experience_additional_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_08_222407_create_cv_experience_others_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_08_222407_create_cv_experience_others_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/migrations/2019_07_09_051216_create_cv_skills_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2019_07_09_051216_create_cv_skills_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202048_create_content_available_status_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202049_create_content_available_types_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202127_create_contents_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202128_create_content_pages_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202129_create_content_page_raw_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202146_create_content_categories_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202237_create_content_contributors_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202335_create_content_galleries_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202343_create_content_files_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202344_create_content_seo_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202402_create_content_tags_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_202403_create_content_technologies_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_08_235468_create_content_metadata_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2021_05_09_220354_create_content_related_table.php
-
-		-
-			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: database/migrations/2022_01_30_225444_create_hardware_types_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_225445_create_hardware_devices_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_225446_create_hardware_available_components_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_225447_create_hardware_components_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_225448_create_hardware_energy_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_232819_create_hardware_power_loads_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_232820_create_hardware_power_loads_today_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_232821_create_hardware_power_loads_historical_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_232822_create_hardware_power_generators_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_232823_create_hardware_power_generators_today_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_01_30_232824_create_hardware_power_generators_historical_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_01_000000_create_keycounter_keyboard_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_01_000001_create_keycounter_mouse_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_03_000001_create_meteorology_air_quality_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_04_000001_create_meteorology_wind_direction_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_04_100001_create_meteorology_lightning_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_04_100002_create_meteorology_resume_today_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_04_100003_create_meteorology_resume_historical_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_05_050940_create_meteorology_pressure_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_05_051023_create_meteorology_temperature_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_05_051036_create_meteorology_humidity_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_06_000001_create_meteorology_winter_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_06_024139_create_meteorology_light_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_07_000001_create_meteorology_uv_index_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_07_000002_create_meteorology_uva_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_07_000003_create_meteorology_uvb_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_07_000004_create_meteorology_eco2_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_07_000005_create_meteorology_tvoc_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_07_000006_create_meteorology_rain_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_17_212009_create_printers_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2022_02_17_212118_create_printer_stack_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2023_02_18_000001_create_smartbonsai_plants_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2023_02_18_000003_create_airflight_airplanes_table.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: database/migrations/2023_02_18_000004_create_airflight_routes_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2025_07_13_134332_create_newsletter_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/migrations/2025_07_14_140809_create_content_daily_views_table.php
 
 		-
 			message: '#^Property Database\\Seeders\\RolesTableSeeder\:\:\$tableName is never read, only written\.$#'

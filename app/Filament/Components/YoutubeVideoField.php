@@ -9,7 +9,7 @@ use Filament\Forms\Components\Field;
 
 /**
  * Campo Filament que integra el buscador de vídeos de YouTube
- * (plugin JS propio `public/dashboard/js/youtube_video_search.js`).
+ * (plugin JS propio `public/js/youtube_video_search.js`).
  *
  * El estado del campo es el ID del vídeo de YouTube (`youtube_video_id`).
  * Al seleccionar un vídeo en el modal de búsqueda, se rellena el estado y se

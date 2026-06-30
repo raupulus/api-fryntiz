@@ -15,7 +15,6 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Platform/V2/PlatformController.php` | API V2 | index, show, featured |
-| `app/Http/Controllers/Dashboard/PlatformController.php` | Dashboard | Admin legacy |
 
 ### Servicios
 | Archivo | Descripción |

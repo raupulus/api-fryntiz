@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
-use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
-use App\Policies\CategoryPolicy;
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-
-use function collect;
-use function route;
 
 /**
  * Class Category
@@ -59,29 +54,13 @@ use function route;
  *
  * @mixin \Eloquent
  */
-class Category extends BaseAbstractModelWithTableCrud
+class Category extends BaseModel
 {
     use ImageTrait;
 
     protected $table = 'categories';
 
     protected $fillable = ['name', 'slug', 'description', 'parent_id', 'image_id', 'icon', 'color', 'priority'];
-
-    public static function getModuleName(): string
-    {
-        return 'category';
-    }
-
-    public static function getModelTitles(): array
-    {
-        return [
-            'singular' => 'Categoría',
-            'plural' => 'Categorías',
-            'add' => 'Agregar Categoría',
-            'edit' => 'Editar Categoría',
-            'delete' => 'Eliminar Categoría',
-        ];
-    }
 
     protected static function boot()
     {
@@ -133,95 +112,5 @@ class Category extends BaseAbstractModelWithTableCrud
         }
 
         return $this->delete();
-    }
-
-    /****************** Métodos para tablas dinámicas ******************/
-
-    /**
-     * Devuelve el modelo de la política asociada.
-     */
-    protected static function getPolicy(): ?string
-    {
-        return CategoryPolicy::class;
-    }
-
-    /**
-     * Devuelve un array con el nombre del atributo y la validación aplicada.
-     */
-    public static function getFieldsValidation(): array
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories,slug,{id}',
-            'description' => 'nullable|string|max:255',
-        ];
-    }
-
-    /**
-     * Devuelve un array con todos los títulos de una tabla.
-     */
-    public static function getTableHeads(): array
-    {
-        return [
-            'id' => 'ID',
-            'name' => 'Nombre',
-            'slug' => 'Slug',
-            'description' => 'Descripción',
-        ];
-    }
-
-    /**
-     * Devuelve un array con información sobre los atributos de la tabla.
-     *
-     * @return string[][]
-     */
-    public static function getTableCellsInfo(): array
-    {
-        return [
-            'id' => [
-                'type' => 'integer',
-            ],
-            'name' => [
-                'type' => 'text',
-                'wrapper' => 'span',
-                'class' => 'text-weight-bold',
-            ],
-            'slug' => [
-                'type' => 'text',
-            ],
-            'description' => [
-                'type' => 'text',
-            ],
-
-        ];
-    }
-
-    /**
-     * Devuelve las rutas de acciones
-     */
-    public static function getTableActionsInfo(): Collection
-    {
-        // TODO Crear policies para devolver solo acciones permitidas ahora.
-
-        return collect([
-            [
-                'type' => 'update',
-                'name' => 'Editar',
-                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
-                'method' => 'GET',
-                /*
-                'params' => [
-
-                ]
-                */
-            ],
-            [
-                'type' => 'delete',
-                'name' => 'Eliminar',
-                'url' => route(self::getCrudRoutes()['destroy']),
-                'method' => 'DELETE',
-                'ajax' => true,
-            ],
-        ]);
     }
 }

@@ -66,27 +66,6 @@ class CurriculumExperienceSelfEmployed extends CurriculumBaseSection
     public static $imagePath = 'cv_experience_self_employed';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.experience_selfemployed.edit',
-        'delete' => 'dashboard.cv.experience_selfemployed.destroy',
-        'destroy' => 'dashboard.cv.experience_selfemployed.destroy',
-        'store' => 'dashboard.cv.experience_selfemployed.store',
-        'update' => 'dashboard.cv.experience_selfemployed.update',
-        'index' => 'dashboard.cv.experience_selfemployed.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.experience-self-employed.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_experience_self_employed';

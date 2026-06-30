@@ -34,8 +34,8 @@ Varias pueden aplicar a la vez (p. ej. un endpoint nuevo con su migración usa
 - **Patrón:** MVC con Service Layer
 - **API:** Única versión **V2 FULL REST** (la V1 legacy fue eliminada en fix_1), respuestas JSON con JsonResources
 - **Admin:** Dos paneles Filament 5 (Admin para superadmin, Tenant para usuarios)
-- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js + Vue.js 3 (Vite 6, prefiere usar pnpm)
-- **Build:** Vite 6 con `laravel-vite-plugin`, `@tailwindcss/vite` y `@vitejs/plugin-vue` — entrypoints: `resources/css/app.css`, `resources/js/app.js`, `resources/js/vue.js`, `resources/css/filament/admin/theme.css`
+- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js + Vue.js 3 (Vite 8, prefiere usar pnpm)
+- **Build:** Vite 8 con `laravel-vite-plugin`, `@tailwindcss/vite` y `@vitejs/plugin-vue` — entrypoints: `resources/css/app.css`, `resources/js/app.js`, `resources/js/vue.js`, `resources/css/filament/admin/theme.css`
 - **Excepciones API:** Excepciones JSON personalizadas (`JsonValidationException`, `JsonAuthorizationException`) en `app/Exceptions/`, configuradas en `bootstrap/app.php`
 - **Eventos y WebSockets:** Eventos broadcast (`app/Events/`) con listeners (`app/Listeners/`), con soporte preparado para Laravel Reverb. Sub-eventos granulares en `app/Events/WeatherStation/` (Temperature, Humidity, Pressure, Light, Wind, Rain, Lightning, AirQuality)
 - **Jobs:** `ProcessContentViewJob` para vistas de contenido asíncronas
@@ -117,8 +117,8 @@ app/
 ├── Http/
 │   ├── Controllers/Api/    # Controladores API por módulo + V2/
 │   ├── Controllers/        # Controladores web públicos por módulo
-│   ├── Middleware/          # Cors, CorsAllowAll, DomainCheckMiddleware, IpCounterStrict
-│   ├── Requests/           # FormRequests con validación en español (Api/, Cv/, Dashboard/)
+│   ├── Middleware/          # Cors, DomainCheckMiddleware, IpCounterStrict
+│   ├── Requests/           # FormRequests con validación en español (Api/, Cv/)
 │   └── Resources/          # JsonResources (raíz: Content*, User) + V2/ por módulo
 ├── Jobs/               # Jobs asíncronos (ProcessContentViewJob)
 ├── Listeners/          # Event listeners (BroadcastWeatherStationUpdate)
@@ -150,7 +150,6 @@ routes/
 ├── api/
 │   └── v2.php          # API V2 (única, prefijo /api/v2)
 ├── console.php         # Scheduler (tareas programadas)
-├── dashboard.php       # Panel legacy AdminLTE (prefijo /dashboard)
 ├── webhook.php         # Webhooks (GitLab, etc.)
 ├── hardware/           # v2.php, web.php
 ├── keycounter/         # v2.php, web.php
@@ -169,7 +168,6 @@ Aliases registrados en `bootstrap/app.php`:
 | Alias | Clase | Uso |
 |-------|-------|-----|
 | `cors` | `Cors` | CORS estándar |
-| `cors.allow.all` | `CorsAllowAll` | CORS permisivo (desarrollo/IoT) |
 | `check.domain` | `DomainCheckMiddleware` | Verificación de dominio |
 | `ip.counter.strict` | `IpCounterStrict` | Contador de IPs estricto |
 

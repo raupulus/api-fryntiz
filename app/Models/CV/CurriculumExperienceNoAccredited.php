@@ -66,27 +66,6 @@ class CurriculumExperienceNoAccredited extends CurriculumBaseSection
     public static $imagePath = 'cv_experience_no_accredited';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.experience_no_accredited.edit',
-        'delete' => 'dashboard.cv.experience_no_accredited.destroy',
-        'destroy' => 'dashboard.cv.experience_no_accredited.destroy',
-        'store' => 'dashboard.cv.experience_no_accredited.store',
-        'update' => 'dashboard.cv.experience_no_accredited.update',
-        'index' => 'dashboard.cv.experience_no_accredited.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.experience-no-accredited.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_experience_no_accredited';

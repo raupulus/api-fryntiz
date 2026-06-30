@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\Cors;
-use App\Http\Middleware\CorsAllowAll;
 use App\Http\Middleware\DomainCheckMiddleware;
 use App\Http\Middleware\IpCounterStrict;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -56,11 +55,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('cv')
                 ->group(base_path('routes/cv/web.php'));
 
-            // === Dashboard (panel legacy AdminLTE) ===
-            Route::middleware('web')
-                ->prefix('dashboard')
-                ->group(base_path('routes/dashboard.php'));
-
             // === API V2 (nueva versión) ===
             Route::middleware('api')
                 ->prefix('api/v2')
@@ -73,7 +67,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'cors' => Cors::class,
-            'cors.allow.all' => CorsAllowAll::class,
             'check.domain' => DomainCheckMiddleware::class,
             'ip.counter.strict' => IpCounterStrict::class,
             // Sanctum: control de abilities por token de dispositivo IoT (fix_1 fase 05).

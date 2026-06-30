@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Content;
 
 use App\Http\Traits\ImageTrait;
-use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
+use App\Models\BaseModels\BaseModel;
 use App\Models\Category;
 use App\Models\ContentDailyView;
 use App\Models\File;
@@ -15,17 +15,15 @@ use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\User;
-use App\Policies\ContentPolicy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 
-use function route;
 use function url;
 
 /**
@@ -60,29 +58,28 @@ use function url;
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read User|null $author
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentCategory> $categoriesJoin
+ * @property-read Collection<int, ContentCategory> $categoriesJoin
  * @property-read int|null $categories_join_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelated
+ * @property-read Collection<int, Content> $contentsRelated
  * @property-read int|null $contents_related_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelatedAllPlatforms
+ * @property-read Collection<int, Content> $contentsRelatedAllPlatforms
  * @property-read int|null $contents_related_all_platforms_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelatedMe
+ * @property-read Collection<int, Content> $contentsRelatedMe
  * @property-read int|null $contents_related_me_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsRelatedMeAllPlatforms
+ * @property-read Collection<int, Content> $contentsRelatedMeAllPlatforms
  * @property-read int|null $contents_related_me_all_platforms_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $contributors
+ * @property-read Collection<int, User> $contributors
  * @property-read int|null $contributors_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentContributor> $contributorsJoin
+ * @property-read Collection<int, ContentContributor> $contributorsJoin
  * @property-read int|null $contributors_join_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentDailyView> $dailyViews
+ * @property-read Collection<int, ContentDailyView> $dailyViews
  * @property-read int|null $daily_views_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentGallery> $galleries
+ * @property-read Collection<int, ContentGallery> $galleries
  * @property-read int|null $galleries_count
  * @property-read mixed $categories
  * @property-read mixed $subcategories
  * @property-read mixed $tags
  * @property-read mixed $url
- * @property-read string $url_edit
  * @property-read string $url_image
  * @property-read string $url_image_large
  * @property-read string $url_image_medium
@@ -92,18 +89,18 @@ use function url;
  * @property-read mixed $url_preview
  * @property-read File|null $image
  * @property-read ContentMetadata|null $metadata
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentPage> $pages
+ * @property-read Collection<int, ContentPage> $pages
  * @property-read int|null $pages_count
  * @property-read Platform|null $platform
  * @property-read ContentSeo|null $seo
  * @property-read ContentAvailableStatus|null $status
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentTag> $tagsJoin
+ * @property-read Collection<int, ContentTag> $tagsJoin
  * @property-read int|null $tags_join_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PlatformTag> $tagsPlatform
+ * @property-read Collection<int, PlatformTag> $tagsPlatform
  * @property-read int|null $tags_platform_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Technology> $technologies
+ * @property-read Collection<int, Technology> $technologies
  * @property-read int|null $technologies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ContentTechnology> $technologiesJoin
+ * @property-read Collection<int, ContentTechnology> $technologiesJoin
  * @property-read int|null $technologies_join_count
  * @property-read ContentAvailableType|null $type
  * @property-read User|null $user
@@ -148,7 +145,7 @@ use function url;
  *
  * @mixin \Eloquent
  */
-class Content extends BaseAbstractModelWithTableCrud
+class Content extends BaseModel
 {
     use HasFactory, ImageTrait;
 
@@ -190,22 +187,6 @@ class Content extends BaseAbstractModelWithTableCrud
         'scheduled_at' => 'datetime',
         'processed_at' => 'datetime',
     ];
-
-    public static function getModuleName(): string
-    {
-        return 'content';
-    }
-
-    public static function getModelTitles(): array
-    {
-        return [
-            'singular' => 'Contenido',
-            'plural' => 'Contenidos',
-            'add' => 'Agregar Contenido',
-            'edit' => 'Editar Contenido',
-            'delete' => 'Eliminar Contenido',
-        ];
-    }
 
     protected static function boot()
     {
@@ -529,17 +510,6 @@ class Content extends BaseAbstractModelWithTableCrud
     }
 
     /**
-     * Devuelve la url para editar un contenido.
-     *
-     * @return string Devuelve una cadena con la ruta para editar este
-     *                contenido.
-     */
-    public function getUrlEditAttribute()
-    {
-        return route('dashboard.content.edit', ['model' => $this->id]);
-    }
-
-    /**
      * Añade una nueva página al contenido.
      */
     public function addPage(): ContentPage
@@ -741,110 +711,6 @@ class Content extends BaseAbstractModelWithTableCrud
         }
 
         return parent::safeDelete();
-    }
-
-    /****************** Métodos para tablas dinámicas ******************/
-
-    /**
-     * Devuelve el modelo de la política asociada.
-     */
-    protected static function getPolicy(): ?string
-    {
-        return ContentPolicy::class;
-    }
-
-    /**
-     * Devuelve un array con el nombre del atributo y la validación aplicada.
-     * Esto está pensado para usarlo en el frontend
-     */
-    public static function getFieldsValidation(): array
-    {
-        return [
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:tags,slug,{id}',
-            'excerpt' => 'nullable|string|max:255',
-        ];
-    }
-
-    /**
-     * Devuelve un array con todos los títulos de una tabla.
-     */
-    public static function getTableHeads(): array
-    {
-        return [
-            'id' => 'ID',
-            'image_id' => 'Imagen ID',
-            'urlImage' => 'Imagen',
-            'title' => 'Título',
-            'published_at' => 'Publicado',
-            'slug' => 'Slug',
-            'excerpt' => 'Resumen',
-        ];
-    }
-
-    /**
-     * Devuelve un array con información sobre los atributos de la tabla.
-     *
-     * @return string[][]
-     */
-    public static function getTableCellsInfo(): array
-    {
-        return [
-            'id' => [
-                'type' => 'integer',
-            ],
-            'image_id' => [
-                'type' => 'hidden',
-            ],
-            'urlImage' => [
-                'type' => 'image',
-            ],
-            'title' => [
-                'type' => 'text',
-                'wrapper' => 'span',
-                'class' => 'text-weight-bold',
-            ],
-            'published_at' => [
-                'type' => 'datetime',
-                'format' => 'd/m/Y',
-            ],
-            'slug' => [
-                'type' => 'text',
-            ],
-            'excerpt' => [
-                'type' => 'text',
-            ],
-
-        ];
-    }
-
-    /**
-     * Devuelve las rutas de acciones
-     */
-    public static function getTableActionsInfo(): Collection
-    {
-        // TODO Crear policies para devolver solo acciones permitidas ahora.
-
-        return collect([
-            [
-                'type' => 'update',
-                'name' => 'Editar',
-                'url' => route(self::getCrudRoutes()['edit'], '[id]'),
-                'method' => 'GET',
-                /*
-                'params' => [
-
-                ]
-                */
-            ],
-            [
-                'type' => 'delete',
-                'name' => 'Eliminar',
-                'url' => route(self::getCrudRoutes()['destroy']),
-                'method' => 'DELETE',
-                'ajax' => true,
-            ],
-        ]);
     }
 
     /**

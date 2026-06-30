@@ -14,7 +14,6 @@ Módulo para enviar formularios de contacto vía API con verificación reCAPTCHA
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Contact/V2/ContactController.php` | API V2 | Enviar formulario de contacto |
 | `app/Http/Controllers/EmailController.php` | Web | Controlador web legacy |
-| `app/Http/Controllers/Dashboard/EmailController.php` | Dashboard | Admin legacy |
 
 ### Servicios
 | Archivo | Descripción |

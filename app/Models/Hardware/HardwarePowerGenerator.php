@@ -87,7 +87,7 @@ class HardwarePowerGenerator extends BaseModel
             'read_at' => $request->get('read_at'),
         ];
 
-        return new self(array_filter($data, 'strlen'));
+        return new self(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
     }
 
     /**
@@ -113,7 +113,7 @@ class HardwarePowerGenerator extends BaseModel
             'read_at' => $request->get('read_at'),
         ];
 
-        $this->fill(array_filter($data, 'strlen'));
+        $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
 
         return $this;
     }

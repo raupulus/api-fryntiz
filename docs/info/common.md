@@ -15,14 +15,6 @@ Entidades compartidas transversales usadas por múltiples módulos: categorías 
 | `app/Models/PlatformCategory.php` | `platform_categories` | Pivot plataforma ↔ categoría |
 | `app/Models/PlatformTag.php` | `platform_tags` | Pivot plataforma ↔ tag |
 
-### Controladores Dashboard (Admin legacy)
-| Archivo | Descripción |
-|---------|-------------|
-| `app/Http/Controllers/Dashboard/CategoryController.php` | CRUD categorías |
-| `app/Http/Controllers/Dashboard/TagController.php` | CRUD tags |
-| `app/Http/Controllers/Dashboard/TechnologyController.php` | CRUD tecnologías |
-| `app/Http/Controllers/Dashboard/LanguageController.php` | CRUD idiomas |
-
 ### Controladores Web
 | Archivo | Descripción |
 |---------|-------------|
@@ -109,20 +101,9 @@ Entidades compartidas transversales usadas por múltiples módulos: categorías 
 | `iso3` | string | Código ISO 3 letras |
 | `icon64` | string | Ruta icono 64x64 |
 
-## Modelo base heredado (BaseAbstractModelWithTableCrud)
+## Modelo base heredado (BaseModel)
 
-Muchos modelos del proyecto (Category, Tag, Technology, Platform, BaseWheaterStation) extienden `BaseAbstractModelWithTableCrud` que provee:
-
-| Método estático | Descripción |
-|-----------------|-------------|
-| `getModuleName()` | Nombre del módulo |
-| `getModelTitles()` | Títulos CRUD (singular, plural, add, edit, delete) |
-| `getFieldsValidation()` | Reglas de validación |
-| `getTableHeads()` | Cabeceras de tabla |
-| `getTableCellsInfo()` | Info de celdas (tipo, wrapper, class) |
-| `getTableActionsInfo()` | Acciones disponibles |
-| `getTableRowsByPage()` | Paginación manual |
-| `getPolicy()` | Clase de política asociada |
+Los modelos del proyecto extienden `BaseModel` (o `BaseModel` directamente), que provee `safeDelete()` y tipado común. La antigua clase `BaseAbstractModelWithTableCrud` (CRUD dinámico del panel AdminLTE legacy) fue eliminada junto con dicho panel.
 
 ## Uso en otros módulos
 

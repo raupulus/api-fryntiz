@@ -62,27 +62,6 @@ class CurriculumRepository extends CurriculumBaseSection
     public static $imagePath = 'cv_repository';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.repository.edit',
-        'delete' => 'dashboard.cv.repository.destroy',
-        'destroy' => 'dashboard.cv.repository.destroy',
-        'store' => 'dashboard.cv.repository.store',
-        'update' => 'dashboard.cv.repository.update',
-        'index' => 'dashboard.cv.repository.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.repositories.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_repositories';

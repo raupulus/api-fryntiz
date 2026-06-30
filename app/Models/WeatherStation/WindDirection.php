@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class WindDirection extends BaseWheaterStation
+class WindDirection extends BaseWeatherStation
 {
     protected $fillable = [
         'user_id',

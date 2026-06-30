@@ -53,7 +53,7 @@
 @once
     @push('scripts')
         <link href="{{ asset('css/youtube_video_search.css') }}" rel="stylesheet" />
-        <script src="{{ asset('dashboard/js/youtube_video_search.js') }}"></script>
+        <script src="{{ asset('js/youtube_video_search.js') }}"></script>
 
         <script>
             document.addEventListener('alpine:init', () => {

@@ -113,7 +113,7 @@ class HardwarePowerLoadToday extends BaseModel
             'power' => $request->get('today_load_power') ?? $power,
         ];
 
-        return new self(array_filter($data, 'strlen'));
+        return new self(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
     }
 
     /**
@@ -184,7 +184,7 @@ class HardwarePowerLoadToday extends BaseModel
             'power' => ($powerTotal > $this->power) ? $powerTotal : $this->power,
         ];
 
-        $this->fill(array_filter($data, 'strlen'));
+        $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
 
         return $this;
     }

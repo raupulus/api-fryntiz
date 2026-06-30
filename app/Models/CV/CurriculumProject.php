@@ -64,27 +64,6 @@ class CurriculumProject extends CurriculumBaseSection
     public static $imagePath = 'cv_projects';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.project.edit',
-        'delete' => 'dashboard.cv.project.destroy',
-        'destroy' => 'dashboard.cv.project.destroy',
-        'store' => 'dashboard.cv.project.store',
-        'update' => 'dashboard.cv.project.update',
-        'index' => 'dashboard.cv.project.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.project.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_projects';

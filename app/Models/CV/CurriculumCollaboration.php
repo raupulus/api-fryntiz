@@ -64,27 +64,6 @@ class CurriculumCollaboration extends CurriculumBaseSection
     public static $imagePath = 'cv_collaboration';
 
     /**
-     * @var string[] Rutas de acción para el dashboard sobre este modelo.
-     */
-    public static $routesDashboard = [
-        'edit' => 'dashboard.cv.collaboration.edit',
-        'delete' => 'dashboard.cv.collaboration.destroy',
-        'destroy' => 'dashboard.cv.collaboration.destroy',
-        'store' => 'dashboard.cv.collaboration.store',
-        'update' => 'dashboard.cv.collaboration.update',
-        'index' => 'dashboard.cv.collaboration.index',
-    ];
-
-    /**
-     * Vistas para este modelo.
-     *
-     * @var string[]
-     */
-    public static $viewsDashboard = [
-        'index' => 'dashboard.curriculums.collaboration.index',
-    ];
-
-    /**
      * @var string Nombre de la tabla usada por el modelo.
      */
     protected $table = 'cv_collaborations';

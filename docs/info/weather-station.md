@@ -9,7 +9,7 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 ### Modelos
 | Archivo | Tabla | Descripción |
 |---------|-------|-------------|
-| `app/Models/WeatherStation/BaseWheaterStation.php` | — | Modelo base abstracto para todos los sensores |
+| `app/Models/WeatherStation/BaseWeatherStation.php` | — | Modelo base abstracto para todos los sensores |
 | `app/Models/WeatherStation/Temperature.php` | `meteorology_temperature` | Datos de temperatura |
 | `app/Models/WeatherStation/Humidity.php` | `meteorology_humidity` | Datos de humedad |
 | `app/Models/WeatherStation/Pressure.php` | `meteorology_pressure` | Datos de presión atmosférica |
@@ -81,7 +81,7 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 | `app/Policies/WeatherStationPolicy.php` | Política de autorización |
 | `config/aemet.php` | Configuración de API AEMET (apikey, códigos municipio) |
 
-## Campos del modelo base (BaseWheaterStation)
+## Campos del modelo base (BaseWeatherStation)
 
 Todos los sensores heredan estos campos:
 
@@ -103,9 +103,9 @@ Todos los sensores heredan estos campos:
 
 ## Relaciones
 
-- `BaseWheaterStation` → `BelongsTo` → `HardwareDevice` (vía `hardware_device_id`)
+- `BaseWeatherStation` → `BelongsTo` → `HardwareDevice` (vía `hardware_device_id`)
 
-## Métodos clave (BaseWheaterStation)
+## Métodos clave (BaseWeatherStation)
 
 | Método | Descripción |
 |--------|-------------|
@@ -176,5 +176,5 @@ Todos extienden `BaseModel`, usan `public $timestamps = false` (solo `created_at
 y tienen relaciones `user()` y `hardwareDevice()`.
 
 > **Nota fix_11:** todos los modelos de sensores tienen ahora `user_id` en su
-> `$fillable` (añadido en `BaseWheaterStation` y en los modelos que sobrescriben
+> `$fillable` (añadido en `BaseWeatherStation` y en los modelos que sobrescriben
 > `$fillable`).
