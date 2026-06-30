@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Auth\V2;
 
 use App\Http\Controllers\Api\V2\BaseApiController;
-use App\Http\Requests\Api\Auth\LoginRequest;
+use App\Http\Requests\Api\Auth\V2\LoginRequest;
 use App\Http\Resources\V2\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;

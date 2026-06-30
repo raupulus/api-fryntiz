@@ -117,6 +117,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/v1/*') || $request->is('api/*/v1/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La API V1 esta obsoleta y ha sido eliminada. Por favor, actualice sus clientes a la API V2.',
+                ], 410);
+            }
             if ($request->is('api/v2/*')) {
                 return response()->json([
                     'success' => false,

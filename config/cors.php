@@ -9,23 +9,15 @@ return [
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
     |
-    | Configurado para api-fryntiz tras fix_10 / fase 02: el endpoint público
-    | /api/airflight/v1/get/aircrafts/json debe responder con cabeceras CORS
-    | válidas al ser invocado desde el navegador en /airflight.
+    | Configurado para api-fryntiz: los endpoints públicos de la API V2
+    | (p. ej. /api/v2/airflight/aircrafts, invocado desde el navegador en
+    | /airflight) deben responder con cabeceras CORS válidas. `api/*` cubre
+    | toda la API V2, por lo que no hacen falta entradas por módulo/versión.
     |
     */
 
     'paths' => [
         'api/*',
-        'api/v1/*',
-        'api/v2/*',
-        'api/airflight/v1/*',
-        'api/airflight/v2/*',
-        'api/hardware/v1/*',
-        'api/keycounter/v1/*',
-        'api/smartplant/v1/*',
-        'api/weatherstation/v1/*',
-        'api/cv/v1/*',
         'sanctum/csrf-cookie',
         'login', 'logout',
     ],

@@ -23,7 +23,7 @@ class PlatformService
     public function getAll(): Collection
     {
         return Cache::remember('platforms.all', 3600, function () {
-            return Platform::with(['tags', 'categories'])->get();
+            return Platform::with(['tags', 'categories', 'image'])->get();
         });
     }
 
@@ -35,7 +35,7 @@ class PlatformService
      */
     public function getBySlug(string $slug): ?Platform
     {
-        return Platform::with(['tags', 'categories'])
+        return Platform::with(['tags', 'categories', 'image'])
             ->where('slug', $slug)
             ->first();
     }

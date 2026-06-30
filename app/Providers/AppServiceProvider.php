@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -63,11 +62,10 @@ class AppServiceProvider extends ServiceProvider
         // Usar modelo ApiToken personalizado para Filament Resource (fix_10 / fase 13).
         Sanctum::usePersonalAccessTokenModel(ApiToken::class);
 
-        // Registrar lazy loading como advertencia en desarrollo (sin lanzar excepción)
-        // TODO: Corregir queries N+1 y activar preventLazyLoading estricto
-        Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation) {
-            Log::warning("Lazy loading [{$relation}] on model [".get_class($model).']');
-        });
+        // Lazy loading estricto fuera de producción: lanza excepción al detectar
+        // una relación cargada bajo demanda (N+1) para corregirla con eager loading.
+        // En producción NUNCA lanza (no afecta a usuarios finales).
+        Model::preventLazyLoading(! app()->isProduction());
 
         // Gate global: superadmin tiene acceso a todo
         Gate::before(function ($user, $ability) {
