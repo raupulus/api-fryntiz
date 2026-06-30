@@ -48,7 +48,7 @@ class MouseResource extends Resource
                     Select::make('user_id')
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
-                        ->relationship('device', 'name_friendly')->searchable()->preload()->label('Dispositivo'),
+                        ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Dispositivo'),
                 ]),
                 Section::make('Racha')->columns(2)->schema([
                     DateTimePicker::make('start_at')
@@ -136,7 +136,7 @@ class MouseResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('hardware_device_id')
-                    ->relationship('device', 'name_friendly')->label('Dispositivo'),
+                    ->relationship('hardwareDevice', 'name_friendly')->label('Dispositivo'),
                 SelectFilter::make('user_id')
                     ->relationship('user', 'name')->label('Usuario'),
                 SelectFilter::make('weekday')->options([

@@ -23,18 +23,51 @@ use Illuminate\Support\Collection;
 class WeatherStationService
 {
     /**
-     * Obtiene un resumen consolidado con el último registro de los principales sensores climatológicos.
+     * Obtiene un resumen consolidado y aplanado con la última lectura de los
+     * principales sensores climatológicos, en el formato que consume el widget
+     * frontend (ChipionaWeatherComponent).
      *
-     * @return array Arreglo asociativo con la última lectura de cada sensor clave.
+     * @return array Estructura plana con los valores escalares de cada sensor.
      */
     public function getResume(): array
     {
+        $temperature = Temperature::latestRecord()->first();
+        $humidity = Humidity::latestRecord()->first();
+        $pressure = Pressure::latestRecord()->first();
+        $light = Light::latestRecord()->first();
+        $airQuality = AirQuality::latestRecord()->first();
+        $tvoc = Tvoc::latestRecord()->first();
+        $eco2 = Eco2::latestRecord()->first();
+        $wind = Wind::latestRecord()->first();
+        $windDirection = WindDirection::latestRecord()->first();
+        $lastLightning = Lightning::latestRecord()->first();
+
+        $now = now();
+        $hour = (int) $now->format('H');
+
         return [
-            'temperature' => Temperature::latestRecord()->first(),
-            'humidity' => Humidity::latestRecord()->first(),
-            'pressure' => Pressure::latestRecord()->first(),
-            'light' => Light::latestRecord()->first(),
-            'air_quality' => AirQuality::latestRecord()->first(),
+            'instant' => [
+                'day_name' => $now->locale('es')->dayName,
+                'date_human_format' => $now->locale('es')->isoFormat('D [de] MMMM [de] YYYY'),
+                'time' => $now->format('H:i'),
+                'day_status' => ($hour >= 7 && $hour < 21) ? 'Día' : 'Noche',
+            ],
+            'temperature' => $temperature?->value,
+            'humidity' => $humidity?->value,
+            'pressure' => $pressure?->value,
+            'wind_direction' => $windDirection?->direction,
+            'wind_average' => $wind?->average,
+            'wind_min' => $wind?->min,
+            'wind_max' => $wind?->max,
+            'light' => $light?->lux,
+            'uv_index' => $light?->index,
+            'uva' => $light?->uva,
+            'uvb' => $light?->uvb,
+            'air_quality' => $airQuality?->air_quality,
+            'tvoc' => $tvoc?->value,
+            'eco2' => $eco2?->value,
+            'last_lightning_at' => $lastLightning?->created_at,
+            'lightningQuantityLastTenMinutes' => Lightning::where('created_at', '>=', now()->subMinutes(10))->count(),
         ];
     }
 
@@ -42,10 +75,10 @@ class WeatherStationService
      * Obtiene los datos históricos de un tipo de sensor específico en un rango de fechas.
      * Si no se proveen fechas, se devuelven los registros de los últimos 7 días.
      *
-     * @param string $sensorType Nombre identificador del tipo de sensor (ej: 'temperature', 'humidity').
-     * @param string|null $from Fecha inicial en formato compatible.
-     * @param string|null $to Fecha final en formato compatible.
-     * @return \Illuminate\Support\Collection Colección con los datos solicitados.
+     * @param  string  $sensorType  Nombre identificador del tipo de sensor (ej: 'temperature', 'humidity').
+     * @param  string|null  $from  Fecha inicial en formato compatible.
+     * @param  string|null  $to  Fecha final en formato compatible.
+     * @return Collection Colección con los datos solicitados.
      */
     public function getPreparedData(string $sensorType, ?string $from = null, ?string $to = null): Collection
     {
@@ -62,11 +95,11 @@ class WeatherStationService
     }
 
     /**
-     * Almacena masivamente datos genéricos enviados por la estación física, 
+     * Almacena masivamente datos genéricos enviados por la estación física,
      * resolviendo el modelo correspondiente en función de la clave del array enviado.
      *
-     * @param array $data Datos estructurados por tipo de sensor.
-     * @param int $hardwareDeviceId Identificador del dispositivo de hardware que envía la data.
+     * @param  array  $data  Datos estructurados por tipo de sensor.
+     * @param  int  $hardwareDeviceId  Identificador del dispositivo de hardware que envía la data.
      * @return array Colección con todos los modelos Eloquent almacenados en la base de datos.
      */
     public function storeGenericData(array $data, int $hardwareDeviceId): array
@@ -88,7 +121,7 @@ class WeatherStationService
     /**
      * Resuelve y devuelve la clase de modelo Eloquent apropiada según el tipo de sensor.
      *
-     * @param string $type Nombre en cadena de texto del sensor.
+     * @param  string  $type  Nombre en cadena de texto del sensor.
      * @return string|null Namespace de la clase del modelo correspondiente, o null si no existe.
      */
     private function resolveSensorModel(string $type): ?string

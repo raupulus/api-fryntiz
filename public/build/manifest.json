@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CFYJRRQE.css",
+    "file": "assets/app-htOk7UnY.css",
     "name": "app",
     "names": [
       "app.css"
@@ -24,12 +24,12 @@
     "isEntry": true
   },
   "resources/js/vue.js": {
-    "file": "assets/vue-DkLrM6va.js",
+    "file": "assets/vue--PWvd9K6.js",
     "name": "vue",
     "src": "resources/js/vue.js",
     "isEntry": true,
     "css": [
-      "assets/vue-CfnC02Mj.css"
+      "assets/vue-DlhbZV9H.css"
     ],
     "assets": [
       "assets/chipiona-BKWz67is.webp"

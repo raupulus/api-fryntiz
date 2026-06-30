@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -43,7 +43,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class SocialNetwork extends Model
+class SocialNetwork extends BaseModel
 {
     // use ImageTrait;
 

@@ -44,7 +44,6 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 | `app/Http/Controllers/Api/WeatherStation/V2/HumidityController.php` | API V2 | CRUD humedad |
 | `app/Http/Controllers/Api/WeatherStation/V2/PressureController.php` | API V2 | CRUD presión |
 | `app/Http/Controllers/WeatherStation/WeatherStationController.php` | Web | Frontend público |
-| `app/Http/Controllers/Api/WeatherStation/*.php` | API V1 | Controladores V1 legacy (12 archivos) |
 
 ### Servicios
 | Archivo | Descripción |
@@ -142,9 +141,10 @@ Todos los sensores heredan estos campos:
 
 - **Archivo:** `resources/js/vue/Components/ChipionaWeatherComponent.vue`
 - **Montaje:** `resources/js/vue.js` (carga con `@vite('resources/js/vue.js')`)
-- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default `api/weatherstation/v1/resume`)
-- **Actualización:** Cada 65 segundos vía `fetch()` desde API V1
+- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default `api/v2/weatherstation/resume`)
+- **Actualización:** Cada 65 segundos vía `fetch()` desde API V2 (`api/v2/weatherstation/resume`)
 - **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
+- **Contrato:** `GET resume` V2 devuelve `{success, message, data}` con un objeto **plano** (`temperature`, `humidity`, `pressure`, `wind_*`, `light`, `uv_index`, `uva`, `uvb`, `air_quality`, `tvoc`, `eco2`, `instant`, `last_lightning_at`, `lightningQuantityLastTenMinutes`). El componente desenvuelve `json.data` y mapea esos campos. Alineado en fix_2 (`WeatherStationService::getResume`).
 
 ### Iconos Material Symbols por sensor
 

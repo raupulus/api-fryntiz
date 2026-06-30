@@ -16,8 +16,8 @@ class KeyCounterService
     /**
      * Almacena el número de pulsaciones del teclado y purga la caché relacionada.
      *
-     * @param array $data Datos de pulsaciones de teclado recibidas por el cliente.
-     * @return \App\Models\KeyCounter\Keyboard Modelo Keyboard guardado en base de datos.
+     * @param  array  $data  Datos de pulsaciones de teclado recibidas por el cliente.
+     * @return Keyboard Modelo Keyboard guardado en base de datos.
      */
     public function storeKeyboard(array $data): Keyboard
     {
@@ -33,8 +33,8 @@ class KeyCounterService
     /**
      * Almacena las estadísticas de uso del ratón y purga la caché asociada.
      *
-     * @param array $data Datos de movimiento, clicks, y scroll del ratón.
-     * @return \App\Models\KeyCounter\Mouse Modelo Mouse guardado en base de datos.
+     * @param  array  $data  Datos de movimiento, clicks, y scroll del ratón.
+     * @return Mouse Modelo Mouse guardado en base de datos.
      */
     public function storeMouse(array $data): Mouse
     {
@@ -50,8 +50,8 @@ class KeyCounterService
     /**
      * Calcula las estadísticas agregadas de teclado de un usuario en los últimos días.
      *
-     * @param int $userId ID del usuario.
-     * @param int $days Margen de días a contemplar (por defecto 30).
+     * @param  int  $userId  ID del usuario.
+     * @param  int  $days  Margen de días a contemplar (por defecto 30).
      * @return array Estadísticas que incluyen el total, promedio diario y número de registros.
      */
     public function getUserKeyboardStats(int $userId, int $days = 30): array

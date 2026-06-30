@@ -17,9 +17,9 @@ class NewsletterService
     /**
      * Inscribe un nuevo email en la newsletter y emite un correo de verificación.
      *
-     * @param string $email Dirección de correo electrónico.
-     * @param string|null $name Nombre opcional del suscriptor.
-     * @return \App\Models\Newsletter Modelo de la suscripción generada.
+     * @param  string  $email  Dirección de correo electrónico.
+     * @param  string|null  $name  Nombre opcional del suscriptor.
+     * @return Newsletter Modelo de la suscripción generada.
      */
     public function subscribe(string $email, ?string $name = null): Newsletter
     {
@@ -57,7 +57,7 @@ class NewsletterService
     /**
      * Valida y activa una suscripción usando un token de verificación.
      *
-     * @param string $token Token criptográfico único.
+     * @param  string  $token  Token criptográfico único.
      * @return bool True si se verificó con éxito, False en caso contrario.
      */
     public function verify(string $token): bool
@@ -73,7 +73,7 @@ class NewsletterService
     /**
      * Da de baja y cancela la suscripción en base a su token de cancelación.
      *
-     * @param string $token Token criptográfico de desuscripción.
+     * @param  string  $token  Token criptográfico de desuscripción.
      * @return bool True si se canceló correctamente, False de lo contrario.
      */
     public function unsubscribe(string $token): bool

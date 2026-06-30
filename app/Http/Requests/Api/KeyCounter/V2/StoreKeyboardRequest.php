@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\KeyCounter\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\OwnedHardwareDevice;
 use Carbon\Carbon;
 
 /**
  * Validación para almacenar registro de teclado en API V2.
- * Reglas equivalentes a V1 StoreKeyboardRequest.
  */
 class StoreKeyboardRequest extends BaseFormRequest
 {
@@ -39,7 +39,7 @@ class StoreKeyboardRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id'],
+            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'user_id' => ['required', 'integer', 'exists:users,id'],
             'start_at' => ['required', 'date_format:Y-m-d H:i:s'],
             'end_at' => ['required', 'date_format:Y-m-d H:i:s'],

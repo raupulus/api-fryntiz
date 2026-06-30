@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation\AEMET;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AEMET newModelQuery()
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class AEMET extends Model
+class AEMET extends BaseModel
 {
     use HasFactory;
 

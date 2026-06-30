@@ -6,6 +6,7 @@ namespace App\Models\SmartPlant;
 
 use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
+use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -26,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property bool $waterpump_enabled Indica si se ha activado la bomba de agua
  * @property bool $vaporizer_enabled Indica si se ha activado el vaporizador
  * @property Carbon|null $created_at
- * @property-read HardwareDevice|null $device
+ * @property-read HardwareDevice|null $hardwareDevice
  * @property-read SmartPlantPlant $plant
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister newModelQuery()
@@ -50,6 +51,8 @@ use Illuminate\Support\Carbon;
  */
 class SmartPlantRegister extends BaseModel
 {
+    use BelongsToHardwareDevice;
+
     protected $table = 'smartplant_registers';
 
     protected $fillable = [
@@ -74,10 +77,5 @@ class SmartPlantRegister extends BaseModel
     public function plant(): BelongsTo
     {
         return $this->belongsTo(SmartPlantPlant::class, 'plant_id');
-    }
-
-    public function device(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id');
     }
 }

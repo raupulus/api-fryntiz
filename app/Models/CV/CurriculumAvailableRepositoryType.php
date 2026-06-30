@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\CV;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
@@ -42,7 +42,7 @@ use function is_array;
  *
  * @mixin \Eloquent
  */
-class CurriculumAvailableRepositoryType extends Model
+class CurriculumAvailableRepositoryType extends BaseModel
 {
     protected $table = 'cv_available_repository_types';
 
@@ -85,10 +85,8 @@ class CurriculumAvailableRepositoryType extends Model
 
     /**
      * Elimina de forma segura un tipo de repositorio y los datos asociados.
-     *
-     * @return bool
      */
-    public function safeDelete()
+    public function safeDelete(): bool
     {
         // # Elimino la imagen asociada al tipo de repositorio y todas las miniaturas.
         if ($this->image) {

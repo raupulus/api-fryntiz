@@ -21,7 +21,7 @@
     <section class="py-8 bg-surface-container-low flex justify-center">
         <div id="app-weather-chipiona"
              data-api-base-url="{{ url('/') }}"
-             data-api-path="api/weatherstation/v1/resume"
+             data-api-path="api/v2/weatherstation/resume"
              class="w-full max-w-lg">
             <p class="text-on-surface-variant text-center py-8">Cargando datos del clima...</p>
         </div>

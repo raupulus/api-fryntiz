@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models\Hardware;
 
+use App\Models\BaseModels\BaseModel;
+use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -21,8 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read HardwareDevice|null $device
- * @property-read HardwareDevice|null $hardware
+ * @property-read HardwareDevice|null $hardwareDevice
  * @property-read HardwareDevice|null $monitorized
  * @property-read Collection<int, HardwarePowerGenerator> $powerGenerators
  * @property-read int|null $power_generators_count
@@ -43,19 +43,13 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class HardwareEnergy extends Model
+class HardwareEnergy extends BaseModel
 {
+    use BelongsToHardwareDevice;
+
     protected $table = 'hardware_energy';
 
     protected $fillable = ['hardware_device_id', 'hardware_device_monitorized_id', 'is_generator', 'sensor_position'];
-
-    /**
-     * Relación con el dispositivo que monitoriza la energía.
-     */
-    public function hardware(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
-    }
 
     /**
      * Dispositivo monitorizado.
@@ -63,14 +57,6 @@ class HardwareEnergy extends Model
     public function monitorized(): BelongsTo
     {
         return $this->belongsTo(HardwareDevice::class, 'hardware_device_monitorized_id', 'id');
-    }
-
-    /**
-     * Alias para Filament Resources.
-     */
-    public function device(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
     }
 
     /**

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Mcp\Tools;
 
 use Illuminate\Support\Facades\Schema;
-use Laravel\Mcp\Tools\Tool;
+use Laravel\Mcp\Server\Tool;
 
 class InspectDatabaseSchemaTool extends Tool
 {

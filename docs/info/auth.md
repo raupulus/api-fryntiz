@@ -47,9 +47,6 @@ php artisan filament:upgrade
 | `app/Http/Controllers/Api/Auth/V2/LoginController.php` | API V2 | login, logout |
 | `app/Http/Controllers/Api/Auth/V2/RegisterController.php` | API V2 | signup, delete-account |
 | `app/Http/Controllers/Api/User/V2/UserController.php` | API V2 | index, show, update, destroy |
-| `app/Http/Controllers/Api/Auth/V1/LoginController.php` | API V1 | Login V1 legacy |
-| `app/Http/Controllers/Api/Auth/V1/RegisterController.php` | API V1 | Register V1 legacy |
-| `app/Http/Controllers/Api/User/V1/UserController.php` | API V1 | Users V1 legacy |
 | `app/Http/Controllers/Auth/*.php` | Web | Fortify (6 controladores) |
 | `app/Http/Controllers/Dashboard/Users/UserController.php` | Dashboard | Admin legacy |
 

@@ -19,9 +19,9 @@ class ContentService
      * Obtiene un contenido publicado específico en base a su slug y al slug de la plataforma a la que pertenece.
      * Carga de manera ansiosa relaciones clave como páginas, SEO, metadatos y tecnologías.
      *
-     * @param string $platformSlug Slug de la plataforma origen.
-     * @param string $contentSlug Slug único del contenido a buscar.
-     * @return \App\Models\Content\Content|null Modelo de contenido o null si no se encuentra/no está publicado.
+     * @param  string  $platformSlug  Slug de la plataforma origen.
+     * @param  string  $contentSlug  Slug único del contenido a buscar.
+     * @return Content|null Modelo de contenido o null si no se encuentra/no está publicado.
      */
     public function getBySlug(string $platformSlug, string $contentSlug): ?Content
     {
@@ -35,9 +35,9 @@ class ContentService
     /**
      * Obtiene los contenidos destacados para una plataforma determinada.
      *
-     * @param \App\Models\Platform $platform Plataforma de la cual buscar destacados.
-     * @param int $limit Cantidad máxima de registros a devolver (por defecto 10).
-     * @return \Illuminate\Database\Eloquent\Collection Colección de contenidos destacados.
+     * @param  Platform  $platform  Plataforma de la cual buscar destacados.
+     * @param  int  $limit  Cantidad máxima de registros a devolver (por defecto 10).
+     * @return Collection Colección de contenidos destacados.
      */
     public function getFeaturedForPlatform(Platform $platform, int $limit = 10): Collection
     {
@@ -53,10 +53,10 @@ class ContentService
     /**
      * Obtiene de forma paginada los contenidos publicados de una plataforma, filtrados por un tipo específico.
      *
-     * @param \App\Models\Platform $platform Plataforma origen de los contenidos.
-     * @param int $typeId Identificador del tipo de contenido (ej: artículo, proyecto, tutorial).
-     * @param int $perPage Cantidad de resultados por página (por defecto 15).
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator Paginador con los resultados.
+     * @param  Platform  $platform  Plataforma origen de los contenidos.
+     * @param  int  $typeId  Identificador del tipo de contenido (ej: artículo, proyecto, tutorial).
+     * @param  int  $perPage  Cantidad de resultados por página (por defecto 15).
+     * @return LengthAwarePaginator Paginador con los resultados.
      */
     public function getByTypeForPlatform(Platform $platform, int $typeId, int $perPage = 15): LengthAwarePaginator
     {
@@ -71,9 +71,9 @@ class ContentService
     /**
      * Obtiene contenidos relacionados (de la misma plataforma y tipo) excluyendo el contenido actual.
      *
-     * @param \App\Models\Content\Content $content Contenido base para buscar relacionados.
-     * @param int $limit Límite de contenidos sugeridos (por defecto 5).
-     * @return \Illuminate\Database\Eloquent\Collection Colección de contenidos relacionados.
+     * @param  Content  $content  Contenido base para buscar relacionados.
+     * @param  int  $limit  Límite de contenidos sugeridos (por defecto 5).
+     * @return Collection Colección de contenidos relacionados.
      */
     public function getRelated(Content $content, int $limit = 5): Collection
     {

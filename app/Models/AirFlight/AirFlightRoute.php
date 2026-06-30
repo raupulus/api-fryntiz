@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\AirFlight;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -61,8 +62,10 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class AirFlightRoute extends Model
+class AirFlightRoute extends BaseModel
 {
+    use BelongsToHardwareDevice;
+
     protected $table = 'airflight_routes';
 
     public const HISTORY_LENGTH = 30;
@@ -93,10 +96,5 @@ class AirFlightRoute extends Model
     public function airplane(): BelongsTo
     {
         return $this->belongsTo(AirFlightAirPlane::class, 'airplane_id', 'id');
-    }
-
-    public function hardwareDevice(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
     }
 }

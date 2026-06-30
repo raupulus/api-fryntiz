@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands\IoT;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Services\Hardware\DeviceTokenService;
 use Illuminate\Console\Command;
+use Throwable;
 
 /**
  * Emite un token Sanctum para un dispositivo IoT concreto, con abilities
@@ -25,7 +27,7 @@ class IssueDeviceTokenCommand extends Command
 
     protected $description = 'Emite un token Sanctum por dispositivo IoT con abilities limitadas';
 
-    public function handle(): int
+    public function handle(DeviceTokenService $service): int
     {
         $device = HardwareDevice::find($this->argument('device'));
 
@@ -35,30 +37,22 @@ class IssueDeviceTokenCommand extends Command
             return self::FAILURE;
         }
 
-        $user = $device->user;
-
-        if (! $user) {
-            $this->error('El dispositivo no tiene usuario propietario asociado.');
-
-            return self::FAILURE;
-        }
-
         $abilities = $this->option('abilities');
-
-        if (empty($abilities)) {
-            $this->error('Debe indicar al menos una ability con --abilities (ej. weatherstation:write).');
-
-            return self::FAILURE;
-        }
 
         $expiresAt = $this->option('expires')
             ? now()->addDays((int) $this->option('expires'))
             : null;
 
-        $token = $user->createToken("device:{$device->id}", $abilities, $expiresAt);
+        try {
+            $token = $service->issue($device, $abilities, $expiresAt);
+        } catch (Throwable $e) {
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
 
         $this->info('Token emitido correctamente para el dispositivo #'.$device->id);
-        $this->line('Abilities: '.implode(', ', $abilities));
+        $this->line('Abilities: '.implode(', ', $token->accessToken->abilities ?? $abilities));
         $this->line('Expira: '.($expiresAt ? $expiresAt->toDateTimeString() : 'nunca'));
         $this->newLine();
         $this->warn('Guarda este token ahora (no se volverá a mostrar):');

@@ -1,0 +1,3811 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily12Command\) and ''error'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETDaily12Command.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily12Command\) and ''warn'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Console/Commands/AEMET/AEMETDaily12Command.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\AEMET\\AEMETDaily12Command\:\:handle\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETDaily12Command.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily20Command\) and ''error'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETDaily20Command.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily20Command\) and ''warn'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Console/Commands/AEMET/AEMETDaily20Command.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily8Command\) and ''error'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETDaily8Command.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily8Command\) and ''warn'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Console/Commands/AEMET/AEMETDaily8Command.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\AEMET\\AEMETDaily8Command\:\:handle\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETDaily8Command.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\AEMET\\AEMETDailyCommand\:\:handle\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETDailyCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery10mCommand\) and ''error'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETEvery10mCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery10mCommand\) and ''warn'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Console/Commands/AEMET/AEMETEvery10mCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery30mCommand\) and ''error'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETEvery30mCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery30mCommand\) and ''warn'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Console/Commands/AEMET/AEMETEvery30mCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery4hCommand\) and ''error'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/AEMET/AEMETEvery4hCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery4hCommand\) and ''warn'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Console/Commands/AEMET/AEMETEvery4hCommand.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\AEMETCommand\:\:handle\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Console/Commands/AEMETCommand.php
+
+		-
+			message: '#^Anonymous function has an unused use \$ids\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: app/Console/Commands/Content/PublishContentCommand.php
+
+		-
+			message: '#^Property App\\Models\\Content\\Content\:\:\$published_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Console/Commands/Content/PublishContentCommand.php
+
+		-
+			message: '#^Property App\\Models\\KeyCounter\\Keyboard\:\:\$duration \(int\) does not accept float\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Console/Commands/KeyCounterGenerateDuration.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/Mcp/InspectorCommand.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Admin/Pages/AirFlightMap.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\AirFlight\\AirFlightRoute\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Filament/Admin/Pages/AirFlightMap.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\AirFlight\\AirFlightAirPlane\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Pages/AirFlightMap.php
+
+		-
+			message: '#^Access to an undefined property App\\Filament\\Admin\\Pages\\Profile\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Admin/Pages/Profile.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>send_email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Pages/Profile.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>send_notification" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Pages/Profile.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>send_notification_push" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Pages/Profile.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Admin/Resources/Hardware/HardwareDevices/RelationManagers/TokensRelationManager.php
+
+		-
+			message: '#^Cannot access property \$email on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Admin/Resources/UserResource/Pages/EditUser.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>humidity" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>o3" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>radiation_global" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>rain_prob" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>temperature" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>wind_speed" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Filament/Admin/Widgets/Keyboard30DaysWidget.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Filament/Admin/Widgets/Mouse30DaysWidget.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parent\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Helpers/ContentHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parentCategory\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Helpers/ContentHelper.php
+
+		-
+			message: '#^Method App\\Helpers\\ContentHelper\:\:contentFeaturedPrepare\(\) should return App\\Models\\Content\\Content but returns object\{title\: string, slug\: string, excerpt\: string\|null, has_image\: bool, urlImageSmall\: string, urlImageMedium\: string, published_at\: Illuminate\\Support\\Carbon\|null, updated_at\: Illuminate\\Support\\Carbon\|null, categories\: Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>, subcategories\: Illuminate\\Support\\Collection\<int, mixed\>\}&stdClass\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Helpers/ContentHelper.php
+
+		-
+			message: '#^Static method App\\Helpers\\GoogleRecaptchaHelper\:\:getGoogleRecaptchaKey\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Helpers/GoogleRecaptchaHelper.php
+
+		-
+			message: '#^Static method App\\Helpers\\GoogleRecaptchaHelper\:\:validateAction\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Helpers/GoogleRecaptchaHelper.php
+
+		-
+			message: '#^Static method App\\Helpers\\GoogleRecaptchaHelper\:\:validateHostName\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Helpers/GoogleRecaptchaHelper.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\CategoryController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/CategoryController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Dashboard/Content/ContentController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image_alt\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Dashboard/Content/ContentController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Dashboard/Content/ContentController.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/Dashboard/Content/ContentController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Http/Controllers/Dashboard/Content/ContentController.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Controllers/Dashboard/Content/ContentPageController.php
+
+		-
+			message: '#^Offset 2 on array\{list\<string\>, list\<string\>, list\<string\>, list\<string\>\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Http/Controllers/Dashboard/Content/ContentPageController.php
+
+		-
+			message: '#^Parameter \#3 \$value of function curl_setopt expects bool, int given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/Dashboard/Content/ContentPageController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$request with type App\\Http\\Requests\\Cv\\StoreCvServiceRequest is incompatible with native type App\\Http\\Requests\\Cv\\StoreCvAcademicComplementaryRequest\.$#'
+			identifier: parameter.phpDocType
+			count: 2
+			path: app/Http/Controllers/Dashboard/Cv/CurriculumAcademicComplementaryController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$request with type App\\Http\\Requests\\Cv\\StoreCvServiceRequest is incompatible with native type App\\Http\\Requests\\Cv\\StoreCvAcademicComplementaryOnlineRequest\.$#'
+			identifier: parameter.phpDocType
+			count: 2
+			path: app/Http/Controllers/Dashboard/Cv/CurriculumAcademicComplementaryOnlineController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Cv\\CurriculumBaseSectionController\:\:destroy\(\) with return type void returns Illuminate\\Http\\RedirectResponse but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: app/Http/Controllers/Dashboard/Cv/CurriculumBaseSectionController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Cv\\CurriculumBaseSectionController\:\:destroy\(\) with return type void returns never but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: app/Http/Controllers/Dashboard/Cv/CurriculumBaseSectionController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:index\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$hardwareAvailableComponent with type App\\Models\\Hardware\\HardwareAvailableComponent is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareAvailableComponentController\.$#'
+			identifier: parameter.phpDocType
+			count: 4
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareAvailableComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:index\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$hardwareComponent with type App\\Models\\Hardware\\HardwareComponent is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareComponentController\.$#'
+			identifier: parameter.phpDocType
+			count: 4
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareComponentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareDeviceController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareDeviceController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$hardwareDevice with type App\\Models\\Hardware\\HardwareDevice is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareDeviceController\.$#'
+			identifier: parameter.phpDocType
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareDeviceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:index\(\) should return Illuminate\\Http\\Response but returns Illuminate\\View\\View\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$hardwareType with type App\\Models\\Hardware\\HardwareType is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareEnergyController\.$#'
+			identifier: parameter.phpDocType
+			count: 4
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareEnergyController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:create\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:destroy\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:edit\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:index\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:store\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\:\:update\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$hardwareType with type App\\Models\\Hardware\\HardwareType is incompatible with native type App\\Http\\Controllers\\Dashboard\\Hardware\\HardwareTypeController\.$#'
+			identifier: parameter.phpDocType
+			count: 4
+			path: app/Http/Controllers/Dashboard/Hardware/HardwareTypeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\TagController\:\:destroy\(\) should return Illuminate\\Http\\RedirectResponse but returns Illuminate\\Http\\JsonResponse\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Dashboard/TagController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\TagController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/TagController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Dashboard\\TechnologyController\:\:show\(\) should return Illuminate\\Http\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/Dashboard/TechnologyController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\File\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/FileController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FileController\:\:delete\(\) with return type void returns Illuminate\\Http\\RedirectResponse but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: app/Http/Controllers/FileController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FileController\:\:download\(\) should return Symfony\\Component\\HttpFoundation\\BinaryFileResponse but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Http/Controllers/FileController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\FileThumbnail\:\:\$is_private\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/FileThumbnailController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\FileThumbnail\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/FileThumbnailController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\KeyCounter\\Keyboard\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\KeyCounter\\Keyboard\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
+
+		-
+			message: '#^Parameter \#3 \$callback of static method Illuminate\\Cache\\Repository\:\:remember\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name_friendly" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
+
+		-
+			message: '#^Static method App\\Models\\Language\:\:getTableHeads\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Http/Controllers/LanguageController.php
+
+		-
+			message: '#^Caught class App\\Http\\Controllers\\WebHooks\\Exception not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/WebHooks/GitlabWebhookController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Middleware/DomainCheckMiddleware.php
+
+		-
+			message: '#^Comparison operation "\>" between 0 and 10 is always false\.$#'
+			identifier: greater.alwaysFalse
+			count: 1
+			path: app/Http/Middleware/IpCounterStrict.php
+
+		-
+			message: '#^Comparison operation "\>" between 0 and 5 is always false\.$#'
+			identifier: greater.alwaysFalse
+			count: 1
+			path: app/Http/Middleware/IpCounterStrict.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: app/Http/Middleware/IpCounterStrict.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-list\<string\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Requests/Api/NewsletterSubscribeRequest.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Http/Requests/Api/NewsletterSubscribeRequest.php
+
+		-
+			message: '#^Result of \|\| is always false\.$#'
+			identifier: booleanOr.alwaysFalse
+			count: 2
+			path: app/Http/Requests/Api/NewsletterSubscribeRequest.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Requests/Api/User/V2/UpdateUserRequest.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Http/Requests/Dashboard/Category/CategoryUpdateRequest.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Http/Requests/Dashboard/Content/ContentStoreRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Platform\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Platform\>\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Requests/Dashboard/Platform/PlatformUpdateRequest.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Http/Requests/Dashboard/Platform/PlatformUpdateRequest.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Http/Requests/Dashboard/Tag/TagUpdateRequest.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Http/Requests/Dashboard/Technology/TechnologyUpdateRequest.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-list\<string\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Requests/EmailContactSendRequest.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: app/Http/Requests/EmailContactSendRequest.php
+
+		-
+			message: '#^Result of \|\| is always false\.$#'
+			identifier: booleanOr.alwaysFalse
+			count: 2
+			path: app/Http/Requests/EmailContactSendRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$altitude\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$flight\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$icao\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$lat\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$lon\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$messages\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$seen\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$seen_pos\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$speed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$squawk\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$track\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$excerpt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$image_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$urlImageMedium\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:\$urlImageSmall\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:categoriesQuery\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\V2\\Content\\ContentFeaturedResource\:\:subcategoriesQuery\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$body\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$content_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$raw_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$excerpt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentRelatedResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentRelatedResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$excerpt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$is_featured\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$platform\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$seo_description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$seo_title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/V2/Content/ContentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$cpu_avg\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$intensity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$brand\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$hardware_version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$model\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$name_friendly\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$serial_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$software_version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\HardwareDeviceResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/HardwareDeviceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$battery_percentage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$battery_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$energy_amperage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$energy_power\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$energy_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$load_amperage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$load_power\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$load_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$read_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$temperature\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$duration\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$end_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$pulsation_average\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$pulsations\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$pulsations_special_keys\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$score\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$start_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\KeyboardResource\:\:\$weekday\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/KeyboardResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$clicks_average\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$clicks_left\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$clicks_middle\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$clicks_right\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$duration\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$end_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$score\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$start_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$total_clicks\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\KeyCounter\\MouseResource\:\:\$weekday\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/KeyCounter/MouseResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$domain\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/PlatformResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$full_water_tank\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$humidity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$plant_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$pressure\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$soil_humidity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$soil_humidity_raw\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$temperature\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$uv\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$vaporizer_enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$waterpump_enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$nickname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\UserResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\AirQualityResource\:\:\$air_quality\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/AirQualityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\AirQualityResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/AirQualityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\AirQualityResource\:\:\$gas_resistance\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/AirQualityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\AirQualityResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/AirQualityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\AirQualityResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/AirQualityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\Eco2Resource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/Eco2Resource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\Eco2Resource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/Eco2Resource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\Eco2Resource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/Eco2Resource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\Eco2Resource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/Eco2Resource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\HumidityResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/HumidityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\HumidityResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/HumidityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\HumidityResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/HumidityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\HumidityResource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/HumidityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$index\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$lumens\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$lux\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$uva\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightResource\:\:\$uvb\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightningResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightningResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightningResource\:\:\$distance\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightningResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightningResource\:\:\$energy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightningResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightningResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightningResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightningResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightningResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\LightningResource\:\:\$noise_floor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/LightningResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\PressureResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/PressureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\PressureResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/PressureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\PressureResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/PressureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\PressureResource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/PressureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$moisture\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$rain\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$rain_intensity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\RainResource\:\:\$rain_month\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/RainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TemperatureResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TemperatureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TemperatureResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TemperatureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TemperatureResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TemperatureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TemperatureResource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TemperatureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TvocResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TvocResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TvocResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TvocResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TvocResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TvocResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\TvocResource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/TvocResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindDirectionResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindDirectionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindDirectionResource\:\:\$direction\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindDirectionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindDirectionResource\:\:\$grades\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindDirectionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindDirectionResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindDirectionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindDirectionResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindDirectionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindDirectionResource\:\:\$resistance\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindDirectionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$average\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$max\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$min\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\WeatherStation\\WindResource\:\:\$speed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/WeatherStation/WindResource.php
+
+		-
+			message: '#^Left side of && is always false\.$#'
+			identifier: booleanAnd.leftAlwaysFalse
+			count: 1
+			path: app/Mail/GenericMail.php
+
+		-
+			message: '#^Offset ''attached'' on \*NEVER\* in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Mail/GenericMail.php
+
+		-
+			message: '#^Parameter \#2 \$name of method Illuminate\\Mail\\Mailable\:\:to\(\) expects string\|null, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mail/GenericMail.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Mcp/Tools/GetModelInfoTool.php
+
+		-
+			message: '#^Method App\\Mcp\\Tools\\GetSystemStatusTool\:\:handle\(\) should return Laravel\\Mcp\\Response but returns Laravel\\Mcp\\ResponseFactory\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Mcp/Tools/GetSystemStatusTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$altitude\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$flight\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$lat\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$lon\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$messages\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$rssi\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$seen\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$seen_at\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$seen_pos\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$speed\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$squawk\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$track\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$vert_rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Parameter \#1 \$message of static method Illuminate\\Log\\Logger\:\:error\(\) expects array\|Illuminate\\Contracts\\Support\\Arrayable\|Illuminate\\Contracts\\Support\\Jsonable\|Illuminate\\Support\\Stringable\|string, Exception given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$urlImage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:urlThumbnail\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^PHPDoc tag @return with type mixed is not subtype of native type Illuminate\\Database\\Eloquent\\Builder\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Parameter \#2 \$replacement of function preg_replace expects array\<float\|int\|string\>\|string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Static method App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\:\:getTableHeads\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Variable \$value on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: app/Models/BaseModels/BaseAbstractModelWithTableCrud.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\BaseModels\\BaseModel\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/BaseModels/BaseModel.php
+
+		-
+			message: '#^Method App\\Models\\CV\\Curriculum\:\:getTableRowsByPage\(\) should return array but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\CV\\Curriculum\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/Curriculum.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumAcademicComplementary\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumAcademicComplementary.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumAcademicComplementaryOnline\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumAcademicComplementaryOnline.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumAcademicTraining\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumAcademicTraining.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/CV/CurriculumBaseSection.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:safeDelete\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/CV/CurriculumBaseSection.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:thumbnail\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/CV/CurriculumBaseSection.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumBaseSection\:\:getTableRowsByPage\(\) should return array but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\CV\\CurriculumBaseSection\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumBaseSection.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumCollaboration\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumCollaboration.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumExperienceAccredited\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumExperienceAccredited.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumExperienceAdditional\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumExperienceAdditional.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumExperienceNoAccredited\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumExperienceNoAccredited.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumExperienceOther\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumExperienceOther.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumExperienceSelfEmployed\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumExperienceSelfEmployed.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumHobby\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumHobby.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumJob\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumJob.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumProject\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumProject.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumRepository\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumRepository.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumService\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumService.php
+
+		-
+			message: '#^Method App\\Models\\CV\\CurriculumSkill\:\:getTableCellsInfo\(\) should return array\<array\<string\>\> but returns array\<string, array\<string, bool\|string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/CV/CurriculumSkill.php
+
+		-
+			message: '#^Called ''diff'' on Laravel collection, but could have been retrieved as a query\.$#'
+			identifier: larastan.noUnnecessaryCollectionCall
+			count: 1
+			path: app/Models/Content/Content.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Models/Content/Content.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Content/ContentPage.php
+
+		-
+			message: '#^PHPDoc tag @return with type mixed is not subtype of native type string\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/Content/ContentPage.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>content" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/Content/ContentPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Content\\ContentSeo\:\:\$twitter_title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Content/ContentSeo.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Models/Content/ContentSeo.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/File.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Models/File.php
+
+		-
+			message: '#^PHPDoc tag @return with type array\[int\] is not subtype of native type array\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/File.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<App\\Models\\FileThumbnail\>\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: app/Models/File.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function getimagesize expects string, Illuminate\\Http\\UploadedFile given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Models/File.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Models/File.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 2
+			path: app/Models/File.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\FileType\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/File.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Relations\\HasMany is incompatible with native type Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\.$#'
+			identifier: return.phpDocType
+			count: 2
+			path: app/Models/Hardware/HardwareDevice.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Hardware/HardwareDevice.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Hardware/HardwarePowerGenerator.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Hardware/HardwarePowerGeneratorHistorical.php
+
+		-
+			message: '#^Method App\\Models\\Hardware\\HardwarePowerGeneratorToday\:\:createModel\(\) should return App\\Models\\Hardware\\HardwarePowerGeneratorHistorical but returns App\\Models\\Hardware\\HardwarePowerGeneratorToday\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Hardware/HardwarePowerGeneratorToday.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Hardware/HardwarePowerGeneratorToday.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Hardware/HardwarePowerLoad.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadHistorical\:\:\$battery_max_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadHistorical\:\:\$battery_min_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadToday\:\:\$battery_max_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Hardware/HardwarePowerLoadToday.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadToday\:\:\$battery_min_voltage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Hardware/HardwarePowerLoadToday.php
+
+		-
+			message: '#^Method App\\Models\\Hardware\\HardwarePowerLoadToday\:\:recalculateToday\(\) should return static\(App\\Models\\Hardware\\HardwarePowerLoadToday\)\|null but returns App\\Models\\Hardware\\HardwarePowerLoadToday\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Hardware/HardwarePowerLoadToday.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Hardware/HardwarePowerLoadToday.php
+
+		-
+			message: '#^Method App\\Models\\KeyCounter\\BaseKeyCounter\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\KeyCounter\\BaseKeyCounter\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseModel\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/KeyCounter/BaseKeyCounter.php
+
+		-
+			message: '#^Method App\\Models\\KeyCounter\\BaseKeyCounter\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\KeyCounter\\BaseKeyCounter\) but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Models/KeyCounter/BaseKeyCounter.php
+
+		-
+			message: '#^Method App\\Models\\KeyCounter\\Mouse\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\KeyCounter\\Mouse\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\KeyCounter\\Keyboard\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/KeyCounter/Mouse.php
+
+		-
+			message: '#^Method App\\Models\\Language\:\:getTableRowsByPage\(\) should return array but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Language\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Language.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Platform.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subcategories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Platform.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$urlImageMicro\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Platform.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$urlImageSmall\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Platform.php
+
+		-
+			message: '#^PHPDoc tag @return with type mixed is not subtype of native type Illuminate\\Database\\Eloquent\\Relations\\HasMany\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/SmartPlant/SmartPlantPlant.php
+
+		-
+			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\SmartPlant\\SmartPlantRegister\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''DESC'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/SmartPlant/SmartPlantPlant.php
+
+		-
+			message: '#^Method App\\Models\\SmartPlant\\SmartPlantRegister\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\SmartPlant\\SmartPlantRegister\) but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Models/SmartPlant/SmartPlantRegister.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 9
+			path: app/Models/User.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Foundation\\Auth\\User\>\.$#'
+			identifier: return.type
+			count: 3
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:getAllActive\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Foundation\\Auth\\User\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:getAllInactive\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Foundation\\Auth\\User\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:getFacebookAttribute\(\) should return App\\Models\\UserSocial\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:getTwitterAttribute\(\) should return App\\Models\\UserSocial\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\User\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\User\:\:\$casts is not covariant with PHPDoc type array\<string, string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$casts\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\User\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Property App\\Models\\User\:\:\$deleted_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value 10102 \(CURLOPT_ENCODING, CURLOPT_ENCODING\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMET.php
+
+		-
+			message: '#^Property App\\Models\\WeatherStation\\AEMET\\AEMET\:\:\$CITY is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMET.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type array\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETAdverseEvents.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$apiResponse$#'
+			identifier: parameter.notFound
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETCoast.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type array\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETCoast.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETCoast.php
+
+		-
+			message: '#^Variable \$result on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETCoast.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$apiResponse$#'
+			identifier: parameter.notFound
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETContamination.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type array\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETContamination.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETContamination.php
+
+		-
+			message: '#^Variable \$result on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETContamination.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type App\\Models\\WeatherStation\\AEMET\\AEMETHighSea\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETHighSea.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETHighSea.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$apiResponse$#'
+			identifier: parameter.notFound
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETOzone.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type array\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETOzone.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETOzone.php
+
+		-
+			message: '#^Variable \$result on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETOzone.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETPrediction.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type array\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETPredictionBeach.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETPredictionBeach.php
+
+		-
+			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Facades\\Validator is incompatible with native type Illuminate\\Validation\\Validator\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/WeatherStation/AEMET/AEMETSunRadiation.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/WeatherStation/AirQuality.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\AirQuality\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\AirQuality\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/WeatherStation/AirQuality.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Models/WeatherStation/AirQuality.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$apiFields\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\WeatherStation\\BaseWheaterStation\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 5
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\BaseWheaterStation\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\BaseWheaterStation\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\BaseWheaterStation\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\WeatherStation\\BaseWheaterStation\) but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\WeatherStation\\WindDirection\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''DESC'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\BaseModels\\BaseAbstractModelWithTableCrud\>\:\:whereNotNull\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Models/WeatherStation/BaseWheaterStation.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/WeatherStation/Light.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\Light\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Light\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/WeatherStation/Light.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Models/WeatherStation/Light.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/WeatherStation/Rain.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\Rain\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Rain\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/WeatherStation/Rain.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Models/WeatherStation/Rain.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/WeatherStation/Wind.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\Wind\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\Wind\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/WeatherStation/Wind.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Models/WeatherStation/Wind.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/WeatherStation/WindDirection.php
+
+		-
+			message: '#^Method App\\Models\\WeatherStation\\WindDirection\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\WeatherStation\\WindDirection\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\WeatherStation\\BaseWheaterStation\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/WeatherStation/WindDirection.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Collection\<int,App\\Models\\WeatherStation\\BaseWheaterStation\>\:\:whereNotNull\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: app/Models/WeatherStation/WindDirection.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Content\\Content\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Policies/ContentPolicy.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Policies/EmailPolicy.php
+
+		-
+			message: '#^Class App\\Models\\KeyCounter\\Keyboard referenced with incorrect case\: App\\Models\\Keycounter\\Keyboard\.$#'
+			identifier: class.nameCase
+			count: 6
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:delete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:forceDelete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:restore\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:update\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:view\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:viewAny\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterKeyboardPolicy.php
+
+		-
+			message: '#^Class App\\Models\\KeyCounter\\Mouse referenced with incorrect case\: App\\Models\\Keycounter\\Mouse\.$#'
+			identifier: class.nameCase
+			count: 6
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:delete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:forceDelete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:restore\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:update\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:view\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:viewAny\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Policies/KeyCounterMousePolicy.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Policies/SmartPlantRegisterPolicy.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Models\\User and ''currentAccessToken'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Rules/OwnedHardwareDevice.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\KeyCounter\\Keyboard\>\:\:lastDays\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/KeyCounter/KeyCounterService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/Newsletter/NewsletterService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Client\\Response\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/WeatherStation/AEMETService.php
+
+		-
+			message: '#^Trait App\\Traits\\Filterable is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Traits/Filterable.php
+
+		-
+			message: '#^Trait App\\Traits\\HasSlug is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Traits/HasSlug.php
+
+		-
+			message: '#^Trait App\\Traits\\HasStatus is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Traits/HasStatus.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\ActiveFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\ClassesFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\DataFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\GateFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\HrefFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\LangFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\SearchFilter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/adminlte.php
+
+		-
+			message: '#^Class BeyondCode\\LaravelWebSockets\\Apps\\ConfigAppProvider not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/websockets.php
+
+		-
+			message: '#^Class BeyondCode\\LaravelWebSockets\\Dashboard\\Http\\Middleware\\Authorize not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/websockets.php
+
+		-
+			message: '#^Class BeyondCode\\LaravelWebSockets\\Statistics\\Logger\\HttpStatisticsLogger not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/websockets.php
+
+		-
+			message: '#^Class BeyondCode\\LaravelWebSockets\\Statistics\\Models\\WebSocketsStatisticsEntry not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/websockets.php
+
+		-
+			message: '#^Class BeyondCode\\LaravelWebSockets\\WebSockets\\Channels\\ChannelManagers\\ArrayChannelManager not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/websockets.php
+
+		-
+			message: '#^Call to static method factory\(\) on an unknown class App\\Models\\Team\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/UserFactory.php
+
+		-
+			message: '#^Call to static method hasTeamFeatures\(\) on an unknown class Database\\Factories\\Features\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/UserFactory.php
+
+		-
+			message: '#^Method Database\\Factories\\UserFactory\:\:withPersonalTeam\(\) should return \$this\(Database\\Factories\\UserFactory\) but returns static\(Database\\Factories\\UserFactory\)\.$#'
+			identifier: return.type
+			count: 2
+			path: database/factories/UserFactory.php
+
+		-
+			message: '#^PHPDoc type string of property Database\\Factories\\UserFactory\:\:\$model is not covariant with PHPDoc type class\-string\<Illuminate\\Database\\Eloquent\\Model\> of overridden property Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:\$model\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: database/factories/UserFactory.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_18_100002_create_tags_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_18_100003_create_categories_table.php
+
+		-
+			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: database/migrations/2019_06_19_000000_create_user_roles_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2019_06_19_100000_create_users_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_19_100000_create_users_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2019_06_21_000000_create_user_details_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_21_000000_create_user_details_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2019_06_23_000000_create_user_data_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_23_000000_create_user_data_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2019_06_24_000000_create_user_settings_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_24_000000_create_user_settings_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_06_26_000001_create_user_social_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_26_000001_create_user_social_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_06_26_000002_create_emails_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_06_26_000002_create_emails_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2019_07_03_203128_create_file_types_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_04_132011_create_files_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132011_create_files_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_04_132012_create_file_thumbnails_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132012_create_file_thumbnails_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_04_132013_create_galleries_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132013_create_galleries_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_04_132014_create_gallery_images_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132014_create_gallery_images_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132015_create_platforms_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132016_create_platform_tags_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_132017_create_platform_categories_table.php
+
+		-
+			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: database/migrations/2019_07_04_232014_create_referred_platforms_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_232014_create_referred_platforms_table.php
+
+		-
+			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: database/migrations/2019_07_04_232015_create_referred_users_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_232015_create_referred_users_table.php
+
+		-
+			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: database/migrations/2019_07_04_232016_create_referred_things_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_232016_create_referred_things_table.php
+
+		-
+			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: database/migrations/2019_07_04_232017_create_technologies_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_04_232017_create_technologies_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_05_053049_create_cv_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_05_053049_create_cv_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2019_07_05_053050_create_cv_available_repository_types_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_05_053050_create_cv_available_repository_types_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: database/migrations/2019_07_05_053051_create_cv_repositories_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_05_053051_create_cv_repositories_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_143711_create_cv_services_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_143711_create_cv_services_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_153047_create_cv_collaborations_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_153047_create_cv_collaborations_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_155816_create_cv_hobbies_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_155816_create_cv_hobbies_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_163628_create_cv_jobs_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_163628_create_cv_jobs_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_164233_create_cv_projects_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_164233_create_cv_projects_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_164234_create_cv_project_tags_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_164234_create_cv_project_tags_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_06_164235_create_cv_project_categories_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_06_164235_create_cv_project_categories_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_07_215101_create_cv_academic_training_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_07_215101_create_cv_academic_training_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_050854_create_cv_academic_complementary_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_050854_create_cv_academic_complementary_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_052258_create_cv_academic_complementary_online_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_052258_create_cv_academic_complementary_online_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_154309_create_cv_experience_accredited_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_154309_create_cv_experience_accredited_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_204716_create_cv_experience_no_accredited_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_204716_create_cv_experience_no_accredited_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_214409_create_cv_experience_self_employed_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_214409_create_cv_experience_self_employed_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_220115_create_cv_experience_additional_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_220115_create_cv_experience_additional_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_08_222407_create_cv_experience_others_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_08_222407_create_cv_experience_others_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2019_07_09_051216_create_cv_skills_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2019_07_09_051216_create_cv_skills_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202048_create_content_available_status_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202049_create_content_available_types_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202127_create_contents_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202128_create_content_pages_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202129_create_content_page_raw_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202146_create_content_categories_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202237_create_content_contributors_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202335_create_content_galleries_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202343_create_content_files_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202344_create_content_seo_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202402_create_content_tags_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_202403_create_content_technologies_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_08_235468_create_content_metadata_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2021_05_09_220354_create_content_related_table.php
+
+		-
+			message: '#^Parameter \#2 \$length of method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/migrations/2022_01_30_225444_create_hardware_types_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_225445_create_hardware_devices_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_225446_create_hardware_available_components_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_225447_create_hardware_components_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_225448_create_hardware_energy_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_232819_create_hardware_power_loads_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_232820_create_hardware_power_loads_today_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_232821_create_hardware_power_loads_historical_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_232822_create_hardware_power_generators_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_232823_create_hardware_power_generators_today_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_01_30_232824_create_hardware_power_generators_historical_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_01_000000_create_keycounter_keyboard_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_01_000001_create_keycounter_mouse_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_03_000001_create_meteorology_air_quality_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_04_000001_create_meteorology_wind_direction_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_04_100001_create_meteorology_lightning_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_04_100002_create_meteorology_resume_today_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_04_100003_create_meteorology_resume_historical_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_05_050940_create_meteorology_pressure_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_05_051023_create_meteorology_temperature_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_05_051036_create_meteorology_humidity_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_06_000001_create_meteorology_winter_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_06_024139_create_meteorology_light_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_07_000001_create_meteorology_uv_index_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_07_000002_create_meteorology_uva_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_07_000003_create_meteorology_uvb_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_07_000004_create_meteorology_eco2_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_07_000005_create_meteorology_tvoc_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_07_000006_create_meteorology_rain_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_17_212009_create_printers_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2022_02_17_212118_create_printer_stack_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2023_02_18_000001_create_smartbonsai_plants_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2023_02_18_000003_create_airflight_airplanes_table.php
+
+		-
+			message: '#^Static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: database/migrations/2023_02_18_000004_create_airflight_routes_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2025_07_13_134332_create_newsletter_table.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: database/migrations/2025_07_14_140809_create_content_daily_views_table.php
+
+		-
+			message: '#^Property Database\\Seeders\\RolesTableSeeder\:\:\$tableName is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: database/seeders/RolesTableSeeder.php
+
+		-
+			message: '#^Property Database\\Seeders\\TechnologiesSeeder\:\:\$tableName is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: database/seeders/TechnologiesSeeder.php
+
+		-
+			message: '#^Property Database\\Seeders\\UsersTableSeeder\:\:\$tableName is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: database/seeders/UsersTableSeeder.php
+
+		-
+			message: '#^Anonymous function should never return but return statement found\.$#'
+			identifier: return.never
+			count: 1
+			path: routes/web.php

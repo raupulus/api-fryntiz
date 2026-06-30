@@ -16,9 +16,6 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/KeyCounter/V2/KeyboardController.php` | API V2 | Store registro de teclado |
 | `app/Http/Controllers/Api/KeyCounter/V2/MouseController.php` | API V2 | Store registro de ratón |
-| `app/Http/Controllers/Api/KeyCounter/V1/KeyboardController.php` | API V1 | Controlador V1 legacy teclado |
-| `app/Http/Controllers/Api/KeyCounter/V1/MouseController.php` | API V1 | Controlador V1 legacy ratón |
-| `app/Http/Controllers/Api/KeyCounter/V1/KeyCounterController.php` | API V1 | Controlador V1 legacy general |
 | `app/Http/Controllers/KeyCounter/KeyCounterController.php` | Web | Frontend público |
 
 ### Servicios

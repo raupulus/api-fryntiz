@@ -14,7 +14,6 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/AirFlight/V2/AirFlightController.php` | API V2 | Listar, registrar, batch |
-| `app/Http/Controllers/Api/AirFlight/AirFlightController.php` | API V1 | Controlador V1 legacy |
 | `app/Http/Controllers/AirFlight/AirFlightController.php` | Web | Frontend público |
 
 ### Servicios

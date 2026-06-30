@@ -29,7 +29,6 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Content/V2/ContentController.php` | API V2 | show, pages, related |
-| `app/Http/Controllers/Api/Content/ContentController.php` | API V1 | Controlador V1 legacy |
 | `app/Http/Controllers/Content/*.php` | Web | Controladores frontend (12 archivos) |
 | `app/Http/Controllers/Dashboard/Content/*.php` | Dashboard | Controladores admin legacy (17 archivos) |
 

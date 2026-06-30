@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
@@ -74,7 +74,7 @@ use function storage_path;
  *
  * @mixin \Eloquent
  */
-class File extends Model
+class File extends BaseModel
 {
     public static $thumbnailsSizeWidth = [
         'micro' => 50,

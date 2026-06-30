@@ -15,8 +15,7 @@ class ContactService
     /**
      * Envía un correo electrónico a los administradores con la información del formulario de contacto.
      *
-     * @param array $data Datos validados procedentes del formulario.
-     * @return void
+     * @param  array  $data  Datos validados procedentes del formulario.
      */
     public function sendContactForm(array $data): void
     {

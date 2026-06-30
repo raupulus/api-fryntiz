@@ -93,8 +93,8 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // JsonValidationException y JsonAuthorizationException se auto-renderizadas
-        // mediante su propio método render() para mantener compatibilidad con API V1.
+        // JsonValidationException y JsonAuthorizationException se auto-renderizan
+        // mediante su propio método render() (estructura JSON estándar de la API V2).
 
         $exceptions->render(function (AuthorizationException $e, $request) {
             if ($request->is('api/*') || $request->wantsJson()) {

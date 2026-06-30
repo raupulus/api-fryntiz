@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -64,7 +64,7 @@ use Illuminate\Support\Str;
  *
  * @mixin \Eloquent
  */
-class Newsletter extends Model
+class Newsletter extends BaseModel
 {
     use HasFactory;
 

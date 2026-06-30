@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Mcp\Tools;
 
 use Illuminate\Support\Facades\Process;
-use Laravel\Mcp\Tools\Tool;
+use Laravel\Mcp\Server\Tool;
 
 class RunSpecificTestTool extends Tool
 {

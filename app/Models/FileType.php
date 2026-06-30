@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\BaseModels\BaseModel;
 use App\Traits\BelongsToUser;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
@@ -46,7 +46,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class FileType extends Model
+class FileType extends BaseModel
 {
     use BelongsToUser;
 

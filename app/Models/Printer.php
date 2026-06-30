@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
+use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,6 +47,8 @@ use Illuminate\Support\Carbon;
  */
 class Printer extends BaseModel
 {
+    use BelongsToHardwareDevice;
+
     protected $table = 'printers';
 
     protected $fillable = [
@@ -60,11 +63,6 @@ class Printer extends BaseModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
-    }
-
-    public function hardwareDevice(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
     }
 
     public function printerType(): BelongsTo

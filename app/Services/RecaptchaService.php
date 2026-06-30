@@ -14,7 +14,7 @@ class RecaptchaService
     /**
      * Verifica la validez de un token generado por reCAPTCHA a través de su endpoint oficial.
      *
-     * @param string $token Token proveído por el frontend tras superar el desafío.
+     * @param  string  $token  Token proveído por el frontend tras superar el desafío.
      * @return bool True si es válido y humano, False en caso contrario.
      */
     public function verify(string $token): bool

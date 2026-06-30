@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\WeatherStation\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\OwnedHardwareDevice;
 
 /**
  * Validación para almacenar datos del sensor de rayos/relámpagos en API V2.
@@ -19,7 +20,7 @@ class StoreLightningRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id'],
+            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'distance' => ['nullable', 'numeric', 'min:0'],
             'energy' => ['nullable', 'numeric'],
             'noise_floor' => ['nullable', 'numeric'],

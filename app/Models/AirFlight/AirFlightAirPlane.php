@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models\AirFlight;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Traits\BelongsToHardwareDevice;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +37,7 @@ use function file_exists;
  * @property string|null $flag Imagen de la bandera
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read HardwareDevice|null $device
+ * @property-read HardwareDevice|null $hardwareDevice
  * @property-read string $url_flag
  * @property-read Collection<int, AirFlightRoute> $routes
  * @property-read int|null $routes_count
@@ -60,8 +61,10 @@ use function file_exists;
  *
  * @mixin \Eloquent
  */
-class AirFlightAirPlane extends Model
+class AirFlightAirPlane extends BaseModel
 {
+    use BelongsToHardwareDevice;
+
     protected $table = 'airflight_airplanes';
 
     protected $fillable = [
@@ -90,14 +93,6 @@ class AirFlightAirPlane extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * Dispositivo receptor que detectó el avión.
-     */
-    public function device(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id');
     }
 
     public const FLAGS = [

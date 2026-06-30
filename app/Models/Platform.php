@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App;
-use App\Http\Resources\ContentFeaturedResource;
+use App\Http\Resources\V2\Content\ContentFeaturedResource;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseAbstractModelWithTableCrud;
 use App\Models\Content\Content;

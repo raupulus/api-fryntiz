@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Hardware;
 
 use App\Http\Traits\ImageTrait;
+use App\Models\ApiToken;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\User;
@@ -221,6 +222,20 @@ class HardwareDevice extends BaseModel
     public function image(): HasOne
     {
         return $this->hasOne(File::class, 'id', 'image_id');
+    }
+
+    /**
+     * Tokens Sanctum emitidos para este dispositivo.
+     *
+     * Los tokens IoT pertenecen al usuario propietario (tokenable = User) y se
+     * nombran "device:{id}". Esta relación (solo lectura) los filtra por ese
+     * nombre para listarlos/revocarlos desde el panel del dispositivo.
+     */
+    public function apiTokens(): HasMany
+    {
+        return $this->hasMany(ApiToken::class, 'tokenable_id', 'user_id')
+            ->where('personal_access_tokens.tokenable_type', User::class)
+            ->where('personal_access_tokens.name', 'device:'.$this->getKey());
     }
 
     public static function createModel(HardwareDevice $device, $request) {}

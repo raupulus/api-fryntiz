@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\WebHooks;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModels\BaseModel;
 
 /**
  * Class SimpleWebhookModel
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class SimpleWebhookModel extends Model
+class SimpleWebhookModel extends BaseModel
 {
     //
 }

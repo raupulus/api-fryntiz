@@ -13,7 +13,6 @@ Módulo de suscripción a newsletter con flujo de verificación por email, gesti
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Newsletter/V2/NewsletterController.php` | API V2 | subscribe, verify, unsubscribe |
-| `app/Http/Controllers/Api/NewsletterController.php` | API V1 | Controlador V1 legacy |
 
 ### Servicios
 | Archivo | Descripción |

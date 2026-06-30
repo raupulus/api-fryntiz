@@ -7,6 +7,7 @@ namespace App\Models\WeatherStation;
 use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -33,6 +34,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class MeteorologyUva extends BaseModel
 {
+    use BelongsToHardwareDevice;
+
     protected $table = 'meteorology_uva';
 
     public $timestamps = false;
@@ -42,10 +45,5 @@ class MeteorologyUva extends BaseModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function hardwareDevice(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class);
     }
 }

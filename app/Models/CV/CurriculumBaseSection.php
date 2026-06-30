@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\CV;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\File;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use function array_key_exists;
@@ -13,7 +13,7 @@ use function array_key_exists;
 /**
  * Class CurriculumBaseSection.
  */
-abstract class CurriculumBaseSection extends Model
+abstract class CurriculumBaseSection extends BaseModel
 {
     /**
      * @var string Nombre del modelo en singular.
@@ -94,10 +94,8 @@ abstract class CurriculumBaseSection extends Model
 
     /**
      * Elimina de forma segura un repositorio y los datos asociados.
-     *
-     * @return bool
      */
-    public function safeDelete()
+    public function safeDelete(): bool
     {
         // # Elimino la imagen asociada al curriculum y todas las miniaturas.
         if ($this->image) {

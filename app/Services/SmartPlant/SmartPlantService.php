@@ -16,8 +16,8 @@ class SmartPlantService
     /**
      * Almacena un nuevo registro de métricas de una planta.
      *
-     * @param array $data Datos procedentes del sensor (humedad, temperatura, luz, etc).
-     * @return \App\Models\SmartPlant\SmartPlantRegister El registro almacenado.
+     * @param  array  $data  Datos procedentes del sensor (humedad, temperatura, luz, etc).
+     * @return SmartPlantRegister El registro almacenado.
      */
     public function storeRegister(array $data): SmartPlantRegister
     {
@@ -27,8 +27,8 @@ class SmartPlantService
     /**
      * Obtiene el listado de plantas asociadas a un usuario junto con su último registro de estado.
      *
-     * @param int $userId Identificador único del usuario propietario.
-     * @return \Illuminate\Database\Eloquent\Collection Colección de plantas del usuario.
+     * @param  int  $userId  Identificador único del usuario propietario.
+     * @return Collection Colección de plantas del usuario.
      */
     public function getUserPlants(int $userId): Collection
     {

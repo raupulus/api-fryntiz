@@ -14,8 +14,6 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/SmartPlant/V2/SmartPlantRegisterController.php` | API V2 | Store registro de planta |
-| `app/Http/Controllers/Api/SmartPlant/V1/SmartPlantController.php` | API V1 | Controlador V1 legacy |
-| `app/Http/Controllers/Api/SmartPlant/V1/SmartPlantRegisterController.php` | API V1 | Store V1 legacy |
 | `app/Http/Controllers/SmartPlant/SmartPlantController.php` | Web | Frontend público |
 
 ### Servicios

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models\KeyCounter;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Traits\BelongsToHardwareDevice;
 use App\Traits\BelongsToUser;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 use function array_key_exists;
@@ -21,8 +21,7 @@ use function json_encode;
 /**
  * Class KeyCounter
  *
- * @property-read HardwareDevice|null $device
- * @property-read HardwareDevice|null $hardware
+ * @property-read HardwareDevice|null $hardwareDevice
  * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter forUser(int $userId)
@@ -32,8 +31,9 @@ use function json_encode;
  *
  * @mixin \Eloquent
  */
-class BaseKeyCounter extends Model
+class BaseKeyCounter extends BaseModel
 {
+    use BelongsToHardwareDevice;
     use BelongsToUser;
 
     protected $fillable = [
@@ -48,22 +48,6 @@ class BaseKeyCounter extends Model
         'score',
         'weekday',
     ];
-
-    /**
-     * Relación con el hardware asociado.
-     */
-    public function hardware(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
-    }
-
-    /**
-     * Alias para compatibilidad con Filament Resources.
-     */
-    public function device(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id', 'id');
-    }
 
     /**
      * Sobreescribo la actualización del updated_at para no hacerle nada.
@@ -276,7 +260,7 @@ class BaseKeyCounter extends Model
                 // # Compruebo que haya registro para este dispositivo este día o seteo 0.
                 if ($s && isset($datasetTMP[$device])) {
                     if (! isset($datasetTMP[$device]['label'])) {
-                        $datasetTMP[$device]['label'] = $s->hardware->name;
+                        $datasetTMP[$device]['label'] = $s->hardwareDevice->name;
                     }
 
                     if (! isset($datasetTMP[$device]['borderColor'])) {
@@ -291,7 +275,7 @@ class BaseKeyCounter extends Model
                 } elseif ($s) {
                     $datasetTMP[$device] = [
                         'data' => [$s->total_pulsations],
-                        'label' => $s->hardware->name,
+                        'label' => $s->hardwareDevice->name,
                         'borderColor' => $color,
                         'fill' => 'false',
                     ];

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -29,7 +29,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class PlatformCategory extends Model
+class PlatformCategory extends BaseModel
 {
     protected $fillable = [
         'platform_id',

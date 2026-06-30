@@ -42,7 +42,7 @@ class HardwareEnergyResource extends Resource
         return $schema
             ->components([
                 Select::make('hardware_device_id')
-                    ->relationship('hardware', 'name')
+                    ->relationship('hardwareDevice', 'name')
                     ->required()->searchable()->preload()
                     ->label('Dispositivo monitor'),
                 Select::make('hardware_device_monitorized_id')
@@ -59,7 +59,7 @@ class HardwareEnergyResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('hardware.name')
+                TextColumn::make('hardwareDevice.name')
                     ->label('Dispositivo monitor')
                     ->sortable(),
                 TextColumn::make('monitorized.name')

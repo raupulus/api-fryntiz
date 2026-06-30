@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mcp\Tools;
 
-use Laravel\Mcp\Tools\Tool;
+use Laravel\Mcp\Server\Tool;
 use ReflectionClass;
 use ReflectionMethod;
 

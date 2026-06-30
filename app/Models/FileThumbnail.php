@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Support\Carbon;
 
 use function route;
@@ -50,7 +50,7 @@ use function storage_path;
  *
  * @mixin \Eloquent
  */
-class FileThumbnail extends Model
+class FileThumbnail extends BaseModel
 {
     protected $table = 'file_thumbnails';
 

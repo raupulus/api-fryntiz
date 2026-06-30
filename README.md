@@ -36,7 +36,7 @@ Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (es
 ## Arquitectura
 
 - **Patrón:** MVC con Service Layer
-- **API:** Versionada (V1 legacy + V2 actual), respuestas JSON con JsonResources
+- **API:** Única versión **V2 FULL REST** (la V1 legacy fue eliminada), respuestas JSON con JsonResources
 - **Admin:** Dos paneles Filament 5 (Admin para superadmin, Tenant para usuarios)
 - **Roles:** SuperAdmin (1), Admin (2), User (3)
 
@@ -62,8 +62,7 @@ app/
 
 routes/
 ├── web.php               # Rutas frontend público
-├── api/v1.php            # API V1 (legacy)
-├── api/v2.php            # API V2 (actual)
+├── api/v2.php            # API V2 (única versión)
 ├── console.php           # Scheduler
 ├── weather_station/      # Rutas Weather Station (web + API)
 ├── hardware/             # Rutas Hardware/Energy (web + API)
@@ -146,10 +145,9 @@ Los servicios disponibles son:
 
 ## API
 
-La API tiene dos versiones:
+La API tiene una única versión:
 
-- **V1** (`/api/v1/...`): ⚠️ **Versión deprecada**. Se mantiene únicamente por compatibilidad con clientes que aún no han migrado. **No añadir endpoints nuevos a V1.** Será eliminada en una versión mayor futura.
-- **V2** (`/api/v2/...`): Versión actual con JsonResources, validaciones mejoradas y mayor seguridad. **Toda nueva funcionalidad debe ir aquí.**
+- **V2** (`/api/v2/...`): Versión actual y única, FULL REST, con JsonResources, validaciones mejoradas y mayor seguridad. La V1 legacy fue eliminada por completo.
 
 La documentación detallada de la API V2 está en [`docs/api-v2.md`](docs/api-v2.md).
 

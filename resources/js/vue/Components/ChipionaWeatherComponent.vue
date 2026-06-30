@@ -118,7 +118,7 @@
  *              llamando al endpoint `apiBaseUrl + apiPath`.
  *
  * @prop {String} apiBaseUrl - Base URL del backend que sirve los datos.
- * @prop {String} apiPath    - Ruta relativa al endpoint de resumen (default 'api/weatherstation/v1/resume').
+ * @prop {String} apiPath    - Ruta relativa al endpoint de resumen (default 'api/v2/weatherstation/resume').
  */
 import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
 
@@ -129,7 +129,7 @@ const props = defineProps({
     },
     apiPath: {
         type: String,
-        default: 'api/weatherstation/v1/resume',
+        default: 'api/v2/weatherstation/resume',
     },
 });
 
@@ -159,7 +159,9 @@ const getApiData = async () => {
             method: 'GET',
             mode: 'cors',
         });
-        const data = await response.json();
+        const json = await response.json();
+        // La API V2 envuelve la carga útil en { success, message, data }.
+        const data = json?.data ?? json;
 
         instant.value = data.instant ?? instant.value;
         info.value = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure };

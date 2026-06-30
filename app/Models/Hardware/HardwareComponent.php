@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
+use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -26,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read HardwareAvailableComponent|null $availableComponent
- * @property-read HardwareDevice|null $device
+ * @property-read HardwareDevice|null $hardwareDevice
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent newQuery()
@@ -52,6 +53,7 @@ use Illuminate\Support\Carbon;
  */
 class HardwareComponent extends BaseModel
 {
+    use BelongsToHardwareDevice;
     use SoftDeletes;
 
     protected $table = 'hardware_components';
@@ -62,11 +64,6 @@ class HardwareComponent extends BaseModel
         'serial_number',
         'notes',
     ];
-
-    public function device(): BelongsTo
-    {
-        return $this->belongsTo(HardwareDevice::class, 'hardware_device_id');
-    }
 
     public function availableComponent(): BelongsTo
     {

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\Hardware\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\OwnedHardwareDevice;
 use Carbon\Carbon;
 
 /**
  * Validación para almacenar datos de carga solar en API V2.
- * Reglas equivalentes a V1 StoreSolarChargeRequest.
  */
 class StoreSolarChargeRequest extends BaseFormRequest
 {
@@ -36,7 +36,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'created_at' => ['required', 'date'],
             'date' => ['required', 'date'],
             'read_at' => ['required', 'date'],
-            'device_id' => ['required', 'integer', 'exists:hardware_devices,id'],
+            'device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'hardware' => ['nullable', 'string', 'max:255'],
             'version' => ['nullable', 'string', 'max:255'],
             'serial_number' => ['nullable', 'string', 'max:255'],

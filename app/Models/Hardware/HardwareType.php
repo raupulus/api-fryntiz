@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\Hardware;
 
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-class HardwareType extends Model
+class HardwareType extends BaseModel
 {
     use HasFactory;
 

@@ -16,7 +16,7 @@ const weatherEl = document.getElementById('app-weather-chipiona');
 if (weatherEl) {
     const weatherApp = createApp(ChipionaWeatherComponent, {
         apiBaseUrl: weatherEl.dataset.apiBaseUrl ?? '',
-        apiPath: weatherEl.dataset.apiPath ?? 'api/weatherstation/v1/resume',
+        apiPath: weatherEl.dataset.apiPath ?? 'api/v2/weatherstation/resume',
     });
     weatherApp.mount(weatherEl);
 }

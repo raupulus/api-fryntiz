@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\WeatherStation\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\OwnedHardwareDevice;
 
 /**
  * Validación para almacenar datos del sensor de viento en API V2.
@@ -19,7 +20,7 @@ class StoreWindRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id'],
+            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'speed' => ['nullable', 'numeric', 'min:0'],
             'average' => ['nullable', 'numeric', 'min:0'],
             'min' => ['nullable', 'numeric', 'min:0'],

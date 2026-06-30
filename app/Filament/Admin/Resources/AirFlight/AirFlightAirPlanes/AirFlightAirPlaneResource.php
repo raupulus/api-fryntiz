@@ -63,7 +63,7 @@ class AirFlightAirPlaneResource extends Resource
                     Select::make('user_id')
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
-                        ->relationship('device', 'name_friendly')->searchable()->preload()->label('Receptor'),
+                        ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Receptor'),
                 ]),
                 Section::make('Detección')->columns(3)->schema([
                     DateTimePicker::make('seen_first_at')->label('Primera detección'),
@@ -83,7 +83,7 @@ class AirFlightAirPlaneResource extends Resource
                 TextColumn::make('category')->badge()->label('Cat.'),
                 TextColumn::make('routes_count')->counts('routes')->label('Rutas'),
                 TextColumn::make('seen_last_at')->dateTime('d/m/Y H:i')->sortable()->label('Visto'),
-                TextColumn::make('device.name_friendly')->badge()->toggleable()->label('Receptor'),
+                TextColumn::make('hardwareDevice.name_friendly')->badge()->toggleable()->label('Receptor'),
             ])
             ->filters([
                 SelectFilter::make('category')->options([

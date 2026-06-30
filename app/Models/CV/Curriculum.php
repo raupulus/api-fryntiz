@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\CV;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -87,7 +87,7 @@ use function array_key_exists;
  *
  * @mixin \Eloquent
  */
-class Curriculum extends Model
+class Curriculum extends BaseModel
 {
     protected $table = 'cv';
 
@@ -256,10 +256,8 @@ class Curriculum extends Model
 
     /**
      * Elimina de forma segura un curriculum y los datos asociados.
-     *
-     * @return bool
      */
-    public function safeDelete()
+    public function safeDelete(): bool
     {
         // # Elimino la imagen asociada al curriculum y todas las miniaturas.
         if ($this->image) {

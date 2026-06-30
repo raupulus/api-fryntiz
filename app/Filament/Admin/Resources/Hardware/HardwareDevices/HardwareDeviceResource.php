@@ -198,6 +198,7 @@ class HardwareDeviceResource extends Resource
     {
         return [
             RelationManagers\ComponentsRelationManager::class,
+            RelationManagers\TokensRelationManager::class,
         ];
     }
 

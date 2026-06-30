@@ -13,11 +13,11 @@ use App\Models\User;
 class CurriculumService
 {
     /**
-     * Obtiene el Currículum completo de un usuario, cargando ansiosamente (eager loading) 
+     * Obtiene el Currículum completo de un usuario, cargando ansiosamente (eager loading)
      * todas sus relaciones y secciones asociadas (experiencia, proyectos, educación, habilidades...).
      *
-     * @param \App\Models\User $user Instancia del usuario.
-     * @return \App\Models\CV\Curriculum|null Modelo Curriculum instanciado o null si no posee.
+     * @param  User  $user  Instancia del usuario.
+     * @return Curriculum|null Modelo Curriculum instanciado o null si no posee.
      */
     public function getFullCurriculum(User $user): ?Curriculum
     {

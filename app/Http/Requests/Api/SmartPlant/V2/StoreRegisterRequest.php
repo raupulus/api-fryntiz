@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\SmartPlant\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\OwnedHardwareDevice;
 
 /**
  * Validación para almacenar registro de planta en API V2.
- * Reglas equivalentes a V1 StoreRegisterRequest.
  */
 class StoreRegisterRequest extends BaseFormRequest
 {
@@ -41,7 +41,7 @@ class StoreRegisterRequest extends BaseFormRequest
         return [
             'user_id' => ['required', 'exists:users,id'],
             'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id'],
-            'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id'],
+            'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'uv' => ['nullable', 'numeric'],
             'pressure' => ['nullable', 'numeric'],
             'temperature' => ['nullable', 'numeric'],

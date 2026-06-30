@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModels\BaseModel;
 use Illuminate\Support\Carbon;
 
 use function array_key_exists;
@@ -43,7 +43,7 @@ use function asset;
  *
  * @mixin \Eloquent
  */
-class Language extends Model
+class Language extends BaseModel
 {
     protected $table = 'languages';
 
