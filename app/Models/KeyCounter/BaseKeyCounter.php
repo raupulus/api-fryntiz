@@ -28,6 +28,7 @@ use function json_encode;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseKeyCounter forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

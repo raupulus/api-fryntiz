@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\KeyCounter;
 
+use App\Models\KeyCounter\Mouse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para registro de ratón en API V2.
+ *
+ * @mixin Mouse
  */
 class MouseResource extends JsonResource
 {

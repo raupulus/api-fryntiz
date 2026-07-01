@@ -91,14 +91,6 @@ class ContentSeo extends BaseModel
     }
 
     /**
-     * Relación con el autor del contenido.
-     */
-    public function author(): BelongsTo
-    {
-        return $this->content->author();
-    }
-
-    /**
      * Relación con la imagen asociada al seo.
      */
     public function image(): BelongsTo
@@ -112,8 +104,8 @@ class ContentSeo extends BaseModel
     public function getGenericTags(): Collection
     {
         return collect([
-            'author' => $this->author->name,
-            'copyright' => $this->author->name,
+            'author' => $this->content?->author?->name,
+            'copyright' => $this->content?->author?->name,
             'distribution' => $this->distribution, // global, local, iu
             'description' => $this->description,
             'robots' => $this->robots,
@@ -157,7 +149,7 @@ class ContentSeo extends BaseModel
             'twitter:site' => '@raupulus',
             'twitter:title' => $this->twitter_title,
             'twitter:description' => $this->description,
-            'twitter:creator' => $this->author->name,
+            'twitter:creator' => $this->content?->author?->name,
             'twitter:image' => '', // TODO: Obtener desde relación con Files
             'twitter:image:alt' => $this->image_alt,
         ]);

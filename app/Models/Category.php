@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -33,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @property-read string $url_image_small
  * @property-read File|null $image
  * @property-read Category|null $parentCategory
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Category> $subcategories
+ * @property-read Collection<int, Category> $subcategories
  * @property-read int|null $subcategories_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category newModelQuery()

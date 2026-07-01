@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Content;
 
+use App\Models\Content\Content;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Content
+ */
 class ContentFeaturedResource extends JsonResource
 {
     /**

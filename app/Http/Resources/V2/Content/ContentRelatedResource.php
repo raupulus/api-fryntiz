@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Content;
 
+use App\Models\Content\Content;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource ligero para contenido relacionado en API V2.
+ *
+ * @mixin Content
  */
 class ContentRelatedResource extends JsonResource
 {
@@ -20,7 +23,7 @@ class ContentRelatedResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'image' => $this->image,
-            'type' => $this->type?->value ?? $this->type,
+            'type' => $this->type,
             'published_at' => $this->published_at?->toISOString(),
         ];
     }

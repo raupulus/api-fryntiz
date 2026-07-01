@@ -40,6 +40,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareEnergy whereIsGenerator($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareEnergy whereSensorPosition($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareEnergy whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareEnergy forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

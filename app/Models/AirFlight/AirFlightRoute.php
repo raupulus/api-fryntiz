@@ -59,6 +59,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute whereVertRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightRoute forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

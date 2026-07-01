@@ -42,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer wherePrinterTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Printer forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

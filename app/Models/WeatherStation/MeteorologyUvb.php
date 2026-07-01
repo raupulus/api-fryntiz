@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUvb whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUvb whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUvb whereValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyUvb forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

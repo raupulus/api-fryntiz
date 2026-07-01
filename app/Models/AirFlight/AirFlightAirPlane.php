@@ -58,6 +58,7 @@ use function file_exists;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereSeenLastAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

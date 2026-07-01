@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Hardware;
 
+use App\Models\Hardware\HardwareDevice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para dispositivo hardware en API V2.
+ *
+ * @mixin HardwareDevice
  */
 class HardwareDeviceResource extends JsonResource
 {

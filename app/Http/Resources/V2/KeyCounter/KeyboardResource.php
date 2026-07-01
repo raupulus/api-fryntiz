@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\KeyCounter;
 
+use App\Models\KeyCounter\Keyboard;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para registro de teclado en API V2.
+ *
+ * @mixin Keyboard
  */
 class KeyboardResource extends JsonResource
 {

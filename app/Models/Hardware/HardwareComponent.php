@@ -48,6 +48,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

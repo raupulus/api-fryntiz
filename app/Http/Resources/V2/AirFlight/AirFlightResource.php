@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\AirFlight;
 
+use App\Models\AirFlight\AirFlightRoute;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para registro de vuelo en API V2.
+ *
+ * @mixin AirFlightRoute
  */
 class AirFlightResource extends JsonResource
 {

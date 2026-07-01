@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\SmartPlant;
 
+use App\Models\SmartPlant\SmartPlantRegister;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para registro de planta inteligente en API V2.
+ *
+ * @mixin SmartPlantRegister
  */
 class SmartPlantRegisterResource extends JsonResource
 {

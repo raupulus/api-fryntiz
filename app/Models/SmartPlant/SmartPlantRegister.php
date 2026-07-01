@@ -46,6 +46,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister whereUv($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister whereVaporizerEnabled($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister whereWaterpumpEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SmartPlantRegister forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Hardware;
 
+use App\Models\Hardware\HardwareEnergy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para datos de energía en API V2.
+ *
+ * @mixin HardwareEnergy
  */
 class EnergyMonitorResource extends JsonResource
 {

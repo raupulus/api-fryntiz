@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Hardware;
 
+use App\Models\Hardware\SolarCharge;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para datos de carga solar en API V2.
+ *
+ * @mixin SolarCharge
  */
 class SolarChargeResource extends JsonResource
 {

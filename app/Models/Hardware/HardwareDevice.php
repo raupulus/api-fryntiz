@@ -110,6 +110,9 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereUrlCompany($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereUserId($value)
  *
+ * @property-read Collection<int, ApiToken> $apiTokens
+ * @property-read int|null $api_tokens_count
+ *
  * @mixin \Eloquent
  */
 class HardwareDevice extends BaseModel

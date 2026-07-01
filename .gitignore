@@ -22,6 +22,11 @@ storage/app/*.log
 npm-debug.log
 yarn-error.log
 
+# Ignorar helpers generados por laravel-ide-helper (artefactos de desarrollo)
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
 # Ignorar archivos de IDE
 .idea
 *.iml

@@ -46,6 +46,10 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard whereWeekday($value)
  *
+ * @property-read HardwareDevice|null $hardwareDevice
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Keyboard forDevice(int $deviceId)
+ *
  * @mixin \Eloquent
  */
 class Keyboard extends BaseKeyCounter

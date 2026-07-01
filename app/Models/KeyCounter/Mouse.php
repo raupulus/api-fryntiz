@@ -48,6 +48,10 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse whereWeekday($value)
  *
+ * @property-read HardwareDevice|null $hardwareDevice
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mouse forDevice(int $deviceId)
+ *
  * @mixin \Eloquent
  */
 class Mouse extends Keyboard

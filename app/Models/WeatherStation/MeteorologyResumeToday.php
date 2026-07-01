@@ -65,6 +65,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereWindSpeed($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereWindSpeedMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereWindSpeedMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday forDevice(int $deviceId)
  *
  * @mixin \Eloquent
  */

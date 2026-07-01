@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Content;
 
+use App\Models\Content\ContentPage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para páginas de contenido en API V2.
+ *
+ * @mixin ContentPage
  */
 class ContentPageResource extends JsonResource
 {

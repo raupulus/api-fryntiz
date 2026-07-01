@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\WeatherStation;
 
+use App\Models\WeatherStation\AirQuality;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin AirQuality
+ */
 class AirQualityResource extends JsonResource
 {
     public function toArray(Request $request): array
