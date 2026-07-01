@@ -198,6 +198,7 @@ class BaseKeyCounter extends BaseModel
 
         // # Obtengo las estadísticas agrupadas por cada dispositivo
         $data = self::getAllFiltered()
+            ->with('hardwareDevice')
             ->select([
                 DB::Raw('count(id) as spurts'), // Cantidad de rachas
                 DB::Raw('sum(duration) as duration'),

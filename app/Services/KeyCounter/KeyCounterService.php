@@ -26,6 +26,7 @@ class KeyCounterService
         // Invalidar cachés del frontend al recibir datos nuevos
         Cache::forget('keycounter:keyboard:summary');
         Cache::forget('keycounter:widgets');
+        Cache::forget('keycounter:year_total:'.now()->year);
 
         return $keyboard;
     }
@@ -46,6 +47,9 @@ class KeyCounterService
 
         return $mouse;
     }
+
+    // Nota: Mouse no aporta pulsaciones al total anual de Keyboard
+    // (`keycounter:year_total:*`), por lo que no necesita invalidar esa caché.
 
     /**
      * Calcula las estadísticas agregadas de teclado de un usuario en los últimos días.

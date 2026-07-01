@@ -18,7 +18,9 @@ class SeedKeyCounterDebugCommand extends Command
 {
     use ResolvesDebugDefaults;
 
-    protected $signature = 'debug:seed-keycounter {--count=50 : Número de registros por tipo}';
+    protected $signature = 'debug:seed-keycounter
+        {--count=50 : Número de registros por tipo}
+        {--days=7 : Número de días distintos (hacia atrás) sobre los que repartir los registros}';
 
     protected $description = 'Inserta registros de debug para Keyboard y Mouse (solo desarrollo)';
 
@@ -39,17 +41,20 @@ class SeedKeyCounterDebugCommand extends Command
         }
 
         $count = (int) $this->option('count');
+        $days = max(1, (int) $this->option('days'));
         $now = Carbon::now();
-        $weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-        $this->info("Insertando {$count} registros de Keyboard...");
+        $this->info("Insertando {$count} registros de Keyboard repartidos en {$days} días...");
 
         for ($i = 0; $i < $count; $i++) {
-            $startAt = $now->copy()->subMinutes(($count - $i) * 2);
+            $startAt = $this->randomMomentInPastDays($now, $days, $i);
             $duration = fake()->numberBetween(30, 1800);
             $endAt = $startAt->copy()->addSeconds($duration);
 
-            Keyboard::create([
+            // `created_at` no está en $fillable del modelo, así que se usa forceFill()
+            // para poder fijarlo manualmente (create() lo ignoraría y Eloquent lo
+            // sobreescribiría con la fecha actual al guardar).
+            (new Keyboard)->forceFill([
                 'user_id' => $userId,
                 'hardware_device_id' => $hardwareDeviceId,
                 'start_at' => $startAt,
@@ -61,17 +66,18 @@ class SeedKeyCounterDebugCommand extends Command
                 'score' => fake()->numberBetween(1, 100),
                 'weekday' => $startAt->dayOfWeek,
                 'created_at' => $startAt,
-            ]);
+                'updated_at' => $startAt,
+            ])->save();
         }
 
-        $this->info("Insertando {$count} registros de Mouse...");
+        $this->info("Insertando {$count} registros de Mouse repartidos en {$days} días...");
 
         for ($i = 0; $i < $count; $i++) {
-            $startAt = $now->copy()->subMinutes(($count - $i) * 2);
+            $startAt = $this->randomMomentInPastDays($now, $days, $i);
             $duration = fake()->numberBetween(30, 1800);
             $endAt = $startAt->copy()->addSeconds($duration);
 
-            Mouse::create([
+            (new Mouse)->forceFill([
                 'user_id' => $userId,
                 'hardware_device_id' => $hardwareDeviceId,
                 'start_at' => $startAt,
@@ -84,11 +90,30 @@ class SeedKeyCounterDebugCommand extends Command
                 'clicks_average' => fake()->randomFloat(2, 1, 80),
                 'weekday' => $startAt->dayOfWeek,
                 'created_at' => $startAt,
-            ]);
+                'updated_at' => $startAt,
+            ])->save();
         }
 
         $this->info("✅ {$count} registros de Keyboard y {$count} de Mouse insertados.");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Genera una fecha/hora aleatoria dentro de uno de los últimos $days días.
+     *
+     * Reparte los registros de forma cíclica entre los días disponibles (día 0 =
+     * hoy, día 1 = ayer, ...) para que cada día del rango reciba registros,
+     * evitando que la gráfica del frontend (que agrupa por DATE(created_at))
+     * muestre un único punto.
+     */
+    private function randomMomentInPastDays(Carbon $now, int $days, int $index): Carbon
+    {
+        $dayOffset = $index % $days;
+
+        return $now->copy()
+            ->subDays($dayOffset)
+            ->startOfDay()
+            ->addSeconds(fake()->numberBetween(8 * 3600, 22 * 3600));
     }
 }

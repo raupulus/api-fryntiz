@@ -98,7 +98,7 @@
     <section class="py-8 bg-surface-container-low">
         <div class="max-w-5xl mx-auto px-6">
             <h2 class="text-3xl font-bold text-center text-on-surface mb-6">Resumen del mes</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Total de rachas</h4>
                     <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $keyboard_statistics['period_count'] }}</h3>
@@ -110,6 +110,26 @@
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Max. Puls./disp. en 1 día</h4>
                     <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $keyboard_statistics['data']->max('total_pulsations') }}</h3>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
+                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Puntuación total</h4>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ number_format($monthSummary['total_score']) }}</h3>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
+                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Pulsaciones media (por racha)</h4>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $monthSummary['avg_pulsations'] }}</h3>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
+                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Media teclas especiales</h4>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $monthSummary['avg_special_keys'] }}</h3>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
+                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Pulsaciones por minuto</h4>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $monthSummary['pulsations_per_minute'] }}</h3>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
+                    <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Puntuación media</h4>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ $monthSummary['avg_score'] }}</h3>
                 </div>
             </div>
         </div>
@@ -143,12 +163,20 @@
                             <span class="text-on-surface font-bold">{{ $keyboardSummary['avg_score'] }}</span>
                         </div>
                         <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Media teclas especiales</span>
+                            <span class="text-on-surface font-bold">{{ $keyboardSummary['avg_pulsations_special_keys'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Máximo pulsaciones en racha</span>
                             <span class="text-on-surface font-bold">{{ $keyboardSummary['max_pulsations'] }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Total pulsaciones</span>
                             <span class="text-on-surface font-bold text-lg">{{ number_format($keyboardSummary['total_pulsations']) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant text-sm">Total teclas especiales</span>
+                            <span class="text-on-surface font-bold text-lg">{{ number_format($keyboardSummary['total_pulsations_special_keys']) }}</span>
                         </div>
                         <div class="text-xs text-on-surface-variant pt-2 border-t border-surface-container">
                             Período: {{ $keyboardSummary['period_start'] }} — {{ $keyboardSummary['period_end'] }}
