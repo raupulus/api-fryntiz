@@ -24,9 +24,7 @@ class GoogleRecaptchaHelper
      */
     private const HOSTS = [
         'raupulus.dev',
-        'fryntiz.es',
-        'fryntiz.dev',
-        'api.fryntiz.dev',
+        'api.raupulus.dev',
     ];
 
     /**

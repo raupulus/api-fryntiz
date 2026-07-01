@@ -93,7 +93,7 @@
                             <table style="width: 100%">
                                 <tr class="infoblock_heading">
                                     <td class="center"><b id="infoblock_name">Detalles del Vuelo</b></td>
-                                    <td style="text-align: right"><a href="https://api.fryntiz.dev/airflight" id="dump1090_version" target="_blank"></a></td>
+                                    <td style="text-align: right"><a href="https://api.raupulus.dev/airflight" id="dump1090_version" target="_blank"></a></td>
                                 </tr>
                                 <tr class="infoblock_body"><td>&nbsp;</td><td>&nbsp;</td></tr>
                                 <tr class="infoblock_body dim"><td>Selecciona un avión de la tabla inferior para ver sus datos</td><td>&nbsp;</td></tr>
