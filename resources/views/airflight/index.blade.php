@@ -222,13 +222,13 @@
                             @foreach($planes as $plane)
                                 <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
                                     <td class="px-3 py-2 text-center text-on-surface font-mono">{{ $plane->icao ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->callsign ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->altitude ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->speed ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->track ?? '-' }}°</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lat ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lon ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->squawk ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->latestRoute->flight ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->altitude ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->speed ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->track ?? '-' }}°</td>
+                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lat ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lon ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->squawk ?? '-' }}</td>
                                     <td class="px-3 py-2 text-center text-on-surface">{{ $plane->seen_last_at ?? '-' }}</td>
                                 </tr>
                             @endforeach
@@ -257,6 +257,17 @@
     <script src="{{ asset('resources/airflight/ol3/ol-3.17.1.js') }}" type="text/javascript"></script>
     <script src="{{ asset('resources/airflight/ol3/ol3-layerswitcher.js') }}" type="text/javascript"></script>
     <script type="text/javascript" src="{{ asset('resources/airflight/config.js') }}"></script>
+
+    {{-- Endpoints del mapa: se componen en tiempo de request desde API_URL (.env)
+         hacia la API v2, en vez de quedar hardcodeados en el asset estático. --}}
+    <script>
+        var airflightApiBase = "{{ rtrim(config('app.api_url'), '/') }}/v2/airflight";
+        var urlAircrafts = airflightApiBase + '/aircrafts';
+        var urlReceiver = airflightApiBase + '/receiver';
+        var urlHistory = airflightApiBase + '/history';
+        var urlDb = airflightApiBase + '/db';
+    </script>
+
     <script type="text/javascript" src="{{ asset('resources/airflight/markers.js') }}"></script>
     <script type="text/javascript" src="{{ asset('resources/airflight/dbloader.js') }}"></script>
     <script type="text/javascript" src="{{ asset('resources/airflight/registrations.js') }}"></script>

@@ -45,14 +45,19 @@ php artisan debug:seed-keycounter --count=100
 
 ## AirFlight
 
-Inserta aviones con ICAO/callsign y registros de ruta con coordenadas cercanas a Chipiona:
+Inserta aviones con ICAO/callsign y una trayectoria de vuelo coherente cada
+uno (rumbo, velocidad y altitud evolucionan punto a punto, cerca de Chipiona),
+para que el mapa trace una línea real en vez de puntos sueltos:
 
 ```bash
-# 10 aviones + 100 rutas (por defecto)
+# 10 aviones + 100 puntos de ruta repartidos entre ellos (por defecto)
 php artisan debug:seed-airflight
 
 # Personalizar
 php artisan debug:seed-airflight --planes=20 --routes=200
+
+# Ejecutar varias veces para ir añadiendo aviones nuevos (no borra los existentes)
+php artisan debug:seed-airflight --planes=1 --routes=25
 ```
 
 **Archivo:** `app/Console/Commands/Debug/SeedAirFlightDebugCommand.php`

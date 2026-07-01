@@ -174,6 +174,33 @@ PlaneObject.prototype.updateTrack = function(estimate_time) {
         return true;
 };
 
+// Si el backend nos manda un recorrido ya conocido (histórico guardado en BD,
+// no reconstruido en vivo sondeo a sondeo), lo usamos para dibujar la línea
+// de vuelo desde que aparece el avión, en vez de esperar a acumularla.
+PlaneObject.prototype.seedTrail = function(trail) {
+        if (this.track_linesegs.length > 0 || !trail || trail.length < 2) {
+                return;
+        }
+
+        var coords = trail.map(function(point) {
+                return ol.proj.fromLonLat(point);
+        });
+
+        this.track_linesegs.push({
+                fixed: new ol.geom.LineString(coords),
+                feature: null,
+                head_update: this.last_position_time,
+                tail_update: this.last_position_time,
+                estimated: false,
+                ground: (this.altitude === "ground")
+        });
+        this.history_size += trail.length;
+
+        // El último punto del recorrido pasa a ser la posición previa, para
+        // que el siguiente sondeo en vivo continúe la línea sin duplicarla.
+        this.prev_position = this.position;
+};
+
 // This is to remove the line from the screen if we deselect the plane
 PlaneObject.prototype.clearLines = function() {
         for (var i = this.track_linesegs.length - 1; i >= 0 ; --i) {

@@ -4,32 +4,47 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\AirFlight;
 
-use App\Models\AirFlight\AirFlightRoute;
+use App\Models\AirFlight\AirFlightAirPlane;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
- * Resource para registro de vuelo en API V2.
+ * Resource para avión detectado en API V2, junto con su última posición conocida.
  *
- * @mixin AirFlightRoute
+ * @mixin AirFlightAirPlane
  */
 class AirFlightResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $route = $this->latestRoute;
+
+        $seen = $route?->seen_at ? Carbon::parse($route->seen_at)->diffInSeconds(now()) : null;
+
         return [
             'id' => $this->id,
             'icao' => $this->icao,
-            'flight' => $this->flight,
-            'squawk' => $this->squawk,
-            'lat' => $this->lat,
-            'lon' => $this->lon,
-            'altitude' => $this->altitude,
-            'speed' => $this->speed,
-            'track' => $this->track,
-            'seen' => $this->seen,
-            'seen_pos' => $this->seen_pos,
-            'messages' => $this->messages,
+            'category' => $this->category,
+            'flight' => $route?->flight,
+            'squawk' => $route?->squawk,
+            'lat' => $route?->lat,
+            'lon' => $route?->lon,
+            'altitude' => $route?->altitude,
+            'vert_rate' => $route?->vert_rate,
+            'speed' => $route?->speed,
+            'track' => $route?->track,
+            'rssi' => $route?->rssi !== null ? (float) $route->rssi : -100.0,
+            // El esquema solo guarda un timestamp por detección (seen == seen_pos).
+            'seen' => $seen,
+            'seen_pos' => $seen,
+            'messages' => $route?->messages,
+            // Recorrido conocido [lon, lat] (más antiguo primero), para que el
+            // mapa pueda dibujar la línea de vuelo desde el primer sondeo, sin
+            // esperar a acumularla en vivo.
+            'trail' => $this->relationLoaded('trail')
+                ? $this->trail->take(-50)->map(fn ($r) => [(float) $r->lon, (float) $r->lat])->values()
+                : [],
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

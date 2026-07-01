@@ -114,7 +114,31 @@ function processReceiverUpdate(data) {
 
         // Call the function update
         plane.updateData(now, ac);
+
+        // Primera vez que vemos el avión: si el backend trae recorrido ya
+        // conocido, lo usamos para dibujar la línea desde ya.
+        plane.seedTrail(ac.trail);
     }
+}
+
+// La API v2 devuelve {success, message, data: [avion, ...]} con "icao" en vez
+// de "hex", y sin "now"/"messages" a nivel de paquete (eso es propio del
+// protocolo dump1090 que espera este widget). Se adapta aquí a lo que
+// processReceiverUpdate()/PlaneObject.updateData() esperan.
+function adaptAircraftsResponse(response) {
+    var list = (response && response.data) ? response.data : [];
+    var totalMessages = 0;
+
+    var aircraft = list.map(function(ac) {
+        totalMessages += (ac.messages || 0);
+        return $.extend({}, ac, { hex: ac.icao });
+    });
+
+    return {
+        now: Math.floor(Date.now() / 1000),
+        messages: totalMessages,
+        aircraft: aircraft
+    };
 }
 
 function fetchData() {
@@ -129,7 +153,8 @@ function fetchData() {
         cache:false,
         dataType:'json'
     });
-    FetchPending.done(function(data) {
+    FetchPending.done(function(response) {
+        var data = adaptAircraftsResponse(response);
         var now = data.now;
 
         processReceiverUpdate(data);
@@ -182,7 +207,9 @@ function initialize() {
         dataType:'json'
     })
 
-        .done(function(data) {
+        .done(function(response) {
+            var data = (response && response.data) ? response.data : {};
+
             if(typeof data.lat !== "undefined") {
                 SiteShow = true;
                 SiteLat = data.lat;

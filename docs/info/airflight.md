@@ -102,6 +102,15 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 
 ### Comando de debug
 
+Genera aviones con una trayectoria coherente cada uno (rumbo, velocidad y
+altitud evolucionan punto a punto, no son coordenadas sueltas), para que el
+mapa pueda trazar una línea real. `--routes` es el total de puntos a repartir
+entre `--planes` aviones.
+
 ```bash
 php artisan debug:seed-airflight --planes=10 --routes=100
+
+# Ejecutar varias veces para ir añadiendo aviones nuevos sin borrar los anteriores,
+# cada uno con su propia línea de ~25 puntos:
+php artisan debug:seed-airflight --planes=1 --routes=25
 ```

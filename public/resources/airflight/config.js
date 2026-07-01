@@ -108,18 +108,14 @@ PageName = "Vuelos en Chipiona";
 ShowFlags = true;
 
 // Path to country flags (can be a relative or absolute URL; include a trailing /)
-FlagPath = "https://api.fryntiz.dev/resources/airflight/flags-tiny/";
+FlagPath = "/resources/airflight/flags-tiny/";
 
 // Set to true to enable the ChartBundle base layers (US coverage only)
 ChartBundleLayers = true;
 
-var urlAircrafts = 'https://api.fryntiz.dev/api/airflight/v1/get/aircrafts/json';
-var urlHistory = 'https://api.fryntiz.dev/api/airflight/v1/get/history/json';
-var urlFlags = 'https://api.fryntiz.dev/resources/airflight/flags-tiny/';
-var urlReceiver = 'https://api.fryntiz.dev/api/airflight/v1/get/receiver/json';
-var urlUpInTheHair = 'https://api.fryntiz.dev/api/airflight/v1/upintheair.json';
-var urlDb = 'https://api.fryntiz.dev/api/airflight/v1/get/db/json';
-
+// urlAircrafts, urlReceiver, urlHistory y urlDb se definen en tiempo de
+// request en resources/views/airflight/index.blade.php (usan API_URL de .env
+// y apuntan a la API v2), no aquí.
 
 // Mensajes
 var messageProblemAjax = 'Se está demorando demasiado en sincronizar los vuelos, está conectado a internet?'

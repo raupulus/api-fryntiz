@@ -6,6 +6,7 @@ namespace App\Services\AirFlight;
 
 use App\Models\AirFlight\AirFlightAirPlane;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Servicio encargado de procesar y almacenar la telemetría y detección de vuelos (ADSB).
@@ -47,8 +48,22 @@ class AirFlightService
      */
     public function getAircraftHistory(int $perPage = 50): LengthAwarePaginator
     {
-        return AirFlightAirPlane::with('routes')
+        return AirFlightAirPlane::with('latestRoute')
             ->orderByDesc('created_at')
             ->paginate($perPage);
+    }
+
+    /**
+     * Aviones vistos en los últimos minutos, con su última posición conocida.
+     * Es la fuente de datos que consume el mapa en vivo.
+     *
+     * @param  int  $minutes  Ventana de actividad reciente (por defecto 10 minutos).
+     */
+    public function getActiveAircrafts(int $minutes = 10): Collection
+    {
+        return AirFlightAirPlane::with(['latestRoute', 'trail'])
+            ->where('seen_last_at', '>=', now()->subMinutes($minutes))
+            ->orderByDesc('seen_last_at')
+            ->get();
     }
 }

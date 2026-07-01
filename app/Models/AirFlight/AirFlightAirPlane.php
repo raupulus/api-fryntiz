@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
 
 use function asset;
@@ -86,6 +87,28 @@ class AirFlightAirPlane extends BaseModel
     public function routes(): HasMany
     {
         return $this->hasMany(AirFlightRoute::class, 'airplane_id');
+    }
+
+    /**
+     * Recorrido reciente (más antiguo primero) para trazar la línea de vuelo
+     * en el mapa. El widget del mapa solo dibuja la traza en vivo a base de
+     * sondeos sucesivos; esto le da de una vez el historial ya conocido.
+     */
+    public function trail(): HasMany
+    {
+        return $this->routes()
+            ->whereNotNull('lat')
+            ->whereNotNull('lon')
+            ->orderBy('seen_at');
+    }
+
+    /**
+     * Última posición/ruta conocida del avión (lat, lon, altitud, velocidad, squawk...).
+     * Estos datos viven en airflight_routes, no en este modelo.
+     */
+    public function latestRoute(): HasOne
+    {
+        return $this->hasOne(AirFlightRoute::class, 'airplane_id')->latestOfMany('seen_at');
     }
 
     /**

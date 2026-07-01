@@ -125,7 +125,7 @@ El token se registra en Sanctum como `device:{id}` para facilitar la trazabilida
 | `debug:seed-users` | `--count=5` | Crea usuarios de prueba. |
 | `debug:seed-hardware` | `--count=5` | Crea dispositivos hardware. |
 | `debug:seed-weatherstation` | `--count=20` | Crea registros de sensores meteo. |
-| `debug:seed-airflight` | `--planes=10 --routes=100` | Crea aviones y rutas. |
+| `debug:seed-airflight` | `--planes=10 --routes=100` | Crea aviones con trayectorias coherentes (rumbo/velocidad/altitud continuos). |
 | `debug:seed-smartplant` | `--plants=5 --registers=50` | Crea plantas y registros. |
 | `debug:seed-keycounter` | `--count=50` | Crea registros KeyCounter. |
 | `debug:seed-energy` | `--devices=5 --records=100` | Crea registros de energía. |

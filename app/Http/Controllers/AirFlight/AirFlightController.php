@@ -26,7 +26,8 @@ class AirFlightController extends Controller
         $now = Carbon::now();
         $lastHour = (clone $now)->subHour();
 
-        $planes = AirFlightAirPlane::where('seen_last_at', '>=', $lastHour)
+        $planes = AirFlightAirPlane::with('latestRoute')
+            ->where('seen_last_at', '>=', $lastHour)
             ->orderByDesc('seen_last_at')
             ->paginate(20);
 

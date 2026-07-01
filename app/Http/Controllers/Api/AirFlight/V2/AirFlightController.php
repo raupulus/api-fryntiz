@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\AirFlight\V2\StoreAirFlightRequest;
 use App\Http\Requests\Api\AirFlight\V2\StoreBatchAirFlightRequest;
 use App\Http\Resources\V2\AirFlight\AirFlightResource;
-use App\Models\AirFlight\AirFlightRoute;
 use App\Services\AirFlight\AirFlightService;
 use Illuminate\Http\JsonResponse;
 
@@ -25,7 +24,10 @@ class AirFlightController extends BaseApiController
     public function receiver(): JsonResponse
     {
         return $this->successResponse([
-            'history' => AirFlightRoute::HISTORY_LENGTH,
+            // No se guardan snapshots temporales para reproducir el historial
+            // de recorrido (solo la última posición por avión), así que se
+            // desactiva la reproducción de historial en el mapa.
+            'history' => 0,
             'lat' => 36.7381,
             'lon' => -6.4301,
             'refresh' => 5000,
@@ -34,15 +36,24 @@ class AirFlightController extends BaseApiController
     }
 
     /**
-     * Lista aviones detectados recientemente.
+     * Lista aviones vistos en los últimos minutos, con su última posición.
      */
     public function aircrafts(): JsonResponse
     {
-        $aircrafts = $this->service->getAircraftHistory();
-
         return $this->successResponse(
-            AirFlightResource::collection($aircrafts)
+            AirFlightResource::collection($this->service->getActiveAircrafts())
         );
+    }
+
+    /**
+     * Base de datos de matrícula/tipo de avión por prefijo ICAO.
+     *
+     * No se mantiene ese dataset (requeriría importar el registro OACI
+     * completo), así que se responde "no encontrado" de forma consistente.
+     */
+    public function db(string $bkey): JsonResponse
+    {
+        return $this->notFoundResponse('Sin datos de matrícula/tipo para este prefijo ICAO');
     }
 
     /**

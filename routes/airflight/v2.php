@@ -15,6 +15,7 @@ Route::prefix('airflight')->group(function () {
     Route::get('/aircrafts', [AirFlightController::class, 'aircrafts'])->name('api.v2.airflight.aircrafts');
     Route::get('/history', [AirFlightController::class, 'history'])->name('api.v2.airflight.history');
     Route::get('/receiver', [AirFlightController::class, 'receiver'])->name('api.v2.airflight.receiver');
+    Route::get('/db/{bkey}', [AirFlightController::class, 'db'])->name('api.v2.airflight.db');
 
     Route::middleware(['auth:sanctum', 'ability:airflight:write'])->group(function () {
         Route::post('/register', [AirFlightController::class, 'store'])->middleware('throttle:api-store')->name('api.v2.airflight.store');
