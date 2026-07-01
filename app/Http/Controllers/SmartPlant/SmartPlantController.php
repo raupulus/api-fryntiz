@@ -31,8 +31,21 @@ class SmartPlantController extends Controller
         ]);
     }
 
-    public function show()
+    /**
+     * Muestra el perfil completo de una planta con sus últimas 50 lecturas.
+     *
+     * @return Application|Factory|View
+     */
+    public function show(SmartPlantPlant $smartplant)
     {
-        //
+        $registers = $smartplant->registers()
+            ->latest()
+            ->take(50)
+            ->get();
+
+        return view('smartplant.show')->with([
+            'plant' => $smartplant,
+            'registers' => $registers,
+        ]);
     }
 }

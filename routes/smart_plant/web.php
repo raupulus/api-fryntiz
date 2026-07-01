@@ -10,3 +10,5 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'App\Http\Controllers\SmartPlant\SmartPlantController@index')->name('smartplant.index');
+
+Route::get('/{smartplant}', 'App\Http\Controllers\SmartPlant\SmartPlantController@show')->name('smartplant.show');

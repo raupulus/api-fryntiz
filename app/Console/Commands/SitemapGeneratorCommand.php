@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\SmartPlant\SmartPlantPlant;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -59,6 +60,7 @@ class SitemapGeneratorCommand extends Command
         // # URLs estáticas con prioridades y frecuencia de actualización
         $staticUrls = [
             ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly'],
+            ['url' => route('smartplant.index'), 'priority' => 0.7, 'changefreq' => 'weekly'],
         ];
 
         foreach ($staticUrls as $urlData) {
@@ -70,7 +72,21 @@ class SitemapGeneratorCommand extends Command
             );
         }
 
+        $this->addSmartPlantUrls($sitemap);
+
         return $sitemap;
+    }
+
+    private function addSmartPlantUrls(Sitemap $sitemap): void
+    {
+        SmartPlantPlant::all()->each(function (SmartPlantPlant $plant) use ($sitemap) {
+            $sitemap->add(
+                Url::create(route('smartplant.show', $plant))
+                    ->setPriority(0.6)
+                    ->setChangeFrequency('weekly')
+                    ->setLastModificationDate($plant->updated_at ?? Carbon::now())
+            );
+        });
     }
 
     private function writeSitemapToFile(Sitemap $sitemap): void

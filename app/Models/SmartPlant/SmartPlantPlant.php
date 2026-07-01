@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $description Descripción general de la planta
  * @property string $details Descripción avanzada con detalles de la planta
  * @property string|null $image Imagen que representa a la planta
- * @property string $start_at Momento en el que se ha sembrado
+ * @property Carbon $start_at Momento en el que se ha sembrado
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -56,6 +56,10 @@ class SmartPlantPlant extends BaseModel
     use BelongsToUser;
 
     protected $table = 'smartplant_plants';
+
+    protected $casts = [
+        'start_at' => 'datetime',
+    ];
 
     protected $fillable = [
         'user_id',
