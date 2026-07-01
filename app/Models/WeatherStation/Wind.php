@@ -106,6 +106,20 @@ class Wind extends BaseWeatherStation
         return $query;
     }
 
+    /**
+     * Convierte una velocidad almacenada en m/s (unidad nativa del sensor) a km/h.
+     * Centraliza la conversión para reutilizarla en cualquier vista o respuesta
+     * que deba mostrar la velocidad del viento en km/h.
+     */
+    public static function msToKmh(float|int|string|null $metersPerSecond): ?float
+    {
+        if ($metersPerSecond === null || ! is_numeric($metersPerSecond)) {
+            return null;
+        }
+
+        return round((float) $metersPerSecond * 3.6, 2);
+    }
+
     /****************** Métodos para tablas dinámicas ******************/
 
     /**
@@ -137,10 +151,10 @@ class Wind extends BaseWeatherStation
     {
         return [
             'id' => 'ID',
-            'speed' => 'Actual m/s',
-            'average' => 'Media m/s',
-            'min' => 'Mínimo m/s',
-            'max' => 'Máximo m/s',
+            'speed' => 'Actual km/h',
+            'average' => 'Media km/h',
+            'min' => 'Mínimo km/h',
+            'max' => 'Máximo km/h',
             'created_at' => 'Instante',
         ];
     }

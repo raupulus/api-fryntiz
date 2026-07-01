@@ -186,7 +186,7 @@ class BaseWeatherStation extends BaseModel
         $datas = [];
 
         foreach ($this->apiFields as $field) {
-            $datas[$field] = round($this->{$field}, 1);
+            $datas[$field] = round((float) $this->{$field}, 1);
         }
 
         $result = collect(array_merge($generic, $datas, [

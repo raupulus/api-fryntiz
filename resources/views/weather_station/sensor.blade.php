@@ -18,11 +18,17 @@
     {{-- Botón volver + Tabla --}}
     <section class="py-12 bg-surface">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="mb-6">
+            <div class="mb-6 flex items-center justify-between flex-wrap gap-4">
                 <a href="{{ route('weather_station.index') }}"
                    class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-lg text-on-surface hover:bg-surface-container-high transition-colors">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
                     Volver a Weather Station
+                </a>
+
+                <a href="{{ $nextUrl }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-lg text-on-surface hover:bg-surface-container-high transition-colors">
+                    Siguiente: {{ $nextTitle }}
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
 
@@ -32,16 +38,30 @@
                         <table class="min-w-max w-full table-auto text-sm">
                             <thead>
                                 <tr class="bg-inverse-surface text-inverse-on-surface">
-                                    <td class="px-4 py-2 text-center">Valor ({{ $unit }})</td>
+                                    @foreach($columns as $label)
+                                        <td class="px-4 py-2 text-center">{{ $label }}</td>
+                                    @endforeach
                                     <td class="px-4 py-2 text-center">Fecha</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($records as $record)
                                     <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
-                                        <td class="px-4 py-2 text-center text-on-surface font-semibold">
-                                            {{ is_numeric($record->value) ? round($record->value, 2) : $record->value }}
-                                        </td>
+                                        @foreach($columns as $field => $label)
+                                            @php
+                                                $value = $record->{$field};
+                                                $cellType = $cellsInfo[$field]['type'] ?? 'string';
+                                            @endphp
+                                            <td class="px-4 py-2 text-center text-on-surface font-semibold">
+                                                @if($cellType === 'bool')
+                                                    {{ $value ? 'Sí' : 'No' }}
+                                                @elseif($cellType === 'float' && is_numeric($value))
+                                                    {{ round($value, 2) }}
+                                                @else
+                                                    {{ $value }}
+                                                @endif
+                                            </td>
+                                        @endforeach
                                         <td class="px-4 py-2 text-center text-on-surface-variant">
                                             {{ $record->created_at ? $record->created_at->format('d/m/Y H:i:s') : '-' }}
                                         </td>
