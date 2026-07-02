@@ -25,11 +25,33 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
+        if ($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
+            return false;
+        }
+
         return $user->isAdmin() || $user->id === $model->id;
     }
 
     public function delete(User $user, User $model): bool
     {
+        if ($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
+            return false;
+        }
+
         return $user->isSuperAdmin() && $user->id !== $model->id;
+    }
+
+    public function forceDelete(User $user, User $model): bool
+    {
+        if ($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
+            return false;
+        }
+
+        return $user->isSuperAdmin() && $user->id !== $model->id;
+    }
+
+    public function restore(User $user, User $model): bool
+    {
+        return $user->isAdmin();
     }
 }
