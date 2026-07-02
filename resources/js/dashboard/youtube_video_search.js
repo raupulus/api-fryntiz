@@ -1,4 +1,5 @@
-class YoutubeVideoSearch {
+if (typeof window.YoutubeVideoSearch === 'undefined') {
+window.YoutubeVideoSearch = class YoutubeVideoSearch {
     url = 'https://www.googleapis.com/youtube/v3/search';
 
     totalResults = 0;
@@ -406,4 +407,5 @@ class YoutubeVideoSearch {
         return this.videos;
     }
 
+}
 }

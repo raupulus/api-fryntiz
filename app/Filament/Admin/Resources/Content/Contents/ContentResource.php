@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Content\Contents;
 
+use App\Enums\ContentStatusEnum;
 use App\Filament\Admin\Resources\Content\Contents\Pages\CreateContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ListContents;
@@ -68,13 +69,15 @@ class ContentResource extends Resource
                             ->unique(ignoreRecord: true)->rule('alpha_dash')->label('Slug'),
                         Select::make('platform_id')->required()
                             ->relationship('platform', 'title')
+                            ->default(fn () => request()->query('platform_id'))
                             ->searchable()->preload()->label('Plataforma'),
                         Select::make('author_id')->required()
                             ->relationship('author', 'name')
                             ->default(fn () => auth()->id())
                             ->searchable()->preload()->label('Autor'),
                         Select::make('status_id')
-                            ->relationship('status', 'name')->required()->label('Estado'),
+                            ->relationship('status', 'name')->required()->label('Estado')
+                            ->default(ContentStatusEnum::Draft->value),
                         Select::make('type_id')
                             ->relationship('type', 'name')->required()->label('Tipo'),
                     ]),
@@ -104,7 +107,9 @@ class ContentResource extends Resource
                         Toggle::make('is_visible_on_sitemap_news')->label('Sitemap noticias'),
                     ]),
                     Grid::make(2)->schema([
-                        DateTimePicker::make('published_at')->label('Publicado en'),
+                        DateTimePicker::make('published_at')->label('Publicado en')
+                            ->disabled()
+                            ->helperText('Se rellena solo: al guardar en estado "Publicado" con alguna página creada, o al cumplirse la fecha programada.'),
                         DateTimePicker::make('scheduled_at')->label('Programado para'),
                     ]),
                 ]),

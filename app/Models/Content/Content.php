@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Content;
 
+use App\Enums\ContentStatusEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\Category;
@@ -192,6 +193,20 @@ class Content extends BaseModel
     protected static function boot()
     {
         parent::boot();
+
+        // Evento "saving": published_at es de solo lectura en el formulario, se
+        // calcula aquí para que sea imposible fijarlo a mano. Solo se marca como
+        // publicado si ya tiene al menos una página (si no, se queda sin fecha
+        // hasta que se añada contenido real).
+        static::saving(function ($model) {
+            if (
+                blank($model->published_at)
+                && $model->status_id === ContentStatusEnum::Published->value
+                && $model->pages()->exists()
+            ) {
+                $model->published_at = now();
+            }
+        });
 
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function ($model) {

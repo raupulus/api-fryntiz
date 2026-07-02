@@ -18,7 +18,7 @@
         <div class="flex items-center gap-3 flex-wrap">
             <button
                 type="button"
-                :id="'btn-' + uid"
+                id="btn-{{ $uid }}"
                 class="fi-btn fi-btn-size-md inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-primary-500"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" class="w-4 h-4">
@@ -36,7 +36,7 @@
         </div>
 
         {{-- Contenedor del modal (el plugin JS inyecta el DOM aquí) --}}
-        <div :id="'modal-' + uid"></div>
+        <div id="modal-{{ $uid }}"></div>
 
         {{-- Vista previa --}}
         <div x-show="state" class="mt-2">
@@ -59,6 +59,7 @@
             document.addEventListener('alpine:init', () => {
                 Alpine.data('youtubeVideoField', ({ state, apiKey, channels, platformStatePath, uid }) => ({
                     state: state,
+                    uid: uid,
                     searcher: null,
 
                     init() {
