@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Clusters\Energy;
 use App\Filament\Admin\Widgets\EnergyHistoricalChart;
+use App\Filament\Admin\Widgets\EnergyStatsWidget;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -30,6 +31,7 @@ class EnergyDashboard extends Page
     protected function getHeaderWidgets(): array
     {
         return [
+            EnergyStatsWidget::class,
             EnergyHistoricalChart::class,
         ];
     }

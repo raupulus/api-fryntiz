@@ -66,7 +66,11 @@ class SmartPlantPlantResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image')->square()->label('Imagen'),
+                ImageColumn::make('image')
+                    ->disk('public')
+                    ->square()
+                    ->defaultImageUrl(asset('storage/smartplant/default.jpg'))
+                    ->label('Imagen'),
                 TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
                 TextColumn::make('name_scientific')->toggleable()->label('Científico'),
                 TextColumn::make('start_at')->date('d/m/Y')->sortable()->label('Sembrada'),

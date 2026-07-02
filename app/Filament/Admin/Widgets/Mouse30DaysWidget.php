@@ -16,7 +16,7 @@ class Mouse30DaysWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $clicks = Mouse::where('start_at', '>=', now()->subDays(30))->sum('total_clicks') ?? 0;
+        $clicks = (float) (Mouse::where('start_at', '>=', now()->subDays(30))->sum('total_clicks') ?? 0);
 
         return [
             Stat::make('Clicks de Ratón (Últimos 30 días)', number_format($clicks))

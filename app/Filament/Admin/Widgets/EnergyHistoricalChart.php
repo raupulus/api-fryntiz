@@ -16,6 +16,8 @@ class EnergyHistoricalChart extends ChartWidget
 {
     protected static ?int $sort = 2;
 
+    protected int|string|array $columnSpan = 'full';
+
     protected ?string $heading = 'Generación vs Consumo — 30 días';
 
     protected function getData(): array

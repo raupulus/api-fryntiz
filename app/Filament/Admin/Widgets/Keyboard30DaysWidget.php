@@ -16,7 +16,7 @@ class Keyboard30DaysWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $pulsations = Keyboard::where('start_at', '>=', now()->subDays(30))->sum('pulsations') ?? 0;
+        $pulsations = (float) (Keyboard::where('start_at', '>=', now()->subDays(30))->sum('pulsations') ?? 0);
 
         return [
             Stat::make('Pulsaciones de Teclas (Últimos 30 días)', number_format($pulsations))
