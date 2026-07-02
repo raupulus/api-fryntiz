@@ -46,14 +46,18 @@ class SeedEnergyDebugCommand extends Command
         $devices = [];
 
         for ($i = 0; $i < $devicesCount; $i++) {
-            $device = HardwareDevice::create([
-                'user_id' => $userId,
-                'hardware_type_id' => 1,
-                'name' => ($deviceNames[$i % count($deviceNames)]).' #'.($i + 1),
-                'name_friendly' => 'Debug Device '.($i + 1),
-                'description' => 'Dispositivo de debug para pruebas de energía',
-                'created_at' => $now,
-            ]);
+            $name = ($deviceNames[$i % count($deviceNames)]).' #'.($i + 1);
+
+            // # firstOrCreate evita duplicar dispositivos si el comando se ejecuta varias veces.
+            $device = HardwareDevice::firstOrCreate(
+                ['user_id' => $userId, 'name' => $name],
+                [
+                    'hardware_type_id' => 1,
+                    'name_friendly' => 'Debug Device '.($i + 1),
+                    'description' => 'Dispositivo de debug para pruebas de energía',
+                    'created_at' => $now,
+                ]
+            );
             $devices[] = $device;
         }
 
