@@ -45,13 +45,16 @@ class PlatformResource extends Resource
     {
         return $schema->components([
             Section::make('Imagen principal')->schema([
+                // A diferencia de otros recursos (Gallery, Curriculum...), aquí
+                // no se usa HasImageFileUpload/File: image_path guarda
+                // directamente la ruta en disco que genera FileUpload, sin
+                // pasar por el modelo File ni por ImageTrait.
                 ImageCropperUpload::makeImage('image_path')
                     ->logo()
                     ->directory('platforms')
                     ->hiddenLabel()
                     ->extraAttributes(['class' => 'flex justify-center mx-auto'])
-                    ->columnSpanFull()
-                    ->helperText('Se vincula vía el trait ImageTrait cuando el modelo se guarda.'),
+                    ->columnSpanFull(),
             ])->columnSpanFull(),
 
             Section::make('General')->columns(2)->schema([

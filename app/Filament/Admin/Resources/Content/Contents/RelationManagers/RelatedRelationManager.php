@@ -20,6 +20,11 @@ class RelatedRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('title')
+            // La relación es auto-referenciada (Content -> Content) a través de
+            // "content_related". Filament adivina el nombre inverso pluralizando
+            // el modelo padre ("contents"), pero ese método no existe: la
+            // relación inversa real es contentsRelatedMe().
+            ->inverseRelationship('contentsRelatedMe')
             ->columns([
                 TextColumn::make('title')->searchable()->label('Título'),
                 TextColumn::make('platform.title')->badge()->label('Plataforma'),

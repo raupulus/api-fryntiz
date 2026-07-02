@@ -12,6 +12,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -77,6 +78,7 @@ class PagesRelationManager extends RelationManager
             ->defaultSort('order')
             ->headerActions([
                 CreateAction::make()
+                    ->label('Añadir Página')
                     ->mutateFormDataUsing(function (array $data) {
                         $this->pendingJson = $data['content_json'] ?? null;
                         unset($data['content_json']);
@@ -88,7 +90,11 @@ class PagesRelationManager extends RelationManager
             ->recordActions([
                 EditAction::make()
                     ->mutateRecordDataUsing(function (array $data, $record) {
-                        $data['content_json'] = $record->raw?->content;
+                        // Solo el raw JSON: la relación raw() devuelve el más
+                        // reciente sin filtrar por tipo y podría ser markdown.
+                        $data['content_json'] = $record->raw()
+                            ->where('available_page_raw_id', $this->jsonTypeId())
+                            ->value('content');
 
                         return $data;
                     })
@@ -112,7 +118,18 @@ class PagesRelationManager extends RelationManager
             return;
         }
 
-        $typeId = ContentAvailablePageRaw::query()->where('type', 'json')->value('id');
+        $typeId = $this->jsonTypeId();
+
+        if ($typeId === null) {
+            Notification::make()
+                ->danger()
+                ->title('No se pudo guardar el contenido del editor')
+                ->body('Falta el tipo "json" en content_available_page_raw. Ejecuta el seeder ContentAvailablePageRawSeeder.')
+                ->persistent()
+                ->send();
+
+            return;
+        }
 
         $record->raw()->updateOrCreate(
             ['available_page_raw_id' => $typeId],
@@ -120,5 +137,13 @@ class PagesRelationManager extends RelationManager
         );
 
         $this->pendingJson = null;
+    }
+
+    /**
+     * Id del tipo de raw "json" (contenido de Editor.js).
+     */
+    protected function jsonTypeId(): ?int
+    {
+        return ContentAvailablePageRaw::query()->where('type', 'json')->value('id');
     }
 }

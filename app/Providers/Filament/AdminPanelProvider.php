@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Admin\Pages\Login;
 use App\Filament\Admin\Pages\Profile;
+use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Models\Platform;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
@@ -76,6 +77,14 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): string => view()->yieldPushContent('scripts'),
+            )
+            // Editor.js debe cargarse con la página: los modales (EditorJsField
+            // en el RelationManager de páginas) se montan por Livewire y un
+            // @push desde su vista no llegaría a inyectarse en el layout.
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): string => view('filament.components.editorjs-scripts')->render(),
+                scopes: EditContent::class,
             )
             ->defaultThemeMode(ThemeMode::Dark)
             ->font('Figtree')

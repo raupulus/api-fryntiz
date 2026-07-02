@@ -20,6 +20,9 @@ class ContributorsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+            // Relación inversa explícita: Filament adivinaría "contents"
+            // (plural del modelo padre Content), que no existe en User.
+            ->inverseRelationship('contributedContents')
             ->columns([
                 TextColumn::make('name')->label('Nombre'),
                 TextColumn::make('email')->label('Email'),

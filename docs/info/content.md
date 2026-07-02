@@ -19,7 +19,9 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Models/Content/ContentTechnology.php` | `content_technologies` | Pivot contenido ↔ tecnología |
 | `app/Models/Content/ContentContributor.php` | `content_contributors` | Pivot contenido ↔ usuario contribuidor |
 | `app/Models/Content/ContentFile.php` | `content_files` | Pivot contenido ↔ archivo |
-| `app/Models/Content/ContentGallery.php` | — | Galerías de contenido |
+| `app/Models/Content/ContentGallery.php` | `content_galleries` | Pivot contenido ↔ galería |
+| `app/Models/Gallery.php` | `galleries` | Galería reutilizable de imágenes (no exclusiva de Content) |
+| `app/Models/GalleryImage.php` | `gallery_images` | Imagen (FK a `files`) perteneciente a una `Gallery` |
 | `app/Models/Content/ContentRelated.php` | `content_related` | Relación contenido ↔ contenido |
 | `app/Models/Content/ContentSeo.php` | `content_seo` | Datos SEO del contenido |
 | `app/Models/Content/ContentMetadata.php` | `content_metadata` | Metadata externa (repos, redes sociales) |
@@ -147,6 +149,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 - `Content` → `HasMany` → `ContentTechnology` (vía `content_id`)
 - `Content` → `HasMany` → `ContentContributor` (vía `content_id`)
 - `Content` → `HasMany` → `ContentFile` (vía `content_id`)
+- `Content` → `BelongsToMany` → `Gallery` (vía pivote `content_galleries`; inversa `Gallery::contents()`)
 - `Content` → `HasMany` → `ContentRelated` (vía `content_id`)
 - `Content` → `HasOne` → `ContentSeo` (vía `content_id`)
 - `Content` → `HasOne` → `ContentMetadata` (vía `content_id`)
@@ -199,8 +202,67 @@ Recupera el plugin JS original (`public/js/youtube_video_search.js` +
 
 - Componente reutilizable `app/Filament/Components/EditorJsField.php` + vista
   `resources/views/filament/components/editorjs-field.blade.php`.
-- Carga Editor.js desde `public/vendor/editorjs/`; los scripts se inyectan vía
-  `renderHook(PanelsRenderHook::SCRIPTS_AFTER)` en `AdminPanelProvider`.
+- Carga Editor.js desde `public/vendor/editorjs/`. Los scripts y el componente
+  Alpine `editorJsField` viven en
+  `resources/views/filament/components/editorjs-scripts.blade.php` y se
+  inyectan vía `renderHook(PanelsRenderHook::SCRIPTS_AFTER, ..., scopes:
+  EditContent::class)` en `AdminPanelProvider`. No usar `@push` desde la vista
+  del campo: el modal se monta por Livewire tras la carga de la página y el
+  push se descartaría. Si el campo se usa en otra página, añadir esa página a
+  los `scopes` del hook.
+- Fiabilidad del editor en el modal: Alpine llama `init()`/`destroy()`
+  automáticamente (sin `x-init`), el `$watch` del state ignora los cambios
+  generados por el propio editor (`lastSaved`) para no re-renderizar mientras
+  se escribe, y un listener `focusout` vuelca el último cambio antes de pulsar
+  «Guardar».
 - Integrado en `PagesRelationManager` (pestañas «Editor Visual (JSON)» / «HTML»).
-  El JSON se persiste en la relación `raw()` (`content_page_raw`, tipo `json`).
+  El JSON se persiste en la relación `raw()` (`content_page_raw`, tipo `json`);
+  al editar se carga solo el raw de tipo `json` (no el más reciente de
+  cualquier tipo).
+
+## Galerías
+
+Las tablas `galleries` y `gallery_images` existían desde 2019 sin modelo
+Eloquent ni recurso Filament; `Content::galleries()` apuntaba a un `HasMany`
+sobre `ContentGallery` con un formulario placeholder (un `TextInput` numérico
+para escribir a mano el `gallery_id`). Implementado por completo:
+
+- `App\Models\Gallery` (tabla `galleries`, top-level, no bajo `Content/`
+  porque es un recurso de imágenes reutilizable, igual que `File`):
+  `user()`, `image()` (portada, FK a `files`), `images()` (`HasMany` →
+  `GalleryImage`), `contents()` (`BelongsToMany` → `Content`, inversa de
+  `Content::galleries()`). `safeDelete()` sobrescrito: borra primero cada
+  `GalleryImage` (y su `File`) antes de borrarse a sí misma.
+- `App\Models\GalleryImage` (tabla `gallery_images`): `gallery()`, `image()`
+  (FK a `files`).
+- `Content::galleries()` pasó de `HasMany` a `BelongsToMany` (pivote
+  `content_galleries`, sin columnas propias): una galería puede reutilizarse
+  en varios contenidos y un contenido puede tener varias galerías.
+  `ContentGallery` ahora expone `content()`/`gallery()` para quien consulte
+  el pivote directamente, aunque el `belongsToMany` no pasa por `->using()`
+  (mismo criterio que `Content::contentsRelated()`).
+- Recurso Filament nuevo `app/Filament/Admin/Resources/Galleries/`
+  (grupo «Gestión»): CRUD de galerías con portada
+  (`ImageCropperUpload` + `HasImageFileUpload`, igual que `CurriculumResource`)
+  y un `ImagesRelationManager` para subir/borrar las imágenes de la galería
+  (`DeleteAction` sobrescrita para llamar a `$record->safeDelete()` y no dejar
+  `files` huérfanos).
+- `GalleriesRelationManager` de `ContentResource` reescrito al patrón
+  Attach/Detach de `RelatedRelationManager`: `AttachAction` +
+  `->inverseRelationship('contents')` explícito (evita que Filament adivine
+  mal el nombre del método inverso; ver el bug real que motivó esto en
+  `RelatedRelationManager` y `ContributorsRelationManager`).
+- Migración `2026_07_02_153015_make_galleries_description_nullable.php`:
+  `galleries.description` era `NOT NULL` sin default desde el origen de la
+  tabla (2019), lo que impedía crear una galería sin descripción. Como el
+  módulo se usa por primera vez ahora, se corrige antes de que produzca datos.
+- **Estilos en línea a propósito** en `gallery-images-preview.blade.php` y en
+  el HTML del selector de `GalleriesRelationManager` (Attach): el panel Admin
+  **no** tiene registrado un tema Tailwind custom (`->viteTheme()` en
+  `AdminPanelProvider` se probó y se revirtió — el `resources/css/filament/admin/theme.css`
+  del repo estaba huérfano, nunca cargado, y sus reglas sin probar rompían el
+  dropzone de FilePond en Hardware/Platforms/Technologies/Categories en cuanto
+  se activaban). Mientras no exista un tema custom verificado, cualquier vista
+  Blade propia del panel debe usar CSS en línea (`<style>`/`style=""`), no
+  clases Tailwind: no hay ningún build que las genere.
 

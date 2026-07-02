@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
+use App\Models\Content\Content;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -179,6 +181,14 @@ class User extends Authenticatable implements FilamentUser
     public function role(): BelongsTo
     {
         return $this->belongsTo(UserRole::class, 'role_id', 'id');
+    }
+
+    /**
+     * Contenidos en los que colabora. Inversa de Content::contributors().
+     */
+    public function contributedContents(): BelongsToMany
+    {
+        return $this->belongsToMany(Content::class, 'content_contributors', 'user_id', 'content_id');
     }
 
     /**

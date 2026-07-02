@@ -172,15 +172,26 @@ class File extends BaseModel
 
         $fullPath = ($is_private ? 'private' : 'public').'/'.$path;
 
+        // # Capturo los metadatos ANTES de store(): para un
+        // TemporaryUploadedFile de Livewire, store() mueve (no copia) el
+        // archivo fuera de livewire-tmp/, y getClientMimeType() en ese
+        // objeto siempre devuelve el genérico application/octet-stream
+        // (Livewire nunca lo informa al construirlo), así que se usa
+        // getMimeType() (lee el contenido real) con ese como fallback.
+        $size = $uploadedFile->getSize();
+        $mime = $uploadedFile->getMimeType() ?: $uploadedFile->getClientMimeType();
+        $originalName = $uploadedFile->getClientOriginalName();
+        $originalExtension = $uploadedFile->getClientOriginalExtension();
+        [$width, $height] = @getimagesize($uploadedFile->getRealPath()) ?: [null, null];
+
         $imageFullPath = $uploadedFile->store($fullPath);
         $imageNameArray = explode('/', $imageFullPath);
         $imageName = $imageNameArray[count($imageNameArray) - 1];
-        $mime = $uploadedFile->getClientMimeType();
 
         $canEditImage = in_array($mime, self::$imageMimeCanEdit);
 
         // # Obtengo el tipo de archivo o lo creo si no existe.
-        $fileType = FileType::addFileType($uploadedFile->getClientMimeType(), $uploadedFile->getClientOriginalExtension());
+        $fileType = FileType::addFileType($mime, $originalExtension);
 
         // # Cuando se está reemplazando un archivo se borra del disco el anterior.
         if ($file_id) {
@@ -197,14 +208,8 @@ class File extends BaseModel
             // TODO → Borrar o cambiar metadatos de los archivos si es privado.
         }
 
-        $width = $height = null;
-
-        if (($fileType?->type === 'image') && isset(getimagesize($uploadedFile)[0])) {
-            $width = getimagesize($uploadedFile)[0];
-        }
-
-        if (($fileType?->type === 'image') && isset(getimagesize($uploadedFile)[1])) {
-            $height = getimagesize($uploadedFile)[1];
+        if ($fileType?->type !== 'image') {
+            $width = $height = null;
         }
 
         $module = explode('/', $path);
@@ -216,16 +221,16 @@ class File extends BaseModel
         ], [
             'user_id' => auth()->id(),
             'file_type_id' => $fileType?->id,
-            'size' => $uploadedFile->getSize(),
+            'size' => $size,
             'width' => $width,
             'height' => $height,
             'name' => $imageName,
-            'original_name' => $uploadedFile->getClientOriginalName(),
+            'original_name' => $originalName,
             'module' => $module,
             'path' => $path,
             'storage_path' => $fullPath,
-            'alt' => $uploadedFile->getClientOriginalName(),
-            'title' => $uploadedFile->getClientOriginalName(),
+            'alt' => $originalName,
+            'title' => $originalName,
             'is_private' => $is_private,
         ]);
 

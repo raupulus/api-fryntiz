@@ -9,6 +9,7 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\Category;
 use App\Models\ContentDailyView;
 use App\Models\File;
+use App\Models\Gallery;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
 use App\Models\PlatformTag;
@@ -74,7 +75,7 @@ use function url;
  * @property-read int|null $contributors_join_count
  * @property-read Collection<int, ContentDailyView> $dailyViews
  * @property-read int|null $daily_views_count
- * @property-read Collection<int, ContentGallery> $galleries
+ * @property-read Collection<int, Gallery> $galleries
  * @property-read int|null $galleries_count
  * @property-read mixed $categories
  * @property-read mixed $subcategories
@@ -335,11 +336,11 @@ class Content extends BaseModel
     }
 
     /**
-     * Relación con las galerías asociadas.
+     * Galerías asociadas a este contenido. Inversa de Gallery::contents().
      */
-    public function galleries(): HasMany
+    public function galleries(): BelongsToMany
     {
-        return $this->hasMany(ContentGallery::class, 'content_id', 'id');
+        return $this->belongsToMany(Gallery::class, 'content_galleries', 'content_id', 'gallery_id');
     }
 
     /**

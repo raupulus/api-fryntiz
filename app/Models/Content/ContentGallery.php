@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Gallery;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -17,6 +19,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property-read Content|null $content
+ * @property-read Gallery|null $gallery
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentGallery newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentGallery newQuery()
@@ -33,4 +37,20 @@ use Illuminate\Support\Carbon;
 class ContentGallery extends BaseModel
 {
     use HasFactory;
+
+    /**
+     * Contenido asociado.
+     */
+    public function content(): BelongsTo
+    {
+        return $this->belongsTo(Content::class);
+    }
+
+    /**
+     * Galería asociada.
+     */
+    public function gallery(): BelongsTo
+    {
+        return $this->belongsTo(Gallery::class);
+    }
 }
