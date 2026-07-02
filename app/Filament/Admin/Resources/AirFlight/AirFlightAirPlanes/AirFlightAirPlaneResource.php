@@ -64,12 +64,12 @@ class AirFlightAirPlaneResource extends Resource
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
                         ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Receptor'),
-                ]),
+                ])->columnSpanFull(),
                 Section::make('Detección')->columns(3)->schema([
                     DateTimePicker::make('seen_first_at')->label('Primera detección'),
                     DateTimePicker::make('seen_last_at')->label('Última detección'),
                     DateTimePicker::make('route_last_at')->label('Última ruta'),
-                ]),
+                ])->columnSpanFull(),
             ]);
     }
 

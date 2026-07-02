@@ -49,7 +49,7 @@ class KeyboardResource extends Resource
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
                         ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Dispositivo'),
-                ]),
+                ])->columnSpanFull(),
                 Section::make('Racha')->columns(2)->schema([
                     DateTimePicker::make('start_at')
                         ->required()->label('Inicio'),
@@ -60,7 +60,7 @@ class KeyboardResource extends Resource
                         ->required()->numeric()->minValue(0)->suffix('s')->label('Duración'),
                     TextInput::make('weekday')
                         ->required()->numeric()->minValue(0)->maxValue(6)->label('Día semana (0=Dom)'),
-                ]),
+                ])->columnSpanFull(),
                 Section::make('Pulsaciones')->columns(2)->schema([
                     TextInput::make('pulsations')
                         ->required()->numeric()->minValue(0)->label('Total'),
@@ -70,7 +70,7 @@ class KeyboardResource extends Resource
                         ->required()->numeric()->step(0.0001)->label('Media (puls/s)'),
                     TextInput::make('score')
                         ->required()->numeric()->minValue(0)->label('Puntuación'),
-                ]),
+                ])->columnSpanFull(),
             ]);
     }
 

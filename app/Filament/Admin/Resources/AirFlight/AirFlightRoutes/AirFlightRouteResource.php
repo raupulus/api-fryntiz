@@ -44,7 +44,7 @@ class AirFlightRouteResource extends Resource
                     ->relationship('user', 'name')
                     ->searchable()->preload()->label('Usuario'),
                 Select::make('airplane_id')
-                    ->relationship('airplane', 'name_friendly')
+                    ->relationship('airplane', 'icao')
                     ->required()->searchable()->preload()->label('Avión'),
                 Select::make('hardware_device_id')
                     ->relationship('hardwareDevice', 'name')
@@ -79,7 +79,7 @@ class AirFlightRouteResource extends Resource
                 TextColumn::make('user.name')
                     ->label('Usuario')
                     ->sortable(),
-                TextColumn::make('airplane.name_friendly')
+                TextColumn::make('airplane.icao')
                     ->label('Avión')
                     ->sortable()
                     ->searchable(),
