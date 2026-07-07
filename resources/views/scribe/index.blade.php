@@ -144,13 +144,16 @@
                                 <a href="#endpoints-GETapi-v2-platform--platform_slug--content-type--contentType-">Devuelve el contenido de una plataforma filtrado por tipo (slug del tipo).</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-airflight-aircrafts">
-                                <a href="#endpoints-GETapi-v2-airflight-aircrafts">Lista aviones detectados recientemente.</a>
+                                <a href="#endpoints-GETapi-v2-airflight-aircrafts">Lista aviones vistos en los últimos minutos, con su última posición.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-airflight-history">
                                 <a href="#endpoints-GETapi-v2-airflight-history">Historial extendido de aviones (últimos 100).</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-airflight-receiver">
                                 <a href="#endpoints-GETapi-v2-airflight-receiver">Información del receptor (posición, refresco, historial).</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-airflight-db--bkey-">
+                                <a href="#endpoints-GETapi-v2-airflight-db--bkey-">Base de datos de matrícula/tipo de avión por prefijo ICAO.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-airflight-register">
                                 <a href="#endpoints-POSTapi-v2-airflight-register">Registra un avión detectado.</a>
@@ -170,6 +173,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-hardware-solar-charge">
                                 <a href="#endpoints-POSTapi-v2-hardware-solar-charge">Almacena datos de carga solar.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-hardware-device-status">
+                                <a href="#endpoints-POSTapi-v2-hardware-device-status">Actualiza el último estado conocido del dispositivo indicado.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-keycounter-keyboard">
                                 <a href="#endpoints-POSTapi-v2-keycounter-keyboard">Almacena un registro de pulsaciones de teclado.</a>
                             </li>
@@ -179,8 +185,14 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-smartplant-register">
                                 <a href="#endpoints-POSTapi-v2-smartplant-register">Almacena un registro de datos de planta.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weatherstation-resume">
-                                <a href="#endpoints-GETapi-v2-weatherstation-resume">Devuelve el resumen meteorológico actual.</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weatherstation-station--id--">
+                                <a href="#endpoints-GETapi-v2-weatherstation-station--id--">Devuelve una estación por id. Si no se indica id, se usa la estación
+principal por defecto (la primera de exterior).</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weatherstation-zone--id-">
+                                <a href="#endpoints-GETapi-v2-weatherstation-zone--id-">Devuelve todas las estaciones de una zona (colección), opcionalmente
+acotadas por `location_type` (indoor/outdoor). Siempre devuelve una
+colección, aunque solo haya una estación o ninguna.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weatherstation-temperature">
                                 <a href="#endpoints-GETapi-v2-weatherstation-temperature">Lista datos de temperatura con filtro opcional por rango de fechas.</a>
@@ -295,7 +307,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: June 29, 2026</li>
+        <li>Last updated: July 6, 2026</li>
     </ul>
 </div>
 
@@ -2083,14 +2095,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/user/16" \
+    --get "http://localhost:8000/api/v2/user/2" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/user/16"
+    "http://localhost:8000/api/v2/user/2"
 );
 
 const headers = {
@@ -2204,10 +2216,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="GETapi-v2-user--id-"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>16</code></p>
+<p>The ID of the user. Example: <code>2</code></p>
             </div>
                     </form>
 
@@ -2224,7 +2236,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost:8000/api/v2/user/16" \
+    "http://localhost:8000/api/v2/user/2" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -2237,7 +2249,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/user/16"
+    "http://localhost:8000/api/v2/user/2"
 );
 
 const headers = {
@@ -2340,10 +2352,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="PUTapi-v2-user--id-"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>16</code></p>
+<p>The ID of the user. Example: <code>2</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -2397,14 +2409,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/v2/user/16" \
+    "http://localhost:8000/api/v2/user/2" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/user/16"
+    "http://localhost:8000/api/v2/user/2"
 );
 
 const headers = {
@@ -2501,10 +2513,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="DELETEapi-v2-user--id-"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>16</code></p>
+<p>The ID of the user. Example: <code>2</code></p>
             </div>
                     </form>
 
@@ -3146,7 +3158,116 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;glover-armstrong-WfmZm&quot;,
+            &quot;domain&quot;: &quot;williamson.com&quot;,
+            &quot;description&quot;: &quot;Qui repellat rerum eum et rem et maxime.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;rogahn-llc-XEHr2&quot;,
+            &quot;domain&quot;: &quot;fisher.org&quot;,
+            &quot;description&quot;: &quot;Fuga sunt quia eos consequatur ad officia.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;larson-reilly-and-johns-rjPmf&quot;,
+            &quot;domain&quot;: &quot;grimes.com&quot;,
+            &quot;description&quot;: &quot;Sed veniam veritatis repellat ut.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;hermiston-fay-and-towne-TBR8n&quot;,
+            &quot;domain&quot;: &quot;kozey.com&quot;,
+            &quot;description&quot;: &quot;Perspiciatis tempore voluptas debitis cumque similique.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;wiza-tremblay-XryUf&quot;,
+            &quot;domain&quot;: &quot;bartoletti.net&quot;,
+            &quot;description&quot;: &quot;Minima consequatur facere non placeat eveniet veniam asperiores ipsa.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;jaskolski-llc-sn37S&quot;,
+            &quot;domain&quot;: &quot;koepp.com&quot;,
+            &quot;description&quot;: &quot;Quam voluptatem maiores officia ad soluta sed ut.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;leannon-schuppe-GL2J6&quot;,
+            &quot;domain&quot;: &quot;hagenes.com&quot;,
+            &quot;description&quot;: &quot;Quia rem quae illo et.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;farrell-smith-and-homenick-s4joa&quot;,
+            &quot;domain&quot;: &quot;daniel.com&quot;,
+            &quot;description&quot;: &quot;Et aut dolor quae vel aut facere.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;bergnaum-gerhold-and-legros-Qc1qW&quot;,
+            &quot;domain&quot;: &quot;feil.com&quot;,
+            &quot;description&quot;: &quot;Neque et enim ex molestias.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;mclaughlin-okeefe-Lt36R&quot;,
+            &quot;domain&quot;: &quot;mayert.org&quot;,
+            &quot;description&quot;: &quot;Dolor est aut ut dolores rem sed.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:39.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;buckridge-llc-ZwLF9&quot;,
+            &quot;domain&quot;: &quot;crist.org&quot;,
+            &quot;description&quot;: &quot;Laudantium et alias dolor inventore ea dolores voluptate ut.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:39.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;name&quot;: null,
+            &quot;slug&quot;: &quot;romaguera-kling-Nt1tS&quot;,
+            &quot;domain&quot;: &quot;bergstrom.com&quot;,
+            &quot;description&quot;: &quot;Eos dolores atque iure nesciunt ut aut esse et.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:39.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -3236,14 +3357,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platform/16" \
+    --get "http://localhost:8000/api/v2/platform/1" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platform/16"
+    "http://localhost:8000/api/v2/platform/1"
 );
 
 const headers = {
@@ -3357,10 +3478,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="slug"                data-endpoint="GETapi-v2-platform--slug-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -3377,14 +3498,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platform/16/featured" \
+    --get "http://localhost:8000/api/v2/platform/1/featured" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platform/16/featured"
+    "http://localhost:8000/api/v2/platform/1/featured"
 );
 
 const headers = {
@@ -3498,10 +3619,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platform--platform_slug--featured"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -3518,14 +3639,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platform/16/categories" \
+    --get "http://localhost:8000/api/v2/platform/1/categories" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platform/16/categories"
+    "http://localhost:8000/api/v2/platform/1/categories"
 );
 
 const headers = {
@@ -3639,10 +3760,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platform--platform_slug--categories"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -3659,14 +3780,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platform/16/content/type/architecto" \
+    --get "http://localhost:8000/api/v2/platform/1/content/type/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platform/16/content/type/architecto"
+    "http://localhost:8000/api/v2/platform/1/content/type/architecto"
 );
 
 const headers = {
@@ -3780,10 +3901,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platform--platform_slug--content-type--contentType-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>contentType</code></b>&nbsp;&nbsp;
@@ -3799,7 +3920,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v2-airflight-aircrafts">Lista aviones detectados recientemente.</h2>
+                    <h2 id="endpoints-GETapi-v2-airflight-aircrafts">Lista aviones vistos en los últimos minutos, con su última posición.</h2>
 
 <p>
 </p>
@@ -3980,7 +4101,1775 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 128,
+            &quot;icao&quot;: &quot;885445&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;WUE5644&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.712786,
+            &quot;lon&quot;: -6.447823,
+            &quot;altitude&quot;: 2677.2,
+            &quot;vert_rate&quot;: 6.6,
+            &quot;speed&quot;: 167,
+            &quot;track&quot;: 62,
+            &quot;rssi&quot;: -17.6,
+            &quot;seen&quot;: 155701.10282,
+            &quot;seen_pos&quot;: 155701.10282,
+            &quot;messages&quot;: 153,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 136,
+            &quot;icao&quot;: &quot;099480&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;UIV0913&quot;,
+            &quot;squawk&quot;: &quot;8074&quot;,
+            &quot;lat&quot;: 36.854628,
+            &quot;lon&quot;: -6.103312,
+            &quot;altitude&quot;: 8020.8,
+            &quot;vert_rate&quot;: -3.6,
+            &quot;speed&quot;: 187.9,
+            &quot;track&quot;: 83,
+            &quot;rssi&quot;: -13.8,
+            &quot;seen&quot;: 155689.102948,
+            &quot;seen_pos&quot;: 155689.102948,
+            &quot;messages&quot;: 62,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 137,
+            &quot;icao&quot;: &quot;942528&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;YSP9297&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.492107,
+            &quot;lon&quot;: -6.55376,
+            &quot;altitude&quot;: 61.6,
+            &quot;vert_rate&quot;: -2.2,
+            &quot;speed&quot;: 232,
+            &quot;track&quot;: 239,
+            &quot;rssi&quot;: -17.8,
+            &quot;seen&quot;: 155754.103012,
+            &quot;seen_pos&quot;: 155754.103012,
+            &quot;messages&quot;: 47,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 135,
+            &quot;icao&quot;: &quot;670945&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;DRT5567&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.696155,
+            &quot;lon&quot;: -6.411396,
+            &quot;altitude&quot;: 4293,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 104.4,
+            &quot;track&quot;: 83,
+            &quot;rssi&quot;: -19.6,
+            &quot;seen&quot;: 155690.103069,
+            &quot;seen_pos&quot;: 155690.103069,
+            &quot;messages&quot;: 118,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 134,
+            &quot;icao&quot;: &quot;283598&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;EQG4942&quot;,
+            &quot;squawk&quot;: &quot;5801&quot;,
+            &quot;lat&quot;: 36.960343,
+            &quot;lon&quot;: -6.296042,
+            &quot;altitude&quot;: 8362.6,
+            &quot;vert_rate&quot;: -5.8,
+            &quot;speed&quot;: 226.1,
+            &quot;track&quot;: 70,
+            &quot;rssi&quot;: -15.2,
+            &quot;seen&quot;: 155694.10312599997,
+            &quot;seen_pos&quot;: 155694.10312599997,
+            &quot;messages&quot;: 73,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 133,
+            &quot;icao&quot;: &quot;027301&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;COR7280&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.456265,
+            &quot;lon&quot;: -6.53513,
+            &quot;altitude&quot;: 4269.5,
+            &quot;vert_rate&quot;: 4.1,
+            &quot;speed&quot;: 256.6,
+            &quot;track&quot;: 174,
+            &quot;rssi&quot;: -25.3,
+            &quot;seen&quot;: 155724.10318,
+            &quot;seen_pos&quot;: 155724.10318,
+            &quot;messages&quot;: 155,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 132,
+            &quot;icao&quot;: &quot;283350&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;RIY2047&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.693169,
+            &quot;lon&quot;: -6.749825,
+            &quot;altitude&quot;: 10307.5,
+            &quot;vert_rate&quot;: -4.5,
+            &quot;speed&quot;: 145.9,
+            &quot;track&quot;: 261,
+            &quot;rssi&quot;: -5.9,
+            &quot;seen&quot;: 155691.10323500002,
+            &quot;seen_pos&quot;: 155691.10323500002,
+            &quot;messages&quot;: 123,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 131,
+            &quot;icao&quot;: &quot;447740&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;MBM4894&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.511191,
+            &quot;lon&quot;: -6.330716,
+            &quot;altitude&quot;: 7547.2,
+            &quot;vert_rate&quot;: 5.3,
+            &quot;speed&quot;: 222.5,
+            &quot;track&quot;: 234,
+            &quot;rssi&quot;: -19.4,
+            &quot;seen&quot;: 155764.10328799998,
+            &quot;seen_pos&quot;: 155764.10328799998,
+            &quot;messages&quot;: 87,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 130,
+            &quot;icao&quot;: &quot;604236&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;SNC7633&quot;,
+            &quot;squawk&quot;: &quot;4628&quot;,
+            &quot;lat&quot;: 36.903529,
+            &quot;lon&quot;: -6.545709,
+            &quot;altitude&quot;: 8244.5,
+            &quot;vert_rate&quot;: -6.7,
+            &quot;speed&quot;: 70.7,
+            &quot;track&quot;: 280,
+            &quot;rssi&quot;: -27.8,
+            &quot;seen&quot;: 155740.10334099998,
+            &quot;seen_pos&quot;: 155740.10334099998,
+            &quot;messages&quot;: 68,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 129,
+            &quot;icao&quot;: &quot;465307&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;CTO5167&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.879135,
+            &quot;lon&quot;: -6.67799,
+            &quot;altitude&quot;: 9851,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 43.7,
+            &quot;track&quot;: 228,
+            &quot;rssi&quot;: -8.3,
+            &quot;seen&quot;: 155705.103393,
+            &quot;seen_pos&quot;: 155705.103393,
+            &quot;messages&quot;: 76,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:42.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 119,
+            &quot;icao&quot;: &quot;044583&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;YSW1498&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.943912,
+            &quot;lon&quot;: -6.56404,
+            &quot;altitude&quot;: 9790.8,
+            &quot;vert_rate&quot;: 6.4,
+            &quot;speed&quot;: 237.1,
+            &quot;track&quot;: 348,
+            &quot;rssi&quot;: -12.9,
+            &quot;seen&quot;: 386352.103445,
+            &quot;seen_pos&quot;: 386352.103445,
+            &quot;messages&quot;: 52,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 123,
+            &quot;icao&quot;: &quot;919518&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;LEK6940&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.581304,
+            &quot;lon&quot;: -6.266541,
+            &quot;altitude&quot;: 5511,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 79.2,
+            &quot;track&quot;: 301,
+            &quot;rssi&quot;: -8.4,
+            &quot;seen&quot;: 386333.103497,
+            &quot;seen_pos&quot;: 386333.103497,
+            &quot;messages&quot;: 175,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 124,
+            &quot;icao&quot;: &quot;768971&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;CEJ3786&quot;,
+            &quot;squawk&quot;: &quot;1606&quot;,
+            &quot;lat&quot;: 36.95794,
+            &quot;lon&quot;: -6.436945,
+            &quot;altitude&quot;: 5383,
+            &quot;vert_rate&quot;: -3.6,
+            &quot;speed&quot;: 68.3,
+            &quot;track&quot;: 34,
+            &quot;rssi&quot;: -7.1,
+            &quot;seen&quot;: 386335.10354900005,
+            &quot;seen_pos&quot;: 386335.10354900005,
+            &quot;messages&quot;: 147,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 125,
+            &quot;icao&quot;: &quot;681413&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;WVS3922&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.743303,
+            &quot;lon&quot;: -6.606282,
+            &quot;altitude&quot;: 5044,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 116.6,
+            &quot;track&quot;: 250,
+            &quot;rssi&quot;: -5.3,
+            &quot;seen&quot;: 386326.10378899996,
+            &quot;seen_pos&quot;: 386326.10378899996,
+            &quot;messages&quot;: 173,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 118,
+            &quot;icao&quot;: &quot;281562&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;VJY1691&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.794664,
+            &quot;lon&quot;: -6.397148,
+            &quot;altitude&quot;: 5439.7,
+            &quot;vert_rate&quot;: 7.3,
+            &quot;speed&quot;: 145,
+            &quot;track&quot;: 122,
+            &quot;rssi&quot;: -10,
+            &quot;seen&quot;: 386309.103861,
+            &quot;seen_pos&quot;: 386309.103861,
+            &quot;messages&quot;: 151,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 127,
+            &quot;icao&quot;: &quot;065812&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;XDH4967&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.859682,
+            &quot;lon&quot;: -6.088289,
+            &quot;altitude&quot;: 2646.4,
+            &quot;vert_rate&quot;: -5.4,
+            &quot;speed&quot;: 267.8,
+            &quot;track&quot;: 122,
+            &quot;rssi&quot;: -9.3,
+            &quot;seen&quot;: 386309.10392100003,
+            &quot;seen_pos&quot;: 386309.10392100003,
+            &quot;messages&quot;: 144,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 120,
+            &quot;icao&quot;: &quot;413800&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;YFI1190&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.619572,
+            &quot;lon&quot;: -6.560393,
+            &quot;altitude&quot;: 2049,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 258.7,
+            &quot;track&quot;: 267,
+            &quot;rssi&quot;: -5.4,
+            &quot;seen&quot;: 386292.103978,
+            &quot;seen_pos&quot;: 386292.103978,
+            &quot;messages&quot;: 78,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 121,
+            &quot;icao&quot;: &quot;859980&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;CGS6145&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.847089,
+            &quot;lon&quot;: -6.347913,
+            &quot;altitude&quot;: 3521.8,
+            &quot;vert_rate&quot;: 6.9,
+            &quot;speed&quot;: 77.9,
+            &quot;track&quot;: 212,
+            &quot;rssi&quot;: -26.5,
+            &quot;seen&quot;: 386357.10403399996,
+            &quot;seen_pos&quot;: 386357.10403399996,
+            &quot;messages&quot;: 138,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 122,
+            &quot;icao&quot;: &quot;194590&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;EEF9773&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.75014,
+            &quot;lon&quot;: -6.554628,
+            &quot;altitude&quot;: 8350,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 166.9,
+            &quot;track&quot;: 359,
+            &quot;rssi&quot;: -10,
+            &quot;seen&quot;: 386283.104089,
+            &quot;seen_pos&quot;: 386283.104089,
+            &quot;messages&quot;: 125,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 126,
+            &quot;icao&quot;: &quot;068276&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;BAS7657&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.655962,
+            &quot;lon&quot;: -6.665013,
+            &quot;altitude&quot;: 7757,
+            &quot;vert_rate&quot;: -5.8,
+            &quot;speed&quot;: 151.1,
+            &quot;track&quot;: 260,
+            &quot;rssi&quot;: -5.2,
+            &quot;seen&quot;: 386331.10414300003,
+            &quot;seen_pos&quot;: 386331.10414300003,
+            &quot;messages&quot;: 139,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:22.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 111,
+            &quot;icao&quot;: &quot;517261&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;IOS1678&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.865939,
+            &quot;lon&quot;: -5.747252,
+            &quot;altitude&quot;: 414,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 202.6,
+            &quot;track&quot;: 99,
+            &quot;rssi&quot;: -10.7,
+            &quot;seen&quot;: 392456.104198,
+            &quot;seen_pos&quot;: 392456.104198,
+            &quot;messages&quot;: 90,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 109,
+            &quot;icao&quot;: &quot;485395&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;GZE2343&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.763725,
+            &quot;lon&quot;: -6.838744,
+            &quot;altitude&quot;: 1870,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 170.7,
+            &quot;track&quot;: 289,
+            &quot;rssi&quot;: -22.8,
+            &quot;seen&quot;: 392476.104251,
+            &quot;seen_pos&quot;: 392476.104251,
+            &quot;messages&quot;: 237,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 108,
+            &quot;icao&quot;: &quot;850891&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;HMK2212&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.975475,
+            &quot;lon&quot;: -6.474582,
+            &quot;altitude&quot;: 6519,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 168.3,
+            &quot;track&quot;: 349,
+            &quot;rssi&quot;: -5.3,
+            &quot;seen&quot;: 392416.10431,
+            &quot;seen_pos&quot;: 392416.10431,
+            &quot;messages&quot;: 97,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 107,
+            &quot;icao&quot;: &quot;432944&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;RGG4414&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.665165,
+            &quot;lon&quot;: -6.307721,
+            &quot;altitude&quot;: 7064.4,
+            &quot;vert_rate&quot;: -5.1,
+            &quot;speed&quot;: 48.4,
+            &quot;track&quot;: 303,
+            &quot;rssi&quot;: -20.8,
+            &quot;seen&quot;: 392489.10436299996,
+            &quot;seen_pos&quot;: 392489.10436299996,
+            &quot;messages&quot;: 93,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 106,
+            &quot;icao&quot;: &quot;551320&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;YNY9747&quot;,
+            &quot;squawk&quot;: &quot;7619&quot;,
+            &quot;lat&quot;: 36.467594,
+            &quot;lon&quot;: -6.364427,
+            &quot;altitude&quot;: 9399.4,
+            &quot;vert_rate&quot;: -7.1,
+            &quot;speed&quot;: 180,
+            &quot;track&quot;: 116,
+            &quot;rssi&quot;: -10.9,
+            &quot;seen&quot;: 392453.104415,
+            &quot;seen_pos&quot;: 392453.104415,
+            &quot;messages&quot;: 135,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 105,
+            &quot;icao&quot;: &quot;002491&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;OFW3059&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 37.223209,
+            &quot;lon&quot;: -6.084421,
+            &quot;altitude&quot;: 2352,
+            &quot;vert_rate&quot;: 7.5,
+            &quot;speed&quot;: 182.6,
+            &quot;track&quot;: 23,
+            &quot;rssi&quot;: -18.7,
+            &quot;seen&quot;: 392493.104467,
+            &quot;seen_pos&quot;: 392493.104467,
+            &quot;messages&quot;: 96,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 117,
+            &quot;icao&quot;: &quot;121666&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;IDT5152&quot;,
+            &quot;squawk&quot;: &quot;7351&quot;,
+            &quot;lat&quot;: 36.536414,
+            &quot;lon&quot;: -6.764942,
+            &quot;altitude&quot;: 8269,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 191.9,
+            &quot;track&quot;: 251,
+            &quot;rssi&quot;: -7.9,
+            &quot;seen&quot;: 392434.104519,
+            &quot;seen_pos&quot;: 392434.104519,
+            &quot;messages&quot;: 98,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 116,
+            &quot;icao&quot;: &quot;791524&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;NQP2694&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.654899,
+            &quot;lon&quot;: -6.797598,
+            &quot;altitude&quot;: 7414,
+            &quot;vert_rate&quot;: -6.5,
+            &quot;speed&quot;: 259,
+            &quot;track&quot;: 245,
+            &quot;rssi&quot;: -13.5,
+            &quot;seen&quot;: 392491.10456999997,
+            &quot;seen_pos&quot;: 392491.10456999997,
+            &quot;messages&quot;: 152,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 115,
+            &quot;icao&quot;: &quot;781676&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;CDY2358&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.899144,
+            &quot;lon&quot;: -6.341687,
+            &quot;altitude&quot;: 626.6,
+            &quot;vert_rate&quot;: -5.4,
+            &quot;speed&quot;: 80.9,
+            &quot;track&quot;: 256,
+            &quot;rssi&quot;: -15.5,
+            &quot;seen&quot;: 392492.104621,
+            &quot;seen_pos&quot;: 392492.104621,
+            &quot;messages&quot;: 164,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 114,
+            &quot;icao&quot;: &quot;500040&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;UHF5975&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.581371,
+            &quot;lon&quot;: -6.004034,
+            &quot;altitude&quot;: 8539,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 251.9,
+            &quot;track&quot;: 152,
+            &quot;rssi&quot;: -10,
+            &quot;seen&quot;: 392448.104672,
+            &quot;seen_pos&quot;: 392448.104672,
+            &quot;messages&quot;: 78,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 113,
+            &quot;icao&quot;: &quot;169329&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;WNX7145&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 37.123609,
+            &quot;lon&quot;: -6.266534,
+            &quot;altitude&quot;: 10310,
+            &quot;vert_rate&quot;: 7.8,
+            &quot;speed&quot;: 151.7,
+            &quot;track&quot;: 360,
+            &quot;rssi&quot;: -15.3,
+            &quot;seen&quot;: 392465.104724,
+            &quot;seen_pos&quot;: 392465.104724,
+            &quot;messages&quot;: 195,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 112,
+            &quot;icao&quot;: &quot;846890&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;OWW4213&quot;,
+            &quot;squawk&quot;: &quot;3753&quot;,
+            &quot;lat&quot;: 36.595947,
+            &quot;lon&quot;: -6.74272,
+            &quot;altitude&quot;: 9804,
+            &quot;vert_rate&quot;: -3.2,
+            &quot;speed&quot;: 44.3,
+            &quot;track&quot;: 220,
+            &quot;rssi&quot;: -26.1,
+            &quot;seen&quot;: 392503.10477499996,
+            &quot;seen_pos&quot;: 392503.10477499996,
+            &quot;messages&quot;: 117,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 110,
+            &quot;icao&quot;: &quot;153825&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;TTU5519&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.511666,
+            &quot;lon&quot;: -6.361613,
+            &quot;altitude&quot;: 7538,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 133.8,
+            &quot;track&quot;: 184,
+            &quot;rssi&quot;: -26.2,
+            &quot;seen&quot;: 392448.104826,
+            &quot;seen_pos&quot;: 392448.104826,
+            &quot;messages&quot;: 143,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 104,
+            &quot;icao&quot;: &quot;440329&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;JBG7260&quot;,
+            &quot;squawk&quot;: &quot;2917&quot;,
+            &quot;lat&quot;: 36.454004,
+            &quot;lon&quot;: -6.333875,
+            &quot;altitude&quot;: 5884,
+            &quot;vert_rate&quot;: -7.1,
+            &quot;speed&quot;: 145.8,
+            &quot;track&quot;: 143,
+            &quot;rssi&quot;: -5.2,
+            &quot;seen&quot;: 392415.10487599997,
+            &quot;seen_pos&quot;: 392415.10487599997,
+            &quot;messages&quot;: 165,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 103,
+            &quot;icao&quot;: &quot;213318&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;SJZ1328&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.19592,
+            &quot;lon&quot;: -6.024854,
+            &quot;altitude&quot;: 7934,
+            &quot;vert_rate&quot;: -4.5,
+            &quot;speed&quot;: 198.1,
+            &quot;track&quot;: 167,
+            &quot;rssi&quot;: -21.8,
+            &quot;seen&quot;: 392478.104927,
+            &quot;seen_pos&quot;: 392478.104927,
+            &quot;messages&quot;: 163,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 102,
+            &quot;icao&quot;: &quot;401564&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;AEX5936&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 37.203789,
+            &quot;lon&quot;: -6.334452,
+            &quot;altitude&quot;: 11616.8,
+            &quot;vert_rate&quot;: 6.2,
+            &quot;speed&quot;: 242.7,
+            &quot;track&quot;: 28,
+            &quot;rssi&quot;: -11.4,
+            &quot;seen&quot;: 392500.104978,
+            &quot;seen_pos&quot;: 392500.104978,
+            &quot;messages&quot;: 145,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 101,
+            &quot;icao&quot;: &quot;262623&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;HVY2333&quot;,
+            &quot;squawk&quot;: &quot;2620&quot;,
+            &quot;lat&quot;: 36.484218,
+            &quot;lon&quot;: -6.280744,
+            &quot;altitude&quot;: 9912,
+            &quot;vert_rate&quot;: 6,
+            &quot;speed&quot;: 194.9,
+            &quot;track&quot;: 143,
+            &quot;rssi&quot;: -15.2,
+            &quot;seen&quot;: 392497.10502899997,
+            &quot;seen_pos&quot;: 392497.10502899997,
+            &quot;messages&quot;: 159,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 100,
+            &quot;icao&quot;: &quot;000778&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;IMP1350&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.80319,
+            &quot;lon&quot;: -6.185471,
+            &quot;altitude&quot;: 9823.2,
+            &quot;vert_rate&quot;: 6.3,
+            &quot;speed&quot;: 166.2,
+            &quot;track&quot;: 43,
+            &quot;rssi&quot;: -20.9,
+            &quot;seen&quot;: 392435.10508300003,
+            &quot;seen_pos&quot;: 392435.10508300003,
+            &quot;messages&quot;: 205,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 99,
+            &quot;icao&quot;: &quot;432619&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;ICR8003&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.739491,
+            &quot;lon&quot;: -6.95121,
+            &quot;altitude&quot;: 2154,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 256.9,
+            &quot;track&quot;: 239,
+            &quot;rssi&quot;: -8.1,
+            &quot;seen&quot;: 392444.105142,
+            &quot;seen_pos&quot;: 392444.105142,
+            &quot;messages&quot;: 145,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 98,
+            &quot;icao&quot;: &quot;796629&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;OGJ5340&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.982364,
+            &quot;lon&quot;: -5.926762,
+            &quot;altitude&quot;: 3955,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 136.5,
+            &quot;track&quot;: 77,
+            &quot;rssi&quot;: -28.8,
+            &quot;seen&quot;: 392428.105197,
+            &quot;seen_pos&quot;: 392428.105197,
+            &quot;messages&quot;: 102,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 97,
+            &quot;icao&quot;: &quot;484118&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;GAS8606&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 37.028147,
+            &quot;lon&quot;: -6.031481,
+            &quot;altitude&quot;: 10778,
+            &quot;vert_rate&quot;: 7.8,
+            &quot;speed&quot;: 174.2,
+            &quot;track&quot;: 43,
+            &quot;rssi&quot;: -19.6,
+            &quot;seen&quot;: 392445.10525300005,
+            &quot;seen_pos&quot;: 392445.10525300005,
+            &quot;messages&quot;: 98,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:57:05.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 95,
+            &quot;icao&quot;: &quot;928300&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;DBW9663&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.602117,
+            &quot;lon&quot;: -5.302321,
+            &quot;altitude&quot;: 7408.6,
+            &quot;vert_rate&quot;: 6.8,
+            &quot;speed&quot;: 243,
+            &quot;track&quot;: 111,
+            &quot;rssi&quot;: -9.6,
+            &quot;seen&quot;: 392573.105306,
+            &quot;seen_pos&quot;: 392573.105306,
+            &quot;messages&quot;: 252,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:55:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 96,
+            &quot;icao&quot;: &quot;239027&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;MGB0175&quot;,
+            &quot;squawk&quot;: &quot;7747&quot;,
+            &quot;lat&quot;: 36.384253,
+            &quot;lon&quot;: -6.256648,
+            &quot;altitude&quot;: 7627,
+            &quot;vert_rate&quot;: 7.3,
+            &quot;speed&quot;: 203.8,
+            &quot;track&quot;: 196,
+            &quot;rssi&quot;: -23.2,
+            &quot;seen&quot;: 392587.105356,
+            &quot;seen_pos&quot;: 392587.105356,
+            &quot;messages&quot;: 148,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:55:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 70,
+            &quot;icao&quot;: &quot;799467&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;UAP8468&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.579736,
+            &quot;lon&quot;: -6.41445,
+            &quot;altitude&quot;: 9498,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 226.2,
+            &quot;track&quot;: 91,
+            &quot;rssi&quot;: -29.7,
+            &quot;seen&quot;: 392984.10540899995,
+            &quot;seen_pos&quot;: 392984.10540899995,
+            &quot;messages&quot;: 131,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:48:35.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 72,
+            &quot;icao&quot;: &quot;641913&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;EGK4063&quot;,
+            &quot;squawk&quot;: &quot;3799&quot;,
+            &quot;lat&quot;: 36.558999,
+            &quot;lon&quot;: -6.373571,
+            &quot;altitude&quot;: 9092.6,
+            &quot;vert_rate&quot;: 7.2,
+            &quot;speed&quot;: 47.8,
+            &quot;track&quot;: 158,
+            &quot;rssi&quot;: -15.7,
+            &quot;seen&quot;: 392939.105459,
+            &quot;seen_pos&quot;: 392939.105459,
+            &quot;messages&quot;: 80,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:48:35.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 69,
+            &quot;icao&quot;: &quot;149799&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;IMN0802&quot;,
+            &quot;squawk&quot;: &quot;9223&quot;,
+            &quot;lat&quot;: 36.581957,
+            &quot;lon&quot;: -6.453154,
+            &quot;altitude&quot;: 2480,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 166.3,
+            &quot;track&quot;: 32,
+            &quot;rssi&quot;: -26,
+            &quot;seen&quot;: 392983.10550999996,
+            &quot;seen_pos&quot;: 392983.10550999996,
+            &quot;messages&quot;: 82,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:48:35.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 71,
+            &quot;icao&quot;: &quot;238051&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;IZU2831&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.873175,
+            &quot;lon&quot;: -6.632856,
+            &quot;altitude&quot;: 9329,
+            &quot;vert_rate&quot;: -2.2,
+            &quot;speed&quot;: 235.7,
+            &quot;track&quot;: 171,
+            &quot;rssi&quot;: -19.5,
+            &quot;seen&quot;: 392938.10556,
+            &quot;seen_pos&quot;: 392938.10556,
+            &quot;messages&quot;: 123,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:48:35.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 68,
+            &quot;icao&quot;: &quot;392013&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;JTC5339&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.90995,
+            &quot;lon&quot;: -6.075229,
+            &quot;altitude&quot;: 6507.2,
+            &quot;vert_rate&quot;: 3.8,
+            &quot;speed&quot;: 155.5,
+            &quot;track&quot;: 88,
+            &quot;rssi&quot;: -21.4,
+            &quot;seen&quot;: 392984.10561,
+            &quot;seen_pos&quot;: 392984.10561,
+            &quot;messages&quot;: 141,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:47:48.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 48,
+            &quot;icao&quot;: &quot;535411&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;VQE1560&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.707301,
+            &quot;lon&quot;: -6.21797,
+            &quot;altitude&quot;: 3854,
+            &quot;vert_rate&quot;: 2.4,
+            &quot;speed&quot;: 193.1,
+            &quot;track&quot;: 60,
+            &quot;rssi&quot;: -27.9,
+            &quot;seen&quot;: 393683.10566,
+            &quot;seen_pos&quot;: 393683.10566,
+            &quot;messages&quot;: 72,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:36:27.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 47,
+            &quot;icao&quot;: &quot;914727&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;ZKA0518&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.725689,
+            &quot;lon&quot;: -6.190097,
+            &quot;altitude&quot;: 1610,
+            &quot;vert_rate&quot;: -2.6,
+            &quot;speed&quot;: 183,
+            &quot;track&quot;: 228,
+            &quot;rssi&quot;: -10.1,
+            &quot;seen&quot;: 393718.10571100004,
+            &quot;seen_pos&quot;: 393718.10571100004,
+            &quot;messages&quot;: 50,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:36:27.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 49,
+            &quot;icao&quot;: &quot;008007&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;EAR5679&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.925775,
+            &quot;lon&quot;: -6.480726,
+            &quot;altitude&quot;: 3400,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 227.7,
+            &quot;track&quot;: 256,
+            &quot;rssi&quot;: -13.5,
+            &quot;seen&quot;: 393674.10576099996,
+            &quot;seen_pos&quot;: 393674.10576099996,
+            &quot;messages&quot;: 95,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:36:27.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 50,
+            &quot;icao&quot;: &quot;325833&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;VBX9333&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.64908,
+            &quot;lon&quot;: -6.567099,
+            &quot;altitude&quot;: 2615.8,
+            &quot;vert_rate&quot;: 4.2,
+            &quot;speed&quot;: 242.5,
+            &quot;track&quot;: 176,
+            &quot;rssi&quot;: -10.9,
+            &quot;seen&quot;: 393657.105811,
+            &quot;seen_pos&quot;: 393657.105811,
+            &quot;messages&quot;: 111,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:36:27.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 46,
+            &quot;icao&quot;: &quot;345202&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;MKY8273&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.736125,
+            &quot;lon&quot;: -6.915978,
+            &quot;altitude&quot;: 4793.8,
+            &quot;vert_rate&quot;: 2.6,
+            &quot;speed&quot;: 108.5,
+            &quot;track&quot;: 231,
+            &quot;rssi&quot;: -11.7,
+            &quot;seen&quot;: 393723.10586400004,
+            &quot;seen_pos&quot;: 393723.10586400004,
+            &quot;messages&quot;: 186,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 45,
+            &quot;icao&quot;: &quot;537890&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;ENR2569&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 37.202055,
+            &quot;lon&quot;: -6.40536,
+            &quot;altitude&quot;: 4192.4,
+            &quot;vert_rate&quot;: -4.9,
+            &quot;speed&quot;: 215.5,
+            &quot;track&quot;: 26,
+            &quot;rssi&quot;: -19.1,
+            &quot;seen&quot;: 393738.105917,
+            &quot;seen_pos&quot;: 393738.105917,
+            &quot;messages&quot;: 226,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:35:53.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;icao&quot;: &quot;966011&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;FIO4424&quot;,
+            &quot;squawk&quot;: &quot;1883&quot;,
+            &quot;lat&quot;: 36.817434,
+            &quot;lon&quot;: -6.334667,
+            &quot;altitude&quot;: 4322,
+            &quot;vert_rate&quot;: 5,
+            &quot;speed&quot;: 163.1,
+            &quot;track&quot;: 70,
+            &quot;rssi&quot;: -16.9,
+            &quot;seen&quot;: 395779.105973,
+            &quot;seen_pos&quot;: 395779.105973,
+            &quot;messages&quot;: 82,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:02:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;icao&quot;: &quot;336413&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;ZDK4554&quot;,
+            &quot;squawk&quot;: &quot;1388&quot;,
+            &quot;lat&quot;: 36.637164,
+            &quot;lon&quot;: -6.506524,
+            &quot;altitude&quot;: 9532.4,
+            &quot;vert_rate&quot;: -2.1,
+            &quot;speed&quot;: 67.7,
+            &quot;track&quot;: 168,
+            &quot;rssi&quot;: -26.4,
+            &quot;seen&quot;: 395729.106027,
+            &quot;seen_pos&quot;: 395729.106027,
+            &quot;messages&quot;: 92,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:02:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;icao&quot;: &quot;492403&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;XWH9790&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.905302,
+            &quot;lon&quot;: -6.228889,
+            &quot;altitude&quot;: 4533,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 248.1,
+            &quot;track&quot;: 91,
+            &quot;rssi&quot;: -22.1,
+            &quot;seen&quot;: 395751.106078,
+            &quot;seen_pos&quot;: 395751.106078,
+            &quot;messages&quot;: 83,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:02:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;icao&quot;: &quot;271313&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;QRF7559&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.87359,
+            &quot;lon&quot;: -6.269925,
+            &quot;altitude&quot;: 988,
+            &quot;vert_rate&quot;: 2.5,
+            &quot;speed&quot;: 75.4,
+            &quot;track&quot;: 97,
+            &quot;rssi&quot;: -17.6,
+            &quot;seen&quot;: 395756.106128,
+            &quot;seen_pos&quot;: 395756.106128,
+            &quot;messages&quot;: 65,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:02:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;icao&quot;: &quot;813326&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;TEB3592&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.623226,
+            &quot;lon&quot;: -6.264677,
+            &quot;altitude&quot;: 7448,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 77.7,
+            &quot;track&quot;: 84,
+            &quot;rssi&quot;: -9.1,
+            &quot;seen&quot;: 395759.10618,
+            &quot;seen_pos&quot;: 395759.10618,
+            &quot;messages&quot;: 66,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:02:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;icao&quot;: &quot;180612&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;WES1621&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 37.015962,
+            &quot;lon&quot;: -6.193702,
+            &quot;altitude&quot;: 1385,
+            &quot;vert_rate&quot;: 0,
+            &quot;speed&quot;: 217.2,
+            &quot;track&quot;: 29,
+            &quot;rssi&quot;: -12.6,
+            &quot;seen&quot;: 395760.106233,
+            &quot;seen_pos&quot;: 395760.106233,
+            &quot;messages&quot;: 127,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T19:01:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;icao&quot;: &quot;714552&quot;,
+            &quot;category&quot;: null,
+            &quot;flight&quot;: &quot;NDC0011&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.956943,
+            &quot;lon&quot;: -6.302359,
+            &quot;altitude&quot;: 10722,
+            &quot;vert_rate&quot;: -1213,
+            &quot;speed&quot;: 456,
+            &quot;track&quot;: 287,
+            &quot;rssi&quot;: -10.9,
+            &quot;seen&quot;: 396859.106284,
+            &quot;seen_pos&quot;: 396859.106284,
+            &quot;messages&quot;: 338,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:54:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;icao&quot;: &quot;109096&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;DNZ4964&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.78008,
+            &quot;lon&quot;: -6.182975,
+            &quot;altitude&quot;: 1445,
+            &quot;vert_rate&quot;: -1617,
+            &quot;speed&quot;: 56,
+            &quot;track&quot;: 206,
+            &quot;rssi&quot;: -8.9,
+            &quot;seen&quot;: 396319.106334,
+            &quot;seen_pos&quot;: 396319.106334,
+            &quot;messages&quot;: 394,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:54:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;icao&quot;: &quot;816496&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;EBV0617&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.5912,
+            &quot;lon&quot;: -6.081023,
+            &quot;altitude&quot;: 3357,
+            &quot;vert_rate&quot;: -1326,
+            &quot;speed&quot;: 378,
+            &quot;track&quot;: 83,
+            &quot;rssi&quot;: -23.2,
+            &quot;seen&quot;: 396379.106385,
+            &quot;seen_pos&quot;: 396379.106385,
+            &quot;messages&quot;: 201,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:54:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;icao&quot;: &quot;068505&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;QHW4824&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.602673,
+            &quot;lon&quot;: -6.328433,
+            &quot;altitude&quot;: 716,
+            &quot;vert_rate&quot;: 69,
+            &quot;speed&quot;: 99,
+            &quot;track&quot;: 144,
+            &quot;rssi&quot;: -7.2,
+            &quot;seen&quot;: 397099.106435,
+            &quot;seen_pos&quot;: 397099.106435,
+            &quot;messages&quot;: 16,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:54:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;icao&quot;: &quot;181431&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;EBO6476&quot;,
+            &quot;squawk&quot;: &quot;7500&quot;,
+            &quot;lat&quot;: 36.542895,
+            &quot;lon&quot;: -6.78029,
+            &quot;altitude&quot;: 3749,
+            &quot;vert_rate&quot;: 1522,
+            &quot;speed&quot;: 414,
+            &quot;track&quot;: 140,
+            &quot;rssi&quot;: -18,
+            &quot;seen&quot;: 396259.106486,
+            &quot;seen_pos&quot;: 396259.106486,
+            &quot;messages&quot;: 281,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:54:01.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;icao&quot;: &quot;134611&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;NJB1467&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 37.074063,
+            &quot;lon&quot;: -6.016417,
+            &quot;altitude&quot;: 11739,
+            &quot;vert_rate&quot;: -1534,
+            &quot;speed&quot;: 153,
+            &quot;track&quot;: 354,
+            &quot;rssi&quot;: -18.8,
+            &quot;seen&quot;: 398170.106537,
+            &quot;seen_pos&quot;: 398170.106537,
+            &quot;messages&quot;: 288,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;icao&quot;: &quot;997702&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;XTT5778&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.625193,
+            &quot;lon&quot;: -6.182365,
+            &quot;altitude&quot;: 10277,
+            &quot;vert_rate&quot;: 574,
+            &quot;speed&quot;: 325,
+            &quot;track&quot;: 161,
+            &quot;rssi&quot;: -8.7,
+            &quot;seen&quot;: 398290.106587,
+            &quot;seen_pos&quot;: 398290.106587,
+            &quot;messages&quot;: 337,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;icao&quot;: &quot;805793&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;KQU0527&quot;,
+            &quot;squawk&quot;: &quot;7500&quot;,
+            &quot;lat&quot;: 36.7013,
+            &quot;lon&quot;: -6.305762,
+            &quot;altitude&quot;: 5676,
+            &quot;vert_rate&quot;: 176,
+            &quot;speed&quot;: 360,
+            &quot;track&quot;: 99,
+            &quot;rssi&quot;: -29.3,
+            &quot;seen&quot;: 398830.10663700005,
+            &quot;seen_pos&quot;: 398830.10663700005,
+            &quot;messages&quot;: 493,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;icao&quot;: &quot;514315&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;GDT4687&quot;,
+            &quot;squawk&quot;: &quot;4980&quot;,
+            &quot;lat&quot;: 36.510787,
+            &quot;lon&quot;: -6.37943,
+            &quot;altitude&quot;: 4241,
+            &quot;vert_rate&quot;: -347,
+            &quot;speed&quot;: 136,
+            &quot;track&quot;: 354,
+            &quot;rssi&quot;: -24.8,
+            &quot;seen&quot;: 398230.10668699996,
+            &quot;seen_pos&quot;: 398230.10668699996,
+            &quot;messages&quot;: 44,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;icao&quot;: &quot;710725&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;EIQ1107&quot;,
+            &quot;squawk&quot;: &quot;7500&quot;,
+            &quot;lat&quot;: 36.809031,
+            &quot;lon&quot;: -6.653308,
+            &quot;altitude&quot;: 10858,
+            &quot;vert_rate&quot;: -146,
+            &quot;speed&quot;: 392,
+            &quot;track&quot;: 128,
+            &quot;rssi&quot;: -23.9,
+            &quot;seen&quot;: 398530.106743,
+            &quot;seen_pos&quot;: 398530.106743,
+            &quot;messages&quot;: 253,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;icao&quot;: &quot;757500&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;ZNP9868&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 37.081406,
+            &quot;lon&quot;: -6.396388,
+            &quot;altitude&quot;: 1297,
+            &quot;vert_rate&quot;: 608,
+            &quot;speed&quot;: 458,
+            &quot;track&quot;: 296,
+            &quot;rssi&quot;: -14,
+            &quot;seen&quot;: 399610.106796,
+            &quot;seen_pos&quot;: 399610.106796,
+            &quot;messages&quot;: 40,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;icao&quot;: &quot;716675&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;RMY1859&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.46006,
+            &quot;lon&quot;: -6.754419,
+            &quot;altitude&quot;: 7778,
+            &quot;vert_rate&quot;: -121,
+            &quot;speed&quot;: 434,
+            &quot;track&quot;: 73,
+            &quot;rssi&quot;: -25.5,
+            &quot;seen&quot;: 398410.10684799997,
+            &quot;seen_pos&quot;: 398410.10684799997,
+            &quot;messages&quot;: 87,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;icao&quot;: &quot;411182&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;TSH8948&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.942196,
+            &quot;lon&quot;: -6.527866,
+            &quot;altitude&quot;: 7788,
+            &quot;vert_rate&quot;: -1358,
+            &quot;speed&quot;: 367,
+            &quot;track&quot;: 247,
+            &quot;rssi&quot;: -13.1,
+            &quot;seen&quot;: 398590.106899,
+            &quot;seen_pos&quot;: 398590.106899,
+            &quot;messages&quot;: 316,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:22:10.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;icao&quot;: &quot;235099&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;VNQ6859&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.704535,
+            &quot;lon&quot;: -6.468149,
+            &quot;altitude&quot;: 4790,
+            &quot;vert_rate&quot;: 1484,
+            &quot;speed&quot;: 232,
+            &quot;track&quot;: 17,
+            &quot;rssi&quot;: -19.9,
+            &quot;seen&quot;: 399023.106951,
+            &quot;seen_pos&quot;: 399023.106951,
+            &quot;messages&quot;: 70,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;icao&quot;: &quot;205579&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;YQP9859&quot;,
+            &quot;squawk&quot;: &quot;2772&quot;,
+            &quot;lat&quot;: 36.590388,
+            &quot;lon&quot;: -6.710454,
+            &quot;altitude&quot;: 4328,
+            &quot;vert_rate&quot;: 1110,
+            &quot;speed&quot;: 254,
+            &quot;track&quot;: 69,
+            &quot;rssi&quot;: -22.6,
+            &quot;seen&quot;: 399143.107002,
+            &quot;seen_pos&quot;: 399143.107002,
+            &quot;messages&quot;: 467,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;icao&quot;: &quot;075445&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;PBJ1822&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.573903,
+            &quot;lon&quot;: -6.320201,
+            &quot;altitude&quot;: 5457,
+            &quot;vert_rate&quot;: -70,
+            &quot;speed&quot;: 262,
+            &quot;track&quot;: 52,
+            &quot;rssi&quot;: -21.4,
+            &quot;seen&quot;: 400163.107054,
+            &quot;seen_pos&quot;: 400163.107054,
+            &quot;messages&quot;: 58,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;icao&quot;: &quot;711267&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;GXQ1735&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.405357,
+            &quot;lon&quot;: -6.279664,
+            &quot;altitude&quot;: 3146,
+            &quot;vert_rate&quot;: -1847,
+            &quot;speed&quot;: 226,
+            &quot;track&quot;: 331,
+            &quot;rssi&quot;: -14.1,
+            &quot;seen&quot;: 399383.10710799997,
+            &quot;seen_pos&quot;: 399383.10710799997,
+            &quot;messages&quot;: 397,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;icao&quot;: &quot;144960&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;RLM3272&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.439914,
+            &quot;lon&quot;: -6.084562,
+            &quot;altitude&quot;: 8615,
+            &quot;vert_rate&quot;: 637,
+            &quot;speed&quot;: 178,
+            &quot;track&quot;: 109,
+            &quot;rssi&quot;: -16.9,
+            &quot;seen&quot;: 398843.10716200003,
+            &quot;seen_pos&quot;: 398843.10716200003,
+            &quot;messages&quot;: 256,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;icao&quot;: &quot;941621&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;DSJ0618&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.971917,
+            &quot;lon&quot;: -6.499035,
+            &quot;altitude&quot;: 5129,
+            &quot;vert_rate&quot;: -432,
+            &quot;speed&quot;: 320,
+            &quot;track&quot;: 197,
+            &quot;rssi&quot;: -16,
+            &quot;seen&quot;: 398963.10721600003,
+            &quot;seen_pos&quot;: 398963.10721600003,
+            &quot;messages&quot;: 229,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;icao&quot;: &quot;199438&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;KDI2094&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 37.021186,
+            &quot;lon&quot;: -6.273819,
+            &quot;altitude&quot;: 3621,
+            &quot;vert_rate&quot;: -108,
+            &quot;speed&quot;: 312,
+            &quot;track&quot;: 30,
+            &quot;rssi&quot;: -15.3,
+            &quot;seen&quot;: 399203.10727,
+            &quot;seen_pos&quot;: 399203.10727,
+            &quot;messages&quot;: 188,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;icao&quot;: &quot;176510&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;XUV1516&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.411751,
+            &quot;lon&quot;: -6.233901,
+            &quot;altitude&quot;: 7603,
+            &quot;vert_rate&quot;: 434,
+            &quot;speed&quot;: 397,
+            &quot;track&quot;: 179,
+            &quot;rssi&quot;: -22.9,
+            &quot;seen&quot;: 398783.107322,
+            &quot;seen_pos&quot;: 398783.107322,
+            &quot;messages&quot;: 377,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;icao&quot;: &quot;678935&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;HZK4570&quot;,
+            &quot;squawk&quot;: &quot;7600&quot;,
+            &quot;lat&quot;: 36.557568,
+            &quot;lon&quot;: -6.57408,
+            &quot;altitude&quot;: 5535,
+            &quot;vert_rate&quot;: -1844,
+            &quot;speed&quot;: 409,
+            &quot;track&quot;: 54,
+            &quot;rssi&quot;: -27.5,
+            &quot;seen&quot;: 399083.10737599997,
+            &quot;seen_pos&quot;: 399083.10737599997,
+            &quot;messages&quot;: 476,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;icao&quot;: &quot;266426&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;WHU0960&quot;,
+            &quot;squawk&quot;: &quot;7000&quot;,
+            &quot;lat&quot;: 36.897527,
+            &quot;lon&quot;: -6.373214,
+            &quot;altitude&quot;: 7285,
+            &quot;vert_rate&quot;: 612,
+            &quot;speed&quot;: 201,
+            &quot;track&quot;: 358,
+            &quot;rssi&quot;: -18.5,
+            &quot;seen&quot;: 399623.10742799996,
+            &quot;seen_pos&quot;: 399623.10742799996,
+            &quot;messages&quot;: 299,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T18:11:57.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;icao&quot;: &quot;255957&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;UCC1364&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 37.023502,
+            &quot;lon&quot;: -6.032356,
+            &quot;altitude&quot;: 9118,
+            &quot;vert_rate&quot;: 483,
+            &quot;speed&quot;: 55,
+            &quot;track&quot;: 120,
+            &quot;rssi&quot;: -14.6,
+            &quot;seen&quot;: 405604.10748,
+            &quot;seen_pos&quot;: 405604.10748,
+            &quot;messages&quot;: 433,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;icao&quot;: &quot;967356&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;WTI3240&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.401613,
+            &quot;lon&quot;: -6.652688,
+            &quot;altitude&quot;: 9731,
+            &quot;vert_rate&quot;: -1525,
+            &quot;speed&quot;: 347,
+            &quot;track&quot;: 248,
+            &quot;rssi&quot;: -14.3,
+            &quot;seen&quot;: 405844.107532,
+            &quot;seen_pos&quot;: 405844.107532,
+            &quot;messages&quot;: 268,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;icao&quot;: &quot;708522&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;QDF2880&quot;,
+            &quot;squawk&quot;: &quot;6293&quot;,
+            &quot;lat&quot;: 36.997455,
+            &quot;lon&quot;: -6.627174,
+            &quot;altitude&quot;: 3070,
+            &quot;vert_rate&quot;: -520,
+            &quot;speed&quot;: 493,
+            &quot;track&quot;: 272,
+            &quot;rssi&quot;: -23.6,
+            &quot;seen&quot;: 405784.107582,
+            &quot;seen_pos&quot;: 405784.107582,
+            &quot;messages&quot;: 444,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;icao&quot;: &quot;198299&quot;,
+            &quot;category&quot;: &quot;B2&quot;,
+            &quot;flight&quot;: &quot;LCN9295&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.540502,
+            &quot;lon&quot;: -6.461913,
+            &quot;altitude&quot;: 1906,
+            &quot;vert_rate&quot;: 1167,
+            &quot;speed&quot;: 359,
+            &quot;track&quot;: 343,
+            &quot;rssi&quot;: -21.3,
+            &quot;seen&quot;: 406084.107634,
+            &quot;seen_pos&quot;: 406084.107634,
+            &quot;messages&quot;: 71,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;icao&quot;: &quot;819469&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;SIM6886&quot;,
+            &quot;squawk&quot;: &quot;7600&quot;,
+            &quot;lat&quot;: 36.857279,
+            &quot;lon&quot;: -6.526873,
+            &quot;altitude&quot;: 10153,
+            &quot;vert_rate&quot;: 1540,
+            &quot;speed&quot;: 56,
+            &quot;track&quot;: 18,
+            &quot;rssi&quot;: -14.7,
+            &quot;seen&quot;: 405484.107685,
+            &quot;seen_pos&quot;: 405484.107685,
+            &quot;messages&quot;: 311,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;icao&quot;: &quot;662266&quot;,
+            &quot;category&quot;: &quot;A5&quot;,
+            &quot;flight&quot;: &quot;XZE9905&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 37.057422,
+            &quot;lon&quot;: -6.423699,
+            &quot;altitude&quot;: 6655,
+            &quot;vert_rate&quot;: -1320,
+            &quot;speed&quot;: 181,
+            &quot;track&quot;: 266,
+            &quot;rssi&quot;: -22.7,
+            &quot;seen&quot;: 405664.107735,
+            &quot;seen_pos&quot;: 405664.107735,
+            &quot;messages&quot;: 391,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;icao&quot;: &quot;322285&quot;,
+            &quot;category&quot;: &quot;A2&quot;,
+            &quot;flight&quot;: &quot;GDL7842&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.485004,
+            &quot;lon&quot;: -6.017964,
+            &quot;altitude&quot;: 11772,
+            &quot;vert_rate&quot;: 920,
+            &quot;speed&quot;: 120,
+            &quot;track&quot;: 304,
+            &quot;rssi&quot;: -16.4,
+            &quot;seen&quot;: 407404.107785,
+            &quot;seen_pos&quot;: 407404.107785,
+            &quot;messages&quot;: 243,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;icao&quot;: &quot;243935&quot;,
+            &quot;category&quot;: &quot;A1&quot;,
+            &quot;flight&quot;: &quot;TRG3733&quot;,
+            &quot;squawk&quot;: null,
+            &quot;lat&quot;: 36.552298,
+            &quot;lon&quot;: -6.063796,
+            &quot;altitude&quot;: 5106,
+            &quot;vert_rate&quot;: -365,
+            &quot;speed&quot;: 150,
+            &quot;track&quot;: 81,
+            &quot;rssi&quot;: -25.5,
+            &quot;seen&quot;: 407344.107835,
+            &quot;seen_pos&quot;: 407344.107835,
+            &quot;messages&quot;: 342,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;icao&quot;: &quot;321293&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;EGS8246&quot;,
+            &quot;squawk&quot;: &quot;7700&quot;,
+            &quot;lat&quot;: 36.423315,
+            &quot;lon&quot;: -6.047815,
+            &quot;altitude&quot;: 5728,
+            &quot;vert_rate&quot;: 1905,
+            &quot;speed&quot;: 56,
+            &quot;track&quot;: 289,
+            &quot;rssi&quot;: -28.1,
+            &quot;seen&quot;: 405544.107885,
+            &quot;seen_pos&quot;: 405544.107885,
+            &quot;messages&quot;: 466,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;icao&quot;: &quot;184806&quot;,
+            &quot;category&quot;: &quot;A3&quot;,
+            &quot;flight&quot;: &quot;DQE7365&quot;,
+            &quot;squawk&quot;: &quot;6325&quot;,
+            &quot;lat&quot;: 36.709809,
+            &quot;lon&quot;: -6.514369,
+            &quot;altitude&quot;: 8445,
+            &quot;vert_rate&quot;: -500,
+            &quot;speed&quot;: 256,
+            &quot;track&quot;: 49,
+            &quot;rssi&quot;: -13.2,
+            &quot;seen&quot;: 406324.107935,
+            &quot;seen_pos&quot;: 406324.107935,
+            &quot;messages&quot;: 30,
+            &quot;trail&quot;: [],
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:16.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -4110,7 +5999,7 @@ vary: Origin
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
     &quot;data&quot;: {
-        &quot;history&quot;: 30,
+        &quot;history&quot;: 0,
         &quot;lat&quot;: 36.7381,
         &quot;lon&quot;: -6.4301,
         &quot;refresh&quot;: 5000,
@@ -4191,6 +6080,148 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
+
+                    <h2 id="endpoints-GETapi-v2-airflight-db--bkey-">Base de datos de matrícula/tipo de avión por prefijo ICAO.</h2>
+
+<p>
+</p>
+
+<p>No se mantiene ese dataset (requeriría importar el registro OACI
+completo), así que se responde "no encontrado" de forma consistente.</p>
+
+<span id="example-requests-GETapi-v2-airflight-db--bkey-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v2/airflight/db/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v2/airflight/db/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-airflight-db--bkey-">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+vary: Origin
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Sin datos de matr&iacute;cula/tipo para este prefijo ICAO&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-airflight-db--bkey-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-airflight-db--bkey-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-airflight-db--bkey-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-airflight-db--bkey-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-airflight-db--bkey-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-airflight-db--bkey-" data-method="GET"
+      data-path="api/v2/airflight/db/{bkey}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-airflight-db--bkey-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-airflight-db--bkey-"
+                    onclick="tryItOut('GETapi-v2-airflight-db--bkey-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-airflight-db--bkey-"
+                    onclick="cancelTryOut('GETapi-v2-airflight-db--bkey-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-airflight-db--bkey-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/airflight/db/{bkey}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-airflight-db--bkey-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-airflight-db--bkey-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>bkey</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="bkey"                data-endpoint="GETapi-v2-airflight-db--bkey-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>Example: <code>architecto</code></p>
+            </div>
+                    </form>
 
                     <h2 id="endpoints-POSTapi-v2-airflight-register">Registra un avión detectado.</h2>
 
@@ -5042,7 +7073,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"hardware_device\": 16,
+    \"hardware_device_id\": 16,
     \"cpu_avg\": 4326.41688
 }"
 </code></pre></div>
@@ -5059,7 +7090,7 @@ const headers = {
 };
 
 let body = {
-    "hardware_device": 16,
+    "hardware_device_id": 16,
     "cpu_avg": 4326.41688
 };
 
@@ -5146,12 +7177,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>hardware_device</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="hardware_device"                data-endpoint="POSTapi-v2-hardware-energy"
+               step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-hardware-energy"
                value="16"
                data-component="body">
     <br>
@@ -5202,10 +7233,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"created_at\": \"2026-06-29T19:53:30\",
-    \"date\": \"2026-06-29T19:53:30\",
-    \"read_at\": \"2026-06-29T19:53:30\",
-    \"device_id\": 16,
+    \"created_at\": \"2026-07-06T08:57:20\",
+    \"date\": \"2026-07-06T08:57:20\",
+    \"read_at\": \"2026-07-06T08:57:20\",
+    \"hardware_device_id\": 16,
     \"hardware\": \"n\",
     \"version\": \"g\",
     \"serial_number\": \"z\",
@@ -5234,10 +7265,10 @@ const headers = {
 };
 
 let body = {
-    "created_at": "2026-06-29T19:53:30",
-    "date": "2026-06-29T19:53:30",
-    "read_at": "2026-06-29T19:53:30",
-    "device_id": 16,
+    "created_at": "2026-07-06T08:57:20",
+    "date": "2026-07-06T08:57:20",
+    "read_at": "2026-07-06T08:57:20",
+    "hardware_device_id": 16,
     "hardware": "n",
     "version": "g",
     "serial_number": "z",
@@ -5342,10 +7373,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="created_at"                data-endpoint="POSTapi-v2-hardware-solar-charge"
-               value="2026-06-29T19:53:30"
+               value="2026-07-06T08:57:20"
                data-component="body">
     <br>
-<p>El campo value no es una fecha válida. Example: <code>2026-06-29T19:53:30</code></p>
+<p>El campo value no es una fecha válida. Example: <code>2026-07-06T08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date</code></b>&nbsp;&nbsp;
@@ -5354,10 +7385,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v2-hardware-solar-charge"
-               value="2026-06-29T19:53:30"
+               value="2026-07-06T08:57:20"
                data-component="body">
     <br>
-<p>El campo value no es una fecha válida. Example: <code>2026-06-29T19:53:30</code></p>
+<p>El campo value no es una fecha válida. Example: <code>2026-07-06T08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
@@ -5366,18 +7397,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-solar-charge"
-               value="2026-06-29T19:53:30"
+               value="2026-07-06T08:57:20"
                data-component="body">
     <br>
-<p>El campo value no es una fecha válida. Example: <code>2026-06-29T19:53:30</code></p>
+<p>El campo value no es una fecha válida. Example: <code>2026-07-06T08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>device_id</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="device_id"                data-endpoint="POSTapi-v2-hardware-solar-charge"
+               step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-hardware-solar-charge"
                value="16"
                data-component="body">
     <br>
@@ -5541,6 +7572,262 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                    <h2 id="endpoints-POSTapi-v2-hardware-device-status">Actualiza el último estado conocido del dispositivo indicado.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v2-hardware-device-status">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/v2/hardware/device-status" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"hardware_device_id\": 16,
+    \"temp\": 4326.41688,
+    \"voltage\": 4326.41688,
+    \"battery_level\": 0,
+    \"cpu\": 0,
+    \"disk\": 0,
+    \"uptime\": 60,
+    \"ip_local\": \"1.102.226.211\",
+    \"ip_public\": \"1.102.226.211\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v2/hardware/device-status"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "hardware_device_id": 16,
+    "temp": 4326.41688,
+    "voltage": 4326.41688,
+    "battery_level": 0,
+    "cpu": 0,
+    "disk": 0,
+    "uptime": 60,
+    "ip_local": "1.102.226.211",
+    "ip_public": "1.102.226.211"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v2-hardware-device-status">
+</span>
+<span id="execution-results-POSTapi-v2-hardware-device-status" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v2-hardware-device-status"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v2-hardware-device-status"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v2-hardware-device-status" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v2-hardware-device-status">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v2-hardware-device-status" data-method="POST"
+      data-path="api/v2/hardware/device-status"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v2-hardware-device-status', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v2-hardware-device-status"
+                    onclick="tryItOut('POSTapi-v2-hardware-device-status');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v2-hardware-device-status"
+                    onclick="cancelTryOut('POSTapi-v2-hardware-device-status');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v2-hardware-device-status"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v2/hardware/device-status</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="16"
+               data-component="body">
+    <br>
+<p>Must match an existing stored value. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>temp</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="temp"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="4326.41688"
+               data-component="body">
+    <br>
+<p>Example: <code>4326.41688</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>voltage</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="voltage"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="4326.41688"
+               data-component="body">
+    <br>
+<p>Example: <code>4326.41688</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>battery_level</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="battery_level"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="0"
+               data-component="body">
+    <br>
+<p>El campo value debe estar entre 0 y 100. Example: <code>0</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cpu</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="cpu"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="0"
+               data-component="body">
+    <br>
+<p>El campo value debe estar entre 0 y 100. Example: <code>0</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>disk</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="disk"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="0"
+               data-component="body">
+    <br>
+<p>El campo value debe estar entre 0 y 100. Example: <code>0</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>uptime</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="uptime"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="60"
+               data-component="body">
+    <br>
+<p>El campo value debe ser al menos 0. Example: <code>60</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>ip_local</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="ip_local"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="1.102.226.211"
+               data-component="body">
+    <br>
+<p>El campo value debe ser una dirección IP válida. Example: <code>1.102.226.211</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>ip_public</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="ip_public"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value="1.102.226.211"
+               data-component="body">
+    <br>
+<p>El campo value debe ser una dirección IP válida. Example: <code>1.102.226.211</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>extra</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="extra"                data-endpoint="POSTapi-v2-hardware-device-status"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+        </form>
+
                     <h2 id="endpoints-POSTapi-v2-keycounter-keyboard">Almacena un registro de pulsaciones de teclado.</h2>
 
 <p>
@@ -5560,8 +7847,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-06-29 19:53:30\",
-    \"end_at\": \"2026-06-29 19:53:30\",
+    \"start_at\": \"2026-07-06 08:57:20\",
+    \"end_at\": \"2026-07-06 08:57:20\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -5585,8 +7872,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-06-29 19:53:30",
-    "end_at": "2026-06-29 19:53:30",
+    "start_at": "2026-07-06 08:57:20",
+    "end_at": "2026-07-06 08:57:20",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -5708,10 +7995,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard"
-               value="2026-06-29 19:53:30"
+               value="2026-07-06 08:57:20"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-06-29 19:53:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-07-06 08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -5720,10 +8007,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard"
-               value="2026-06-29 19:53:30"
+               value="2026-07-06 08:57:20"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-06-29 19:53:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-07-06 08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -5818,8 +8105,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-06-29 19:53:30\",
-    \"end_at\": \"2026-06-29 19:53:30\",
+    \"start_at\": \"2026-07-06 08:57:20\",
+    \"end_at\": \"2026-07-06 08:57:20\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -5844,8 +8131,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-06-29 19:53:30",
-    "end_at": "2026-06-29 19:53:30",
+    "start_at": "2026-07-06 08:57:20",
+    "end_at": "2026-07-06 08:57:20",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -5968,10 +8255,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse"
-               value="2026-06-29 19:53:30"
+               value="2026-07-06 08:57:20"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-06-29 19:53:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-07-06 08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -5980,10 +8267,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse"
-               value="2026-06-29 19:53:30"
+               value="2026-07-06 08:57:20"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-06-29 19:53:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-07-06 08:57:20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6097,9 +8384,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 4326.41688,
     \"soil_humidity_raw\": 4326.41688,
-    \"full_water_tank\": true,
+    \"full_water_tank\": false,
     \"waterpump_enabled\": false,
-    \"vaporizer_enabled\": false
+    \"vaporizer_enabled\": true
 }"
 </code></pre></div>
 
@@ -6124,9 +8411,9 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 4326.41688,
     "soil_humidity_raw": 4326.41688,
-    "full_water_tank": true,
+    "full_water_tank": false,
     "waterpump_enabled": false,
-    "vaporizer_enabled": false
+    "vaporizer_enabled": true
 };
 
 fetch(url, {
@@ -6339,7 +8626,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -6383,31 +8670,38 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
-                    <h2 id="endpoints-GETapi-v2-weatherstation-resume">Devuelve el resumen meteorológico actual.</h2>
+                    <h2 id="endpoints-GETapi-v2-weatherstation-station--id--">Devuelve una estación por id. Si no se indica id, se usa la estación
+principal por defecto (la primera de exterior).</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-v2-weatherstation-resume">
+<span id="example-requests-GETapi-v2-weatherstation-station--id--">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/weatherstation/resume" \
+    --get "http://localhost:8000/api/v2/weatherstation/station/architecto" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
+    --header "Accept: application/json" \
+    --data "{
+    \"sensors\": [
+        \"temperature\"
+    ]
+}"
+</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/weatherstation/resume"
+    "http://localhost:8000/api/v2/weatherstation/station/architecto"
 );
 
 const headers = {
@@ -6415,15 +8709,196 @@ const headers = {
     "Accept": "application/json",
 };
 
+let body = {
+    "sensors": [
+        "temperature"
+    ]
+};
 
 fetch(url, {
     method: "GET",
     headers,
+    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
-<span id="example-responses-GETapi-v2-weatherstation-resume">
+<span id="example-responses-GETapi-v2-weatherstation-station--id--">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+vary: Origin
+set-cookie: XSRF-TOKEN=eyJpdiI6ImVuOVZMSUFwQnQ3bTVpNGRNcmtnY0E9PSIsInZhbHVlIjoiOFVKV3I4b0Fpc0RQNDdkVEhtYTFvVEVOM2pvTms0dEx6MzRYQXVsZFJveHczU0hxNmN6ZTBGcnhOc2FwWDJYS3FDWFBqZ3cvYkRHREwxZHdiR2dEcnBSWDA5T0dtVTY4OTVQN2tZZ3FpZDNJRmFoMWtEejEwaG12SmN3Q0h1UnYiLCJtYWMiOiIzNWJmZDNmOGY1ZGYzYjcxZTJlODdmYWVkNTU2ZWZhZjk0MzYyNmVkMzZhZTlmZmVmYTA3OWQ4Nzk4ZGExZDFiIiwidGFnIjoiIn0%3D; expires=Mon, 06 Jul 2026 18:57:20 GMT; Max-Age=36000; path=/; domain=localhost; samesite=lax; api_raupulus_session=eyJpdiI6ImxnaFhuSVJzbFdtK0FwLzJuY2FHUGc9PSIsInZhbHVlIjoiZVBUZDVIc2d6Q050WXcvY2doQlErYXd3T1BuRVBSZlFWZ1FvSEYwVG1EVGFzbUVqZ3BaNC9Eelpuamd2Tm5meE5xeVBlcy9JOG9RVWZTOXMwVnluMWpBK0w5S29hZU8zNlpSQ2NCaTJEK1J0ZWhlazUzcnZtNktvT3J3NzloQVgiLCJtYWMiOiJkYThiMWI2MDczNmNkOTAzOTIxOWYwZTEyNWU4ZDc4OWM2MTBlYmIzMmVhNGNiZDc2N2NiNTA4YjVjNTgzZmY4IiwidGFnIjoiIn0%3D; expires=Mon, 06 Jul 2026 18:57:20 GMT; Max-Age=36000; path=/; domain=localhost; httponly; samesite=lax
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;API V2 - Endpoint no encontrado&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-weatherstation-station--id--" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-weatherstation-station--id--"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-weatherstation-station--id--"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-weatherstation-station--id--" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-weatherstation-station--id--">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-weatherstation-station--id--" data-method="GET"
+      data-path="api/v2/weatherstation/station/{id?}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-weatherstation-station--id--', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-weatherstation-station--id--"
+                    onclick="tryItOut('GETapi-v2-weatherstation-station--id--');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-weatherstation-station--id--"
+                    onclick="cancelTryOut('GETapi-v2-weatherstation-station--id--');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-weatherstation-station--id--"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/weatherstation/station/{id?}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-weatherstation-station--id--"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-weatherstation-station--id--"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v2-weatherstation-station--id--"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the . Example: <code>architecto</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>sensors</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sensors[0]"                data-endpoint="GETapi-v2-weatherstation-station--id--"
+               data-component="body">
+        <input type="text" style="display: none"
+               name="sensors[1]"                data-endpoint="GETapi-v2-weatherstation-station--id--"
+               data-component="body">
+    <br>
+
+Must be one of:
+<ul style="list-style-type: square;"><li><code>temperature</code></li> <li><code>humidity</code></li> <li><code>pressure</code></li> <li><code>wind</code></li> <li><code>light</code></li> <li><code>air_quality</code></li> <li><code>rain</code></li> <li><code>lightning</code></li></ul>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-GETapi-v2-weatherstation-zone--id-">Devuelve todas las estaciones de una zona (colección), opcionalmente
+acotadas por `location_type` (indoor/outdoor). Siempre devuelve una
+colección, aunque solo haya una estación o ninguna.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-weatherstation-zone--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v2/weatherstation/zone/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"sensors\": [
+        \"lightning\"
+    ],
+    \"location_type\": \"indoor\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v2/weatherstation/zone/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "sensors": [
+        "lightning"
+    ],
+    "location_type": "indoor"
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-weatherstation-zone--id-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -6438,71 +8913,48 @@ vary: Origin
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Resumen meteorologico obtenido correctamente&quot;,
-    &quot;data&quot;: {
-        &quot;instant&quot;: {
-            &quot;day_name&quot;: &quot;lunes&quot;,
-            &quot;date_human_format&quot;: &quot;29 de junio de 2026&quot;,
-            &quot;time&quot;: &quot;19:53&quot;,
-            &quot;day_status&quot;: &quot;D&iacute;a&quot;
-        },
-        &quot;temperature&quot;: null,
-        &quot;humidity&quot;: null,
-        &quot;pressure&quot;: null,
-        &quot;wind_direction&quot;: null,
-        &quot;wind_average&quot;: null,
-        &quot;wind_min&quot;: null,
-        &quot;wind_max&quot;: null,
-        &quot;light&quot;: null,
-        &quot;uv_index&quot;: null,
-        &quot;uva&quot;: null,
-        &quot;uvb&quot;: null,
-        &quot;air_quality&quot;: null,
-        &quot;tvoc&quot;: null,
-        &quot;eco2&quot;: null,
-        &quot;last_lightning_at&quot;: null,
-        &quot;lightningQuantityLastTenMinutes&quot;: 0
-    }
+    &quot;message&quot;: &quot;Estaciones de la zona obtenidas correctamente&quot;,
+    &quot;data&quot;: []
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-v2-weatherstation-resume" hidden>
+<span id="execution-results-GETapi-v2-weatherstation-zone--id-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-v2-weatherstation-resume"></span>:
+                id="execution-response-status-GETapi-v2-weatherstation-zone--id-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v2-weatherstation-resume"
+    <pre class="json"><code id="execution-response-content-GETapi-v2-weatherstation-zone--id-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-v2-weatherstation-resume" hidden>
+<span id="execution-error-GETapi-v2-weatherstation-zone--id-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v2-weatherstation-resume">
+    <pre><code id="execution-error-message-GETapi-v2-weatherstation-zone--id-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-v2-weatherstation-resume" data-method="GET"
-      data-path="api/v2/weatherstation/resume"
+<form id="form-GETapi-v2-weatherstation-zone--id-" data-method="GET"
+      data-path="api/v2/weatherstation/zone/{id}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-weatherstation-resume', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-weatherstation-zone--id-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v2-weatherstation-resume"
-                    onclick="tryItOut('GETapi-v2-weatherstation-resume');">Try it out ⚡
+                    id="btn-tryout-GETapi-v2-weatherstation-zone--id-"
+                    onclick="tryItOut('GETapi-v2-weatherstation-zone--id-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v2-weatherstation-resume"
-                    onclick="cancelTryOut('GETapi-v2-weatherstation-resume');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-v2-weatherstation-zone--id-"
+                    onclick="cancelTryOut('GETapi-v2-weatherstation-zone--id-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v2-weatherstation-resume"
+                    id="btn-executetryout-GETapi-v2-weatherstation-zone--id-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -6510,7 +8962,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/v2/weatherstation/resume</code></b>
+            <b><code>api/v2/weatherstation/zone/{id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -6519,7 +8971,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v2-weatherstation-resume"
+                              name="Content-Type"                data-endpoint="GETapi-v2-weatherstation-zone--id-"
                value="application/json"
                data-component="header">
     <br>
@@ -6531,13 +8983,57 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v2-weatherstation-resume"
+                              name="Accept"                data-endpoint="GETapi-v2-weatherstation-zone--id-"
                value="application/json"
                data-component="header">
     <br>
 <p>Example: <code>application/json</code></p>
             </div>
-                        </form>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v2-weatherstation-zone--id-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the zone. Example: <code>architecto</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>sensors</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sensors[0]"                data-endpoint="GETapi-v2-weatherstation-zone--id-"
+               data-component="body">
+        <input type="text" style="display: none"
+               name="sensors[1]"                data-endpoint="GETapi-v2-weatherstation-zone--id-"
+               data-component="body">
+    <br>
+
+Must be one of:
+<ul style="list-style-type: square;"><li><code>temperature</code></li> <li><code>humidity</code></li> <li><code>pressure</code></li> <li><code>wind</code></li> <li><code>light</code></li> <li><code>air_quality</code></li> <li><code>rain</code></li> <li><code>lightning</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>location_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="location_type"                data-endpoint="GETapi-v2-weatherstation-zone--id-"
+               value="indoor"
+               data-component="body">
+    <br>
+<p>Example: <code>indoor</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>indoor</code></li> <li><code>outdoor</code></li></ul>
+        </div>
+        </form>
 
                     <h2 id="endpoints-GETapi-v2-weatherstation-temperature">Lista datos de temperatura con filtro opcional por rango de fechas.</h2>
 
@@ -6591,7 +9087,632 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;22.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;14.5000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;18.7300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;22.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;16.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;11.3200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;10.6800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;27.7100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;13.0500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;16.1400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;32.7500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;40.2900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;27.9700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;23.1600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;24.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;36.4700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;38.3600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;27.6700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;16.0500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;37.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;31.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;20.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;21.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;17.2500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;18.7400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;22.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;26.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;41.9500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;23.1600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;40.5100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;22.0700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;40.9700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;19.0500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;30.5200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;16.1900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;15.9300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;10.0300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;22.4000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;41.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;38.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;8.9900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;26.0500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;36.5900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;6.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;24.8500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;19.6000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;27.0600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;19.1200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;40.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;16.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;10.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;6.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;19.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;27.3700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;19.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;41.3400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;16.1500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;18.2200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;25.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;18.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;39.3700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;16.9300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;19.6500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;27.5900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;30.6000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;20.9100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;10.5200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;12.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;5.7300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;27.3200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;39.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;16.9200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;34.4900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;14.7600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;21.7900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;41.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;38.8800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;12.7300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;33.0800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;25.0600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;14.2900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;38.0300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;34.8400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;32.3400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;35.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;15.8700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;32.6300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;13.8500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;9.6500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;5.3800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;25.7000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;35.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;21.9000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;17.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;28.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;37.9900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;31.5000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;38.9700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;14.3800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;25.4900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;23.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;36.2000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;12.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;16.1400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -6720,7 +9841,632 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;56.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;80.0800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;91.6700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;51.1500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;60.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;93.6000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;44.5800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;41.0200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;60.0700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;57.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;59.1300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;33.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;50.3800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;87.5900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;74.7600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;50.4900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;56.6600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;67.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;40.1400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;97.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;25.9700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;67.8400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;59.2200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;83.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;36.5500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;53.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;90.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;60.6900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;37.1400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;76.9300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;72.8600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;25.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;64.5600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;28.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;69.0200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;73.9500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;88.0800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;32.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;44.5100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;90.6200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;72.8800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;41.8300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;84.6300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;85.6300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;46.5300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;38.4200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;42.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;25.8300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;50.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;52.8600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;84.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;40.0800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;39.4400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;26.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;85.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;29.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;68.7500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;73.2300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;64.4700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;57.0300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;91.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;30.4100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;53.1200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;57.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;50.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;49.6100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;90.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;26.1400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;76.3700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;78.5600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;70.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;20.0500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;40.8100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;95.0300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;45.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;87.4600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;61.0300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;72.2200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;52.4700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;42.1300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;39.6900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;54.0200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;80.6100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;57.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;61.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;57.1700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;80.4800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;58.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;32.7800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;93.2200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;30.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;38.1800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;83.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;32.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;78.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;55.7000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;91.2300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;61.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;77.6300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;91.6500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;45.6400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;53.8100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;54.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;25.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -6849,7 +10595,632 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1021.3300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1018.9900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1006.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1006.4600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1015.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1033.0700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1029.8100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1024.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1011.1900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1021.7400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1029.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1010.2500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1007.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1017.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1001.3600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1038.1200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1028.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1005.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1018.2500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1038.4900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;994.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;992.8400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1033.1900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1007.2900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;998.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1005.7600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1017.1200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1011.4400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1015.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1011.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;995.7000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1031.8300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1038.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1007.3000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;991.3400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;995.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1013.3300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1012.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1010.0300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1011.7500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1031.7600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1034.1300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1033.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1022.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1007.9100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1016.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;993.5600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;997.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1003.9500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1024.3100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1002.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1030.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1011.5900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1023.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1023.5400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1032.1600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1031.7300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1007.5500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1025.0900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1038.6800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1002.1500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1001.8900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;991.1800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1002.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1027.8600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1023.7300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1000.4000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1038.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1000.9500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;997.6600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1031.0900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1038.0900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;991.3200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1036.8600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;998.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1002.9600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;995.1300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1008.6800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;990.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1026.9100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1016.0200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1006.4800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1038.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1024.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1017.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;992.8600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1000.4700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1034.2300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1031.3500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1031.7800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;995.8700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;993.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1005.4700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1007.7200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1000.6800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1020.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;994.9000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1033.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1025.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1030.7000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1019.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1012.1700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1010.1300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;997.0200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -6978,7 +11349,1048 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;102.44&quot;,
+            &quot;index&quot;: &quot;0.35&quot;,
+            &quot;lux&quot;: &quot;266.21&quot;,
+            &quot;uva&quot;: &quot;1.17&quot;,
+            &quot;uvb&quot;: &quot;2.49&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;642.29&quot;,
+            &quot;index&quot;: &quot;9.38&quot;,
+            &quot;lux&quot;: &quot;695.02&quot;,
+            &quot;uva&quot;: &quot;311.96&quot;,
+            &quot;uvb&quot;: &quot;151.19&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;475.16&quot;,
+            &quot;index&quot;: &quot;1.27&quot;,
+            &quot;lux&quot;: &quot;517.57&quot;,
+            &quot;uva&quot;: &quot;455.76&quot;,
+            &quot;uvb&quot;: &quot;200.09&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;167.83&quot;,
+            &quot;index&quot;: &quot;0.68&quot;,
+            &quot;lux&quot;: &quot;14.02&quot;,
+            &quot;uva&quot;: &quot;47.35&quot;,
+            &quot;uvb&quot;: &quot;15.20&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;479.00&quot;,
+            &quot;index&quot;: &quot;8.36&quot;,
+            &quot;lux&quot;: &quot;18.08&quot;,
+            &quot;uva&quot;: &quot;440.70&quot;,
+            &quot;uvb&quot;: &quot;49.22&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;720.67&quot;,
+            &quot;index&quot;: &quot;10.98&quot;,
+            &quot;lux&quot;: &quot;201.20&quot;,
+            &quot;uva&quot;: &quot;404.39&quot;,
+            &quot;uvb&quot;: &quot;58.87&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;449.40&quot;,
+            &quot;index&quot;: &quot;6.36&quot;,
+            &quot;lux&quot;: &quot;991.47&quot;,
+            &quot;uva&quot;: &quot;412.33&quot;,
+            &quot;uvb&quot;: &quot;26.75&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;64.77&quot;,
+            &quot;index&quot;: &quot;0.47&quot;,
+            &quot;lux&quot;: &quot;104.97&quot;,
+            &quot;uva&quot;: &quot;31.89&quot;,
+            &quot;uvb&quot;: &quot;28.83&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;149.54&quot;,
+            &quot;index&quot;: &quot;1.30&quot;,
+            &quot;lux&quot;: &quot;748.33&quot;,
+            &quot;uva&quot;: &quot;195.58&quot;,
+            &quot;uvb&quot;: &quot;74.92&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;15.12&quot;,
+            &quot;index&quot;: &quot;0.58&quot;,
+            &quot;lux&quot;: &quot;387.99&quot;,
+            &quot;uva&quot;: &quot;14.80&quot;,
+            &quot;uvb&quot;: &quot;20.46&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;965.42&quot;,
+            &quot;index&quot;: &quot;2.12&quot;,
+            &quot;lux&quot;: &quot;187.82&quot;,
+            &quot;uva&quot;: &quot;116.55&quot;,
+            &quot;uvb&quot;: &quot;129.44&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;650.61&quot;,
+            &quot;index&quot;: &quot;8.16&quot;,
+            &quot;lux&quot;: &quot;164.03&quot;,
+            &quot;uva&quot;: &quot;266.02&quot;,
+            &quot;uvb&quot;: &quot;241.37&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;35.11&quot;,
+            &quot;index&quot;: &quot;0.50&quot;,
+            &quot;lux&quot;: &quot;221.92&quot;,
+            &quot;uva&quot;: &quot;0.90&quot;,
+            &quot;uvb&quot;: &quot;8.49&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;875.11&quot;,
+            &quot;index&quot;: &quot;0.30&quot;,
+            &quot;lux&quot;: &quot;334.46&quot;,
+            &quot;uva&quot;: &quot;350.31&quot;,
+            &quot;uvb&quot;: &quot;260.66&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;924.55&quot;,
+            &quot;index&quot;: &quot;0.57&quot;,
+            &quot;lux&quot;: &quot;608.64&quot;,
+            &quot;uva&quot;: &quot;253.39&quot;,
+            &quot;uvb&quot;: &quot;8.81&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;542.90&quot;,
+            &quot;index&quot;: &quot;5.73&quot;,
+            &quot;lux&quot;: &quot;716.15&quot;,
+            &quot;uva&quot;: &quot;201.65&quot;,
+            &quot;uvb&quot;: &quot;211.27&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;57.95&quot;,
+            &quot;index&quot;: &quot;4.74&quot;,
+            &quot;lux&quot;: &quot;290.15&quot;,
+            &quot;uva&quot;: &quot;312.15&quot;,
+            &quot;uvb&quot;: &quot;277.60&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;169.42&quot;,
+            &quot;index&quot;: &quot;0.22&quot;,
+            &quot;lux&quot;: &quot;331.48&quot;,
+            &quot;uva&quot;: &quot;12.75&quot;,
+            &quot;uvb&quot;: &quot;27.20&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;353.39&quot;,
+            &quot;index&quot;: &quot;0.37&quot;,
+            &quot;lux&quot;: &quot;149.51&quot;,
+            &quot;uva&quot;: &quot;31.79&quot;,
+            &quot;uvb&quot;: &quot;4.59&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;974.32&quot;,
+            &quot;index&quot;: &quot;6.42&quot;,
+            &quot;lux&quot;: &quot;982.26&quot;,
+            &quot;uva&quot;: &quot;229.46&quot;,
+            &quot;uvb&quot;: &quot;199.41&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;288.59&quot;,
+            &quot;index&quot;: &quot;3.42&quot;,
+            &quot;lux&quot;: &quot;675.57&quot;,
+            &quot;uva&quot;: &quot;350.49&quot;,
+            &quot;uvb&quot;: &quot;38.41&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;865.60&quot;,
+            &quot;index&quot;: &quot;1.36&quot;,
+            &quot;lux&quot;: &quot;653.62&quot;,
+            &quot;uva&quot;: &quot;307.63&quot;,
+            &quot;uvb&quot;: &quot;186.69&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;229.41&quot;,
+            &quot;index&quot;: &quot;0.44&quot;,
+            &quot;lux&quot;: &quot;104.48&quot;,
+            &quot;uva&quot;: &quot;18.94&quot;,
+            &quot;uvb&quot;: &quot;5.41&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;648.97&quot;,
+            &quot;index&quot;: &quot;7.23&quot;,
+            &quot;lux&quot;: &quot;233.76&quot;,
+            &quot;uva&quot;: &quot;187.55&quot;,
+            &quot;uvb&quot;: &quot;274.19&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;667.77&quot;,
+            &quot;index&quot;: &quot;0.11&quot;,
+            &quot;lux&quot;: &quot;120.66&quot;,
+            &quot;uva&quot;: &quot;57.42&quot;,
+            &quot;uvb&quot;: &quot;222.91&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;273.54&quot;,
+            &quot;index&quot;: &quot;0.18&quot;,
+            &quot;lux&quot;: &quot;141.03&quot;,
+            &quot;uva&quot;: &quot;9.44&quot;,
+            &quot;uvb&quot;: &quot;1.73&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;217.88&quot;,
+            &quot;index&quot;: &quot;6.17&quot;,
+            &quot;lux&quot;: &quot;40.72&quot;,
+            &quot;uva&quot;: &quot;90.74&quot;,
+            &quot;uvb&quot;: &quot;248.87&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;926.68&quot;,
+            &quot;index&quot;: &quot;6.13&quot;,
+            &quot;lux&quot;: &quot;4.71&quot;,
+            &quot;uva&quot;: &quot;420.44&quot;,
+            &quot;uvb&quot;: &quot;40.01&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;202.48&quot;,
+            &quot;index&quot;: &quot;0.34&quot;,
+            &quot;lux&quot;: &quot;260.62&quot;,
+            &quot;uva&quot;: &quot;33.72&quot;,
+            &quot;uvb&quot;: &quot;1.25&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;77.42&quot;,
+            &quot;index&quot;: &quot;8.29&quot;,
+            &quot;lux&quot;: &quot;187.92&quot;,
+            &quot;uva&quot;: &quot;233.42&quot;,
+            &quot;uvb&quot;: &quot;154.58&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;204.81&quot;,
+            &quot;index&quot;: &quot;10.06&quot;,
+            &quot;lux&quot;: &quot;423.40&quot;,
+            &quot;uva&quot;: &quot;10.80&quot;,
+            &quot;uvb&quot;: &quot;122.17&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;668.82&quot;,
+            &quot;index&quot;: &quot;9.51&quot;,
+            &quot;lux&quot;: &quot;639.28&quot;,
+            &quot;uva&quot;: &quot;11.47&quot;,
+            &quot;uvb&quot;: &quot;145.85&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;326.50&quot;,
+            &quot;index&quot;: &quot;0.77&quot;,
+            &quot;lux&quot;: &quot;98.33&quot;,
+            &quot;uva&quot;: &quot;13.61&quot;,
+            &quot;uvb&quot;: &quot;12.97&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;225.84&quot;,
+            &quot;index&quot;: &quot;7.86&quot;,
+            &quot;lux&quot;: &quot;505.12&quot;,
+            &quot;uva&quot;: &quot;91.44&quot;,
+            &quot;uvb&quot;: &quot;42.30&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;142.73&quot;,
+            &quot;index&quot;: &quot;0.53&quot;,
+            &quot;lux&quot;: &quot;368.96&quot;,
+            &quot;uva&quot;: &quot;21.31&quot;,
+            &quot;uvb&quot;: &quot;2.25&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;747.48&quot;,
+            &quot;index&quot;: &quot;9.64&quot;,
+            &quot;lux&quot;: &quot;596.22&quot;,
+            &quot;uva&quot;: &quot;425.40&quot;,
+            &quot;uvb&quot;: &quot;49.47&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;306.40&quot;,
+            &quot;index&quot;: &quot;10.80&quot;,
+            &quot;lux&quot;: &quot;605.43&quot;,
+            &quot;uva&quot;: &quot;183.66&quot;,
+            &quot;uvb&quot;: &quot;39.10&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;101.21&quot;,
+            &quot;index&quot;: &quot;0.98&quot;,
+            &quot;lux&quot;: &quot;219.45&quot;,
+            &quot;uva&quot;: &quot;1.49&quot;,
+            &quot;uvb&quot;: &quot;23.42&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;723.07&quot;,
+            &quot;index&quot;: &quot;5.21&quot;,
+            &quot;lux&quot;: &quot;748.91&quot;,
+            &quot;uva&quot;: &quot;291.14&quot;,
+            &quot;uvb&quot;: &quot;298.10&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;515.47&quot;,
+            &quot;index&quot;: &quot;6.84&quot;,
+            &quot;lux&quot;: &quot;55.53&quot;,
+            &quot;uva&quot;: &quot;99.56&quot;,
+            &quot;uvb&quot;: &quot;77.26&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;662.85&quot;,
+            &quot;index&quot;: &quot;10.45&quot;,
+            &quot;lux&quot;: &quot;413.50&quot;,
+            &quot;uva&quot;: &quot;278.78&quot;,
+            &quot;uvb&quot;: &quot;89.68&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;224.20&quot;,
+            &quot;index&quot;: &quot;0.01&quot;,
+            &quot;lux&quot;: &quot;72.64&quot;,
+            &quot;uva&quot;: &quot;35.01&quot;,
+            &quot;uvb&quot;: &quot;6.48&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;425.86&quot;,
+            &quot;index&quot;: &quot;8.33&quot;,
+            &quot;lux&quot;: &quot;926.60&quot;,
+            &quot;uva&quot;: &quot;292.82&quot;,
+            &quot;uvb&quot;: &quot;102.64&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;573.86&quot;,
+            &quot;index&quot;: &quot;10.65&quot;,
+            &quot;lux&quot;: &quot;574.01&quot;,
+            &quot;uva&quot;: &quot;298.04&quot;,
+            &quot;uvb&quot;: &quot;32.88&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;262.13&quot;,
+            &quot;index&quot;: &quot;0.10&quot;,
+            &quot;lux&quot;: &quot;78.89&quot;,
+            &quot;uva&quot;: &quot;39.17&quot;,
+            &quot;uvb&quot;: &quot;6.02&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;569.29&quot;,
+            &quot;index&quot;: &quot;0.23&quot;,
+            &quot;lux&quot;: &quot;664.34&quot;,
+            &quot;uva&quot;: &quot;388.56&quot;,
+            &quot;uvb&quot;: &quot;267.16&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;259.36&quot;,
+            &quot;index&quot;: &quot;0.85&quot;,
+            &quot;lux&quot;: &quot;147.27&quot;,
+            &quot;uva&quot;: &quot;20.97&quot;,
+            &quot;uvb&quot;: &quot;9.93&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;309.44&quot;,
+            &quot;index&quot;: &quot;10.19&quot;,
+            &quot;lux&quot;: &quot;286.40&quot;,
+            &quot;uva&quot;: &quot;80.60&quot;,
+            &quot;uvb&quot;: &quot;54.48&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;215.56&quot;,
+            &quot;index&quot;: &quot;3.86&quot;,
+            &quot;lux&quot;: &quot;135.21&quot;,
+            &quot;uva&quot;: &quot;21.41&quot;,
+            &quot;uvb&quot;: &quot;160.19&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;72.40&quot;,
+            &quot;index&quot;: &quot;0.50&quot;,
+            &quot;lux&quot;: &quot;279.14&quot;,
+            &quot;uva&quot;: &quot;42.92&quot;,
+            &quot;uvb&quot;: &quot;25.01&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;188.40&quot;,
+            &quot;index&quot;: &quot;8.51&quot;,
+            &quot;lux&quot;: &quot;855.21&quot;,
+            &quot;uva&quot;: &quot;359.91&quot;,
+            &quot;uvb&quot;: &quot;129.29&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;839.92&quot;,
+            &quot;index&quot;: &quot;4.45&quot;,
+            &quot;lux&quot;: &quot;93.91&quot;,
+            &quot;uva&quot;: &quot;233.15&quot;,
+            &quot;uvb&quot;: &quot;188.02&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;296.41&quot;,
+            &quot;index&quot;: &quot;0.45&quot;,
+            &quot;lux&quot;: &quot;368.09&quot;,
+            &quot;uva&quot;: &quot;12.93&quot;,
+            &quot;uvb&quot;: &quot;27.82&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;707.44&quot;,
+            &quot;index&quot;: &quot;3.97&quot;,
+            &quot;lux&quot;: &quot;867.43&quot;,
+            &quot;uva&quot;: &quot;108.63&quot;,
+            &quot;uvb&quot;: &quot;218.24&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;548.52&quot;,
+            &quot;index&quot;: &quot;9.30&quot;,
+            &quot;lux&quot;: &quot;600.52&quot;,
+            &quot;uva&quot;: &quot;40.25&quot;,
+            &quot;uvb&quot;: &quot;120.77&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;451.46&quot;,
+            &quot;index&quot;: &quot;8.01&quot;,
+            &quot;lux&quot;: &quot;584.14&quot;,
+            &quot;uva&quot;: &quot;134.21&quot;,
+            &quot;uvb&quot;: &quot;158.27&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;10.79&quot;,
+            &quot;index&quot;: &quot;0.55&quot;,
+            &quot;lux&quot;: &quot;182.37&quot;,
+            &quot;uva&quot;: &quot;39.43&quot;,
+            &quot;uvb&quot;: &quot;12.59&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;lumens&quot;: &quot;754.29&quot;,
+            &quot;index&quot;: &quot;9.43&quot;,
+            &quot;lux&quot;: &quot;800.07&quot;,
+            &quot;uva&quot;: &quot;406.41&quot;,
+            &quot;uvb&quot;: &quot;259.57&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;lumens&quot;: &quot;315.71&quot;,
+            &quot;index&quot;: &quot;0.41&quot;,
+            &quot;lux&quot;: &quot;269.62&quot;,
+            &quot;uva&quot;: &quot;43.46&quot;,
+            &quot;uvb&quot;: &quot;17.72&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;lumens&quot;: &quot;412.31&quot;,
+            &quot;index&quot;: &quot;8.70&quot;,
+            &quot;lux&quot;: &quot;538.84&quot;,
+            &quot;uva&quot;: &quot;50.71&quot;,
+            &quot;uvb&quot;: &quot;280.83&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;903.13&quot;,
+            &quot;index&quot;: &quot;10.09&quot;,
+            &quot;lux&quot;: &quot;119.10&quot;,
+            &quot;uva&quot;: &quot;126.74&quot;,
+            &quot;uvb&quot;: &quot;4.02&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;261.25&quot;,
+            &quot;index&quot;: &quot;1.35&quot;,
+            &quot;lux&quot;: &quot;581.33&quot;,
+            &quot;uva&quot;: &quot;370.68&quot;,
+            &quot;uvb&quot;: &quot;254.81&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;763.82&quot;,
+            &quot;index&quot;: &quot;7.68&quot;,
+            &quot;lux&quot;: &quot;21.04&quot;,
+            &quot;uva&quot;: &quot;296.79&quot;,
+            &quot;uvb&quot;: &quot;245.63&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;396.56&quot;,
+            &quot;index&quot;: &quot;0.47&quot;,
+            &quot;lux&quot;: &quot;744.92&quot;,
+            &quot;uva&quot;: &quot;18.76&quot;,
+            &quot;uvb&quot;: &quot;409.51&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;572.92&quot;,
+            &quot;index&quot;: &quot;4.78&quot;,
+            &quot;lux&quot;: &quot;19.77&quot;,
+            &quot;uva&quot;: &quot;77.60&quot;,
+            &quot;uvb&quot;: &quot;184.26&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;5.75&quot;,
+            &quot;index&quot;: &quot;7.99&quot;,
+            &quot;lux&quot;: &quot;881.04&quot;,
+            &quot;uva&quot;: &quot;394.71&quot;,
+            &quot;uvb&quot;: &quot;357.61&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;359.56&quot;,
+            &quot;index&quot;: &quot;2.37&quot;,
+            &quot;lux&quot;: &quot;95.57&quot;,
+            &quot;uva&quot;: &quot;22.74&quot;,
+            &quot;uvb&quot;: &quot;466.76&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;365.02&quot;,
+            &quot;index&quot;: &quot;2.56&quot;,
+            &quot;lux&quot;: &quot;710.42&quot;,
+            &quot;uva&quot;: &quot;94.90&quot;,
+            &quot;uvb&quot;: &quot;311.83&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;416.77&quot;,
+            &quot;index&quot;: &quot;10.02&quot;,
+            &quot;lux&quot;: &quot;496.46&quot;,
+            &quot;uva&quot;: &quot;309.58&quot;,
+            &quot;uvb&quot;: &quot;257.78&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;64.82&quot;,
+            &quot;index&quot;: &quot;9.15&quot;,
+            &quot;lux&quot;: &quot;938.83&quot;,
+            &quot;uva&quot;: &quot;376.92&quot;,
+            &quot;uvb&quot;: &quot;96.11&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;131.54&quot;,
+            &quot;index&quot;: &quot;10.05&quot;,
+            &quot;lux&quot;: &quot;150.54&quot;,
+            &quot;uva&quot;: &quot;311.97&quot;,
+            &quot;uvb&quot;: &quot;362.88&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;468.28&quot;,
+            &quot;index&quot;: &quot;7.52&quot;,
+            &quot;lux&quot;: &quot;19.81&quot;,
+            &quot;uva&quot;: &quot;61.43&quot;,
+            &quot;uvb&quot;: &quot;246.65&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;757.29&quot;,
+            &quot;index&quot;: &quot;0.30&quot;,
+            &quot;lux&quot;: &quot;590.25&quot;,
+            &quot;uva&quot;: &quot;388.19&quot;,
+            &quot;uvb&quot;: &quot;261.36&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;8.71&quot;,
+            &quot;index&quot;: &quot;7.75&quot;,
+            &quot;lux&quot;: &quot;915.78&quot;,
+            &quot;uva&quot;: &quot;274.42&quot;,
+            &quot;uvb&quot;: &quot;348.04&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;935.42&quot;,
+            &quot;index&quot;: &quot;6.39&quot;,
+            &quot;lux&quot;: &quot;103.39&quot;,
+            &quot;uva&quot;: &quot;463.18&quot;,
+            &quot;uvb&quot;: &quot;339.58&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;103.30&quot;,
+            &quot;index&quot;: &quot;8.91&quot;,
+            &quot;lux&quot;: &quot;1.51&quot;,
+            &quot;uva&quot;: &quot;70.18&quot;,
+            &quot;uvb&quot;: &quot;307.92&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;292.20&quot;,
+            &quot;index&quot;: &quot;10.04&quot;,
+            &quot;lux&quot;: &quot;456.95&quot;,
+            &quot;uva&quot;: &quot;192.63&quot;,
+            &quot;uvb&quot;: &quot;386.16&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;397.54&quot;,
+            &quot;index&quot;: &quot;9.79&quot;,
+            &quot;lux&quot;: &quot;504.77&quot;,
+            &quot;uva&quot;: &quot;288.96&quot;,
+            &quot;uvb&quot;: &quot;154.07&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;244.04&quot;,
+            &quot;index&quot;: &quot;6.22&quot;,
+            &quot;lux&quot;: &quot;861.88&quot;,
+            &quot;uva&quot;: &quot;278.70&quot;,
+            &quot;uvb&quot;: &quot;450.95&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;828.10&quot;,
+            &quot;index&quot;: &quot;0.64&quot;,
+            &quot;lux&quot;: &quot;463.45&quot;,
+            &quot;uva&quot;: &quot;166.91&quot;,
+            &quot;uvb&quot;: &quot;194.71&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;211.79&quot;,
+            &quot;index&quot;: &quot;7.79&quot;,
+            &quot;lux&quot;: &quot;971.50&quot;,
+            &quot;uva&quot;: &quot;378.31&quot;,
+            &quot;uvb&quot;: &quot;115.81&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;301.58&quot;,
+            &quot;index&quot;: &quot;5.79&quot;,
+            &quot;lux&quot;: &quot;425.37&quot;,
+            &quot;uva&quot;: &quot;425.65&quot;,
+            &quot;uvb&quot;: &quot;26.58&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;29.08&quot;,
+            &quot;index&quot;: &quot;3.12&quot;,
+            &quot;lux&quot;: &quot;698.09&quot;,
+            &quot;uva&quot;: &quot;89.35&quot;,
+            &quot;uvb&quot;: &quot;405.12&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;19.55&quot;,
+            &quot;index&quot;: &quot;7.63&quot;,
+            &quot;lux&quot;: &quot;415.87&quot;,
+            &quot;uva&quot;: &quot;328.28&quot;,
+            &quot;uvb&quot;: &quot;221.65&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;777.98&quot;,
+            &quot;index&quot;: &quot;2.26&quot;,
+            &quot;lux&quot;: &quot;806.98&quot;,
+            &quot;uva&quot;: &quot;107.02&quot;,
+            &quot;uvb&quot;: &quot;120.15&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;602.53&quot;,
+            &quot;index&quot;: &quot;0.18&quot;,
+            &quot;lux&quot;: &quot;181.33&quot;,
+            &quot;uva&quot;: &quot;409.82&quot;,
+            &quot;uvb&quot;: &quot;461.83&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;619.59&quot;,
+            &quot;index&quot;: &quot;8.99&quot;,
+            &quot;lux&quot;: &quot;277.61&quot;,
+            &quot;uva&quot;: &quot;335.24&quot;,
+            &quot;uvb&quot;: &quot;278.07&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;588.99&quot;,
+            &quot;index&quot;: &quot;2.71&quot;,
+            &quot;lux&quot;: &quot;128.78&quot;,
+            &quot;uva&quot;: &quot;390.04&quot;,
+            &quot;uvb&quot;: &quot;8.67&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;802.22&quot;,
+            &quot;index&quot;: &quot;9.27&quot;,
+            &quot;lux&quot;: &quot;207.86&quot;,
+            &quot;uva&quot;: &quot;2.19&quot;,
+            &quot;uvb&quot;: &quot;411.13&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;814.10&quot;,
+            &quot;index&quot;: &quot;8.22&quot;,
+            &quot;lux&quot;: &quot;438.71&quot;,
+            &quot;uva&quot;: &quot;223.09&quot;,
+            &quot;uvb&quot;: &quot;3.87&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;925.30&quot;,
+            &quot;index&quot;: &quot;2.37&quot;,
+            &quot;lux&quot;: &quot;648.64&quot;,
+            &quot;uva&quot;: &quot;338.25&quot;,
+            &quot;uvb&quot;: &quot;244.98&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;579.73&quot;,
+            &quot;index&quot;: &quot;8.05&quot;,
+            &quot;lux&quot;: &quot;210.11&quot;,
+            &quot;uva&quot;: &quot;283.82&quot;,
+            &quot;uvb&quot;: &quot;168.49&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;718.91&quot;,
+            &quot;index&quot;: &quot;7.52&quot;,
+            &quot;lux&quot;: &quot;198.22&quot;,
+            &quot;uva&quot;: &quot;449.69&quot;,
+            &quot;uvb&quot;: &quot;407.26&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;467.93&quot;,
+            &quot;index&quot;: &quot;9.93&quot;,
+            &quot;lux&quot;: &quot;420.97&quot;,
+            &quot;uva&quot;: &quot;290.44&quot;,
+            &quot;uvb&quot;: &quot;234.53&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;161.89&quot;,
+            &quot;index&quot;: &quot;6.22&quot;,
+            &quot;lux&quot;: &quot;550.06&quot;,
+            &quot;uva&quot;: &quot;277.95&quot;,
+            &quot;uvb&quot;: &quot;27.94&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;941.31&quot;,
+            &quot;index&quot;: &quot;6.32&quot;,
+            &quot;lux&quot;: &quot;796.94&quot;,
+            &quot;uva&quot;: &quot;76.47&quot;,
+            &quot;uvb&quot;: &quot;396.64&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;957.46&quot;,
+            &quot;index&quot;: &quot;3.55&quot;,
+            &quot;lux&quot;: &quot;381.81&quot;,
+            &quot;uva&quot;: &quot;157.12&quot;,
+            &quot;uvb&quot;: &quot;189.65&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;828.44&quot;,
+            &quot;index&quot;: &quot;1.25&quot;,
+            &quot;lux&quot;: &quot;47.12&quot;,
+            &quot;uva&quot;: &quot;316.82&quot;,
+            &quot;uvb&quot;: &quot;156.35&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;612.66&quot;,
+            &quot;index&quot;: &quot;6.59&quot;,
+            &quot;lux&quot;: &quot;426.53&quot;,
+            &quot;uva&quot;: &quot;105.64&quot;,
+            &quot;uvb&quot;: &quot;280.69&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;113.51&quot;,
+            &quot;index&quot;: &quot;0.97&quot;,
+            &quot;lux&quot;: &quot;602.50&quot;,
+            &quot;uva&quot;: &quot;254.61&quot;,
+            &quot;uvb&quot;: &quot;312.19&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;494.38&quot;,
+            &quot;index&quot;: &quot;7.36&quot;,
+            &quot;lux&quot;: &quot;644.62&quot;,
+            &quot;uva&quot;: &quot;197.90&quot;,
+            &quot;uvb&quot;: &quot;390.24&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;664.05&quot;,
+            &quot;index&quot;: &quot;7.50&quot;,
+            &quot;lux&quot;: &quot;641.35&quot;,
+            &quot;uva&quot;: &quot;179.60&quot;,
+            &quot;uvb&quot;: &quot;334.76&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;200.67&quot;,
+            &quot;index&quot;: &quot;5.36&quot;,
+            &quot;lux&quot;: &quot;648.44&quot;,
+            &quot;uva&quot;: &quot;417.99&quot;,
+            &quot;uvb&quot;: &quot;149.24&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;lumens&quot;: &quot;622.42&quot;,
+            &quot;index&quot;: &quot;1.39&quot;,
+            &quot;lux&quot;: &quot;505.90&quot;,
+            &quot;uva&quot;: &quot;437.63&quot;,
+            &quot;uvb&quot;: &quot;256.82&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7107,7 +12519,764 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 164,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;30.3600&quot;,
+            &quot;average&quot;: &quot;24.2880&quot;,
+            &quot;min&quot;: &quot;12.1440&quot;,
+            &quot;max&quot;: &quot;45.5400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 144,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;9.5700&quot;,
+            &quot;average&quot;: &quot;7.6560&quot;,
+            &quot;min&quot;: &quot;3.8280&quot;,
+            &quot;max&quot;: &quot;14.3550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 143,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;3.3700&quot;,
+            &quot;average&quot;: &quot;2.6960&quot;,
+            &quot;min&quot;: &quot;1.3480&quot;,
+            &quot;max&quot;: &quot;5.0550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 163,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;2.4500&quot;,
+            &quot;average&quot;: &quot;1.9600&quot;,
+            &quot;min&quot;: &quot;0.9800&quot;,
+            &quot;max&quot;: &quot;3.6750&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 142,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;38.8500&quot;,
+            &quot;average&quot;: &quot;31.0800&quot;,
+            &quot;min&quot;: &quot;15.5400&quot;,
+            &quot;max&quot;: &quot;58.2750&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 162,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;4.4300&quot;,
+            &quot;average&quot;: &quot;3.5440&quot;,
+            &quot;min&quot;: &quot;1.7720&quot;,
+            &quot;max&quot;: &quot;6.6450&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 161,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;35.7900&quot;,
+            &quot;average&quot;: &quot;28.6320&quot;,
+            &quot;min&quot;: &quot;14.3160&quot;,
+            &quot;max&quot;: &quot;53.6850&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 141,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;45.4000&quot;,
+            &quot;average&quot;: &quot;36.3200&quot;,
+            &quot;min&quot;: &quot;18.1600&quot;,
+            &quot;max&quot;: &quot;68.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 140,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;5.9400&quot;,
+            &quot;average&quot;: &quot;4.7520&quot;,
+            &quot;min&quot;: &quot;2.3760&quot;,
+            &quot;max&quot;: &quot;8.9100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 160,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;35.3200&quot;,
+            &quot;average&quot;: &quot;28.2560&quot;,
+            &quot;min&quot;: &quot;14.1280&quot;,
+            &quot;max&quot;: &quot;52.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 139,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;42.9700&quot;,
+            &quot;average&quot;: &quot;34.3760&quot;,
+            &quot;min&quot;: &quot;17.1880&quot;,
+            &quot;max&quot;: &quot;64.4550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 159,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;14.5100&quot;,
+            &quot;average&quot;: &quot;11.6080&quot;,
+            &quot;min&quot;: &quot;5.8040&quot;,
+            &quot;max&quot;: &quot;21.7650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 138,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;4.2900&quot;,
+            &quot;average&quot;: &quot;3.4320&quot;,
+            &quot;min&quot;: &quot;1.7160&quot;,
+            &quot;max&quot;: &quot;6.4350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 158,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;38.6900&quot;,
+            &quot;average&quot;: &quot;30.9520&quot;,
+            &quot;min&quot;: &quot;15.4760&quot;,
+            &quot;max&quot;: &quot;58.0350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 137,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;27.8400&quot;,
+            &quot;average&quot;: &quot;22.2720&quot;,
+            &quot;min&quot;: &quot;11.1360&quot;,
+            &quot;max&quot;: &quot;41.7600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 157,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;13.3600&quot;,
+            &quot;average&quot;: &quot;10.6880&quot;,
+            &quot;min&quot;: &quot;5.3440&quot;,
+            &quot;max&quot;: &quot;20.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 136,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;31.0100&quot;,
+            &quot;average&quot;: &quot;24.8080&quot;,
+            &quot;min&quot;: &quot;12.4040&quot;,
+            &quot;max&quot;: &quot;46.5150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 156,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;49.3600&quot;,
+            &quot;average&quot;: &quot;39.4880&quot;,
+            &quot;min&quot;: &quot;19.7440&quot;,
+            &quot;max&quot;: &quot;74.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 135,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;18.6900&quot;,
+            &quot;average&quot;: &quot;14.9520&quot;,
+            &quot;min&quot;: &quot;7.4760&quot;,
+            &quot;max&quot;: &quot;28.0350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 155,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;10.3000&quot;,
+            &quot;average&quot;: &quot;8.2400&quot;,
+            &quot;min&quot;: &quot;4.1200&quot;,
+            &quot;max&quot;: &quot;15.4500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 154,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;18.7300&quot;,
+            &quot;average&quot;: &quot;14.9840&quot;,
+            &quot;min&quot;: &quot;7.4920&quot;,
+            &quot;max&quot;: &quot;28.0950&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 134,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;36.7100&quot;,
+            &quot;average&quot;: &quot;29.3680&quot;,
+            &quot;min&quot;: &quot;14.6840&quot;,
+            &quot;max&quot;: &quot;55.0650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 133,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;13.0800&quot;,
+            &quot;average&quot;: &quot;10.4640&quot;,
+            &quot;min&quot;: &quot;5.2320&quot;,
+            &quot;max&quot;: &quot;19.6200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 153,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;42.3900&quot;,
+            &quot;average&quot;: &quot;33.9120&quot;,
+            &quot;min&quot;: &quot;16.9560&quot;,
+            &quot;max&quot;: &quot;63.5850&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 152,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;42.7200&quot;,
+            &quot;average&quot;: &quot;34.1760&quot;,
+            &quot;min&quot;: &quot;17.0880&quot;,
+            &quot;max&quot;: &quot;64.0800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 132,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;38.3000&quot;,
+            &quot;average&quot;: &quot;30.6400&quot;,
+            &quot;min&quot;: &quot;15.3200&quot;,
+            &quot;max&quot;: &quot;57.4500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 131,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;24.9700&quot;,
+            &quot;average&quot;: &quot;19.9760&quot;,
+            &quot;min&quot;: &quot;9.9880&quot;,
+            &quot;max&quot;: &quot;37.4550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 151,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;32.7100&quot;,
+            &quot;average&quot;: &quot;26.1680&quot;,
+            &quot;min&quot;: &quot;13.0840&quot;,
+            &quot;max&quot;: &quot;49.0650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 130,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;24.9000&quot;,
+            &quot;average&quot;: &quot;19.9200&quot;,
+            &quot;min&quot;: &quot;9.9600&quot;,
+            &quot;max&quot;: &quot;37.3500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 150,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;26.8000&quot;,
+            &quot;average&quot;: &quot;21.4400&quot;,
+            &quot;min&quot;: &quot;10.7200&quot;,
+            &quot;max&quot;: &quot;40.2000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 149,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;8.1800&quot;,
+            &quot;average&quot;: &quot;6.5440&quot;,
+            &quot;min&quot;: &quot;3.2720&quot;,
+            &quot;max&quot;: &quot;12.2700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 129,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;30.1700&quot;,
+            &quot;average&quot;: &quot;24.1360&quot;,
+            &quot;min&quot;: &quot;12.0680&quot;,
+            &quot;max&quot;: &quot;45.2550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 128,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;46.4100&quot;,
+            &quot;average&quot;: &quot;37.1280&quot;,
+            &quot;min&quot;: &quot;18.5640&quot;,
+            &quot;max&quot;: &quot;69.6150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 148,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;27.6900&quot;,
+            &quot;average&quot;: &quot;22.1520&quot;,
+            &quot;min&quot;: &quot;11.0760&quot;,
+            &quot;max&quot;: &quot;41.5350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 147,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;49.8100&quot;,
+            &quot;average&quot;: &quot;39.8480&quot;,
+            &quot;min&quot;: &quot;19.9240&quot;,
+            &quot;max&quot;: &quot;74.7150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 127,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;39.4500&quot;,
+            &quot;average&quot;: &quot;31.5600&quot;,
+            &quot;min&quot;: &quot;15.7800&quot;,
+            &quot;max&quot;: &quot;59.1750&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 126,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;21.6900&quot;,
+            &quot;average&quot;: &quot;17.3520&quot;,
+            &quot;min&quot;: &quot;8.6760&quot;,
+            &quot;max&quot;: &quot;32.5350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 146,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;6.4100&quot;,
+            &quot;average&quot;: &quot;5.1280&quot;,
+            &quot;min&quot;: &quot;2.5640&quot;,
+            &quot;max&quot;: &quot;9.6150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 145,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;speed&quot;: &quot;45.6200&quot;,
+            &quot;average&quot;: &quot;36.4960&quot;,
+            &quot;min&quot;: &quot;18.2480&quot;,
+            &quot;max&quot;: &quot;68.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 125,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;speed&quot;: &quot;19.1600&quot;,
+            &quot;average&quot;: &quot;15.3280&quot;,
+            &quot;min&quot;: &quot;7.6640&quot;,
+            &quot;max&quot;: &quot;28.7400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;25.9700&quot;,
+            &quot;average&quot;: &quot;20.7760&quot;,
+            &quot;min&quot;: &quot;10.3880&quot;,
+            &quot;max&quot;: &quot;38.9550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;17.2900&quot;,
+            &quot;average&quot;: &quot;13.8320&quot;,
+            &quot;min&quot;: &quot;6.9160&quot;,
+            &quot;max&quot;: &quot;25.9350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;28.4700&quot;,
+            &quot;average&quot;: &quot;22.7760&quot;,
+            &quot;min&quot;: &quot;11.3880&quot;,
+            &quot;max&quot;: &quot;42.7050&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;26.9100&quot;,
+            &quot;average&quot;: &quot;21.5280&quot;,
+            &quot;min&quot;: &quot;10.7640&quot;,
+            &quot;max&quot;: &quot;40.3650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;5.5100&quot;,
+            &quot;average&quot;: &quot;4.4080&quot;,
+            &quot;min&quot;: &quot;2.2040&quot;,
+            &quot;max&quot;: &quot;8.2650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;48.5900&quot;,
+            &quot;average&quot;: &quot;38.8720&quot;,
+            &quot;min&quot;: &quot;19.4360&quot;,
+            &quot;max&quot;: &quot;72.8850&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;20.0100&quot;,
+            &quot;average&quot;: &quot;16.0080&quot;,
+            &quot;min&quot;: &quot;8.0040&quot;,
+            &quot;max&quot;: &quot;30.0150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;10.2900&quot;,
+            &quot;average&quot;: &quot;8.2320&quot;,
+            &quot;min&quot;: &quot;4.1160&quot;,
+            &quot;max&quot;: &quot;15.4350&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;19.1600&quot;,
+            &quot;average&quot;: &quot;15.3280&quot;,
+            &quot;min&quot;: &quot;7.6640&quot;,
+            &quot;max&quot;: &quot;28.7400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;24.3100&quot;,
+            &quot;average&quot;: &quot;19.4480&quot;,
+            &quot;min&quot;: &quot;9.7240&quot;,
+            &quot;max&quot;: &quot;36.4650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;21.3100&quot;,
+            &quot;average&quot;: &quot;17.0480&quot;,
+            &quot;min&quot;: &quot;8.5240&quot;,
+            &quot;max&quot;: &quot;31.9650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;35.7100&quot;,
+            &quot;average&quot;: &quot;28.5680&quot;,
+            &quot;min&quot;: &quot;14.2840&quot;,
+            &quot;max&quot;: &quot;53.5650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;15.8500&quot;,
+            &quot;average&quot;: &quot;12.6800&quot;,
+            &quot;min&quot;: &quot;6.3400&quot;,
+            &quot;max&quot;: &quot;23.7750&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;5.2000&quot;,
+            &quot;average&quot;: &quot;4.1600&quot;,
+            &quot;min&quot;: &quot;2.0800&quot;,
+            &quot;max&quot;: &quot;7.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;19.9500&quot;,
+            &quot;average&quot;: &quot;15.9600&quot;,
+            &quot;min&quot;: &quot;7.9800&quot;,
+            &quot;max&quot;: &quot;29.9250&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;10.5600&quot;,
+            &quot;average&quot;: &quot;8.4480&quot;,
+            &quot;min&quot;: &quot;4.2240&quot;,
+            &quot;max&quot;: &quot;15.8400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;31.0100&quot;,
+            &quot;average&quot;: &quot;24.8080&quot;,
+            &quot;min&quot;: &quot;12.4040&quot;,
+            &quot;max&quot;: &quot;46.5150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;12.7700&quot;,
+            &quot;average&quot;: &quot;10.2160&quot;,
+            &quot;min&quot;: &quot;5.1080&quot;,
+            &quot;max&quot;: &quot;19.1550&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;32.7600&quot;,
+            &quot;average&quot;: &quot;26.2080&quot;,
+            &quot;min&quot;: &quot;13.1040&quot;,
+            &quot;max&quot;: &quot;49.1400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;14.6300&quot;,
+            &quot;average&quot;: &quot;11.7040&quot;,
+            &quot;min&quot;: &quot;5.8520&quot;,
+            &quot;max&quot;: &quot;21.9450&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;31.1400&quot;,
+            &quot;average&quot;: &quot;24.9120&quot;,
+            &quot;min&quot;: &quot;12.4560&quot;,
+            &quot;max&quot;: &quot;46.7100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;35.5800&quot;,
+            &quot;average&quot;: &quot;28.4640&quot;,
+            &quot;min&quot;: &quot;14.2320&quot;,
+            &quot;max&quot;: &quot;53.3700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;18.1400&quot;,
+            &quot;average&quot;: &quot;14.5120&quot;,
+            &quot;min&quot;: &quot;7.2560&quot;,
+            &quot;max&quot;: &quot;27.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;36.9500&quot;,
+            &quot;average&quot;: &quot;29.5600&quot;,
+            &quot;min&quot;: &quot;14.7800&quot;,
+            &quot;max&quot;: &quot;55.4250&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;14.8100&quot;,
+            &quot;average&quot;: &quot;11.8480&quot;,
+            &quot;min&quot;: &quot;5.9240&quot;,
+            &quot;max&quot;: &quot;22.2150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;9.4200&quot;,
+            &quot;average&quot;: &quot;7.5360&quot;,
+            &quot;min&quot;: &quot;3.7680&quot;,
+            &quot;max&quot;: &quot;14.1300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;31.2300&quot;,
+            &quot;average&quot;: &quot;24.9840&quot;,
+            &quot;min&quot;: &quot;12.4920&quot;,
+            &quot;max&quot;: &quot;46.8450&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;0.8600&quot;,
+            &quot;average&quot;: &quot;0.6880&quot;,
+            &quot;min&quot;: &quot;0.3440&quot;,
+            &quot;max&quot;: &quot;1.2900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;31.9100&quot;,
+            &quot;average&quot;: &quot;25.5280&quot;,
+            &quot;min&quot;: &quot;12.7640&quot;,
+            &quot;max&quot;: &quot;47.8650&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;44.6200&quot;,
+            &quot;average&quot;: &quot;35.6960&quot;,
+            &quot;min&quot;: &quot;17.8480&quot;,
+            &quot;max&quot;: &quot;66.9300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;2.8800&quot;,
+            &quot;average&quot;: &quot;2.3040&quot;,
+            &quot;min&quot;: &quot;1.1520&quot;,
+            &quot;max&quot;: &quot;4.3200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;38.3900&quot;,
+            &quot;average&quot;: &quot;30.7120&quot;,
+            &quot;min&quot;: &quot;15.3560&quot;,
+            &quot;max&quot;: &quot;57.5850&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;27.1900&quot;,
+            &quot;average&quot;: &quot;21.7520&quot;,
+            &quot;min&quot;: &quot;10.8760&quot;,
+            &quot;max&quot;: &quot;40.7850&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;34.0400&quot;,
+            &quot;average&quot;: &quot;27.2320&quot;,
+            &quot;min&quot;: &quot;13.6160&quot;,
+            &quot;max&quot;: &quot;51.0600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;1.8700&quot;,
+            &quot;average&quot;: &quot;1.4960&quot;,
+            &quot;min&quot;: &quot;0.7480&quot;,
+            &quot;max&quot;: &quot;2.8050&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;32.2000&quot;,
+            &quot;average&quot;: &quot;25.7600&quot;,
+            &quot;min&quot;: &quot;12.8800&quot;,
+            &quot;max&quot;: &quot;48.3000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;14.9300&quot;,
+            &quot;average&quot;: &quot;11.9440&quot;,
+            &quot;min&quot;: &quot;5.9720&quot;,
+            &quot;max&quot;: &quot;22.3950&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;25.2100&quot;,
+            &quot;average&quot;: &quot;20.1680&quot;,
+            &quot;min&quot;: &quot;10.0840&quot;,
+            &quot;max&quot;: &quot;37.8150&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;45.1500&quot;,
+            &quot;average&quot;: &quot;36.1200&quot;,
+            &quot;min&quot;: &quot;18.0600&quot;,
+            &quot;max&quot;: &quot;67.7250&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;3.2200&quot;,
+            &quot;average&quot;: &quot;2.5760&quot;,
+            &quot;min&quot;: &quot;1.2880&quot;,
+            &quot;max&quot;: &quot;4.8300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;7.1400&quot;,
+            &quot;average&quot;: &quot;5.7120&quot;,
+            &quot;min&quot;: &quot;2.8560&quot;,
+            &quot;max&quot;: &quot;10.7100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;43.6400&quot;,
+            &quot;average&quot;: &quot;34.9120&quot;,
+            &quot;min&quot;: &quot;17.4560&quot;,
+            &quot;max&quot;: &quot;65.4600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;10.3000&quot;,
+            &quot;average&quot;: &quot;8.2400&quot;,
+            &quot;min&quot;: &quot;4.1200&quot;,
+            &quot;max&quot;: &quot;15.4500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;speed&quot;: &quot;1.0200&quot;,
+            &quot;average&quot;: &quot;0.8160&quot;,
+            &quot;min&quot;: &quot;0.4080&quot;,
+            &quot;max&quot;: &quot;1.5300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7236,7 +13405,680 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 164,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;1820.41666666670&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 10,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 144,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;20388.66666666700&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 112,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 143,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;51881.87500000000&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 285,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 163,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;4186.95833333330&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 23,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 142,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;29854.83333333300&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 164,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 162,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;14199.25000000000&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 78,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 161,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;10194.33333333300&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 56,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 141,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;50789.62500000000&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 279,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 140,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;54794.54166666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 301,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 160,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;10740.45833333300&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 59,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 139,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;37500.58333333300&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 206,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 159,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;3458.79166666670&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 19,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 138,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;21480.91666666700&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 118,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 158,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;4551.04166666670&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 25,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 137,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;20934.79166666700&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 115,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 157,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;18568.25000000000&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 102,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 136,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;4733.08333333330&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 26,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 156,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;7645.75000000000&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 42,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 135,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;57525.16666666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 316,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 155,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;46056.54166666700&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 253,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 154,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;36044.25000000000&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 198,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 134,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;46056.54166666700&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 253,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 133,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;5279.20833333330&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 29,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 153,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;52428.00000000000&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 288,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 152,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;25303.79166666700&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 139,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 132,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;50789.62500000000&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 279,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 131,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;36044.25000000000&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 198,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 151,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;24939.70833333300&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 137,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 130,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;55340.66666666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 304,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 150,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;56068.83333333300&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 308,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 149,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;36044.25000000000&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 198,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 129,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;2002.45833333330&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 11,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 128,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;33495.66666666700&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 184,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 148,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;54066.37500000000&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 297,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 147,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;47876.95833333300&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 263,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 127,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;58617.41666666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 322,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 126,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;42779.79166666700&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 235,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 146,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;59527.62500000000&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 327,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 145,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;resistance&quot;: &quot;27670.33333333300&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 152,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 125,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;resistance&quot;: &quot;15473.54166666700&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 85,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;57525.16666666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 316,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;46602.66666666700&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 256,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;43325.91666666700&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 238,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;30036.87500000000&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 165,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;62258.25000000000&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 342,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;26942.16666666700&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 148,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;26578.08333333300&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 146,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;9466.16666666670&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 52,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;8373.91666666670&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 46,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;24393.58333333300&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 134,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;61894.16666666700&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 340,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;63350.50000000000&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 348,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;36954.45833333300&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 203,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;59163.54166666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 325,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;23847.45833333300&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 131,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;3458.79166666670&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 19,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;47694.91666666700&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 262,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;41323.45833333300&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 227,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;54794.54166666700&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 301,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;50971.66666666700&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 280,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;55704.75000000000&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 306,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;5643.29166666670&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 31,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;23847.45833333300&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 131,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;46420.62500000000&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 255,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;65352.95833333300&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 359,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;17476.00000000000&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 96,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;57889.25000000000&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 318,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;38410.79166666700&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 211,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;2366.54166666670&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 13,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;8009.83333333330&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 44,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;3458.79166666670&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 19,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;5097.16666666670&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 28,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;16565.79166666700&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 91,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;60073.75000000000&quot;,
+            &quot;direction&quot;: &quot;NW&quot;,
+            &quot;grades&quot;: 330,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;62258.25000000000&quot;,
+            &quot;direction&quot;: &quot;N&quot;,
+            &quot;grades&quot;: 342,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;32767.50000000000&quot;,
+            &quot;direction&quot;: &quot;S&quot;,
+            &quot;grades&quot;: 180,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;43143.87500000000&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 237,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;39321.00000000000&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 216,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;46966.75000000000&quot;,
+            &quot;direction&quot;: &quot;W&quot;,
+            &quot;grades&quot;: 258,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;43143.87500000000&quot;,
+            &quot;direction&quot;: &quot;SW&quot;,
+            &quot;grades&quot;: 237,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;12014.75000000000&quot;,
+            &quot;direction&quot;: &quot;NE&quot;,
+            &quot;grades&quot;: 66,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;18932.33333333300&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 104,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;19660.50000000000&quot;,
+            &quot;direction&quot;: &quot;E&quot;,
+            &quot;grades&quot;: 108,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;resistance&quot;: &quot;22573.16666666700&quot;,
+            &quot;direction&quot;: &quot;SE&quot;,
+            &quot;grades&quot;: 124,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7365,7 +14207,764 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 164,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;5.8&quot;,
+            &quot;rain_intensity&quot;: &quot;11.18&quot;,
+            &quot;rain_month&quot;: &quot;66.72&quot;,
+            &quot;moisture&quot;: &quot;65.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 144,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;4.2&quot;,
+            &quot;rain_intensity&quot;: &quot;2.59&quot;,
+            &quot;rain_month&quot;: &quot;36.40&quot;,
+            &quot;moisture&quot;: &quot;34.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 143,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;3.0&quot;,
+            &quot;rain_intensity&quot;: &quot;8.91&quot;,
+            &quot;rain_month&quot;: &quot;102.61&quot;,
+            &quot;moisture&quot;: &quot;35.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 163,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;6.1&quot;,
+            &quot;rain_intensity&quot;: &quot;9.61&quot;,
+            &quot;rain_month&quot;: &quot;29.78&quot;,
+            &quot;moisture&quot;: &quot;43.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 142,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;7.1&quot;,
+            &quot;rain_intensity&quot;: &quot;9.37&quot;,
+            &quot;rain_month&quot;: &quot;36.73&quot;,
+            &quot;moisture&quot;: &quot;78.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 162,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;0.4&quot;,
+            &quot;rain_intensity&quot;: &quot;15.24&quot;,
+            &quot;rain_month&quot;: &quot;26.77&quot;,
+            &quot;moisture&quot;: &quot;94.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 161,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;3.0&quot;,
+            &quot;rain_intensity&quot;: &quot;7.62&quot;,
+            &quot;rain_month&quot;: &quot;84.56&quot;,
+            &quot;moisture&quot;: &quot;71.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 141,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;9.9&quot;,
+            &quot;rain_intensity&quot;: &quot;14.05&quot;,
+            &quot;rain_month&quot;: &quot;18.46&quot;,
+            &quot;moisture&quot;: &quot;95.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 140,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;6.0&quot;,
+            &quot;rain_intensity&quot;: &quot;18.19&quot;,
+            &quot;rain_month&quot;: &quot;138.91&quot;,
+            &quot;moisture&quot;: &quot;45.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 160,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;5.8&quot;,
+            &quot;rain_intensity&quot;: &quot;9.36&quot;,
+            &quot;rain_month&quot;: &quot;142.72&quot;,
+            &quot;moisture&quot;: &quot;19.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 139,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;9.4&quot;,
+            &quot;rain_intensity&quot;: &quot;2.98&quot;,
+            &quot;rain_month&quot;: &quot;113.55&quot;,
+            &quot;moisture&quot;: &quot;90.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 159,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;1.7&quot;,
+            &quot;rain_intensity&quot;: &quot;16.05&quot;,
+            &quot;rain_month&quot;: &quot;73.68&quot;,
+            &quot;moisture&quot;: &quot;87.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 138,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;2.0&quot;,
+            &quot;rain_intensity&quot;: &quot;8.31&quot;,
+            &quot;rain_month&quot;: &quot;62.10&quot;,
+            &quot;moisture&quot;: &quot;63.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 158,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;1.8&quot;,
+            &quot;rain_intensity&quot;: &quot;4.16&quot;,
+            &quot;rain_month&quot;: &quot;83.89&quot;,
+            &quot;moisture&quot;: &quot;29.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 137,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;0.1&quot;,
+            &quot;rain_intensity&quot;: &quot;12.77&quot;,
+            &quot;rain_month&quot;: &quot;112.42&quot;,
+            &quot;moisture&quot;: &quot;33.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 157,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;9.5&quot;,
+            &quot;rain_intensity&quot;: &quot;12.80&quot;,
+            &quot;rain_month&quot;: &quot;29.78&quot;,
+            &quot;moisture&quot;: &quot;91.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 136,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;5.7&quot;,
+            &quot;rain_intensity&quot;: &quot;18.05&quot;,
+            &quot;rain_month&quot;: &quot;118.55&quot;,
+            &quot;moisture&quot;: &quot;36.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 156,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;2.5&quot;,
+            &quot;rain_intensity&quot;: &quot;7.89&quot;,
+            &quot;rain_month&quot;: &quot;135.80&quot;,
+            &quot;moisture&quot;: &quot;21.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 135,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;0.7&quot;,
+            &quot;rain_intensity&quot;: &quot;1.14&quot;,
+            &quot;rain_month&quot;: &quot;127.02&quot;,
+            &quot;moisture&quot;: &quot;72.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 155,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;4.1&quot;,
+            &quot;rain_intensity&quot;: &quot;19.57&quot;,
+            &quot;rain_month&quot;: &quot;123.96&quot;,
+            &quot;moisture&quot;: &quot;60.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 154,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;4.6&quot;,
+            &quot;rain_intensity&quot;: &quot;8.58&quot;,
+            &quot;rain_month&quot;: &quot;134.22&quot;,
+            &quot;moisture&quot;: &quot;90.4&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 134,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;4.9&quot;,
+            &quot;rain_intensity&quot;: &quot;17.57&quot;,
+            &quot;rain_month&quot;: &quot;76.06&quot;,
+            &quot;moisture&quot;: &quot;84.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 133,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;1.5&quot;,
+            &quot;rain_intensity&quot;: &quot;19.39&quot;,
+            &quot;rain_month&quot;: &quot;43.70&quot;,
+            &quot;moisture&quot;: &quot;92.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 153,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;0.2&quot;,
+            &quot;rain_intensity&quot;: &quot;5.46&quot;,
+            &quot;rain_month&quot;: &quot;59.02&quot;,
+            &quot;moisture&quot;: &quot;78.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 152,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;8.6&quot;,
+            &quot;rain_intensity&quot;: &quot;3.78&quot;,
+            &quot;rain_month&quot;: &quot;137.60&quot;,
+            &quot;moisture&quot;: &quot;36.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 132,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;8.4&quot;,
+            &quot;rain_intensity&quot;: &quot;19.38&quot;,
+            &quot;rain_month&quot;: &quot;40.88&quot;,
+            &quot;moisture&quot;: &quot;80.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 131,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;9.8&quot;,
+            &quot;rain_intensity&quot;: &quot;9.95&quot;,
+            &quot;rain_month&quot;: &quot;65.00&quot;,
+            &quot;moisture&quot;: &quot;15.8&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 151,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;7.3&quot;,
+            &quot;rain_intensity&quot;: &quot;5.04&quot;,
+            &quot;rain_month&quot;: &quot;34.63&quot;,
+            &quot;moisture&quot;: &quot;16.4&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 130,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;0.5&quot;,
+            &quot;rain_intensity&quot;: &quot;18.77&quot;,
+            &quot;rain_month&quot;: &quot;101.05&quot;,
+            &quot;moisture&quot;: &quot;40.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 150,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;3.4&quot;,
+            &quot;rain_intensity&quot;: &quot;18.73&quot;,
+            &quot;rain_month&quot;: &quot;94.90&quot;,
+            &quot;moisture&quot;: &quot;47.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 149,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;2.6&quot;,
+            &quot;rain_intensity&quot;: &quot;5.89&quot;,
+            &quot;rain_month&quot;: &quot;14.51&quot;,
+            &quot;moisture&quot;: &quot;99.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 129,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;0.7&quot;,
+            &quot;rain_intensity&quot;: &quot;3.99&quot;,
+            &quot;rain_month&quot;: &quot;104.68&quot;,
+            &quot;moisture&quot;: &quot;42.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 128,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;0.4&quot;,
+            &quot;rain_intensity&quot;: &quot;14.83&quot;,
+            &quot;rain_month&quot;: &quot;101.29&quot;,
+            &quot;moisture&quot;: &quot;83.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 148,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;2.0&quot;,
+            &quot;rain_intensity&quot;: &quot;5.10&quot;,
+            &quot;rain_month&quot;: &quot;98.94&quot;,
+            &quot;moisture&quot;: &quot;63.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 147,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;3.2&quot;,
+            &quot;rain_intensity&quot;: &quot;10.27&quot;,
+            &quot;rain_month&quot;: &quot;142.53&quot;,
+            &quot;moisture&quot;: &quot;75.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 127,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;9.1&quot;,
+            &quot;rain_intensity&quot;: &quot;13.24&quot;,
+            &quot;rain_month&quot;: &quot;134.99&quot;,
+            &quot;moisture&quot;: &quot;21.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 126,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;3.9&quot;,
+            &quot;rain_intensity&quot;: &quot;4.91&quot;,
+            &quot;rain_month&quot;: &quot;98.95&quot;,
+            &quot;moisture&quot;: &quot;20.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 146,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;6.9&quot;,
+            &quot;rain_intensity&quot;: &quot;18.81&quot;,
+            &quot;rain_month&quot;: &quot;87.06&quot;,
+            &quot;moisture&quot;: &quot;42.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 145,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;rain&quot;: &quot;1.2&quot;,
+            &quot;rain_intensity&quot;: &quot;10.85&quot;,
+            &quot;rain_month&quot;: &quot;142.63&quot;,
+            &quot;moisture&quot;: &quot;9.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 125,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;rain&quot;: &quot;7.1&quot;,
+            &quot;rain_intensity&quot;: &quot;6.70&quot;,
+            &quot;rain_month&quot;: &quot;108.37&quot;,
+            &quot;moisture&quot;: &quot;7.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;4.5&quot;,
+            &quot;rain_intensity&quot;: &quot;6.43&quot;,
+            &quot;rain_month&quot;: &quot;63.08&quot;,
+            &quot;moisture&quot;: &quot;85.8&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;7.8&quot;,
+            &quot;rain_intensity&quot;: &quot;17.76&quot;,
+            &quot;rain_month&quot;: &quot;11.89&quot;,
+            &quot;moisture&quot;: &quot;16.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;8.4&quot;,
+            &quot;rain_intensity&quot;: &quot;6.81&quot;,
+            &quot;rain_month&quot;: &quot;131.74&quot;,
+            &quot;moisture&quot;: &quot;65.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.2&quot;,
+            &quot;rain_intensity&quot;: &quot;10.88&quot;,
+            &quot;rain_month&quot;: &quot;43.30&quot;,
+            &quot;moisture&quot;: &quot;54.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;5.0&quot;,
+            &quot;rain_intensity&quot;: &quot;15.08&quot;,
+            &quot;rain_month&quot;: &quot;96.08&quot;,
+            &quot;moisture&quot;: &quot;21.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;10.0&quot;,
+            &quot;rain_intensity&quot;: &quot;19.40&quot;,
+            &quot;rain_month&quot;: &quot;90.11&quot;,
+            &quot;moisture&quot;: &quot;92.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;7.0&quot;,
+            &quot;rain_intensity&quot;: &quot;3.40&quot;,
+            &quot;rain_month&quot;: &quot;67.40&quot;,
+            &quot;moisture&quot;: &quot;73.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;3.1&quot;,
+            &quot;rain_intensity&quot;: &quot;15.94&quot;,
+            &quot;rain_month&quot;: &quot;17.07&quot;,
+            &quot;moisture&quot;: &quot;8.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;7.9&quot;,
+            &quot;rain_intensity&quot;: &quot;9.83&quot;,
+            &quot;rain_month&quot;: &quot;49.96&quot;,
+            &quot;moisture&quot;: &quot;55.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;2.6&quot;,
+            &quot;rain_intensity&quot;: &quot;4.91&quot;,
+            &quot;rain_month&quot;: &quot;54.33&quot;,
+            &quot;moisture&quot;: &quot;70.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;8.9&quot;,
+            &quot;rain_intensity&quot;: &quot;11.70&quot;,
+            &quot;rain_month&quot;: &quot;42.29&quot;,
+            &quot;moisture&quot;: &quot;14.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.8&quot;,
+            &quot;rain_intensity&quot;: &quot;5.94&quot;,
+            &quot;rain_month&quot;: &quot;41.12&quot;,
+            &quot;moisture&quot;: &quot;63.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;4.5&quot;,
+            &quot;rain_intensity&quot;: &quot;13.34&quot;,
+            &quot;rain_month&quot;: &quot;112.80&quot;,
+            &quot;moisture&quot;: &quot;15.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;5.0&quot;,
+            &quot;rain_intensity&quot;: &quot;3.36&quot;,
+            &quot;rain_month&quot;: &quot;35.31&quot;,
+            &quot;moisture&quot;: &quot;96.8&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;4.4&quot;,
+            &quot;rain_intensity&quot;: &quot;19.18&quot;,
+            &quot;rain_month&quot;: &quot;8.47&quot;,
+            &quot;moisture&quot;: &quot;99.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;9.2&quot;,
+            &quot;rain_intensity&quot;: &quot;18.08&quot;,
+            &quot;rain_month&quot;: &quot;103.43&quot;,
+            &quot;moisture&quot;: &quot;67.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;4.8&quot;,
+            &quot;rain_intensity&quot;: &quot;11.51&quot;,
+            &quot;rain_month&quot;: &quot;100.55&quot;,
+            &quot;moisture&quot;: &quot;68.3&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;2.2&quot;,
+            &quot;rain_intensity&quot;: &quot;13.33&quot;,
+            &quot;rain_month&quot;: &quot;139.81&quot;,
+            &quot;moisture&quot;: &quot;97.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.9&quot;,
+            &quot;rain_intensity&quot;: &quot;18.42&quot;,
+            &quot;rain_month&quot;: &quot;5.65&quot;,
+            &quot;moisture&quot;: &quot;81.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.5&quot;,
+            &quot;rain_intensity&quot;: &quot;11.21&quot;,
+            &quot;rain_month&quot;: &quot;76.71&quot;,
+            &quot;moisture&quot;: &quot;23.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;8.2&quot;,
+            &quot;rain_intensity&quot;: &quot;8.00&quot;,
+            &quot;rain_month&quot;: &quot;143.01&quot;,
+            &quot;moisture&quot;: &quot;80.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;4.7&quot;,
+            &quot;rain_intensity&quot;: &quot;19.52&quot;,
+            &quot;rain_month&quot;: &quot;125.74&quot;,
+            &quot;moisture&quot;: &quot;30.8&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.9&quot;,
+            &quot;rain_intensity&quot;: &quot;11.49&quot;,
+            &quot;rain_month&quot;: &quot;3.39&quot;,
+            &quot;moisture&quot;: &quot;18.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;5.5&quot;,
+            &quot;rain_intensity&quot;: &quot;18.52&quot;,
+            &quot;rain_month&quot;: &quot;24.19&quot;,
+            &quot;moisture&quot;: &quot;10.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;6.8&quot;,
+            &quot;rain_intensity&quot;: &quot;19.49&quot;,
+            &quot;rain_month&quot;: &quot;99.54&quot;,
+            &quot;moisture&quot;: &quot;19.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;6.4&quot;,
+            &quot;rain_intensity&quot;: &quot;12.70&quot;,
+            &quot;rain_month&quot;: &quot;61.06&quot;,
+            &quot;moisture&quot;: &quot;86.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;1.9&quot;,
+            &quot;rain_intensity&quot;: &quot;12.64&quot;,
+            &quot;rain_month&quot;: &quot;38.48&quot;,
+            &quot;moisture&quot;: &quot;53.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;7.2&quot;,
+            &quot;rain_intensity&quot;: &quot;16.72&quot;,
+            &quot;rain_month&quot;: &quot;66.03&quot;,
+            &quot;moisture&quot;: &quot;39.2&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;4.8&quot;,
+            &quot;rain_intensity&quot;: &quot;7.49&quot;,
+            &quot;rain_month&quot;: &quot;76.16&quot;,
+            &quot;moisture&quot;: &quot;9.1&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.9&quot;,
+            &quot;rain_intensity&quot;: &quot;16.63&quot;,
+            &quot;rain_month&quot;: &quot;64.66&quot;,
+            &quot;moisture&quot;: &quot;2.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.2&quot;,
+            &quot;rain_intensity&quot;: &quot;6.05&quot;,
+            &quot;rain_month&quot;: &quot;73.44&quot;,
+            &quot;moisture&quot;: &quot;13.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;7.3&quot;,
+            &quot;rain_intensity&quot;: &quot;3.74&quot;,
+            &quot;rain_month&quot;: &quot;146.20&quot;,
+            &quot;moisture&quot;: &quot;29.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;2.2&quot;,
+            &quot;rain_intensity&quot;: &quot;14.99&quot;,
+            &quot;rain_month&quot;: &quot;57.26&quot;,
+            &quot;moisture&quot;: &quot;16.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;3.7&quot;,
+            &quot;rain_intensity&quot;: &quot;10.87&quot;,
+            &quot;rain_month&quot;: &quot;23.00&quot;,
+            &quot;moisture&quot;: &quot;28.8&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;2.2&quot;,
+            &quot;rain_intensity&quot;: &quot;19.82&quot;,
+            &quot;rain_month&quot;: &quot;3.41&quot;,
+            &quot;moisture&quot;: &quot;22.7&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;8.9&quot;,
+            &quot;rain_intensity&quot;: &quot;7.38&quot;,
+            &quot;rain_month&quot;: &quot;149.78&quot;,
+            &quot;moisture&quot;: &quot;16.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;9.1&quot;,
+            &quot;rain_intensity&quot;: &quot;5.29&quot;,
+            &quot;rain_month&quot;: &quot;6.85&quot;,
+            &quot;moisture&quot;: &quot;25.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;6.3&quot;,
+            &quot;rain_intensity&quot;: &quot;5.47&quot;,
+            &quot;rain_month&quot;: &quot;12.08&quot;,
+            &quot;moisture&quot;: &quot;23.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;8.4&quot;,
+            &quot;rain_intensity&quot;: &quot;10.32&quot;,
+            &quot;rain_month&quot;: &quot;41.57&quot;,
+            &quot;moisture&quot;: &quot;98.5&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;0.9&quot;,
+            &quot;rain_intensity&quot;: &quot;15.92&quot;,
+            &quot;rain_month&quot;: &quot;29.20&quot;,
+            &quot;moisture&quot;: &quot;48.4&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;2.6&quot;,
+            &quot;rain_intensity&quot;: &quot;13.66&quot;,
+            &quot;rain_month&quot;: &quot;109.79&quot;,
+            &quot;moisture&quot;: &quot;33.9&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;2.7&quot;,
+            &quot;rain_intensity&quot;: &quot;0.55&quot;,
+            &quot;rain_month&quot;: &quot;44.98&quot;,
+            &quot;moisture&quot;: &quot;81.8&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;8.0&quot;,
+            &quot;rain_intensity&quot;: &quot;10.32&quot;,
+            &quot;rain_month&quot;: &quot;120.76&quot;,
+            &quot;moisture&quot;: &quot;33.0&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;rain&quot;: &quot;5.5&quot;,
+            &quot;rain_intensity&quot;: &quot;3.14&quot;,
+            &quot;rain_month&quot;: &quot;134.46&quot;,
+            &quot;moisture&quot;: &quot;85.6&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7494,7 +15093,632 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1755.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1425.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1520.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1611.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1156.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;663.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1268.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1216.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1111.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;650.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1962.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1312.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1228.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;598.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;619.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1320.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;860.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1630.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1831.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1014.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1389.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1294.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;986.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1670.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1642.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;806.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1446.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;445.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1057.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1999.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1732.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;880.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;433.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1271.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1760.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1143.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1184.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1790.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;952.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1230.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1355.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1747.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1153.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1759.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1465.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1803.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1591.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1439.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;603.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1475.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;684.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1483.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1556.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;1684.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;589.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1489.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1139.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;722.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;1942.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;1987.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1933.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1556.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1563.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1420.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1366.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;957.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1087.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;524.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;899.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1344.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;700.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1588.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1913.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1018.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1612.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1668.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1206.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;786.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1023.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;937.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1578.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1122.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1233.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1301.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1842.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1717.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1899.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1627.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1650.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1554.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;930.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;796.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;630.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1031.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1451.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;526.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;451.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1432.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1716.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1842.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;585.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1825.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;1091.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;932.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7623,7 +15847,632 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;856.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;461.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;791.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;826.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;900.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;94.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;616.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;651.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;874.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;916.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;541.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;599.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;846.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;384.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;893.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;849.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;144.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;29.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;644.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;896.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;376.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;813.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;856.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;755.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;518.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;509.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;319.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;954.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;831.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;665.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;905.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;100.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;322.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;26.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;804.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;697.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;449.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;31.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;117.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;984.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;612.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;149.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;703.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;598.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;834.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;606.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;593.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;840.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;2.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;440.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;828.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;697.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;494.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;673.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;283.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;631.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;553.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;value&quot;: &quot;884.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;value&quot;: &quot;767.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;value&quot;: &quot;991.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;234.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;89.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;208.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;825.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;340.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;483.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;726.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;970.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;171.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;177.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;114.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;674.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;849.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;683.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;789.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;515.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;273.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;856.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;554.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;506.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;210.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;347.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;491.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;643.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;913.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;237.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;569.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;540.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;746.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;865.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;422.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;541.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;227.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;133.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;991.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;999.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;605.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;985.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;65.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;810.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;202.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;189.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;841.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;value&quot;: &quot;149.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7752,7 +16601,736 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 224,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;15697.12000000000&quot;,
+            &quot;air_quality&quot;: &quot;29.6500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 204,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;45816.04000000000&quot;,
+            &quot;air_quality&quot;: &quot;45.8400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 184,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;19273.33000000000&quot;,
+            &quot;air_quality&quot;: &quot;95.4200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 223,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;21273.24000000000&quot;,
+            &quot;air_quality&quot;: &quot;40.6800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 203,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;1491.57000000000&quot;,
+            &quot;air_quality&quot;: &quot;22.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 183,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;44713.09000000000&quot;,
+            &quot;air_quality&quot;: &quot;45.3400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 202,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;36055.13000000000&quot;,
+            &quot;air_quality&quot;: &quot;36.6700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 222,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;45326.39000000000&quot;,
+            &quot;air_quality&quot;: &quot;59.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 182,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;5566.67000000000&quot;,
+            &quot;air_quality&quot;: &quot;60.3600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 221,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;16989.44000000000&quot;,
+            &quot;air_quality&quot;: &quot;50.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 181,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;23524.09000000000&quot;,
+            &quot;air_quality&quot;: &quot;10.4600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 201,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;13812.51000000000&quot;,
+            &quot;air_quality&quot;: &quot;56.5300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 220,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;47972.89000000000&quot;,
+            &quot;air_quality&quot;: &quot;55.3200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 180,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;19452.31000000000&quot;,
+            &quot;air_quality&quot;: &quot;86.4200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 200,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;27260.11000000000&quot;,
+            &quot;air_quality&quot;: &quot;42.4500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 199,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;15295.49000000000&quot;,
+            &quot;air_quality&quot;: &quot;98.8000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 179,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;37838.33000000000&quot;,
+            &quot;air_quality&quot;: &quot;42.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 219,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;45227.03000000000&quot;,
+            &quot;air_quality&quot;: &quot;57.5200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 218,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;43733.74000000000&quot;,
+            &quot;air_quality&quot;: &quot;87.0900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 178,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;13204.36000000000&quot;,
+            &quot;air_quality&quot;: &quot;22.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 198,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;19043.40000000000&quot;,
+            &quot;air_quality&quot;: &quot;1.6100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 197,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;39362.18000000000&quot;,
+            &quot;air_quality&quot;: &quot;13.3500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 217,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;37355.58000000000&quot;,
+            &quot;air_quality&quot;: &quot;85.5300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 177,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;1338.84000000000&quot;,
+            &quot;air_quality&quot;: &quot;43.2600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 176,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;39926.69000000000&quot;,
+            &quot;air_quality&quot;: &quot;64.6200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 216,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;44568.24000000000&quot;,
+            &quot;air_quality&quot;: &quot;50.5900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 196,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;30974.59000000000&quot;,
+            &quot;air_quality&quot;: &quot;66.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 175,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;48354.58000000000&quot;,
+            &quot;air_quality&quot;: &quot;1.5600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 215,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;10685.66000000000&quot;,
+            &quot;air_quality&quot;: &quot;11.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 195,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;11949.97000000000&quot;,
+            &quot;air_quality&quot;: &quot;87.1500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 194,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;21843.37000000000&quot;,
+            &quot;air_quality&quot;: &quot;13.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 174,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;5535.95000000000&quot;,
+            &quot;air_quality&quot;: &quot;47.5200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 214,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;7217.95000000000&quot;,
+            &quot;air_quality&quot;: &quot;69.6800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 193,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;32475.71000000000&quot;,
+            &quot;air_quality&quot;: &quot;50.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 213,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;28737.81000000000&quot;,
+            &quot;air_quality&quot;: &quot;93.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 173,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;18853.03000000000&quot;,
+            &quot;air_quality&quot;: &quot;11.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 192,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;8546.97000000000&quot;,
+            &quot;air_quality&quot;: &quot;35.6600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 212,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;46038.17000000000&quot;,
+            &quot;air_quality&quot;: &quot;53.7600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 172,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;11810.98000000000&quot;,
+            &quot;air_quality&quot;: &quot;5.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 191,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;9676.69000000000&quot;,
+            &quot;air_quality&quot;: &quot;19.1500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 171,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;39114.27000000000&quot;,
+            &quot;air_quality&quot;: &quot;26.1000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 211,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;31976.56000000000&quot;,
+            &quot;air_quality&quot;: &quot;23.6100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 190,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;2335.02000000000&quot;,
+            &quot;air_quality&quot;: &quot;69.3000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 170,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;10355.87000000000&quot;,
+            &quot;air_quality&quot;: &quot;17.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 210,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;30803.55000000000&quot;,
+            &quot;air_quality&quot;: &quot;44.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 189,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;1836.78000000000&quot;,
+            &quot;air_quality&quot;: &quot;57.9800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 209,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;48810.94000000000&quot;,
+            &quot;air_quality&quot;: &quot;4.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 169,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;24143.03000000000&quot;,
+            &quot;air_quality&quot;: &quot;46.5300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 188,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;17100.52000000000&quot;,
+            &quot;air_quality&quot;: &quot;94.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 208,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;1627.17000000000&quot;,
+            &quot;air_quality&quot;: &quot;80.8600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 168,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;21940.00000000000&quot;,
+            &quot;air_quality&quot;: &quot;43.8300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 167,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;5113.89000000000&quot;,
+            &quot;air_quality&quot;: &quot;97.4200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 207,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;12476.68000000000&quot;,
+            &quot;air_quality&quot;: &quot;59.4600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 187,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;12403.37000000000&quot;,
+            &quot;air_quality&quot;: &quot;66.0500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 186,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;10449.32000000000&quot;,
+            &quot;air_quality&quot;: &quot;70.7500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 166,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;21913.38000000000&quot;,
+            &quot;air_quality&quot;: &quot;71.4000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 206,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;30302.05000000000&quot;,
+            &quot;air_quality&quot;: &quot;68.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 185,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;gas_resistance&quot;: &quot;45290.69000000000&quot;,
+            &quot;air_quality&quot;: &quot;88.1700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 205,
+            &quot;hardware_device_id&quot;: 36,
+            &quot;gas_resistance&quot;: &quot;39685.92000000000&quot;,
+            &quot;air_quality&quot;: &quot;41.2000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 165,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;gas_resistance&quot;: &quot;21279.71000000000&quot;,
+            &quot;air_quality&quot;: &quot;79.6900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 44,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;29194.70000000000&quot;,
+            &quot;air_quality&quot;: &quot;76.0800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;10112.36000000000&quot;,
+            &quot;air_quality&quot;: &quot;14.3100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;37944.89000000000&quot;,
+            &quot;air_quality&quot;: &quot;97.5600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;1556.76000000000&quot;,
+            &quot;air_quality&quot;: &quot;75.6700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;12139.29000000000&quot;,
+            &quot;air_quality&quot;: &quot;63.0100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;44301.25000000000&quot;,
+            &quot;air_quality&quot;: &quot;68.4700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;21454.00000000000&quot;,
+            &quot;air_quality&quot;: &quot;12.0000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;2816.20000000000&quot;,
+            &quot;air_quality&quot;: &quot;98.4000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;23630.06000000000&quot;,
+            &quot;air_quality&quot;: &quot;37.6000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;10125.08000000000&quot;,
+            &quot;air_quality&quot;: &quot;90.2200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;29661.46000000000&quot;,
+            &quot;air_quality&quot;: &quot;17.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;29020.79000000000&quot;,
+            &quot;air_quality&quot;: &quot;88.7300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;11370.46000000000&quot;,
+            &quot;air_quality&quot;: &quot;27.8200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;44077.29000000000&quot;,
+            &quot;air_quality&quot;: &quot;93.7700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;23765.18000000000&quot;,
+            &quot;air_quality&quot;: &quot;17.6500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;35729.47000000000&quot;,
+            &quot;air_quality&quot;: &quot;48.8300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;33917.33000000000&quot;,
+            &quot;air_quality&quot;: &quot;50.4000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;12322.54000000000&quot;,
+            &quot;air_quality&quot;: &quot;87.0400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;3219.83000000000&quot;,
+            &quot;air_quality&quot;: &quot;33.7500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;22998.27000000000&quot;,
+            &quot;air_quality&quot;: &quot;72.3600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;38034.51000000000&quot;,
+            &quot;air_quality&quot;: &quot;87.3600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;21835.42000000000&quot;,
+            &quot;air_quality&quot;: &quot;9.6900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;38680.15000000000&quot;,
+            &quot;air_quality&quot;: &quot;33.9600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;9289.80000000000&quot;,
+            &quot;air_quality&quot;: &quot;72.3400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;15440.56000000000&quot;,
+            &quot;air_quality&quot;: &quot;95.1100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;2453.65000000000&quot;,
+            &quot;air_quality&quot;: &quot;37.1200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;10794.01000000000&quot;,
+            &quot;air_quality&quot;: &quot;89.7000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;30912.80000000000&quot;,
+            &quot;air_quality&quot;: &quot;79.3600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;31354.87000000000&quot;,
+            &quot;air_quality&quot;: &quot;77.9900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;11586.33000000000&quot;,
+            &quot;air_quality&quot;: &quot;87.2800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;3070.84000000000&quot;,
+            &quot;air_quality&quot;: &quot;68.2100&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;38380.31000000000&quot;,
+            &quot;air_quality&quot;: &quot;83.5500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;30566.69000000000&quot;,
+            &quot;air_quality&quot;: &quot;64.4300&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;22225.86000000000&quot;,
+            &quot;air_quality&quot;: &quot;35.4600&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;28085.89000000000&quot;,
+            &quot;air_quality&quot;: &quot;40.2400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;18987.10000000000&quot;,
+            &quot;air_quality&quot;: &quot;17.5700&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;10134.04000000000&quot;,
+            &quot;air_quality&quot;: &quot;9.6000&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;40183.85000000000&quot;,
+            &quot;air_quality&quot;: &quot;57.4900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;37427.16000000000&quot;,
+            &quot;air_quality&quot;: &quot;44.1500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;10878.69000000000&quot;,
+            &quot;air_quality&quot;: &quot;63.3900&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;33610.22000000000&quot;,
+            &quot;air_quality&quot;: &quot;3.8500&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;15535.18000000000&quot;,
+            &quot;air_quality&quot;: &quot;63.3200&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;9569.77000000000&quot;,
+            &quot;air_quality&quot;: &quot;86.1800&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;gas_resistance&quot;: &quot;10204.85000000000&quot;,
+            &quot;air_quality&quot;: &quot;30.9400&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T15:49:32.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7881,7 +17459,672 @@ vary: Origin
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 163,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 24,
+            &quot;energy&quot;: 795,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 143,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 22,
+            &quot;energy&quot;: 240,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:32:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 142,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 24,
+            &quot;energy&quot;: 756,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 162,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 30,
+            &quot;energy&quot;: 374,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:31:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 141,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 20,
+            &quot;energy&quot;: 744,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 161,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 1,
+            &quot;energy&quot;: 694,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:30:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 160,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 17,
+            &quot;energy&quot;: 201,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 140,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 3,
+            &quot;energy&quot;: 148,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:29:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 139,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 20,
+            &quot;energy&quot;: 986,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 159,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 19,
+            &quot;energy&quot;: 599,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:28:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 138,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 21,
+            &quot;energy&quot;: 69,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 158,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 28,
+            &quot;energy&quot;: 317,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:27:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 137,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 26,
+            &quot;energy&quot;: 662,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 157,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 17,
+            &quot;energy&quot;: 494,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:26:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 136,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 20,
+            &quot;energy&quot;: 425,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 156,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 29,
+            &quot;energy&quot;: 341,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:25:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 135,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 32,
+            &quot;energy&quot;: 51,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 155,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 38,
+            &quot;energy&quot;: 783,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:24:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 134,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 11,
+            &quot;energy&quot;: 261,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 154,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 904,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:23:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 153,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 28,
+            &quot;energy&quot;: 803,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 133,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 24,
+            &quot;energy&quot;: 308,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:22:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 132,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 12,
+            &quot;energy&quot;: 952,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 152,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 6,
+            &quot;energy&quot;: 161,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:21:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 151,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 39,
+            &quot;energy&quot;: 81,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 131,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 12,
+            &quot;energy&quot;: 189,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:20:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 130,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 814,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 150,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 29,
+            &quot;energy&quot;: 471,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:19:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 129,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 18,
+            &quot;energy&quot;: 364,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 149,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 24,
+            &quot;energy&quot;: 305,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:18:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 148,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 6,
+            &quot;energy&quot;: 387,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 128,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 24,
+            &quot;energy&quot;: 537,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:17:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 127,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 12,
+            &quot;energy&quot;: 944,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 147,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 11,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:16:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 146,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 13,
+            &quot;energy&quot;: 416,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 126,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 1,
+            &quot;energy&quot;: 578,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:15:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 125,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 30,
+            &quot;energy&quot;: 978,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 145,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 20,
+            &quot;energy&quot;: 445,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:14:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 144,
+            &quot;hardware_device_id&quot;: 35,
+            &quot;distance&quot;: 34,
+            &quot;energy&quot;: 203,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 124,
+            &quot;hardware_device_id&quot;: 34,
+            &quot;distance&quot;: 9,
+            &quot;energy&quot;: 133,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-04T19:13:15.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 43,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 32,
+            &quot;energy&quot;: 853,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:38:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 42,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 12,
+            &quot;energy&quot;: 34,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:37:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 41,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 35,
+            &quot;energy&quot;: 432,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:36:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 40,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 30,
+            &quot;energy&quot;: 670,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:35:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 39,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 20,
+            &quot;energy&quot;: 31,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:34:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 38,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 40,
+            &quot;energy&quot;: 417,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:33:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 37,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 15,
+            &quot;energy&quot;: 385,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:32:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 36,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 40,
+            &quot;energy&quot;: 215,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:31:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 35,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 1,
+            &quot;energy&quot;: 650,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:30:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 34,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 23,
+            &quot;energy&quot;: 429,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:29:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 33,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 2,
+            &quot;energy&quot;: 449,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:28:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 37,
+            &quot;energy&quot;: 611,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:27:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 7,
+            &quot;energy&quot;: 804,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:26:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 935,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:25:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 37,
+            &quot;energy&quot;: 108,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:24:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 28,
+            &quot;energy&quot;: 514,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:23:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 21,
+            &quot;energy&quot;: 580,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:22:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 8,
+            &quot;energy&quot;: 467,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:21:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 32,
+            &quot;energy&quot;: 510,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T21:20:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 37,
+            &quot;energy&quot;: 52,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T21:19:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 39,
+            &quot;energy&quot;: 851,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:19:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 35,
+            &quot;energy&quot;: 769,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:18:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 6,
+            &quot;energy&quot;: 491,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:17:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 28,
+            &quot;energy&quot;: 730,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:16:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 21,
+            &quot;energy&quot;: 795,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:15:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 50,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:14:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 15,
+            &quot;energy&quot;: 871,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:13:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 394,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:12:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 9,
+            &quot;energy&quot;: 479,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:11:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 35,
+            &quot;energy&quot;: 113,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 36,
+            &quot;energy&quot;: 556,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:10:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 5,
+            &quot;energy&quot;: 717,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 14,
+            &quot;energy&quot;: 720,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 1,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 21,
+            &quot;energy&quot;: 52,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:50.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 12,
+            &quot;energy&quot;: 496,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:08:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 25,
+            &quot;energy&quot;: 246,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:07:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 5,
+            &quot;energy&quot;: 460,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:06:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 23,
+            &quot;energy&quot;: 761,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:05:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 27,
+            &quot;energy&quot;: 615,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:04:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 10,
+            &quot;energy&quot;: 381,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:03:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 12,
+            &quot;energy&quot;: 468,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:02:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 2,
+            &quot;energy&quot;: 747,
+            &quot;noise_floor&quot;: 1,
+            &quot;created_at&quot;: &quot;2026-07-01T16:01:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;hardware_device_id&quot;: 1,
+            &quot;distance&quot;: 3,
+            &quot;energy&quot;: 495,
+            &quot;noise_floor&quot;: 0,
+            &quot;created_at&quot;: &quot;2026-07-01T16:00:14.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -9962,7 +20205,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -9974,8 +20217,2580 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;user_id&quot;: 1,
+        &quot;image_id&quot;: null,
+        &quot;title&quot;: &quot;Curriculum de Ra&uacute;l Caro&quot;,
+        &quot;presentation&quot;: &quot;Ut laboriosam aliquid est non. Odio iure aut nihil architecto non consequatur. Adipisci enim sunt ut aut et vitae. Sit dolorum culpa quis et ea.&quot;,
+        &quot;is_active&quot;: true,
+        &quot;is_downloadable&quot;: true,
+        &quot;is_default&quot;: true,
+        &quot;is_public&quot;: true,
+        &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+        &quot;deleted_at&quot;: null,
+        &quot;repositories&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://www.weissnat.net/ratione-fugit-possimus-qui.html&quot;,
+                &quot;title&quot;: &quot;qui ea&quot;,
+                &quot;description&quot;: &quot;Quod id ratione accusamus molestias ad.&quot;,
+                &quot;name&quot;: &quot;quos&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;https://www.halvorson.net/distinctio-velit-rerum-commodi-expedita&quot;,
+                &quot;title&quot;: &quot;quae iste&quot;,
+                &quot;description&quot;: &quot;Necessitatibus aliquam consequatur incidunt occaecati.&quot;,
+                &quot;name&quot;: &quot;consequuntur&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://schiller.biz/dolores-voluptas-et-ipsa-rerum-laborum-cupiditate&quot;,
+                &quot;title&quot;: &quot;nihil dolore&quot;,
+                &quot;description&quot;: &quot;Quis sunt eos natus autem.&quot;,
+                &quot;name&quot;: &quot;tempore&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://littel.net/&quot;,
+                &quot;title&quot;: &quot;accusantium autem&quot;,
+                &quot;description&quot;: &quot;Consequuntur corrupti voluptatum ea rerum rem non.&quot;,
+                &quot;name&quot;: &quot;beatae&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://keebler.org/consectetur-eveniet-corporis-sit-unde-vero&quot;,
+                &quot;title&quot;: &quot;ut blanditiis&quot;,
+                &quot;description&quot;: &quot;Rerum ex cum cumque perspiciatis.&quot;,
+                &quot;name&quot;: &quot;quia&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;https://koss.com/cupiditate-dignissimos-in-est-repellat.html&quot;,
+                &quot;title&quot;: &quot;vitae repellendus&quot;,
+                &quot;description&quot;: &quot;Distinctio quasi esse cum est est.&quot;,
+                &quot;name&quot;: &quot;aut&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://www.botsford.com/harum-in-laborum-natus-veniam-inventore-nihil.html&quot;,
+                &quot;title&quot;: &quot;ea nisi&quot;,
+                &quot;description&quot;: &quot;Necessitatibus amet aut excepturi nobis et aperiam qui.&quot;,
+                &quot;name&quot;: &quot;dolores&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://jacobs.org/dignissimos-reiciendis-odio-consequatur-eos-reiciendis&quot;,
+                &quot;title&quot;: &quot;dolor et&quot;,
+                &quot;description&quot;: &quot;Dignissimos sint alias doloremque ea eos aut sapiente dolorem.&quot;,
+                &quot;name&quot;: &quot;perferendis&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://www.marquardt.com/hic-facilis-inventore-eaque-dolore-repellat&quot;,
+                &quot;title&quot;: &quot;autem saepe&quot;,
+                &quot;description&quot;: &quot;Eos temporibus voluptas eos tempore placeat doloremque omnis dolorem.&quot;,
+                &quot;name&quot;: &quot;debitis&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;http://www.lesch.com/pariatur-perferendis-qui-dolor-eveniet-iure&quot;,
+                &quot;title&quot;: &quot;unde suscipit&quot;,
+                &quot;description&quot;: &quot;Est natus dolorem ad dignissimos dicta alias occaecati qui.&quot;,
+                &quot;name&quot;: &quot;molestiae&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;https://toy.com/dolorem-eaque-adipisci-illum-laborum-temporibus-modi-est-ut.html&quot;,
+                &quot;title&quot;: &quot;quo error&quot;,
+                &quot;description&quot;: &quot;Pariatur est sint fugit.&quot;,
+                &quot;name&quot;: &quot;eaque&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;repository_type_id&quot;: 1,
+                &quot;url&quot;: &quot;https://abshire.info/quis-et-nihil-ullam-numquam-consequuntur-est-modi.html&quot;,
+                &quot;title&quot;: &quot;facere nihil&quot;,
+                &quot;description&quot;: &quot;Quaerat repudiandae debitis architecto et.&quot;,
+                &quot;name&quot;: &quot;assumenda&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;services&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;nihil voluptate iure&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Dolorem quasi molestiae laudantium enim voluptatibus. Sint ipsa id laboriosam aut placeat. Distinctio hic est possimus eos corrupti. Aut praesentium quo sit optio necessitatibus quod.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;ullam qui qui&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Recusandae voluptate quisquam temporibus officia. Ex eius veniam voluptates voluptas aut sapiente et laudantium. Ut debitis recusandae exercitationem perspiciatis inventore temporibus.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;explicabo suscipit est&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Ipsa enim et maxime rem possimus magnam. Repellendus recusandae pariatur dolores explicabo. Vel rerum numquam ut similique deleniti quis.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;ab distinctio illum&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Nihil numquam nobis tenetur repellat velit perspiciatis vel ex. Nihil aut ex distinctio ea odio. Esse et voluptatem qui repudiandae repudiandae delectus quia.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;rerum consequatur voluptate&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Dolor sint aut velit error id. Illo dolores in animi sapiente. Nisi voluptatem fugiat inventore molestiae. Assumenda nostrum fugit ut sed aut est.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;et voluptatem at&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Doloremque beatae voluptas totam mollitia aut ullam ex. Consequatur atque facilis impedit provident. Voluptatem tempore ex suscipit tenetur sed non doloremque. Aspernatur ducimus et nemo suscipit aliquid.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;asperiores enim magnam&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Est aut officia nemo et ea. Fugit nisi ut neque nihil minus facilis quis. Alias magnam accusamus et ut dolores sit ea tenetur.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;ea corporis minus&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Dicta et dignissimos et quia voluptate rerum et. Exercitationem veritatis aut ut non atque cupiditate. Recusandae a et qui aut aperiam dignissimos minus. Provident itaque corporis eveniet optio. Et sapiente vero consequatur cum ad vero quo.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;doloremque nihil quaerat&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Pariatur est natus reprehenderit omnis. Deserunt temporibus cum quis suscipit autem. Sequi esse velit nihil nisi sit est.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;nobis distinctio ullam&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Et dolorem nulla excepturi pariatur. Quibusdam qui magni sint sit repudiandae voluptatem.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;enim earum est&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Est voluptates vel in. Consequatur pariatur sed vel. Quo veniam ipsa voluptatem illo repellat consequatur neque officiis.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;labore animi beatae&quot;,
+                &quot;url&quot;: null,
+                &quot;description&quot;: &quot;Impedit velit qui quisquam facere ipsum. Suscipit laboriosam laborum error et veniam. Sed ex earum architecto earum ullam commodi libero sed.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;collaborations&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;et commodi sit&quot;,
+                &quot;description&quot;: &quot;Et ab incidunt ad deserunt. Dolorem placeat sed in quam eveniet harum itaque. Tempora temporibus ullam sint temporibus consequatur. Enim cum distinctio culpa omnis molestias modi nostrum. Voluptates repellat odio ea repellat rerum delectus porro unde.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;voluptates dolores rerum&quot;,
+                &quot;description&quot;: &quot;Ducimus et dolorum aut ab facere quae. Sunt maiores suscipit delectus fugit. Omnis voluptas corporis dolores dolorum temporibus quidem pariatur. Perferendis ipsum harum ut nihil laborum enim.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;distinctio vel autem&quot;,
+                &quot;description&quot;: &quot;Aut aut nostrum numquam adipisci rerum. Asperiores dignissimos voluptatem neque tempore. Non tempora cum quia voluptas optio neque.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;numquam nesciunt atque&quot;,
+                &quot;description&quot;: &quot;Minus excepturi quis debitis in est. Fugit quo et assumenda autem eligendi. Quasi ut nesciunt facilis dolorem dolores quo repellendus ut.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;atque molestiae eum&quot;,
+                &quot;description&quot;: &quot;Consequatur modi omnis et et dolores explicabo. Nisi recusandae et velit nisi. Nostrum delectus repudiandae aliquid iusto. Sed exercitationem aut voluptatum qui culpa.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;amet nesciunt placeat&quot;,
+                &quot;description&quot;: &quot;Id amet commodi dolores aut facere nihil. Voluptas illo autem et aliquam laudantium facere itaque nulla. Nemo recusandae vitae doloribus cum qui quibusdam enim sed. Hic non repudiandae illum ut voluptatem iste tenetur.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;aut et modi&quot;,
+                &quot;description&quot;: &quot;Quis modi vel reiciendis consequatur esse et molestiae fugit. Provident esse impedit voluptas ducimus. Quia quod quod voluptate. Nihil facilis nemo rerum quis.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;quis praesentium quidem&quot;,
+                &quot;description&quot;: &quot;In pariatur nemo iusto necessitatibus in quasi. In odio id ratione dicta vel. Quia repellendus delectus et ut et ullam rem recusandae. Quasi officia commodi id.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;qui voluptatem quia&quot;,
+                &quot;description&quot;: &quot;Ipsa vero quae quo earum sed. Quod libero voluptas rerum id dicta facilis aliquid cum. Maxime vitae molestias necessitatibus nisi ratione nostrum. Praesentium assumenda similique quia molestiae.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;repellendus veniam unde&quot;,
+                &quot;description&quot;: &quot;Consequatur omnis ducimus aut neque quia temporibus impedit. Quisquam tempore nisi eligendi ut reprehenderit. Et corporis asperiores et maiores sint rerum ut. Eligendi sit minus et aut quasi.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;esse deleniti qui&quot;,
+                &quot;description&quot;: &quot;Et numquam saepe eius voluptas sint impedit debitis. Sunt eligendi est aut ducimus et autem eaque. Libero alias commodi et dolor architecto id.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;optio molestiae odio&quot;,
+                &quot;description&quot;: &quot;Accusantium explicabo eveniet est neque perspiciatis. Nobis labore et quo aut et. Nihil quaerat culpa id nesciunt sunt quidem.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;hobbies&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;aut quia&quot;,
+                &quot;description&quot;: &quot;Et inventore esse itaque.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;inventore et&quot;,
+                &quot;description&quot;: &quot;Debitis dolorum est tenetur et aut ab deleniti autem.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;ducimus autem&quot;,
+                &quot;description&quot;: &quot;At omnis tenetur et quod fugit similique natus.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;a pariatur&quot;,
+                &quot;description&quot;: &quot;Assumenda facere ea veniam eos.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;magni et&quot;,
+                &quot;description&quot;: &quot;Hic est est magnam numquam molestias velit eum error.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;similique voluptatem&quot;,
+                &quot;description&quot;: &quot;Ex voluptatem aut totam autem accusamus atque.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;sunt aut&quot;,
+                &quot;description&quot;: &quot;Occaecati sint facilis exercitationem harum illo accusamus dolor est.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;numquam qui&quot;,
+                &quot;description&quot;: &quot;Est repellat inventore incidunt perspiciatis.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;aut omnis&quot;,
+                &quot;description&quot;: &quot;Magni animi et incidunt inventore tempore sit reprehenderit.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;consequatur et&quot;,
+                &quot;description&quot;: &quot;Voluptas saepe distinctio quod dolorem non quas qui.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;molestiae dicta&quot;,
+                &quot;description&quot;: &quot;Unde iste qui voluptatem dolores.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;delectus numquam&quot;,
+                &quot;description&quot;: &quot;Cumque eos officia quas.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 13,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;delectus illum&quot;,
+                &quot;description&quot;: &quot;Dolore rerum iure modi eius debitis quia explicabo.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 14,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;tenetur quas&quot;,
+                &quot;description&quot;: &quot;Dolores dolor eos aut sint.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 15,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;architecto delectus&quot;,
+                &quot;description&quot;: &quot;Veritatis animi perferendis totam cumque rerum molestias est officiis.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 16,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;voluptas et&quot;,
+                &quot;description&quot;: &quot;Aut labore numquam nihil sunt at vel.&quot;,
+                &quot;url&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;jobs&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Inspector&quot;,
+                &quot;description&quot;: &quot;Enim ipsum eaque velit. Eos excepturi sequi alias dolor omnis. Culpa et et labore eveniet. Nostrum sit temporibus aperiam eius.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Insurance Investigator&quot;,
+                &quot;description&quot;: &quot;Porro sunt neque tenetur fuga voluptas fuga iusto. Tempora consectetur nam facilis provident.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Title Abstractor&quot;,
+                &quot;description&quot;: &quot;Iure consequuntur unde voluptatem et inventore. Sed voluptates sunt doloribus qui.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Interviewer&quot;,
+                &quot;description&quot;: &quot;Minima facilis dolore est alias dolores est. At odio id eum voluptate dolor. Provident debitis labore velit dolorem. Consequuntur tenetur commodi voluptatum cumque.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Benefits Specialist&quot;,
+                &quot;description&quot;: &quot;Non aliquam ipsum repellat error. Ad placeat distinctio qui et. Exercitationem assumenda rerum rerum veniam non. Ut eaque eveniet labore aut.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Rail Car Repairer&quot;,
+                &quot;description&quot;: &quot;Earum amet et optio eius. Qui amet dolorem optio. Ipsam voluptatem placeat nemo placeat sint expedita nisi.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Geologist&quot;,
+                &quot;description&quot;: &quot;Ut deleniti dolore corporis hic. Exercitationem magni praesentium dolorum. Rerum nisi vel odio tempora cupiditate aliquam.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Marking Clerk&quot;,
+                &quot;description&quot;: &quot;Natus voluptatem similique ipsam dolor sed eaque. Aut laborum velit harum voluptatem et debitis animi. Sit quod veritatis magni est et voluptas ratione. Enim iste rerum et eligendi voluptas vitae commodi.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Nursery Worker&quot;,
+                &quot;description&quot;: &quot;Incidunt enim et possimus iure mollitia eum. Delectus eum dolores ducimus numquam dolorem corrupti enim corporis. Dolor veritatis ex eius enim. Beatae harum nemo omnis molestiae officiis.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Real Estate Sales Agent&quot;,
+                &quot;description&quot;: &quot;Consequatur repellat velit consectetur et mollitia voluptas est. Laboriosam nihil vel numquam sapiente aut maxime qui repudiandae.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Agricultural Crop Worker&quot;,
+                &quot;description&quot;: &quot;Est hic eos deleniti fuga quisquam rerum error. Odit perspiciatis mollitia numquam aut perspiciatis. Deserunt illum quia consequatur vel nulla. Voluptatem perferendis qui officia quibusdam voluptatum molestias.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Poet OR Lyricist&quot;,
+                &quot;description&quot;: &quot;Cumque atque laborum perferendis assumenda et. Amet at ratione non distinctio consequuntur ullam. Dicta rerum natus fugiat et ut illum. Iure dolore pariatur quo occaecati.&quot;,
+                &quot;url&quot;: null,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: null,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;projects&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;illo animi dignissimos&quot;,
+                &quot;description&quot;: &quot;Tempora magni consequatur cumque ut vitae.&quot;,
+                &quot;url&quot;: &quot;http://nolan.biz/&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Etcher&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;laboriosam natus mollitia&quot;,
+                &quot;description&quot;: &quot;Recusandae inventore illo et error ea voluptate odit.&quot;,
+                &quot;url&quot;: &quot;http://aufderhar.com/voluptatem-ea-sed-temporibus-sunt-beatae-libero-autem.html&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Crane and Tower Operator&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;accusantium repudiandae placeat&quot;,
+                &quot;description&quot;: &quot;Iste possimus atque labore vero sed assumenda.&quot;,
+                &quot;url&quot;: &quot;http://hoeger.com/provident-velit-est-est-pariatur-omnis-expedita-nesciunt-incidunt&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Detective&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;aperiam sed voluptate&quot;,
+                &quot;description&quot;: &quot;Sit similique est atque eum quia.&quot;,
+                &quot;url&quot;: &quot;http://stanton.biz/doloribus-ducimus-a-nisi-iure-quis-in-officiis&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Oil and gas Operator&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;adipisci rem et&quot;,
+                &quot;description&quot;: &quot;Ipsa animi qui perspiciatis quia unde.&quot;,
+                &quot;url&quot;: &quot;http://www.keebler.org/&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Electrical Sales Representative&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;architecto qui eveniet&quot;,
+                &quot;description&quot;: &quot;Qui ut ad vero corporis maiores quis qui.&quot;,
+                &quot;url&quot;: &quot;https://www.morar.com/necessitatibus-non-officiis-inventore-dolores-ipsam-voluptates-maiores-molestiae&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Welder&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;deserunt distinctio nemo&quot;,
+                &quot;description&quot;: &quot;Eum rerum earum vero autem eos.&quot;,
+                &quot;url&quot;: &quot;http://bernier.org/deleniti-odit-quos-autem.html&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Welfare Eligibility Clerk&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;impedit in dicta&quot;,
+                &quot;description&quot;: &quot;Est repellendus sed repudiandae neque laborum.&quot;,
+                &quot;url&quot;: &quot;http://hodkiewicz.info/dolor-iusto-sint-libero-et-voluptate-explicabo.html&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Social and Human Service Assistant&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;voluptates rem amet&quot;,
+                &quot;description&quot;: &quot;Sapiente qui aspernatur autem sit pariatur libero dolore ut.&quot;,
+                &quot;url&quot;: &quot;http://www.wisoky.biz/nisi-maiores-nemo-temporibus-tempore-quasi-ratione-ad.html&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Home Appliance Repairer&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;est accusantium omnis&quot;,
+                &quot;description&quot;: &quot;Sed labore quasi rerum veniam distinctio aliquid tempora.&quot;,
+                &quot;url&quot;: &quot;https://connelly.com/dolorem-tenetur-esse-et-repudiandae-laborum-mollitia-voluptatem.html&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Dental Laboratory Technician&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;animi sunt repellendus&quot;,
+                &quot;description&quot;: &quot;Veritatis aut voluptas eius et eius.&quot;,
+                &quot;url&quot;: &quot;http://www.mraz.biz/&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Electro-Mechanical Technician&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;praesentium nesciunt et&quot;,
+                &quot;description&quot;: &quot;Et ut at voluptas voluptas enim totam fugiat culpa.&quot;,
+                &quot;url&quot;: &quot;http://greenholt.com/tempore-omnis-et-non-est-doloremque-nisi-sit.html&quot;,
+                &quot;urlinfo&quot;: null,
+                &quot;repository&quot;: null,
+                &quot;role&quot;: &quot;Utility Meter Reader&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;academic_training&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Ut laboriosam soluta vel.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Optio vitae omnis enim error sed odio iusto. Ab minima sit veniam minima. Sed dolorem aut aut autem ab quos.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 504,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Omnis adipisci.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Tempora accusamus qui aut eaque. Maiores et quo omnis alias ipsa fugiat a. Ut laudantium distinctio laudantium occaecati itaque delectus totam.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 164,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Reprehenderit dicta ipsum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Tempore voluptate architecto impedit. Pariatur culpa dolore aut in ipsum blanditiis ut. Enim totam earum voluptatum officia asperiores aut. Sunt doloribus dolorem rem enim enim et.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1686,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sunt reiciendis repellat sint.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ea molestias tempore ad numquam quia vitae. Et ipsam amet sed expedita vitae et. Totam saepe laborum soluta sit quidem et quia sed. Deleniti eos est totam dolorem.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1969,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Dignissimos quod necessitatibus dolorum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Qui quo perferendis dignissimos voluptatibus aperiam error facilis. Sed eos rerum non fugit minima. Officia facere minima similique impedit doloremque ex aut.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1026,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sint cumque tempore nostrum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Odit et omnis voluptatum aperiam saepe maiores. Nam natus ducimus dolorem sequi eius unde. Facere animi qui commodi voluptatum eligendi ullam aut. Praesentium illo et voluptas quidem.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 570,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Corporis corrupti.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et qui omnis ut omnis amet. Illo laboriosam vero quo voluptatem. Et accusantium vero quam aspernatur nihil ut. Aperiam nesciunt veniam quod ab ullam cum eum.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1655,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Neque iusto ipsam recusandae.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et veniam sed repudiandae eum quia optio. Quibusdam ut odit qui maxime. Facilis asperiores sequi alias.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 674,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Adipisci eveniet et.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Dolorum pariatur suscipit quo sunt corrupti. Et et rerum beatae qui quas. Sed quo quae aut neque rerum blanditiis quia. Voluptates autem nostrum et autem eveniet consequatur.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 132,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Perferendis dicta aut ea.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Rem dolorem possimus nobis similique eius. Officia officiis labore excepturi tenetur sed quibusdam repellat. Labore ab quibusdam quod velit minima aspernatur sint voluptatem.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1068,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Assumenda qui quidem.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et atque cumque praesentium et ipsum eos soluta. Eius ipsa cupiditate sequi. Rem mollitia temporibus iste quam totam illum.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 757,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Pariatur cum et rerum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Esse commodi beatae eius consequuntur consequatur. Deleniti est voluptatem numquam id. Provident eos autem quos tempora est. Officiis tempora dolorum incidunt officiis enim.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 439,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;academic_complementary&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Dolores illo sit.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Perspiciatis eveniet fuga velit molestiae et quia voluptate aut. Dolores dolores non voluptatem vel totam delectus officiis et. Quia sint non error nihil rem quia laboriosam.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 77,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Accusamus voluptatibus cum ut.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Veritatis velit sed rerum sit sunt ullam. Ut explicabo veniam officia explicabo unde. Exercitationem voluptatum sunt omnis veniam blanditiis quia. Reprehenderit optio aspernatur rerum delectus qui odit non. Beatae hic in quibusdam ut dolorem dolores.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 62,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Blanditiis voluptatum doloribus.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Nemo blanditiis inventore sit et voluptate facere. Cupiditate tempora et itaque. Et illo aut et vitae ut. Repellendus maiores est quos et perferendis ut minus.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 29,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Illo nihil perspiciatis tempore.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Distinctio aspernatur magnam molestiae et quod iure atque architecto. Temporibus qui et autem eaque autem vel quam. Sunt est aspernatur hic vero iure aut. Omnis rerum eaque est ullam eveniet animi neque.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 54,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Nisi et sunt.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Quasi tempora culpa nulla eius esse. Cumque aut sint aut ad. Voluptatem reiciendis libero nam eum. Tempora ipsam et vel maxime.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 66,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Voluptate reprehenderit reprehenderit.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Voluptas cum et quos esse dignissimos recusandae eveniet. In deleniti quia suscipit velit rerum praesentium. Praesentium eligendi assumenda quas cum.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 30,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Et id asperiores ipsam.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Eligendi praesentium occaecati repudiandae repellat et quia delectus. Enim dolores vel et deserunt voluptas molestiae quae. Voluptatem deleniti dolorem deleniti quisquam quod esse porro nihil. Debitis tempora enim eveniet cum rerum ducimus atque.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 49,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;At et labore quia adipisci.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Itaque id ratione quo delectus cum. Rem est officia quis atque distinctio atque. Maiores nobis qui et facilis.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 25,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Ut corrupti dolor repellat.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Doloribus sunt facere culpa. Reiciendis perspiciatis animi aut tenetur.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 64,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Tenetur quasi et eaque.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Quibusdam hic optio eum. Ut nesciunt accusamus laboriosam vero quae temporibus commodi et. Quo fugiat et voluptatibus debitis et.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 37,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sapiente quibusdam repellendus aut.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Perferendis qui tenetur quidem veniam quia eum. Est eius aspernatur possimus quos voluptas ut. Hic voluptatem ea voluptate et sint minus itaque. Consectetur repellendus quos velit sit dignissimos temporibus quia at. Deserunt illum vel quas voluptate rerum consequuntur cupiditate.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 35,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Quia facere doloremque quaerat.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Modi amet odit magni tenetur. Mollitia qui molestias consequuntur ab. Nisi optio asperiores sunt non eveniet et est.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 59,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;academic_complementary_online&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Eos provident enim quisquam.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et dolores beatae optio dolores sit aut. Recusandae tempora modi architecto officiis fuga enim. Vel laborum minus omnis praesentium quo consequuntur. Voluptatem eligendi assumenda laudantium molestiae qui corrupti.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 36,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Rerum illo labore.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Dolores ea nemo aut molestias distinctio. Ut dolorum consequatur doloremque. Eveniet pariatur est quae voluptas voluptas ut est. Optio et ratione sed rem occaecati.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 17,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Iusto aut voluptatem.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Repudiandae vel ea autem sunt aut non quis. Non suscipit est rerum a quos. Dignissimos voluptatem vero rem consequatur.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 27,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Numquam quia quo.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ducimus cumque dolorem dicta rerum reiciendis officia ducimus. Nesciunt consectetur ut aspernatur fugit asperiores esse voluptatibus. Ut corporis unde ut eum optio.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 36,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sapiente quos quis porro.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ullam perspiciatis similique est reprehenderit odio. Autem velit ipsum aut exercitationem aut sequi est. Omnis quia inventore est modi ad. Rerum quia id quod ut.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 13,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;At deserunt blanditiis natus nobis.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Recusandae dolor impedit ipsa natus consequatur assumenda. Mollitia dolores magni quaerat aperiam. Accusantium earum voluptas saepe quasi rerum sit.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 23,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Ratione tempore quod.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Nam dolor ipsa sunt distinctio omnis ratione. Omnis possimus velit perspiciatis sunt ab labore aperiam. Odio temporibus molestiae fuga reprehenderit unde hic. Enim qui eum vero vitae fugit.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 45,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Esse dicta rerum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Sit in nisi nihil sint. Vero ea quae commodi nam facere quis omnis atque. Debitis eius et nihil consequatur excepturi deserunt nisi.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 24,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sit necessitatibus dolorum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Repellendus in rem ullam temporibus quisquam et nam. Dicta doloremque aliquam maiores nobis ullam deserunt. Qui consequuntur rerum iusto consequatur non quis.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 48,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Porro ea sint et tempora.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Id est omnis ipsam asperiores quibusdam doloribus dignissimos. Quos ipsa magni libero nostrum soluta nostrum maxime. Sequi voluptatem iste qui eius distinctio.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 33,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Impedit aut omnis quos blanditiis.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ex officia qui delectus rerum. Eaque eum ea quaerat dignissimos. Molestias delectus et quod velit aliquam.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 26,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Et perferendis sit.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Velit quidem dolores debitis asperiores ratione eius qui. Sit quia quia assumenda perspiciatis fugit officiis expedita. Quam voluptates esse ea ullam nisi voluptatem officiis. Tempora quidem sint ratione.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 30,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;experience_accredited&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Word Processors and Typist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Dickens, Will and Pagac&quot;,
+                &quot;description&quot;: &quot;Aut nulla eius magnam assumenda voluptatem rerum incidunt. Velit dolore doloribus est quisquam. Id ipsa illo dolores natus ea quia sequi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Precious Stone Worker&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Howell, Reynolds and Bradtke&quot;,
+                &quot;description&quot;: &quot;Nisi vero itaque beatae illo ea dignissimos. A voluptatibus velit alias officiis exercitationem dolor voluptate cum. Dolores rem provident id velit velit aut velit.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Amusement Attendant&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Blick-Labadie&quot;,
+                &quot;description&quot;: &quot;Veniam asperiores magnam et commodi possimus rerum. A aliquam sit qui eius rerum. Dignissimos quasi itaque error et sed ad. Officia deserunt natus iure aliquid.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Stonemason&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Reichel-Swift&quot;,
+                &quot;description&quot;: &quot;Ipsum qui molestiae dignissimos molestias eius neque. Dignissimos eius eius nostrum fugiat commodi vel deleniti. Enim rem eum aliquid reprehenderit quibusdam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Social Work Teacher&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Emard-Schumm&quot;,
+                &quot;description&quot;: &quot;Sapiente consequatur cum soluta explicabo distinctio esse. Possimus repellat officia eum facere. Sed nostrum possimus ratione sit laborum veritatis. Est laboriosam magnam repellat.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Cutting Machine Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;O&#039;Kon, Gorczany and Parker&quot;,
+                &quot;description&quot;: &quot;Eligendi sapiente consequatur iste quo quam. Aspernatur neque qui suscipit similique illum. Non non molestias et nisi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sociologist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Cassin Group&quot;,
+                &quot;description&quot;: &quot;Illum aliquid blanditiis accusantium ipsum. Vel et repudiandae veritatis alias. Et porro molestiae facere laborum sed. Enim officia et quisquam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Photographic Restorer&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Jaskolski-Hill&quot;,
+                &quot;description&quot;: &quot;Quis perferendis aut dolorem magnam dicta provident quia. Animi officiis omnis porro deserunt dolorem pariatur odit. Aut quam repudiandae dolores saepe repellendus qui. Corrupti assumenda nam velit eveniet laudantium optio error. Est officia et sit hic explicabo.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;experience_no_accredited&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Textile Cutting Machine Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Pfannerstill, Price and Lynch&quot;,
+                &quot;description&quot;: &quot;Nihil vel dolores saepe asperiores. Amet eos eaque dolorem. Suscipit qui est tempora aut aut omnis labore.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Extruding and Drawing Machine Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Johnson Ltd&quot;,
+                &quot;description&quot;: &quot;Necessitatibus eligendi placeat error quia. Corporis ipsa quasi consequatur tempore fugit odio. Itaque blanditiis est praesentium.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Explosives Expert&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Eichmann Group&quot;,
+                &quot;description&quot;: &quot;Fugiat et ex adipisci reprehenderit ullam inventore sequi. Quaerat non cumque eum optio. Velit temporibus minima architecto laboriosam quis libero. Culpa cum et nostrum rem consectetur beatae. Cum dolorum occaecati animi quo magnam vel.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Rock Splitter&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Hill, Leuschke and Feest&quot;,
+                &quot;description&quot;: &quot;Non omnis nihil iste tempore. Ad praesentium illum beatae quaerat est perspiciatis voluptas voluptatibus. Totam facere dolores ea inventore consequuntur blanditiis vitae.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Epidemiologist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Medhurst, Lemke and Cormier&quot;,
+                &quot;description&quot;: &quot;Ad voluptates est suscipit. Nesciunt dolorum aut magnam quod animi. Veritatis totam nihil delectus ad. Aut saepe explicabo nisi quod veritatis quia.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Carver&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Haag and Sons&quot;,
+                &quot;description&quot;: &quot;Molestiae a aspernatur quam quibusdam. Nulla consequuntur aliquid dolorum in sed. Id hic est et eligendi quae.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Agricultural Manager&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Brown, Stokes and DuBuque&quot;,
+                &quot;description&quot;: &quot;Repudiandae at soluta accusamus perferendis sed est. Reiciendis omnis commodi unde nulla modi quas. Unde voluptas qui velit quo cupiditate unde excepturi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Shuttle Car Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Pacocha PLC&quot;,
+                &quot;description&quot;: &quot;Odit illum sit maiores. Rerum reiciendis ad tempore laborum est labore. Magni nemo rem quod mollitia ut ipsam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;experience_self_employed&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Precision Aircraft Systems Assemblers&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Schuster-Rolfson&quot;,
+                &quot;description&quot;: &quot;Et optio adipisci dicta nostrum cum. Quis ut quia quaerat ipsa sit.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Hoist and Winch Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Gutkowski Ltd&quot;,
+                &quot;description&quot;: &quot;Consequatur aspernatur sunt earum sunt et provident sit. Odio aperiam possimus hic facere facere. Consequatur vitae perspiciatis quia architecto. Et in eum aut doloribus quo.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Aircraft Launch Specialist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Flatley, Mills and Prohaska&quot;,
+                &quot;description&quot;: &quot;Alias earum similique maiores enim qui. Similique porro labore corporis sit. Aliquid voluptatum iusto enim omnis molestiae dolor fugit quia. Voluptas consectetur autem distinctio.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Alteration Tailor&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Heaney Group&quot;,
+                &quot;description&quot;: &quot;Sint recusandae rerum alias minus. Voluptas quod rerum modi officia quasi voluptas est. Ea corrupti et minima. Corporis non ipsam aut voluptatibus fugit similique.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Bill and Account Collector&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Kihn-Kihn&quot;,
+                &quot;description&quot;: &quot;Minus aut sunt totam. Quis dolores inventore eum molestias perferendis qui rerum. Cum numquam doloribus sed commodi repellendus fugiat et porro.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Machine Feeder&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Lowe and Sons&quot;,
+                &quot;description&quot;: &quot;Reiciendis dolor ratione sapiente expedita provident. Nisi autem a qui quisquam et minima culpa. Occaecati atque possimus incidunt nihil eaque. Officiis quae quod qui vitae incidunt animi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Compliance Officers&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Bernier, Barrows and Auer&quot;,
+                &quot;description&quot;: &quot;Voluptas ab consectetur eum veniam nesciunt consequatur non. Est quidem fugit magnam sit rerum occaecati. Omnis quo enim quidem earum quod et reprehenderit.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Metal Worker&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Lemke-Pouros&quot;,
+                &quot;description&quot;: &quot;Eaque sapiente rerum corporis vel. Ut facere enim non tempora cupiditate omnis. Atque voluptas omnis deleniti dolor dolor quia.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;experience_additional&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Education Teacher&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Pagac LLC&quot;,
+                &quot;description&quot;: &quot;Cum doloribus blanditiis delectus aut nostrum quia. Dolor laboriosam autem ratione dolores adipisci consectetur et. Quae alias beatae quia.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Agricultural Sales Representative&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Padberg-Feest&quot;,
+                &quot;description&quot;: &quot;Dolorem autem quia neque et. Quo quod beatae sint autem eius est. Ut voluptas doloribus vel voluptatem nulla fuga cum.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Aircraft Cargo Handling Supervisor&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Reilly-Klocko&quot;,
+                &quot;description&quot;: &quot;Assumenda sequi amet autem iure ipsa. Quas omnis voluptate et et quae ad. Omnis laboriosam aut occaecati ea harum repellendus. Molestiae assumenda soluta omnis atque perspiciatis.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Psychologist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Hermiston, Swaniawski and Haag&quot;,
+                &quot;description&quot;: &quot;Et est laboriosam modi ut magni dolores autem. Nostrum aut iste aut rerum fugiat. Reiciendis quos aut qui aut a. Tenetur quo officiis voluptas eligendi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Locomotive Engineer&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Wehner Ltd&quot;,
+                &quot;description&quot;: &quot;Doloremque facilis quia explicabo dolore. Molestiae fuga voluptas autem exercitationem sunt minus eveniet. Facere cupiditate consequatur soluta repudiandae corrupti.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Tax Examiner&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Greenholt-Kris&quot;,
+                &quot;description&quot;: &quot;Aspernatur reprehenderit aperiam accusamus. Voluptas quis architecto pariatur ad placeat qui est. Non a dolorum labore ut quis. Ut veritatis dicta corporis omnis nesciunt. Et quaerat sed provident ut.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Carpet Installer&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Oberbrunner, Mante and Cartwright&quot;,
+                &quot;description&quot;: &quot;Asperiores quidem aut a recusandae assumenda consequatur sed. Reprehenderit blanditiis doloremque illo et neque cupiditate omnis. Sed est ducimus nobis et. Delectus in laudantium qui blanditiis et et vitae.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Umpire and Referee&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Armstrong Group&quot;,
+                &quot;description&quot;: &quot;Placeat necessitatibus repellendus rem eum sit iusto. Quia ipsa tenetur error perferendis sequi corrupti. Similique possimus alias similique facilis quis tempore. Ut a iure qui quisquam sequi deleniti doloremque.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;experience_other&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Hunter and Trapper&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Bauch-Hansen&quot;,
+                &quot;description&quot;: &quot;Minus qui laudantium dolorem sequi sequi omnis cumque. Sed deleniti in culpa nihil id consequatur qui ab. Nemo sit rerum eum voluptas earum vero quod. Fugit dolor occaecati dolorem nemo quia. Esse deleniti voluptatum qui harum non et veniam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Architecture Teacher&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Koss Group&quot;,
+                &quot;description&quot;: &quot;Eum ut est et nobis soluta. Perspiciatis doloribus sit aspernatur in quod. Consequuntur ipsum fuga magni rerum animi aut. Incidunt ut molestias beatae facere aut facilis consequuntur. Possimus perferendis non vero dolore tempore suscipit tempora non.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Aircraft Rigging Assembler&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Feil, Considine and Jones&quot;,
+                &quot;description&quot;: &quot;At et facere exercitationem animi sunt beatae. Odio excepturi repudiandae fugiat nesciunt id non fuga. Voluptatem numquam consectetur consequatur quod.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Recordkeeping Clerk&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Boyle-Schaefer&quot;,
+                &quot;description&quot;: &quot;Sequi maxime expedita perferendis at sit et. Vero labore voluptate quae. Aut aut ut ut vero quam ad. Voluptatem et soluta perferendis quas autem dolor.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Semiconductor Processor&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Barton PLC&quot;,
+                &quot;description&quot;: &quot;Minus minus in numquam. Harum aspernatur et tempora reiciendis necessitatibus distinctio. Molestiae aspernatur illo ut dolorem.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Diesel Engine Specialist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Hane LLC&quot;,
+                &quot;description&quot;: &quot;Maxime et ad sit quis voluptatem consectetur dicta. Inventore sit est cum voluptates. Harum consectetur laboriosam modi minima ut. Mollitia libero dolorem harum ut.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Forest Fire Fighter&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Wuckert, Nikolaus and Pagac&quot;,
+                &quot;description&quot;: &quot;Dolore voluptas non ex et numquam. Id nesciunt rerum dolore rerum velit optio cumque. Dolore illo quis itaque aut sapiente voluptatibus. Sunt quia autem doloribus hic.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Logging Worker&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Bruen, Fisher and Friesen&quot;,
+                &quot;description&quot;: &quot;Qui sed rem et aliquid non. Placeat dolor tempora consectetur iusto. Deleniti omnis quos molestias incidunt et explicabo sit. Sequi accusantium beatae autem aut.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;skills&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PHP&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Aliquam qui voluptatem sint aut quisquam voluptatibus.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Laravel&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Placeat ut dolorem autem esse quibusdam quas.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Vue.js&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Sed rem animi minima nobis et iure quos.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PostgreSQL&quot;,
+                &quot;level&quot;: 9,
+                &quot;description&quot;: &quot;Omnis consequatur ut sint vitae ipsa.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Docker&quot;,
+                &quot;level&quot;: 6,
+                &quot;description&quot;: &quot;Suscipit et quia quas doloribus quo dolor quod.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Git&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Aut autem voluptas assumenda quas non maxime.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Linux&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Et id quis ipsam minima.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;TailwindCSS&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Consequatur perferendis commodi perferendis amet quia ea nihil.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PHP&quot;,
+                &quot;level&quot;: 8,
+                &quot;description&quot;: &quot;Incidunt eos tempore incidunt voluptatem neque.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Laravel&quot;,
+                &quot;level&quot;: 8,
+                &quot;description&quot;: &quot;Asperiores magni quod et pariatur.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Vue.js&quot;,
+                &quot;level&quot;: 5,
+                &quot;description&quot;: &quot;Deserunt quaerat aperiam quam exercitationem non quod dolorem.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PostgreSQL&quot;,
+                &quot;level&quot;: 8,
+                &quot;description&quot;: &quot;Ut quis doloribus placeat est quo.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 13,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Docker&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Recusandae sit itaque atque quidem nam.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 14,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Git&quot;,
+                &quot;level&quot;: 6,
+                &quot;description&quot;: &quot;Similique quia omnis quia dolores similique ipsam.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 15,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Linux&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Aut nulla doloribus inventore ut voluptatem voluptatem rem dolorem.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 16,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;TailwindCSS&quot;,
+                &quot;level&quot;: 6,
+                &quot;description&quot;: &quot;Temporibus autem iusto corrupti velit quis inventore voluptates.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 17,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PHP&quot;,
+                &quot;level&quot;: 5,
+                &quot;description&quot;: &quot;Rerum quas quis quia qui dolorum vel ipsam.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 18,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Laravel&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Ex laudantium ut est numquam unde.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 19,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Vue.js&quot;,
+                &quot;level&quot;: 6,
+                &quot;description&quot;: &quot;Esse similique exercitationem molestiae quia ut minima.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 20,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PostgreSQL&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Corporis et consectetur autem doloremque molestiae.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 21,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Docker&quot;,
+                &quot;level&quot;: 8,
+                &quot;description&quot;: &quot;Quisquam autem quam reiciendis.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 22,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Git&quot;,
+                &quot;level&quot;: 5,
+                &quot;description&quot;: &quot;Rerum dolorum provident vel accusantium.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 23,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Linux&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Dolore nisi et officia sit quia.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 24,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;TailwindCSS&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Nesciunt et maiores qui quibusdam occaecati repellat.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 25,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PHP&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Magni porro sunt quisquam eius.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 26,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Laravel&quot;,
+                &quot;level&quot;: 9,
+                &quot;description&quot;: &quot;Aut pariatur eum et nobis.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 27,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Vue.js&quot;,
+                &quot;level&quot;: 6,
+                &quot;description&quot;: &quot;Corrupti et repudiandae nostrum officia occaecati.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 28,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;PostgreSQL&quot;,
+                &quot;level&quot;: 7,
+                &quot;description&quot;: &quot;Ut aspernatur iste eveniet omnis accusantium et quia exercitationem.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 29,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Docker&quot;,
+                &quot;level&quot;: 6,
+                &quot;description&quot;: &quot;Est non sit rem dolores.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 30,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Git&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Est veniam dolores est necessitatibus nulla impedit.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 31,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;Linux&quot;,
+                &quot;level&quot;: 8,
+                &quot;description&quot;: &quot;Iusto tenetur quo ex esse nisi voluptas.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 32,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;name&quot;: &quot;TailwindCSS&quot;,
+                &quot;level&quot;: 10,
+                &quot;description&quot;: &quot;Sit quo sed consequatur occaecati in magni amet.&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ]
+    }
 }</code>
  </pre>
     </span>
@@ -10090,7 +22905,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-experience">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10102,8 +22917,580 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: {
+        &quot;accredited&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Word Processors and Typist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Dickens, Will and Pagac&quot;,
+                &quot;description&quot;: &quot;Aut nulla eius magnam assumenda voluptatem rerum incidunt. Velit dolore doloribus est quisquam. Id ipsa illo dolores natus ea quia sequi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Precious Stone Worker&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Howell, Reynolds and Bradtke&quot;,
+                &quot;description&quot;: &quot;Nisi vero itaque beatae illo ea dignissimos. A voluptatibus velit alias officiis exercitationem dolor voluptate cum. Dolores rem provident id velit velit aut velit.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Amusement Attendant&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Blick-Labadie&quot;,
+                &quot;description&quot;: &quot;Veniam asperiores magnam et commodi possimus rerum. A aliquam sit qui eius rerum. Dignissimos quasi itaque error et sed ad. Officia deserunt natus iure aliquid.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Stonemason&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Reichel-Swift&quot;,
+                &quot;description&quot;: &quot;Ipsum qui molestiae dignissimos molestias eius neque. Dignissimos eius eius nostrum fugiat commodi vel deleniti. Enim rem eum aliquid reprehenderit quibusdam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Social Work Teacher&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Emard-Schumm&quot;,
+                &quot;description&quot;: &quot;Sapiente consequatur cum soluta explicabo distinctio esse. Possimus repellat officia eum facere. Sed nostrum possimus ratione sit laborum veritatis. Est laboriosam magnam repellat.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Cutting Machine Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;O&#039;Kon, Gorczany and Parker&quot;,
+                &quot;description&quot;: &quot;Eligendi sapiente consequatur iste quo quam. Aspernatur neque qui suscipit similique illum. Non non molestias et nisi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sociologist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Cassin Group&quot;,
+                &quot;description&quot;: &quot;Illum aliquid blanditiis accusantium ipsum. Vel et repudiandae veritatis alias. Et porro molestiae facere laborum sed. Enim officia et quisquam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Photographic Restorer&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Jaskolski-Hill&quot;,
+                &quot;description&quot;: &quot;Quis perferendis aut dolorem magnam dicta provident quia. Animi officiis omnis porro deserunt dolorem pariatur odit. Aut quam repudiandae dolores saepe repellendus qui. Corrupti assumenda nam velit eveniet laudantium optio error. Est officia et sit hic explicabo.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;no_accredited&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Textile Cutting Machine Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Pfannerstill, Price and Lynch&quot;,
+                &quot;description&quot;: &quot;Nihil vel dolores saepe asperiores. Amet eos eaque dolorem. Suscipit qui est tempora aut aut omnis labore.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Extruding and Drawing Machine Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Johnson Ltd&quot;,
+                &quot;description&quot;: &quot;Necessitatibus eligendi placeat error quia. Corporis ipsa quasi consequatur tempore fugit odio. Itaque blanditiis est praesentium.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Explosives Expert&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Eichmann Group&quot;,
+                &quot;description&quot;: &quot;Fugiat et ex adipisci reprehenderit ullam inventore sequi. Quaerat non cumque eum optio. Velit temporibus minima architecto laboriosam quis libero. Culpa cum et nostrum rem consectetur beatae. Cum dolorum occaecati animi quo magnam vel.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Rock Splitter&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Hill, Leuschke and Feest&quot;,
+                &quot;description&quot;: &quot;Non omnis nihil iste tempore. Ad praesentium illum beatae quaerat est perspiciatis voluptas voluptatibus. Totam facere dolores ea inventore consequuntur blanditiis vitae.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Epidemiologist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Medhurst, Lemke and Cormier&quot;,
+                &quot;description&quot;: &quot;Ad voluptates est suscipit. Nesciunt dolorum aut magnam quod animi. Veritatis totam nihil delectus ad. Aut saepe explicabo nisi quod veritatis quia.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Carver&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Haag and Sons&quot;,
+                &quot;description&quot;: &quot;Molestiae a aspernatur quam quibusdam. Nulla consequuntur aliquid dolorum in sed. Id hic est et eligendi quae.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Agricultural Manager&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Brown, Stokes and DuBuque&quot;,
+                &quot;description&quot;: &quot;Repudiandae at soluta accusamus perferendis sed est. Reiciendis omnis commodi unde nulla modi quas. Unde voluptas qui velit quo cupiditate unde excepturi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Shuttle Car Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Pacocha PLC&quot;,
+                &quot;description&quot;: &quot;Odit illum sit maiores. Rerum reiciendis ad tempore laborum est labore. Magni nemo rem quod mollitia ut ipsam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;self_employed&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Precision Aircraft Systems Assemblers&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Schuster-Rolfson&quot;,
+                &quot;description&quot;: &quot;Et optio adipisci dicta nostrum cum. Quis ut quia quaerat ipsa sit.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Hoist and Winch Operator&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Gutkowski Ltd&quot;,
+                &quot;description&quot;: &quot;Consequatur aspernatur sunt earum sunt et provident sit. Odio aperiam possimus hic facere facere. Consequatur vitae perspiciatis quia architecto. Et in eum aut doloribus quo.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Aircraft Launch Specialist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Flatley, Mills and Prohaska&quot;,
+                &quot;description&quot;: &quot;Alias earum similique maiores enim qui. Similique porro labore corporis sit. Aliquid voluptatum iusto enim omnis molestiae dolor fugit quia. Voluptas consectetur autem distinctio.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Alteration Tailor&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Heaney Group&quot;,
+                &quot;description&quot;: &quot;Sint recusandae rerum alias minus. Voluptas quod rerum modi officia quasi voluptas est. Ea corrupti et minima. Corporis non ipsam aut voluptatibus fugit similique.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Bill and Account Collector&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Kihn-Kihn&quot;,
+                &quot;description&quot;: &quot;Minus aut sunt totam. Quis dolores inventore eum molestias perferendis qui rerum. Cum numquam doloribus sed commodi repellendus fugiat et porro.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Machine Feeder&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Lowe and Sons&quot;,
+                &quot;description&quot;: &quot;Reiciendis dolor ratione sapiente expedita provident. Nisi autem a qui quisquam et minima culpa. Occaecati atque possimus incidunt nihil eaque. Officiis quae quod qui vitae incidunt animi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Compliance Officers&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Bernier, Barrows and Auer&quot;,
+                &quot;description&quot;: &quot;Voluptas ab consectetur eum veniam nesciunt consequatur non. Est quidem fugit magnam sit rerum occaecati. Omnis quo enim quidem earum quod et reprehenderit.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Metal Worker&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Lemke-Pouros&quot;,
+                &quot;description&quot;: &quot;Eaque sapiente rerum corporis vel. Ut facere enim non tempora cupiditate omnis. Atque voluptas omnis deleniti dolor dolor quia.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;additional&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Education Teacher&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Pagac LLC&quot;,
+                &quot;description&quot;: &quot;Cum doloribus blanditiis delectus aut nostrum quia. Dolor laboriosam autem ratione dolores adipisci consectetur et. Quae alias beatae quia.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Agricultural Sales Representative&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Padberg-Feest&quot;,
+                &quot;description&quot;: &quot;Dolorem autem quia neque et. Quo quod beatae sint autem eius est. Ut voluptas doloribus vel voluptatem nulla fuga cum.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Aircraft Cargo Handling Supervisor&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Reilly-Klocko&quot;,
+                &quot;description&quot;: &quot;Assumenda sequi amet autem iure ipsa. Quas omnis voluptate et et quae ad. Omnis laboriosam aut occaecati ea harum repellendus. Molestiae assumenda soluta omnis atque perspiciatis.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Psychologist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Hermiston, Swaniawski and Haag&quot;,
+                &quot;description&quot;: &quot;Et est laboriosam modi ut magni dolores autem. Nostrum aut iste aut rerum fugiat. Reiciendis quos aut qui aut a. Tenetur quo officiis voluptas eligendi.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Locomotive Engineer&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Wehner Ltd&quot;,
+                &quot;description&quot;: &quot;Doloremque facilis quia explicabo dolore. Molestiae fuga voluptas autem exercitationem sunt minus eveniet. Facere cupiditate consequatur soluta repudiandae corrupti.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Tax Examiner&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Greenholt-Kris&quot;,
+                &quot;description&quot;: &quot;Aspernatur reprehenderit aperiam accusamus. Voluptas quis architecto pariatur ad placeat qui est. Non a dolorum labore ut quis. Ut veritatis dicta corporis omnis nesciunt. Et quaerat sed provident ut.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Carpet Installer&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Oberbrunner, Mante and Cartwright&quot;,
+                &quot;description&quot;: &quot;Asperiores quidem aut a recusandae assumenda consequatur sed. Reprehenderit blanditiis doloremque illo et neque cupiditate omnis. Sed est ducimus nobis et. Delectus in laudantium qui blanditiis et et vitae.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Umpire and Referee&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Armstrong Group&quot;,
+                &quot;description&quot;: &quot;Placeat necessitatibus repellendus rem eum sit iusto. Quia ipsa tenetur error perferendis sequi corrupti. Similique possimus alias similique facilis quis tempore. Ut a iure qui quisquam sequi deleniti doloremque.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;other&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Hunter and Trapper&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Bauch-Hansen&quot;,
+                &quot;description&quot;: &quot;Minus qui laudantium dolorem sequi sequi omnis cumque. Sed deleniti in culpa nihil id consequatur qui ab. Nemo sit rerum eum voluptas earum vero quod. Fugit dolor occaecati dolorem nemo quia. Esse deleniti voluptatum qui harum non et veniam.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Architecture Teacher&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Koss Group&quot;,
+                &quot;description&quot;: &quot;Eum ut est et nobis soluta. Perspiciatis doloribus sit aspernatur in quod. Consequuntur ipsum fuga magni rerum animi aut. Incidunt ut molestias beatae facere aut facilis consequuntur. Possimus perferendis non vero dolore tempore suscipit tempora non.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Aircraft Rigging Assembler&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Feil, Considine and Jones&quot;,
+                &quot;description&quot;: &quot;At et facere exercitationem animi sunt beatae. Odio excepturi repudiandae fugiat nesciunt id non fuga. Voluptatem numquam consectetur consequatur quod.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Recordkeeping Clerk&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Boyle-Schaefer&quot;,
+                &quot;description&quot;: &quot;Sequi maxime expedita perferendis at sit et. Vero labore voluptate quae. Aut aut ut ut vero quam ad. Voluptatem et soluta perferendis quas autem dolor.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Semiconductor Processor&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Barton PLC&quot;,
+                &quot;description&quot;: &quot;Minus minus in numquam. Harum aspernatur et tempora reiciendis necessitatibus distinctio. Molestiae aspernatur illo ut dolorem.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Diesel Engine Specialist&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Hane LLC&quot;,
+                &quot;description&quot;: &quot;Maxime et ad sit quis voluptatem consectetur dicta. Inventore sit est cum voluptates. Harum consectetur laboriosam modi minima ut. Mollitia libero dolorem harum ut.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Forest Fire Fighter&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Wuckert, Nikolaus and Pagac&quot;,
+                &quot;description&quot;: &quot;Dolore voluptas non ex et numquam. Id nesciunt rerum dolore rerum velit optio cumque. Dolore illo quis itaque aut sapiente voluptatibus. Sunt quia autem doloribus hic.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2022-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Logging Worker&quot;,
+                &quot;position&quot;: null,
+                &quot;company&quot;: &quot;Bruen, Fisher and Friesen&quot;,
+                &quot;description&quot;: &quot;Qui sed rem et aliquid non. Placeat dolor tempora consectetur iusto. Deleniti omnis quos molestias incidunt et explicabo sit. Sequi accusantium beatae autem aut.&quot;,
+                &quot;note&quot;: null,
+                &quot;start_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ]
+    }
 }</code>
  </pre>
     </span>
@@ -10218,7 +23605,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-education">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10230,8 +23617,772 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: {
+        &quot;academic_training&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Ut laboriosam soluta vel.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Optio vitae omnis enim error sed odio iusto. Ab minima sit veniam minima. Sed dolorem aut aut autem ab quos.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 504,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Omnis adipisci.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Tempora accusamus qui aut eaque. Maiores et quo omnis alias ipsa fugiat a. Ut laudantium distinctio laudantium occaecati itaque delectus totam.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 164,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Reprehenderit dicta ipsum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Tempore voluptate architecto impedit. Pariatur culpa dolore aut in ipsum blanditiis ut. Enim totam earum voluptatum officia asperiores aut. Sunt doloribus dolorem rem enim enim et.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1686,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sunt reiciendis repellat sint.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ea molestias tempore ad numquam quia vitae. Et ipsam amet sed expedita vitae et. Totam saepe laborum soluta sit quidem et quia sed. Deleniti eos est totam dolorem.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1969,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Dignissimos quod necessitatibus dolorum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Qui quo perferendis dignissimos voluptatibus aperiam error facilis. Sed eos rerum non fugit minima. Officia facere minima similique impedit doloremque ex aut.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1026,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sint cumque tempore nostrum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Odit et omnis voluptatum aperiam saepe maiores. Nam natus ducimus dolorem sequi eius unde. Facere animi qui commodi voluptatum eligendi ullam aut. Praesentium illo et voluptas quidem.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 570,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Corporis corrupti.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et qui omnis ut omnis amet. Illo laboriosam vero quo voluptatem. Et accusantium vero quam aspernatur nihil ut. Aperiam nesciunt veniam quod ab ullam cum eum.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1655,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Neque iusto ipsam recusandae.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et veniam sed repudiandae eum quia optio. Quibusdam ut odit qui maxime. Facilis asperiores sequi alias.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 674,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Adipisci eveniet et.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Dolorum pariatur suscipit quo sunt corrupti. Et et rerum beatae qui quas. Sed quo quae aut neque rerum blanditiis quia. Voluptates autem nostrum et autem eveniet consequatur.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 132,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2023-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Perferendis dicta aut ea.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Rem dolorem possimus nobis similique eius. Officia officiis labore excepturi tenetur sed quibusdam repellat. Labore ab quibusdam quod velit minima aspernatur sint voluptatem.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 1068,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Assumenda qui quidem.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et atque cumque praesentium et ipsum eos soluta. Eius ipsa cupiditate sequi. Rem mollitia temporibus iste quam totam illum.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 757,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Pariatur cum et rerum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Esse commodi beatae eius consequuntur consequatur. Deleniti est voluptatem numquam id. Provident eos autem quos tempora est. Officiis tempora dolorum incidunt officiis enim.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 439,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2021-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2023-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;complementary&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Dolores illo sit.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Perspiciatis eveniet fuga velit molestiae et quia voluptate aut. Dolores dolores non voluptatem vel totam delectus officiis et. Quia sint non error nihil rem quia laboriosam.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 77,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Accusamus voluptatibus cum ut.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Veritatis velit sed rerum sit sunt ullam. Ut explicabo veniam officia explicabo unde. Exercitationem voluptatum sunt omnis veniam blanditiis quia. Reprehenderit optio aspernatur rerum delectus qui odit non. Beatae hic in quibusdam ut dolorem dolores.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 62,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Blanditiis voluptatum doloribus.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Nemo blanditiis inventore sit et voluptate facere. Cupiditate tempora et itaque. Et illo aut et vitae ut. Repellendus maiores est quos et perferendis ut minus.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 29,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Illo nihil perspiciatis tempore.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Distinctio aspernatur magnam molestiae et quod iure atque architecto. Temporibus qui et autem eaque autem vel quam. Sunt est aspernatur hic vero iure aut. Omnis rerum eaque est ullam eveniet animi neque.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 54,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Nisi et sunt.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Quasi tempora culpa nulla eius esse. Cumque aut sint aut ad. Voluptatem reiciendis libero nam eum. Tempora ipsam et vel maxime.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 66,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Voluptate reprehenderit reprehenderit.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Voluptas cum et quos esse dignissimos recusandae eveniet. In deleniti quia suscipit velit rerum praesentium. Praesentium eligendi assumenda quas cum.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 30,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Et id asperiores ipsam.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Eligendi praesentium occaecati repudiandae repellat et quia delectus. Enim dolores vel et deserunt voluptas molestiae quae. Voluptatem deleniti dolorem deleniti quisquam quod esse porro nihil. Debitis tempora enim eveniet cum rerum ducimus atque.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 49,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;At et labore quia adipisci.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Itaque id ratione quo delectus cum. Rem est officia quis atque distinctio atque. Maiores nobis qui et facilis.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 25,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Ut corrupti dolor repellat.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Doloribus sunt facere culpa. Reiciendis perspiciatis animi aut tenetur.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 64,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2024-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Tenetur quasi et eaque.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Quibusdam hic optio eum. Ut nesciunt accusamus laboriosam vero quae temporibus commodi et. Quo fugiat et voluptatibus debitis et.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 37,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sapiente quibusdam repellendus aut.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Perferendis qui tenetur quidem veniam quia eum. Est eius aspernatur possimus quos voluptas ut. Hic voluptatem ea voluptate et sint minus itaque. Consectetur repellendus quos velit sit dignissimos temporibus quia at. Deserunt illum vel quas voluptate rerum consequuntur cupiditate.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 35,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Quia facere doloremque quaerat.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Modi amet odit magni tenetur. Mollitia qui molestias consequuntur ab. Nisi optio asperiores sunt non eveniet et est.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 59,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2024-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ],
+        &quot;complementary_online&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Eos provident enim quisquam.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Et dolores beatae optio dolores sit aut. Recusandae tempora modi architecto officiis fuga enim. Vel laborum minus omnis praesentium quo consequuntur. Voluptatem eligendi assumenda laudantium molestiae qui corrupti.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 36,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Rerum illo labore.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Dolores ea nemo aut molestias distinctio. Ut dolorum consequatur doloremque. Eveniet pariatur est quae voluptas voluptas ut est. Optio et ratione sed rem occaecati.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 17,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 3,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Iusto aut voluptatem.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Repudiandae vel ea autem sunt aut non quis. Non suscipit est rerum a quos. Dignissimos voluptatem vero rem consequatur.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 27,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:09:32&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 4,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Numquam quia quo.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ducimus cumque dolorem dicta rerum reiciendis officia ducimus. Nesciunt consectetur ut aspernatur fugit asperiores esse voluptatibus. Ut corporis unde ut eum optio.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 36,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 5,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sapiente quos quis porro.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ullam perspiciatis similique est reprehenderit odio. Autem velit ipsum aut exercitationem aut sequi est. Omnis quia inventore est modi ad. Rerum quia id quod ut.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 13,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 6,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;At deserunt blanditiis natus nobis.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Recusandae dolor impedit ipsa natus consequatur assumenda. Mollitia dolores magni quaerat aperiam. Accusantium earum voluptas saepe quasi rerum sit.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 23,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 16:20:14&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 7,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Ratione tempore quod.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Nam dolor ipsa sunt distinctio omnis ratione. Omnis possimus velit perspiciatis sunt ab labore aperiam. Odio temporibus molestiae fuga reprehenderit unde hic. Enim qui eum vero vitae fugit.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 45,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 8,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Esse dicta rerum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Sit in nisi nihil sint. Vero ea quae commodi nam facere quis omnis atque. Debitis eius et nihil consequatur excepturi deserunt nisi.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 24,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 9,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Sit necessitatibus dolorum.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Repellendus in rem ullam temporibus quisquam et nam. Dicta doloremque aliquam maiores nobis ullam deserunt. Qui consequuntur rerum iusto consequatur non quis.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 48,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;end_at&quot;: &quot;2025-07-01 21:39:20&quot;,
+                &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 10,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Porro ea sint et tempora.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Id est omnis ipsam asperiores quibusdam doloribus dignissimos. Quos ipsa magni libero nostrum soluta nostrum maxime. Sequi voluptatem iste qui eius distinctio.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 33,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 11,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Impedit aut omnis quos blanditiis.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Ex officia qui delectus rerum. Eaque eum ea quaerat dignissimos. Molestias delectus et quod velit aliquam.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 26,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: 12,
+                &quot;curriculum_id&quot;: 1,
+                &quot;image_id&quot;: null,
+                &quot;title&quot;: &quot;Et perferendis sit.&quot;,
+                &quot;entity&quot;: null,
+                &quot;credential_id&quot;: null,
+                &quot;credential_url&quot;: null,
+                &quot;learned&quot;: null,
+                &quot;description&quot;: &quot;Velit quidem dolores debitis asperiores ratione eius qui. Sit quia quia assumenda perspiciatis fugit officiis expedita. Quam voluptates esse ea ullam nisi voluptatem officiis. Tempora quidem sint ratione.&quot;,
+                &quot;note&quot;: null,
+                &quot;hours&quot;: 30,
+                &quot;instructor&quot;: null,
+                &quot;expires&quot;: false,
+                &quot;expires_at&quot;: null,
+                &quot;expedition_at&quot;: null,
+                &quot;start_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;end_at&quot;: &quot;2025-07-04 13:42:40&quot;,
+                &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+            }
+        ]
+    }
 }</code>
  </pre>
     </span>
@@ -10346,7 +24497,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-skills">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10358,8 +24509,330 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PHP&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Aliquam qui voluptatem sint aut quisquam voluptatibus.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Laravel&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Placeat ut dolorem autem esse quibusdam quas.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Vue.js&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Sed rem animi minima nobis et iure quos.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PostgreSQL&quot;,
+            &quot;level&quot;: 9,
+            &quot;description&quot;: &quot;Omnis consequatur ut sint vitae ipsa.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Docker&quot;,
+            &quot;level&quot;: 6,
+            &quot;description&quot;: &quot;Suscipit et quia quas doloribus quo dolor quod.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Git&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Aut autem voluptas assumenda quas non maxime.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Linux&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Et id quis ipsam minima.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;TailwindCSS&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Consequatur perferendis commodi perferendis amet quia ea nihil.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PHP&quot;,
+            &quot;level&quot;: 8,
+            &quot;description&quot;: &quot;Incidunt eos tempore incidunt voluptatem neque.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Laravel&quot;,
+            &quot;level&quot;: 8,
+            &quot;description&quot;: &quot;Asperiores magni quod et pariatur.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Vue.js&quot;,
+            &quot;level&quot;: 5,
+            &quot;description&quot;: &quot;Deserunt quaerat aperiam quam exercitationem non quod dolorem.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PostgreSQL&quot;,
+            &quot;level&quot;: 8,
+            &quot;description&quot;: &quot;Ut quis doloribus placeat est quo.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Docker&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Recusandae sit itaque atque quidem nam.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Git&quot;,
+            &quot;level&quot;: 6,
+            &quot;description&quot;: &quot;Similique quia omnis quia dolores similique ipsam.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Linux&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Aut nulla doloribus inventore ut voluptatem voluptatem rem dolorem.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;TailwindCSS&quot;,
+            &quot;level&quot;: 6,
+            &quot;description&quot;: &quot;Temporibus autem iusto corrupti velit quis inventore voluptates.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 17,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PHP&quot;,
+            &quot;level&quot;: 5,
+            &quot;description&quot;: &quot;Rerum quas quis quia qui dolorum vel ipsam.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 18,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Laravel&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Ex laudantium ut est numquam unde.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 19,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Vue.js&quot;,
+            &quot;level&quot;: 6,
+            &quot;description&quot;: &quot;Esse similique exercitationem molestiae quia ut minima.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 20,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PostgreSQL&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Corporis et consectetur autem doloremque molestiae.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 21,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Docker&quot;,
+            &quot;level&quot;: 8,
+            &quot;description&quot;: &quot;Quisquam autem quam reiciendis.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 22,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Git&quot;,
+            &quot;level&quot;: 5,
+            &quot;description&quot;: &quot;Rerum dolorum provident vel accusantium.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 23,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Linux&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Dolore nisi et officia sit quia.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 24,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;TailwindCSS&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Nesciunt et maiores qui quibusdam occaecati repellat.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 25,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PHP&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Magni porro sunt quisquam eius.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 26,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Laravel&quot;,
+            &quot;level&quot;: 9,
+            &quot;description&quot;: &quot;Aut pariatur eum et nobis.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 27,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Vue.js&quot;,
+            &quot;level&quot;: 6,
+            &quot;description&quot;: &quot;Corrupti et repudiandae nostrum officia occaecati.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 28,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;PostgreSQL&quot;,
+            &quot;level&quot;: 7,
+            &quot;description&quot;: &quot;Ut aspernatur iste eveniet omnis accusantium et quia exercitationem.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 29,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Docker&quot;,
+            &quot;level&quot;: 6,
+            &quot;description&quot;: &quot;Est non sit rem dolores.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 30,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Git&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Est veniam dolores est necessitatibus nulla impedit.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 31,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;Linux&quot;,
+            &quot;level&quot;: 8,
+            &quot;description&quot;: &quot;Iusto tenetur quo ex esse nisi voluptas.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 32,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;TailwindCSS&quot;,
+            &quot;level&quot;: 10,
+            &quot;description&quot;: &quot;Sit quo sed consequatur occaecati in magni amet.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -10474,7 +24947,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-projects">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10486,8 +24959,166 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;illo animi dignissimos&quot;,
+            &quot;description&quot;: &quot;Tempora magni consequatur cumque ut vitae.&quot;,
+            &quot;url&quot;: &quot;http://nolan.biz/&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Etcher&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;laboriosam natus mollitia&quot;,
+            &quot;description&quot;: &quot;Recusandae inventore illo et error ea voluptate odit.&quot;,
+            &quot;url&quot;: &quot;http://aufderhar.com/voluptatem-ea-sed-temporibus-sunt-beatae-libero-autem.html&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Crane and Tower Operator&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;accusantium repudiandae placeat&quot;,
+            &quot;description&quot;: &quot;Iste possimus atque labore vero sed assumenda.&quot;,
+            &quot;url&quot;: &quot;http://hoeger.com/provident-velit-est-est-pariatur-omnis-expedita-nesciunt-incidunt&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Detective&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;aperiam sed voluptate&quot;,
+            &quot;description&quot;: &quot;Sit similique est atque eum quia.&quot;,
+            &quot;url&quot;: &quot;http://stanton.biz/doloribus-ducimus-a-nisi-iure-quis-in-officiis&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Oil and gas Operator&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;adipisci rem et&quot;,
+            &quot;description&quot;: &quot;Ipsa animi qui perspiciatis quia unde.&quot;,
+            &quot;url&quot;: &quot;http://www.keebler.org/&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Electrical Sales Representative&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;architecto qui eveniet&quot;,
+            &quot;description&quot;: &quot;Qui ut ad vero corporis maiores quis qui.&quot;,
+            &quot;url&quot;: &quot;https://www.morar.com/necessitatibus-non-officiis-inventore-dolores-ipsam-voluptates-maiores-molestiae&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Welder&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;deserunt distinctio nemo&quot;,
+            &quot;description&quot;: &quot;Eum rerum earum vero autem eos.&quot;,
+            &quot;url&quot;: &quot;http://bernier.org/deleniti-odit-quos-autem.html&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Welfare Eligibility Clerk&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;impedit in dicta&quot;,
+            &quot;description&quot;: &quot;Est repellendus sed repudiandae neque laborum.&quot;,
+            &quot;url&quot;: &quot;http://hodkiewicz.info/dolor-iusto-sint-libero-et-voluptate-explicabo.html&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Social and Human Service Assistant&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;voluptates rem amet&quot;,
+            &quot;description&quot;: &quot;Sapiente qui aspernatur autem sit pariatur libero dolore ut.&quot;,
+            &quot;url&quot;: &quot;http://www.wisoky.biz/nisi-maiores-nemo-temporibus-tempore-quasi-ratione-ad.html&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Home Appliance Repairer&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;est accusantium omnis&quot;,
+            &quot;description&quot;: &quot;Sed labore quasi rerum veniam distinctio aliquid tempora.&quot;,
+            &quot;url&quot;: &quot;https://connelly.com/dolorem-tenetur-esse-et-repudiandae-laborum-mollitia-voluptatem.html&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Dental Laboratory Technician&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;animi sunt repellendus&quot;,
+            &quot;description&quot;: &quot;Veritatis aut voluptas eius et eius.&quot;,
+            &quot;url&quot;: &quot;http://www.mraz.biz/&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Electro-Mechanical Technician&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;praesentium nesciunt et&quot;,
+            &quot;description&quot;: &quot;Et ut at voluptas voluptas enim totam fugiat culpa.&quot;,
+            &quot;url&quot;: &quot;http://greenholt.com/tempore-omnis-et-non-est-doloremque-nisi-sit.html&quot;,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: &quot;Utility Meter Reader&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -10602,7 +25233,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-repositories">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10614,8 +25245,154 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://www.weissnat.net/ratione-fugit-possimus-qui.html&quot;,
+            &quot;title&quot;: &quot;qui ea&quot;,
+            &quot;description&quot;: &quot;Quod id ratione accusamus molestias ad.&quot;,
+            &quot;name&quot;: &quot;quos&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;https://www.halvorson.net/distinctio-velit-rerum-commodi-expedita&quot;,
+            &quot;title&quot;: &quot;quae iste&quot;,
+            &quot;description&quot;: &quot;Necessitatibus aliquam consequatur incidunt occaecati.&quot;,
+            &quot;name&quot;: &quot;consequuntur&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://schiller.biz/dolores-voluptas-et-ipsa-rerum-laborum-cupiditate&quot;,
+            &quot;title&quot;: &quot;nihil dolore&quot;,
+            &quot;description&quot;: &quot;Quis sunt eos natus autem.&quot;,
+            &quot;name&quot;: &quot;tempore&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://littel.net/&quot;,
+            &quot;title&quot;: &quot;accusantium autem&quot;,
+            &quot;description&quot;: &quot;Consequuntur corrupti voluptatum ea rerum rem non.&quot;,
+            &quot;name&quot;: &quot;beatae&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://keebler.org/consectetur-eveniet-corporis-sit-unde-vero&quot;,
+            &quot;title&quot;: &quot;ut blanditiis&quot;,
+            &quot;description&quot;: &quot;Rerum ex cum cumque perspiciatis.&quot;,
+            &quot;name&quot;: &quot;quia&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;https://koss.com/cupiditate-dignissimos-in-est-repellat.html&quot;,
+            &quot;title&quot;: &quot;vitae repellendus&quot;,
+            &quot;description&quot;: &quot;Distinctio quasi esse cum est est.&quot;,
+            &quot;name&quot;: &quot;aut&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://www.botsford.com/harum-in-laborum-natus-veniam-inventore-nihil.html&quot;,
+            &quot;title&quot;: &quot;ea nisi&quot;,
+            &quot;description&quot;: &quot;Necessitatibus amet aut excepturi nobis et aperiam qui.&quot;,
+            &quot;name&quot;: &quot;dolores&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://jacobs.org/dignissimos-reiciendis-odio-consequatur-eos-reiciendis&quot;,
+            &quot;title&quot;: &quot;dolor et&quot;,
+            &quot;description&quot;: &quot;Dignissimos sint alias doloremque ea eos aut sapiente dolorem.&quot;,
+            &quot;name&quot;: &quot;perferendis&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://www.marquardt.com/hic-facilis-inventore-eaque-dolore-repellat&quot;,
+            &quot;title&quot;: &quot;autem saepe&quot;,
+            &quot;description&quot;: &quot;Eos temporibus voluptas eos tempore placeat doloremque omnis dolorem.&quot;,
+            &quot;name&quot;: &quot;debitis&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;http://www.lesch.com/pariatur-perferendis-qui-dolor-eveniet-iure&quot;,
+            &quot;title&quot;: &quot;unde suscipit&quot;,
+            &quot;description&quot;: &quot;Est natus dolorem ad dignissimos dicta alias occaecati qui.&quot;,
+            &quot;name&quot;: &quot;molestiae&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;https://toy.com/dolorem-eaque-adipisci-illum-laborum-temporibus-modi-est-ut.html&quot;,
+            &quot;title&quot;: &quot;quo error&quot;,
+            &quot;description&quot;: &quot;Pariatur est sint fugit.&quot;,
+            &quot;name&quot;: &quot;eaque&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;repository_type_id&quot;: 1,
+            &quot;url&quot;: &quot;https://abshire.info/quis-et-nihil-ullam-numquam-consequuntur-est-modi.html&quot;,
+            &quot;title&quot;: &quot;facere nihil&quot;,
+            &quot;description&quot;: &quot;Quaerat repudiandae debitis architecto et.&quot;,
+            &quot;name&quot;: &quot;assumenda&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -10730,7 +25507,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-services">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10742,8 +25519,130 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;nihil voluptate iure&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Dolorem quasi molestiae laudantium enim voluptatibus. Sint ipsa id laboriosam aut placeat. Distinctio hic est possimus eos corrupti. Aut praesentium quo sit optio necessitatibus quod.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;ullam qui qui&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Recusandae voluptate quisquam temporibus officia. Ex eius veniam voluptates voluptas aut sapiente et laudantium. Ut debitis recusandae exercitationem perspiciatis inventore temporibus.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;explicabo suscipit est&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Ipsa enim et maxime rem possimus magnam. Repellendus recusandae pariatur dolores explicabo. Vel rerum numquam ut similique deleniti quis.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;ab distinctio illum&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Nihil numquam nobis tenetur repellat velit perspiciatis vel ex. Nihil aut ex distinctio ea odio. Esse et voluptatem qui repudiandae repudiandae delectus quia.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;rerum consequatur voluptate&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Dolor sint aut velit error id. Illo dolores in animi sapiente. Nisi voluptatem fugiat inventore molestiae. Assumenda nostrum fugit ut sed aut est.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;et voluptatem at&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Doloremque beatae voluptas totam mollitia aut ullam ex. Consequatur atque facilis impedit provident. Voluptatem tempore ex suscipit tenetur sed non doloremque. Aspernatur ducimus et nemo suscipit aliquid.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;asperiores enim magnam&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Est aut officia nemo et ea. Fugit nisi ut neque nihil minus facilis quis. Alias magnam accusamus et ut dolores sit ea tenetur.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;ea corporis minus&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Dicta et dignissimos et quia voluptate rerum et. Exercitationem veritatis aut ut non atque cupiditate. Recusandae a et qui aut aperiam dignissimos minus. Provident itaque corporis eveniet optio. Et sapiente vero consequatur cum ad vero quo.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;doloremque nihil quaerat&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Pariatur est natus reprehenderit omnis. Deserunt temporibus cum quis suscipit autem. Sequi esse velit nihil nisi sit est.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;nobis distinctio ullam&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Et dolorem nulla excepturi pariatur. Quibusdam qui magni sint sit repudiandae voluptatem.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;enim earum est&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Est voluptates vel in. Consequatur pariatur sed vel. Quo veniam ipsa voluptatem illo repellat consequatur neque officiis.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;name&quot;: &quot;labore animi beatae&quot;,
+            &quot;url&quot;: null,
+            &quot;description&quot;: &quot;Impedit velit qui quisquam facere ipsum. Suscipit laboriosam laborum error et veniam. Sed ex earum architecto earum ullam commodi libero sed.&quot;,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -10858,7 +25757,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-collaborations">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10870,8 +25769,166 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;et commodi sit&quot;,
+            &quot;description&quot;: &quot;Et ab incidunt ad deserunt. Dolorem placeat sed in quam eveniet harum itaque. Tempora temporibus ullam sint temporibus consequatur. Enim cum distinctio culpa omnis molestias modi nostrum. Voluptates repellat odio ea repellat rerum delectus porro unde.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;voluptates dolores rerum&quot;,
+            &quot;description&quot;: &quot;Ducimus et dolorum aut ab facere quae. Sunt maiores suscipit delectus fugit. Omnis voluptas corporis dolores dolorum temporibus quidem pariatur. Perferendis ipsum harum ut nihil laborum enim.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;distinctio vel autem&quot;,
+            &quot;description&quot;: &quot;Aut aut nostrum numquam adipisci rerum. Asperiores dignissimos voluptatem neque tempore. Non tempora cum quia voluptas optio neque.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;numquam nesciunt atque&quot;,
+            &quot;description&quot;: &quot;Minus excepturi quis debitis in est. Fugit quo et assumenda autem eligendi. Quasi ut nesciunt facilis dolorem dolores quo repellendus ut.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;atque molestiae eum&quot;,
+            &quot;description&quot;: &quot;Consequatur modi omnis et et dolores explicabo. Nisi recusandae et velit nisi. Nostrum delectus repudiandae aliquid iusto. Sed exercitationem aut voluptatum qui culpa.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;amet nesciunt placeat&quot;,
+            &quot;description&quot;: &quot;Id amet commodi dolores aut facere nihil. Voluptas illo autem et aliquam laudantium facere itaque nulla. Nemo recusandae vitae doloribus cum qui quibusdam enim sed. Hic non repudiandae illum ut voluptatem iste tenetur.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;aut et modi&quot;,
+            &quot;description&quot;: &quot;Quis modi vel reiciendis consequatur esse et molestiae fugit. Provident esse impedit voluptas ducimus. Quia quod quod voluptate. Nihil facilis nemo rerum quis.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;quis praesentium quidem&quot;,
+            &quot;description&quot;: &quot;In pariatur nemo iusto necessitatibus in quasi. In odio id ratione dicta vel. Quia repellendus delectus et ut et ullam rem recusandae. Quasi officia commodi id.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;qui voluptatem quia&quot;,
+            &quot;description&quot;: &quot;Ipsa vero quae quo earum sed. Quod libero voluptas rerum id dicta facilis aliquid cum. Maxime vitae molestias necessitatibus nisi ratione nostrum. Praesentium assumenda similique quia molestiae.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;repellendus veniam unde&quot;,
+            &quot;description&quot;: &quot;Consequatur omnis ducimus aut neque quia temporibus impedit. Quisquam tempore nisi eligendi ut reprehenderit. Et corporis asperiores et maiores sint rerum ut. Eligendi sit minus et aut quasi.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;esse deleniti qui&quot;,
+            &quot;description&quot;: &quot;Et numquam saepe eius voluptas sint impedit debitis. Sunt eligendi est aut ducimus et autem eaque. Libero alias commodi et dolor architecto id.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;optio molestiae odio&quot;,
+            &quot;description&quot;: &quot;Accusantium explicabo eveniet est neque perspiciatis. Nobis labore et quo aut et. Nihil quaerat culpa id nesciunt sunt quidem.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -10986,7 +26043,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-hobbies">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10998,8 +26055,170 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;aut quia&quot;,
+            &quot;description&quot;: &quot;Et inventore esse itaque.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;inventore et&quot;,
+            &quot;description&quot;: &quot;Debitis dolorum est tenetur et aut ab deleniti autem.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;ducimus autem&quot;,
+            &quot;description&quot;: &quot;At omnis tenetur et quod fugit similique natus.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;a pariatur&quot;,
+            &quot;description&quot;: &quot;Assumenda facere ea veniam eos.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;magni et&quot;,
+            &quot;description&quot;: &quot;Hic est est magnam numquam molestias velit eum error.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;similique voluptatem&quot;,
+            &quot;description&quot;: &quot;Ex voluptatem aut totam autem accusamus atque.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;sunt aut&quot;,
+            &quot;description&quot;: &quot;Occaecati sint facilis exercitationem harum illo accusamus dolor est.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;numquam qui&quot;,
+            &quot;description&quot;: &quot;Est repellat inventore incidunt perspiciatis.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;aut omnis&quot;,
+            &quot;description&quot;: &quot;Magni animi et incidunt inventore tempore sit reprehenderit.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;consequatur et&quot;,
+            &quot;description&quot;: &quot;Voluptas saepe distinctio quod dolorem non quas qui.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;molestiae dicta&quot;,
+            &quot;description&quot;: &quot;Unde iste qui voluptatem dolores.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;delectus numquam&quot;,
+            &quot;description&quot;: &quot;Cumque eos officia quas.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 13,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;delectus illum&quot;,
+            &quot;description&quot;: &quot;Dolore rerum iure modi eius debitis quia explicabo.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 14,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;tenetur quas&quot;,
+            &quot;description&quot;: &quot;Dolores dolor eos aut sint.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 15,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;architecto delectus&quot;,
+            &quot;description&quot;: &quot;Veritatis animi perferendis totam cumque rerum molestias est officiis.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 16,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;voluptas et&quot;,
+            &quot;description&quot;: &quot;Aut labore numquam nihil sunt at vel.&quot;,
+            &quot;url&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -11114,7 +26333,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-cv-jobs">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (200):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -11126,8 +26345,166 @@ vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Curriculum no encontrado&quot;
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Inspector&quot;,
+            &quot;description&quot;: &quot;Enim ipsum eaque velit. Eos excepturi sequi alias dolor omnis. Culpa et et labore eveniet. Nostrum sit temporibus aperiam eius.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Insurance Investigator&quot;,
+            &quot;description&quot;: &quot;Porro sunt neque tenetur fuga voluptas fuga iusto. Tempora consectetur nam facilis provident.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Title Abstractor&quot;,
+            &quot;description&quot;: &quot;Iure consequuntur unde voluptatem et inventore. Sed voluptates sunt doloribus qui.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:09:32.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Interviewer&quot;,
+            &quot;description&quot;: &quot;Minima facilis dolore est alias dolores est. At odio id eum voluptate dolor. Provident debitis labore velit dolorem. Consequuntur tenetur commodi voluptatum cumque.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Benefits Specialist&quot;,
+            &quot;description&quot;: &quot;Non aliquam ipsum repellat error. Ad placeat distinctio qui et. Exercitationem assumenda rerum rerum veniam non. Ut eaque eveniet labore aut.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 6,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Rail Car Repairer&quot;,
+            &quot;description&quot;: &quot;Earum amet et optio eius. Qui amet dolorem optio. Ipsam voluptatem placeat nemo placeat sint expedita nisi.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T16:20:14.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 7,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Geologist&quot;,
+            &quot;description&quot;: &quot;Ut deleniti dolore corporis hic. Exercitationem magni praesentium dolorum. Rerum nisi vel odio tempora cupiditate aliquam.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 8,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Marking Clerk&quot;,
+            &quot;description&quot;: &quot;Natus voluptatem similique ipsam dolor sed eaque. Aut laborum velit harum voluptatem et debitis animi. Sit quod veritatis magni est et voluptas ratione. Enim iste rerum et eligendi voluptas vitae commodi.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 9,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Nursery Worker&quot;,
+            &quot;description&quot;: &quot;Incidunt enim et possimus iure mollitia eum. Delectus eum dolores ducimus numquam dolorem corrupti enim corporis. Dolor veritatis ex eius enim. Beatae harum nemo omnis molestiae officiis.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-01T21:39:20.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 10,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Real Estate Sales Agent&quot;,
+            &quot;description&quot;: &quot;Consequatur repellat velit consectetur et mollitia voluptas est. Laboriosam nihil vel numquam sapiente aut maxime qui repudiandae.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 11,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Agricultural Crop Worker&quot;,
+            &quot;description&quot;: &quot;Est hic eos deleniti fuga quisquam rerum error. Odit perspiciatis mollitia numquam aut perspiciatis. Deserunt illum quia consequatur vel nulla. Voluptatem perferendis qui officia quibusdam voluptatum molestias.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 12,
+            &quot;curriculum_id&quot;: 1,
+            &quot;image_id&quot;: null,
+            &quot;title&quot;: &quot;Poet OR Lyricist&quot;,
+            &quot;description&quot;: &quot;Cumque atque laborum perferendis assumenda et. Amet at ratione non distinctio consequuntur ullam. Dicta rerum natus fugiat et ut illum. Iure dolore pariatur quo occaecati.&quot;,
+            &quot;url&quot;: null,
+            &quot;urlinfo&quot;: null,
+            &quot;repository&quot;: null,
+            &quot;role&quot;: null,
+            &quot;created_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2026-07-04T13:42:40.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -11251,7 +26628,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 vary: Origin
-set-cookie: XSRF-TOKEN=eyJpdiI6Iks1SlhyNHdtNnF3aFFXdjhQd2cwdFE9PSIsInZhbHVlIjoiRXJ4enF4bWhkMHNTYnBydGRtZWV3N1ppR0tMMG5BYnNCcS9zMFhyMGVwdWxIRk1QNzNrQzlVYzJ4ektXSmFpZG9rSUMzVEUva2dCUXlFaXJIOHNoQjVzRWMzN0RDbDUxbTJ4TWYwczVJUWpHSEJiWTloUEFkU1lrbnJUL2U1N2wiLCJtYWMiOiJjYTFkNjFlZmQxZWYyZTRkMzhhNGVjMjllNTIyZjBiOWEyNzNjMjc3NWEzOWNjZTZhZTYxZjg4OWRhMGQwYjBmIiwidGFnIjoiIn0%3D; expires=Tue, 30 Jun 2026 05:53:31 GMT; Max-Age=36000; path=/; domain=localhost; samesite=lax; api_raupulus_session=eyJpdiI6IkJZQ2pRSkh3MmZPNkJzU1N5SzFEV3c9PSIsInZhbHVlIjoic1owZFFkZ1NFYjVJWnByRll1ckFkMGRHUit6WkJ5ZUVXb2FSMUk4bHJQano4QzlQdU1vWHV4d0ZNR3lZMUVHODI4UjNXZGJZK3I1VWZrNm9IQjU1M1J1VDRzd3IwcFBjQ04xYU1KcDZsaHRCU25tN3NiaWl3T2tXWkR0bW41Ui8iLCJtYWMiOiJhZDlhNTM5ZmIzYTUyMDU5MDJhMTQ0ZGJkMjFmMGYxN2YwOGZhMDg4YzA0NjVmYzExNTM0ZjhmZDZmZjY4YmJiIiwidGFnIjoiIn0%3D; expires=Tue, 30 Jun 2026 05:53:31 GMT; Max-Age=36000; path=/; domain=localhost; httponly; samesite=lax
+set-cookie: XSRF-TOKEN=eyJpdiI6InNublJGVUtlOFZhV04rVlNtOGdlRkE9PSIsInZhbHVlIjoiNDNTMGVCbXFtcGJoY3F3cldsRUFYQzdLNXcxWVlFUTMxYVZjQ2o1OHNIOVM2dkM3ZE1COCtQOFN3SGJsMlFJUHRkMXQ4d3hkV0hpRWVSaXcrQlZoaWlrVVhESnR5bEJ5c3F1ZzZheWc4VFJZZWFYY0xNdURiU0RmK3FJQnpzSGEiLCJtYWMiOiIwMWVjMDQ3NzZhMGVkZjNjMDlkYmRjMGNiYWYyN2I2MjA5MDBlMmU0ZGM1MjhjOTRlMDNhNGY4ZDY0ZGRlOGYxIiwidGFnIjoiIn0%3D; expires=Mon, 06 Jul 2026 18:57:20 GMT; Max-Age=36000; path=/; domain=localhost; samesite=lax; api_raupulus_session=eyJpdiI6IlRwaG5uaGQ3TU4zbEN2ZEQ0blhzTFE9PSIsInZhbHVlIjoib2MyVkV0SGwyZFlFRG1XeW9hWDFKeUJrSUNzUXlxSlhXZFlOcUQxYmpoWW50Mk4ybXBWQnZtMXgyNkZMQXVJdGUvQUVBSWRtYTc2OUMvbk8wTk53TzRaK3Z5c3UrcGsramdtdE16LzVYS2pNODVEaURLNCtyWGxkN2JMTHFOc0kiLCJtYWMiOiIzMDc3YTQ1ODI1NmJiM2VlNmNiN2E3MjMyMDM1N2MxN2UxOGY1MWViNDI0MWQ2OWRlNzlhYzQ4YzgxOTAxMjI4IiwidGFnIjoiIn0%3D; expires=Mon, 06 Jul 2026 18:57:20 GMT; Max-Age=36000; path=/; domain=localhost; httponly; samesite=lax
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
