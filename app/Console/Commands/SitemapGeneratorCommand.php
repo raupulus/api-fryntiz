@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\WeatherStation\WeatherStationController;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\SmartPlant\SmartPlantPlant;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -73,6 +75,7 @@ class SitemapGeneratorCommand extends Command
         }
 
         $this->addSmartPlantUrls($sitemap);
+        $this->addWeatherStationUrls($sitemap);
 
         return $sitemap;
     }
@@ -87,6 +90,55 @@ class SitemapGeneratorCommand extends Command
                     ->setLastModificationDate($plant->updated_at ?? Carbon::now())
             );
         });
+    }
+
+    /**
+     * Añade las vistas interiores de la estación meteorológica: el índice y,
+     * por cada estación (o de forma global si aún no hay ninguna clasificada),
+     * la página de detalle de cada sensor que tenga al menos un registro.
+     *
+     * Los sensores sin datos para una estación se omiten: podría ser una
+     * estación que nunca rellenará ese sensor (EJ: solo mide viento).
+     */
+    private function addWeatherStationUrls(Sitemap $sitemap): void
+    {
+        $sitemap->add(
+            Url::create(route('weather_station.index'))
+                ->setPriority(0.6)
+                ->setChangeFrequency('hourly')
+                ->setLastModificationDate(Carbon::now())
+        );
+
+        $stationIds = HardwareDevice::weatherStations()->pluck('id');
+
+        // Reserva: si aún no hay ninguna estación clasificada, generamos las
+        // urls globales (sin `station`) para no dejar el módulo sin páginas.
+        $stationIds = $stationIds->isNotEmpty() ? $stationIds : collect([null]);
+
+        foreach ($stationIds as $stationId) {
+            foreach (WeatherStationController::SENSOR_MAP as $type => $config) {
+                $model = $config['model'];
+                $primaryField = $config['primary']['field'];
+
+                $lastCreatedAt = $model::whereNotNull($primaryField)
+                    ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
+                    ->max('created_at');
+
+                if (! $lastCreatedAt) {
+                    continue;
+                }
+
+                $sitemap->add(
+                    Url::create(route('weather_station.sensor', array_filter([
+                        'type' => $type,
+                        'station' => $stationId,
+                    ])))
+                        ->setPriority(0.5)
+                        ->setChangeFrequency('daily')
+                        ->setLastModificationDate(Carbon::parse($lastCreatedAt))
+                );
+            }
+        }
     }
 
     private function writeSitemapToFile(Sitemap $sitemap): void
