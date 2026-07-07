@@ -12,6 +12,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use JsonHelper;
@@ -167,7 +168,7 @@ class KeyCounterController extends Controller
      */
     private function buildMonthSummary(array $keyboardStatistics): array
     {
-        /** @var \Illuminate\Support\Collection $data */
+        /** @var Collection $data */
         $data = $keyboardStatistics['data'];
         $rachas = $keyboardStatistics['period_count'];
         $totalPulsations = $keyboardStatistics['period_total_pulsations'];
@@ -195,10 +196,8 @@ class KeyCounterController extends Controller
      * volver a consultarlos. Solo el año en curso usa una caché de corta
      * duración que además se invalida al guardar un registro nuevo (ver
      * KeyCounterService).
-     *
-     * @return \Illuminate\Support\Collection
      */
-    private function getYearlyPulsationTotals(int $currentYear): \Illuminate\Support\Collection
+    private function getYearlyPulsationTotals(int $currentYear): Collection
     {
         $years = range(self::FIRST_STATS_YEAR, $currentYear);
 
