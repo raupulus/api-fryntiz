@@ -4,6 +4,39 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 
 > 📘 Para detalles de la integración técnica con AEMET (endpoints, rate-limit, retry/backoff, caché), ver [apis/aemet.md](apis/aemet.md).
 
+## Estaciones, tipo de hardware y ubicación
+
+Una **estación meteorológica es un `HardwareDevice` cuyo tipo de hardware es
+"Estación Meteorológica"** (`HardwareType::WEATHER_STATION`, id 6 en producción).
+El tipo es lo único que define que un dispositivo sea estación.
+
+Independientemente de eso, **todo** hardware tiene una ubicación física:
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `location_type` | enum `HardwareLocationTypeEnum` (`indoor`/`outdoor`) | Ubicación física de cualquier hardware. **Por defecto `indoor`**. |
+| `zone` | string(100) nullable | Zona concreta, EJ: `Azotea`, `Salón`, `Jardín`. |
+
+- Enum: `app/Enums/HardwareLocationTypeEnum.php` (`Indoor`→"Interior",
+  `Outdoor`→"Exterior", con `label()` y `options()`).
+- `HardwareType::WEATHER_STATION` = `'Estación Meteorológica'`. Los tipos por
+  defecto se siembran con `HardwareTypesSeeder` (ids fijos de producción,
+  idempotente por id, resincroniza la secuencia en PostgreSQL).
+- Modelo `HardwareDevice`: scope `weatherStations()` (filtra por el tipo de
+  hardware), helper `isWeatherStation()`, atributos `location_label` y
+  `display_name` (nombre amistoso + zona).
+- **Estación principal por defecto**: `config/weather_station.php` →
+  `main_station_id` (env `WEATHER_STATION_MAIN_ID`). Resolución en
+  `WeatherStationService::resolveMainStationId()`: config → primera estación de
+  exterior → cualquier estación.
+- **Panel Admin** (`HardwareDeviceResource`): sección "Ubicación" con
+  `location_type` (por defecto interior) y `zone` para **cualquier** dispositivo;
+  para marcarlo estación se elige el tipo "Estación Meteorológica".
+
+El **frontend** agrupa las estaciones por interior/exterior y, dentro, por zona.
+El **widget** resumen apunta por defecto a la estación principal y admite
+cambiarla vía `data-station` (prop `station`), mostrando ubicación dinámica.
+
 ## Archivos principales
 
 ### Modelos
@@ -38,7 +71,7 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/WeatherStation/V2/GeneralController.php` | API V2 | Resumen meteorológico |
+| `app/Http/Controllers/Api/WeatherStation/V2/StationController.php` | API V2 | Estación por id (`/station/{id?}`) y por zona (`/zone/{zone}`), datos formateados |
 | `app/Http/Controllers/Api/WeatherStation/V2/GenericController.php` | API V2 | Store genérico multi-sensor |
 | `app/Http/Controllers/Api/WeatherStation/V2/TemperatureController.php` | API V2 | CRUD temperatura |
 | `app/Http/Controllers/Api/WeatherStation/V2/HumidityController.php` | API V2 | CRUD humedad |
@@ -54,6 +87,7 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 ### Resources API V2
 | Archivo | Descripción |
 |---------|-------------|
+| `app/Http/Resources/V2/WeatherStation/WeatherStationResource.php` | Resource JSON de estación (datos formateados + selección de sensores) |
 | `app/Http/Resources/V2/WeatherStation/TemperatureResource.php` | Resource JSON temperatura |
 | `app/Http/Resources/V2/WeatherStation/HumidityResource.php` | Resource JSON humedad |
 | `app/Http/Resources/V2/WeatherStation/PressureResource.php` | Resource JSON presión |
@@ -61,6 +95,8 @@ Módulo IoT para recopilar datos meteorológicos de sensores locales y datos ofi
 ### FormRequests V2
 | Archivo | Descripción |
 |---------|-------------|
+| `app/Http/Requests/Api/WeatherStation/V2/ShowStationRequest.php` | Validación de `/station/{id?}` (parámetro `sensors`) |
+| `app/Http/Requests/Api/WeatherStation/V2/ShowZoneRequest.php` | Validación de `/zone/{zone}` (`sensors`, `location_type`) |
 | `app/Http/Requests/Api/WeatherStation/V2/StoreSensorRequest.php` | Validación store sensor individual |
 | `app/Http/Requests/Api/WeatherStation/V2/StoreGenericRequest.php` | Validación store genérico multi-sensor |
 
@@ -117,7 +153,8 @@ Todos los sensores heredan estos campos:
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | `/api/v2/weatherstation/resume` | No | Resumen meteorológico |
+| GET | `/api/v2/weatherstation/station/{id?}` | No | Una estación (datos formateados). Sin `id` → primera de exterior. `?sensors=` para acotar sensores |
+| GET | `/api/v2/weatherstation/zone/{zone}` | No | Colección de estaciones de una zona. `?location_type=indoor\|outdoor` y `?sensors=` opcionales |
 | GET | `/api/v2/weatherstation/temperature` | No | Listado de temperaturas |
 | GET | `/api/v2/weatherstation/humidity` | No | Listado de humedad |
 | GET | `/api/v2/weatherstation/pressure` | No | Listado de presión |
@@ -125,6 +162,32 @@ Todos los sensores heredan estos campos:
 | POST | `/api/v2/weatherstation/temperature/store` | Sí | Store temperatura |
 | POST | `/api/v2/weatherstation/humidity/store` | Sí | Store humedad |
 | POST | `/api/v2/weatherstation/pressure/store` | Sí | Store presión |
+
+### Endpoints de estación (datos formateados)
+
+`StationController` + `WeatherStationResource` (`app/Http/Resources/V2/WeatherStation/`).
+Los valores llegan **listos para usar y como números** (nunca cadenas ni
+unidades): viento en **km/h**, temperatura/magnitudes redondeadas a **2 decimales**,
+`eco2`/`tvoc`/`energy` enteros. La unidad es documentación, no se envía.
+
+- **Selección de sensores** (`?sensors=`): lista separada por comas. Sensores
+  válidos: `temperature`, `humidity`, `pressure`, `wind`, `light`, `air_quality`,
+  `rain`, `lightning`. Sin el parámetro se devuelven todos. Validado por
+  `ShowStationRequest`/`ShowZoneRequest` (422 si un sensor no existe).
+- **`GET /station/{id?}`**: si no se pasa `id`, resuelve la estación principal
+  (config `weather_station.main_station_id` → primera de exterior → cualquiera).
+  404 si el id no es una estación.
+- **`GET /zone/{zone}`**: siempre devuelve una **colección** (aunque haya una o
+  ninguna). `?location_type=indoor|outdoor` acota dentro de la zona. Coincidencia
+  de zona insensible a mayúsculas.
+
+Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
+`location_label`, `instant`, y un bloque por sensor solicitado
+(`wind` → `{average, min, max, direction, direction_grades}`,
+`light` → `{lux, uv_index, uva, uvb}`,
+`air_quality` → `{quality, eco2, tvoc}`,
+`rain` → `{value, intensity}`,
+`lightning` → `{last_at, last_six_hours, distance, energy}`).
 
 ## Rutas Web
 
@@ -141,10 +204,11 @@ Todos los sensores heredan estos campos:
 
 - **Archivo:** `resources/js/vue/Components/ChipionaWeatherComponent.vue`
 - **Montaje:** `resources/js/vue.js` (carga con `@vite('resources/js/vue.js')`)
-- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default `api/v2/weatherstation/resume`)
-- **Actualización:** Cada 65 segundos vía `fetch()` desde API V2 (`api/v2/weatherstation/resume`)
+- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default `api/v2/weatherstation/station`), `station` (id de la estación; vacío = principal). En Blade se pasa con `data-station`.
+- **Actualización:** Cada 65 segundos vía `fetch()` al endpoint de una estación (`api/v2/weatherstation/station[/{id}]`).
 - **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
-- **Contrato:** `GET resume` V2 devuelve `{success, message, data}` con un objeto **plano** (`temperature`, `humidity`, `pressure`, `wind_*`, `light`, `uv_index`, `uva`, `uvb`, `air_quality`, `tvoc`, `eco2`, `instant`, `last_lightning_at`, `lightningQuantityLastTenMinutes`). El componente desenvuelve `json.data` y mapea esos campos. Alineado en fix_2 (`WeatherStationService::getResume`).
+- **Ubicación dinámica:** muestra `data.name` + `data.location_label` en lugar de un literal fijo.
+- **Contrato:** consume `GET /station/{id?}` (envelope `{success, message, data}`). `data` incluye `name`, `location_label`, `instant` y los bloques de sensores (`wind.average`, `light.uv_index`, `air_quality.quality/eco2/tvoc`, `lightning.last_six_hours`, `temperature`, `humidity`, `pressure`) ya formateados como números.
 
 ### Iconos Material Symbols por sensor
 
@@ -157,7 +221,12 @@ php artisan debug:seed-weatherstation --count=20
 ```
 
 El comando rellena todas las tablas de sensores incluyendo `user_id`, además de
-los resúmenes y datos UV (ver modelos nuevos abajo).
+los resúmenes y datos UV (ver modelos nuevos abajo). Si ya existen estaciones
+(dispositivos de tipo "Estación Meteorológica"), las reutiliza; si no, garantiza
+el tipo (vía `HardwareTypesSeeder`) y crea **3 estaciones de ejemplo** (2 de
+exterior — zonas `Azotea` y `Jardín` — y 1 de interior — `Salón`) y reparte las
+lecturas con rangos realistas por perfil (el interior omite viento, lluvia, rayos
+y UV alto, y usa temperaturas/humedad más templadas).
 
 ## Modelos de resumen y UV (fix_11)
 

@@ -96,7 +96,10 @@ php artisan debug:seed-energy --devices=10 --records=200
 
 ## Hardware (Dispositivos sueltos)
 
-Crea dispositivos hardware de prueba:
+Crea dispositivos hardware de prueba. Cada dispositivo se genera con el
+**último estado conocido** poblado con datos de ejemplo (`temp`, `voltage`,
+`battery_level`, `cpu`, `disk`, `uptime` y `extra`), útil para depurar el widget
+"Estado de dispositivos" del panel y la sección "Stats de hardware":
 
 ```bash
 php artisan debug:seed-hardware --count=5

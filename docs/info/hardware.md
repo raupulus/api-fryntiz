@@ -26,6 +26,7 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `app/Http/Controllers/Api/Hardware/V2/HardwareDeviceController.php` | API V2 | Ver dispositivo, listar computadores |
 | `app/Http/Controllers/Api/Hardware/V2/EnergyMonitorController.php` | API V2 | Store datos de energía |
 | `app/Http/Controllers/Api/Hardware/V2/SolarChargeController.php` | API V2 | Store carga solar |
+| `app/Http/Controllers/Api/Hardware/V2/DeviceStatusController.php` | API V2 | Store del último estado del dispositivo (temp, tensión, batería, CPU, disco, uptime, IPs) |
 | `app/Http/Controllers/Hardware/*.php` | Web | Controladores frontend (10 archivos) |
 
 ### Servicios
@@ -40,12 +41,14 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `app/Http/Resources/V2/Hardware/HardwareDeviceResource.php` | Resource dispositivo |
 | `app/Http/Resources/V2/Hardware/EnergyMonitorResource.php` | Resource energía |
 | `app/Http/Resources/V2/Hardware/SolarChargeResource.php` | Resource carga solar |
+| `app/Http/Resources/V2/Hardware/DeviceStatusResource.php` | Resource último estado del dispositivo |
 
 ### FormRequests V2
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Http/Requests/Api/Hardware/V2/StoreEnergyRequest.php` | Validación store energía |
 | `app/Http/Requests/Api/Hardware/V2/StoreSolarChargeRequest.php` | Validación store carga solar |
+| `app/Http/Requests/Api/Hardware/V2/StoreDeviceStatusRequest.php` | Validación store estado del dispositivo (acepta `hardware_device_info` agrupado) |
 
 ### Otros
 | Archivo | Descripción |
@@ -53,6 +56,7 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `app/Policies/HardwarePolicy.php` | Política de autorización |
 | `app/Enums/HardwareTypeEnum.php` | Enum tipos de hardware |
 | `app/Traits/BelongsToHardwareDevice.php` | Trait relación con dispositivo hardware |
+| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas existentes |
 | `app/Rules/OwnedHardwareDevice.php` | Regla de validación: pertenencia del dispositivo (por usuario + ligado estricto por token) |
 | `app/Console/Commands/IoT/IssueDeviceTokenCommand.php` | Comando `iot:device-token` (usa `DeviceTokenService`) |
 
@@ -77,9 +81,18 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `url_company` | string | URL del fabricante |
 | `description` | text | Descripción |
 | `buy_at` | date | Fecha de compra |
-| `last_seen_at` | timestamp | Última conexión |
+| `last_seen_at` | timestamp | Última conexión (se actualiza en cada subida de estado) |
 | `ip_local` | string | IP local |
 | `ip_public` | string | IP pública |
+| `temp` | decimal | Último estado: temperatura del dispositivo (ºC) |
+| `voltage` | decimal | Último estado: tensión del dispositivo (V) |
+| `battery_level` | smallint | Último estado: nivel de batería (0-100) |
+| `cpu` | decimal | Último estado: uso de CPU (0-100) |
+| `disk` | decimal | Último estado: uso de disco (0-100) |
+| `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
+| `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
+
+> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `POST /api/v2/hardware/device-status` o adjuntando una clave opcional `hardware_device_info` en cualquier subida IoT del módulo (energía, carga solar).
 
 ## Campos del modelo HardwarePowerGenerator
 
@@ -127,8 +140,52 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 |--------|------|------|----------|-------------|
 | GET | `/api/v2/hardware/device/{id}` | Sí | api-store | Ver dispositivo |
 | GET | `/api/v2/hardware/computers` | Sí | api-store | Listar computadores |
-| POST | `/api/v2/hardware/energy` | Sí | api-store | Store datos energía |
-| POST | `/api/v2/hardware/solar-charge` | Sí | api-store | Store carga solar |
+| POST | `/api/v2/hardware/energy` | Sí | api-store | Store datos energía (admite `hardware_device_info` opcional) |
+| POST | `/api/v2/hardware/solar-charge` | Sí | api-store | Store carga solar (admite `hardware_device_info` opcional) |
+| POST | `/api/v2/hardware/device-status` | Sí (`ability:hardware:write`) | api-store | Store solo el último estado del dispositivo |
+
+### Estado del dispositivo (`device-status`)
+
+Pensado para NAS, Raspberry Pi, portátiles, etc. que suben periódicamente su
+estado. El cuerpo debe incluir siempre `hardware_device_id` (id del dispositivo,
+validado con `OwnedHardwareDevice`). Campos opcionales: `temp`, `voltage`,
+`battery_level`, `cpu`, `disk`, `uptime`, `ip_local`, `ip_public`, `extra`.
+No se guarda histórico: solo se sobrescribe el último estado y se actualiza
+`last_seen_at` al momento actual.
+
+> **Nombre canónico del dispositivo:** el identificador del dispositivo es
+> **`hardware_device_id`** en entrada y salida en todos los endpoints de
+> escritura del módulo (`energy`, `solar-charge`, `device-status`). La columna
+> física en `solar_charges` también se llama `hardware_device_id` desde la
+> migración `2026_07_06_000002`.
+
+Ejemplo de cuerpo:
+
+```json
+{
+    "hardware_device_id": 1,
+    "temp": 33,
+    "voltage": 3.7,
+    "battery_level": 48,
+    "ip_local": "192.168.1.100",
+    "ip_public": "203.0.113.1",
+    "cpu": 33,
+    "uptime": 123456,
+    "disk": 80,
+    "extra": {}
+}
+```
+
+En subidas conjuntas con otros datos, el estado puede agruparse dentro de
+`hardware_device_info` (se aplana automáticamente):
+
+```json
+{
+    "hardware_device_id": 1,
+    "hardware_device_info": { "temp": 33, "voltage": 3.7, "uptime": 123456 },
+    "data": {}
+}
+```
 
 ## Rutas Web
 
@@ -146,7 +203,8 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 ### Comandos de debug
 
 ```bash
-# Crear dispositivos hardware sueltos
+# Crear dispositivos hardware sueltos (con último estado de ejemplo:
+# temp, voltage, battery_level, cpu, disk, uptime y extra poblados)
 php artisan debug:seed-hardware --count=5
 
 # Crear dispositivos y registros de energía solar (voltaje, corriente, potencia)
@@ -178,9 +236,8 @@ ability `device:{id}`. El comando y Filament son equivalentes.
 
 ### Validación de pertenencia (`OwnedHardwareDevice`)
 
-Regla aplicada al campo de dispositivo (`hardware_device_id` / `hardware_device`
-/ `device_id`) en todos los FormRequest de escritura IoT (Hardware,
-WeatherStation, KeyCounter, SmartPlant). Comprueba:
+Regla aplicada al campo `hardware_device_id` en todos los FormRequest de
+escritura IoT (Hardware, WeatherStation, KeyCounter, SmartPlant). Comprueba:
 
 1. **Pertenencia por usuario:** el dispositivo debe pertenecer al usuario
    autenticado.
@@ -204,6 +261,21 @@ RelationManagers en la ficha de edición:
   dispositivo (nombre `device:{id}`), permite *emitir* uno nuevo ligado al
   dispositivo y *revocar* los existentes. El listado global de todos los tokens
   sigue disponible en el recurso **API Tokens** (grupo *Sistema*).
+
+Además, la ficha de edición incluye una sección **"Stats de hardware"**
+(colapsada, solo lectura) al final del formulario que muestra el último estado
+conocido reportado por la API: `temp`, `voltage`, `battery_level`, `cpu`,
+`disk`, `uptime`, `ip_local`, `ip_public` y `extra` (JSON formateado).
+
+### Widget del dashboard — Estado de dispositivos
+
+`DeviceStatusWidget` (`app/Filament/Admin/Widgets/DeviceStatusWidget.php`,
+vista `resources/views/filament/admin/widgets/device-status-widget.blade.php`)
+se muestra en la página principal del panel Admin ocupando **todo el ancho**.
+Lista cada dispositivo que reporta al menos un valor no nulo de `temp`,
+`voltage`, `cpu` o `disk`, mostrando su nombre a la izquierda y, a la derecha,
+un *chip* con icono por cada métrica no nula entre `temp`, `voltage`, `cpu`,
+`disk`, `uptime` y `battery_level`. Se refresca cada 60 s.
 
 ## Impresoras
 
