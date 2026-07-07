@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Hardware\HardwareDevices;
 
+use App\Enums\HardwareLocationTypeEnum;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\CreateHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\EditHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\ListHardwareDevices;
@@ -79,12 +80,89 @@ class HardwareDeviceResource extends Resource
                         TextInput::make('battery_nominal_capacity')
                             ->numeric()->label('Capacidad nominal de batería'),
                         TextInput::make('url_company')->label('Sitio web empresa'),
-                        TextInput::make('ip_local')->label('IP Local'),
-                        TextInput::make('ip_public')->label('IP Pública'),
+                        TextInput::make('ip_local')
+                            ->label('IP Local')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
+                        TextInput::make('ip_public')
+                            ->label('IP Pública')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
                         DateTimePicker::make('buy_at')->label('Comprado el'),
-                        DateTimePicker::make('last_seen_at')->label('Última vez en línea'),
+                        DateTimePicker::make('last_seen_at')
+                            ->label('Última vez en línea')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
                         Textarea::make('description')
                             ->label('Descripción')
+                            ->columnSpanFull(),
+                    ])->columnSpanFull(),
+
+                Section::make('Ubicación')
+                    ->description('Dónde está el hardware. Para estaciones meteorológicas, elige "Estación Meteorológica" en el tipo de hardware.')
+                    ->columns(2)
+                    ->schema([
+                        Select::make('location_type')
+                            ->label('Ubicación')
+                            ->options(HardwareLocationTypeEnum::options())
+                            ->native(false)
+                            ->default(HardwareLocationTypeEnum::Indoor->value)
+                            ->selectablePlaceholder(false)
+                            ->helperText('Interior o exterior. Por defecto interior.'),
+                        TextInput::make('zone')
+                            ->label('Zona')
+                            ->maxLength(100)
+                            ->placeholder('EJ: Azotea, Salón, Jardín'),
+                    ])->columnSpanFull(),
+
+                Section::make('Stats de hardware')
+                    ->description('Último estado conocido reportado por el dispositivo a través de la API. Solo lectura.')
+                    ->columns(3)
+                    ->collapsed()
+                    ->schema([
+                        TextInput::make('temp')
+                            ->label('Temperatura (°C)')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('voltage')
+                            ->label('Tensión (V)')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('battery_level')
+                            ->label('Nivel de batería (%)')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('cpu')
+                            ->label('Uso de CPU (%)')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('disk')
+                            ->label('Uso de disco (%)')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('uptime')
+                            ->label('Uptime (segundos)')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('ip_local')
+                            ->label('IP Local')
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('ip_public')
+                            ->label('IP Pública')
+                            ->disabled()
+                            ->dehydrated(false),
+                        Textarea::make('extra')
+                            ->label('Métricas adicionales (extra)')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->rows(4)
+                            ->formatStateUsing(fn ($state) => filled($state)
+                                ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                                : null)
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
             ]);
@@ -113,6 +191,18 @@ class HardwareDeviceResource extends Resource
                 TextColumn::make('name_friendly')
                     ->label('Nombre amigable')
                     ->searchable(),
+                TextColumn::make('location_type')
+                    ->label('Ubicación')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state instanceof HardwareLocationTypeEnum ? $state->label() : $state)
+                    ->color(fn ($state) => $state === HardwareLocationTypeEnum::Outdoor ? 'success' : 'info')
+                    ->placeholder('—')
+                    ->toggleable(),
+                TextColumn::make('zone')
+                    ->label('Zona')
+                    ->searchable()
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('ref')
                     ->label('Referencia')
                     ->searchable()
@@ -182,6 +272,9 @@ class HardwareDeviceResource extends Resource
             ->filters([
                 SelectFilter::make('hardware_type_id')
                     ->relationship('hardwareType', 'name')->label('Tipo'),
+                SelectFilter::make('location_type')
+                    ->label('Ubicación')
+                    ->options(HardwareLocationTypeEnum::options()),
             ])
             ->recordActions([
                 EditAction::make(),

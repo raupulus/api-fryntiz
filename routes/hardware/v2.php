@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\Hardware\V2\DeviceStatusController;
 use App\Http\Controllers\Api\Hardware\V2\EnergyMonitorController;
 use App\Http\Controllers\Api\Hardware\V2\HardwareDeviceController;
 use App\Http\Controllers\Api\Hardware\V2\SolarChargeController;
@@ -24,5 +25,6 @@ Route::prefix('hardware')->group(function () {
     Route::middleware(['auth:sanctum', 'ability:hardware:write', 'throttle:api-store'])->group(function () {
         Route::post('/energy', [EnergyMonitorController::class, 'store'])->name('api.v2.hardware.energy.store');
         Route::post('/solar-charge', [SolarChargeController::class, 'store'])->name('api.v2.hardware.solar_charge.store');
+        Route::post('/device-status', [DeviceStatusController::class, 'store'])->name('api.v2.hardware.device_status.store');
     });
 });

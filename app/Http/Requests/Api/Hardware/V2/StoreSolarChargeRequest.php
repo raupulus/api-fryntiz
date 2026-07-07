@@ -26,7 +26,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'created_at' => $created_at,
             'date' => $this->date ?? $created_at->format('Y-m-d'),
             'read_at' => $created_at,
-            'device_id' => (int) $this->device_id,
+            'hardware_device_id' => $this->hardware_device_id !== null ? (int) $this->hardware_device_id : null,
         ]);
     }
 
@@ -36,7 +36,7 @@ class StoreSolarChargeRequest extends BaseFormRequest
             'created_at' => ['required', 'date'],
             'date' => ['required', 'date'],
             'read_at' => ['required', 'date'],
-            'device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
+            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'hardware' => ['nullable', 'string', 'max:255'],
             'version' => ['nullable', 'string', 'max:255'],
             'serial_number' => ['nullable', 'string', 'max:255'],
@@ -56,8 +56,8 @@ class StoreSolarChargeRequest extends BaseFormRequest
     public function messages(): array
     {
         return [
-            'device_id.required' => 'El dispositivo es obligatorio.',
-            'device_id.exists' => 'El dispositivo especificado no existe.',
+            'hardware_device_id.required' => 'El dispositivo es obligatorio.',
+            'hardware_device_id.exists' => 'El dispositivo especificado no existe.',
             'created_at.required' => 'La fecha de creacion es obligatoria.',
             'date.required' => 'La fecha es obligatoria.',
             'read_at.required' => 'La fecha de lectura es obligatoria.',

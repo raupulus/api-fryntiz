@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Hardware\V2;
 
+use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Hardware\V2\StoreEnergyRequest;
 use App\Http\Resources\V2\Hardware\EnergyMonitorResource;
@@ -15,6 +16,8 @@ use Illuminate\Http\JsonResponse;
  */
 class EnergyMonitorController extends BaseApiController
 {
+    use HandlesHardwareDeviceInfo;
+
     public function __construct(private HardwareService $service) {}
 
     /**
@@ -22,7 +25,11 @@ class EnergyMonitorController extends BaseApiController
      */
     public function store(StoreEnergyRequest $request): JsonResponse
     {
-        $energy = $this->service->storeEnergyData($request->validated());
+        $data = $request->validated();
+
+        $energy = $this->service->storeEnergyData($data);
+
+        $this->storeDeviceInfoIfPresent($request, $this->service, (int) $data['hardware_device_id']);
 
         return $this->createdResponse(
             new EnergyMonitorResource($energy),

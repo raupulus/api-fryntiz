@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Hardware;
 
+use App\Enums\HardwareLocationTypeEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\ApiToken;
 use App\Models\BaseModels\BaseModel;
@@ -11,6 +12,7 @@ use App\Models\File;
 use App\Models\User;
 use App\Traits\BelongsToUser;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +33,10 @@ use function array_filter;
  * @property int|null $referred_thing_id Relación con el dispositivo afiliado
  * @property string|null $name Nombre real del dispositivo, EJ: Raspberry Pi 4b+
  * @property string|null $name_friendly Nombre amistoso para reconocerlo EJ: Raspberry en azotea
+ * @property HardwareLocationTypeEnum|null $location_type Ubicación física del hardware: interior/exterior (por defecto interior)
+ * @property string|null $zone Zona concreta del hardware, EJ: Azotea, Salón, Jardín
+ * @property-read string|null $location_label
+ * @property-read string $display_name
  * @property string|null $ref Referencia del dispositivo
  * @property string|null $brand Marca del fabricante, EJ: Apple
  * @property string|null $model Modelo del dispositivo, EJ: 4b+
@@ -42,9 +48,16 @@ use function array_filter;
  * @property string|null $url_company Enlace a la página de la empresa fabricante
  * @property string|null $description Descripción del dispositivo.
  * @property string|null $buy_at Fecha de compra del dispositivo
- * @property string|null $last_seen_at Última vez que se vio el dispositivo
+ * @property \Illuminate\Support\Carbon|null $last_seen_at Última vez que se vio el dispositivo
  * @property string|null $ip_local Ip local del dispositivo
  * @property string|null $ip_public Ip pública del dispositivo
+ * @property float|null $temp Última temperatura conocida del dispositivo en grados Celsius
+ * @property float|null $voltage Última tensión conocida del dispositivo en voltios
+ * @property int|null $battery_level Último nivel de batería conocido en porcentaje (0-100)
+ * @property float|null $cpu Último uso de CPU conocido en porcentaje (0-100)
+ * @property float|null $disk Último uso de disco conocido en porcentaje (0-100)
+ * @property int|null $uptime Último tiempo de actividad conocido en segundos
+ * @property array<string, mixed>|null $extra Métricas de estado adicionales del dispositivo
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -122,13 +135,60 @@ class HardwareDevice extends BaseModel
     protected $table = 'hardware_devices';
 
     protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id',
-        'name', 'name_friendly', 'ref', 'model', 'brand', 'software_version',
-        'hardware_version', 'serial_number', 'battery_type', 'battery_nominal_capacity',
-        'url_company', 'description', 'buy_at', 'last_seen_at', 'ip_local', 'ip_public'];
+        'name', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
+        'software_version', 'hardware_version', 'serial_number', 'battery_type',
+        'battery_nominal_capacity', 'url_company', 'description', 'buy_at',
+        'last_seen_at', 'ip_local', 'ip_public', 'temp', 'voltage',
+        'battery_level', 'cpu', 'disk', 'uptime', 'extra'];
 
     protected $casts = [
         'buy_at' => 'datetime',
+        'last_seen_at' => 'datetime',
+        'location_type' => HardwareLocationTypeEnum::class,
+        'temp' => 'float',
+        'voltage' => 'float',
+        'battery_level' => 'integer',
+        'cpu' => 'float',
+        'disk' => 'float',
+        'uptime' => 'integer',
+        'extra' => 'array',
     ];
+
+    /**
+     * Limita la consulta a los dispositivos que son estaciones meteorológicas,
+     * es decir, cuyo tipo de hardware es "Estación Meteorológica".
+     */
+    public function scopeWeatherStations(Builder $query): Builder
+    {
+        return $query->whereHas('hardwareType', fn (Builder $q) => $q->where('name', HardwareType::WEATHER_STATION));
+    }
+
+    /**
+     * Indica si el dispositivo es una estación meteorológica (según su tipo).
+     */
+    public function isWeatherStation(): bool
+    {
+        return $this->hardwareType?->name === HardwareType::WEATHER_STATION;
+    }
+
+    /**
+     * Etiqueta legible de la ubicación (Interior/Exterior).
+     */
+    public function getLocationLabelAttribute(): ?string
+    {
+        return $this->location_type?->label();
+    }
+
+    /**
+     * Nombre para mostrar del dispositivo: prioriza el nombre amistoso y cae al
+     * nombre real; si hay zona la añade como sufijo entre paréntesis.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        $base = $this->name_friendly ?: ($this->name ?: ('Estación #'.$this->getKey()));
+
+        return $this->zone ? $base.' ('.$this->zone.')' : $base;
+    }
 
     /**
      * Relación con el tipo de hardware.

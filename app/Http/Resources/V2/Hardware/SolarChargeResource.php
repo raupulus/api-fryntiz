@@ -19,7 +19,7 @@ class SolarChargeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'device_id' => $this->device_id,
+            'hardware_device_id' => $this->device_id,
             'date' => $this->date,
             'read_at' => $this->read_at,
             'battery_voltage' => $this->battery_voltage,

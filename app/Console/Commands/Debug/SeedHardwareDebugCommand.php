@@ -68,6 +68,18 @@ class SeedHardwareDebugCommand extends Command
                 'last_seen_at' => now(),
                 'ip_local' => fake()->localIpv4(),
                 'ip_public' => fake()->ipv4(),
+                // Último estado conocido del dispositivo (métricas de estado
+                // reportadas por la API). Datos de ejemplo para depuración.
+                'temp' => fake()->randomFloat(1, 20, 75),
+                'voltage' => fake()->randomFloat(2, 3, 13),
+                'battery_level' => fake()->numberBetween(0, 100),
+                'cpu' => fake()->randomFloat(1, 0, 100),
+                'disk' => fake()->randomFloat(1, 0, 100),
+                'uptime' => fake()->numberBetween(60, 5_000_000),
+                'extra' => [
+                    'ram' => fake()->numberBetween(10, 95).'%',
+                    'processes' => fake()->numberBetween(50, 400),
+                ],
             ]);
         }
 

@@ -59,4 +59,33 @@ class HardwareService
     {
         return SolarCharge::create($data);
     }
+
+    /**
+     * Actualiza el último estado conocido de un dispositivo de hardware.
+     *
+     * No se guarda histórico: solo se sobrescribe el último estado del propio
+     * dispositivo (temperatura, tensión, batería, CPU, disco, uptime, IPs y
+     * métricas extra). El campo `last_seen_at` se fija al momento actual.
+     *
+     * Solo se actualizan las claves presentes en `$data` para no sobrescribir
+     * con nulos valores previamente conocidos que no vengan en esta subida.
+     *
+     * @param  int  $deviceId  Identificador del dispositivo hardware.
+     * @param  array  $data  Estado del dispositivo (temp, voltage, battery_level, cpu, disk, uptime, ip_local, ip_public, extra).
+     * @return HardwareDevice Dispositivo actualizado.
+     */
+    public function updateDeviceStatus(int $deviceId, array $data): HardwareDevice
+    {
+        $device = HardwareDevice::query()->findOrFail($deviceId);
+
+        $allowed = ['temp', 'voltage', 'battery_level', 'cpu', 'disk', 'uptime', 'ip_local', 'ip_public', 'extra'];
+
+        $status = array_intersect_key($data, array_flip($allowed));
+
+        $status['last_seen_at'] = now();
+
+        $device->fill($status)->save();
+
+        return $device;
+    }
 }

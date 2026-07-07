@@ -20,7 +20,7 @@ class StoreEnergyRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'hardware_device' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
+            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'cpu_avg' => ['nullable', 'numeric'],
             'intensity' => ['nullable', 'array'],
             'intensity.*' => ['nullable', 'array'],
@@ -30,8 +30,8 @@ class StoreEnergyRequest extends BaseFormRequest
     public function messages(): array
     {
         return [
-            'hardware_device.required' => 'El dispositivo hardware es obligatorio.',
-            'hardware_device.exists' => 'El dispositivo hardware especificado no existe.',
+            'hardware_device_id.required' => 'El dispositivo hardware es obligatorio.',
+            'hardware_device_id.exists' => 'El dispositivo hardware especificado no existe.',
             'cpu_avg.numeric' => 'El promedio de CPU debe ser numerico.',
             'intensity.array' => 'La intensidad debe ser un array.',
         ];

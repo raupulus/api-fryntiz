@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Hardware\V2;
 
+use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Hardware\V2\StoreSolarChargeRequest;
 use App\Http\Resources\V2\Hardware\SolarChargeResource;
@@ -15,6 +16,8 @@ use Illuminate\Http\JsonResponse;
  */
 class SolarChargeController extends BaseApiController
 {
+    use HandlesHardwareDeviceInfo;
+
     public function __construct(private HardwareService $service) {}
 
     /**
@@ -22,7 +25,11 @@ class SolarChargeController extends BaseApiController
      */
     public function store(StoreSolarChargeRequest $request): JsonResponse
     {
-        $charge = $this->service->storeSolarCharge($request->validated());
+        $data = $request->validated();
+
+        $charge = $this->service->storeSolarCharge($data);
+
+        $this->storeDeviceInfoIfPresent($request, $this->service, (int) $data['hardware_device_id']);
 
         return $this->createdResponse(
             new SolarChargeResource($charge),

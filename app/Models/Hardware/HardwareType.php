@@ -32,5 +32,11 @@ class HardwareType extends BaseModel
 {
     use HasFactory;
 
+    /**
+     * Nombre del tipo de hardware que identifica a las estaciones meteorológicas.
+     * Coincide con el registro sembrado por HardwareTypeSeeder.
+     */
+    public const WEATHER_STATION = 'Estación Meteorológica';
+
     protected $fillable = ['name', 'description'];
 }
