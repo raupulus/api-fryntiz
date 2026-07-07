@@ -24,5 +24,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="MAIL_MAILER" value="array"/>
+        <env name="BROADCAST_DRIVER" value="null"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
     </php>
 </phpunit>
