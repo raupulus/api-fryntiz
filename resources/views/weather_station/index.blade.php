@@ -17,11 +17,21 @@
         </div>
     </section>
 
+    @if(session('notice'))
+        <div class="max-w-7xl mx-auto px-6 mt-4">
+            <div class="bg-tertiary-container/10 border border-tertiary-container text-on-surface rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-base">info</span>
+                {{ session('notice') }}
+            </div>
+        </div>
+    @endif
+
     {{-- Widget resumen del clima actual (Vue 3) --}}
     <section class="py-8 bg-surface-container-low flex justify-center">
         <div id="app-weather-chipiona"
              data-api-base-url="{{ url('/') }}"
-             data-api-path="api/v2/weatherstation/resume"
+             data-api-path="api/v2/weatherstation/station"
+             @if(!empty($mainStationId)) data-station="{{ $mainStationId }}" @endif
              class="w-full max-w-lg">
             <p class="text-on-surface-variant text-center py-8">Cargando datos del clima...</p>
         </div>
@@ -40,31 +50,55 @@
         </div>
     </section>
 
-    {{-- Secciones de datos --}}
+    {{-- Secciones de datos, agrupadas por ubicación (interior/exterior) y zona --}}
     <section class="py-12 bg-surface-container-low">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-3xl font-bold text-on-surface mb-6">Datos de los sensores</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($sections as $section)
-                    <a href="{{ $section['url'] }}" class="bg-surface-container-lowest rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center">
-                                <span class="material-symbols-outlined text-on-tertiary-container">{{ $section['icon'] }}</span>
-                            </div>
-                            @if($section['primary'])
-                                <div class="text-right">
-                                    <div class="text-xl font-bold text-on-surface">{{ $section['primary'] }}</div>
-                                    @if($section['secondary'])
-                                        <div class="text-xs text-on-surface-variant">{{ $section['secondary'] }}</div>
+            <h2 class="text-3xl font-bold text-on-surface mb-2">Datos de los sensores</h2>
+            <p class="text-on-surface-variant mb-8">
+                Las estaciones se agrupan por interior y exterior, y dentro de estas por zona, para no mezclar lecturas dispares.
+            </p>
+
+            @forelse($groups as $group)
+                <div class="mb-12">
+                    {{-- Cabecera de grupo interior/exterior --}}
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-on-tertiary-container">
+                            {{ $group['location_type'] === 'outdoor' ? 'wb_sunny' : 'home' }}
+                        </span>
+                        <h3 class="text-2xl font-bold text-on-surface">{{ $group['label'] }}</h3>
+                    </div>
+
+                    @foreach($group['zones'] as $zone)
+                        @foreach($zone['stations'] as $station)
+                            {{-- Franja por estación: borde de color + fondo sutil para separarlas visualmente --}}
+                            <div class="mb-8 rounded-xl border-l-4 {{ $group['location_type'] === 'outdoor' ? 'border-secondary' : 'border-tertiary-container' }} bg-surface-container/40 pl-5 pr-5 py-5">
+                                {{-- Cabecera de estación (zona + nombre) --}}
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="material-symbols-outlined text-on-surface-variant text-lg">location_on</span>
+                                    <h4 class="text-lg font-bold text-on-surface">{{ $station['name'] }}</h4>
+                                    <span class="text-xs text-on-surface-variant">{{ $zone['zone'] }}</span>
+                                    @if($station['is_main'])
+                                        <span class="text-[10px] font-bold uppercase tracking-widest bg-primary-container text-white rounded-full px-2 py-0.5">Principal</span>
                                     @endif
                                 </div>
-                            @endif
-                        </div>
-                        <h3 class="text-lg font-bold text-on-surface mb-2">{{ $section['title'] }}</h3>
-                        <span class="text-primary-container font-bold text-xs uppercase tracking-widest group-hover:underline">Ver datos →</span>
-                    </a>
-                @endforeach
-            </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    @foreach($station['sections'] as $section)
+                                        @include('weather_station.partials.sensor-card', ['section' => $section])
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    @endforeach
+                </div>
+            @empty
+                {{-- Reserva: aún no hay estaciones clasificadas por interior/exterior --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($ungrouped as $section)
+                        @include('weather_station.partials.sensor-card', ['section' => $section])
+                    @endforeach
+                </div>
+            @endforelse
         </div>
     </section>
 

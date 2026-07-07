@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\WeatherStation;
 
+use App\Enums\HardwareLocationTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
@@ -16,6 +18,8 @@ use App\Models\WeatherStation\Temperature;
 use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
+use App\Services\WeatherStation\WeatherStationService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
@@ -32,7 +36,7 @@ class WeatherStationController extends Controller
      * muestra en la tarjeta resumen de la vista índice, usando el último
      * registro de cada sensor.
      */
-    private const SENSOR_MAP = [
+    public const SENSOR_MAP = [
         'temperature' => [
             'title' => 'Temperatura', 'model' => Temperature::class, 'icon' => 'thermostat',
             'primary' => ['field' => 'value', 'unit' => 'ºC'],
@@ -89,11 +93,72 @@ class WeatherStationController extends Controller
     ];
 
     /**
-     * Muestra la vista principal con el widget y las tarjetas de sensores,
-     * cada una con el valor principal (y secundario si aplica) del último
-     * registro recibido.
+     * Muestra la vista principal con el widget y las estaciones agrupadas por
+     * ubicación (interior/exterior) y zona. Cada estación muestra las tarjetas
+     * de sus sensores con el valor principal (y secundario si aplica) del
+     * último registro recibido en ese dispositivo.
+     *
+     * Si todavía no hay ninguna estación clasificada (sin `location_type`), se
+     * muestra el resumen global de sensores como comportamiento de reserva.
      */
     public function index()
+    {
+        $stations = HardwareDevice::weatherStations()
+            ->orderBy('zone')
+            ->orderBy('id')
+            ->get();
+
+        $mainStationId = app(WeatherStationService::class)
+            ->resolveMainStationId();
+
+        $groups = [];
+
+        foreach (HardwareLocationTypeEnum::cases() as $type) {
+            $inType = $stations->where('location_type', $type);
+
+            if ($inType->isEmpty()) {
+                continue;
+            }
+
+            $zones = [];
+
+            foreach ($inType->groupBy(fn (HardwareDevice $d) => $d->zone ?: 'Sin zona') as $zoneName => $devices) {
+                $zones[] = [
+                    'zone' => $zoneName,
+                    'stations' => $devices->map(fn (HardwareDevice $d) => [
+                        'id' => $d->getKey(),
+                        'name' => $d->display_name,
+                        'is_main' => $d->getKey() === $mainStationId,
+                        'sections' => $this->buildSensorCards($d->getKey()),
+                    ])->values()->all(),
+                ];
+            }
+
+            $groups[] = [
+                'location_type' => $type->value,
+                'label' => $type->label(),
+                'zones' => $zones,
+            ];
+        }
+
+        // Reserva: sin estaciones clasificadas mostramos el resumen global.
+        $ungrouped = empty($groups) ? $this->buildSensorCards(null) : [];
+
+        return view('weather_station.index', compact('groups', 'ungrouped', 'mainStationId'));
+    }
+
+    /**
+     * Construye las tarjetas de sensores (valor principal/secundario del último
+     * registro) opcionalmente filtradas por una estación concreta.
+     *
+     * Los sensores sin ningún registro se omiten: no tiene sentido enlazar a
+     * una vista de detalle vacía (una estación puede tener solo viento, o solo
+     * luz/radiación, y nunca rellenar el resto de sensores).
+     *
+     * @param  int|null  $stationId  Dispositivo del que tomar las lecturas.
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildSensorCards(?int $stationId): array
     {
         $sections = [];
 
@@ -102,21 +167,66 @@ class WeatherStationController extends Controller
             $primaryField = $config['primary']['field'];
 
             $latest = $model::whereNotNull($primaryField)
+                ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
                 ->latest('created_at')
                 ->first();
 
+            if (! $latest) {
+                continue;
+            }
+
             $sections[] = [
                 'title' => $config['title'],
-                'url' => route('weather_station.sensor', $type),
+                'url' => route('weather_station.sensor', array_filter([
+                    'type' => $type,
+                    'station' => $stationId,
+                ])),
                 'icon' => $config['icon'],
-                'primary' => $latest ? $this->formatSensorValue($latest, $config['primary']) : null,
-                'secondary' => ($latest && isset($config['secondary']))
+                'primary' => $this->formatSensorValue($latest, $config['primary']),
+                'secondary' => isset($config['secondary'])
                     ? $this->formatSensorValue($latest, $config['secondary'])
                     : null,
             ];
         }
 
-        return view('weather_station.index', compact('sections'));
+        return $sections;
+    }
+
+    /**
+     * Indica si un tipo de sensor tiene al menos un registro, opcionalmente
+     * filtrado por estación.
+     */
+    private function sensorHasData(string $type, ?int $stationId): bool
+    {
+        $config = self::SENSOR_MAP[$type];
+        $model = $config['model'];
+        $primaryField = $config['primary']['field'];
+
+        return $model::whereNotNull($primaryField)
+            ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
+            ->exists();
+    }
+
+    /**
+     * Busca cíclicamente, a partir del sensor actual, el siguiente tipo con
+     * datos disponibles para la estación indicada (o de forma global si no hay
+     * estación). Si ninguno tiene datos, devuelve el propio tipo actual.
+     */
+    private function nextTypeWithData(string $currentType, ?int $stationId): string
+    {
+        $types = array_keys(self::SENSOR_MAP);
+        $start = array_search($currentType, $types);
+        $count = count($types);
+
+        for ($i = 1; $i < $count; $i++) {
+            $candidate = $types[($start + $i) % $count];
+
+            if ($this->sensorHasData($candidate, $stationId)) {
+                return $candidate;
+            }
+        }
+
+        return $currentType;
     }
 
     /**
@@ -129,10 +239,22 @@ class WeatherStationController extends Controller
      * @param  string  $type  Tipo de sensor (temperature, humidity, pressure, etc.)
      * @return View
      */
-    public function sensor(string $type)
+    public function sensor(Request $request, string $type)
     {
         if (! isset(self::SENSOR_MAP[$type])) {
             abort(404, 'Sensor no encontrado');
+        }
+
+        $stationId = $request->filled('station') ? (int) $request->query('station') : null;
+        $station = $stationId ? HardwareDevice::find($stationId) : null;
+
+        // Sin datos para este sensor en esta estación (o de forma global): no
+        // tiene sentido servir una vista vacía. Puede ocurrir porque la
+        // estación nunca rellenará ese sensor (EJ: una estación solo de viento).
+        if (! $this->sensorHasData($type, $stationId)) {
+            return redirect()
+                ->route('weather_station.index')
+                ->with('notice', 'Ese sensor no tiene datos disponibles todavía.');
         }
 
         $sensor = self::SENSOR_MAP[$type];
@@ -145,9 +267,11 @@ class WeatherStationController extends Controller
         $cellsInfo = $model::getTableCellsInfo();
 
         $records = $model::whereNotNull($primaryField)
+            ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
             ->orderByDesc('created_at')
             ->select(array_merge(array_keys($columns), ['created_at']))
-            ->paginate(25);
+            ->paginate(25)
+            ->withQueryString();
 
         if (isset($sensor['convertFields'], $sensor['convertMethod'])) {
             $records->getCollection()->transform(function ($record) use ($sensor) {
@@ -159,8 +283,9 @@ class WeatherStationController extends Controller
             });
         }
 
-        $types = array_keys(self::SENSOR_MAP);
-        $nextType = $types[(array_search($type, $types) + 1) % count($types)];
+        // "Siguiente" salta los sensores sin datos para esta misma estación,
+        // para no llevar al usuario a un tipo que rebotaría al índice.
+        $nextType = $this->nextTypeWithData($type, $stationId);
 
         return view('weather_station.sensor', [
             'title' => $sensor['title'],
@@ -168,8 +293,12 @@ class WeatherStationController extends Controller
             'icon' => $sensor['icon'],
             'columns' => $columns,
             'cellsInfo' => $cellsInfo,
+            'stationName' => $station?->display_name,
             'nextTitle' => self::SENSOR_MAP[$nextType]['title'],
-            'nextUrl' => route('weather_station.sensor', $nextType),
+            'nextUrl' => route('weather_station.sensor', array_filter([
+                'type' => $nextType,
+                'station' => $stationId,
+            ])),
             'records' => $records,
         ]);
     }

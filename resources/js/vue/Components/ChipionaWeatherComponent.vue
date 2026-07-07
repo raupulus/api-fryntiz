@@ -9,7 +9,7 @@
                         <div class="resume-container-date">
                             <div class="resume-inline resume-location">
                                 <span class="icon icon-location"></span>
-                                Chipiona, Es
+                                {{ location.name }}<span v-if="location.label"> · {{ location.label }}</span>
                             </div>
                             <div class="resume-inline resume-date-dayname">
                                 {{ instant.day_name }}
@@ -43,9 +43,9 @@
                                     <span class="icon icon-pressure color-yellow"></span>
                                     {{ roundTo2(info.pressure) }} mb
                                 </div>
-                                <div class="mt-5">
+                                <div class="mt-5" v-if="lightning.quantityLastSixHours > 0">
                                     <span class="icon icon-lightning color-yellow"></span>
-                                    {{ lightning.quantityLastTenMinutes }}
+                                    {{ lightning.quantityLastSixHours }}
                                 </div>
                             </div>
 
@@ -118,7 +118,12 @@
  *              llamando al endpoint `apiBaseUrl + apiPath`.
  *
  * @prop {String} apiBaseUrl - Base URL del backend que sirve los datos.
- * @prop {String} apiPath    - Ruta relativa al endpoint de resumen (default 'api/v2/weatherstation/resume').
+ * @prop {String} apiPath    - Ruta relativa al endpoint de una estación (default 'api/v2/weatherstation/station').
+ * @prop {String} station    - Id de la estación cuyo resumen mostrar. Si se
+ *                             deja vacío, la API resuelve la estación principal
+ *                             (por defecto la primera de exterior). Permite
+ *                             reutilizar el widget apuntando a distintas
+ *                             estaciones sin tocar el componente.
  */
 import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
 
@@ -129,21 +134,30 @@ const props = defineProps({
     },
     apiPath: {
         type: String,
-        default: 'api/v2/weatherstation/resume',
+        default: 'api/v2/weatherstation/station',
+    },
+    station: {
+        type: [String, Number],
+        default: '',
     },
 });
 
 const navigation = ref({ info: true, wind: false, tvoc: false, light: false });
+const location = ref({ name: 'Chipiona, Es', label: '' });
 const instant = ref({ day_name: '', date_human_format: '', time: '', day_status: '' });
 const info = ref({ temperature: 0, humidity: 0, pressure: 0 });
 const wind = ref({ average: 0, min: 0, max: 0, direction: 'N' });
 const air_quality = ref({ quality: 100, co2_eco2: 0, tvoc: 0 });
 const light = ref({ light: 0, index: 0, uva: 0, uvb: 0 });
-const lightning = ref({ last: '', quantityLastTenMinutes: 0 });
+const lightning = ref({ last: '', quantityLastSixHours: 0 });
 
 let intervalId = null;
 
-const roundTo2 = (num) => Math.round((num ?? 0) * 100) / 100;
+const roundTo2 = (num) => {
+    const value = Number(num);
+
+    return Number.isFinite(value) ? Math.round(value * 100) / 100 : 0;
+};
 
 const menuSelect = (item) => {
     Object.keys(navigation.value).forEach((key) => {
@@ -153,7 +167,12 @@ const menuSelect = (item) => {
 
 const getApiData = async () => {
     try {
-        const url = `${props.apiBaseUrl}/${props.apiPath}`;
+        // Endpoint de una sola estación: /station/{id?}. Sin id, la API
+        // devuelve la estación principal (primera de exterior).
+        const stationSegment = props.station !== '' && props.station != null
+            ? `/${encodeURIComponent(props.station)}`
+            : '';
+        const url = `${props.apiBaseUrl}/${props.apiPath}${stationSegment}`;
         const response = await fetch(url, {
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             method: 'GET',
@@ -162,13 +181,38 @@ const getApiData = async () => {
         const json = await response.json();
         // La API V2 envuelve la carga útil en { success, message, data }.
         const data = json?.data ?? json;
+        if (!data) return;
 
+        // Ubicación dinámica de la estación (nombre + interior/exterior).
+        location.value = {
+            name: data.name ?? location.value.name,
+            label: data.location_label ?? '',
+        };
+
+        // Los valores ya llegan formateados (km/h, 2 decimales) como números.
         instant.value = data.instant ?? instant.value;
         info.value = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure };
-        wind.value = { direction: data.wind_direction, average: data.wind_average, min: data.wind_min, max: data.wind_max };
-        light.value = { light: data.light, index: data.uv_index, uva: data.uva, uvb: data.uvb };
-        air_quality.value = { quality: data.air_quality, tvoc: data.tvoc, co2_eco2: data.eco2 };
-        lightning.value = { last: data.last_lightning_at, quantityLastTenMinutes: data.lightningQuantityLastTenMinutes };
+        wind.value = {
+            direction: data.wind?.direction,
+            average: data.wind?.average,
+            min: data.wind?.min,
+            max: data.wind?.max,
+        };
+        light.value = {
+            light: data.light?.lux,
+            index: data.light?.uv_index,
+            uva: data.light?.uva,
+            uvb: data.light?.uvb,
+        };
+        air_quality.value = {
+            quality: data.air_quality?.quality,
+            tvoc: data.air_quality?.tvoc,
+            co2_eco2: data.air_quality?.eco2,
+        };
+        lightning.value = {
+            last: data.lightning?.last_at,
+            quantityLastSixHours: data.lightning?.last_six_hours,
+        };
     } catch (error) {
         console.error('Error al obtener datos desde la API:', error);
     }

@@ -11,7 +11,13 @@
                 <span class="material-symbols-outlined text-4xl">{{ $icon }}</span>
                 <h1 class="text-4xl md:text-5xl font-bold tracking-tighter">{{ $title }}</h1>
             </div>
-            <p class="text-lg text-white/80">Datos del sensor — Estación meteorológica Chipiona</p>
+            <p class="text-lg text-white/80">
+                @if(!empty($stationName))
+                    Datos del sensor — {{ $stationName }}
+                @else
+                    Datos del sensor — Estación meteorológica Chipiona
+                @endif
+            </p>
         </div>
     </section>
 

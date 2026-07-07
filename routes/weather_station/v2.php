@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\WeatherStation\V2\AirQualityController;
 use App\Http\Controllers\Api\WeatherStation\V2\Eco2Controller;
-use App\Http\Controllers\Api\WeatherStation\V2\GeneralController;
 use App\Http\Controllers\Api\WeatherStation\V2\GenericController;
 use App\Http\Controllers\Api\WeatherStation\V2\HumidityController;
 use App\Http\Controllers\Api\WeatherStation\V2\LightController;
 use App\Http\Controllers\Api\WeatherStation\V2\LightningController;
 use App\Http\Controllers\Api\WeatherStation\V2\PressureController;
 use App\Http\Controllers\Api\WeatherStation\V2\RainController;
+use App\Http\Controllers\Api\WeatherStation\V2\StationController;
 use App\Http\Controllers\Api\WeatherStation\V2\TemperatureController;
 use App\Http\Controllers\Api\WeatherStation\V2\TvocController;
 use App\Http\Controllers\Api\WeatherStation\V2\WindController;
@@ -24,8 +24,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('weatherstation')->group(function () {
+    // # Estaciones (datos formateados, selección de sensores con ?sensors=)
+    // Una estación por id (id opcional → primera de exterior)
+    Route::get('/station/{station?}', [StationController::class, 'show'])
+        ->whereNumber('station')
+        ->name('api.v2.weatherstation.station.show');
+    // Todas las estaciones de una zona (?location_type=indoor|outdoor)
+    Route::get('/zone/{zone}', [StationController::class, 'zone'])
+        ->name('api.v2.weatherstation.zone.show');
+
     // # Lecturas públicas (con filtro opcional ?from=&to=)
-    Route::get('/resume', [GeneralController::class, 'resume'])->name('api.v2.weatherstation.resume');
     Route::get('/temperature', [TemperatureController::class, 'index'])->name('api.v2.weatherstation.temperature.index');
     Route::get('/humidity', [HumidityController::class, 'index'])->name('api.v2.weatherstation.humidity.index');
     Route::get('/pressure', [PressureController::class, 'index'])->name('api.v2.weatherstation.pressure.index');
