@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Hardware;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Support\Auth\TokenAbilities;
 use Carbon\Carbon;
 use InvalidArgumentException;
 use Laravel\Sanctum\NewAccessToken;
@@ -17,6 +18,10 @@ use RuntimeException;
  * panel Filament. Siempre añade la ability "device:{id}" para ligar el token
  * al dispositivo (validación estricta en escritura) y lo crea sobre el
  * usuario propietario, con nombre "device:{id}" para trazabilidad.
+ *
+ * El catálogo de abilities vive en {@see TokenAbilities}. Aquí sólo se emiten
+ * abilities de módulo: un token de dispositivo **nunca** lleva
+ * {@see TokenAbilities::SESSION} ni el comodín `*`.
  */
 class DeviceTokenService
 {
@@ -26,14 +31,7 @@ class DeviceTokenService
      *
      * @var array<string, string>
      */
-    public const MODULE_ABILITIES = [
-        'hardware:read' => 'Hardware lectura',
-        'hardware:write' => 'Hardware escritura',
-        'weatherstation:write' => 'WeatherStation escritura',
-        'keycounter:write' => 'KeyCounter escritura',
-        'smartplant:write' => 'SmartPlant escritura',
-        'airflight:write' => 'AirFlight escritura',
-    ];
+    public const MODULE_ABILITIES = TokenAbilities::MODULE_ABILITIES;
 
     /**
      * Emite un token ligado al dispositivo.
@@ -41,7 +39,8 @@ class DeviceTokenService
      * @param  array<int, string>  $abilities  Abilities de módulo (sin "device:{id}").
      *
      * @throws RuntimeException Si el dispositivo no tiene usuario propietario.
-     * @throws InvalidArgumentException Si no se indica ninguna ability de módulo.
+     * @throws InvalidArgumentException Si no se indica ninguna ability de módulo
+     *                                  o si se cuela una ability no permitida.
      */
     public function issue(HardwareDevice $device, array $abilities, ?Carbon $expiresAt = null): NewAccessToken
     {
@@ -57,12 +56,18 @@ class DeviceTokenService
             throw new InvalidArgumentException('Debe indicar al menos una ability de módulo (ej. hardware:write).');
         }
 
-        // Liga el token al dispositivo de forma estricta.
-        $deviceAbility = $this->deviceAbility($device);
+        // Un token de dispositivo sólo puede llevar abilities del catálogo de
+        // módulo. Ni "*", ni "session", ni nada inventado.
+        $invalid = array_diff($abilities, array_keys(TokenAbilities::MODULE_ABILITIES));
 
-        if (! in_array($deviceAbility, $abilities, true)) {
-            $abilities[] = $deviceAbility;
+        if ($invalid !== []) {
+            throw new InvalidArgumentException(
+                'Abilities no permitidas para un token de dispositivo: '.implode(', ', $invalid).'.'
+            );
         }
+
+        // Liga el token al dispositivo de forma estricta.
+        $abilities[] = $this->deviceAbility($device);
 
         return $user->createToken("device:{$device->id}", $abilities, $expiresAt);
     }
@@ -72,6 +77,6 @@ class DeviceTokenService
      */
     public function deviceAbility(HardwareDevice $device): string
     {
-        return 'device:'.$device->id;
+        return TokenAbilities::forDevice($device);
     }
 }

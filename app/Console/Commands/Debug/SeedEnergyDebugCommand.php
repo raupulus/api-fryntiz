@@ -121,6 +121,11 @@ class SeedEnergyDebugCommand extends Command
                     'voltage_min' => 11.5, 'voltage_max' => 14.8,
                     'battery_min' => 11.5, 'battery_max' => 14.8,
                     'battery_percentage_min' => 20, 'battery_percentage_max' => 100,
+                    'amperage_min' => 0.2, 'amperage_max' => 2.8,
+                    'power_min' => 2.4, 'power_max' => 38.0,
+                    'energy_wh' => fake()->randomFloat(2, 200, 900),
+                    'energy_ah' => fake()->randomFloat(2, 15, 70),
+                    'readings_count' => 96,
                     'read_at' => $now,
                 ]
             );
@@ -132,8 +137,11 @@ class SeedEnergyDebugCommand extends Command
                     'voltage_min' => 12.0, 'voltage_max' => 24.0,
                     'battery_min' => 11.5, 'battery_max' => 14.8,
                     'battery_percentage_min' => 20, 'battery_percentage_max' => 100,
-                    'amperage_max' => 4.8,
-                    'power' => 45.0, 'power_max' => 95.0,
+                    'amperage_min' => 0.0, 'amperage_max' => 4.8,
+                    'power_min' => 0.0, 'power_max' => 95.0,
+                    'energy_wh' => fake()->randomFloat(2, 400, 1800),
+                    'energy_ah' => fake()->randomFloat(2, 30, 140),
+                    'readings_count' => 96,
                     'read_at' => $now,
                 ]
             );
@@ -152,10 +160,11 @@ class SeedEnergyDebugCommand extends Command
                         'battery_max' => fake()->randomFloat(2, 13, 15),
                         'amperage_min' => fake()->randomFloat(2, 0, 0.5),
                         'amperage_max' => fake()->randomFloat(2, 2, 3),
-                        'amperage' => fake()->randomFloat(2, 0.5, 2),
                         'power_min' => fake()->randomFloat(2, 0, 5),
                         'power_max' => fake()->randomFloat(2, 50, 60),
-                        'power' => fake()->randomFloat(2, 10, 40),
+                        'energy_wh' => fake()->randomFloat(2, 300, 1200),
+                        'energy_ah' => fake()->randomFloat(2, 25, 90),
+                        'readings_count' => 96 * ($d + 1),
                         'days_operating' => $d + 1,
                     ]
                 );
@@ -166,7 +175,9 @@ class SeedEnergyDebugCommand extends Command
                         'days_operating' => $d + 1,
                         'number_battery_over_discharges' => fake()->numberBetween(0, 3),
                         'number_battery_full_charges' => fake()->numberBetween(0, 5),
-                        'power' => fake()->randomFloat(2, 10, 90),
+                        'energy_wh' => fake()->randomFloat(2, 500, 2500),
+                        'energy_ah' => fake()->randomFloat(2, 40, 190),
+                        'readings_count' => 96 * ($d + 1),
                     ]
                 );
             }

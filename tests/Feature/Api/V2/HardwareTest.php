@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\V2;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Support\Auth\TokenAbilities;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -15,63 +16,71 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function can_get_device_authenticated(): void
     {
-        $headers = $this->asUser();
-        $response = $this->getJson($this->apiUrl('hardware/device/1'), $headers);
-        $this->assertContains($response->status(), [200, 404]);
-        $response->assertJsonStructure(['success', 'message']);
+        $user = $this->createAuthenticatedUser();
+        $device = HardwareDevice::create(['user_id' => $user->id, 'name' => 'Portátil']);
+
+        $response = $this->getJson(
+            $this->apiUrl("hardware/devices/{$device->id}"),
+            $this->moduleHeaders($user, TokenAbilities::HARDWARE_READ)
+        );
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.id', $device->id);
     }
 
     #[Test]
     public function cannot_get_device_unauthenticated(): void
     {
-        $response = $this->getJson($this->apiUrl('hardware/device/1'), $this->guestHeaders());
+        $response = $this->getJson($this->apiUrl('hardware/devices/1'), $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function can_get_computers_authenticated(): void
     {
-        $headers = $this->asUser();
-        $response = $this->getJson($this->apiUrl('hardware/computers'), $headers);
+        // `GET /hardware/computers` era una ruta propia para lo que es un
+        // filtro de la colección.
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWARE_READ);
+        $response = $this->getJson($this->apiUrl('hardware/devices?type=laptop'), $headers);
         $this->assertSuccessResponse($response);
-        $response->assertJsonStructure(['data']);
+        $response->assertJsonStructure(['data', 'meta' => ['total', 'per_page', 'current_page', 'last_page']]);
     }
 
     #[Test]
     public function cannot_get_computers_unauthenticated(): void
     {
-        $response = $this->getJson($this->apiUrl('hardware/computers'), $this->guestHeaders());
+        $response = $this->getJson($this->apiUrl('hardware/devices'), $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function cannot_store_energy_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('hardware/energy'), [], $this->guestHeaders());
+        $response = $this->postJson($this->apiUrl('hardware/energy-readings'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function store_energy_validates_required_fields(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('hardware/energy'), [], $headers);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWARE_WRITE);
+        $response = $this->postJson($this->apiUrl('hardware/energy-readings'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);
     }
 
     #[Test]
-    public function cannot_store_solar_charge_unauthenticated(): void
+    public function cannot_store_solar_reading_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('hardware/solar-charge'), [], $this->guestHeaders());
+        $response = $this->postJson($this->apiUrl('hardware/solar-readings'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
-    public function store_solar_charge_validates_required_fields(): void
+    public function store_solar_reading_validates_required_fields(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('hardware/solar-charge'), [], $headers);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWARE_WRITE);
+        $response = $this->postJson($this->apiUrl('hardware/solar-readings'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);
     }
@@ -79,15 +88,17 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function cannot_store_device_status_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('hardware/device-status'), [], $this->guestHeaders());
+        $response = $this->putJson($this->apiUrl('hardware/devices/1/status'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function store_device_status_validates_required_fields(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('hardware/device-status'), [], $headers);
+        // El dispositivo va en la URL, así que un id que no es del usuario
+        // falla por pertenencia, no por campo obligatorio.
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWARE_WRITE);
+        $response = $this->putJson($this->apiUrl('hardware/devices/999999/status'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);
     }
@@ -95,8 +106,8 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function store_device_status_updates_last_known_state(): void
     {
-        $user = $this->createAuthenticatedUser(3);
-        $headers = $this->authenticatedHeaders($user);
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);
 
         $device = HardwareDevice::create([
             'user_id' => $user->id,
@@ -116,7 +127,7 @@ class HardwareTest extends ApiTestCase
             'extra' => ['ram' => 512],
         ];
 
-        $response = $this->postJson($this->apiUrl('hardware/device-status'), $payload, $headers);
+        $response = $this->putJson($this->apiUrl("hardware/devices/{$device->id}/status"), $payload, $headers);
         $this->assertSuccessResponse($response);
 
         $device->refresh();
@@ -129,8 +140,8 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function store_device_status_accepts_grouped_hardware_device_info(): void
     {
-        $user = $this->createAuthenticatedUser(3);
-        $headers = $this->authenticatedHeaders($user);
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);
 
         $device = HardwareDevice::create([
             'user_id' => $user->id,
@@ -146,7 +157,7 @@ class HardwareTest extends ApiTestCase
             ],
         ];
 
-        $response = $this->postJson($this->apiUrl('hardware/device-status'), $payload, $headers);
+        $response = $this->putJson($this->apiUrl("hardware/devices/{$device->id}/status"), $payload, $headers);
         $this->assertSuccessResponse($response);
 
         $device->refresh();

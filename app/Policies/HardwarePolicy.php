@@ -6,83 +6,76 @@ namespace App\Policies;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 /**
- * Class HardwarePolicy
+ * Autorización sobre dispositivos hardware.
+ *
+ * Un dispositivo es de un usuario y sólo de él. Además, si la petición llega
+ * con un token ligado a un dispositivo concreto (`device:{id}`), ese token no
+ * alcanza a los demás dispositivos del mismo dueño: es la diferencia entre
+ * robar un cacharro y robar la cuenta entera.
+ *
+ * Ojo: el atajo `Gate::before` de superadmin está desactivado para tokens de
+ * dispositivo (ver `AppServiceProvider`), así que estos métodos sí se ejecutan
+ * cuando quien llama es un cacharro.
  */
 class HardwarePolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    public function index(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
 
-    public function create(User $user)
+    public function view(User $user, HardwareDevice $device): bool
     {
-        return true;
+        return $this->isOwnedAndReachable($user, $device);
     }
 
-    public function store(User $user)
+    public function create(User $user): bool
     {
-        return true;
+        return ! TokenAbilities::deviceRequest($user);
     }
 
-    public function delete(User $user, HardwareDevice $hardwareDevice)
+    public function update(User $user, HardwareDevice $device): bool
     {
-        return $hardwareDevice->user_id == $user->id;
+        return $this->isOwnedAndReachable($user, $device);
     }
 
-    public function show(User $user, HardwareDevice $hardwareDevice)
+    public function delete(User $user, HardwareDevice $device): bool
     {
-        return true;
+        // Borrar un dispositivo no es tarea de un dispositivo.
+        return ! TokenAbilities::deviceRequest($user)
+            && (int) $device->user_id === (int) $user->id;
     }
 
-    public function update(User $user, HardwareDevice $hardwareDevice)
+    public function restore(User $user, HardwareDevice $device): bool
     {
-        return $hardwareDevice->user_id == $user->id;
+        return $this->delete($user, $device);
+    }
+
+    public function forceDelete(User $user, HardwareDevice $device): bool
+    {
+        return $this->delete($user, $device);
     }
 
     /**
-     * Permisos para guardar datos de dispositivos solares.
-     *
-     * @return bool
+     * Escribir lecturas (energía, carga solar, estado) contra un dispositivo.
      */
-    public function storeSolarCharge(User $user, HardwareDevice $model)
+    public function writeData(User $user, HardwareDevice $device): bool
     {
-        // Log::info('Entrando a storeSolarCharge');
-        // Log::info('El usuario es: ' . $user->id);
-        // Log::info('El modelo es: ' . $model->id);
-
-        /*
-        if ($user->role_id == 1) {
-            return true;
-        }
-        */
-
-        return $model->user_id === $user->id;
+        return $this->isOwnedAndReachable($user, $device);
     }
 
     /**
-     * Permisos para mostrar datos de dispositivos solares.
-     *
-     * @return bool
+     * Pertenencia + ligado del token al dispositivo concreto.
      */
-    public function indexSolarCharge()
+    private function isOwnedAndReachable(User $user, HardwareDevice $device): bool
     {
-        return true;
+        return (int) $device->user_id === (int) $user->id
+            && TokenAbilities::tokenReachesDevice($user, (int) $device->id);
     }
 }

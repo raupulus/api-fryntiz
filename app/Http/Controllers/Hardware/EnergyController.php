@@ -29,16 +29,16 @@ class EnergyController extends Controller
     {
         $dateToday = date('Y-m-d');
 
-        $hardwares = HardwareDevice::with('image', 'powerLoadsHistorical', 'powerGeneratorsHistorical')
+        $hardwareItems = HardwareDevice::with('image', 'powerLoadsHistorical', 'powerGeneratorsHistorical')
             ->where(function ($query) {
                 $query->whereHas('powerLoadsHistorical', function ($q) {
-                    $q->whereNotNull('power');
+                    $q->whereNotNull('energy_wh');
                 })->orWhereHas('powerGeneratorsHistorical', function ($q) {
-                    $q->whereNotNull('power');
+                    $q->whereNotNull('energy_wh');
                 });
             })
             ->get();
-        $hardware_ids = $hardwares->pluck('id')->toArray();
+        $hardware_ids = $hardwareItems->pluck('id')->toArray();
 
         $lastHour = Carbon::now()->subHour();
 
@@ -79,9 +79,12 @@ class EnergyController extends Controller
         $generator = (object) [
             'current' => round($hardwareGeneratorCurrent->sum('power')),
             'current_amperage' => round($hardwareGeneratorCurrent->sum('amperage')),
-            'today' => round($hardwareGeneratorToday->sum('power')),
-            'today_amperage' => round($hardwareGeneratorToday->sum('amperage')),
-            'historical' => number_format($hardwareGeneratorHistorical->sum('power') / 1000, 1),
+            // Del día y del acumulado salen vatios-hora, no vatios: sumar la
+            // potencia instantánea daba un número que dependía de cuántas veces
+            // hubiera medido el sensor.
+            'today' => round($hardwareGeneratorToday->sum('energy_wh')),
+            'today_amperage' => round($hardwareGeneratorToday->sum('energy_ah')),
+            'historical' => number_format($hardwareGeneratorHistorical->sum('energy_wh') / 1000, 1),
             'days_operating' => $hardwareGeneratorHistorical->sum('days_operating'),
             'battery_full_charge' => number_format($hardwareGeneratorHistorical->sum('number_battery_full_charges')),
             'battery_percentage' => number_format((float) ($hardwareGeneratorCurrent->avg('battery_percentage') ?? 0)),
@@ -93,9 +96,9 @@ class EnergyController extends Controller
         $load = (object) [
             'current' => round($hardwareLoadCurrent->sum('power')),
             'current_amperage' => number_format($hardwareLoadCurrent->sum('amperage'), 1),
-            'today' => round($hardwareLoadToday->sum('power')),
-            'today_amperage' => round($hardwareLoadToday->sum('amperage')),
-            'historical' => number_format($hardwareLoadHistorical->sum('power') / 1000, 1),
+            'today' => round($hardwareLoadToday->sum('energy_wh')),
+            'today_amperage' => round($hardwareLoadToday->sum('energy_ah')),
+            'historical' => number_format($hardwareLoadHistorical->sum('energy_wh') / 1000, 1),
             'battery_percentage' => number_format((float) ($hardwareLoadCurrent->avg('battery_percentage') ?? 0)),
             'max_temp' => number_format((float) ($hardwareLoadCurrent->max('temperature') ?? 0), 1),
         ];
@@ -106,12 +109,12 @@ class EnergyController extends Controller
                 'title' => 'Generado',
                 'value' => $generator->historical,
                 'image' => asset('images/icons/solar-panel.svg'),
-                'unit' => 'kw',
+                'unit' => 'kWh',
             ], [
                 'title' => 'Consumido',
                 'value' => $load->historical,
                 'image' => asset('images/icons/energy-green.svg'),
-                'unit' => 'kw',
+                'unit' => 'kWh',
             ], [
                 'title' => 'Días Operando',
                 'value' => $generator->days_operating,
@@ -131,22 +134,22 @@ class EnergyController extends Controller
                 'title' => 'Generado',
                 'value' => $generator->today,
                 'image' => asset('images/icons/solar-panel.svg'),
-                'unit' => 'W',
+                'unit' => 'Wh',
             ], [
                 'title' => 'Consumido',
                 'value' => $load->today,
                 'image' => asset('images/icons/energy-green.svg'),
-                'unit' => 'W',
+                'unit' => 'Wh',
             ], [
                 'title' => 'Generado',
                 'value' => $generator->today_amperage,
                 'image' => asset('images/icons/solar-panel.svg'),
-                'unit' => 'ah',
+                'unit' => 'Ah',
             ], [
                 'title' => 'Consumido',
                 'value' => $load->today_amperage,
                 'image' => asset('images/icons/energy-green.svg'),
-                'unit' => 'ah',
+                'unit' => 'Ah',
             ],
         ];
 
@@ -165,12 +168,12 @@ class EnergyController extends Controller
                 'title' => 'Generando',
                 'value' => $generator->current_amperage,
                 'image' => asset('images/icons/solar-panel.svg'),
-                'unit' => 'ah',
+                'unit' => 'A',
             ], [
                 'title' => 'Consumiendo',
                 'value' => $load->current_amperage,
                 'image' => asset('images/icons/energy-green.svg'),
-                'unit' => 'ah',
+                'unit' => 'A',
             ],
 
             [
@@ -198,7 +201,7 @@ class EnergyController extends Controller
         ];
 
         // # Estadísticas individuales por cada dispositivo, usadas en sus tarjetas.
-        $devicesStats = $hardwares->mapWithKeys(function ($hw) use (
+        $devicesStats = $hardwareItems->mapWithKeys(function ($hw) use (
             $hardwareGeneratorCurrent, $hardwareGeneratorToday, $hardwareGeneratorHistorical,
             $hardwareLoadCurrent, $hardwareLoadToday, $hardwareLoadHistorical
         ) {
@@ -212,20 +215,20 @@ class EnergyController extends Controller
 
             return [$hw->id => (object) [
                 'generated_now' => (float) ($genCurrent->power ?? 0),
-                'generated_today' => (float) ($genToday->power ?? 0),
+                'generated_today' => (float) ($genToday->energy_wh ?? 0),
                 'consumed_now' => (float) ($loadCurrentHw->power ?? 0),
-                'consumed_today' => (float) ($loadTodayHw->power ?? 0),
+                'consumed_today' => (float) ($loadTodayHw->energy_wh ?? 0),
                 'battery_percentage' => (int) round((float) ($genCurrent->battery_percentage ?? 0)),
                 'days_operating' => (int) $genHistorical->sum('days_operating'),
-                'generated_historical_kw' => round($genHistorical->sum('power') / 1000, 2),
-                'consumed_historical_kw' => round($loadHistoricalHw->sum('power') / 1000, 2),
+                'generated_historical_kwh' => round($genHistorical->sum('energy_wh') / 1000, 2),
+                'consumed_historical_kwh' => round($loadHistoricalHw->sum('energy_wh') / 1000, 2),
             ]];
         });
 
         return view('hardware.energy.index', [
             'generator' => $generator,
             'load' => $load,
-            'hardwares' => $hardwares,
+            'hardwareItems' => $hardwareItems,
             'devicesStats' => $devicesStats,
             'historicalStats' => $historicalStats,
             'todayStats' => $todayStats,

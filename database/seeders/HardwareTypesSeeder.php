@@ -20,20 +20,20 @@ class HardwareTypesSeeder extends Seeder
     private string $tableName = 'hardware_types';
 
     /**
-     * @var array<int, array{id:int, name:string}>
+     * @var array<int, array{id:int, name:string, slug:string}>
      */
     private array $types = [
-        ['id' => 1, 'name' => 'Monitor de Energía'],
-        ['id' => 2, 'name' => 'Controlador Solar'],
-        ['id' => 3, 'name' => 'PC Portátil'],
-        ['id' => 4, 'name' => 'PC Desktop'],
-        ['id' => 5, 'name' => 'Micro PC'],
-        ['id' => 6, 'name' => 'Estación Meteorológica'],
-        ['id' => 7, 'name' => 'Teléfono'],
-        ['id' => 8, 'name' => 'Tablet'],
-        ['id' => 9, 'name' => 'Coche'],
-        ['id' => 10, 'name' => 'Impresora'],
-        ['id' => 11, 'name' => 'Microcontrolador'],
+        ['id' => 1, 'name' => 'Monitor de Energía', 'slug' => 'monitor-de-energia'],
+        ['id' => 2, 'name' => 'Controlador Solar', 'slug' => 'controlador-solar'],
+        ['id' => 3, 'name' => 'PC Portátil', 'slug' => 'pc-portatil'],
+        ['id' => 4, 'name' => 'PC Desktop', 'slug' => 'pc-desktop'],
+        ['id' => 5, 'name' => 'Micro PC', 'slug' => 'micro-pc'],
+        ['id' => 6, 'name' => 'Estación Meteorológica', 'slug' => 'estacion-meteorologica'],
+        ['id' => 7, 'name' => 'Teléfono', 'slug' => 'telefono'],
+        ['id' => 8, 'name' => 'Tablet', 'slug' => 'tablet'],
+        ['id' => 9, 'name' => 'Coche', 'slug' => 'coche'],
+        ['id' => 10, 'name' => 'Impresora', 'slug' => 'impresora'],
+        ['id' => 11, 'name' => 'Microcontrolador', 'slug' => 'microcontrolador'],
     ];
 
     public function run(): void
@@ -47,6 +47,7 @@ class HardwareTypesSeeder extends Seeder
                 DB::table($this->tableName)->insert([
                     'id' => $type['id'],
                     'name' => $type['name'],
+                    'slug' => $type['slug'],
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Support\Auth\TokenAbilities;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Laravel\Sanctum\PersonalAccessToken;
 
 use function auth;
 
@@ -22,9 +22,7 @@ use function auth;
  *
  * Solo se aplica el ligado estricto a tokens relacionados con dispositivos
  * (los que tienen alguna ability "device:*"). Los tokens sin esa ability —p. ej.
- * tokens "*" o tokens futuros ajenos a dispositivos— solo pasan la comprobación
- * de pertenencia por usuario. Como la regla únicamente se añade a los
- * FormRequest de escritura IoT, no afecta a otros endpoints ni tipos de token.
+ * una sesión humana— solo pasan la comprobación de pertenencia por usuario.
  *
  * La existencia del dispositivo se delega en la regla `exists` del FormRequest.
  */
@@ -61,35 +59,8 @@ class OwnedHardwareDevice implements ValidationRule
         }
 
         // 2) Ligado estricto por dispositivo (solo si el token lo declara).
-        $token = method_exists($user, 'currentAccessToken') ? $user->currentAccessToken() : null;
-
-        if (! $token instanceof PersonalAccessToken) {
-            return;
-        }
-
-        $deviceAbilities = $this->deviceAbilities((array) ($token->abilities ?? []));
-
-        if ($deviceAbilities !== [] && ! in_array($deviceId, $deviceAbilities, true)) {
+        if (! TokenAbilities::tokenReachesDevice($user, $deviceId)) {
             $fail('El token utilizado no está autorizado para este dispositivo hardware.');
         }
-    }
-
-    /**
-     * Extrae los ids de dispositivo declarados en las abilities ("device:{id}").
-     *
-     * @param  array<int, mixed>  $abilities
-     * @return array<int, int>
-     */
-    private function deviceAbilities(array $abilities): array
-    {
-        $ids = [];
-
-        foreach ($abilities as $ability) {
-            if (is_string($ability) && str_starts_with($ability, 'device:')) {
-                $ids[] = (int) substr($ability, strlen('device:'));
-            }
-        }
-
-        return $ids;
     }
 }

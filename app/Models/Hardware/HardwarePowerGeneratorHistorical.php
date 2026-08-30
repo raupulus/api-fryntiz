@@ -5,96 +5,77 @@ declare(strict_types=1);
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
+use App\Traits\AccumulatesEnergyHistory;
+use App\Traits\BelongsToHardwareDevice;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 
-use function array_filter;
-
 /**
- * Class HardwarePowerGeneratorHistorical
+ * Acumulado histórico de la generación de un elemento.
+ *
+ * `number_battery_over_discharges` y `number_battery_full_charges` no salen de
+ * aquí: los declara el controlador solar y los escribe quien recibe su lectura.
+ * Por eso el recálculo desde los resúmenes diarios no los toca.
  *
  * @property int $id
- * @property int|null $hardware_device_id Dispositivo asociado
- * @property int|null $days_operating Número de días que el dispositivo ha estado operativo
- * @property int|null $number_battery_over_discharges Número de veces que se ha vaciado la batería por completo
- * @property int|null $number_battery_full_charges Número de veces que se ha cargado la batería por completo
- * @property float|null $amperage Carga total en Ah que ha sido almacenado en la batería
- * @property numeric|null $power Potencia (W) generada acumulada en el tiempo
- * @property string|null $read_at Fecha y hora de lectura
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property int|null $hardware_device_id
+ * @property int|null $hardware_energy_id
+ * @property int|null $days_operating Días distintos con lecturas
+ * @property int|null $number_battery_over_discharges
+ * @property int|null $number_battery_full_charges
+ * @property float|null $energy_wh
+ * @property float|null $energy_ah
+ * @property int $readings_count
+ * @property Carbon|null $read_at
  *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereAmperage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereDaysOperating($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereHardwareDeviceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereNumberBatteryFullCharges($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereNumberBatteryOverDischarges($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical wherePower($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereReadAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwarePowerGeneratorHistorical whereUpdatedAt($value)
+ * @method static Builder<static>|HardwarePowerGeneratorHistorical newModelQuery()
+ * @method static Builder<static>|HardwarePowerGeneratorHistorical newQuery()
+ * @method static Builder<static>|HardwarePowerGeneratorHistorical query()
  *
  * @mixin \Eloquent
  */
 class HardwarePowerGeneratorHistorical extends BaseModel
 {
+    use AccumulatesEnergyHistory;
+    use BelongsToHardwareDevice;
     use HasFactory;
 
     protected $table = 'hardware_power_generators_historical';
 
-    protected $fillable = ['hardware_device_id', 'days_operating',
+    protected $fillable = [
+        'hardware_device_id', 'hardware_energy_id', 'days_operating',
         'number_battery_over_discharges', 'number_battery_full_charges',
-        'amperage', 'power', 'read_at'];
+        'energy_wh', 'energy_ah', 'readings_count', 'read_at',
+    ];
+
+    protected $casts = [
+        'hardware_device_id' => 'integer',
+        'hardware_energy_id' => 'integer',
+        'days_operating' => 'integer',
+        'number_battery_over_discharges' => 'integer',
+        'number_battery_full_charges' => 'integer',
+        'energy_wh' => 'float',
+        'energy_ah' => 'float',
+        'readings_count' => 'integer',
+        'read_at' => 'datetime',
+    ];
 
     /**
-     * Prepara el modelo para ser guardado a partir de los datos de una
-     * request.
+     * Esta tabla no guarda extremos: sólo contadores y acumulados.
      *
-     *
-     * @return HardwarePowerGeneratorHistorical
+     * @return array<string, array{min?: string, max?: string}>
      */
-    public static function createModel(HardwareDevice $device, $request)
+    protected static function extremeColumns(): array
     {
-        $data = [
-            'hardware_device_id' => $device->id,
-            'days_operating' => $request->get('days_operating'),
-            'number_battery_over_discharges' => $request->get('number_battery_over_discharges'),
-            'number_battery_full_charges' => $request->get('number_battery_full_charges'),
-            'amperage' => $request->get('historical_energy_amperage'),
-            'power' => $request->get('historical_energy_power'),
-            'read_at' => $request->get('read_at'),
-        ];
-
-        return new self(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
+        return [];
     }
 
     /**
-     * Prepara el modelo para ser actualizado a partir de los datos de una
-     * request.
-     *
-     *
-     * @return $this
+     * @return class-string
      */
-    public function updateModel($request)
+    protected static function todayModel(): string
     {
-        $amperage = $request->get('historical_energy_amperage') ?? $this->amperage;
-        $power = $request->get('historical_energy_power') ?? $this->power;
-
-        $data = [
-            'days_operating' => $request->get('days_operating') ?? $this->days_operating,
-            'number_battery_over_discharges' => $request->get('number_battery_over_discharges') ?? $this->number_battery_over_discharges,
-            'number_battery_full_charges' => $request->get('number_battery_full_charges') ?? $this->number_battery_full_charges,
-            'amperage' => ($amperage > $this->amperage) ? $amperage : $this->amperage,
-            'power' => ($power > $this->power) ? $power : $this->power,
-            'read_at' => $request->get('read_at'),
-        ];
-
-        $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
-
-        return $this;
+        return HardwarePowerGeneratorToday::class;
     }
 }

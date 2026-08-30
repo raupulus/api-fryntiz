@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api\Hardware\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Rules\OwnedHardwareDevice;
+use Closure;
 
 /**
  * Validación para almacenar el último estado conocido de un dispositivo en la
@@ -23,15 +24,52 @@ class StoreDeviceStatusRequest extends BaseFormRequest
     }
 
     /**
+     * Campos que se aceptan dentro de `hardware_device_info`.
+     *
+     * Es una lista blanca a propósito: `merge($info)` a secas dejaba que el
+     * cliente sobreescribiera CUALQUIER clave de la raíz metiéndola dentro del
+     * grupo, incluido `hardware_device_id` (fix1 #13). Aquí sólo pasan los
+     * campos de estado, y `hardware_device_id` nunca es uno de ellos.
+     *
+     * @var array<int, string>
+     */
+    /** Máximo de claves admitidas en `extra`. */
+    private const MAX_EXTRA_KEYS = 30;
+
+    /** Longitud máxima de cada valor de `extra` (o valor máximo si es número). */
+    private const MAX_EXTRA_LENGTH = 255;
+
+    private const STATUS_FIELDS = [
+        'temp', 'voltage', 'battery_level', 'cpu', 'disk',
+        'uptime', 'ip_local', 'ip_public', 'extra',
+    ];
+
+    /**
      * Si el estado viene agrupado en `hardware_device_info`, lo aplana a la raíz
      * para poder validarlo con un único conjunto de reglas.
      */
     protected function prepareForValidation(): void
     {
+        // El dispositivo viene en la URL (`PUT /hardware/devices/7/status`), no
+        // en el cuerpo. Se inyecta aquí para que las reglas de pertenencia
+        // sigan aplicándose sobre `hardware_device_id` igual que antes.
+        if ($this->route('device') !== null) {
+            $this->merge(['hardware_device_id' => $this->route('device')]);
+        }
+
         $info = $this->input('hardware_device_info');
 
-        if (is_array($info)) {
-            $this->merge($info);
+        if (! is_array($info)) {
+            return;
+        }
+
+        $allowed = array_intersect_key($info, array_flip(self::STATUS_FIELDS));
+
+        // Lo que ya viene en la raíz manda sobre lo agrupado.
+        $allowed = array_diff_key($allowed, $this->except('hardware_device_info'));
+
+        if ($allowed !== []) {
+            $this->merge($allowed);
         }
     }
 
@@ -47,29 +85,31 @@ class StoreDeviceStatusRequest extends BaseFormRequest
             'uptime' => ['nullable', 'integer', 'min:0'],
             'ip_local' => ['nullable', 'ip'],
             'ip_public' => ['nullable', 'ip'],
-            'extra' => ['nullable', 'array'],
+            // `extra` es un cajón de sastre que se guarda en JSON. Sin límites,
+            // un cacharro (o quien le robe el token) puede engordar la fila sin
+            // freno (fix1 #12).
+            'extra' => ['nullable', 'array', 'max:'.self::MAX_EXTRA_KEYS],
+            'extra.*' => ['nullable', $this->simpleBoundedValue()],
         ];
     }
 
-    public function messages(): array
+    /**
+     * Cada valor de `extra` tiene que ser un dato simple y de longitud acotada.
+     * No vale una lista ni un objeto anidado: `extra` es un cajón de métricas,
+     * no un sitio donde meter un árbol entero.
+     */
+    private function simpleBoundedValue(): Closure
     {
-        return [
-            'hardware_device_id.required' => 'El dispositivo hardware es obligatorio.',
-            'hardware_device_id.integer' => 'El dispositivo hardware debe ser un identificador válido.',
-            'hardware_device_id.exists' => 'El dispositivo hardware especificado no existe.',
-            'temp.numeric' => 'La temperatura debe ser numérica.',
-            'voltage.numeric' => 'La tensión debe ser numérica.',
-            'battery_level.integer' => 'El nivel de batería debe ser un número entero.',
-            'battery_level.between' => 'El nivel de batería debe estar entre 0 y 100.',
-            'cpu.numeric' => 'El uso de CPU debe ser numérico.',
-            'cpu.between' => 'El uso de CPU debe estar entre 0 y 100.',
-            'disk.numeric' => 'El uso de disco debe ser numérico.',
-            'disk.between' => 'El uso de disco debe estar entre 0 y 100.',
-            'uptime.integer' => 'El tiempo de actividad debe ser un número entero de segundos.',
-            'uptime.min' => 'El tiempo de actividad no puede ser negativo.',
-            'ip_local.ip' => 'La IP local debe ser una dirección IP válida.',
-            'ip_public.ip' => 'La IP pública debe ser una dirección IP válida.',
-            'extra.array' => 'El campo extra debe ser un objeto de métricas.',
-        ];
+        return function (string $atributo, mixed $value, Closure $failure): void {
+            if (is_array($value) || is_object($value)) {
+                $failure('Los valores de extra deben ser simples (número, texto o booleano).');
+
+                return;
+            }
+
+            if (is_string($value) && mb_strlen($value) > self::MAX_EXTRA_LENGTH) {
+                $failure('Cada valor de extra no puede superar los '.self::MAX_EXTRA_LENGTH.' caracteres.');
+            }
+        };
     }
 }

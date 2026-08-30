@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 
 use function array_filter;
@@ -54,6 +55,9 @@ use function array_filter;
  * @property float|null $temp Última temperatura conocida del dispositivo en grados Celsius
  * @property float|null $voltage Última tensión conocida del dispositivo en voltios
  * @property int|null $battery_level Último nivel de batería conocido en porcentaje (0-100)
+ * @property float|null $battery_voltage Última tensión de batería conocida en voltios
+ * @property int|null $battery_percentage Último porcentaje de batería conocido (0-100)
+ * @property \Illuminate\Support\Carbon|null $battery_read_at Cuándo se midió la batería
  * @property float|null $cpu Último uso de CPU conocido en porcentaje (0-100)
  * @property float|null $disk Último uso de disco conocido en porcentaje (0-100)
  * @property int|null $uptime Último tiempo de actividad conocido en segundos
@@ -77,7 +81,7 @@ use function array_filter;
  * @property-read int|null $hardware_energy_generator_count
  * @property-read Collection<int, HardwareDevice> $hardwareEnergyLoad
  * @property-read int|null $hardware_energy_load_count
- * @property-read HardwareType|null $hardwareType
+ * @property-read HardwareType|null $type
  * @property-read File|null $image
  * @property-read Collection<int, HardwarePowerGeneratorToday> $powerGeneratorToday
  * @property-read int|null $power_generator_today_count
@@ -131,15 +135,24 @@ use function array_filter;
 class HardwareDevice extends BaseModel
 {
     use BelongsToUser, HasFactory, ImageTrait;
+    use SoftDeletes;
 
     protected $table = 'hardware_devices';
 
-    protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id',
+    /**
+     * `image_id` faltaba aquí (N171): el formulario del panel sí resolvía la
+     * subida y dejaba el id en los datos, pero la asignación en masa lo
+     * descartaba en silencio y la imagen nunca se guardaba.
+     */
+    protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id', 'image_id',
         'name', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
         'battery_nominal_capacity', 'url_company', 'description', 'buy_at',
         'last_seen_at', 'ip_local', 'ip_public', 'temp', 'voltage',
-        'battery_level', 'cpu', 'disk', 'uptime', 'extra'];
+        'battery_level', 'cpu', 'disk', 'uptime', 'extra',
+        // Batería del propio dispositivo (D108). La puede mandar cualquier
+        // endpoint IoT y siempre es opcional; no es una lectura de energía.
+        'battery_voltage', 'battery_percentage', 'battery_read_at'];
 
     protected $casts = [
         'buy_at' => 'datetime',
@@ -148,6 +161,9 @@ class HardwareDevice extends BaseModel
         'temp' => 'float',
         'voltage' => 'float',
         'battery_level' => 'integer',
+        'battery_voltage' => 'float',
+        'battery_percentage' => 'integer',
+        'battery_read_at' => 'datetime',
         'cpu' => 'float',
         'disk' => 'float',
         'uptime' => 'integer',
@@ -160,7 +176,7 @@ class HardwareDevice extends BaseModel
      */
     public function scopeWeatherStations(Builder $query): Builder
     {
-        return $query->whereHas('hardwareType', fn (Builder $q) => $q->where('name', HardwareType::WEATHER_STATION));
+        return $query->whereHas('type', fn (Builder $q) => $q->where('name', HardwareType::WEATHER_STATION));
     }
 
     /**
@@ -168,7 +184,7 @@ class HardwareDevice extends BaseModel
      */
     public function isWeatherStation(): bool
     {
-        return $this->hardwareType?->name === HardwareType::WEATHER_STATION;
+        return $this->type?->name === HardwareType::WEATHER_STATION;
     }
 
     /**
@@ -194,14 +210,6 @@ class HardwareDevice extends BaseModel
      * Relación con el tipo de hardware.
      */
     public function type(): BelongsTo
-    {
-        return $this->belongsTo(HardwareType::class, 'hardware_type_id', 'id');
-    }
-
-    /**
-     * Alias para compatibilidad con Filament Resources.
-     */
-    public function hardwareType(): BelongsTo
     {
         return $this->belongsTo(HardwareType::class, 'hardware_type_id', 'id');
     }

@@ -93,9 +93,9 @@
     <section class="py-12 bg-surface-container-low">
         <div class="max-w-7xl mx-auto px-6">
             <h2 class="text-3xl font-bold text-on-surface mb-6">Dispositivos</h2>
-            @if($hardwares->count() > 0)
+            @if($hardwareItems->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($hardwares as $hw)
+                    @foreach($hardwareItems as $hw)
                         @php
                             $stats = $devicesStats[$hw->id];
                             $maxBar = max($stats->generated_now, $stats->generated_today, $stats->consumed_now, $stats->consumed_today, 1);
@@ -120,11 +120,11 @@
                                 <div class="grid grid-cols-3 gap-2 text-center mb-5">
                                     <div class="bg-surface-container-low rounded-lg py-2">
                                         <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-lg block">solar_power</span>
-                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->generated_historical_kw }} kW</span>
+                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->generated_historical_kwh }} kWh</span>
                                     </div>
                                     <div class="bg-surface-container-low rounded-lg py-2">
                                         <span class="material-symbols-outlined text-sky-600 dark:text-sky-400 text-lg block">bolt</span>
-                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->consumed_historical_kw }} kW</span>
+                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->consumed_historical_kwh }} kWh</span>
                                     </div>
                                     <div class="bg-surface-container-low rounded-lg py-2">
                                         <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-lg block">battery_charging_full</span>
@@ -146,7 +146,7 @@
                                     <div>
                                         <div class="flex justify-between text-xs text-on-surface-variant mb-1">
                                             <span>Generado hoy</span>
-                                            <span class="font-semibold text-on-surface">{{ $stats->generated_today }} W</span>
+                                            <span class="font-semibold text-on-surface">{{ $stats->generated_today }} Wh</span>
                                         </div>
                                         <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
                                             <div class="h-full rounded-full bg-amber-500/60" style="width: {{ min(100, $stats->generated_today / $maxBar * 100) }}%"></div>
@@ -164,7 +164,7 @@
                                     <div>
                                         <div class="flex justify-between text-xs text-on-surface-variant mb-1">
                                             <span>Consumido hoy</span>
-                                            <span class="font-semibold text-on-surface">{{ $stats->consumed_today }} W</span>
+                                            <span class="font-semibold text-on-surface">{{ $stats->consumed_today }} Wh</span>
                                         </div>
                                         <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
                                             <div class="h-full rounded-full bg-sky-500/60" style="width: {{ min(100, $stats->consumed_today / $maxBar * 100) }}%"></div>
