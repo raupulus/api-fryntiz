@@ -17,10 +17,41 @@ return [
     |
     */
 
-    'stateful' => explode(',', env(
-        'SANCTUM_STATEFUL_DOMAINS',
-        'localhost,localhost:3000,localhost:3001,localhost:3020,localhost:5000,localhost:8000,127.0.0.1,127.0.0.1:8000,::1,,'.parse_url(env('APP_URL'), PHP_URL_HOST)
-    )),
+    /*
+     * En .env se ponen sólo los dominios, separados por comas y sin esquema:
+     *
+     *   SANCTUM_STATEFUL_DOMAINS=raupulus.dev,laguialinux.com
+     *
+     * De cada uno se derivan aquí las variantes que hacen falta. Fuera de
+     * producción se añaden los localhost habituales; en producción NO, para no
+     * dejar puesto un dominio de desarrollo con cookies de sesión.
+     */
+    'stateful' => (static function (): array {
+        $domains = array_values(array_filter(array_map(
+            static fn (string $domain): string => trim($domain),
+            explode(',', (string) env('SANCTUM_STATEFUL_DOMAINS', ''))
+        )));
+
+        $host = parse_url((string) env('APP_URL'), PHP_URL_HOST);
+
+        if (is_string($host) && $host !== '') {
+            $domains[] = $host;
+        }
+
+        if (env('APP_ENV') !== 'production') {
+            $domains = array_merge($domains, [
+                'localhost',
+                'localhost:3000',
+                'localhost:5173',
+                'localhost:8000',
+                '127.0.0.1',
+                '127.0.0.1:8000',
+                '::1',
+            ]);
+        }
+
+        return array_values(array_unique($domains));
+    })(),
 
     /*
     |--------------------------------------------------------------------------

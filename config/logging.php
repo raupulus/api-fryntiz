@@ -37,9 +37,15 @@ return [
     */
 
     'channels' => [
+        /*
+         * `daily`, no `single`: un único fichero crece sin freno y nadie lo
+         * vacía hasta que el disco se llena. Con rotación diaria y 14 días de
+         * retención el log se limpia solo y sigue teniendo historial suficiente
+         * para investigar algo de la semana pasada.
+         */
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['daily'],
             'ignore_exceptions' => false,
         ],
 

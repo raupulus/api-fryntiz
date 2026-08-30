@@ -29,10 +29,16 @@ return [
         explode(',', (string) env('FRONTEND_URLS', ''))
     ))),
 
-    'allowed_origins_patterns' => [
-        // Permite localhost / 127.0.0.1 con cualquier puerto en desarrollo.
-        '#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#',
-    ],
+    /*
+     * El comodín de localhost sólo existe fuera de producción. Estaba puesto
+     * de forma permanente, y con `supports_credentials => true` eso significa
+     * que cualquier página servida desde localhost —incluida una que abra el
+     * navegador de la víctima— podía hacer peticiones con cookies contra la
+     * API de producción (fix1 #9).
+     */
+    'allowed_origins_patterns' => env('APP_ENV') === 'production'
+        ? []
+        : ['#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#'],
 
     'allowed_headers' => ['*'],
 

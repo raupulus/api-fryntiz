@@ -8,6 +8,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Caducidad del token de sesión de la API
+    |--------------------------------------------------------------------------
+    |
+    | Días que vive el token que emite `POST /api/v2/auth/login` para una
+    | persona. No afecta a los tokens de dispositivo IoT, que se emiten sin
+    | caducidad a propósito (`DeviceTokenService`) y se acotan por abilities.
+    |
+    */
+
+    'api_session_days' => (int) env('API_SESSION_DAYS', 30),
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Defaults
     |--------------------------------------------------------------------------
     |
