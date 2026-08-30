@@ -6,10 +6,11 @@ namespace App\Mail;
 
 use App\Models\Newsletter;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class NewsletterUnsubscribe extends Mailable
+class NewsletterUnsubscribe extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

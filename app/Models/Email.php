@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -76,10 +77,13 @@ use Illuminate\Support\Carbon;
  */
 class Email extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'emails';
 
     protected $fillable = [
         'user_id',
+        'platform_id',
         'language_id',
         'email',
         'attributes',
@@ -112,7 +116,7 @@ class Email extends BaseModel
         'send' => 'boolean',
         'sent_at' => 'datetime',
         'error_at' => 'datetime',
-        'captcha_score' => 'decimal:1',
+        'captcha_score' => 'decimal:2',
     ];
 
     /**
@@ -129,5 +133,32 @@ class Email extends BaseModel
     public function language(): BelongsTo
     {
         return $this->belongsTo(Language::class, 'language_id', 'id');
+    }
+
+    /**
+     * Relación con la plataforma desde la que se envió el mensaje.
+     */
+    public function platform(): BelongsTo
+    {
+        return $this->belongsTo(Platform::class);
+    }
+
+    /**
+     * Datos extra del mensaje (columna JSON `attributes`).
+     *
+     * Se accede por aquí y no por `$email->attributes` porque ese nombre choca
+     * con `Model::$attributes`, la propiedad interna de Eloquent donde vive el
+     * estado del modelo. Desde fuera de la clase funciona por `__get()`, pero
+     * desde dentro —o desde cualquier trait— `$this->attributes` devuelve el
+     * array crudo del modelo entero. Es una trampa esperando a que alguien la
+     * pise; este método no tiene ese problema.
+     *
+     * @return array<string, mixed>
+     */
+    public function extraData(): array
+    {
+        $value = $this->getAttributeValue('attributes');
+
+        return is_array($value) ? $value : [];
     }
 }

@@ -23,14 +23,4 @@ class NewsletterResendRequest extends BaseFormRequest
             'platform_id' => ['required', 'integer', 'exists:platforms,id'],
         ];
     }
-
-    public function messages(): array
-    {
-        return [
-            'email.required' => 'El correo electronico es obligatorio.',
-            'email.email' => 'El formato del correo electronico no es valido.',
-            'platform_id.required' => 'La plataforma es obligatoria.',
-            'platform_id.exists' => 'La plataforma especificada no existe.',
-        ];
-    }
 }

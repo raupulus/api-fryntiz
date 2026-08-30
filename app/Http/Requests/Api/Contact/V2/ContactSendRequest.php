@@ -23,22 +23,33 @@ class ContactSendRequest extends BaseFormRequest
             'email' => ['required', 'email', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
-            'g-recaptcha-response' => ['required', 'string'],
+            // Consentimientos: la web los manda, y hay que poder demostrar que
+            // se aceptaron.
+            'privacity' => ['sometimes', 'boolean'],
+            'contactme' => ['sometimes', 'boolean'],
+            // Campos libres que quiera añadir cada web (teléfono, empresa…).
+            'attributes' => ['sometimes', 'array', 'max:20'],
+            'attributes.*' => ['nullable', 'string', 'max:255'],
+            'g-recaptcha-response' => [! empty(config('services.recaptcha.secret_key')) ? 'required' : 'nullable', 'string'],
         ];
     }
 
+    /**
+     * Sólo lo que el mensaje por defecto no puede decir.
+     *
+     * El resto salía de aquí escrito a mano —98 cadenas repartidas por 19
+     * ficheros, la mitad sin tildes y todas sólo en español— para acabar
+     * diciendo lo mismo que ya dice `lang/{es,en}/validation.php`. Los nombres
+     * de campo viven ahora en su bloque `attributes`, así que «El campo
+     * hardware_device_id es obligatorio» sale ya como «El campo dispositivo es
+     * obligatorio», en los dos idiomas y para todas las reglas.
+     *
+     * @return array<string,string>
+     */
     public function messages(): array
     {
         return [
-            'name.required' => 'El nombre es obligatorio.',
-            'name.max' => 'El nombre no puede superar los 255 caracteres.',
-            'email.required' => 'El correo electronico es obligatorio.',
-            'email.email' => 'El formato del correo electronico no es valido.',
-            'subject.required' => 'El asunto es obligatorio.',
-            'message.required' => 'El mensaje es obligatorio.',
-            'message.min' => 'El mensaje debe tener al menos :min caracteres.',
-            'message.max' => 'El mensaje no puede superar los :max caracteres.',
-            'g-recaptcha-response.required' => 'La verificacion de seguridad es obligatoria.',
+            'g-recaptcha-response.required' => 'Falta la verificación de seguridad.',
         ];
     }
 }

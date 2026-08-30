@@ -17,19 +17,21 @@ class NewsletterService
     /**
      * Inscribe un nuevo email en la newsletter y emite un correo de verificación.
      *
+     * El servicio ya no lee de `request()`: recibe todo lo que necesita. Antes
+     * sacaba `platform_id` de la petición **sin validarlo** (ni `integer`, ni
+     * `exists`), de modo que un valor inexistente reventaba contra la clave
+     * foránea y devolvía 500 en vez de 422; y encima hacía `?? 1` a pelo. Con
+     * eso el servicio tampoco se podía llamar desde un comando o un test sin
+     * montar una petición falsa (auditoría A7).
+     *
      * @param  string  $email  Dirección de correo electrónico.
      * @param  string|null  $name  Nombre opcional del suscriptor.
+     * @param  int  $platformId  Plataforma a la que se suscribe (ya validada).
+     * @param  array{language?: string|null, ip_address?: string|null, user_agent?: string|null}  $context
      * @return Newsletter Modelo de la suscripción generada.
      */
-    public function subscribe(string $email, ?string $name = null): Newsletter
+    public function subscribe(string $email, ?string $name, int $platformId, array $context = []): Newsletter
     {
-        // Resolve platform_id
-        $platformId = request('platform_id');
-        if (! $platformId) {
-            $platformId = Platform::where('domain', request()->getHost())->first()?->id
-                ?? (Platform::first()?->id ?? 1);
-        }
-
         $result = Newsletter::createOrUpdate([
             'email' => $email,
             'name' => $name,
@@ -37,9 +39,9 @@ class NewsletterService
             'is_verified' => false,
             'status' => Newsletter::STATUS_INACTIVE,
             'subscription_source' => Newsletter::SOURCE_API,
-            'language' => request()->header('Accept-Language') ? substr(request()->header('Accept-Language'), 0, 2) : 'es',
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'language' => $context['language'] ?? 'es',
+            'ip_address' => $context['ip_address'] ?? null,
+            'user_agent' => $context['user_agent'] ?? null,
         ]);
 
         $newsletter = $result['newsletter'];
@@ -49,6 +51,8 @@ class NewsletterService
             $newsletter->regenerateVerificationToken();
         }
 
+        // La cabecera RFC 8058 se añade en el propio Mailable, para que la baja
+        // de un clic del cliente de correo haga POST y no GET.
         Mail::to($email)->send(new NewsletterVerification($newsletter));
 
         return $newsletter;
@@ -116,5 +120,16 @@ class NewsletterService
     public function stats(?int $platformId = null): array
     {
         return Newsletter::getStats($platformId);
+    }
+
+    /**
+     * Plataforma que corresponde a un dominio. Devuelve null si no hay ninguna:
+     * el que llama decide qué hacer, en vez de caer a `1` a ciegas.
+     */
+    public function platformByDomain(string $domain): ?Platform
+    {
+        return Platform::query()
+            ->where('domain', $domain)
+            ->first();
     }
 }

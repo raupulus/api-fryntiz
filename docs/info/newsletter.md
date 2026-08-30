@@ -12,7 +12,7 @@ Módulo de suscripción a newsletter con flujo de verificación por email, gesti
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/Newsletter/V2/NewsletterController.php` | API V2 | subscribe, verify, unsubscribe |
+| `app/Http/Controllers/Api/Newsletter/V2/NewsletterController.php` | API V2 | subscribe, resendVerification, verify, unsubscribe, stats |
 
 ### Servicios
 | Archivo | Descripción |
@@ -90,8 +90,10 @@ Al crear un suscriptor, se generan automáticamente:
 | Método | Ruta | Auth | Throttle | Descripción |
 |--------|------|------|----------|-------------|
 | POST | `/api/v2/newsletter/subscribe` | No | api-auth | Suscribir email |
+| POST | `/api/v2/newsletter/resend-verification` | No | api-auth | Reenviar email de verificación |
 | GET | `/api/v2/newsletter/verify/{token}` | No | api-auth | Verificar email |
 | GET | `/api/v2/newsletter/unsubscribe/{token}` | No | api-auth | Cancelar suscripción |
+| GET | `/api/v2/newsletter/stats` | Sí | api-auth | Estadísticas de suscriptores |
 
 ## Flujo de suscripción
 
@@ -109,3 +111,17 @@ Al crear un suscriptor, se generan automáticamente:
 php artisan debug:seed-newsletter --count=10
 ```
 
+---
+
+## Estado del módulo (2026-08-19)
+
+| Capa | Estado |
+|------|--------|
+| Modelo, servicio y API V2 | ✅ |
+| Tests (6 métodos) | ✅ |
+| Mailables (verificación y baja) | ✅ |
+| **Panel Filament** | ❌ **Sin Resource** — no hay forma de ver ni gestionar suscriptores desde `/admin` (fase 05, tarea T4) |
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-30

@@ -73,7 +73,7 @@ Módulo para enviar formularios de contacto vía API con verificación reCAPTCHA
 
 1. POST `/api/v2/contact/send` con `name`, `email`, `subject`, `message`, `g-recaptcha-response`
 2. `ContactSendRequest` valida campos (message min:10, max:5000)
-3. `RecaptchaService::verify()` valida el token reCAPTCHA
+3. `RecaptchaService::verify()` valida el token reCAPTCHA (si la clave secreta no está configurada en `.env`, se omite la comprobación externa para permitir desarrollo local sin credenciales)
 4. `ContactService::sendContactForm()` envía el `ContactMail`
 5. Respuesta: `{ success: true, message: "Mensaje enviado correctamente" }`
 
@@ -83,3 +83,6 @@ Módulo para enviar formularios de contacto vía API con verificación reCAPTCHA
 php artisan debug:seed-contact --count=10
 ```
 
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-26

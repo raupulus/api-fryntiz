@@ -313,19 +313,41 @@ class Newsletter extends BaseModel
     }
 
     /**
-     * Obtener URL de verificación
+     * Enlace que va dentro del correo de verificación.
+     *
+     * Apunta a una **página web que no muta nada**: la confirmación es un POST
+     * desde un botón. Si el enlace confirmara por sí solo, el antivirus del
+     * correo lo seguiría al escanear el mensaje y daría por confirmada una
+     * suscripción que nadie ha confirmado.
+     *
+     * Apuntaba a `route('newsletter.verify')`, un nombre de ruta que no existe
+     * en ninguna parte: llamar a este método lanzaba una excepción.
      */
     public function getVerificationUrl(): string
     {
-        return route('newsletter.verify', ['token' => $this->verification_token]);
+        return route('newsletter.manage', ['token' => $this->verification_token]);
     }
 
     /**
-     * Obtener URL de desuscripción
+     * Enlace de baja. Misma página, mismo motivo.
      */
     public function getUnsubscribeUrl(): string
     {
-        return route('newsletter.unsubscribe', ['token' => $this->unsubscribe_token]);
+        return route('newsletter.manage', ['token' => $this->unsubscribe_token]);
+    }
+
+    /**
+     * Destino de la baja de un clic (RFC 8058).
+     *
+     * Es la URL que se pone en la cabecera `List-Unsubscribe` junto a
+     * `List-Unsubscribe-Post: List-Unsubscribe=One-Click`. El cliente de correo
+     * hace POST aquí; nunca GET.
+     */
+    public function getOneClickUnsubscribeUrl(): string
+    {
+        return route('api.v2.newsletter.subscriptions.unsubscribe', [
+            'token' => $this->unsubscribe_token,
+        ]);
     }
 
     /**
