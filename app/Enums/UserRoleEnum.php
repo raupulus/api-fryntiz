@@ -13,6 +13,7 @@ enum UserRoleEnum: int
     case SuperAdmin = 1;
     case Admin = 2;
     case User = 3;
+    case Editor = 4;
 
     /**
      * Obtener la etiqueta en español del rol.
@@ -23,6 +24,7 @@ enum UserRoleEnum: int
             self::SuperAdmin => 'Super Administrador',
             self::Admin => 'Administrador',
             self::User => 'Usuario',
+            self::Editor => 'Editor',
         };
     }
 }

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -36,6 +37,8 @@ use Illuminate\Support\Carbon;
  */
 class UserSocial extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'user_social';
 
     protected $fillable = [

@@ -16,7 +16,12 @@ use Throwable;
  *
  * Ejemplos:
  *   php artisan iot:device-token 12 --abilities=weatherstation:write
- *   php artisan iot:device-token 7 --abilities=energy:write --abilities=hardware:write --expires=365
+ *   php artisan iot:device-token 7 --abilities=hardware:write --abilities=hardware:read --expires=365
+ *
+ * Abilities válidas (catálogo en App\Support\Auth\TokenAbilities):
+ *   hardware:read, hardware:write, weatherstation:write, keycounter:write,
+ *   smartplant:write, airflight:write.
+ * No existe comodín: "*" y "session" se rechazan.
  */
 class IssueDeviceTokenCommand extends Command
 {

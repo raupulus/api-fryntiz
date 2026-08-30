@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\ApiToken;
+use App\Models\User;
+use App\Support\Auth\TokenAbilities;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -15,6 +18,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
+use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
 /**
@@ -62,16 +67,68 @@ class AppServiceProvider extends ServiceProvider
         // Usar modelo ApiToken personalizado para Filament Resource (fix_10 / fase 13).
         Sanctum::usePersonalAccessTokenModel(ApiToken::class);
 
+        // Un token de un usuario desactivado no autentica, aunque el token siga
+        // vivo. Es la palanca para cortar de golpe todos los cacharros de una
+        // cuenta comprometida sin tener que borrar token a token.
+        Sanctum::authenticateAccessTokensUsing(
+            static function (PersonalAccessToken $accessToken, bool $isValid): bool {
+                if (! $isValid) {
+                    return false;
+                }
+
+                $tokenable = $accessToken->tokenable;
+
+                return ! ($tokenable instanceof User) || (bool) $tokenable->is_active;
+            }
+        );
+
         // Lazy loading estricto fuera de producción: lanza excepción al detectar
         // una relación cargada bajo demanda (N+1) para corregirla con eager loading.
         // En producción NUNCA lanza (no afecta a usuarios finales).
         Model::preventLazyLoading(! app()->isProduction());
 
-        // Gate global: superadmin tiene acceso a todo
+        // Huso horario de VISUALIZACIÓN (D100).
+        //
+        // La aplicación corre y guarda en UTC —`config/app.php` pone 'UTC'
+        // literal, no `env()`, así que `APP_TIMEZONE` es inerte a propósito—.
+        // Pero mostrar UTC en el panel obliga a restar una o dos horas mentales
+        // según la época del año.
+        //
+        // `FilamentTimezone` afecta a todas las columnas `dateTime()`, a los
+        // `DateTimePicker` y a las infolists del panel. No toca la base de datos
+        // ni la salida de la API, que siguen en UTC con `Z`.
+        FilamentTimezone::set(config('app.display_timezone', 'Europe/Madrid'));
+
+        // Política de contraseñas por defecto.
+        //
+        // `Password::defaults()` se usa en tres sitios (panel de usuarios,
+        // perfil y registro por API) y nunca se había configurado, así que
+        // equivalía a `min:8` a secas (fix1 #11). Se define una sola vez aquí
+        // y la heredan los tres.
+        Password::defaults(static function (): Password {
+            $regla = Password::min(12)->letters()->mixedCase()->numbers();
+
+            return app()->isProduction() ? $regla->uncompromised() : $regla;
+        });
+
+        // Gate global: superadmin tiene acceso a todo.
+        //
+        // Con una excepción que importa mucho: si la petición viene de un token
+        // de dispositivo IoT, el atajo NO se aplica. El dueño de los cacharros
+        // es superadmin, así que sin esto el token de una estación heredaría
+        // "acceso a todo" y las 16 policies quedarían anuladas justo para el
+        // principal del que hay que defenderse. Devolver null deja que la
+        // policy correspondiente decida con sus propias reglas de propiedad.
         Gate::before(function ($user, $ability) {
+            if (TokenAbilities::deviceRequest($user)) {
+                return null;
+            }
+
             if ($user->isSuperAdmin()) {
                 return true;
             }
+
+            return null;
         });
 
         // Gate: acceso al panel de administración
@@ -97,35 +154,61 @@ class AppServiceProvider extends ServiceProvider
             RateLimiter::for('api-store', fn () => Limit::none());
             RateLimiter::for('api-store-batch', fn () => Limit::none());
         } else {
-            // Rate limiter general para API
+            // Los números salen de config/rate_limits.php, que explica de dónde
+            // sale cada uno. Antes estaban escritos aquí a mano.
+
             RateLimiter::for('api', function (Request $request) {
-                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+                return Limit::perMinute((int) config('rate_limits.api_per_minute'))
+                    ->by(self::rateKey($request));
             });
 
-            // Rate limiter estricto para escritura de datos de sensores
             RateLimiter::for('sensor-data', function (Request $request) {
-                return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
+                return Limit::perMinute((int) config('rate_limits.iot_store_per_minute'))
+                    ->by(self::rateKey($request));
             });
 
-            // Rate limiter para contacto
+            // Contacto: por IP, que es lo único que hay (el endpoint es público).
             RateLimiter::for('contact', function (Request $request) {
-                return Limit::perHour(5)->by($request->ip());
+                return Limit::perHour((int) config('rate_limits.contact_per_hour'))->by($request->ip());
             });
 
-            // Rate limiter para autenticación API V2 (prevenir fuerza bruta)
+            // Login: por IP y por email, para que intentar contra muchas cuentas
+            // desde una IP no se salga por la puerta de al lado.
             RateLimiter::for('api-auth', function (Request $request) {
-                return Limit::perMinute(10)->by($request->ip());
+                $porMinuto = (int) config('rate_limits.auth_per_minute');
+
+                return [
+                    Limit::perMinute($porMinuto)->by('ip:'.$request->ip()),
+                    Limit::perMinute($porMinuto)->by('email:'.strtolower((string) $request->input('email'))),
+                ];
             });
 
-            // Rate limiter para stores IoT API V2
+            // Escrituras IoT: por TOKEN, que es lo que identifica al cacharro.
             RateLimiter::for('api-store', function (Request $request) {
-                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+                return Limit::perMinute((int) config('rate_limits.iot_store_per_minute'))
+                    ->by(self::rateKey($request));
             });
 
-            // Rate limiter para batch stores API V2
             RateLimiter::for('api-store-batch', function (Request $request) {
-                return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
+                return Limit::perMinute((int) config('rate_limits.iot_batch_per_minute'))
+                    ->by(self::rateKey($request));
             });
         }
+    }
+
+    /**
+     * Clave de rate limit de las escrituras IoT: identifica al dispositivo, no
+     * al dueño. Se usa el id del token, que es lo que hay dentro del cacharro.
+     * Si la petición llega sin token (o por cookie de sesión), cae a la IP.
+     */
+    private static function rateKey(Request $request): string
+    {
+        $token = $request->user()?->currentAccessToken();
+
+        if ($token instanceof PersonalAccessToken) {
+            return 'token:'.$token->getKey();
+        }
+
+        return 'ip:'.$request->ip();
     }
 }

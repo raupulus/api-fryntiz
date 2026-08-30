@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserRoleEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\Content\Content;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +26,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
-use RoleHelper;
 
 use function asset;
 
@@ -33,6 +34,7 @@ use function asset;
  *
  * @property int $id
  * @property int $role_id Role principal del usuario, aunque pueda tener otros roles extras
+ * @property bool $is_active Cuenta activa. Distinto de deleted_at (borrado lógico).
  * @property int|null $current_team_id Identificador del equipo al que pertenece.
  * @property string $name Nombre del usuario
  * @property string|null $surname Apellidos del usuario
@@ -62,6 +64,7 @@ use function asset;
  * @property-read int|null $notifications_count
  * @property-read UserRole $role
  * @property-read UserSetting|null $settings
+ * @property-read Collection<int, Platform> $platforms
  * @property-read Collection<int, UserSocial> $socials
  * @property-read int|null $socials_count
  * @property-read Collection<int, ApiToken> $tokens
@@ -109,14 +112,24 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'role_id',
+        'is_active',
         'name',
         'surname',
         'nickname',
         'email',
         'password',
         'profile_photo_path',
-        'email_verified_at',
     ];
+
+    /**
+     * `email_verified_at` NO es asignable en masa: marcar un email como
+     * verificado es un acto explícito, no un campo más de un formulario
+     * (fix1 #3). Se pone con `markEmailAsVerified()` o con `forceFill()`.
+     *
+     * `role_id` sí lo es porque el formulario de usuarios de Filament lo
+     * necesita, y ese formulario ya está detrás del panel de administración.
+     * Por la API no llega nunca: no hay alta ni edición de usuarios por API.
+     */
 
     /**
      * The attributes that should be hidden for arrays.
@@ -140,6 +153,7 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -219,7 +233,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->name.' '.$this->surname;
     }
 
-    public function urlAvatarIcon()
+    public function urlAvatarIcon(): string
     {
         if ($this->profile_photo_path) {
             return asset($this->image);
@@ -228,7 +242,7 @@ class User extends Authenticatable implements FilamentUser
         return asset('images/avatar-icon.png');
     }
 
-    public function urlAvatar()
+    public function urlAvatar(): string
     {
         if ($this->profile_photo_path) {
             return asset($this->image);
@@ -237,9 +251,21 @@ class User extends Authenticatable implements FilamentUser
         return asset('images/avatar.png');
     }
 
-    public function getProfilePhotoUrlAttribute()
+    public function getProfilePhotoUrlAttribute(): string
     {
         return $this->urlAvatar();
+    }
+
+    /**
+     * Plataformas sobre las que este usuario puede trabajar.
+     *
+     * Sólo tiene sentido para el rol Editor: un admin llega a todas y no
+     * necesita filas en el pivote.
+     */
+    public function platforms(): BelongsToMany
+    {
+        return $this->belongsToMany(Platform::class, 'platform_user')
+            ->withTimestamps();
     }
 
     /**
@@ -248,26 +274,59 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            return $this->isAdmin();
+            return $this->is_active && ($this->isAdmin() || $this->isEditor());
         }
 
-        return true;
+        return $this->is_active;
     }
 
     /**
-     * Comprueba si el usuario es SuperAdmin (role_id = 1).
+     * Comprueba si el usuario es SuperAdmin.
      */
     public function isSuperAdmin(): bool
     {
-        return $this->role_id === 1;
+        return (int) $this->role_id === UserRoleEnum::SuperAdmin->value;
     }
 
     /**
-     * Comprueba si el usuario es Admin o SuperAdmin (role_id = 1 o 2).
+     * Comprueba si el usuario es Admin o SuperAdmin.
      */
     public function isAdmin(): bool
     {
-        return in_array($this->role_id, [1, 2], true);
+        return in_array((int) $this->role_id, [
+            UserRoleEnum::SuperAdmin->value,
+            UserRoleEnum::Admin->value,
+        ], true);
+    }
+
+    /**
+     * Comprueba si el usuario es Editor: edita contenido, pero sólo en las
+     * plataformas que tenga asignadas en `platform_user`.
+     */
+    public function isEditor(): bool
+    {
+        return (int) $this->role_id === UserRoleEnum::Editor->value;
+    }
+
+    /**
+     * ¿Puede este usuario trabajar sobre la plataforma indicada?
+     *
+     * Un admin llega a todas. Un editor sólo a las que tiene asignadas. Un
+     * contenido sin plataforma (`null`) es de administración general.
+     */
+    public function canManagePlatform(?int $platformId): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if (! $this->isEditor() || $platformId === null) {
+            return false;
+        }
+
+        return $this->platforms()
+            ->whereKey($platformId)
+            ->exists();
     }
 
     /**
@@ -342,39 +401,55 @@ class User extends Authenticatable implements FilamentUser
             return null;
         }
 
-        $this->deleted_at = $this->deleted_at ? null : Carbon::now();
+        // N192: antes esto era `$this->deleted_at = ...`. Con `SoftDeletes`
+        // activo, desactivar a alguien lo hacía desaparecer del propio listado
+        // desde el que se le desactivaba, sin forma de volver a activarlo.
+        // Desactivado y borrado son dos estados distintos.
+        $this->is_active = ! $this->is_active;
 
         return $this->save();
     }
 
     /**
-     * Obtiene todos los modelos de la base de datos filtrando por roles.
+     * Restringe la consulta a los usuarios que el usuario dado puede ver.
      *
-     * @param  array|mixed  $columns
-     * @return Collection|User[]
+     * Sustituye a un `public static function all()` que sobreescribía el método
+     * de Eloquent para filtrar por rol. Aquello estaba mal por tres motivos:
+     * ignoraba el parámetro `$columns`, cambiaba el significado de un método
+     * que el framework llama por su cuenta, y consultaba `auth()->user()->role_id`
+     * sin comprobar que hubiera alguien autenticado — o sea, error fatal en
+     * cualquier comando de consola, job o petición pública que acabase pasando
+     * por ahí.
+     *
+     * @param  Builder<User>  $query
+     * @return Builder<User>
      */
-    public static function all($columns = ['*'])
+    public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
-        $users = parent::all();
-
-        // # Usuarios Activos que según el role del actual puede ver.
-        if (RoleHelper::isSuperAdmin()) {
-            return $users;
-        } elseif (RoleHelper::isAdmin()) {
-            return $users->whereNotIn('role_id', [1]);
+        if ($user?->isSuperAdmin()) {
+            return $query;
         }
 
-        return $users->whereNotIn('role_id', [1, 2]);
+        if ($user?->isAdmin()) {
+            return $query->where('role_id', '!=', UserRoleEnum::SuperAdmin->value);
+        }
+
+        return $query->whereNotIn('role_id', [
+            UserRoleEnum::SuperAdmin->value,
+            UserRoleEnum::Admin->value,
+        ]);
     }
 
     /**
-     * Devuelve todos los usuarios activos de la plataforma.
+     * Devuelve todos los usuarios activos.
      *
-     * @return Collection|Authenticatable[]
+     * Miraba `deleted_at`, que es borrado lógico, no desactivación (N192).
+     *
+     * @return Collection<int, User>
      */
     public static function getAllActive()
     {
-        return self::whereNull('deleted_at')->get();
+        return self::query()->where('is_active', true)->get();
     }
 
     /**
@@ -443,8 +518,15 @@ class User extends Authenticatable implements FilamentUser
                     'color' => $sn->color,
                     'nick' => $ele->nick,
                     'url' => $ele->url,
-                    // 'url_image' => $sn->urlImage,
-                    'url_image' => 'http://localhost:8000/images/default/small.jpg', // TODO->Terminar imágenes en SocialNetwork
+                    // La URL estaba escrita a mano contra `http://localhost:8000`,
+                    // así que en producción todos los perfiles apuntaban a una
+                    // imagen de la máquina de desarrollo de nadie. `asset()`
+                    // resuelve contra `APP_URL`. `social_networks.image` guarda
+                    // la ruta de la imagen propia de cada red; si está vacía, se
+                    // cae a la genérica.
+                    'url_image' => $sn->image
+                        ? asset($sn->image)
+                        : asset('images/default/small.jpg'),
                 ];
             }),
 

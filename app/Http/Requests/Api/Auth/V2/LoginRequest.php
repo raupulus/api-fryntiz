@@ -20,14 +20,4 @@ class LoginRequest extends BaseFormRequest
             'password' => ['required', 'string', 'min:6'],
         ];
     }
-
-    public function messages(): array
-    {
-        return [
-            'email.required' => 'El correo electronico es obligatorio.',
-            'email.email' => 'El formato del correo electronico no es valido.',
-            'password.required' => 'La contrasena es obligatoria.',
-            'password.min' => 'La contrasena debe tener al menos :min caracteres.',
-        ];
-    }
 }
