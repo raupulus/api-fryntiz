@@ -6,12 +6,19 @@ use Illuminate\Support\Facades\Broadcast;
 
 /*
 |--------------------------------------------------------------------------
-| Broadcast Channels
+| Canales de broadcast
 |--------------------------------------------------------------------------
 |
-| Here you may register all of the event broadcasting channels that your
-| application supports. The given channel authorization callbacks are
-| used to check if an authenticated user can listen to the channel.
+| Aquí sólo van los canales PRIVADOS y de presencia: son los que hay que
+| autorizar. Un canal público no se declara porque no hay nada que decidir.
+|
+| El canal de las estaciones —`weather-station.{id}`— es **público a
+| propósito**: esas lecturas se sirven sin autenticar por
+| `GET /api/v2/weather-stations/{id}`, así que pedir un token para escucharlas
+| no protegería un dato que ya es público; sólo complicaría a las ocho webs que
+| consumen la API.
+|
+| Ver docs/info/websockets.md.
 |
 */
 
