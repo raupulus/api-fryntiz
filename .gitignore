@@ -1,64 +1,96 @@
-# Ignorar archivos generados automáticamente
-/node_modules
+# Ignorar dependencias y directorios generados
+node_modules/
+vendor/
+template/
+.pnpm-store/
+pnpm-store/
 /public/hot
 /public/storage
-/storage/*.key
-/vendor
+/public/sitemap.xml
+/public/css
+/public/js
+/public/mix-manifest.json
+/public/admin-panel
+/public/assets
+/public/fonts/vendor
+/public/fonts/filament
 
 # Ignorar archivos de configuración y datos sensibles
 .env
+.env.*
+!.env.example
+!.env.example.production
 .env.backup
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
 Homestead.yaml
+/storage/*.key
 
 # Ignorar archivos de registro y caché
-bootstrap/cache
-storage/logs
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
 storage/app/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+*.log
 
-# Ignorar archivos de herramientas de desarrollo
-npm-debug.log
-yarn-error.log
+# Ignorar archivos de herramientas de desarrollo y gestores de paquetes
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Ignorar helpers generados por laravel-ide-helper (artefactos de desarrollo)
 _ide_helper.php
 _ide_helper_models.php
 .phpstorm.meta.php
 
-# Ignorar archivos de IDE
-.idea
+# Ignorar archivos de IDEs y editores
+.idea/
 *.iml
 *.ipr
 *.iws
-
-# Ignorar archivos CSS, JS y de fuentes
-public/css
-public/js
-public/mix-manifest.json
-/public/admin-panel
-/public/assets
-/public/fonts/vendor
-/public/fonts/filament
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.fleet/
 
 # Ignorar carpetas de configuración de agentes IA
 .junie/
+.agents/*
+!.agents/skills/
 .claude/*
-# Excepción: las skills del proyecto SÍ se versionan (uso compartido por equipo/agentes)
 !.claude/skills/
+
+# Documentación interna y planificación: NO va en git.
+#
+# `docs/planning` es material de trabajo local para preparar cómo se adapta el
+# proyecto, no es el proyecto. `docs/planning/archived` guarda las
+# planificaciones ya ejecutadas. Nada de esto se versiona.
+#
+# Lo que SÍ va en git es `docs/apis` (documentación oficial y verificada de APIs
+# de terceros) y `docs/info` (documentación técnica de cada módulo de esta
+# plataforma).
+/docs/planning
+/docs/auditorias
+
+# Zona de descarte temporal de la migración a v2 (ver su propio
+# POR-QUE-ESTAN-AQUI.md): ficheros retirados a la espera de borrado
+# definitivo, no código vivo. No debe colarse en un commit.
+/_to_delete
 
 # Ignorar archivo de caché de generar código
 /code-generator
 
-# Ignorar archivos de sistema Mac OS
+# Ignorar archivos de sistema operativo
 .DS_Store
+Thumbs.db
 
-## Archivos generados DDL
+## Archivos generados DDL y base de datos
 /database/DDL
-
-## Otros
 /derby.log
-/public/sitemap.xml
-/docs/planning
 /plantilla

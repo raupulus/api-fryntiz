@@ -14,12 +14,12 @@ parameters:
     # Level 9 is the highest level
     level: 5
 
-    # Tolerar entradas del baseline que apunten a ficheros ya eliminados
-    # (evita que PHPStan aborte tras borrar código; regenerar baseline al estabilizar).
-    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
 
-    # ignoreErrors:
-    #     - '#Unsafe usage of new static\(\)#'
+    ignoreErrors:
+        -
+            message: "#Called 'env' outside of the config directory#"
+            path: bootstrap/app.php
 
     excludePaths:
         - vendor/

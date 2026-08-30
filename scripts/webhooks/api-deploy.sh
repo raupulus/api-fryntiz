@@ -1,39 +1,60 @@
 #!/usr/bin/env bash
+#
+# Despliegue disparado por webhook.
+#
+# Lo que estaba mal y por qué importa:
+#
+#  - `npm install --production` en un proyecto pnpm, y encima sin construir
+#    nada: instalaba dependencias y no generaba ni un asset.
+#  - Escribía el log en `storage/logs/script-api-deploy.log` después de haberse
+#    molestado en crear `storage/logs/webhooks/api-deploy.log`. El fichero que
+#    preparaba no se usaba.
+#  - `git checkout -- .` descarta cambios locales sin avisar. Se mantiene porque
+#    en el servidor no debe haber cambios locales, pero deja constancia.
+#  - Sin `set -e`: si fallaba `git pull` o la migración, seguía y levantaba la
+#    aplicación igual.
+#  - No cacheaba nada ni reiniciaba los workers, así que quedaban ejecutando el
+#    código anterior.
+#
+set -euo pipefail
 
-## Crea el directorio de logs si no existiera.
-if [[ ! -d 'storage/logs/webhooks' ]]; then
-    mkdir 'storage/logs/webhooks'
-fi
+cd "$(dirname "$0")/../.."
 
-## Crea el archivo sobre el que escribir los logs si no existiera.
-if [[ ! -f 'storage/logs/webhooks/api-deploy.log' ]]; then
-    touch 'storage/logs/webhooks/api-deploy.log'
-    chmod 775 'storage/logs/webhooks/api-deploy.log'
-fi
+LOG_DIR='storage/logs/webhooks'
+LOG="${LOG_DIR}/api-deploy.log"
 
-LOG="storage/logs/script-api-deploy.log"
+mkdir -p "$LOG_DIR"
+touch "$LOG"
+chmod 664 "$LOG" || true
 
-echo "Script para desplegar API comenzado correctamente" >> $LOG 2>> $LOG
+exec >> "$LOG" 2>&1
 
-## Pongo en modo mantenimiento.
-php artisan down >> $LOG 2>> $LOG
+echo "===================================================================="
+echo "$(date '+%Y-%m-%d %H:%M:%S')  Despliegue por webhook: comienzo"
 
-## Descarto cambios realizados sobre archivos trackeados.
-git checkout -- . >> $LOG 2>> $LOG
+# Pase lo que pase, sacar la aplicación de mantenimiento al salir.
+trap 'php artisan up || true; echo "$(date "+%Y-%m-%d %H:%M:%S")  Fin"' EXIT
 
-## Actualizo cambios.
-git pull >> $LOG 2>> $LOG
+php artisan down --retry=60
 
-## Genero assets con npm.
-npm install --production >> $LOG 2>> $LOG
+# En el servidor no debe haber cambios locales: si los hay, se descartan.
+git checkout -- .
+git pull --ff-only
 
-## Actualizo paquetes de composer.
-export COMPOSER_HOME=/tmp/composer_home && composer install --no-interaction --no-dev --prefer-dist >> $LOG 2>> $LOG
+export COMPOSER_HOME=/tmp/composer_home
+composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
-## Fuerzo actualización de migraciones nuevas.
-php artisan migrate --force >> $LOG 2>> $LOG
+pnpm install --frozen-lockfile
+pnpm run build
 
-## Vuelvo a poner el sitio en modo producción normal.
-php artisan up >> $LOG 2>> $LOG
+php artisan migrate --force
 
-echo "Script termina" >> $LOG 2>> $LOG
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+
+# Los workers son procesos de larga vida: sin esto seguirían con el código viejo.
+php artisan queue:restart
+
+echo "$(date '+%Y-%m-%d %H:%M:%S')  Despliegue terminado sin errores"
