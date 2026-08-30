@@ -2,7 +2,11 @@
 
 Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (estación meteorológica, plantas inteligentes, contador de pulsaciones, registro de vuelos, energía solar), gestión de contenidos multi-plataforma, currículum vitae y newsletter.
 
-**Autor:** Raúl Caro Pastorino — [raupulus.dev](https://raupulus.dev)
+**Autor:** Raúl Caro Pastorino (@raupulus) — [raupulus.dev](https://raupulus.dev)
+
+> 📍 **¿Retomando el proyecto?** Empieza por [`AGENTS.md`](AGENTS.md) (fuente de verdad de
+> arquitectura, rutas y convenciones) y por [`docs/info/`](docs/info/README.md) (documentación
+> técnica de cada módulo). `docs/planning/` es material de trabajo local, no se versiona en git.
 
 ## Stack Tecnológico
 
@@ -24,14 +28,19 @@ Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (es
 
 | Módulo | Descripción |
 |--------|-------------|
-| **Weather Station** | Datos meteorológicos de sensores (temperatura, humedad, presión, viento, lluvia, calidad del aire, rayos) + integración AEMET (predicciones, eventos adversos, costas, ozono, radiación solar) |
-| **Hardware / Energy** | Gestión de dispositivos hardware, monitorización de energía solar, generadores y consumos con resúmenes diarios |
-| **KeyCounter** | Registro de pulsaciones de teclado, clicks y movimientos de ratón con estadísticas por usuario y dispositivo |
-| **AirFlight** | Registro de aviones detectados, rutas y telemetría |
-| **Smart Plant** | Monitorización de plantas con sensores de humedad del suelo, luz y temperatura |
-| **Content (CMS)** | CMS multi-plataforma y multi-tipo (artículo, tutorial, proyecto, página, reseña) con SEO, categorías, tags, tecnologías y galerías |
-| **CV** | Currículum vitae completo con 16 secciones (experiencia, formación, habilidades, proyectos, repositorios) y generación PDF (DomPDF) |
-| **Newsletter** | Gestión de suscriptores con verificación por email y baja por token |
+| **Weather Station** | Datos meteorológicos de sensores (temperatura, humedad, presión, viento, lluvia, calidad del aire, rayos) + integración AEMET (predicciones, eventos adversos, costas, ozono, radiación solar). |
+| **Hardware / Energy** | Gestión de dispositivos hardware, monitorización de energía solar, generadores y consumos con resúmenes diarios. |
+| **KeyCounter** | Registro de pulsaciones de teclado, clicks y movimientos de ratón con estadísticas por usuario y dispositivo. |
+| **AirFlight** | Registro de aviones detectados, rutas y telemetría. |
+| **Smart Plant** | Monitorización de plantas con sensores de humedad del suelo, luz y temperatura. |
+| **Content (CMS)** | CMS multi-plataforma y multi-tipo (artículo, tutorial, proyecto, página, reseña) con SEO, categorías, tags, tecnologías y galerías. |
+| **CV** | Currículum vitae completo con 16 secciones (experiencia, formación, habilidades, proyectos, repositorios) y descarga del PDF del currículum. |
+| **Newsletter** | Gestión de suscriptores con verificación por email y baja por token. |
+| **Auth** | Autenticación web (Fortify) y API V2 (Sanctum). |
+| **Contact** | Formulario de contacto con validación reCAPTCHA. |
+| **Platform** | Gestión de plataformas/sitios. |
+| **User** | Gestión de usuarios y perfiles. |
+| **Webhook** | Gestión de webhooks externos (GitLab). |
 
 ## Arquitectura
 
@@ -45,6 +54,7 @@ Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (es
 ```
 app/
 ├── Actions/              # Operaciones atómicas reutilizables
+├── Helpers/              # TextFormatParseHelper (EditorJS → HTML)
 ├── Console/Commands/     # Comandos Artisan (AEMET, content, project, sitemap, keycounter)
 ├── Enums/                # PHP 8.4 backed enums
 ├── Filament/
@@ -53,12 +63,17 @@ app/
 ├── Http/
 │   ├── Controllers/Api/  # Controladores API por módulo/versión
 │   ├── Controllers/      # Controladores web públicos
-│   ├── Middleware/        # Cors, DomainCheck, IpCounter
+│   ├── Middleware/       # (vacío: los 3 que había estaban muertos, fase 8)
 │   ├── Requests/         # FormRequests
 │   └── Resources/V2/     # JsonResources para API V2
 ├── Models/               # Eloquent models por módulo
 ├── Services/             # Service Layer por módulo
+├── Support/              # Lectores y utilidades sin estado (CapWarnings, AemetApiKey, …)
 └── Traits/               # Traits compartidos (HasSlug, HasStatus, Filterable, etc.)
+
+support/helpers/          # Helpers globales sin namespace (JsonHelper, AEMETHelper)
+_to_delete/               # Código retirado, con el porqué en POR-QUE-ESTAN-AQUI.md.
+                          # Se vacía cuando terminen todas las fases, no antes.
 
 routes/
 ├── web.php               # Rutas frontend público
@@ -69,60 +84,111 @@ routes/
 ├── keycounter/           # Rutas KeyCounter (web + API)
 ├── smart_plant/          # Rutas Smart Plant (web + API)
 ├── airflight/            # Rutas AirFlight (web + API)
-└── cv/                   # Rutas CV (web + API)
+├── cv/                   # Rutas CV (web + API)
+├── webhook.php           # Rutas Webhook (GitLab)
+└── ai.php                # Rutas AI (MCP)
 
 docs/info/                # Documentación técnica de cada módulo
 ```
 
 ## Requisitos
 
-- PHP >= 8.4
-- PostgreSQL >= 15
-- Redis >= 7 (opcional, recomendado)
-- Node.js >= 20
-- Composer >= 2.7
+- **PHP** >= 8.4
+- **Base de datos:** PostgreSQL >= 17 (**siempre PostgreSQL**, tanto en desarrollo, testing y producción)
+- **Caché y Colas:** Redis >= 7 (recomendado)
+- **Node.js** >= 20
+- **Gestor de paquetes JS:** `pnpm` (recomendado y predeterminado)
+- **Composer** >= 2.7
 
-## Instalación (Desarrollo)
+## Variables de entorno que hay que rellenar a mano
 
-> **Gestor de paquetes JS**: este proyecto **prefiere `pnpm`** sobre `npm`. Instálalo con `npm install -g pnpm` si aún no lo tienes.
+Estas no tienen un valor por defecto que sirva en producción. Si se dejan vacías
+el sistema arranca igual, pero degradado y **sin dar ningún error**, que es la
+peor forma de fallar.
+
+| Variable | Qué pasa si no se pone | Formato |
+|---|---|---|
+| `TRUSTED_PROXIES` | Detrás de nginx o Cloudflare, `request()->ip()` devuelve la IP del proxy. Todos los rate limit por IP —incluido el del login— pasan a ser **un cupo global compartido por todos los visitantes**: ni frenan a un atacante ni dejan pasar el tráfico legítimo. | IPs o rangos CIDR separados por comas. Por defecto los rangos privados. **Nunca `*`** si la aplicación puede alcanzarse sin pasar por el proxy. |
+| `SANCTUM_STATEFUL_DOMAINS` | Los dominios que no estén aquí no reciben cookie de sesión. | **Sólo el dominio**, sin esquema ni `www`, separados por comas: `raupulus.dev,laguialinux.com`. Las variantes las deriva `config/sanctum.php`, y fuera de producción añade solo los `localhost`. |
+| `FRONTEND_URLS` | CORS rechaza al frontend. | **URL completa con esquema**, separadas por comas: `https://raupulus.dev,https://laguialinux.com`. Ojo, formato distinto al de arriba. |
+| `API_SESSION_DAYS` | Por defecto 30. | Días que vive el token que emite `POST /api/v2/auth/login` para una persona. Los tokens de dispositivo IoT **no caducan a propósito**: su seguridad son las abilities, no el tiempo. |
+| `AEMET_API_KEY_EXPIRES_AT` | La clave de AEMET es un JWT que **caduca a los ~100 días**, y su caducidad **no da error**: AEMET responde 200 con el cuerpo vacío, que en los logs es idéntico a «hoy no hay datos». Sin esta fecha nadie se entera hasta que echa de menos un dato semanas después. | Fecha en `Y-m-d`, apuntada a mano al renovar la clave. `aemet:check-api-key` avisa 15 días antes; se renueva en <https://opendata.aemet.es/centrodedescargas/altaUsuario>. |
+
+Las plantillas `.env.example` y `.env.example.production` llevan el mismo texto
+en un comentario junto a cada variable.
+
+## Instalación y Despliegue (Desarrollo)
+
+> **Gestor de paquetes JS**: este proyecto utiliza **`pnpm`**. Instálalo con `npm install -g pnpm` si aún no lo tienes.
 
 ```bash
-# Clonar repositorio
+# 1. Clonar repositorio
 git clone https://gitlab.com/raupulus/api-fryntiz.git api-raupulus
 cd api-raupulus
 
-# Instalación automática
-php artisan project:install
-
-# O manualmente:
+# 2. Configuración de entorno
 cp .env.example .env
+
+# 3. Instalación de dependencias
 composer install
 pnpm install
 pnpm run build
+
+# 4. Clave de aplicación y base de datos PostgreSQL
 php artisan key:generate
 php artisan migrate --seed
 php artisan storage:link
+
+# 5. Poblar datos corporativos realistas de ejemplo (opcional para desarrollo/demo)
+php artisan project:dummy
+
+# 6. Iniciar servidor local
 php artisan serve
 ```
 
-## Instalación (Producción)
+Alternativamente, el comando `php artisan project:install` automatiza la inicialización inicial del entorno.
 
-Ver guía completa en [`docs/deploys/deploy-vps.md`](docs/deploys/deploy-vps.md) (Docker + bare-metal).
+## Instalación y Despliegue (Producción)
 
-Resumen rápido:
+Ver guía completa y arquitectura de servidores en [`docs/deploys/deploy-vps.md`](docs/deploys/deploy-vps.md) (Docker + bare-metal).
+
+Pasos esenciales de despliegue:
 
 ```bash
+# 1. Configurar entorno de producción
 cp .env.example.production .env
-# Editar .env con las credenciales de producción
+# Configurar credenciales reales de PostgreSQL, Redis, URLs y correo en .env
+# y las cuatro variables de la sección "Variables de entorno que hay que
+# rellenar a mano" (TRUSTED_PROXIES, SANCTUM_STATEFUL_DOMAINS, FRONTEND_URLS,
+# API_SESSION_DAYS).
+
+# 2. Instalar dependencias optimizadas
 composer install --optimize-autoloader --no-dev
 pnpm install --frozen-lockfile
 pnpm run build
-php artisan key:generate
+
+# 3. Migraciones y enlaces de almacenamiento
 php artisan migrate --force
-php artisan db:seed --force
 php artisan storage:link
+
+# 4. Limpieza y compilación de cachés de producción
 php artisan project:clear --production
+
+# 5. Supervisor y Cron  (los dos son obligatorios, no opcionales)
+#
+# 5a. Worker de colas. Sin él los correos y el contador de visitas se quedan
+#     encolados para siempre, porque QUEUE_CONNECTION es `database`:
+#     php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600
+#
+# 5b. Cron del scheduler. Sin él no se actualiza AEMET, ni se publica el
+#     contenido programado, ni se genera el sitemap:
+#   * * * * * cd /ruta/al/proyecto && php artisan schedule:run >> /dev/null 2>&1
 ```
+
+> Para comprobar que el planificador está bien: `php artisan schedule:list`
+> enseña qué se ejecuta y cuándo. Y `php artisan test --filter=Planificador`
+> falla si alguna tarea programada o algún botón del panel de AEMET llama a un
+> comando que no existe — que es exactamente lo que pasaba antes y no se veía.
 
 ## Docker
 
@@ -149,48 +215,67 @@ La API tiene una única versión:
 
 - **V2** (`/api/v2/...`): Versión actual y única, FULL REST, con JsonResources, validaciones mejoradas y mayor seguridad. La V1 legacy fue eliminada por completo.
 
-La documentación detallada de la API V2 está en [`docs/api-v2.md`](docs/api-v2.md).
+La documentación interactiva se genera con Scribe (ruta `/docs`). El contrato
+detallado y copiable de cada módulo (endpoints, auth, parámetros, forma de la
+respuesta) vive en [`docs/info/api/v2/`](docs/info/api/v2/), un archivo por
+módulo.
 
 ### Autenticación API
 
-Los endpoints protegidos requieren un token Bearer de Laravel Sanctum. Los tokens se obtienen mediante el endpoint de login.
+Los endpoints protegidos requieren un token Bearer de Laravel Sanctum con sus respectivas *abilities* por módulo (`api-session` para usuarios, o tokens dedicados por dispositivo IoT).
 
 ## Paneles de Administración
 
-- **Admin** (`/admin`): Gestión completa del sistema — solo superadministradores
-- **Panel** (`/panel`): Panel de usuario — acceso a recursos propios
+- **Admin** (`/admin`): Gestión completa del sistema — para SuperAdmin, Admin y Editor.
+- **Panel** (`/panel`): Panel de usuario / inquilino para acceso a recursos propios.
 
 ## Comandos Útiles
 
-Catálogo completo en [`docs/info/commands.md`](docs/info/commands.md). Los más habituales:
+Catálogo completo en [`docs/info/commands.md`](docs/info/commands.md). Los comandos principales del proyecto son:
 
 ```bash
-php artisan project:install              # Inicializar proyecto completo
-php artisan project:clear                # Limpiar cachés
-php artisan content:publish              # Publicar contenidos programados
-php artisan sitemap:generate             # Generar sitemap.xml
-php artisan debug:seed-all               # Poblar la base de datos para desarrollo
+php artisan project:install              # Inicializar proyecto completo (desarrollo)
+php artisan project:clear                # Limpiar cachés, colas, regenerar clave y recomponer autoload
+php artisan project:dummy                # Poblar base de datos con contenido corporativo realista
+php artisan sitemap:generate             # Generar sitemap.xml navegable del sitio
+php artisan content:publish              # Publicar contenidos programados vencidos
+php artisan debug:seed-all               # Poblar datos técnicos de depuración por módulo
 ```
 
-Para el listado de comandos AEMET, KeyCounter, debug y resto, ver [`docs/info/commands.md`](docs/info/commands.md).
+## Verificación de Código y Tests
 
-## Tests
+La suite de pruebas corre siempre contra **PostgreSQL real** (no SQLite), en la base de datos `api_raupulus_testing`.
+Créala una vez si aún no existe:
 
 ```bash
-php artisan test
+createdb api_raupulus_testing        # o: psql -c "CREATE DATABASE api_raupulus_testing;"
+```
+
+Atajos de calidad en `composer`:
+
+```bash
+composer check                            # Pint + Tests compactos automatizados
+composer pint                             # Formateo de código PSR-12
+composer phpstan                          # Análisis estático (PHPStan nivel 5)
+php artisan test --compact                # Ejecutar tests PHPUnit
 ```
 
 ## Documentación
 
 | Recurso | Ubicación |
 |---------|-----------|
+| Estado actual del proyecto | [`docs/planning/ESTADO-ACTUAL.md`](docs/planning/ESTADO-ACTUAL.md) |
+| Roadmap de próximos pasos | [`docs/planning/roadmap/`](docs/planning/roadmap/README.md) |
 | Arquitectura y convenciones | [`AGENTS.md`](AGENTS.md) |
-| API V2 | [`docs/api-v2.md`](docs/api-v2.md) |
+| Catálogo de componentes Blade UI | [`docs/info/COMPONENTS.md`](docs/info/COMPONENTS.md) |
+| Sistema de diseño (Tailwind CSS v4) | [`docs/info/DESIGN.md`](docs/info/DESIGN.md) |
+| Paneles Filament | [`docs/info/filament-panels.md`](docs/info/filament-panels.md) |
+| API V2 (contratos por módulo) | [`docs/info/api/v2/`](docs/info/api/v2/) |
 | Documentación de módulos | [`docs/info/`](docs/info/) |
 | Catálogo de comandos Artisan | [`docs/info/commands.md`](docs/info/commands.md) |
 | Despliegue en VPS | [`docs/deploys/deploy-vps.md`](docs/deploys/deploy-vps.md) |
 | Integración AEMET | [`docs/info/apis/aemet.md`](docs/info/apis/aemet.md) |
-| WebSockets (Reverb) | [`docs/info/websockets.md`](docs/info/websockets.md) |
+| WebSockets (propuesta, no implementado) | [`docs/info/websockets.md`](docs/info/websockets.md) |
 | Citación académica | [`CITATION.txt`](CITATION.txt) |
 
 ## Convenciones
@@ -199,8 +284,13 @@ php artisan test
 - **Idioma de documentación:** Español (PHPDoc, comentarios, mensajes de validación)
 - **Estilo:** PSR-12, principios SOLID
 - **Naming:** Convenciones Laravel (PascalCase clases, camelCase métodos, snake_case tablas/columnas)
-- **Base de datos:** Migraciones con `comment` en todas las columnas, foreign keys explícitas
+- **Base de datos:** Migraciones con `comment` en todas las tablas y columnas, foreign keys explícitas
+- **Componentes UI:** Obligatoriedad de reutilizar `<x-button>`, `<x-input>`, etc. (ver `docs/info/COMPONENTS.md`)
 
 ## Licencia
 
 Este proyecto está licenciado bajo **GNU General Public License v3.0** — ver archivo [`LICENSE`](LICENSE) para más detalles.
+
+---
+
+> Última revisión de este documento: 2026-08-26

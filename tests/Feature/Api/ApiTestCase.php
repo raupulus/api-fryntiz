@@ -68,7 +68,7 @@ abstract class ApiTestCase extends TestCase
     protected function assertPaginatedResponse($response): void
     {
         $response->assertStatus(200)
-            ->assertJsonStructure(['data', 'links', 'meta']);
+            ->assertJsonStructure(['success', 'message', 'data', 'meta']);
     }
 
     /**
@@ -76,12 +76,17 @@ abstract class ApiTestCase extends TestCase
      */
     private function seedRoles(): void
     {
-        if (DB::table('user_roles')->count() === 0) {
-            DB::table('user_roles')->insert([
-                ['id' => 1, 'name' => 'superadmin', 'display_name' => 'Super Admin', 'slug' => 'super-admin', 'description' => 'Administrador Principal', 'created_at' => now(), 'updated_at' => now()],
-                ['id' => 2, 'name' => 'admin', 'display_name' => 'Admin', 'slug' => 'admin', 'description' => 'Administradores', 'created_at' => now(), 'updated_at' => now()],
-                ['id' => 3, 'name' => 'user', 'display_name' => 'Usuario', 'slug' => 'usuario', 'description' => 'Usuario normal', 'created_at' => now(), 'updated_at' => now()],
-            ]);
+        $roles = [
+            ['id' => 1, 'name' => 'superadmin', 'display_name' => 'Super Admin', 'slug' => 'super-admin', 'description' => 'Administrador Principal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'name' => 'admin', 'display_name' => 'Admin', 'slug' => 'admin', 'description' => 'Administradores', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'name' => 'user', 'display_name' => 'Usuario', 'slug' => 'usuario', 'description' => 'Usuario normal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4, 'name' => 'editor', 'display_name' => 'Editor', 'slug' => 'editor', 'description' => 'Edita contenido sólo en las plataformas que tenga asignadas', 'created_at' => now(), 'updated_at' => now()],
+        ];
+
+        foreach ($roles as $role) {
+            if (! DB::table('user_roles')->where('id', $role['id'])->exists()) {
+                DB::table('user_roles')->insert($role);
+            }
         }
     }
 

@@ -1,295 +1,671 @@
-# AGENTS.md — Información del proyecto Api Raupulus
+# AGENTS.md — Api Raupulus
 
-## Descripción General
+> **Última revisión:** 2026-08-30 · Verificado contra la rama `v2`.
+> Todo lo que hay aquí se ha comprobado contra el código. Si encuentras una discrepancia,
+> **corrige este fichero en el mismo commit** en el que la detectes.
 
-Api Raupulus es una plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (estación meteorológica, plantas inteligentes, contador de pulsaciones, registro de vuelos, energía solar), gestión de contenidos multi-plataforma, currículum vitae y newsletter.
+---
 
-## Skills del proyecto — carga automática
+## 0. Antes de empezar — lee esto
 
-Este repo incluye **skills específicas** en `.claude/skills/<nombre>/SKILL.md`
-(versionadas en git). Cada skill encapsula las **convenciones reales** de su
-dominio en este proyecto. En Claude Code se auto-activan por su campo
-`description`; cualquier otro agente que lea este AGENTS.md debe **cargar la skill
-correspondiente al empezar a trabajar en ese contexto** según esta tabla:
+| Necesitas saber… | Ve a |
+|------------------|------|
+| Arquitectura, rutas, comandos y convenciones vigentes | Este fichero |
+| Cómo funciona un módulo concreto | [`docs/info/<modulo>.md`](docs/info/README.md) |
+| Convenciones de un dominio (API, Filament, migraciones…) | `.claude/skills/<skill>/SKILL.md` — ver §2 |
+| Rutas de la API V2 propia (`/api/v2/...`) | [`docs/info/api/v2/README.md`](docs/info/api/v2/README.md) — índice y contrato por módulo |
+| Historial de cómo se llegó hasta aquí | `docs/planning/archived/` — **excepción, no fuente de verdad**: ver aviso abajo |
 
-| Skill | Ruta | Cárgala cuando trabajes en… |
-|-------|------|------------------------------|
-| `laravel-backend` | `.claude/skills/laravel-backend/SKILL.md` | Models, Services, Actions, Jobs, Events/Listeners, Enums, Helpers, Policies, Traits; lógica de negocio bajo `app/` (skill base del backend) |
-| `api-rest-v2` | `.claude/skills/api-rest-v2/SKILL.md` | Endpoints API: controladores `Api/…/V2`, Resources `V2`, FormRequests `Api`, rutas `*/v2.php`, Sanctum, tokens IoT/abilities, envelope JSON |
-| `postgresql-migrations` | `.claude/skills/postgresql-migrations/SKILL.md` | `database/migrations/`, esquema, índices, FKs, tipos de columna, rendimiento de consultas |
-| `filament-admin` | `.claude/skills/filament-admin/SKILL.md` | `app/Filament/`: Resources, Pages, Widgets, Clusters, componentes y paneles Admin/Tenant |
-| `vue-tailwind-frontend` | `.claude/skills/vue-tailwind-frontend/SKILL.md` | `resources/js/`, `resources/css/`, componentes `.vue`, vistas Blade, Tailwind 4, Vite/pnpm, Alpine |
-| `design-system` | `.claude/skills/design-system/SKILL.md` | Criterio visual: paleta, tipografía, jerarquía, look&feel, diseñar/revisar pantallas (Raupulus Slate / Obsidian Flux) |
-| `seo` | `.claude/skills/seo/SKILL.md` | `ContentSeo`, meta/OG/Twitter en `head.blade.php`, sitemap, JSON-LD, hreflang, canonicals, posicionamiento |
-| `mcp-server` | `.claude/skills/mcp-server/SKILL.md` | `app/Mcp/` (Servers/Tools/Resources/Prompts), `routes/ai.php`, comandos `mcp:*`/`make:mcp-*`, exponer contexto del proyecto a LLMs (`laravel/mcp`) |
-| `printers` | `.claude/skills/printers/SKILL.md` | Módulo Impresoras: modelos `Printer`/`PrinterStack`/`PrinterAvailableType`, cola de impresión, `PrinterResource` |
+**Estado en una línea:** la API V2 está completa y operativa, la V1 fue eliminada por completo,
+y el proyecto está en fase de **consolidación** — limpiar legacy y completar el panel Filament.
+No estamos construyendo la V2; la estamos terminando de asentar.
 
-Regla práctica: si una tarea cae en uno de esos contextos, **consulta primero la
-skill** antes de escribir código, para respetar las convenciones del proyecto.
-Varias pueden aplicar a la vez (p. ej. un endpoint nuevo con su migración usa
-`api-rest-v2` + `postgresql-migrations` + `laravel-backend`).
+> ⚠️ **`docs/planning/archived/` no es fiable y es la excepción, no la norma.** Es material de
+> trabajo local (no versionado, `.gitignore`) que registra cómo se llegó al estado actual;
+> **no describe el estado actual**. En un clon nuevo del repositorio **no existe**, y en este
+> mismo repositorio se borrará por completo en cuanto se verifique que sus planificaciones están
+> implementadas del todo. Solo se consulta si hace falta rescatar el porqué concreto de una
+> decisión ya tomada, nunca para saber si algo "sigue abierto": para eso, este fichero y el
+> código son la fuente de verdad vigente.
 
-## Arquitectura
+---
 
-- **Patrón:** MVC con Service Layer
-- **API:** Única versión **V2 FULL REST** (la V1 legacy fue eliminada en fix_1), respuestas JSON con JsonResources
-- **Admin:** Dos paneles Filament 5 (Admin para superadmin, Tenant para usuarios)
-- **Frontend:** Blade + Tailwind CSS 4 + Alpine.js + Vue.js 3 (Vite 8, prefiere usar pnpm)
-- **Build:** Vite 8 con `laravel-vite-plugin`, `@tailwindcss/vite` y `@vitejs/plugin-vue` — entrypoints: `resources/css/app.css`, `resources/js/app.js`, `resources/js/vue.js`, `resources/css/filament/admin/theme.css`
-- **Excepciones API:** Excepciones JSON personalizadas (`JsonValidationException`, `JsonAuthorizationException`) en `app/Exceptions/`, configuradas en `bootstrap/app.php`
-- **Eventos y WebSockets:** Eventos broadcast (`app/Events/`) con listeners (`app/Listeners/`), con soporte preparado para Laravel Reverb. Sub-eventos granulares en `app/Events/WeatherStation/` (Temperature, Humidity, Pressure, Light, Wind, Rain, Lightning, AirQuality)
-- **Jobs:** `ProcessContentViewJob` para vistas de contenido asíncronas
-- **Notificaciones:** `NewContactMessage` para formulario de contacto
+## 1. Qué es este proyecto
 
-## Dependencias Principales
+Plataforma multi-API en Laravel 13 que centraliza los proyectos personales de Raúl Caro
+Pastorino (**@raupulus**): módulos IoT (estación meteorológica, plantas inteligentes, contador
+de pulsaciones, registro de vuelos ADS-B, energía solar, impresoras), un CMS multi-plataforma,
+currículum vitae y newsletter.
+
+**Objetivo del proyecto:** una solución robusta, escalable, segura y **fácil de gestionar desde
+la intranet**. Ese último punto es el que justifica el esfuerzo en el panel Filament: todo debe
+poder administrarse sin abrir una terminal.
+
+---
+
+## 2. Skills del proyecto — carga automática
+
+El repo incluye skills en `.agents/skills/<nombre>/SKILL.md` (versionadas en git mediante una
+excepción de `.gitignore`). Cada una encapsula las **convenciones reales** de su dominio.
+En Claude Code se auto-activan por su `description`; cualquier otro agente debe cargar la que
+corresponda **antes de escribir código**.
+
+| Skill | Cárgala cuando trabajes en… |
+|-------|------------------------------|
+| `laravel-backend` | Models, Services, Actions, Jobs, Events/Listeners, Enums, Helpers, Policies, Traits — lógica de negocio bajo `app/` (skill base) |
+| `api-rest-v2` | Endpoints: controladores `Api/…/V2`, Resources `V2`, FormRequests `Api`, rutas `*/v2.php`, Sanctum, tokens IoT/abilities, envelope JSON |
+| `postgresql-migrations` | `database/migrations/`, esquema, índices, FKs, tipos de columna, rendimiento |
+| `filament-admin` | `app/Filament/`: Resources, Pages, Widgets, Clusters, componentes, paneles Admin/Tenant |
+| `vue-tailwind-frontend` | `resources/js/`, `resources/css/`, `.vue`, Blade, Tailwind 4, Vite 8, Alpine |
+| `design-system` | Criterio visual: paleta, tipografía, jerarquía (Raupulus Slate / Obsidian Flux) |
+| `seo` | `ContentSeo`, meta/OG/Twitter, sitemap, JSON-LD, hreflang, canonicals |
+| `mcp-server` | `app/Mcp/`, `routes/ai.php`, comandos `mcp:*`, exponer contexto a LLMs (`laravel/mcp`) |
+| `printers` | Módulo Impresoras: `Printer`, `PrinterStack`, `PrinterAvailableType`, cola de impresión |
+| `module-development` | Flujo de trabajo completo paso a paso para la creación de nuevos módulos |
+
+Varias pueden aplicar a la vez: un endpoint nuevo con su migración usa `api-rest-v2` +
+`postgresql-migrations` + `laravel-backend`.
+
+---
+
+## 3. Flujo de trabajo obligatorio
+
+**Ninguna tarea está terminada hasta que estos cuatro pasos pasan en verde.**
+
+```bash
+./vendor/bin/pint                    # 1. Formato (PSR-12)
+./vendor/bin/phpstan analyse         # 2. Análisis estático (nivel 5)
+php artisan test                     # 3. Tests (PostgreSQL: api_raupulus_testing)
+php artisan scribe:generate          # 4. Solo si has tocado la API V2
+```
+
+Atajo obligatorio: `composer check` (ejecuta `./vendor/bin/pint --format agent` y `@php artisan test --compact`).
+
+### Además, en cada tarea
+
+1. **Actualiza `docs/info/<modulo>.md`** en el mismo commit. Es obligatorio por protocolo, no opcional.
+2. **Añade o ajusta tests.** Toda funcionalidad implementada tiene que tener tests automatizados que la validen para seguir funcionando (`php artisan test --compact`). Un cambio de comportamiento sin test es un cambio sin verificar.
+3. **Si tocas un contrato de la API**, comprueba qué clientes lo consumen antes de romperlo: los dispositivos IoT no se actualizan solos.
+4. **Regla de planificación:** Toda fase o módulo en una planificación lleva al inicio una descripción y al final un checklist (`- [ ] ...`) que solo se marcará como checked (`[x]`) cuando se verifique de verdad que se ha implementado y se cumple perfectamente.
+5. **Fechas en la documentación:** Todo archivo dentro de `docs/`, en cualquier subdirectorio, lleva al pie **fecha de creación y fecha de última revisión**, en una sola línea y con este formato exacto:
+
+   ```markdown
+   ---
+
+   > Creado: YYYY-MM-DD · Última revisión: YYYY-MM-DD
+   ```
+
+   La de creación no se toca nunca una vez puesta. La de revisión se actualiza **en el mismo commit** en que se cambia el documento. Sirve para auditar que la documentación viva se mantiene al día.
+6. **Si trabajas sobre una fase del roadmap**, marca su checklist al terminar.
+7. **Directriz de Lectura Dirigida y Economía de Tokens**: Al trabajar en un módulo o funcionalidad específica (ej. noticias, páginas, usuarios), el agente debe consultar **únicamente** el archivo técnico correspondiente en `docs/info/[modulo].md` y la guía de diseño en `docs/info/DESIGN.md` en caso de tocar el frontend/vistas. No debe leer el resto de archivos de `docs/info/` a menos que sea estrictamente necesario para resolver una relación cruzada entre modelos.
+
+### Idiomas
+
+> ⛔ **Esta regla se ha incumplido y ha habido que deshacerlo entero.** No es una
+> preferencia de estilo: **todo identificador va en inglés y toda explicación en
+> español**, sin excepciones y sin preguntar. Si dudas de cómo se dice algo en
+> inglés, se busca; no se deja en castellano «de momento».
+>
+> «Identificador» es **todo lo que el intérprete lee**: clases, traits, enums,
+> interfaces, métodos, funciones, variables, propiedades, constantes, argumentos
+> con nombre, claves de array internas, claves de configuración, nombres de
+> fichero y de directorio, tablas, columnas, nombres de test, canales de
+> broadcast, clases CSS e identificadores de JavaScript y de Vue.
+>
+> **Excepción única:** los campos que devuelve una API de terceros se leen tal y
+> como los manda (`$envelope['estado']` de AEMET), porque el nombre no es
+> nuestro. El contexto que escribimos alrededor —variables, claves de log— sí va
+> en inglés.
+
+| Elemento | Idioma |
+|----------|--------|
+| Código (clases, métodos, variables, propiedades, constantes, columnas, claves de configuración, nombres de test) | Inglés |
+| PHPDoc, comentarios, comentarios de migración | Español |
+| Mensajes de validación y de cara al usuario | Español (**con tildes** — hay textos antiguos sin ellas, corrígelos al pasar) |
+| Mensajes de log | Inglés |
+| Documentación (`docs/`, `README.md`, este fichero) | Español |
+
+### Crédito y autoría
+
+Cuando algo generado deba atribuirse: nick **@raupulus**, email público **public@raupulus.dev**.
+No usar ninguna otra dirección.
+
+---
+
+## 4. Stack real
+
+### Backend
 
 | Paquete | Versión | Uso |
 |---------|---------|-----|
-| `laravel/framework` | ^13.0 | Framework base |
+| `php` | ^8.4 | — |
+| `laravel/framework` | ^13.0 | Framework |
 | `filament/filament` | ^5.0 | Paneles de administración |
-| `laravel/sanctum` | ^4.0 | Autenticación API (tokens) |
+| `laravel/sanctum` | ^4.0 | Autenticación API por tokens |
 | `laravel/fortify` | ^1.24 | Autenticación web |
-| `intervention/image` | ^3.0 | Procesamiento de imágenes |
-| `intervention/image-laravel` | ^1.5 | Integración Laravel de Intervention |
-| `guzzlehttp/guzzle` | ^7.9 | Cliente HTTP (AEMET, etc.) |
-| `spatie/laravel-sitemap` | ^8.0 | Generación de sitemap |
-| `google/recaptcha` | ^1.3 | Validación reCAPTCHA |
-| `laravel/tinker` | ^3.0 | REPL interactivo |
-| `laravel/pint` | ^1.18 | Linting/formatting (dev) |
-| `phpunit/phpunit` | ^11.0 | Tests (dev) |
-| `barryvdh/laravel-debugbar` | ^4.0 | Debug toolbar (dev) |
-| `vue` | ^3.5 | Framework JS reactivo (frontend) |
-| `@vitejs/plugin-vue` | ^6.0 | Plugin Vite para Vue SFC |
-| `alpinejs` | ^3.14 | Interactividad ligera Blade |
+| `laravel/mcp` | ^0.8.1 | Servidor MCP (`app/Mcp/`, `routes/ai.php`) |
+| `laravel/tinker` | ^3.0 | REPL |
+| `intervention/image` + `-laravel` | ^3.0 / ^1.5 | Procesamiento de imágenes |
+| `guzzlehttp/guzzle` | ^7.9 | Cliente HTTP (AEMET) |
+| `spatie/laravel-sitemap` | ^8.0 | Sitemap |
+| `google/recaptcha` | ^1.3 | reCAPTCHA |
 
-**PHP requerido:** ^8.4
-**Node.js requerido:** >=20 <=26 (pnpm@11)
+**Dev:** `knuckleswtf/scribe` ^5.11 (doc de API) · `larastan/larastan` ^3.10 ·
+`laravel/pint` ^1.18 · `phpunit/phpunit` ^11.0 · `barryvdh/laravel-debugbar` ^4.0 ·
+`barryvdh/laravel-ide-helper` ^3.7 · `mockery/mockery` ^1.6 · `fakerphp/faker` ^1.24 ·
+`nunomaduro/collision` ^8.0 · `roave/security-advisories`.
 
-## Comandos de Desarrollo
+### Frontend
 
+| Paquete | Versión |
+|---------|---------|
+| `vue` | ^3.5 |
+| `alpinejs` | ^3.15 |
+| `tailwindcss` + `@tailwindcss/vite` | ^4.3 |
+| `vite` | ^8.0 |
+| `laravel-vite-plugin` | ^3.1 |
+| `@vitejs/plugin-vue` | ^6.0 |
+| `@tailwindcss/forms` | ^0.5 |
+
+**Node:** >=20 <=26 · **Gestor de paquetes: `pnpm@11.7.0`** (declarado en `packageManager`).
+Usar `pnpm`, nunca `npm` ni `yarn`.
+
+**Entrypoints de Vite:** `resources/css/app.css`, `resources/js/app.js`, `resources/js/vue.js`,
+`resources/css/filament/admin/theme.css`.
+
+### Infraestructura
+
+PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PHP-FPM + supervisord,
+`docker/nginx`, `docker/postgres`) · nginx o Apache en bare-metal.
+
+---
+
+## 5. Arquitectura
+
+- **Patrón:** MVC con Service Layer. La lógica de negocio vive en `app/Services/`, no en los
+  controladores.
+- **API:** una única versión, **V2 FULL REST**, bajo el prefijo `/api/v2`. La V1 fue eliminada
+  por completo; `bootstrap/app.php` responde **`410 Gone`** a cualquier petición a `api/v1/*`.
+- **Controladores API:** todos extienden `App\Http\Controllers\Api\V2\BaseApiController`, que
+  usa el trait `ApiResponseTrait` (`successResponse`, `createdResponse`, `paginatedResponse`
+  —colecciones, con bloque `meta`—, `deletedResponse` (204), `errorResponse`,
+  `notFoundResponse`, `unauthorizedResponse`, `forbiddenResponse`, `conflictResponse`,
+  `withWarnings`).
+- **Excepciones:** manejadas globalmente en `bootstrap/app.php` con envelope JSON uniforme.
+  Además hay `JsonValidationException` y `JsonAuthorizationException` en `app/Exceptions/`
+  que se auto-renderizan.
+- **Admin:** dos paneles Filament 5 — `admin` (`/admin`, exige `is_active` y rol SuperAdmin,
+  Admin o **Editor** — `User::canAccessPanel()`) y `tenant` (`/panel`, cualquier usuario
+  autenticado y activo).
+- **Frontend público:** Blade + Tailwind 4 + Alpine 3, con **1** componente Vue puntual
+  (`ChipionaWeatherComponent`). Los colores son tokens de `@theme` en
+  `resources/css/app.css`: **en las vistas no se escribe un color literal**.
+  Ver `docs/info/frontend.md`.
+- **Eventos:** uno, `App\Events\WeatherStation\ReadingsReceived` (`readings.received` en el
+  canal), emitido desde `SensorReadingController` una vez por subida al canal público
+  `weather-station.{id}`. `laravel/reverb`, `laravel-echo` y `pusher-js` **ya están
+  instalados**; sigue **apagado por defecto** (`BROADCAST_CONNECTION=null`) porque encenderlo
+  es una decisión de despliegue (configurar `.env` y levantar el demonio), no de código.
+  Ver `docs/info/websockets.md`.
+  Los nueve eventos anteriores colgaban de `$dispatchesEvents` de los modelos y **no se
+  emitieron nunca**, porque la escritura usa `insert()` del query builder.
+- **Jobs:** `ProcessContentViewJob`. ⚠️ Con `QUEUE_CONNECTION=sync` corre en la petición.
+- **MCP:** `app/Mcp/Servers/ApiRaupulusServer.php` con 4 tools (`GetModelInfoTool`,
+  `GetSystemStatusTool`, `InspectDatabaseSchemaTool`, `RunSpecificTestTool`).
+
+---
+
+## 6. Estructura de directorios completa
+
+> ⚠️ **Nota:** Esta estructura debe mantenerse estrictamente actualizada tras cualquier adición, eliminación o reestructuración de directorios en el proyecto.
+
+```
+api-fryntiz/
+├── app/                      # Lógica principal de la aplicación (arquitectura MVC + Service Layer)
+│   ├── Actions/              # Operaciones atómicas reutilizables (Fortify, PublishContent, StoreSensorData)
+│   ├── Console/Commands/     # 34 comandos Artisan propios (AEMET/, Debug/, IoT/, Mcp/, CV/, Project...)
+│   ├── Enums/                # Backed Enums tipados en PHP 8.4 (sufijo Enum)
+│   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
+│   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
+│   ├── Filament/             # Configuración de los paneles de Filament
+│   │   ├── Admin/            # Panel Admin: 24 Resources, 29 RelationManagers, 4 Clusters, 7 Widgets, 5 Pages
+│   │   ├── Tenant/           # Panel Tenant/Usuario: Pages/Dashboard.php
+│   │   ├── Components/       # Componentes Filament (EditorJsField, ImageCropperUpload, YoutubeVideoField)
+│   │   └── Concerns/         # Traits de Filament (HasImageFileUpload)
+│   ├── Helpers/              # Clases auxiliares con namespace (TextFormatParseHelper)
+│   ├── Http/                 # Capa de transporte HTTP
+│   │   ├── Api/               # CollectionQuery: paginación/filtros/orden comunes a la API V2
+│   │   ├── Controllers/Api/  # Controladores API V2 organizados por módulo
+│   │   ├── Controllers/      # Controladores web para vistas públicas y streaming de ficheros
+│   │   ├── Middleware/       # Vacío. Los 3 que había estaban muertos y se retiraron en la fase 8
+│   │   ├── Requests/         # 20 FormRequests con reglas estrictas de validación
+│   │   └── Resources/V2/     # 31 JsonResources para transformación de datos en API V2
+│   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
+│   ├── Listeners/            # Oyentes de eventos (BroadcastWeatherStationUpdate)
+│   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
+│   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
+│   ├── Models/               # 107 Modelos Eloquent con PHPDoc completo
+│   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
+│   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
+│   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
+│   │   ├── CV/               # Secciones curriculares (Experiencia, Habilidades, Proyectos...)
+│   │   ├── Hardware/         # Dispositivos físicos, monitorización de energía solar y generadores
+│   │   └── (raíz)            # User, Platform, File, FileThumbnail, Gallery, Printer, Newsletter...
+│   ├── Notifications/        # Notificaciones del sistema
+│   ├── Policies/             # 16 Policies para autorización de modelos
+│   ├── Providers/            # Service Providers de Laravel y paneles Filament (AdminPanelProvider, TenantPanelProvider)
+│   ├── Rules/                # Reglas de validación personalizadas (OwnedHardwareDevice, OwnedSmartPlant, KnownSensor)
+│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (14 servicios)
+│   ├── Support/              # Clases de soporte general (Auth, TokenAbilities, FilamentValidationRules)
+│   └── Traits/               # Traits reutilizables (ApiResponseTrait, BelongsToUser, HasSlug, Filterable...)
+├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)
+├── config/                   # Archivos de configuración de Laravel, Filament, Sanctum, CORS, AEMET y base de datos
+├── database/                 # Base de datos PostgreSQL
+│   ├── factories/            # 105 Factories para generación de datos de prueba
+│   ├── migrations/           # 133 migraciones comentadas en todas sus tablas y columnas
+│   └── seeders/              # 18 Seeders ordenados para carga de catálogos y datos esenciales
+├── docs/                     # Documentación técnica viva del proyecto (con fecha de revisión obligatoria)
+│   ├── apis/                 # Documentación técnica de referencia de APIs de terceros (AEMET OpenData)
+│   ├── auditorias/           # Informes de auditoría de código internos (excluidos en .gitignore)
+│   ├── deploys/              # Guías de despliegue en VPS (Docker y bare-metal)
+│   ├── info/                 # Documentación técnica viva de cada módulo, COMPONENTS.md, DESIGN.md y commands.md
+│   ├── future/               # Ideas y trabajo decididos pero aplazados. Sólo se lee al retomarlos, no de rutina
+│   └── planning/             # Roadmap de fases, dudas/ y estado actual (excluido en .gitignore)
+├── lang/                     # Traducciones oficiales en español (es/) e inglés (en/) cargadas por Laravel 13
+├── public/                   # Raíz web pública (index.php, assets compilados, robots.txt)
+├── resources/                # Recursos de frontend
+│   ├── css/                  # Hojas de estilo Tailwind CSS v4 (app.css con tokens @theme y tema oscuro)
+│   ├── js/                   # Scripts JavaScript (Vite 8, Alpine.js, componentes Vue puntuales)
+│   └── views/                # Vistas Blade públicas, layouts, correos y components/ (<x-button>, <x-input>...)
+├── routes/                   # Definición de rutas: web.php, api/v2.php, console.php, ai.php y rutas por módulo
+├── support/helpers/          # Funciones auxiliares globales sin namespace (JsonHelper, AEMETHelper)
+├── tests/                    # Suite de pruebas automatizadas PHPUnit ejecutadas contra PostgreSQL
+│   ├── Feature/              # Pruebas de integración para API V2, autenticación, contratos y persistencia
+│   └── Unit/                 # Pruebas unitarias de servicios y lógica aislada
+├── .agents/                  # Directorio maestro de configuración de agentes y skills (versionado en git)
+│   └── skills/               # Skills del proyecto compartidas entre agentes
+├── .claude                   # Enlace simbólico apuntando a .agents (ln -s .agents .claude)
+├── .github                   # Enlace simbólico apuntando a .agents (ln -s .agents .github)
+└── CLAUDE.md                 # Enlace directo de referencia apuntando a AGENTS.md
+```
+
+---
+
+## 6-bis. Mapa completo de rutas
+
+La plataforma expone sus servicios a través de cuatro capas de enrutamiento principales:
+
+### 1. Frontend Web Público (`routes/web.php` y submódulos)
+- `GET  /`: Portada corporativa con presentación de servicios y métricas (`home`).
+- `GET  /about`: Redirección automática a portada (`302`).
+- `GET  /docs`: Documentación interactiva de la API con Swagger/OpenAPI (requiere sesión).
+- `GET  /languages/ajax/get/languages`: Consulta asíncrona de idiomas soportados.
+- `GET  /file/get/{module}/{id}/{slug?}`: Streaming dinámico de ficheros públicos y privados.
+- `GET  /file/thumbnail/get/{module}/{id}/{slug?}`: Generación y entrega de miniaturas WebP.
+- `POST /file/upload`: Subida autenticada de archivos al disco configurado.
+- `POST /file/delete/{id}`: Eliminación segura y autenticada de archivos y sus miniaturas asociadas.
+- `GET  /weatherstation`: Interfaz pública de la estación meteorológica (`weather_station.index`).
+- `GET  /weatherstation/sensor/{type}`: Consulta visual de historial y gráficas por sensor meteorológico.
+- `GET  /smartplant`: Listado de plantas inteligentes monitorizadas.
+- `GET  /smartplant/{smartplant}`: Detalle de sensores de suelo, luz y riego de una planta.
+- `GET  /hardware/energy`: Monitorización en tiempo real de balance fotovoltaico y consumos.
+- `GET  /keycounter`: Estadísticas agregadas de pulsaciones y actividad de periféricos.
+- `GET  /airflight`: Mapa y radar visual de tráfico aéreo ADS-B.
+- `GET  /cv/get/pdf/raupulus/default`: Descarga del currículum vitae generado en PDF.
+- `ANY  /register*`, `/panel/register*`: **Bloqueo explícito** con respuesta `404 Not Found`.
+- `ANY  /dashboard*`: Redirección `301 Moved Permanently` a `/panel`.
+
+### 2. Autenticación Web (Laravel Fortify)
+- `GET|POST /login`: Formulario y autenticación web para sesiones de usuario (`login`).
+- `POST     /logout`: Cierre de sesión web.
+- `GET|POST /two-factor-challenge`: Desafío de autenticación de doble factor.
+- `GET|POST /user/two-factor-*`: Gestión de claves de recuperación y códigos QR 2FA.
+
+### 3. Paneles de Administración (Filament 5)
+- **Panel Admin (`/admin`):** SuperAdmin, Admin y Editor (`AdminPanelProvider`,
+  `User::canAccessPanel()`).
+  - Login dedicado en `/admin/login` y perfil en `/admin/profile`.
+  - 24 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags, Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Sistemas de Energía, Energías, Estación Meteorológica, Plantas Inteligentes (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV, Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter).
+- **Panel Tenant / Usuario (`/panel`):** Panel para usuarios autenticados (`TenantPanelProvider`).
+  - Dashboard de cliente y visualización de recursos propios.
+
+### 4. API V2 REST (`/api/v2/...`, repartida entre `routes/api/v2.php` y `routes/{airflight,cv,hardware,keycounter,smart_plant,weather_station}/v2.php`)
+
+Full REST: recursos en plural, sub-recursos anidados bajo su padre. El mapa completo de
+endpoints, con auth, rate limit y contrato exacto por módulo, vive en
+[`docs/info/api/v2/README.md`](docs/info/api/v2/README.md) — **no se duplica aquí**. Consúltalo
+y mantenlo actualizado en el mismo commit siempre que trabajes con un endpoint de la API V2.
+
+---
+
+## 7. Autenticación y autorización
+
+### Descripción de Roles de la Plataforma
+
+El sistema implementa un esquema de roles respaldado por `app/Enums/UserRoleEnum.php`:
+
+1. **`SuperAdmin` (Valor: `1`):**
+   - Máxima autoridad de la plataforma.
+   - El método `Gate::before()` en `AppServiceProvider` le concede **acceso irrestricto total** a todas las acciones, modelos y endpoints sin evaluar las Policies correspondientes.
+   - Acceso exclusivo a operaciones críticas del sistema, auditorías, configuración avanzada y al panel `/admin`.
+2. **`Admin` (Valor: `2`):**
+   - Administrador operativo.
+   - Acceso al panel de administración `/admin` mediante la comprobación `User::canAccessPanel()`.
+   - Permisos para gestionar usuarios, plataformas, contenidos CMS, dispositivos hardware, supervisión de colas y lectura de estadísticas globales (`view-statistics`).
+3. **`User` (Valor: `3`):**
+   - Usuario final registrado o cliente corporativo.
+   - No tiene acceso al panel `/admin` (su intento de acceso es rechazado con error 403).
+   - Acceso al panel de cliente `/panel`, capacidad para consultar sus propios datos de usuario vía `/api/v2/users/me` y administrar los dispositivos o recursos vinculados a su identificador.
+4. **`Editor` (Valor: `4`):**
+   - Acceso al panel `/admin` mediante `User::canAccessPanel()` (`isAdmin() || isEditor()`),
+     igual que Admin, pero **sin** el bypass total de `Gate::before()`: sus permisos dentro
+     del panel los deciden las Policies de cada módulo, no un atajo de rol.
+   - Pensado para gestionar contenido/operativa del panel sin ser administrador del sistema.
+
+### Web
+
+Laravel Fortify. **El registro público está bloqueado**: `/register`, `/register/*`,
+`/panel/register` y `/panel/register/*` devuelven 404 desde `routes/web.php`. El alta de
+usuarios es manual desde el panel admin.
+`/dashboard` y `/dashboard/*` redirigen a `/panel` (301).
+
+### API
+
+Laravel Sanctum. ⚠️ `config/sanctum.php` tiene `'expiration' => null` — los tokens de sesión de usuario caducan a los 30 días según `config('auth.api_session_days')`, mientras que los tokens de dispositivos IoT están acotados por abilities y no caducan para evitar desconexiones de hardware en campo.
+
+### IoT
+
+Token Sanctum **por dispositivo** con abilities por módulo:
+
+| Ability | Módulo |
+|---------|--------|
+| `weatherstation:write` | Estación meteorológica |
+| `hardware:read` | Hardware / lectura de inventario y estado |
+| `hardware:write` | Hardware / energía |
+| `keycounter:write` | Contador de pulsaciones |
+| `smartplant:write` | Plantas inteligentes |
+| `airflight:write` | Registro de vuelos |
+
+Catálogo único en `App\Support\Auth\TokenAbilities`. Los tokens de sesión humana llevan la
+ability `session` (nunca la de un módulo); los de dispositivo llevan `device:{id}` + su
+ability de módulo.
+
+Emisión:
 ```bash
-# Frontend (usar pnpm preferentemente)
-pnpm dev              # Servidor Vite en desarrollo
-pnpm build            # Build de producción
-
-# Tests
-php artisan test                    # Ejecutar todos los tests
-php artisan test --testsuite=Unit   # Solo tests unitarios
-# BD de test: api_raupulus_testing (PostgreSQL)
-
-# Linting y Análisis Estático
-./vendor/bin/pint     # Formatear código con Laravel Pint (PSR-12)
-./vendor/bin/phpstan analyse # Ejecutar análisis estático (Obligatorio tras crear o editar código)
-
-# Documentación API
-php artisan scribe:generate         # Generar/actualizar documentación de API (Obligatorio tras tocar V2)
-
-# Comandos Artisan del proyecto
-php artisan project:install         # Inicializa proyecto completo (keys, BD, storage)
-php artisan project:clear           # Limpia cachés (optimizado)
-php artisan debug:seed-all          # Poblar la base de datos de datos de prueba
-php artisan content:publish         # Publicar contenidos programados
-php artisan sitemap:generate        # Generar sitemap
-php artisan aemet:*                 # Múltiples comandos AEMET (ver app/Console/Commands/AEMET/)
-php artisan keycounter:maintenance  # Mantenimiento de keycounter
+php artisan iot:device-token <device_id> --abilities=weatherstation:write --expires=365
 ```
+Los endpoints de escritura llevan `auth:sanctum` + `ability:<scope>` + `throttle:api-store`.
 
-## Estructura de Directorios Clave
+---
 
-```
-app/
-├── Actions/            # Operaciones atómicas reutilizables
-│   ├── Fortify/        # Acciones de autenticación Fortify (CreateNewUser, ResetUserPassword, etc.)
-│   ├── PublishContentAction.php
-│   └── StoreSensorDataAction.php
-├── Console/Commands/   # Comandos Artisan
-│   ├── AEMET/          # 7 comandos AEMET por frecuencia (Daily, Every10m, Every30m, Every4h, etc.)
-│   └── Content/        # PublishContentCommand
-├── Enums/              # PHP 8.4 backed enums (UserRoleEnum, ContentStatusEnum, ContentTypeEnum, ContentPageRawTypeEnum, CvRepositoryTypeEnum, FileTypeEnum, HardwareTypeEnum, NewsletterStatusEnum, PlatformStatusEnum)
-├── Events/             # Eventos de dominio (WeatherStationUpdateEvent) + WeatherStation/ (8 sub-eventos granulares por sensor)
-├── Exceptions/         # Excepciones JSON personalizadas (JsonValidationException, JsonAuthorizationException)
-├── Filament/
-│   ├── Admin/          # Panel Admin: Resources (16 módulos), Pages, Widgets, Clusters (AirFlight, Energy, KeyCounter, SmartPlant)
-│   ├── Tenant/         # Panel Tenant: Resources, Pages, Widgets (en desarrollo)
-│   ├── Components/     # Campos Filament personalizados (EditorJsField, ImageCropperUpload, YoutubeVideoField)
-│   └── Concerns/       # Traits Filament (HasImageFileUpload)
-├── Helpers/            # Clases helper globales (AEMETHelper, ContentHelper, GoogleRecaptchaHelper, JsonHelper*, MenuHelper, RoleHelper, TextFormatParseHelper)
-├── Http/
-│   ├── Controllers/Api/    # Controladores API por módulo + V2/
-│   ├── Controllers/        # Controladores web públicos por módulo
-│   ├── Middleware/          # Cors, DomainCheckMiddleware, IpCounterStrict
-│   ├── Requests/           # FormRequests con validación en español (Api/, Cv/)
-│   └── Resources/          # JsonResources (raíz: Content*, User) + V2/ por módulo
-├── Jobs/               # Jobs asíncronos (ProcessContentViewJob)
-├── Listeners/          # Event listeners (BroadcastWeatherStationUpdate)
-├── Mail/               # Mailables (ContactMail, GenericMail, NewsletterVerification, NewsletterUnsubscribe, RetryEmailMessage)
-├── Models/             # Eloquent models organizados por módulo
-│   ├── BaseModels/     # BaseModel, BaseAbstractModelWithTableCrud
-│   ├── WeatherStation/ # 18 modelos de sensores + AEMET/ (9 modelos AEMET)
-│   ├── Hardware/       # 12 modelos (dispositivos, energía, cargas solares)
-│   ├── Content/        # 16 modelos (CMS completo)
-│   ├── CV/             # 18 modelos (currículum)
-│   ├── KeyCounter/     # 3 modelos (BaseKeyCounter, Keyboard, Mouse)
-│   ├── SmartPlant/     # 2 modelos (SmartPlantPlant, SmartPlantRegister)
-│   ├── AirFlight/      # 2 modelos (AirFlightAirPlane, AirFlightRoute)
-│   ├── WebHooks/       # 2 modelos (GitlabWebhook, SimpleWebhookModel)
-│   └── (raíz)          # Printer, PrinterAvailableType, PrinterStack, User, File, Platform, Newsletter, Category, Tag, Technology, etc.
-├── Notifications/      # Notificaciones (NewContactMessage)
-├── Policies/           # Authorization policies (16 policies por módulo)
-├── Providers/          # Service providers
-│   ├── Filament/       # AdminPanelProvider, TenantPanelProvider
-│   ├── AppServiceProvider.php
-│   ├── AuthServiceProvider.php
-│   └── FortifyServiceProvider.php
-├── Services/           # Service Layer por módulo (11 subdirectorios + RecaptchaService)
-├── Support/            # Clases de soporte (FilamentValidationRules — reglas de validación reutilizables para Filament)
-└── Traits/             # Traits compartidos (HasSlug, HasStatus, Filterable, HasTimestampScopes, ApiResponseTrait, BelongsToUser, BelongsToHardwareDevice)
+## 8. Catálogo de comandos propios
 
-routes/
-├── web.php             # Rutas frontend público
-├── api/
-│   └── v2.php          # API V2 (única, prefijo /api/v2)
-├── console.php         # Scheduler (tareas programadas)
-├── webhook.php         # Webhooks (GitLab, etc.)
-├── hardware/           # v2.php, web.php
-├── keycounter/         # v2.php, web.php
-├── smart_plant/        # v2.php, web.php
-├── weather_station/    # v2.php, web.php
-├── airflight/          # v2.php, web.php
-└── cv/                 # v2.php, web.php
-```
+Todos los comandos Artisan personalizados del proyecto están especificados y documentados en detalle en [`docs/info/commands.md`](docs/info/commands.md).
 
-**Nota:** `JsonHelper.php`, `RoleHelper.php`, `AEMETHelper.php` y `MenuHelper.php` son clases globales (sin namespace) y se autocargan vía `composer.json` → `autoload.files` desde `support/helpers/` (fuera del raíz PSR-4 `app/` para no romper el estándar PSR-4).
+34 comandos propios en total (`find app/Console/Commands -iname '*.php' | grep -v Concerns | wc -l`).
 
-## Middleware
+### Comandos del Proyecto
+- `php artisan project:install`: Instalación guiada del entorno (migraciones, seeders y storage:link).
+- `php artisan project:clear`: Limpieza completa de todas las cachés, colas (`queue:clear`), regeneración segura de clave en `.env` (`key:generate --force`, con confirmación explícita si `app()->environment('production')` y no se pasa `--force`) y recomposición del autoload de Composer. Alias: `xerintel:clear`.
+- `php artisan project:dummy`: Generación de datos de ejemplo corporativos realistas en todos los módulos para pruebas de cliente y desarrollo local.
+- `php artisan force:clear`: Limpieza agresiva de caché para entornos de desarrollo con inconsistencias.
+- `php artisan sitemap:generate`: Generación del sitemap XML público de todos los sitios navegables con metadatos de frecuencia y prioridad.
+
+### Comandos de Módulos e Integraciones
+- **AEMET (Estación Meteorológica):** un comando por producto, con la cadencia real de AEMET —
+  `aemet:adverse-events`, `aemet:contamination`, `aemet:hourly-prediction`, `aemet:coast`,
+  `aemet:beaches`, `aemet:high-sea`, `aemet:sun-radiation`, `aemet:ozone`, `aemet:check-api-key`.
+  Los antiguos (`aemet:update*`) ya no existen: se retiraron en la fase 4 (ver
+  `_to_delete/POR-QUE-ESTAN-AQUI.md`).
+- **AirFlight:** `airflight:fix`.
+- **Contenido (CMS):** `content:publish` (publica contenidos programados vencidos).
+- **Currículum:** `cv:regenerate-pdfs` (red de seguridad de la regeneración manual desde Filament).
+- **KeyCounter:** `keycounter:generate_duration`, `keycounter:remove_duplicate`.
+- **IoT:** `iot:device-token` (emisión de tokens de hardware con abilities específicas), `iot:check-silent-devices` (avisa cuando un dispositivo deja de reportar).
+- **MCP:** `mcp:inspector` (inspector de servidores MCP; `mcp:start` lo aporta el propio paquete).
+- **Datos de prueba técnicos:** `debug:seed-all` y comandos individuales `debug:seed-{airflight,contact,content,cv,energy,hardware,keycounter,newsletter,platform,smartplant,weatherstation}`.
+
+Catálogo detallado: [`docs/info/commands.md`](docs/info/commands.md).
+
+### Scheduler (`routes/console.php`)
+
+**Arreglado y protegido por test** (`tests/Feature/Console/SchedulerTest.php` falla si algún
+`Schedule::command()` apunta a un comando que no existe). 16 tareas programadas, todas contra
+comandos reales: `content:publish` (hora), `sitemap:generate` (diario), los 9 comandos AEMET
+con la cadencia de cada producto, `keycounter:remove_duplicate` / `generate_duration`
+(semanal), `iot:check-silent-devices` (diario), `cv:regenerate-pdfs` (diario) y
+`queue:prune-failed` (diario).
+
+El fallo histórico que motivó ese test: el scheduler programaba cuatro comandos que no
+existían (entre ellos `aemet:predictions` y `keycounter:maintenance`, nunca creados con ese
+nombre). No es el estado actual.
+
+---
+
+## 9. Rate limiting
+
+Definidos en `AppServiceProvider::boot()` (desactivados en el entorno `testing`):
+
+| Limiter | Límite | Uso |
+|---------|--------|-----|
+| `api` | 60/min | General |
+| `sensor-data` | 120/min | Escritura de sensores |
+| `contact` | 5/hora por IP | Formulario de contacto |
+| `api-auth` | 10/min por IP | Login, registro, newsletter |
+| `api-store` | 60/min | Escrituras IoT |
+| `api-store-batch` | 10/min | Escrituras en lote |
+| `login`, `two-factor` | — | Definidos en `FortifyServiceProvider` |
+
+---
+
+## 10. Middleware
 
 Aliases registrados en `bootstrap/app.php`:
 
-| Alias | Clase | Uso |
-|-------|-------|-----|
-| `cors` | `Cors` | CORS estándar |
-| `check.domain` | `DomainCheckMiddleware` | Verificación de dominio |
-| `ip.counter.strict` | `IpCounterStrict` | Contador de IPs estricto |
+| Alias | Clase | Estado |
+|-------|-------|--------|
+| `abilities` | `Laravel\Sanctum\Http\Middleware\CheckAbilities` | ✅ En uso |
+| `ability` | `Laravel\Sanctum\Http\Middleware\CheckForAnyAbility` | ✅ En uso en las rutas IoT |
 
-## Scheduler (routes/console.php)
+Y ya está: son los dos únicos alias. Había tres más —`cors`, `check.domain` e
+`ip.counter.strict`— que **no los pedía ninguna ruta** y que estaban rotos por
+dentro; se retiraron en la fase 8 (ver `_to_delete/POR-QUE-ESTAN-AQUI.md`).
 
-```
-content:publish          → hourly
-sitemap:generate         → daily
-aemet:adverse-events     → everySixHours
-aemet:contamination      → everySixHours
-aemet:predictions        → everySixHours
-keycounter:maintenance   → weekly
-```
+El CORS real lo aplica `Illuminate\Http\Middleware\HandleCors` (prepend global) leyendo
+`config/cors.php`, que a su vez depende de la variable **`FRONTEND_URLS`**.
 
-## Módulos
+---
 
-### Weather Station
-- Sensores: temperatura, humedad, presión, luz, viento, dirección viento, lluvia, eco2, tvoc, calidad aire, rayos
-- Integración AEMET: predicciones, eventos adversos, costas, altamar, ozono, contaminación, radiación solar, playas
-- Resúmenes diarios e históricos
+## 11. Base de datos
 
-### Hardware / Energy
-- Dispositivos hardware con tipos y componentes
-- Monitorización de energía: cargas solares, generadores, consumos
-- Resúmenes diarios e históricos
+- PostgreSQL. 133 migraciones, 105 factories, 18 seeders.
+- Toda columna lleva `->comment()` en español.
+- Foreign keys con `onDelete`/`onUpdate` explícitos.
+- Índices en las columnas de búsqueda frecuente.
+- **Tests contra PostgreSQL real** (`api_raupulus_testing`), no SQLite: el proyecto usa tipos
+  específicos de Postgres.
+- `Model::preventLazyLoading()` está **activo fuera de producción**. Un N+1 lanza excepción en
+  desarrollo. Usa siempre eager loading explícito.
 
-### KeyCounter
-- Registro de pulsaciones de teclado por tecla
-- Registro de clicks y movimientos de ratón
-- Estadísticas por usuario y dispositivo
+---
 
-### Smart Plant
-- Plantas con sensores de humedad, luz, temperatura
-- Registros periódicos de datos
+## 12. Trampas conocidas del proyecto
 
-### AirFlight
-- Registro de aviones detectados
-- Rutas y telemetría
+Cosas que sorprenden y hacen perder tiempo. Léelas antes de depurar.
 
-### Content (CMS)
-- Multi-plataforma, multi-tipo (artículo, tutorial, proyecto, página, reseña)
-- Páginas paginadas con contenido raw (HTML/Markdown/JSON)
-- SEO, metadata, categorías, tags, tecnologías, contribuidores, archivos, galerías
-- Contenido relacionado, vistas diarias
+| Trampa | Detalle |
+|--------|---------|
+| **Lazy loading prohibido** | `Model::preventLazyLoading(! app()->isProduction())`. Lo que funciona en producción puede reventar en local. Es intencional. |
+| **`Gate::before` para SuperAdmin** | Un SuperAdmin nunca llega al método de la Policy. Testea con usuarios de rol 2 y 3. |
+| **Helpers globales sin namespace** | `JsonHelper` y `AEMETHelper` viven en `support/helpers/` y se usan con `\JsonHelper::…`. No están en `app/`. `RoleHelper` y `MenuHelper` se retiraron (fases 3 y 8). |
+| **Traducciones** | Viven en `lang/` (raíz), no en `resources/lang/` (retirado). Laravel 13 las carga desde ahí sin configuración extra. |
+| **Scheduler** | Arreglado; `SchedulerTest` impide que vuelva a programar comandos inexistentes. Ver §8. |
+| **`Collection::macro('comment')`** | Macro definida en `AppServiceProvider` para poder hacer `$table->timestamps()->comment(...)` en migraciones. |
+| **`Sanctum::usePersonalAccessTokenModel(ApiToken::class)`** | El modelo de token es `App\Models\ApiToken`, no el de Sanctum. |
+| **Tests sin rate limit** | Todos los limiters devuelven `Limit::none()` en el entorno `testing`. Si testeas rate limiting, ajústalo. |
+| **`docs/planning` NO va en git, y es a propósito** | Es material de trabajo local para preparar cómo se adapta el proyecto; no es el proyecto. `docs/planning/archived` guarda lo ya ejecutado, **no es fiable como estado actual** y es la excepción, no la norma: no existe en un clon nuevo y se borrará por completo en cuanto se verifiquen sus planificaciones. Lo que sí se versiona es `docs/apis` (oficial de terceros) y `docs/info` (técnica de esta plataforma). **No lo saques del `.gitignore`.** |
+| **Envelope de respuesta** | Nunca devuelvas un array pelado desde un controlador API. Usa `BaseApiController`. |
+| **Directorios vacíos sueltos** | Quedan algunos tras la fase 8 (`app/Http/Middleware/`, `app/Services/Auth/`…). Git no versiona directorios vacíos, así que sólo están en la copia local. |
 
-### CV (Currículum)
-- 16 secciones: experiencia (acreditada, no acreditada, autónomo, adicional, otra), formación (reglada, complementaria, online), habilidades, proyectos, repositorios, servicios, colaboraciones, hobbies, trabajos
-- Generación de PDF con DomPDF
+---
 
-### Newsletter
-- Suscripción con verificación por email
-- Baja por token
+## 13. Documentación técnica — OBLIGATORIO mantenerla al día
 
-## Convenciones
+### Qué hay dentro de `docs/`, y qué se versiona
 
-- **Package Manager:** Referencia principal de frontend es `pnpm`, usarlo en lugar de npm/yarn.
-- **Idioma del código:** Inglés (variables, métodos, clases)
-- **Idioma de documentación:** Español (PHPDoc, comments de migraciones, mensajes de validación)
-- **Estilo:** PSR-12, principios SOLID — formatear con `./vendor/bin/pint`
-- **Naming:** Convenciones Laravel (PascalCase clases, camelCase métodos, snake_case tablas/columnas)
-- **Enums:** Usar PHP 8.4 backed enums en `app/Enums/` (sufijo `Enum`, e.g. `UserRoleEnum`, `ContentStatusEnum`)
-- **Traits:** Reutilizar traits de `app/Traits/` antes de duplicar lógica (`HasSlug`, `HasStatus`, `Filterable`, `HasTimestampScopes`, `ApiResponseTrait`, `BelongsToUser`, `BelongsToHardwareDevice`)
-- **Modelos base:** Extender `BaseModel` o `BaseAbstractModelWithTableCrud` de `app/Models/BaseModels/`
-- **API Responses:** Las excepciones de API se manejan globalmente en `bootstrap/app.php` — devuelven JSON con estructura `{success, message}` o `{success, message, errors}`
-- **Resources:** Todos en `app/Http/Resources/V2/` organizados por módulo (los legacy de raíz se eliminaron con la V1)
+| Directorio | Qué es | ¿git? | ¿Se lee? |
+|---|---|---|---|
+| `docs/info/` | Documentación técnica de **cada módulo de esta plataforma** | ✅ **sí** | Sí: es la referencia de trabajo |
+| `docs/info/apis/<api>.md` | **Cómo usamos nosotros** una API de terceros aquí | ✅ **sí** | Sí, al tocar esa integración |
+| `docs/apis/<api>/` | Documentación **oficial y verificada** de esa API de terceros: endpoints, mapeos, erratas y límites reales | ✅ **sí** | **Sólo** al trabajar contra esa API |
+| `docs/apis/<api>/src/` | Las fuentes originales descargadas | ✅ sí | **Nunca de rutina.** No se editan |
+| `docs/planning/` | Material de trabajo **local** para preparar cómo se adapta el proyecto | ❌ **NO** | Sí, mientras se planifica |
+| `docs/planning/archived/` | Planificaciones ya ejecutadas — **excepción, no fiable como estado actual, no existe en un clon nuevo** | ❌ **NO** | **No**, salvo que haga falta rescatar el porqué concreto de una decisión ya tomada |
+| `docs/auditorias/` | Auditorías internas | ❌ **NO** | Bajo demanda |
+| `docs/future/` | Ideas y trabajo **decididos pero aplazados** (no son deuda técnica ni bugs) | ✅ sí | **Sólo** al ir a documentar, revisar o retomar algo para guardarlo de cara al futuro. **No la leas de rutina** al trabajar en un módulo: mientras no se retome, no aporta nada y es gastar contexto de balde |
 
-## Autenticación
+> ⛔ **`docs/planning` y `docs/auditorias` van en `.gitignore` y ahí se quedan.**
+> No son parte del proyecto: son cómo lo preparamos. Si algún documento de
+> planificación dice lo contrario, **manda este fichero**. Ya pasó una vez.
+>
+> Consecuencia práctica: **nada de `docs/info` puede enlazar a `docs/planning`**,
+> porque para quien clone el repositorio sería un enlace roto.
 
-- Web: Laravel Fortify (login, registro, reset password, verificación email)
-- API: Laravel Sanctum (tokens)
-- **IoT (dispositivos):** token Sanctum **por dispositivo** con **abilities/scopes** por módulo (`weatherstation:write`, `hardware:write`, `keycounter:write`, `smartplant:write`, `airflight:write`) y expiración. Emisión con `php artisan iot:device-token <id> --abilities=... [--expires=días]`. Alias de middleware `ability`/`abilities` registrados en `bootstrap/app.php`. Endpoints de escritura protegidos con `auth:sanctum` + `ability:<scope>` + `throttle:api-store`.
-- Roles: 1=SuperAdmin, 2=Admin, 3=User
-- Panel Admin: solo SuperAdmin
-- Panel Tenant: cualquier usuario autenticado
 
-## Base de datos
 
-- PostgreSQL con migraciones documentadas (comment en todas las columnas)
-- Foreign keys con onDelete/onUpdate explícitos
-- Índices en columnas de búsqueda frecuente
+La documentación de cada módulo está en [`docs/info/`](docs/info/README.md). **Actualizarla es
+parte de la tarea, no un extra.**
 
-## ⚠️ Documentación técnica de módulos — OBLIGATORIO mantener actualizada
+### Reglas
 
-La documentación técnica de cada módulo se encuentra en `docs/info/`. **Es obligatorio actualizarla cuando se modifique un módulo existente o se cree uno nuevo.**
+1. **Documentación viva obligatoria:** Cada módulo o funcionalidad del proyecto debe estar documentado en `docs/info/`, y cualquier cambio en un módulo debe actualizar su documentación técnica viva en el mismo commit por protocolo estricto.
+2. **Modificas un módulo** (campos, relaciones, lógica, rutas) → actualiza su `.md` en `docs/info/`.
+3. **Creas un módulo** → crea su `.md` con la estructura correspondiente, e indéxalo en `docs/info/README.md` y en la tabla de este fichero.
+4. **Eliminas un módulo** → elimina su `.md` y quítalo de los índices.
+5. **Documentación de APIs:** Las APIs se documentan en su propio directorio dentro de `docs/info/apis/` detallando cómo las usamos e integramos en nuestra aplicación; la documentación oficial destilada de APIs de terceros se coloca en `docs/apis/` como referencia, enlazando desde `docs/info/apis/` hacia `docs/apis/` cuando se haga referencia a especificaciones oficiales.
+6. **Diseño visual:** El diseño siempre se documenta en `docs/info/DESIGN.md`, donde debe incluirse toda la información técnica referente al diseño, layout y esquema de colores Tailwind CSS v4 para mantener la coherencia visual.
+7. **Componentes reutilizables:** Todos los componentes Blade para frontend se documentan en `docs/info/COMPONENTS.md`, quedando prohibido maquetar botones o inputs manuales si ya existe su equivalente Blade.
+8. **Auditorías de código:** Las auditorías que se soliciten sobre el código se documentan en `docs/auditorias/` y quedan excluidas de git en `.gitignore`.
+9. **Dudas de planificación e implementación:** Se documentan en `docs/planning/dudas/` agrupadas, enumeradas, con hueco para responder y control de estado (`[ ] Pendiente` | `[x] Resuelta` | `[ ] Ignorada`).
+10. **Fechas obligatorias:** Ver la regla 5 de §12. Formato: `> Creado: YYYY-MM-DD · Última revisión: YYYY-MM-DD`, al pie y detrás de un `---`.
 
-### Índice de módulos (`docs/info/`)
+### Índice
 
-| Archivo | Módulo |
-|---------|--------|
-| `weather-station.md` | Estación Meteorológica (sensores + AEMET) |
-| `hardware.md` | Hardware y Energía (dispositivos, cargas solares, generadores) |
-| `printers.md` | Impresoras (gestión de impresoras y cola de impresión) |
-| `keycounter.md` | Contador de Pulsaciones (teclado y ratón) |
-| `smart-plant.md` | Plantas Inteligentes (sensores de plantas) |
-| `airflight.md` | Registro de Vuelos (aviones detectados) |
-| `content.md` | CMS / Contenidos (artículos, tutoriales, proyectos) |
-| `cv.md` | Currículum Vitae (16 secciones + PDF) |
+| Archivo | Módulo / Documento |
+|---------|---------------------|
+| `weather-station.md` | Estación meteorológica (sensores + AEMET) |
+| `hardware.md` | Hardware y energía (dispositivos, cargas solares, generadores) |
+| `keycounter.md` | Contador de pulsaciones (teclado y ratón) |
+| `smart-plant.md` | Plantas inteligentes |
+| `airflight.md` | Registro de vuelos ADS-B |
+| `printers.md` | Impresoras y cola de impresión |
+| `content.md` | CMS / contenidos |
+| `galleries.md` | Galerías de imágenes |
+| `cv.md` | Currículum vitae |
 | `platform.md` | Plataformas (multi-sitio) |
-| `newsletter.md` | Newsletter (suscripción, verificación, baja) |
-| `auth.md` | Autenticación y Usuarios (Sanctum, Fortify, roles) |
-| `contact.md` | Formulario de Contacto (email + recaptcha) |
-| `files.md` | Gestión de Archivos (uploads, thumbnails, redimensión) |
-| `common.md` | Entidades Comunes (categorías, tags, tecnologías, idiomas) |
-| `default-images.md` | Imágenes por defecto (catálogo por módulo) |
-| `debug-commands.md` | Comandos de Debug (inserción de datos de prueba) |
-| `commands.md` | Catálogo completo de comandos Artisan |
-| `websockets.md` | WebSockets con Laravel Reverb |
-| `mcp.md` | Model Context Protocol (MCP) (servidores y herramientas de IA) |
-| `apis/aemet.md` | API AEMET OpenData (integración técnica) |
+| `newsletter.md` | Newsletter |
+| `auth.md` | Autenticación y usuarios |
+| `contact.md` | Formulario de contacto |
+| `files.md` | Gestión de archivos |
+| `webhooks.md` | Webhooks externos (GitLab) |
+| `common.md` | Entidades comunes (categorías, tags, tecnologías, idiomas) |
+| `default-images.md` | Imágenes por defecto por módulo |
+| `filament-panels.md` | Paneles Filament: Resources, widgets, permisos |
+| `commands.md` | Catálogo de comandos Artisan |
+| `debug-commands.md` | Comandos de datos de prueba |
+| `frontend.md` | Frontend público: vistas, Vite, tokens de color, componentes Vue, errores y SEO |
+| `websockets.md` | WebSockets con Reverb: qué se emite, cómo se escucha y cómo se despliega |
+| `mcp.md` | Model Context Protocol |
+| `apis/aemet.md` | Integración con AEMET OpenData |
+| `api/v2/README.md` | Índice del mapa de rutas y contratos de nuestra API V2 |
+| `COMPONENTS.md` | Catálogo de componentes Blade UI reutilizables |
+| `DESIGN.md` | Sistema de diseño visual y tokens Tailwind CSS v4 |
+| `content_builder.md` | Constructor modular de contenido (Filament Builder + Blade) |
+| `_MODULE_TEMPLATE.md` | Plantilla oficial para documentar nuevos módulos |
+| `../deploys/deploy-vps.md` | Despliegue en VPS |
 
-### Reglas de actualización de `docs/info/`
+---
 
-1. **Al modificar un módulo existente** (nuevos campos, nuevas relaciones, cambios en lógica, nuevas rutas, etc.), actualizar el archivo `.md` correspondiente en `docs/info/` reflejando los cambios.
+## 13-bis. Documentación de APIs externas (`docs/apis/`)
 
-2. **Al crear un módulo nuevo**, crear un nuevo archivo `.md` en `docs/info/` con la misma estructura (resumen, archivos, campos, relaciones, rutas, etc.) y añadirlo al índice en `docs/info/README.md` y a la tabla de este archivo.
+- Contiene la documentación oficial **DESTILADA Y VERIFICADA** de APIs de terceros.
+- **Consúltala SOLO cuando la tarea toque una API externa.** Si no, no la leas: gasta
+  contexto sin aportar nada.
+- Orden de lectura obligatorio al tocar una API externa:
+  1. `docs/apis/<api>/README.md` — índice y normas
+  2. `docs/apis/<api>/00-fundamentos.md` + `ERRATAS.md` + `LIMITACIONES.md`
+  3. Solo el archivo del dominio concreto que necesites
+- **Nunca configures nada a partir de la especificación oficial de una API externa sin
+  verificarlo con una petición real.** Está medido: en AEMET la especificación falla en el
+  `Content-Type`, la codificación y la forma de los errores.
+- `docs/apis/<api>/src/` son las fuentes originales: **NO se editan y NO se leen de rutina.**
+- Cada archivo declara sus fuentes al principio, para saber qué volver a descargar al
+  actualizar.
+- Al documentar **CÓMO integramos** la API en este proyecto (servicios, comandos, modelos,
+  caché), hazlo en la carpeta de documentación propia del proyecto, **NO** en `docs/apis/`, y
+  **enlaza** al archivo concreto de `docs/apis/` en vez de repetir el dato oficial.
 
-3. **Al eliminar un módulo**, eliminar el archivo `.md` correspondiente y quitarlo de los índices.
+### Lo que hay hoy
 
-4. Cada archivo en `docs/info/` debe contener:
-   - Resumen breve del módulo (1-2 frases) al inicio
-   - Archivos principales involucrados (modelo, controlador, resource, vistas, etc.)
-   - Campos del modelo con tipos y descripciones
-   - Relaciones, scopes y métodos relevantes
-   - Rutas (web y API) si aplica
-   - Configuración Filament si aplica
+| API | Estado |
+|---|---|
+| [`docs/apis/aemet/`](docs/apis/aemet/) | 64 endpoints verificados con petición real (2026-08-26). 16 archivos + `ERRATAS.md` y `LIMITACIONES.md` |
+
+### AEMET — las cinco trampas que rompen la integración en silencio
+
+Resumen para no tener que releerlo todo. **El detalle está en los archivos, no aquí.**
+
+1. **Dos saltos.** El endpoint devuelve un sobre `{descripcion, estado, datos, metadatos}`;
+   los datos están en la URL `datos`, sin autenticación y **efímera**. Se consume una vez y
+   se persiste: **nunca se guarda ni se referencia esa URL**. Excepción: `balancehidrico` y
+   `resumenclimatologico` devuelven el PDF directo, sin sobre.
+2. **Codificación variable.** La mayoría responde en **ISO-8859-15** y algunos productos en
+   UTF-8 real. Hay que **leer el `charset` de la cabecera `Content-Type` y respetarlo**: con
+   los primeros `json_decode` devuelve `null` **en silencio**; a los segundos, convertirlos
+   los corrompe.
+3. **Un HTTP 200 no significa que haya datos.** Puede traer `estado: 404` en el cuerpo,
+   cuerpo vacío (falta la `api_key`, o el periodo no existe) o **datos de años atrás**. Hay
+   que validar el estado del **cuerpo** y la **frescura** del contenido (`elaborado`, o la
+   fecha de cabecera en los productos de texto).
+4. **Cuota indocumentada.** Cabecera `Remaining-request-endpoint`: **40 peticiones por
+   PLANTILLA de endpoint** (no por URL), menos en productos pesados, y **ligada a la IP**
+   además de a la clave. El 429 **no trae `Retry-After`** y la recuperación tarda más de una
+   hora. Espaciar, rotar entre familias y hacer backoff a ciegas.
+5. **No todo es JSON.** 22 de 64 endpoints devuelven texto plano, y hay GIF, PNG, `tar` sin
+   comprimir, gzip, ZIP, PDF y CSV. El `Content-Type` **no** distingue el `tar` del gzip:
+   comprobar el magic (`1f8b` = gzip; `ustar` en el offset 257 = tar plano).
+
+**Y dos reglas de operación:**
+
+- La **API Key es un JWT que caduca** (~100 días). Va en `.env` como `AEMET_API_KEY`, en la
+  cabecera `api_key` — **nunca en la query string**, que la filtra a los logs. Guardar también
+  `AEMET_API_KEY_EXPIRES_AT` para avisar antes de que caduque. Renovar en
+  <https://opendata.aemet.es/centrodedescargas/altaUsuario>.
+- **La web NUNCA llama a AEMET en la petición del usuario.** Un proceso en segundo plano trae
+  los datos y los persiste; la web lee de la base de datos.
+
+---
+
+## 14. Convenciones de código
+
+- **Estilo:** PSR-12, formateado con `./vendor/bin/pint` (o atajo `composer check` / `composer pint`).
+- **`declare(strict_types=1);`** en todos los ficheros PHP del proyecto.
+- **Tipado estricto:** Todas las funciones y métodos de la aplicación deben estar estrictamente tipados (parámetros y tipos de retorno explícitos) y documentados.
+- **Naming:** PascalCase para clases, camelCase para métodos, snake_case para tablas y columnas.
+- **Enums:** backed enums de PHP 8.4 en `app/Enums/` con sufijo `Enum`.
+- **Traits:** reutiliza los de `app/Traits/` antes de duplicar lógica.
+- **Modelos:** extienden `App\Models\BaseModels\BaseModel` y deben estar documentados con PHPDoc completo para propiedades (`@property`), relaciones (`@property-read`) y métodos (`@method`).
+- **Migraciones:** Todas las migraciones deben estar comentadas explicando el propósito de tablas y columnas con `->comment('...')`.
+- **Controladores API:** extienden `BaseApiController`.
+- **Validación:** siempre en FormRequests bajo `app/Http/Requests/`, nunca en el controlador. Formularios con reglas permisivas pero seguras.
+- **Filament y formularios:** Todo error de formulario se gestiona mediante notificaciones nativas de Filament, sin exponer bloques de HTML crudo.
+- **Subida de imágenes backend:** Todo campo `FileUpload` para imágenes se implementará con cropper/editor por defecto (`->imageEditor()` o componente `ImageCropperUpload`).
+- **Lógica de negocio:** en `app/Services/`, no en controladores ni en modelos.
+- **Autorización:** en Policies + `authorize()` en el controlador o en el FormRequest.
+- **Tests automatizados:** Toda funcionalidad implementada tiene que tener tests automatizados que la validen para seguir funcionando (`php artisan test --compact`).
+- **Base de datos:** Se utiliza **siempre PostgreSQL** (en local, testing y producción).
+- **Reglas de validación reutilizables para Filament:** `app/Support/FilamentValidationRules.php`.
+
+---
+
+> Última revisión: 2026-08-30

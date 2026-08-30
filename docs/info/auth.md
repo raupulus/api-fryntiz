@@ -1,14 +1,14 @@
 # Módulo: Autenticación y Usuarios (Auth)
 
-Módulo de autenticación con soporte dual: Fortify para web y Sanctum para API. Gestión de usuarios con sistema de roles jerárquicos (SuperAdmin, Admin, User) y dos paneles Filament separados.
+Módulo de autenticación con soporte dual: Fortify para web y Sanctum para API. Gestión de usuarios con sistema de roles jerárquicos (SuperAdmin, Admin, User, Editor) y dos paneles Filament separados.
 
 ## Política de acceso
 
 - **No hay registro público.** Las URLs `/register` y `/panel/register` devuelven 404. Tampoco se llama a `->registration()` en los paneles Filament.
 - **Solo dos puntos de entrada**:
-  - `/admin/login` para administradores (panel `admin`, requiere rol SuperAdmin).
+  - `/admin/login` para el panel `admin` (SuperAdmin, Admin o Editor).
   - `/panel/login` para usuarios (panel `tenant`).
-- **Alta de usuarios**: manual desde el panel admin (Sistema → Users) o por comando `php artisan debug:seed-users` en entorno de desarrollo.
+- **Alta de usuarios**: manual desde el panel admin (Sistema → Users) o con el seeder `UsersTableSeeder` en entorno de desarrollo (el comando `debug:seed-users` fue eliminado en fix_11).
 - **Redirección legacy**: `/dashboard` y `/dashboard/*` redirigen a `/panel` (HTTP 301).
 
 ### Método `canAccessPanel()`
@@ -17,8 +17,8 @@ El modelo `App\Models\User` implementa `Filament\Models\Contracts\FilamentUser` 
 
 | Panel | Condición |
 |-------|-----------|
-| `admin` | Usuario SuperAdmin (`User::isSuperAdmin()`) |
-| `tenant` (`/panel`) | Cualquier usuario autenticado |
+| `admin` | `is_active` y (`isAdmin()` o `isEditor()`) — es decir, SuperAdmin, Admin o Editor |
+| `tenant` (`/panel`) | `is_active` (cualquier usuario autenticado activo) |
 
 ### Assets de Filament
 
@@ -44,9 +44,9 @@ php artisan filament:upgrade
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/Auth/V2/LoginController.php` | API V2 | login, logout |
-| `app/Http/Controllers/Api/Auth/V2/RegisterController.php` | API V2 | signup, delete-account |
-| `app/Http/Controllers/Api/User/V2/UserController.php` | API V2 | index, show, update, destroy |
+| `app/Http/Controllers/Api/Auth/V2/TokenController.php` | API V2 | `store` (crea token de sesión), `index` (lista tokens), `storeDeviceToken`, `destroyCurrent`, `destroy` — ver "Rutas API V2 — Tokens" abajo |
+| `app/Http/Controllers/Api/Auth/V2/RegisterController.php` | API V2 | Código de alta/baja de cuenta, **sin ruta activa** (ver "Lo que ya no existe") |
+| `app/Http/Controllers/Api/User/V2/UserController.php` | API V2 | Solo `me()` — los datos del propio usuario. No hay `index`/`store`/`show`/`update`/`destroy` |
 | `app/Http/Controllers/Auth/*.php` | Web | Fortify (6 controladores) |
 
 ### Servicios
@@ -57,14 +57,16 @@ php artisan filament:upgrade
 ### Resources API V2
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Http/Resources/V2/UserResource.php` | Resource JSON usuario |
+| `app/Http/Resources/V2/UserResource.php` | Resource JSON usuario (el email solo se ve si eres su dueño o admin) |
+| `app/Http/Resources/V2/ApiTokenResource.php` | Resource JSON de un token (nunca expone el token en claro) |
 
 ### FormRequests
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Http/Requests/Api/Auth/LoginRequest.php` | Validación login |
-| `app/Http/Requests/Api/Auth/RegisterRequest.php` | Validación registro |
-| `app/Http/Requests/Api/User/V2/UpdateUserRequest.php` | Validación update usuario |
+| `app/Http/Requests/Api/Auth/V2/LoginRequest.php` | Validación de `POST /auth/tokens` |
+| `app/Http/Requests/Api/Auth/V2/RegisterRequest.php` | Validación de alta (código sin ruta activa) |
+| `app/Http/Requests/Api/Auth/V2/DeleteAccountRequest.php` | Validación de baja (código sin ruta activa) |
+| `app/Http/Requests/Api/Auth/V2/IssueDeviceTokenRequest.php` | Validación de `POST /auth/tokens/devices` |
 
 ### Filament
 | Archivo | Descripción |
@@ -77,7 +79,7 @@ php artisan filament:upgrade
 ### Enums
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Enums/UserRoleEnum.php` | Roles: SuperAdmin(1), Admin(2), User(3) |
+| `app/Enums/UserRoleEnum.php` | Roles: SuperAdmin(1), Admin(2), User(3), Editor(4) |
 
 ### Otros
 | Archivo | Descripción |
@@ -114,16 +116,18 @@ php artisan filament:upgrade
 
 | role_id | Nombre | Descripción |
 |---------|--------|-------------|
-| 1 | SuperAdmin | Acceso total, panel Admin |
-| 2 | Admin | Administración parcial |
+| 1 | SuperAdmin | Acceso total (bypass de `Gate::before`), panel Admin |
+| 2 | Admin | Administración operativa, panel Admin |
 | 3 | User | Usuario normal, panel Tenant |
+| 4 | Editor | Panel Admin sin el bypass de SuperAdmin; sus permisos los deciden las Policies |
 
 ### Métodos de rol en User
 
 | Método | Descripción |
 |--------|-------------|
 | `isSuperAdmin()` | ¿Es SuperAdmin? (role_id = 1) |
-| `isAdmin()` | ¿Es Admin? (role_id ≤ 2) |
+| `isAdmin()` | ¿Es SuperAdmin o Admin? (role_id ∈ {1, 2}) |
+| `isEditor()` | ¿Es Editor? (role_id = 4) |
 
 ### Gate global
 
@@ -137,32 +141,72 @@ Gate::before(function ($user, $ability) {
 
 | Panel | Ruta | Acceso | Descripción |
 |-------|------|--------|-------------|
-| Admin | `/admin` | Solo SuperAdmin | Gestión completa del sistema |
-| Tenant | `/panel` | Cualquier autenticado | Panel personal del usuario |
+| Admin | `/admin` | SuperAdmin, Admin o Editor (activos) | Gestión del sistema; solo SuperAdmin tiene bypass total |
+| Tenant | `/panel` | Cualquier usuario autenticado y activo | Panel personal del usuario |
 
-## Rutas API V2 — Auth
+## Rutas API V2 — Tokens
 
-| Método | Ruta | Auth | Throttle | Descripción |
-|--------|------|------|----------|-------------|
-| POST | `/api/v2/auth/login` | No | api-auth | Iniciar sesión (Sanctum token) |
-| POST | `/api/v2/auth/signup` | No | api-auth | Registrar usuario (role=3) |
-| POST | `/api/v2/auth/logout` | Sí | api-auth | Cerrar sesión (elimina token) |
-| POST | `/api/v2/auth/delete-account` | Sí | api-auth | Eliminar cuenta |
+**El token es un recurso, no un verbo** (D90). `POST /auth/login` pasó a ser
+`POST /auth/tokens`, y con eso listar y revocar salen de los métodos HTTP de
+siempre, que es justo lo que necesita el panel de usuario.
 
-## Rutas API V2 — Users
+| Método | Ruta | Auth | Throttle | Qué hace |
+|--------|------|------|----------|----------|
+| POST | `/api/v2/auth/tokens` | No | `api-auth` | Crea un token de sesión a partir de email y contraseña. Responde **201** |
+| GET | `/api/v2/auth/tokens` | `ability:session` | — | Lista los tokens del usuario |
+| POST | `/api/v2/auth/tokens/devices` | `ability:session` | — | Emite un token de dispositivo IoT, acotado por abilities |
+| DELETE | `/api/v2/auth/tokens/current` | `ability:session` | — | Revoca el token con el que se llama (el «logout» de siempre) |
+| DELETE | `/api/v2/auth/tokens/{token}` | `ability:session` | — | Revoca **otro** token del propio usuario |
 
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | `/api/v2/user` | Sí (Admin) | Listar usuarios paginado |
-| GET | `/api/v2/user/{id}` | Sí | Ver usuario |
-| PUT | `/api/v2/user/{id}` | Sí (Owner) | Actualizar usuario |
-| DELETE | `/api/v2/user/{id}` | Sí (Owner/Admin) | Eliminar usuario |
+> ⚠️ **`ability:session` no es lo mismo que «estar autenticado».** Un token de
+> dispositivo IoT está autenticado y **no** puede tocar estas rutas: no lleva esa
+> ability. Es lo que impide que, robando el token de un sensor, se listen y
+> revoquen los tokens de la persona.
+
+### Lo que ya no existe, y por qué
+
+| Ruta que había | Qué pasó |
+|---|---|
+| `POST /api/v2/auth/login` | Es `POST /auth/tokens` |
+| `POST /api/v2/auth/logout` | Es `DELETE /auth/tokens/current` |
+| `POST /api/v2/auth/signup` | **Retirada.** El alta de usuarios se hace desde Filament |
+| `POST /api/v2/auth/delete-account` | **Retirada** (auditoría A1): borraba la cuenta y **todos** los tokens sin pedir la contraseña, así que el token de cualquier cacharro dejaba al dueño fuera. El código sigue escrito y securizado en `RegisterController`, sin ruta |
+
+## Rutas API V2 — Usuarios
+
+| Método | Ruta | Auth | Qué hace |
+|--------|------|------|----------|
+| GET | `/api/v2/users/me` | `ability:session` | Los datos del **propio** usuario |
+
+Y no hay más. `GET /user/{id}`, `PUT /user/{id}` y `DELETE /user/{id}` **se
+retiraron**: el `GET` no comprobaba nada (auditoría **A4**), así que cualquier
+token —el de un sensor incluido— podía enumerar usuarios recorriendo ids. La
+gestión de usuarios se hace desde el panel de administración, que sí pasa por
+`UserPolicy`.
+
+### Lo que decía esta página y era mentira (N258)
+
+Documentaba las tres rutas `/user/{id}` como si existieran, y en el `DELETE`
+ponía «Sí (Owner/Admin)». `UserPolicy::delete()` exige **superadmin**, y además
+prohíbe borrarse a uno mismo. Es decir: **la documentación era más permisiva que
+el código**, que es la peor dirección posible en la que puede equivocarse. Y el
+`GET` ponía «Sí» a secas, igual que el resto de la columna, cuando ahí no se
+comprobaba absolutamente nada: el «Sí» ocultaba el agujero haciéndolo pasar por
+una decisión.
+
+### `UserPolicy`, para lo que se usa desde el panel
+
+| Método | Quién puede |
+|---|---|
+| `viewAny` / `create` | Admin |
+| `view` / `update` | Admin, o el propio usuario. Y a un superadmin sólo lo toca otro superadmin |
+| `delete` / `forceDelete` | **Sólo superadmin**, y nunca a sí mismo |
+| `restore` | Admin |
 
 ## Autenticación Web
 
-Vía Laravel Fortify:
-- Login: `/login`
-- Registro: `/register`
+Vía Laravel Fortify (sin registro público — `/register` y `/panel/register` devuelven 404):
+- Login: `/login` (además `/admin/login` y `/panel/login`)
 - Reset password: `/forgot-password`
 - Verificación email
 - Two-Factor Authentication (2FA)
@@ -188,3 +232,71 @@ admin, user). El comando `debug:seed-users` fue **eliminado en fix_11**.
 - **Imagen de perfil**: usa `ImageCropperUpload` (disco `public`); avatar centrado.
 - **Notificaciones**: la sección ocupa el 100% del ancho (`columnSpanFull`).
 
+---
+
+## Deuda de seguridad: estado tras la fase 3
+
+Lo que había abierto el 2026-08-19 y qué pasó con cada cosa. Verificado contra el
+código el 2026-08-30.
+
+| Lo que había | Estado |
+|---|---|
+| El login emitía tokens **con ability `*`** | ✅ `TokenController::store()` los emite con `ability:session`, y los de dispositivo sólo con las de su módulo |
+| `UserController::show()` **sin `authorize()`** | ✅ La ruta se retiró entera (A4). El controlador sólo tiene `me()` |
+| `StoreUserRequest` aceptaba `role_id` de cualquier admin | ✅ Retirado con las rutas de gestión de usuarios |
+| Política de contraseñas débil (`min:8`) | ✅ `Password::defaults()` en `AppServiceProvider`: mínimo 12, mayúsculas y minúsculas, números, y `uncompromised()` en producción |
+| `UserResource` accedía a `role->name` sin protección | ✅ `whenLoaded('role', …)` |
+| `canAccessPanel()` dejaba entrar a cualquiera al panel **admin** | ✅ Exige `is_active` **y** (admin o editor). El panel tenant (`/panel`) sí es para cualquier usuario activo: es su panel |
+
+### Lo que sigue así, y es a propósito
+
+| Qué | Por qué |
+|---|---|
+| `config('sanctum.expiration') === null` | **Los tokens de dispositivo IoT no caducan a propósito.** Un sensor en un tejado no puede renovar un token cada 30 días. Su seguridad son las abilities, no el tiempo. Los tokens de **persona** sí caducan: `TokenController` les pone `now()->addDays(config('auth.api_session_days'))` al crearlos |
+
+### Lo único que queda por vigilar
+
+`User::$fillable` sigue incluyendo `role_id` y `email_verified_at`. Hoy no es
+explotable —no hay ningún endpoint que haga `User::create($request->all())`, y
+`RegisterController` fija el rol a mano— pero es una mina para el día en que
+alguien escriba ese endpoint sin pensarlo. Anotado en
+`docs/planning/` (local, fuera de git).
+
+## 🔒 Decisión de diseño: no hay recuperación de contraseña
+
+**Decidido el 2026-08-19. Es intencional, no es un olvido ni una funcionalidad pendiente.**
+
+El sistema **no expone ningún flujo de "he olvidado mi contraseña"**. No hay `/forgot-password`
+funcional, ni enlace de recuperación en los logins de los paneles.
+
+### Motivo
+
+El usuario principal de la plataforma es el propio administrador. Un flujo público de recuperación
+es superficie de ataque —enumeración de usuarios, envío masivo de correos, tokens de reset
+interceptables— que **aquí no aporta ninguna utilidad**.
+
+### Cómo se recupera una contraseña
+
+**Solo el administrador**, desde el panel Filament (`/admin` → Sistema → Users):
+
+1. Restablecer la contraseña de un usuario.
+2. Opcionalmente, enviarle la nueva contraseña por email.
+
+Si se pierde la contraseña del administrador, se restablece por consola en el servidor
+(`php artisan tinker`).
+
+### Implicaciones técnicas
+
+| Elemento | Estado que debe mantenerse |
+|----------|---------------------------|
+| `Features::resetPasswords()` en `config/fortify.php` | **Comentado / desactivado** |
+| `->passwordReset()` en los paneles Filament | **No activar en ninguno** |
+| `resources/views/auth/forgot-password.blade.php` | Eliminar (huérfana) |
+| `resources/views/auth/reset-password.blade.php` | Eliminar (huérfana) |
+| `Fortify::resetUserPasswordsUsing()` | Revisar: registrado sobre una feature desactivada |
+
+**No reactivar estas rutas** sin una decisión explícita que revierta esta.
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-30

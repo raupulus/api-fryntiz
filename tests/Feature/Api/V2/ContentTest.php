@@ -24,7 +24,7 @@ class ContentTest extends ApiTestCase
             'published_at' => now()->subDay(),
         ]);
 
-        $response = $this->getJson($this->apiUrl("content/{$platform->slug}/{$content->slug}"));
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -40,7 +40,7 @@ class ContentTest extends ApiTestCase
             'published_at' => now()->subDay(),
         ]);
 
-        $response = $this->getJson($this->apiUrl("content/{$platform->slug}/{$content->slug}"));
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
             'success', 'message',
@@ -51,7 +51,7 @@ class ContentTest extends ApiTestCase
     #[Test]
     public function content_show_returns_404_for_nonexistent(): void
     {
-        $response = $this->getJson($this->apiUrl('content/no-existe/tampoco'));
+        $response = $this->getJson($this->apiUrl('platforms/no-existe/contents/tampoco'));
         $this->assertErrorResponse($response, 404);
     }
 
@@ -63,7 +63,7 @@ class ContentTest extends ApiTestCase
             'status_id' => 2,
             'published_at' => now()->subDay(),
         ]);
-        $response = $this->getJson($this->apiUrl("content/{$content->slug}/pages"));
+        $response = $this->getJson($this->apiUrl("platforms/{$content->platform->slug}/contents/{$content->slug}/pages"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -71,8 +71,28 @@ class ContentTest extends ApiTestCase
     #[Test]
     public function pages_returns_404_for_nonexistent_content(): void
     {
-        $response = $this->getJson($this->apiUrl('content/slug-no-existe/pages'));
+        $response = $this->getJson($this->apiUrl('platforms/no-existe/contents/slug-no-existe/pages'));
         $this->assertErrorResponse($response, 404);
+    }
+
+    #[Test]
+    public function index_does_not_error_with_several_typed_contents(): void
+    {
+        // `type`/`status` son relaciones BelongsTo que ContentResource lee sin
+        // `whenLoaded`. Si el índice no las precarga, acceder a ellas sobre 2+
+        // filas dispara una LazyLoadingViolationException fuera de producción
+        // en vez de responder 200 (bug real, arreglado 2026-08-30).
+        $platform = Platform::factory()->create();
+        Content::factory()->count(3)->create([
+            'platform_id' => $platform->id,
+            'is_active' => true,
+            'status_id' => 2,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents"));
+        $this->assertPaginatedResponse($response);
+        $response->assertJsonCount(3, 'data');
     }
 
     #[Test]
@@ -83,7 +103,7 @@ class ContentTest extends ApiTestCase
             'status_id' => 2,
             'published_at' => now()->subDay(),
         ]);
-        $response = $this->getJson($this->apiUrl("content/{$content->slug}/related"));
+        $response = $this->getJson($this->apiUrl("platforms/{$content->platform->slug}/contents/{$content->slug}/related"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }

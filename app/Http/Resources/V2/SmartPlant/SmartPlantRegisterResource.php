@@ -19,7 +19,9 @@ class SmartPlantRegisterResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            // No hay `user_id` en `smartplant_registers` a propósito: la
+            // planta (`plant_id`) es el único sitio donde consta el dueño de
+            // una lectura (ver GET /smartplant/plants).
             'plant_id' => $this->plant_id,
             'hardware_device_id' => $this->hardware_device_id,
             'uv' => $this->uv,

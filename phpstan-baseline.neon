@@ -1,166 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily12Command\) and ''error'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETDaily12Command.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily12Command\) and ''warn'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Console/Commands/AEMET/AEMETDaily12Command.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\AEMET\\AEMETDaily12Command\:\:handle\(\) should return int but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETDaily12Command.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily20Command\) and ''error'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETDaily20Command.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily20Command\) and ''warn'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Console/Commands/AEMET/AEMETDaily20Command.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily8Command\) and ''error'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETDaily8Command.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETDaily8Command\) and ''warn'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Console/Commands/AEMET/AEMETDaily8Command.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\AEMET\\AEMETDaily8Command\:\:handle\(\) should return int but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETDaily8Command.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\AEMET\\AEMETDailyCommand\:\:handle\(\) should return int but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETDailyCommand.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery10mCommand\) and ''error'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETEvery10mCommand.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery10mCommand\) and ''warn'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Console/Commands/AEMET/AEMETEvery10mCommand.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery30mCommand\) and ''error'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETEvery30mCommand.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery30mCommand\) and ''warn'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Console/Commands/AEMET/AEMETEvery30mCommand.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery4hCommand\) and ''error'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AEMET/AEMETEvery4hCommand.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Console\\Commands\\AEMET\\AEMETEvery4hCommand\) and ''warn'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Console/Commands/AEMET/AEMETEvery4hCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\AEMETCommand\:\:handle\(\) should return int but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Console/Commands/AEMETCommand.php
-
-		-
-			message: '#^Anonymous function has an unused use \$ids\.$#'
-			identifier: closure.unusedUse
-			count: 1
-			path: app/Console/Commands/Content/PublishContentCommand.php
-
-		-
-			message: '#^Property App\\Models\\Content\\Content\:\:\$published_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Console/Commands/Content/PublishContentCommand.php
-
-		-
 			message: '#^Property App\\Models\\KeyCounter\\Keyboard\:\:\$duration \(int\) does not accept float\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: app/Console/Commands/KeyCounterGenerateDuration.php
-
-		-
-			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/Mcp/InspectorCommand.php
-
-		-
-			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Filament/Admin/Pages/AirFlightMap.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\AirFlight\\AirFlightRoute\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Filament/Admin/Pages/AirFlightMap.php
-
-		-
-			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\AirFlight\\AirFlightAirPlane\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Pages/AirFlightMap.php
-
-		-
-			message: '#^Access to an undefined property App\\Filament\\Admin\\Pages\\Profile\:\:\$form\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Filament/Admin/Pages/Profile.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>send_email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Pages/Profile.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>send_notification" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Pages/Profile.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>send_notification_push" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Pages/Profile.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
@@ -211,54 +55,6 @@ parameters:
 			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: app/Filament/Admin/Widgets/Keyboard30DaysWidget.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: app/Filament/Admin/Widgets/Mouse30DaysWidget.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parent\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Helpers/ContentHelper.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parentCategory\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Helpers/ContentHelper.php
-
-		-
-			message: '#^Method App\\Helpers\\ContentHelper\:\:contentFeaturedPrepare\(\) should return App\\Models\\Content\\Content but returns object\{title\: string, slug\: string, excerpt\: string\|null, has_image\: bool, urlImageSmall\: string, urlImageMedium\: string, published_at\: Illuminate\\Support\\Carbon\|null, updated_at\: Illuminate\\Support\\Carbon\|null, categories\: Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>, subcategories\: Illuminate\\Support\\Collection\<int, mixed\>\}&stdClass\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Helpers/ContentHelper.php
-
-		-
-			message: '#^Static method App\\Helpers\\GoogleRecaptchaHelper\:\:getGoogleRecaptchaKey\(\) is unused\.$#'
-			identifier: method.unused
-			count: 1
-			path: app/Helpers/GoogleRecaptchaHelper.php
-
-		-
-			message: '#^Static method App\\Helpers\\GoogleRecaptchaHelper\:\:validateAction\(\) is unused\.$#'
-			identifier: method.unused
-			count: 1
-			path: app/Helpers/GoogleRecaptchaHelper.php
-
-		-
-			message: '#^Static method App\\Helpers\\GoogleRecaptchaHelper\:\:validateHostName\(\) is unused\.$#'
-			identifier: method.unused
-			count: 1
-			path: app/Helpers/GoogleRecaptchaHelper.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\File\:\:\$type\.$#'
 			identifier: property.notFound
 			count: 1
@@ -267,23 +63,17 @@ parameters:
 		-
 			message: '#^Method App\\Http\\Controllers\\FileController\:\:delete\(\) with return type void returns Illuminate\\Http\\RedirectResponse but should not return anything\.$#'
 			identifier: return.void
-			count: 1
+			count: 2
 			path: app/Http/Controllers/FileController.php
 
 		-
-			message: '#^Method App\\Http\\Controllers\\FileController\:\:download\(\) should return Symfony\\Component\\HttpFoundation\\BinaryFileResponse but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Http/Controllers/FileController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\FileThumbnail\:\:\$is_private\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/FileThumbnailController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\FileThumbnail\:\:\$user_id\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/FileThumbnailController.php
@@ -309,13 +99,13 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 2
+			count: 1
 			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>name_friendly" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 2
+			count: 1
 			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
 
 		-
@@ -325,73 +115,79 @@ parameters:
 			path: app/Http/Controllers/LanguageController.php
 
 		-
+			message: '#^Method App\\Http\\Controllers\\WeatherStation\\WeatherStationController\:\:sensor\(\) should return Illuminate\\View\\View but returns Illuminate\\Http\\RedirectResponse\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/WeatherStation/WeatherStationController.php
+
+		-
 			message: '#^Caught class App\\Http\\Controllers\\WebHooks\\Exception not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: app/Http/Controllers/WebHooks/GitlabWebhookController.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: app/Http/Middleware/DomainCheckMiddleware.php
-
-		-
-			message: '#^Comparison operation "\>" between 0 and 10 is always false\.$#'
-			identifier: greater.alwaysFalse
-			count: 1
-			path: app/Http/Middleware/IpCounterStrict.php
-
-		-
-			message: '#^Comparison operation "\>" between 0 and 5 is always false\.$#'
-			identifier: greater.alwaysFalse
-			count: 1
-			path: app/Http/Middleware/IpCounterStrict.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: app/Http/Middleware/IpCounterStrict.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Requests/Api/User/V2/UpdateUserRequest.php
-
-		-
-			message: '#^Call to function is_array\(\) with non\-empty\-list\<string\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Http/Requests/EmailContactSendRequest.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 2
-			path: app/Http/Requests/EmailContactSendRequest.php
-
-		-
-			message: '#^Result of \|\| is always false\.$#'
-			identifier: booleanOr.alwaysFalse
-			count: 2
-			path: app/Http/Requests/EmailContactSendRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$icao\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$altitude\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$seen\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$flight\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\AirFlight\\AirFlightResource\:\:\$seen_pos\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lat\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lon\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$messages\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$rssi\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$seen_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$speed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$squawk\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$track\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$vert_rate\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
@@ -409,18 +205,6 @@ parameters:
 			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$body\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Content/ContentPageResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentPageResource\:\:\$raw_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Content/ContentPageResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$seo_description\.$#'
 			identifier: property.notFound
 			count: 1
@@ -433,136 +217,10 @@ parameters:
 			path: app/Http/Resources/V2/Content/ContentResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$cpu_avg\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\EnergyMonitorResource\:\:\$intensity\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/EnergyMonitorResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$battery_percentage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$battery_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$device_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$energy_amperage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$energy_power\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$energy_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$load_amperage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$load_power\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$load_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$read_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Hardware\\SolarChargeResource\:\:\$temperature\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Hardware/SolarChargeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\PlatformResource\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/PlatformResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\SmartPlant\\SmartPlantRegisterResource\:\:\$user_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/SmartPlant/SmartPlantRegisterResource.php
-
-		-
-			message: '#^Left side of && is always false\.$#'
-			identifier: booleanAnd.leftAlwaysFalse
-			count: 1
-			path: app/Mail/GenericMail.php
-
-		-
-			message: '#^Offset ''attached'' on \*NEVER\* in isset\(\) always exists and is not nullable\.$#'
-			identifier: isset.offset
-			count: 1
-			path: app/Mail/GenericMail.php
-
-		-
 			message: '#^Parameter \#2 \$name of method Illuminate\\Mail\\Mailable\:\:to\(\) expects string\|null, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Mail/GenericMail.php
-
-		-
-			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Mcp/Tools/GetModelInfoTool.php
-
-		-
-			message: '#^Method App\\Mcp\\Tools\\GetSystemStatusTool\:\:handle\(\) should return Laravel\\Mcp\\Response but returns Laravel\\Mcp\\ResponseFactory\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Mcp/Tools/GetSystemStatusTool.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$altitude\.$#'
@@ -647,6 +305,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Models/AirFlight/AirFlightAirPlane.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed~''App\\\\Models\\\\User'' and ''App\\\\Models\\\\User'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Models/ApiToken.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\BaseModels\\BaseModel\:\:\$image\.$#'
@@ -781,12 +445,6 @@ parameters:
 			path: app/Models/Content/Content.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: app/Models/Content/Content.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$order\.$#'
 			identifier: property.notFound
 			count: 2
@@ -811,18 +469,6 @@ parameters:
 			path: app/Models/Content/ContentSeo.php
 
 		-
-			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\Content\\Content\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: app/Models/Content/ContentSeo.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/File.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -835,76 +481,10 @@ parameters:
 			path: app/Models/File.php
 
 		-
-			message: '#^Parameter \#1 \$array \(list\<App\\Models\\FileThumbnail\>\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
-			identifier: arrayFilter.same
-			count: 1
-			path: app/Models/File.php
-
-		-
-			message: '#^Parameter \#1 \$filename of function getimagesize expects string, Illuminate\\Http\\UploadedFile given\.$#'
-			identifier: argument.type
-			count: 4
-			path: app/Models/File.php
-
-		-
-			message: '#^Right side of && is always true\.$#'
-			identifier: booleanAnd.rightAlwaysTrue
-			count: 1
-			path: app/Models/File.php
-
-		-
-			message: '#^Ternary operator condition is always true\.$#'
-			identifier: ternary.alwaysTrue
-			count: 2
-			path: app/Models/File.php
-
-		-
-			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\FileType\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Models/File.php
-
-		-
 			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Relations\\HasMany is incompatible with native type Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\.$#'
 			identifier: return.phpDocType
 			count: 2
 			path: app/Models/Hardware/HardwareDevice.php
-
-		-
-			message: '#^Method App\\Models\\Hardware\\HardwarePowerGeneratorToday\:\:createModel\(\) should return App\\Models\\Hardware\\HardwarePowerGeneratorHistorical but returns App\\Models\\Hardware\\HardwarePowerGeneratorToday\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Hardware/HardwarePowerGeneratorToday.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadHistorical\:\:\$battery_max_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadHistorical\:\:\$battery_min_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadHistorical.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadToday\:\:\$battery_max_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadToday.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Hardware\\HardwarePowerLoadToday\:\:\$battery_min_voltage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadToday.php
-
-		-
-			message: '#^Method App\\Models\\Hardware\\HardwarePowerLoadToday\:\:recalculateToday\(\) should return static\(App\\Models\\Hardware\\HardwarePowerLoadToday\)\|null but returns App\\Models\\Hardware\\HardwarePowerLoadToday\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Hardware/HardwarePowerLoadToday.php
 
 		-
 			message: '#^Method App\\Models\\KeyCounter\\BaseKeyCounter\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\KeyCounter\\BaseKeyCounter\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\BaseModels\\BaseModel\>\.$#'
@@ -975,25 +555,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$image\.$#'
 			identifier: property.notFound
-			count: 9
-			path: app/Models/User.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 2
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Foundation\\Auth\\User\>\.$#'
-			identifier: return.type
-			count: 3
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:getAllActive\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Foundation\\Auth\\User\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\.$#'
-			identifier: return.type
-			count: 1
+			count: 4
 			path: app/Models/User.php
 
 		-
@@ -1037,30 +599,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: app/Models/User.php
-
-		-
-			message: '#^Property App\\Models\\User\:\:\$deleted_at \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value 10102 \(CURLOPT_ENCODING, CURLOPT_ENCODING\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: app/Models/WeatherStation/AEMET/AEMET.php
-
-		-
-			message: '#^Property App\\Models\\WeatherStation\\AEMET\\AEMET\:\:\$CITY is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Models/WeatherStation/AEMET/AEMET.php
-
-		-
-			message: '#^PHPDoc tag @return with type Illuminate\\Database\\Eloquent\\Collection\|null is not subtype of native type array\|null\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: app/Models/WeatherStation/AEMET/AEMETAdverseEvents.php
 
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$apiResponse$#'
@@ -1221,7 +759,7 @@ parameters:
 		-
 			message: '#^Left side of && is always true\.$#'
 			identifier: booleanAnd.leftAlwaysTrue
-			count: 5
+			count: 2
 			path: app/Models/WeatherStation/BaseWeatherStation.php
 
 		-
@@ -1327,112 +865,34 @@ parameters:
 			path: app/Policies/ContentPolicy.php
 
 		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
+			message: '#^Access to an undefined property App\\Models\\SmartPlant\\SmartPlantPlant\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Policies/EmailPolicy.php
+			path: app/Policies/SmartPlantPolicy.php
 
 		-
-			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:delete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
+			message: '#^Access to an undefined property App\\Models\\SmartPlant\\SmartPlantPlant\:\:\$hardware_device_id\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Policies/KeyCounterKeyboardPolicy.php
+			path: app/Rules/OwnedSmartPlant.php
 
 		-
-			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:forceDelete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
+			message: '#^Property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$seen_first_at \(string\|null\) does not accept Illuminate\\Support\\Carbon\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: app/Policies/KeyCounterKeyboardPolicy.php
+			path: app/Services/AirFlight/AirFlightService.php
 
 		-
-			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:restore\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
+			message: '#^Property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$seen_last_at \(string\|null\) does not accept Illuminate\\Support\\Carbon\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: app/Policies/KeyCounterKeyboardPolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:update\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterKeyboardPolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:view\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterKeyboardPolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterKeyboardPolicy\:\:viewAny\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterKeyboardPolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:delete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterMousePolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:forceDelete\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterMousePolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:restore\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterMousePolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:update\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterMousePolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:view\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterMousePolicy.php
-
-		-
-			message: '#^Method App\\Policies\\KeyCounterMousePolicy\:\:viewAny\(\) should return bool\|Illuminate\\Auth\\Access\\Response but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Policies/KeyCounterMousePolicy.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: app/Policies/SmartPlantRegisterPolicy.php
-
-		-
-			message: '#^Call to function method_exists\(\) with App\\Models\\User and ''currentAccessToken'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Rules/OwnedHardwareDevice.php
+			path: app/Services/AirFlight/AirFlightService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\KeyCounter\\Keyboard\>\:\:lastDays\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Services/KeyCounter/KeyCounterService.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Services/Newsletter/NewsletterService.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Client\\Response\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Services/WeatherStation/AEMETService.php
 
 		-
 			message: '#^Trait App\\Traits\\Filterable is used zero times and is not analysed\.$#'
@@ -1511,3 +971,4 @@ parameters:
 			identifier: return.never
 			count: 1
 			path: routes/web.php
+

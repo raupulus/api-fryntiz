@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models\CV;
 
+use App\Enums\CurriculumVisibilityEnum;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 use function array_key_exists;
@@ -89,6 +92,8 @@ use function array_key_exists;
  */
 class Curriculum extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'cv';
 
     protected $guarded = [
@@ -103,18 +108,105 @@ class Curriculum extends BaseModel
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * Al guardar, asegurar que solo un CV por usuario sea is_default.
-     */
+    protected $casts = [
+        'visibility' => CurriculumVisibilityEnum::class,
+        'is_active' => 'boolean',
+        'is_downloadable' => 'boolean',
+        'is_default' => 'boolean',
+        'is_public' => 'boolean',
+        'pdf_needs_regeneration' => 'boolean',
+        'pdf_generated_at' => 'datetime',
+    ];
+
     protected static function booted(): void
     {
         static::saving(function (Curriculum $cv) {
+            // Sólo un CV por usuario puede ser el predeterminado.
             if ($cv->is_default) {
                 self::where('user_id', $cv->user_id)
                     ->where('id', '!=', $cv->id ?? 0)
                     ->update(['is_default' => false]);
             }
+
+            // Un CV compartido sin token no lo ve nadie: se genera solo.
+            if ($cv->visibility === CurriculumVisibilityEnum::Shared && blank($cv->share_token)) {
+                $cv->share_token = self::newShareToken();
+            }
+
+            // `is_public` se queda sincronizado mientras exista la columna, para
+            // que los formularios y consultas antiguos no se contradigan con la
+            // visibilidad real.
+            $cv->is_public = $cv->visibility === CurriculumVisibilityEnum::Public;
         });
+
+        // Cualquier cambio en el CV invalida el PDF (B5).
+        static::updated(function (Curriculum $cv) {
+            if ($cv->wasChanged('pdf_path') || $cv->wasChanged('pdf_needs_regeneration') || $cv->wasChanged('pdf_generated_at')) {
+                return;
+            }
+
+            $cv->markPdfForRegeneration();
+        });
+    }
+
+    /**
+     * Token de compartición: 64 caracteres hexadecimales, imposibles de adivinar.
+     */
+    public static function newShareToken(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * Marca el PDF como caducado sin disparar más eventos.
+     *
+     * Lo llaman también las secciones del CV: si cambias un trabajo, el PDF que
+     * hay guardado ya no vale.
+     */
+    public function markPdfForRegeneration(): void
+    {
+        if ($this->pdf_needs_regeneration) {
+            return;
+        }
+
+        static::withoutEvents(function () {
+            $this->newQuery()
+                ->whereKey($this->getKey())
+                ->update(['pdf_needs_regeneration' => true]);
+        });
+
+        $this->pdf_needs_regeneration = true;
+    }
+
+    /**
+     * ¿Puede verlo alguien que llega sin autenticarse, con este token?
+     */
+    public function isVisibleTo(?string $shareToken = null): bool
+    {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        return match ($this->visibility) {
+            CurriculumVisibilityEnum::Public => true,
+            CurriculumVisibilityEnum::Shared => $shareToken !== null
+                && $this->share_token !== null
+                && hash_equals($this->share_token, $shareToken),
+            CurriculumVisibilityEnum::Private => false,
+        };
+    }
+
+    /**
+     * Sólo los currículums que salen en el listado público (B3).
+     *
+     * @param  Builder<Curriculum>  $query
+     * @return Builder<Curriculum>
+     */
+    public function scopePublicOnly(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('visibility', CurriculumVisibilityEnum::Public->value);
     }
 
     public function repositories(): HasMany

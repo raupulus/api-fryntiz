@@ -25,7 +25,7 @@ class ContentService
      */
     public function getBySlug(string $platformSlug, string $contentSlug): ?Content
     {
-        return Content::with(['pages', 'seo', 'metadata', 'technologies'])
+        return Content::with(['type', 'status', 'pages', 'seo', 'metadata', 'technologies', 'image.fileType'])
             ->whereHas('platform', fn ($q) => $q->where('slug', $platformSlug))
             ->where('slug', $contentSlug)
             ->published()
@@ -41,7 +41,7 @@ class ContentService
      */
     public function getFeaturedForPlatform(Platform $platform, int $limit = 10): Collection
     {
-        return Content::with(['seo', 'metadata'])
+        return Content::with(['seo', 'metadata', 'image.fileType'])
             ->forPlatform($platform->id)
             ->published()
             ->featured()
@@ -60,7 +60,7 @@ class ContentService
      */
     public function getByTypeForPlatform(Platform $platform, int $typeId, int $perPage = 15): LengthAwarePaginator
     {
-        return Content::with(['seo'])
+        return Content::with(['seo', 'image.fileType'])
             ->forPlatform($platform->id)
             ->ofType($typeId)
             ->published()
@@ -77,7 +77,7 @@ class ContentService
      */
     public function getRelated(Content $content, int $limit = 5): Collection
     {
-        return Content::with(['seo'])
+        return Content::with(['type', 'seo', 'image.fileType'])
             ->where('id', '!=', $content->id)
             ->forPlatform($content->platform_id)
             ->ofType($content->type_id)
