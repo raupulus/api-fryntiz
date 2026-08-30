@@ -7,54 +7,53 @@ namespace App\Policies;
 use App\Models\Platform;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use RoleHelper;
 
 /**
- * Class PlatformPolicy
+ * Autorización sobre plataformas (las webs que consumen la API).
+ *
+ * Crear, editar y borrar plataformas es cosa de administración. Un editor ve
+ * únicamente las que tiene asignadas en `platform_user`, que son las mismas
+ * sobre cuyo contenido puede trabajar.
+ *
+ * Los métodos se han renombrado a los que llama el framework: los antiguos
+ * `index`, `store` y `show` no los invoca nadie.
  */
 class PlatformPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->isAdmin() || $user->isEditor();
     }
 
-    public function index(User $user)
+    public function view(User $user, Platform $platform): bool
     {
-        return true;
+        return $user->canManagePlatform((int) $platform->id);
     }
 
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
+        return $user->isAdmin();
     }
 
-    public function store(User $user)
+    public function update(User $user, Platform $platform): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
+        return $user->isAdmin();
     }
 
-    public function delete(User $user, Platform $platform)
+    public function delete(User $user, Platform $platform): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
-        // return $platform->user_id === $user->id;
+        return $user->isAdmin();
     }
 
-    public function show(User $user, Platform $platform)
+    public function restore(User $user, Platform $platform): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
-    public function update(User $user, Platform $platform)
+    public function forceDelete(User $user, Platform $platform): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
-        // return $platform->user_id === $user->id;
+        return $user->isSuperAdmin();
     }
 }

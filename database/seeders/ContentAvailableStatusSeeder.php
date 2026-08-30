@@ -89,5 +89,16 @@ class ContentAvailableStatusSeeder extends Seeder
                 );
             }
         }
+
+        // N227: se insertan ids explícitos, y PostgreSQL NO avanza la secuencia
+        // del serial al hacerlo. Sin esto la secuencia se queda en 1 y el primer
+        // alta nueva choca contra la clave primaria.
+        // `HardwareTypesSeeder` ya lo hacía; este se había quedado sin ello.
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement(
+                "SELECT setval(pg_get_serial_sequence('{$this->tableName}', 'id'), ".
+                "COALESCE((SELECT MAX(id) FROM {$this->tableName}), 1), true)"
+            );
+        }
     }
 }

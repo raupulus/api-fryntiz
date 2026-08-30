@@ -17,11 +17,18 @@ class PlatformResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            // La columna es `title`, no `name` (**N1**). Se mantienen las dos
+            // claves: `name` es la que consumen las webs.
+            'name' => $this->title,
+            'title' => $this->title,
             'slug' => $this->slug,
             'domain' => $this->domain,
             'description' => $this->description,
-            'image' => $this->image,
+            // Igual que en los contenidos: la imagen se sirve como recurso, no
+            // como el modelo `File` entero, y sólo si viene cargada. Devolver
+            // `$this->image` a secas era una consulta perdida por fila y, con
+            // `preventLazyLoading`, un 500 en el listado.
+            'image' => $this->whenLoaded('image', fn () => new SocialImageResource($this->image)),
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

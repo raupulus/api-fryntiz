@@ -8,6 +8,7 @@ use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -64,6 +65,7 @@ use Illuminate\Support\Collection;
 class ContentSeo extends BaseModel
 {
     use ImageTrait;
+    use SoftDeletes;
 
     protected $table = 'content_seo';
 
@@ -124,6 +126,7 @@ class ContentSeo extends BaseModel
     public function getSocialTags(): Collection
     {
         $urlImageMedium = $this->urlThumbnail('normal');
+        $thumbnail = $this->image?->thumbnailModel('normal');
 
         return collect([
             'og:title' => $this->og_title,
@@ -131,9 +134,12 @@ class ContentSeo extends BaseModel
             'og:image:alt' => $this->image_alt,
             'og:image:url' => $urlImageMedium,
             'og:image:secure_url' => $urlImageMedium,
-            // 'og:image:type' => '', // TODO: Obtener desde relación con Files
-            // 'og:image:width' => '', // TODO: Obtener desde relación con Files
-            // 'og:image:height' => '', // TODO: Obtener desde relación con Files
+            // Dimensiones y mime de la miniatura que se está sirviendo. Sin
+            // esto, la red social tiene que descargar la imagen para saber cómo
+            // maquetar la tarjeta y hasta entonces enseña un hueco.
+            'og:image:type' => $thumbnail?->fileType?->mime,
+            'og:image:width' => $thumbnail?->width,
+            'og:image:height' => $thumbnail?->height,
             'og:type' => $this->og_type,
             'og:description' => $this->description,
         ]);
@@ -150,7 +156,9 @@ class ContentSeo extends BaseModel
             'twitter:title' => $this->twitter_title,
             'twitter:description' => $this->description,
             'twitter:creator' => $this->content?->author?->name,
-            'twitter:image' => '', // TODO: Obtener desde relación con Files
+            // La misma imagen que `og:image`: no hay motivo para que difieran, y
+            // vacía hacía que la tarjeta de X saliera sin imagen.
+            'twitter:image' => $this->urlThumbnail('normal'),
             'twitter:image:alt' => $this->image_alt,
         ]);
     }

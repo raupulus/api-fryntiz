@@ -6,6 +6,7 @@ namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,6 +36,7 @@ use Illuminate\Support\Carbon;
 class ContentPageRaw extends BaseModel
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'content_page_raw';
 

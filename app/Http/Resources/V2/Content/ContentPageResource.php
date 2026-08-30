@@ -22,8 +22,13 @@ class ContentPageResource extends JsonResource
             'content_id' => $this->content_id,
             'order' => $this->order,
             'title' => $this->title,
-            'body' => $this->body,
-            'raw_type' => $this->raw_type,
+            // La columna es `content`, no `body` (**N219**). Se mantiene la clave
+            // `body` en la respuesta porque es la que ya consumen las webs; el
+            // renombrado va con el rediseño REST de la fase 5.
+            'body' => $this->content,
+            'slug' => $this->slug,
+            // `raw_type` no era columna: la tabla tiene `current_page_raw_id`.
+            'current_page_raw_id' => $this->current_page_raw_id,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

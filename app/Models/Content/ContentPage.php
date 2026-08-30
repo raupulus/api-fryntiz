@@ -10,6 +10,7 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -56,6 +57,7 @@ use Illuminate\Support\Carbon;
 class ContentPage extends BaseModel
 {
     use ImageTrait;
+    use SoftDeletes;
 
     protected $table = 'content_pages';
 

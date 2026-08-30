@@ -4,64 +4,61 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Suma una visita al contador diario de un contenido.
+ *
+ * Antes hacía UPDATE, y si no había tocado ninguna fila un INSERT, y si el
+ * INSERT chocaba por clave duplicada capturaba la excepción **comparando el
+ * texto del mensaje** («duplicate key») para volver a intentar el UPDATE. Tres
+ * viajes a la base de datos en el peor caso y una condición de carrera resuelta
+ * a base de leer mensajes de error.
+ *
+ * `content_daily_views` ya tiene un índice único sobre `(content_id, date)`, así
+ * que basta un `INSERT ... ON CONFLICT DO UPDATE`: una sola sentencia, atómica,
+ * sin carrera que resolver.
+ */
 class ProcessContentViewJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
-    public $contentId;
+    /**
+     * Tres intentos, separándolos: si la base de datos está saturada, insistir
+     * de inmediato no ayuda.
+     *
+     * @var array<int, int>
+     */
+    public array $backoff = [10, 60];
 
-    public $viewedAt;
+    public int $tries = 3;
 
-    public function __construct($contentId, $viewedAt)
+    public function __construct(
+        public readonly int $contentId,
+        public readonly CarbonInterface $viewedAt,
+    ) {}
+
+    public function handle(): void
     {
-        $this->contentId = $contentId;
-        $this->viewedAt = $viewedAt;
-    }
+        $date = $this->viewedAt->toDateString();
+        $now = now();
 
-    public function handle()
-    {
-        $date = $this->viewedAt->format('Y-m-d');
-
-        try {
-            // Intento actualizar primero
-            $updated = DB::table('content_daily_views')
-                ->where('content_id', $this->contentId)
-                ->where('date', $date)
-                ->update([
-                    'views' => DB::raw('views + 1'),
-                    'updated_at' => now(),
-                ]);
-
-            // Si no se actualizó ninguna fila, creo nueva
-            if ($updated === 0) {
-                DB::table('content_daily_views')->insert([
-                    'content_id' => $this->contentId,
-                    'date' => $date,
-                    'views' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        } catch (\Exception $e) {
-            // Si hay un error de duplicado (race condition), intento update de nuevo
-            if (str_contains($e->getMessage(), 'duplicate key')) {
-                DB::table('content_daily_views')
-                    ->where('content_id', $this->contentId)
-                    ->where('date', $date)
-                    ->update([
-                        'views' => DB::raw('views + 1'),
-                        'updated_at' => now(),
-                    ]);
-            } else {
-                \Log::error('Error processing view: '.$e->getMessage());
-            }
-        }
+        DB::table('content_daily_views')->upsert(
+            [[
+                'content_id' => $this->contentId,
+                'date' => $date,
+                'views' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]],
+            ['content_id', 'date'],
+            [
+                'views' => DB::raw('content_daily_views.views + 1'),
+                'updated_at' => $now,
+            ],
+        );
     }
 }

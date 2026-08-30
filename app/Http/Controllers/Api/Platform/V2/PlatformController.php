@@ -4,38 +4,40 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Platform\V2;
 
+use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\V2\BaseApiController;
-use App\Http\Resources\V2\Content\ContentResource;
 use App\Http\Resources\V2\PlatformResource;
-use App\Models\Content\ContentAvailableType;
-use App\Services\Content\ContentService;
+use App\Models\Platform;
 use App\Services\Platform\PlatformService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Controlador de plataformas para API V2.
+ * Plataformas.
+ *
+ * `featured` y `content/type/{t}` han desaparecido de aquí: eran dos filtros de
+ * la colección de contenidos y viven en `ContentController::index()` como
+ * `?featured=1` y `?type=…`.
  */
 class PlatformController extends BaseApiController
 {
-    public function __construct(
-        private PlatformService $service,
-        private ContentService $contentService,
-    ) {}
+    public function __construct(private readonly PlatformService $service) {}
 
-    /**
-     * Lista todas las plataformas.
-     */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $platforms = $this->service->getAll();
+        $query = new CollectionQuery(
+            filterable: ['slug', 'domain', 'created_at'],
+            sortable: ['title', 'created_at'],
+            defaultSortColumn: 'title',
+            defaultSortDescending: false,
+        );
 
-        return PlatformResource::collection($platforms)->response();
+        return $this->paginatedResponse(
+            $query->paginate(Platform::query()->with('image'), $request),
+            PlatformResource::class
+        );
     }
 
-    /**
-     * Muestra una plataforma por slug.
-     */
     public function show(string $slug): JsonResponse
     {
         $platform = $this->service->getBySlug($slug);
@@ -48,48 +50,7 @@ class PlatformController extends BaseApiController
     }
 
     /**
-     * Devuelve contenido destacado de una plataforma.
-     */
-    public function featured(string $slug): JsonResponse
-    {
-        $platform = $this->service->getBySlug($slug);
-
-        if (! $platform) {
-            return $this->notFoundResponse('Plataforma no encontrada');
-        }
-
-        $featured = $this->contentService->getFeaturedForPlatform($platform);
-
-        return $this->successResponse(
-            ContentResource::collection($featured)
-        );
-    }
-
-    /**
-     * Devuelve el contenido de una plataforma filtrado por tipo (slug del tipo).
-     */
-    public function contentByType(Request $request, string $slug, string $contentType): JsonResponse
-    {
-        $platform = $this->service->getBySlug($slug);
-
-        if (! $platform) {
-            return $this->notFoundResponse('Plataforma no encontrada');
-        }
-
-        $type = ContentAvailableType::where('slug', $contentType)->first();
-
-        if (! $type) {
-            return $this->notFoundResponse('Tipo de contenido no reconocido');
-        }
-
-        $perPage = (int) ($request->integer('per_page') ?: 15);
-        $contents = $this->contentService->getByTypeForPlatform($platform, $type->id, $perPage);
-
-        return ContentResource::collection($contents)->response();
-    }
-
-    /**
-     * Devuelve las categorías disponibles para una plataforma.
+     * Categorías disponibles en una plataforma.
      */
     public function categories(string $slug): JsonResponse
     {

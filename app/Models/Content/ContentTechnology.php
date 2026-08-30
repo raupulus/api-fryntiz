@@ -7,6 +7,7 @@ namespace App\Models\Content;
 use App\Models\BaseModels\BaseModel;
 use App\Models\Technology;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,6 +36,8 @@ use Illuminate\Support\Carbon;
  */
 class ContentTechnology extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'content_technologies';
 
     protected $fillable = ['content_id', 'technology_id'];

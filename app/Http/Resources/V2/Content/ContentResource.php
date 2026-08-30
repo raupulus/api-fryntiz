@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\V2\Content;
 
+use App\Http\Resources\V2\SocialImageResource;
 use App\Models\Content\Content;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,7 +26,10 @@ class ContentResource extends JsonResource
             'type' => $this->type,
             'status' => $this->status,
             'is_featured' => (bool) $this->is_featured,
-            'image' => $this->image,
+            // Con ancho, alto y tipo mime, para que las webs puedan construir
+            // las etiquetas Open Graph completas. Salían vacías y por eso al
+            // compartir un enlace no aparecía la imagen (B9).
+            'image' => $this->whenLoaded('image', fn () => new SocialImageResource($this->image)),
             'seo_title' => $this->seo_title,
             'seo_description' => $this->seo_description,
             'platform' => $this->whenLoaded('platform', fn () => [

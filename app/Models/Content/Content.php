@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 use function url;
@@ -150,6 +151,7 @@ use function url;
 class Content extends BaseModel
 {
     use HasFactory, ImageTrait;
+    use SoftDeletes;
 
     protected $table = 'contents';
 

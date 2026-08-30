@@ -7,6 +7,7 @@ namespace App\Models\Content;
 use App\Models\BaseModels\BaseModel;
 use App\Models\PlatformCategory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -36,6 +37,8 @@ use Illuminate\Support\Carbon;
  */
 class ContentCategory extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'content_categories';
 
     protected $fillable = [

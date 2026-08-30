@@ -16,7 +16,7 @@ class PlatformTest extends ApiTestCase
     public function can_get_all_platforms(): void
     {
         Platform::factory()->count(2)->create();
-        $response = $this->getJson($this->apiUrl('platform'));
+        $response = $this->getJson($this->apiUrl('platforms'));
         $response->assertStatus(200)
             ->assertJsonStructure(['data']);
     }
@@ -25,7 +25,7 @@ class PlatformTest extends ApiTestCase
     public function can_get_platform_by_slug(): void
     {
         $platform = Platform::factory()->create();
-        $response = $this->getJson($this->apiUrl("platform/{$platform->slug}"));
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -34,7 +34,7 @@ class PlatformTest extends ApiTestCase
     public function platform_show_returns_correct_structure(): void
     {
         $platform = Platform::factory()->create();
-        $response = $this->getJson($this->apiUrl("platform/{$platform->slug}"));
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure([
             'success', 'message',
@@ -45,7 +45,7 @@ class PlatformTest extends ApiTestCase
     #[Test]
     public function platform_show_returns_404_for_nonexistent(): void
     {
-        $response = $this->getJson($this->apiUrl('platform/slug-no-existe'));
+        $response = $this->getJson($this->apiUrl('platforms/slug-no-existe'));
         $this->assertErrorResponse($response, 404);
     }
 
@@ -53,14 +53,14 @@ class PlatformTest extends ApiTestCase
     public function can_get_featured_content(): void
     {
         $platform = Platform::factory()->create();
-        $response = $this->getJson($this->apiUrl("platform/{$platform->slug}/featured"));
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents?featured=1"));
         $this->assertSuccessResponse($response);
     }
 
     #[Test]
     public function featured_returns_404_for_nonexistent_platform(): void
     {
-        $response = $this->getJson($this->apiUrl('platform/no-existe/featured'));
+        $response = $this->getJson($this->apiUrl('platforms/no-existe/contents?featured=1'));
         $this->assertErrorResponse($response, 404);
     }
 }

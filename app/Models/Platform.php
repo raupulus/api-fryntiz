@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -89,13 +90,14 @@ use Illuminate\Support\Facades\DB;
 class Platform extends BaseModel
 {
     use HasFactory, ImageTrait;
+    use SoftDeletes;
 
     protected $table = 'platforms';
 
     // protected $with = ['image'];
     protected $appends = ['urlImageMicro', 'urlImageSmall'];
 
-    protected $fillable = ['user_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
+    protected $fillable = ['user_id', 'image_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
         'instagram',
     ];
