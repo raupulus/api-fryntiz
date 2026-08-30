@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\CV\Curricula;
 
+use App\Enums\CurriculumVisibilityEnum;
 use App\Filament\Admin\Resources\CV\Curricula\Pages\CreateCurriculum;
 use App\Filament\Admin\Resources\CV\Curricula\Pages\EditCurriculum;
 use App\Filament\Admin\Resources\CV\Curricula\Pages\ListCurricula;
@@ -13,16 +14,19 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class CurriculumResource extends Resource
 {
@@ -53,13 +57,49 @@ class CurriculumResource extends Resource
                     ->dehydrated(fn ($state) => filled($state))
                     ->label('Imagen'),
                 TextInput::make('title')
-                    ->required()->label('Título'),
+                    ->required()->label('Título')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (?string $state, Set $set, string $operation) {
+                        // El slug se propone al escribir el título sólo al crear:
+                        // cambiarlo en un CV ya publicado rompería su URL.
+                        if ($operation === 'create' && filled($state)) {
+                            $set('slug', Str::slug($state));
+                        }
+                    }),
+                TextInput::make('slug')
+                    ->required()->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->label('Slug')
+                    ->helperText('Es la URL del CV. Cambiarlo rompe los enlaces que ya hayas repartido.'),
                 Textarea::make('presentation')
                     ->columnSpanFull()->label('Presentación'),
-                Toggle::make('is_active')->label('Activo'),
-                Toggle::make('is_downloadable')->label('Descargable'),
+
+                // Visibilidad en tres estados, no un booleano (B1): el estado
+                // intermedio es justo el que hace falta para mandarle a alguien
+                // un CV hecho a medida sin publicarlo en internet.
+                Select::make('visibility')
+                    ->options(CurriculumVisibilityEnum::options())
+                    ->default(CurriculumVisibilityEnum::Private->value)
+                    ->required()
+                    ->live()
+                    ->label('Visibilidad')
+                    ->helperText(fn (?string $state): string => $state === null
+                        ? ''
+                        : (CurriculumVisibilityEnum::tryFrom($state)?->description() ?? '')),
+
+                Placeholder::make('enlace_compartido')
+                    ->label('Enlace privado')
+                    ->content(fn (?Curriculum $record): string => $record?->share_token
+                        ? url('/cv/s/'.$record->share_token)
+                        : 'Se genera al guardar con la visibilidad «Compartido por enlace».')
+                    ->visible(fn ($get) => $get('visibility') === CurriculumVisibilityEnum::Shared->value)
+                    ->columnSpanFull(),
+
+                Toggle::make('is_active')->label('Activo')
+                    ->default(true)
+                    ->helperText('Desactivado no se sirve por ninguna vía, ni con el enlace privado.'),
+                Toggle::make('is_downloadable')->label('Descargable en PDF'),
                 Toggle::make('is_default')->label('Por defecto'),
-                Toggle::make('is_public')->label('Público'),
             ]);
     }
 

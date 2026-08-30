@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\KeyCounter;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\CreateKeyboard;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\EditKeyboard;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\ListKeyboards;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\KeyCounter\Keyboard;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -48,7 +49,9 @@ class KeyboardResource extends Resource
                     Select::make('user_id')
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
-                        ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Dispositivo'),
+                        ->relationship('hardwareDevice', 'name_friendly')
+                        ->getOptionLabelFromRecordUsing(fn (HardwareDevice $record): string => $record->display_name)
+                        ->searchable()->preload()->label('Dispositivo'),
                 ])->columnSpanFull(),
                 Section::make('Racha')->columns(2)->schema([
                     DateTimePicker::make('start_at')
@@ -130,7 +133,9 @@ class KeyboardResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('hardware_device_id')
-                    ->relationship('hardwareDevice', 'name_friendly')->label('Dispositivo'),
+                    ->relationship('hardwareDevice', 'name_friendly')
+                    ->getOptionLabelFromRecordUsing(fn (HardwareDevice $record): string => $record->display_name)
+                    ->label('Dispositivo'),
                 SelectFilter::make('user_id')
                     ->relationship('user', 'name')->label('Usuario'),
                 SelectFilter::make('weekday')->options([

@@ -63,7 +63,7 @@ class HardwareDeviceResource extends Resource
                             ->relationship('user', 'name')
                             ->label('Usuario'),
                         Select::make('hardware_type_id')
-                            ->relationship('hardwareType', 'name')
+                            ->relationship('type', 'name')
                             ->label('Tipo de hardware'),
                         TextInput::make('referred_thing_id')
                             ->numeric()
@@ -176,7 +176,7 @@ class HardwareDeviceResource extends Resource
                     ->label('Usuario')
                     ->searchable(),
                 TextColumn::make('image_id')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true)->label('ID Imagen'),
-                TextColumn::make('hardwareType.name')
+                TextColumn::make('type.name')
                     ->label('Tipo de hardware')
                     ->sortable()
                     ->toggleable(),
@@ -271,7 +271,7 @@ class HardwareDeviceResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('hardware_type_id')
-                    ->relationship('hardwareType', 'name')->label('Tipo'),
+                    ->relationship('type', 'name')->label('Tipo'),
                 SelectFilter::make('location_type')
                     ->label('Ubicación')
                     ->options(HardwareLocationTypeEnum::options()),

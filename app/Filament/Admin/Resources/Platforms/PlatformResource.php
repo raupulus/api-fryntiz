@@ -45,11 +45,14 @@ class PlatformResource extends Resource
     {
         return $schema->components([
             Section::make('Imagen principal')->schema([
-                // A diferencia de otros recursos (Gallery, Curriculum...), aquí
-                // no se usa HasImageFileUpload/File: image_path guarda
-                // directamente la ruta en disco que genera FileUpload, sin
-                // pasar por el modelo File ni por ImageTrait.
-                ImageCropperUpload::makeImage('image_path')
+                // `image_path` NO existe como columna en ninguna tabla del
+                // proyecto (N232): el formulario pedía un campo que no se
+                // guardaba en ningún sitio, así que la imagen se perdía al
+                // guardar sin dar ningún error. La columna que sí existe, con su
+                // clave foránea a `files`, es `image_id`.
+                ImageCropperUpload::makeImage('image_id')
+                    ->storeFiles(false)
+                    ->dehydrated(fn ($state) => filled($state))
                     ->logo()
                     ->directory('platforms')
                     ->hiddenLabel()

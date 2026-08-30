@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Pages;
+namespace App\Filament\Tenant\Pages;
 
 use App\Filament\Concerns\EditsOwnProfile;
 use BackedEnum;
@@ -11,26 +11,32 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use UnitEnum;
 
 /**
- * «Editar perfil» del panel de administración.
+ * «Mis datos» del panel de usuario.
  *
- * El formulario vive en `EditsOwnProfile`, compartido con el panel de usuario:
- * dos copias del mismo formulario acaban divergiendo, y en uno que toca
- * contraseñas eso es un agujero esperando.
+ * Es la mitad de lo que faltaba del panel `tenant`: los dos grupos de
+ * navegación —«Mi Cuenta» y «Dispositivos»— estaban declarados desde el
+ * principio y no los había desarrollado nadie. El panel existía con una única
+ * página vacía.
+ *
+ * Mismo formulario que el del panel de administración, por el trait.
  */
-class Profile extends Page implements HasForms
+class EditProfile extends Page implements HasForms
 {
     use EditsOwnProfile;
     use InteractsWithForms;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserCircle;
 
-    protected static ?string $title = 'Mi perfil';
+    protected static string|UnitEnum|null $navigationGroup = 'Mi Cuenta';
 
-    protected static ?string $slug = 'profile';
+    protected static ?string $title = 'Mis datos';
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'mis-datos';
+
+    protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.admin.pages.profile';
 

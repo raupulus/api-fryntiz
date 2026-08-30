@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\CreateAirFli
 use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\EditAirFlightAirPlane;
 use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\ListAirFlightAirPlanes;
 use App\Models\AirFlight\AirFlightAirPlane;
+use App\Models\Hardware\HardwareDevice;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -63,7 +64,9 @@ class AirFlightAirPlaneResource extends Resource
                     Select::make('user_id')
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
-                        ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Receptor'),
+                        ->relationship('hardwareDevice', 'name_friendly')
+                        ->getOptionLabelFromRecordUsing(fn (HardwareDevice $record): string => $record->display_name)
+                        ->searchable()->preload()->label('Receptor'),
                 ])->columnSpanFull(),
                 Section::make('Detección')->columns(3)->schema([
                     DateTimePicker::make('seen_first_at')->label('Primera detección'),

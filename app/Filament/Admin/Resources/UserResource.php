@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\User;
 use BackedEnum;
@@ -87,6 +88,14 @@ class UserResource extends Resource
                     TextInput::make('email')
                         ->email()->required()->maxLength(255)
                         ->unique(ignoreRecord: true)
+                        // D91: el email no lo cambia nadie sobre sí mismo, ni
+                        // siquiera un administrador. Cambiarse el propio email
+                        // es la vía clásica para apropiarse de una cuenta.
+                        ->disabled(fn ($record) => $record?->id === auth()->id())
+                        ->dehydrated(fn ($record) => $record?->id !== auth()->id())
+                        ->helperText(fn ($record) => $record?->id === auth()->id()
+                            ? 'No puedes cambiar tu propio email.'
+                            : null)
                         ->label('Email'),
                     TextInput::make('nickname')
                         ->maxLength(511)
@@ -102,8 +111,24 @@ class UserResource extends Resource
                     Select::make('role_id')
                         ->relationship('role', 'display_name')
                         ->required()->preload()->searchable()
+                        ->live()
                         ->label('Rol'),
+                    Toggle::make('is_active')
+                        ->default(true)
+                        ->label('Cuenta activa')
+                        ->helperText('Desactivar corta el acceso y anula todos los tokens del usuario, incluidos los de sus dispositivos, sin borrar nada.'),
                 ])->columnSpanFull(),
+
+            Section::make('Plataformas que puede editar')
+                ->description('Sólo aplica al rol Editor: limita el contenido que puede tocar. Un administrador llega a todas y no necesita marcar ninguna.')
+                ->schema([
+                    Select::make('platforms')
+                        ->relationship('platforms', 'name')
+                        ->multiple()->preload()->searchable()
+                        ->hiddenLabel(),
+                ])
+                ->visible(fn ($get) => (int) $get('role_id') === UserRoleEnum::Editor->value)
+                ->columnSpanFull(),
 
             Section::make('Detalles')
                 ->relationship('details')
@@ -166,12 +191,14 @@ class UserResource extends Resource
                 TextColumn::make('email')->searchable()->copyable()->label('Email'),
                 TextColumn::make('role.display_name')->badge()->label('Rol'),
                 IconColumn::make('email_verified_at')->boolean()->label('Verif.'),
+                IconColumn::make('is_active')->boolean()->label('Activo'),
                 TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->label('Creado'),
             ])
             ->filters([
                 SelectFilter::make('role_id')->relationship('role', 'display_name')->label('Rol'),
                 TrashedFilter::make(),
                 TernaryFilter::make('email_verified_at')->nullable()->label('Verificado'),
+                TernaryFilter::make('is_active')->label('Activo'),
             ])
             ->recordActions([
                 ViewAction::make(),

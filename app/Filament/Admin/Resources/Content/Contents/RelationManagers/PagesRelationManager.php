@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Content\Contents\RelationManagers;
 
 use App\Filament\Components\EditorJsField;
 use App\Filament\Components\ImageCropperUpload;
+use App\Filament\Concerns\HasImageFileUpload;
 use App\Models\Content\ContentAvailablePageRaw;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -22,6 +23,8 @@ use Filament\Tables\Table;
 
 class PagesRelationManager extends RelationManager
 {
+    use HasImageFileUpload;
+
     protected static string $relationship = 'pages';
 
     protected static ?string $title = 'Páginas';
@@ -59,7 +62,13 @@ class PagesRelationManager extends RelationManager
                     ]),
             ]),
 
-            ImageCropperUpload::makeImage('image_path')
+            // Pedía `image_id`... no: pedía `image_path`, una columna que no
+            // existe en ninguna tabla del proyecto, así que la imagen se perdía
+            // al guardar sin dar ningún error (N232). La columna real es
+            // `image_id`, con su clave foránea a `files`.
+            ImageCropperUpload::makeImage('image_id')
+                ->storeFiles(false)
+                ->dehydrated(fn ($state) => filled($state))
                 ->cover16x9()
                 ->directory('content-pages')
                 ->columnSpanFull()->label('Imagen de la página'),
@@ -83,7 +92,7 @@ class PagesRelationManager extends RelationManager
                         $this->pendingJson = $data['content_json'] ?? null;
                         unset($data['content_json']);
 
-                        return $data;
+                        return $this->resolveImageUpload($data, 'image_id', 'content-pages');
                     })
                     ->after(fn ($record) => $this->persistRaw($record)),
             ])
@@ -96,13 +105,18 @@ class PagesRelationManager extends RelationManager
                             ->where('available_page_raw_id', $this->jsonTypeId())
                             ->value('content');
 
+                        // El campo de imagen espera un fichero, no la clave
+                        // foránea: si se rellena con el id, el componente
+                        // intenta pintar el número como si fuera una ruta.
+                        unset($data['image_id']);
+
                         return $data;
                     })
                     ->mutateFormDataUsing(function (array $data) {
                         $this->pendingJson = $data['content_json'] ?? null;
                         unset($data['content_json']);
 
-                        return $data;
+                        return $this->resolveImageUpload($data, 'image_id', 'content-pages');
                     })
                     ->after(fn ($record) => $this->persistRaw($record)),
                 DeleteAction::make(),

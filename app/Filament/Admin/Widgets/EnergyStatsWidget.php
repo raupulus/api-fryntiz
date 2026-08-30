@@ -85,19 +85,21 @@ class EnergyStatsWidget extends BaseWidget
         $loadsToday = HardwarePowerLoadToday::query()->where('date', $today)->get();
         $generatorsToday = HardwarePowerGeneratorToday::query()->where('date', $today)->get();
 
-        $consumptionToday = (float) $loadsToday->sum('power');
-        $generationToday = (float) $generatorsToday->sum('power');
+        // Vatios-hora, no vatios: `SUM(power)` sumaba potencias instantáneas y
+        // daba un número que subía si el sensor medía más veces.
+        $consumptionToday = (float) $loadsToday->sum('energy_wh');
+        $generationToday = (float) $generatorsToday->sum('energy_wh');
         $peakConsumptionToday = (float) ($loadsToday->max('power_max') ?? 0);
         $batteryMinToday = (float) ($generatorsToday->min('battery_percentage_min') ?? 0);
 
         return [
-            Stat::make('Consumo (hoy)', number_format($consumptionToday, 2).' W')
-                ->description('Total de energía consumida hoy')
+            Stat::make('Consumo (hoy)', number_format($consumptionToday, 2).' Wh')
+                ->description('Energía consumida hoy')
                 ->descriptionIcon('heroicon-m-bolt')
                 ->color('danger'),
 
-            Stat::make('Generación (hoy)', number_format($generationToday, 2).' W')
-                ->description('Total de energía generada hoy')
+            Stat::make('Generación (hoy)', number_format($generationToday, 2).' Wh')
+                ->description('Energía generada hoy')
                 ->descriptionIcon('heroicon-m-sun')
                 ->color('success'),
 
@@ -120,19 +122,19 @@ class EnergyStatsWidget extends BaseWidget
         $loadsHistorical = HardwarePowerLoadHistorical::query()->where('read_at', '>=', $since)->get();
         $generatorsHistorical = HardwarePowerGeneratorHistorical::query()->where('read_at', '>=', $since)->get();
 
-        $totalConsumption = (float) $loadsHistorical->sum('power');
-        $totalGeneration = (float) $generatorsHistorical->sum('power');
+        $totalConsumption = (float) $loadsHistorical->sum('energy_wh');
+        $totalGeneration = (float) $generatorsHistorical->sum('energy_wh');
         $daysOperating = (int) ($generatorsHistorical->max('days_operating') ?? 0);
         $fullCharges = (int) $generatorsHistorical->sum('number_battery_full_charges');
         $overDischarges = (int) $generatorsHistorical->sum('number_battery_over_discharges');
 
         return [
-            Stat::make('Consumo acumulado (30d)', number_format($totalConsumption, 2).' W')
+            Stat::make('Consumo acumulado (30d)', number_format($totalConsumption / 1000, 2).' kWh')
                 ->description('Energía total consumida en los últimos 30 días')
                 ->descriptionIcon('heroicon-m-bolt')
                 ->color('danger'),
 
-            Stat::make('Generación acumulada (30d)', number_format($totalGeneration, 2).' W')
+            Stat::make('Generación acumulada (30d)', number_format($totalGeneration / 1000, 2).' kWh')
                 ->description('Energía total generada en los últimos 30 días')
                 ->descriptionIcon('heroicon-m-sun')
                 ->color('success'),

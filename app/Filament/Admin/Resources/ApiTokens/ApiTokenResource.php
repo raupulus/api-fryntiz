@@ -7,7 +7,9 @@ namespace App\Filament\Admin\Resources\ApiTokens;
 use App\Filament\Admin\Resources\ApiTokens\Pages\CreateApiToken;
 use App\Filament\Admin\Resources\ApiTokens\Pages\ListApiTokens;
 use App\Models\ApiToken;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Support\Auth\TokenAbilities;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -56,21 +58,35 @@ class ApiTokenResource extends Resource
                 TextInput::make('name')->required()->maxLength(255)
                     ->helperText('Identifica el contexto donde se usará el token.')
                     ->label('Nombre del token')->columnSpanFull(),
+                // Las opciones salen del catálogo real de abilities. Antes eran
+                // una lista escrita a mano con nombres inventados
+                // ("weather:write", "content:read") que no exige ninguna ruta,
+                // y venía marcado "*" por defecto: cada token emitido desde
+                // aquí podía absolutamente todo.
                 CheckboxList::make('abilities')
-                    ->options([
-                        '*' => 'Todos los permisos (*)',
-                        'hardware:read' => 'Hardware lectura',
-                        'hardware:write' => 'Hardware escritura',
-                        'keycounter:write' => 'Keycounter escritura',
-                        'airflight:write' => 'Airflight escritura',
-                        'smartplant:write' => 'SmartPlant escritura',
-                        'weather:write' => 'WeatherStation escritura',
-                        'content:read' => 'Content lectura',
-                    ])
+                    ->options(TokenAbilities::MODULE_ABILITIES)
                     ->columns(2)
-                    ->default(['*'])
-                    ->label('Permisos')->columnSpanFull(),
-                DateTimePicker::make('expires_at')->seconds()->label('Expira el (opcional)')->columnSpanFull(),
+                    ->required()
+                    ->label('Permisos de módulo')
+                    ->helperText('No existe un permiso comodín. Marca sólo lo que el cacharro necesite escribir.')
+                    ->columnSpanFull(),
+                Select::make('device_id')
+                    ->label('Ligar a un dispositivo')
+                    ->options(fn ($get) => $get('tokenable_id')
+                        ? HardwareDevice::query()
+                            ->where('user_id', $get('tokenable_id'))
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->all()
+                        : [])
+                    ->searchable()
+                    ->required()
+                    ->helperText('Añade la ability "device:{id}". Sin ella el token escribiría en cualquier dispositivo del mismo dueño.')
+                    ->columnSpanFull(),
+                DateTimePicker::make('expires_at')->seconds()
+                    ->label('Expira el (opcional)')
+                    ->helperText('Los tokens de dispositivos IoT se dejan sin caducidad a propósito: no se sube a la montaña a reflashear un token. La seguridad la dan los permisos de arriba.')
+                    ->columnSpanFull(),
             ])->columnSpanFull(),
         ]);
     }

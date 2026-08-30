@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\KeyCounter;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\CreateMouse;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\EditMouse;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\ListMice;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\KeyCounter\Mouse;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -48,7 +49,9 @@ class MouseResource extends Resource
                     Select::make('user_id')
                         ->relationship('user', 'name')->searchable()->preload()->label('Usuario'),
                     Select::make('hardware_device_id')
-                        ->relationship('hardwareDevice', 'name_friendly')->searchable()->preload()->label('Dispositivo'),
+                        ->relationship('hardwareDevice', 'name_friendly')
+                        ->getOptionLabelFromRecordUsing(fn (HardwareDevice $record): string => $record->display_name)
+                        ->searchable()->preload()->label('Dispositivo'),
                 ])->columnSpanFull(),
                 Section::make('Racha')->columns(2)->schema([
                     DateTimePicker::make('start_at')
@@ -136,7 +139,9 @@ class MouseResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('hardware_device_id')
-                    ->relationship('hardwareDevice', 'name_friendly')->label('Dispositivo'),
+                    ->relationship('hardwareDevice', 'name_friendly')
+                    ->getOptionLabelFromRecordUsing(fn (HardwareDevice $record): string => $record->display_name)
+                    ->label('Dispositivo'),
                 SelectFilter::make('user_id')
                     ->relationship('user', 'name')->label('Usuario'),
                 SelectFilter::make('weekday')->options([

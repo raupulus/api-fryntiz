@@ -46,7 +46,9 @@ class TechnologyResource extends Resource
     {
         return $schema->components([
             Section::make('Logo')->schema([
-                ImageCropperUpload::makeImage('image_path')
+                ImageCropperUpload::makeImage('image_id')
+                    ->storeFiles(false)
+                    ->dehydrated(fn ($state) => filled($state))
                     ->icon(128)
                     ->directory('technologies')
                     ->hiddenLabel()

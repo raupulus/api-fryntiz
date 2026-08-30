@@ -83,7 +83,9 @@ class ContentResource extends Resource
                     ]),
                     Textarea::make('excerpt')->maxLength(1023)->rows(2)
                         ->columnSpanFull()->label('Extracto'),
-                    ImageCropperUpload::makeImage('image_path')
+                    ImageCropperUpload::makeImage('image_id')
+                        ->storeFiles(false)
+                        ->dehydrated(fn ($state) => filled($state))
                         ->cover16x9()
                         ->directory('contents')
                         ->columnSpanFull()->label('Imagen principal'),

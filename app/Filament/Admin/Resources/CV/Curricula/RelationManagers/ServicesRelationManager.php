@@ -36,6 +36,10 @@ class ServicesRelationManager extends RelationManager
                 TextColumn::make('name')->label('Nombre'),
                 TextColumn::make('url')->limit(40)->label('URL'),
             ])
+            // El orden de un CV es información, no un detalle: se arrastra a
+            // mano y se guarda en `position` (B4).
+            ->reorderable('position')
+            ->defaultSort('position')
             ->headerActions([CreateAction::make()])
             ->recordActions([EditAction::make(), DeleteAction::make()]);
     }
