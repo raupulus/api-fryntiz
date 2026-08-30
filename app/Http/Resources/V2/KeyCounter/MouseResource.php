@@ -11,6 +11,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Resource para registro de ratón en API V2.
  *
+ * Se quitó `score`: `keycounter_mouse` no tiene esa columna, así que salía
+ * `null` en todas las respuestas (**R-6**, **N280**). El ratón no puntúa; el
+ * que puntúa es el teclado.
+ *
  * @mixin Mouse
  */
 class MouseResource extends JsonResource
@@ -29,7 +33,6 @@ class MouseResource extends JsonResource
             'clicks_middle' => $this->clicks_middle,
             'total_clicks' => $this->total_clicks,
             'clicks_average' => $this->clicks_average,
-            'score' => $this->score,
             'weekday' => $this->weekday,
             'created_at' => $this->created_at?->toISOString(),
         ];

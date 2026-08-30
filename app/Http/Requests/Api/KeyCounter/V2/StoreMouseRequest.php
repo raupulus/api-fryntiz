@@ -20,22 +20,27 @@ class StoreMouseRequest extends BaseFormRequest
 
     protected function prepareForValidation(): void
     {
-        $start = new Carbon($this->start_at);
-        $end = new Carbon($this->end_at);
-        $duration = $start->diffInSeconds($end);
+        $merge = ['user_id' => auth()->id()];
 
-        $this->merge([
-            'hardware_device_id' => (int) ($this->hardware_device_id ?? $this->device_id),
-            'user_id' => auth()->id(),
-            'duration' => $duration,
-            'clicks_left' => (int) $this->clicks_left,
-            'clicks_right' => (int) $this->clicks_right,
-            'clicks_middle' => (int) $this->clicks_middle,
-            'total_clicks' => (int) $this->total_clicks,
-            'score' => (int) $this->score,
-            'weekday' => (int) $this->weekday,
-            'clicks_average' => (int) $this->clicks_average,
-        ]);
+        $device = $this->input('hardware_device_id') ?? $this->input('device_id');
+        if ($device !== null) {
+            $merge['hardware_device_id'] = (int) $device;
+        }
+
+        if ($this->filled('start_at') && $this->filled('end_at')) {
+            $merge['duration'] = (new Carbon($this->start_at))->diffInSeconds(new Carbon($this->end_at));
+        }
+
+        // Sin `score`: `keycounter_mouse` no tiene esa columna. Se merjaba,
+        // no se validaba, no se guardaba, y el Resource la devolvía a NULL
+        // en todas las respuestas (**R-6**).
+        foreach (['clicks_left', 'clicks_right', 'clicks_middle', 'total_clicks', 'clicks_average', 'weekday'] as $field) {
+            if ($this->filled($field)) {
+                $merge[$field] = (int) $this->input($field);
+            }
+        }
+
+        $this->merge($merge);
     }
 
     public function rules(): array
@@ -52,24 +57,6 @@ class StoreMouseRequest extends BaseFormRequest
             'total_clicks' => ['required', 'integer', 'min:0'],
             'clicks_average' => ['nullable', 'integer', 'min:0'],
             'weekday' => ['required', 'integer', 'min:0', 'max:6'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'hardware_device_id.required' => 'El dispositivo hardware es obligatorio.',
-            'hardware_device_id.exists' => 'El dispositivo hardware especificado no existe.',
-            'start_at.required' => 'La fecha de inicio es obligatoria.',
-            'start_at.date_format' => 'La fecha de inicio debe tener el formato Y-m-d H:i:s.',
-            'end_at.required' => 'La fecha de fin es obligatoria.',
-            'end_at.date_format' => 'La fecha de fin debe tener el formato Y-m-d H:i:s.',
-            'clicks_left.required' => 'Los clicks izquierdos son obligatorios.',
-            'clicks_right.required' => 'Los clicks derechos son obligatorios.',
-            'clicks_middle.required' => 'Los clicks centrales son obligatorios.',
-            'total_clicks.required' => 'El total de clicks es obligatorio.',
-            'weekday.min' => 'El dia de la semana debe estar entre 0 y 6.',
-            'weekday.max' => 'El dia de la semana debe estar entre 0 y 6.',
         ];
     }
 }

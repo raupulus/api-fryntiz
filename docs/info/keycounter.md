@@ -89,10 +89,23 @@ Ambos FormRequests calculan automáticamente en `prepareForValidation()`:
 
 ## Rutas API V2
 
-| Método | Ruta | Auth | Throttle | Descripción |
-|--------|------|------|----------|-------------|
-| POST | `/api/v2/keycounter/keyboard` | Sí | api-store | Store registro teclado |
-| POST | `/api/v2/keycounter/mouse` | Sí | api-store | Store registro ratón |
+| Método | Ruta | Auth | Throttle | Qué hace |
+|--------|------|------|----------|----------|
+| GET | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:write` | — | Listar sesiones de teclado |
+| GET | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:write` | — | Listar sesiones de ratón |
+| POST | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de teclado |
+| POST | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de ratón |
+
+Las rutas eran `/keycounter/keyboard` y `/keycounter/mouse` (sólo POST). El
+recurso es la **sesión**, así que pasan a `keyboard-sessions` y `mouse-sessions`,
+y listar sale gratis con el `GET` de la misma URL (fase 5).
+
+> **Cómo leer la columna «Auth».** Un `ability:` **no** es «hace falta estar
+> autenticado»: es «hace falta un token **con esa ability concreta**». Un token
+> de otro cacharro está autenticado y aquí no entra. Poner «Sí» a secas —que es
+> lo que ponía antes esta tabla— borra justo esa diferencia, que es toda la que
+> queda si alguien roba el token de un sensor (**N263**).
+
 
 ## Rutas Web
 
@@ -127,3 +140,6 @@ Ambos FormRequests calculan automáticamente en `prepareForValidation()`:
 php artisan debug:seed-keycounter --count=50
 ```
 
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-30

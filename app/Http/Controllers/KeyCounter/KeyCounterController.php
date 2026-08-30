@@ -170,7 +170,7 @@ class KeyCounterController extends Controller
     {
         /** @var Collection $data */
         $data = $keyboardStatistics['data'];
-        $rachas = $keyboardStatistics['period_count'];
+        $gusts = $keyboardStatistics['period_count'];
         $totalPulsations = $keyboardStatistics['period_total_pulsations'];
         $totalScore = $data->sum('total_score');
         $totalSpecialKeys = $data->sum('total_pulsations_special_keys');
@@ -179,10 +179,10 @@ class KeyCounterController extends Controller
         return [
             'total_pulsations' => $totalPulsations,
             'total_score' => $totalScore,
-            'avg_pulsations' => $rachas > 0 ? round($totalPulsations / $rachas, 2) : 0,
-            'avg_special_keys' => $rachas > 0 ? round($totalSpecialKeys / $rachas, 2) : 0,
+            'avg_pulsations' => $gusts > 0 ? round($totalPulsations / $gusts, 2) : 0,
+            'avg_special_keys' => $gusts > 0 ? round($totalSpecialKeys / $gusts, 2) : 0,
             'pulsations_per_minute' => $totalDurationMinutes > 0 ? round($totalPulsations / $totalDurationMinutes, 2) : 0,
-            'avg_score' => $rachas > 0 ? round($totalScore / $rachas, 2) : 0,
+            'avg_score' => $gusts > 0 ? round($totalScore / $gusts, 2) : 0,
         ];
     }
 

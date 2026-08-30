@@ -123,9 +123,9 @@ class BaseKeyCounter extends BaseModel
 
         // # Proceso el filtro de condiciones obligatorias.
         if (isset($filter['where']) && count($filter['where'])) {
-            foreach ($filter['where'] as $idx => $filtro) {
-                if ($filtro != null) {
-                    $model->where($idx, $filtro);
+            foreach ($filter['where'] as $idx => $condition) {
+                if ($condition != null) {
+                    $model->where($idx, $condition);
                 }
             }
         }
@@ -147,9 +147,9 @@ class BaseKeyCounter extends BaseModel
         // # Proceso el filtro de condiciones opcionales
         if (isset($filter['orWhere']) && count($filter['orWhere'])) {
             $model->where(function ($query) use ($filter) {
-                foreach ($filter['orWhere'] as $idx => $filtro) {
-                    if ($filtro) {
-                        $query->orWhere($idx, 'LIKE', '%'.$filtro.'%');
+                foreach ($filter['orWhere'] as $idx => $condition) {
+                    if ($condition) {
+                        $query->orWhere($idx, 'LIKE', '%'.$condition.'%');
                     }
                 }
 

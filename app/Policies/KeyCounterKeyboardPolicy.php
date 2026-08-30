@@ -6,83 +6,71 @@ namespace App\Policies;
 
 use App\Models\KeyCounter\Keyboard;
 use App\Models\User;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 /**
- * Class KeyCounterKeyboardPolicy
+ * Autorización sobre sesiones de keyboard de KeyCounter.
+ *
+ * Todos los métodos salvo `create` estaban vacíos —cuerpo `//`, que devuelve
+ * null y para el Gate significa denegar—. Mientras la policy no se descubría no
+ * pasaba nada; en cuanto se registra, un administrador se quedaba fuera de su
+ * propio listado. Ahora dicen lo que tienen que decir: cada registro es de
+ * quien lo generó.
  */
 class KeyCounterKeyboardPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @return Response|bool
-     */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        //
+        return ! TokenAbilities::deviceRequest($user);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     *
-     * @return Response|bool
-     */
-    public function view(User $user, Keyboard $keyboard)
+    public function view(User $user, Keyboard $keyboard): bool
     {
-        //
+        return $this->isOwnedBy($user, $keyboard);
     }
 
-    /**
-     * Determine whether the user can create models.
-     *
-     * @return Response|bool
-     */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return true;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     *
-     * @return Response|bool
-     */
-    public function update(User $user, Keyboard $keyboard)
+    public function update(User $user, Keyboard $keyboard): bool
     {
-        //
+        return $this->isOwnedBy($user, $keyboard);
+    }
+
+    public function delete(User $user, Keyboard $keyboard): bool
+    {
+        return $this->isOwnedBy($user, $keyboard);
+    }
+
+    public function restore(User $user, Keyboard $keyboard): bool
+    {
+        return $this->isOwnedBy($user, $keyboard);
+    }
+
+    public function forceDelete(User $user, Keyboard $keyboard): bool
+    {
+        return $user->isSuperAdmin() && ! TokenAbilities::deviceRequest($user);
     }
 
     /**
-     * Determine whether the user can delete the model.
-     *
-     * @return Response|bool
+     * Pertenencia por usuario y, si el token está ligado a un dispositivo, que
+     * el registro venga de ese dispositivo.
      */
-    public function delete(User $user, Keyboard $keyboard)
+    private function isOwnedBy(User $user, Keyboard $keyboard): bool
     {
-        //
-    }
+        if ((int) $keyboard->user_id !== (int) $user->id && ! $user->isAdmin()) {
+            return false;
+        }
 
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @return Response|bool
-     */
-    public function restore(User $user, Keyboard $keyboard)
-    {
-        //
-    }
+        if ($keyboard->hardware_device_id === null) {
+            return ! TokenAbilities::deviceRequest($user);
+        }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @return Response|bool
-     */
-    public function forceDelete(User $user, Keyboard $keyboard)
-    {
-        //
+        return TokenAbilities::tokenReachesDevice($user, (int) $keyboard->hardware_device_id);
     }
 }
