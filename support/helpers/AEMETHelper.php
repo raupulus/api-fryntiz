@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Services\WeatherStation\AEMETService;
+use App\Support\WeatherStation\CapWarnings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -10,7 +12,7 @@ use function App\Models\WeatherStation\extractRange;
 
 class AEMETHelper
 {
-    private static $URL = 'https://opendata.aemet.es/opendata/api';
+    private static $URL = 'https://opendata.aemet.es/opendata/api';   // Ver config('aemet.base_url')
 
     private static $API_KEY;
 
@@ -46,43 +48,25 @@ class AEMETHelper
      */
     public static function getCurl(string $url, bool $json = true)
     {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            // CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                'cache-control: no-cache',
-                'Accept: application/json',
-                'api_key: '.config('aemet.AEMET_API_KEY'),
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-
-        if ($err) {
-            \Log::error('AMET model, method getCurl()');
-            \Log::error($err);
-
-            return null;
-        }
-
-        if ($json) {
-            return json_decode($response, true, 512,
-                JSON_INVALID_UTF8_SUBSTITUTE
-            );
-        }
-
-        return $response;
+        /*
+         * Delega en AEMETService, que es donde vive todo el endurecimiento.
+         *
+         * Lo que hacía antes, y por qué no valía:
+         *
+         *  - Leía la clave de `config('aemet.AEMET_API_KEY')`, que ya no existe
+         *    (la clave es `aemet.api_key`), así que mandaba la cabecera vacía.
+         *    AEMET responde 200 con el cuerpo VACÍO cuando falta la clave, no un
+         *    401, de modo que el fallo era indistinguible de "no hay datos".
+         *  - Decodificaba con `JSON_INVALID_UTF8_SUBSTITUTE`. AEMET sirve casi
+         *    todo en ISO-8859-15; ese flag hace que `json_decode` no falle pero
+         *    **destruye todos los acentos**, que es peor que fallar porque
+         *    parece que funciona.
+         *  - No miraba el `Content-Type`, ni la cuota, ni distinguía el HTML de
+         *    error de Tomcat de una respuesta legítima.
+         *
+         * @return array<mixed>|string|null
+         */
+        return app(AEMETService::class)->fetchRaw($url, $json);
     }
 
     /**
@@ -97,146 +81,39 @@ class AEMETHelper
     }
 
     /**
-     * Últimos Avisos de Fenómenos Meteorológicos adversos elaborado para el
-     * área seleccionada. (Andalucía)
+     * Últimos avisos de fenómenos meteorológicos adversos del área configurada.
      *
      * Model: AEMETAdverseEvents
      *
-     * @return array|void
+     * El formato es el más raro de toda la API: un **`tar` sin comprimir** con
+     * un XML CAP 1.2 por aviso y zona. La lectura está en
+     * `App\Support\WeatherStation\CapWarnings`, que no necesita red y por eso se
+     * puede probar con un paquete de mentira —la única forma de comprobar esto
+     * sin esperar a que haya temporal—.
+     *
+     * La descarga va por `fetchBinary()` y no por `file_get_contents()`: hace
+     * falta timeout, control de cuota y detectar el HTML de error que AEMET
+     * devuelve con un 200. Y sobre todo, **sin convertir el charset**: el
+     * `Content-Type` del paquete dice `ISO-8859-15`, y pasarle un binario por
+     * `mb_convert_encoding()` lo deja irreconocible.
+     *
+     * @return array<int,array<string,mixed>>
      */
-    public static function getAvisosCap()
+    public static function getAvisosCap(): array
     {
-        $tempDir = '/tmp/api-fryntiz/weather-station/aemet';
-        $fileName = 'pack_avisos_cap.tar';
-        $tempPath = $tempDir.'/'.$fileName;
+        $sobre = self::getCurl(self::getUrl('avisos_cap'));
 
-        $url = self::getUrl('avisos_cap');
-        $curl = self::getCurl($url);
-
-        $zoneValidSlugs = [
-            'estrecho_de_gibraltar',
-            'costa_estrecho',
-            'litoral_de_huelva',
-            'litoral_gaditano',
-            'costa_litoral_gaditano',
-            'campina_gaditana',
-        ];
-
-        $avisos = [];
-
-        if ($curl && isset($curl['datos'])) {
-            if ($curl) {
-
-                $curl2 = file_get_contents($curl['datos']);
-
-                // # Compruebo si existe el directorio temporal para crearlo
-                if (! file_exists($tempDir)) {
-                    if (! mkdir($tempDir, 0777, true)) {
-                        exit('Failed to create directories...');
-                    }
-                }
-
-                // # Guardo el contenido en un fichero temporal
-                $save = file_put_contents($tempPath, $curl2);
-
-                if ($save && file_exists($tempPath)) {
-                    $tar = new PharData($tempPath);
-                    $tar->extractTo($tempDir, null, true);
-
-                    $files = scandir($tempDir);
-
-                    // # Recorro cada archivo xml para sacar los datos que necesito.
-                    foreach ($files as $file) {
-                        $jsonFromXml = null;
-
-                        if (str_contains($file, '.xml')) {
-                            $content = file_get_contents($tempDir.'/'.$file);
-
-                            $xml = simplexml_load_string($content);
-                            $json = json_encode($xml);
-                            $jsonFromXml = json_decode($json, true);
-
-                            if (file_exists($tempDir.'/'.$file)) {
-                                unlink($tempDir.'/'.$file);
-                            }
-                        }
-
-                        if (! $jsonFromXml || ! count($jsonFromXml)) {
-                            continue;
-                        }
-
-                        $sentTimestampRaw = $jsonFromXml['sent'];
-
-                        if (! $sentTimestampRaw) {
-                            continue;
-                        }
-
-                        $sentTimestampParse = strtotime($sentTimestampRaw);
-                        $sentTimestamp = Carbon::parse($sentTimestampParse);
-
-                        if (! $sentTimestamp) {
-                            continue;
-                        }
-
-                        $sentTimestampSlug = $sentTimestamp->format('Y-m-d_H-i-s');
-
-                        // #Recorre cada Info
-                        foreach ($jsonFromXml['info'] as $info) {
-
-                            // #Recorre cada área
-                            foreach ($info['area'] as $area) {
-
-                                // TODO: comprobar que haya más información de la que se muestra, buscar también en metadatos de la api.
-
-                                $name = isset($area['areaDesc']) ? $area['areaDesc'] : null;
-                                $polygon = isset($area['polygon']) ? $area['polygon'] : null;
-                                $geocode = isset($area['geocode']['value']) ? $area['geocode']['value'] : null;
-
-                                if (! $name) {
-                                    continue;
-                                }
-
-                                $slug = Str::slug($name, '_');
-
-                                $otherFields = [];
-
-                                foreach ($area as $f_idx => $f) {
-                                    if (! in_array($f_idx, ['areaDesc', 'polygon', 'geocode'])) {
-                                        $otherFields[$f_idx] = $f;
-                                    }
-                                }
-
-                                $otherFieldsJson = null;
-
-                                if ($otherFields && count($otherFields)) {
-                                    $otherFieldsJson = json_encode(array_filter($otherFields), true);
-                                }
-
-                                if (in_array($slug, $zoneValidSlugs)) {
-
-                                    // TODO: Comprobar en unas semanas si ha quedado registrando datos que aún no conozco. Faltaría "type" de alerta y grado de peligro.
-
-                                    $avisos[] = [
-                                        'name' => $name,
-                                        'slug' => $slug,
-                                        'polygon' => $polygon,
-                                        'geocode' => $geocode,
-                                        'read_at' => $sentTimestamp,
-                                        'others_fields_json' => $otherFieldsJson,
-                                    ];
-
-                                }
-
-                            }
-                        }
-
-                    }
-
-                    return $avisos;
-                }
-
-            }
+        if (! is_array($sobre) || empty($sobre['datos'])) {
+            return [];
         }
+
+        $paquete = app(AEMETService::class)->fetchBinary((string) $sobre['datos']);
+
+        if ($paquete === null) {
+            return [];
+        }
+
+        return CapWarnings::desdeTar($paquete);
     }
 
     /**

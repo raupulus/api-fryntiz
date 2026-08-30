@@ -1,219 +1,286 @@
-# API AEMET OpenData — Integración
+# AEMET OpenData — cómo la usamos
 
-Documentación técnica de la integración con la API oficial de **AEMET OpenData** (Agencia Estatal de Meteorología) en el proyecto `api-fryntiz`.
+Cómo consume esta plataforma la API de **AEMET OpenData**: qué pedimos, cada
+cuánto, qué guardamos y qué hay que vigilar.
 
-- Documentación oficial: <https://opendata.aemet.es/dist/index.html>
-- Solicitud de API key: <https://opendata.aemet.es/centrodedescargas/altaUsuario>
-
-> Para detalles del módulo y los modelos de Eloquent, ver [weather-station.md](../weather-station.md).
+> **Esto no es la documentación de AEMET.** La documentación de la API —lo que
+> devuelve cada endpoint, sus erratas y sus límites reales— está en
+> [`docs/apis/aemet/`](../../apis/aemet/README.md), y es donde hay que mirar
+> antes de tocar nada aquí. Los datos de este archivo salen de ahí; si algo no
+> cuadra, manda `docs/apis/aemet/`.
+>
+> Para los modelos y las tablas, ver [weather-station.md](../weather-station.md).
 
 ---
 
-## 1. Arquitectura
+## 1. Las piezas
 
 ```
-┌────────────────────────────┐         ┌────────────────────────┐
-│  Comandos Artisan          │  uses   │  AEMETService          │
-│  aemet:update-* (7)        │ ──────▶ │  (Cache + Retry + 2-hop)│
-└────────────────────────────┘         └────────────┬───────────┘
-                                                    │ Http::retry
-                                                    ▼
-                                       ┌────────────────────────┐
-                                       │  opendata.aemet.es     │
-                                       │  /opendata/api/*       │
-                                       └────────────────────────┘
+Comandos artisan (8 productos + 1 de vigilancia)
+        │
+        │  \AEMETHelper::getLoQueSea()     ← parsea cada producto
+        ▼
+  AEMETService                            ← una sola puerta de salida
+        │  · clave en la cabecera api_key, NUNCA en la query
+        │  · charset ISO-8859-15 respetado
+        │  · cuota por endpoint, reintentos acotados
+        │  · detecta cuerpo vacío y HTML de error con 200
+        ▼
+  opendata.aemet.es
 ```
 
-- **Servicio canónico**: `App\Services\WeatherStation\AEMETService`
-- **Helper legacy**: `\AEMETHelper::*` (función global, usada por los comandos actuales hasta migración completa).
-- **Trait de validación de payload**: `App\Console\Commands\AEMET\Concerns\ValidatesAemetPayload` — provee el método `guardedSave($label, $producer, $persistor)` que valida y persiste con manejo de errores.
+| Pieza | Qué hace |
+|---|---|
+| `App\Services\WeatherStation\AEMETService` | **Todas** las peticiones salen por aquí. `fetchRaw()` para JSON y texto, `fetchBinary()` para el `tar` de los avisos |
+| `support/helpers/AEMETHelper.php` | El parseo de cada producto. Es lo que llaman los comandos; ya no hace peticiones por su cuenta |
+| `App\Support\WeatherStation\CapWarnings` | Lee el paquete CAP de los avisos. **No necesita red**: se le dan los bytes del `tar` |
+| `App\Support\WeatherStation\AemetApiKey` | El estado de la clave: si caduca, cuándo y qué hacer |
+| `App\Console\Commands\AEMET\Concerns\ValidatesAemetPayload` | `guardedSave()`: valida el payload y persiste sin dejar que una excepción tumbe el comando |
 
 ---
 
-## 2. Flujo de petición de AEMET (dos saltos)
+## 2. Las dos cosas que hay que saber sí o sí
 
-Todas las llamadas a AEMET son de **dos saltos**:
+### La clave caduca y no da error
 
-1. **Envelope**: `GET https://opendata.aemet.es/opendata/api/<endpoint>` con header `api_key`.
-   Respuesta JSON:
-   ```json
-   {
-     "descripcion": "exito",
-     "estado": 200,
-     "datos": "https://opendata.aemet.es/opendata/sh/<token>",
-     "metadatos": "https://opendata.aemet.es/opendata/sh/<token-meta>"
-   }
-   ```
-2. **Payload real**: `GET <datos>` (sin auth). Devuelve el JSON con la información solicitada.
+La `AEMET_API_KEY` es un JWT que **caduca a los ~100 días**. Cuando caduca, AEMET
+**no responde 401**: responde **200 con el cuerpo vacío**. En los logs eso es
+indistinguible de «hoy no hay datos», así que la integración se queda muda y no
+se entera nadie hasta que alguien echa de menos un dato semanas después.
 
-`AEMETService::makeRequest()` encapsula este flujo y devuelve siempre el payload final (o `null` si cualquiera de los dos saltos falla).
+Por eso:
+
+- `AEMET_API_KEY_EXPIRES_AT` se apunta **a mano en el `.env`** al renovar la clave.
+  Si no está, se lee el `exp` del propio JWT como respaldo.
+- `aemet:check-api-key` corre a diario a las 08:00 y avisa **15 días antes**
+  (`config('aemet.warn_days_before_expiry')`). Sale con código 1 para que el
+  planificador lo registre como fallo.
+- El panel de AEMET enseña el aviso arriba del todo.
+- Cuando un payload llega vacío, `ValidatesAemetPayload` dice en el log si la
+  clave tiene algo que ver. Es el único momento en que alguien lo va a leer.
+
+Se renueva en <https://opendata.aemet.es/centrodedescargas/altaUsuario>.
+
+### Citar a AEMET es obligatorio
+
+No es cortesía. La nota legal de AEMET exige citarla como fuente y conservar sus
+metadatos, y la Ley 18/2015 trae **régimen sancionador**. Mostrar su predicción
+en una web es un «servicio de valor añadido», y para esos la mención explícita es
+exigible.
+
+Los textos están en `config('aemet.attribution')` y son **los literales
+oficiales**: no se reescriben ni se traducen.
+
+| Clave | Texto |
+|---|---|
+| `corta` | `Fuente: AEMET` |
+| `larga` | `Información elaborada utilizando, entre otras, la obtenida de la Agencia Estatal de Meteorología` |
+| `copyright` | `© AEMET. Autorizado el uso de la información y su reproducción citando a AEMET como autora de la misma.` |
+| `nota_legal` | <https://www.aemet.es/es/nota_legal> |
+
+**Antes de publicar un dato de AEMET en cualquier sitio:**
+
+- [ ] Se ve `Fuente: AEMET` (o el texto largo).
+- [ ] Se ve **la fecha de elaboración del dato** — también es obligatoria.
+- [ ] Si el producto trae `origen.copyright` y `origen.notaLegal`, se propagan.
+- [ ] Nada sugiere que AEMET patrocina o valida el sitio.
+
+Detalle completo en
+[`docs/apis/aemet/12-uso-legal-y-atribucion.md`](../../apis/aemet/12-uso-legal-y-atribucion.md).
 
 ---
 
-## 3. Rate limiting
+## 3. El flujo de dos saltos
 
-AEMET aplica límites:
+Toda petición a AEMET son dos:
 
-- ~100 peticiones por minuto por API key.
-- ~3000 peticiones por día por API key.
-- En caso de excederlos, devuelve **HTTP 429** (Too Many Requests).
+1. **El sobre**: `GET /opendata/api/<endpoint>` con la cabecera `api_key`.
+   Devuelve un JSON con `estado`, `descripcion` y una URL en `datos`.
+2. **Los datos**: `GET <datos>`, **sin autenticación** — esa URL es efímera y
+   mandarle la clave sería filtrarla a un host que no la necesita.
 
-### Estrategia implementada
-
-| Mecanismo | Configuración (`config/aemet.php`) | Comportamiento |
-|-----------|------------------------------------|----------------|
-| Caché por endpoint | `cache_ttl.*` (s) | Cada llamada se cachea por TTL específico. |
-| Retry con backoff exponencial | `rate_limit.retry_attempts` (3) y `rate_limit.retry_base_delay_ms` (1000) | Reintenta hasta 3 veces con 1s, 2s, 4s entre reintentos. |
-| Filtro de retry | Solo HTTP 429 y 5xx | No reintenta en 4xx no transitorios. |
-| Margen de seguridad | `max_requests_per_minute = 50` | Cota documental. |
-
-### Tabla de TTL por endpoint
-
-| Endpoint | Clave TTL | Valor por defecto | Razonamiento |
-|----------|-----------|-------------------|--------------|
-| Predicción diaria municipio | `daily_prediction` | 600 s (10 min) | Cambios suaves a lo largo del día. |
-| Contaminación | `contamination` | 1800 s (30 min) | Datos no críticos. |
-| Avisos adversos (CAP) | `adverse_events` | 300 s (5 min) | Críticos para alertas. |
-| Costa | `coast` | 1800 s (30 min) | Cambios cada 12h. |
-| Alta mar | `high_sea` | 1800 s | id. |
-| Ozono | `ozone` | 3600 s (1h) | Mediciones semanales (globo sonda). |
-| Radiación solar | `sun_radiation` | 3600 s | id. |
-| Predicción playa | `prediction_beach` | 1800 s | id. |
+La clave va **siempre en la cabecera `api_key`**, nunca en la query string: en la
+query acaba en los logs del servidor, en los del proxy y en el `Referer`.
 
 ---
 
-## 4. Configuración
+## 4. La cuota, que no es lo que parece
 
-### Variables `.env`
+El límite de AEMET **no es un número de peticiones por minuto**. Es un cubo de
+~40 **por plantilla de endpoint** (15 en los productos pesados) que además va
+ligado a la **IP**, no sólo a la clave:
+
+- Generar otra API Key **no** desbloquea un endpoint agotado.
+- Dos entornos en el mismo servidor **comparten cuota**.
+- El 429 **no trae `Retry-After`** y la recuperación tarda **más de una hora**.
+
+Por eso el backoff son 30 s y sólo 2 reintentos: insistir no recupera nada y
+quema el cubo. La cabecera `Remaining-request-endpoint` dice lo que queda y
+`AEMETService` la va anotando por endpoint.
+
+Números medidos y razonados en
+[`docs/apis/aemet/LIMITACIONES.md`](../../apis/aemet/LIMITACIONES.md).
+
+### Cadencia de cada producto
+
+Las TTL y las horas del planificador salen del campo `periodicidad` que declara
+AEMET para cada producto. **Pedir más a menudo no trae datos nuevos**: sólo gasta
+cuota.
+
+| Producto | Comando | Cuándo | TTL |
+|---|---|---|---|
+| Avisos adversos (CAP) | `aemet:adverse-events` | cada 30 min | 20 min |
+| Contaminación | `aemet:contamination` | cada hora | 1 h |
+| Predicción horaria | `aemet:hourly-prediction` | cada 3 h | 3 h |
+| Predicción de playas | `aemet:beaches` | diario | 6 h |
+| Predicción de costa | `aemet:coast` | diario | 6 h |
+| Alta mar | `aemet:high-sea` | diario 08:15 | 6 h |
+| Radiación solar | `aemet:sun-radiation` | diario 08:25 | 12 h |
+| Ozono | `aemet:ozone` | diario 12:25 | 12 h |
+| **Vigilancia de la clave** | `aemet:check-api-key` | diario 08:00 | — |
+
+Horas en `Europe/Madrid`, fijadas para que no se muevan con el cambio de hora.
+
+---
+
+## 5. Los avisos de fenómenos adversos (CAP)
+
+Es el producto con el formato más raro de toda la API y el que más trampas tiene.
+
+### El formato
+
+- **Un `tar` SIN comprimir**, aunque el `Content-Type` sea `application/x-gtar`.
+  Se comprueba la firma `ustar` en el offset 257 antes de abrirlo, porque AEMET
+  responde 200 con una página de error HTML más a menudo de lo que debería.
+- Se descarga con `fetchBinary()`, **no** con `fetchRaw(..., false)`: el
+  `Content-Type` declara `charset=ISO-8859-15` y pasarle un binario por
+  `mb_convert_encoding()` lo deja irreconocible.
+- Dentro, un XML **CAP 1.2** por aviso y zona, declarado en UTF-8 (a diferencia
+  del resto de la API).
+- **El paquete es el estado completo y vigente**, no un incremento: cada descarga
+  reemplaza. Los avisos caducados y los actualizados AEMET los quita del paquete.
+
+### Lo que se filtra al leerlo, y por qué
+
+| Se descarta | Motivo |
+|---|---|
+| `status` distinto de `Actual` | `Test` son mensajes de prueba |
+| `severity = Minor` (nivel verde) | El Plan Meteoalerta **suprimió el nivel verde en 2022**: no es un aviso, es la ausencia de aviso. Eran 177 de los 252 mensajes del paquete nacional |
+| El bloque `<info>` en `en-GB` | Cada XML trae el **mismo aviso dos veces**, en `es-ES` y en inglés. Recorrer los dos lo duplica |
+| Zonas fuera de `config('aemet.warnings.zones')` | Sólo interesan las de aquí |
+
+El filtro de zona es por **código**, no por nombre: el nombre viaja en `areaDesc`
+y cambia, el código es estable y es el mismo `zona_comarcal` que devuelve el
+maestro de municipios. Se acepta el código exacto o un prefijo, así que `6111` es
+toda la provincia de Cádiz.
+
+```
+   61     11     03  C
+   └┬┘    └┬┘    └┬┘ └ variante costera de la misma zona
+  CCAA  provincia comarca
+        (INE)
+```
+
+### Lo que se guarda
+
+Una fila **por aviso y por zona**: un mismo aviso cubre varias comarcas y lo que
+se pregunta es «¿hay aviso en mi zona?».
+
+| Campo | Para qué |
+|---|---|
+| `identifier` + `geocode` | La clave natural. Es lo que deduplica |
+| `event` | `«Aviso de lluvias de nivel amarillo»`. Ya viene redactado en español y con el nivel dentro: es lo que conviene enseñar |
+| `severity` / `level` | `Moderate`=amarillo, `Severe`=naranja, `Extreme`=rojo. La correlación es exacta |
+| `onset_at` / `expires_at` | Ventana de vigencia |
+| `parameter` | `«P1;Precipitación acumulada en una hora;15 mm»`. El umbral **cambia por zona y por época**: no es una constante |
+| `polygons` | Lista de polígonos, pares `lat,lon`. **Al revés que GeoJSON** |
+| `others_fields_json` | Lo que AEMET mande y no esté contemplado, incluidos `senderName`, `web` y `contact` —que son los metadatos de procedencia que la nota legal obliga a conservar— |
+
+### Filtrar por `expires_at`, siempre
+
+AEMET **no emite `Cancel`**. Para retirar un aviso manda otro de nivel amarillo
+**que nace caducado** (`expires` = `sent`). Si te fías de `msg_type` verás un
+`Update` amarillo y enseñarás un aviso que ya no existe.
+
+Para eso está `AEMETAdverseEvents::current()`.
+
+### Las horas no vienen todas igual
+
+`sent` llega en **UTC** y `effective`, `onset` y `expires` en **hora local**
+(`+01:00`/`+02:00`). Compararlas sin normalizar da errores de una o dos horas
+según la época del año. El lector las pasa todas a UTC al guardarlas (D100).
+
+### Cómo se prueba
+
+Con un `tar` construido a mano en el propio test
+(`tests/Unit/WeatherStation/CapWarningsTest.php`). Es la única forma: los avisos
+sólo existen cuando hay temporal, y un test que dependa de que hoy haya viento en
+Cádiz no prueba nada el resto del año.
+
+---
+
+## 6. Configuración
 
 ```env
-AEMET_API_KEY="<tu_api_key>"
+AEMET_API_KEY="<el JWT>"
+AEMET_API_KEY_EXPIRES_AT="2026-11-30"   # se apunta al renovar la clave
 AEMET_BASE_URL="https://opendata.aemet.es/opendata/api"
-AEMET_DEFAULT_MUNICIPIO="11015"   # Chipiona
+AEMET_DEFAULT_MUNICIPIO="11015"          # Chipiona
 AEMET_DEFAULT_PLAYA="1101501"
 AEMET_DEFAULT_COSTA="11"
-AEMET_DEFAULT_AREA="61"
+AEMET_DEFAULT_AREA="61"                  # Andalucía
+AEMET_AVISOS_AREA="61"
 ```
 
-### `config/aemet.php`
+`config/aemet.php` lleva el porqué de cada número al lado del número. Los
+valores de cuota, TTL y frescura **no son estimaciones**: salen de las medidas de
+`docs/apis/aemet/LIMITACIONES.md`. Antes de cambiar uno, léelo.
 
-Estructura completa: ver el archivo `config/aemet.php` del proyecto. Las claves principales:
-
-- `api_key`, `base_url`
-- `default_municipio`, `default_playa`, `default_costa`, `default_area`
-- `rate_limit.{retry_attempts, retry_base_delay_ms, max_requests_per_minute, max_requests_per_day}`
-- `cache_ttl.{daily_prediction, contamination, adverse_events, coast, high_sea, ozone, sun_radiation, prediction_beach}`
-
----
-
-## 5. Endpoints implementados
-
-| Modelo | Método del servicio | Endpoint base |
-|--------|---------------------|---------------|
-| `AEMETPrediction` | `getDailyPrediction($code = null)` | `/prediccion/especifica/municipio/diaria/{codigoMunicipio}` |
-| `AEMETPredictionBeach` | `getBeachPrediction($code = null)` | `/prediccion/especifica/playa/{codigoPlaya}` |
-| `AEMETCoast` | `getCoastPrediction($code = null)` | `/prediccion/maritima/costera/costa/{codigoCosta}` |
-| `AEMETHighSea` | `getHighSeaPrediction($code = null)` | `/prediccion/maritima/altamar/area/{codigoArea}` |
-| `AEMETContamination` | `getContamination()` | `/red/especial/contaminacionfondo` |
-| `AEMETOzone` | `getOzone()` | `/red/especial/ozono` |
-| `AEMETSunRadiation` | `getSunRadiation()` | `/red/especial/radiacionsolar` |
-| `AEMETAdverseEvents` | `getAdverseEvents($area = null)` | `/avisos_cap/ultimoelaborado/area/{areaId}` |
-
-Todos los métodos devuelven `?array` (null si la petición falla o el payload es inválido).
+⚠️ `default_playa`, `default_costa` y `default_area` siguen **sin verificar con
+una petición real**. Que un endpoint funcione con un valor no dice nada de los
+demás.
 
 ---
 
-## 6. Comandos Artisan
+## 7. Cuando algo falla
 
-Todos están en `app/Console/Commands/AEMET/`:
-
-| Comando | Frecuencia | Endpoint(s) que consume |
-|---------|-----------|--------------------------|
-| `aemet:update-daily` | 1×/24h | Predicción diaria (placeholder actual). |
-| `aemet:update-daily8` | 08:00 | Playas, alta mar, radiación solar. |
-| `aemet:update-daily12` | 12:00 | Costa, ozono. |
-| `aemet:update-daily20` | 20:00 | Costa. |
-| `aemet:update-every4h` | Cada 4h | Predicción horaria. |
-| `aemet:update-every30m` | Cada 30 min | Avisos CAP (eventos adversos). |
-| `aemet:update-every10m` | Cada 10 min | Contaminación. |
-
-Todos los comandos:
-
-1. Usan el trait `ValidatesAemetPayload::guardedSave()`.
-2. Si el payload no es un array no vacío, registran un warning en `storage/logs/laravel.log` y omiten la persistencia (no rompen el siguiente endpoint del mismo comando).
-3. Si lanza excepción durante `saveFromApi`, registran error y siguen con el resto.
-
----
-
-## 7. Manejo de errores
-
-| Situación | Respuesta del servicio | Log |
-|-----------|------------------------|-----|
-| API key no configurada | `null` | `warning`: "no se ha configurado AEMET_API_KEY". |
-| HTTP 4xx no transitorio (400, 401, 403, 404) | `null` | `warning`: "respuesta no exitosa" con status. |
-| HTTP 429 / 5xx | Retry 3× con backoff exponencial; si falla, `null`. | `warning` tras agotar reintentos. |
-| Envelope sin clave `datos` | `null` | `warning`: "envelope sin clave datos". |
-| Payload final no es JSON array | `null` | `warning`: "payload no es JSON array". |
-| Excepción de red | `null` | `error`: "excepción durante la petición". |
-
----
-
-## 8. Verificación en local
+| Síntoma | Dónde mirar |
+|---|---|
+| «payload vacío» en el log | ¿Ha caducado la clave? El propio log lo dice ahora. `php artisan aemet:check-api-key` |
+| Acentos rotos | El charset. AEMET responde en ISO-8859-15 salvo los CAP. `JSON_INVALID_UTF8_SUBSTITUTE` **no** es la solución: parsea sin fallar y destruye los acentos |
+| 429 | Cuota agotada del endpoint. Tarda **más de una hora** en recuperarse; reintentar no ayuda |
+| Datos de hace años con un 200 impecable | Pasa. `max_dias_de_antiguedad` lo detecta y lo registra |
+| Los avisos no traen nada | Puede que no haya. Comprueba `config('aemet.warnings.zones')` y que el paquete sea un `tar` de verdad |
 
 ```bash
-# Configurar API key en .env
-echo "AEMET_API_KEY=\"<TU_KEY>\"" >> .env
-
-# Limpiar cache
-php artisan cache:clear
-
-# Probar comandos
-php artisan aemet:update-every10m
-php artisan aemet:update-every4h
-php artisan aemet:update-daily8
-
-# Ver logs
-tail -f storage/logs/laravel.log
-```
-
-Para probar **sin API key real**, los tests deberían usar `Http::fake()`:
-
-```php
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
-
-Cache::flush();
-Http::fake([
-    'opendata.aemet.es/opendata/api/*' => Http::response([
-        'descripcion' => 'exito',
-        'datos' => 'https://opendata.aemet.es/datos/x.json',
-    ], 200),
-    'opendata.aemet.es/datos/x.json' => Http::response([
-        ['prediccion' => ['dia' => [['fecha' => now()->toDateString()]]]],
-    ], 200),
-]);
-
-$svc = new \App\Services\WeatherStation\AEMETService();
-$data = $svc->getDailyPrediction('11015');
-// $data debe ser un array con la predicción.
+php artisan aemet:check-api-key      # lo primero, siempre
+php artisan config:clear
+php artisan aemet:adverse-events -v
+tail -f storage/logs/laravel-$(date +%Y-%m-%d).log | grep -i aemet
 ```
 
 ---
 
-## 9. Migración pendiente
+## 8. Lo que queda
 
-El proyecto contiene un helper global `\AEMETHelper::*` (ver `app/Helpers/AEMETHelper.php`) que los comandos siguen usando por compatibilidad histórica. **Plan de migración**:
-
-1. Replicar cada método del helper en `AEMETService` (ya están todos los endpoints públicos).
-2. Sustituir progresivamente `\AEMETHelper::xxx()` → `app(AEMETService::class)->xxx()` en los comandos.
-3. Una vez todos los comandos usen el servicio, eliminar `AEMETHelper.php`.
-
-Este paso se hará en una refactorización futura. Por ahora, el trait `ValidatesAemetPayload` garantiza que los fallos del helper se manejan sin perder datos.
+- Los comandos siguen llamando a `\AEMETHelper::*` para **parsear**. Las
+  peticiones ya salen todas por `AEMETService`; falta mover el parseo de cada
+  producto a su sitio, como se ha hecho con los avisos CAP.
+- `default_playa`, `default_costa` y `default_area`: verificar con petición real.
+- Los avisos no se exponen todavía por la API v2 ni en el frontal. **Cuando se
+  expongan, la atribución del punto 2 es obligatoria.**
 
 ---
 
-## 10. Referencias
+## Referencias
 
-- [Documentación oficial OpenData AEMET](https://opendata.aemet.es/dist/index.html)
-- Modelos y migraciones del módulo: [weather-station.md](../weather-station.md)
-- Catálogo de comandos: [commands.md](../commands.md)
+- Documentación de la API: [`docs/apis/aemet/`](../../apis/aemet/README.md)
+- Avisos y CAP: [`04-avisos-y-riesgos.md`](../../apis/aemet/04-avisos-y-riesgos.md)
+- Uso legal: [`12-uso-legal-y-atribucion.md`](../../apis/aemet/12-uso-legal-y-atribucion.md)
+- Límites medidos: [`LIMITACIONES.md`](../../apis/aemet/LIMITACIONES.md)
+- Modelos y tablas: [weather-station.md](../weather-station.md)
+- Comandos: [commands.md](../commands.md)
+
+---
+
+> Creado: 2026-05-26 · Última revisión: 2026-08-30

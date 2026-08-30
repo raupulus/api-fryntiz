@@ -18,6 +18,28 @@
         </div>
     </x-filament::section>
 
+    {{-- La clave de AEMET es un JWT que caduca a los ~100 días, y su caducidad
+         NO da error: la API responde 200 con el cuerpo vacío. Si no se avisa
+         aquí, la integración se queda muda y no se entera nadie. --}}
+    @if (($apiKey['status'] ?? 'ok') !== 'ok')
+        <x-filament::section>
+            <div class="flex items-start gap-3">
+                <x-filament::icon
+                    icon="{{ $apiKey['status'] === 'expired' || $apiKey['status'] === 'no_key' ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-clock' }}"
+                    class="h-6 w-6 shrink-0 {{ $apiKey['status'] === 'expired' || $apiKey['status'] === 'no_key' ? 'text-danger-500' : 'text-warning-500' }}"
+                />
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">
+                        Clave de AEMET: {{ str_replace('_', ' ', $apiKey['status']) }}
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        {{ $apiKey['message'] }}
+                    </p>
+                </div>
+            </div>
+        </x-filament::section>
+    @endif
+
     {{-- Grid de tarjetas --}}
     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-4">
         @foreach ($cards as $key => $card)
@@ -102,4 +124,19 @@
             </x-filament::section>
         @endforeach
     </div>
+
+    {{-- Atribución obligatoria. No es cortesía: la nota legal de AEMET exige
+         citarla como fuente y conservar sus metadatos, y la Ley 18/2015 trae
+         régimen sancionador. Los textos son los literales oficiales. --}}
+    <x-filament::section>
+        <div class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+            <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $attribution['short'] }}</p>
+            <p>{{ $attribution['copyright'] }}</p>
+            <p>
+                <a href="{{ $attribution['legal_notice'] }}" target="_blank" rel="noopener noreferrer" class="underline">
+                    Nota legal de AEMET
+                </a>
+            </p>
+        </div>
+    </x-filament::section>
 </x-filament-panels::page>
