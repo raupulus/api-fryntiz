@@ -1,0 +1,413 @@
+TRANSCRIPCIÓN de https://opendata.aemet.es/centrodedescargas/json/faqs.json
+(fuente oficial AEMET; conversión mecánica HTML->texto, sin editar contenido)
+========================================================================
+
+
+## 1 GENERALIDADES
+
+### 1.1 ¿Qué es Aemet OpenData?
+🔹 Es un servicio que provee fundamentalmente datos meteorológicos y climatológicos elaborados por Aemet, así como diversos productos tanto gráficos como textuales.
+🔹 Es de libre uso y gratuito.
+🔹 La descarga se puede hacer de dos formas: A través del acceso general , que de forma guiada, se recomienda para extraer pocos ficheros y de forma esporádica.
+A través del acceso para desarrolladores , está recomendado para expertos, que mediante programación, permite descargas voluminosas de información de forma automatizable.
+
+🔹 Para descargas manuales se debe entrar al servicio por el acceso general y para las automáticas por el acceso desarrolladores.
+
+### 1.2 ¿Qué información me puedo descargar?
+🔹 Datos de observación, radiación y contaminación de fondo.
+🔹 Imágenes de radar, mapas de rayos y productos derivados de satélite.
+🔹 Climatologías, valores normales y otros productos climatológicos.
+🔹 Predicciones normalizadas en texto, predicciones específicas, predicciones marítimas.
+🔹 Mapas significativos, de análisis y previstos.
+🔹 Avisos de fenómenos meteorológicos adversos e índices de incendios.
+
+### 1.3 ¿Cuáles son las condiciones de uso y reutilización de la información que me descargue?
+Puede consultarse en la nota legal: nota legal
+
+### 1.4 ¿Qué información me puedo descargar?
+Se pretende poner a disposición de los ciudadanos todos los productos de libre acceso y gratuitos aprobados en la resolución de precios públicos de AEMET actualmente en vigor. También están disponibles los datos obtenidos por Aemet en el marco del convenio de colaboración entre la Agencia Estatal de Investigación y la Agencia Estatal de Meteorología con respecto a las actividades españolas en la Antártida .
+Aemet elabora otros productos y servicios que por diferentes motivos no estarán disponibles en Aemet OpenData. Estos productos y servicios pueden ser solicitados a través de la sede electrónica de AEMET .
+
+### 1.5 ¿Por qué algunos productos elaborados por Aemet no son de acceso libre y gratuito?
+La política de datos de Aemet, aprobada por el Consejo Rector de la Agencia, según fija su estatuto , establece el conjunto de datos que se consideran abiertos (libres y gratuitos). Otros llevan un coste marginal asociado o requieren adaptaciones específicas y, por ello, se suministran bajo petición. Además, ciertos productos se elaboran de acuerdo con los requisitos legales de determinados sectores, por lo que son de uso restringido.
+
+### 1.6 ¿Puedo solicitar un producto o servicio meteorológico o climático que no se encuentre en Aemet OpenData?
+Sí. Puede hacerse de dos formas:
+🔹 A través de la sede electrónica , registrándose previamente.
+🔹 Presentando en un registro general
+🔹 Una solicitud dirigida a Aemet.
+
+### 1.7 ¿Puedo solicitar un servicio adaptado en OpenData? (Ejemplo: cambios de formato)
+No, pero existen dos alternativas:
+🔹 Puede entrar a través del acceso para desarrolladores , y programar una aplicación específica para descargar la información y adaptarla a tus requisitos particulares (formato, extensión geográfica, umbrales específicos, etc.).
+🔹 También puede solicitar que Aemet realice la adaptación. En este caso la prestación lleva un coste de gestión asociado al tiempo de personal en la preparación y al suministro adaptado. Puedes presentar tu solicitud de dos formas: A través de la sede electrónica , registrándose previamente: Sede electrónica
+Presentando por registro una solicitud : Modelo de solicitud
+
+### 1.8 ¿Cómo se accede al servicio Aemet OpenData?
+Desde la página de la Aemet , desde el menú de navegación ‘Datos abiertos’, o en su parte inferior pinchando en Aemet OpenData . .
+También recomendamos ver el siguiente video tutorial que mostrará igualmente como acceder al servicio de Aemet OpenData y servirá como resumen de como descargar los distintos datos ¿Cómo obtener información gratuita de AEMET de forma puntual? Una vez dentro de Aemet OpenData, puede acceder al video tutorial en el menú superior de la derecha seleccionando el elemento de “Video” .
+
+### 1.9 Cuando intento descargarme datos, me dice que debo introducir una API Key ¿Qué significa este mensaje?
+Antes de descargar los datos, debe solicitar una clave de acceso o API Key. Puede consultar el apartado 2.1 ¿Qué es la API Key? para saber más sobre la clave. Para obtenerla, siga los pasos indicados en 2.3 ¿Cómo se solicita la clave de acceso o API Key? .
+
+### 1.10 ¿Cómo puedo realizar consultas sobre este servicio?
+🔹 Puede realizar consultas, cumplimentando el formulario disponible en:
+https://sede.aemet.gob.es/AEMET/es/GestionPeticiones/NuevaConsulta
+🔹 También puede acceder, pinchando en la opción “Contactar” en la parte inferior derecha de la pantalla de inicio de Aemet OpenData:
+
+### 1.11 ¿Qué es el servicio RSS?
+RSS es un medio de distribución de contenidos de un sitio web (o de alguna de sus secciones), permitiendo a sus suscriptores conocer las novedades a través de distintos canales (feeds) sin tener que acceder a la web en cuestión.
+
+### 1.12  ¿Cómo puedo suscribirme a las novedades del servicio?
+Puede darse de alta en el servicio ATOM, RSS o GeoRSS . Se accede pinchando en el botón de “RSS” que aparece en la parte superior derecha de la pantalla de inicio de Aemet OpenData:
+
+La siguiente pantalla informa acerca del servicio. Se puede seleccionar RSS, GeoRSS o ATOM , seleccionando en su parte inferior el servicio que corresponda.
+
+Canal ATOM
+
+Canal RSS
+
+### 1.13 No puedo darme de alta en el servicio RSS de distribución de contenidos.
+🔹 Es posible que el navegador utilizado muestre directamente el código XML. Esto pasa, por ejemplo, con el Chrome. Aparece la siguiente ventana:
+
+🔹 Si le aparece el texto en formato XML utilice otro navegador o instale algún componente en el mismo que le permita la gestión de RSS.
+
+### 1.14 ¿Cómo puedo consultar las novedades publicadas?
+Puede consultar todas las novedades desde el botón Novedades situado en la parte superior derecha de la página. Este espacio muestra el histórico completo de publicaciones (changelog) de forma visual y organizada por categorías:
+🔹 Novedad : nuevas funcionalidades o mejoras.
+🔹 Aviso : comunicaciones relevantes para los usuarios.
+🔹 Mantenimiento : actuaciones técnicas programadas o realizadas.
+🔹 Noticia : información general relacionada con el servicio.
+Además, este mismo contenido se publica a través de los canales de noticias RSS y ATOM, permitiendo a los usuarios recibir las actualizaciones de forma automática mediante suscripción.
+
+### 1.15 ¿Qué significan los códigos de estado HTTP devueltos por la API?
+La API puede devolver diferentes códigos HTTP para indicar el resultado de una petición.
+200 - Operación realizada correctamente
+La petición se ha procesado correctamente y la respuesta contiene la información solicitada.
+Ejemplo de respuesta JSON
+
+{
+"descripcion" : "exito",
+"estado" : 200,
+"datos" : "https://opendata.aemet.es/opendata/urldatos",
+"metadatos" : "https://opendata.aemet.es/opendata/urlmetadatos"
+}
+
+401 - No autorizado
+La API Key no es válida, ha expirado o no se ha incluido correctamente en la petición.
+Ejemplo de respuesta JSON
+
+{
+"descripcion": "La API Key ha expirado. Genere una nueva API Key.",
+"estado": 401
+}
+
+403 - Acceso denegado
+La API Key es válida, pero no dispone de permisos para acceder al recurso solicitado.
+Ejemplo de respuesta JSON
+
+{
+"descripcion": "No dispone de permisos para acceder al recurso solicitado.",
+"estado": 403
+}
+
+404 - Recurso no encontrado
+El recurso solicitado no existe o no se encuentra disponible.
+Ejemplo de respuesta JSON
+
+{
+"descripcion": "Recurso no encontrado.",
+"estado": 404
+}
+
+429 - Límite de uso superado
+Petición que supera alguno de los límites del servicio (Límite de peticiones o caudal por minuto excedido para este usuario):
+Ejemplo de respuesta JSON
+
+{
+"descripcion": "Se ha superado el límite de peticiones permitido.",
+"estado": 429
+}
+
+
+## 2 Clave de acceso – API Key
+
+### 2.1 ¿Qué es la API Key?
+🔹 Es una clave que sirve para acceder al servicio Aemet OpenData, tanto como usuario general (descargas manuales), como para aplicaciones automáticas (programadores).
+🔹 Las claves solicitadas a partir del día 13 de septiembre de 2017 a las 11:00 horas, tenían validez indefinida que caducarán el próximo 15 de octubre de 2026.
+🔹 Se recomienda guardar la clave en el correo electrónico o en un fichero para poder copiarla cada vez que se necesite.
+
+### 2.2 ¿Por qué este servicio requiere una clave de acceso?
+Es una medida de control para garantizar el correcto funcionamiento del servicio. La clave permite aplicar mecanismos de protección y gestión del uso, incluyendo límites sobre las peticiones realizadas. El objetivo es evitar situaciones de sobrecarga y garantizar que el servicio se preste de forma adecuada y no discriminatoria para todos los usuarios.
+
+### 2.3 ¿Cómo se solicita la clave de acceso o API Key?
+Es necesario seguir estos pasos:
+🔹 Hacer clic en el apartado “Obtención API Key” de la pantalla de inicio .
+🔹 Aparece entonces una ventana nueva, en la que debe: Escribir el correo electrónico dónde se quiere recibir la clave, asegurándose que se ha escrito correctamente.
+Marcar la casilla de comprobación , haciendo clic en “No soy un robot”.
+
+🔹 Aparece un mensaje avisando que la petición ha sido enviada y que recibirá un correo de confirmación.
+
+🔹 A continuación, llegará un correo de opendata_apikey@aemet.es, con el asunto: “Petición generación API Key servicio Aemet OpenData”. Es necesario pinchar en el enlace del cuerpo de este correo antes de 5 días para confirmar la solicitud de clave:
+
+🔹 Al pinchar en el enlace, se abre una ventana en el navegador:
+
+🔹 A continuación, recibimos un nuevo correo de opendata_apikey@aemet.es con el asunto: “Alta en el servicio Aemet OpenData”, con el siguiente contenido:
+
+🔹 El API Key es la cadena de caracteres que aparece señalada en el ejemplo anterior dentro del rectángulo rojo. Para utilizarla conviene asegurarse que se ha copiado completamente (es habitual no copiar el primer o el último carácter).
+🔹 Esta clave tiene caducidad y sirve tanto para acceso general (descargas manuales) como para desarrolladores (descargas automáticas).
+🔹 Se recomienda guardar la clave en el correo electrónico o en un fichero para poder copiarla cada vez que se necesite, evitando solicitar una nueva cada vez que se accede al servicio.
+
+### 2.4 He solicitado la clave, pero no me llega ningún correo ¿qué debo hacer?
+🔹 El proceso puede durar unos minutos, por lo que es aconsejable esperar un poco.
+🔹 Si el problema persiste, puede deberse a que introdujera una dirección de correo no válida. Repita el 2.3 proceso de solicitud de clave , asegurándose que escribe correctamente el e-mail donde quiere recibir el API Key.
+
+### 2.5 No me funciona la clave
+Puede solicitar otra nueva siguiendo los pasos indicados en 2.3 ¿cómo se solicita la clave?
+
+### 2.6 ¿Puedo solicitar más de una clave de acceso?
+Si. Con la misma dirección de correo puede solicitar más de una clave de acceso. Esto facilita el mantenimiento de procesamientos automatizados de datos de Aemet OpenData.
+
+### 2.7 ¿Se requieren datos de carácter personal para utilizar el servicio?
+No. Sólo se requiere proporcionar el correo electrónico para recibir la clave de acceso. La dirección del correo electrónico no se almacena en ningún fichero ni base de datos externa.
+
+### 2.8 ¿Qué ocurrirá con las API Keys antiguas que no tienen fecha de expiración?
+⚠️ A partir del 15 de octubre de 2026 , las API Keys emitidas sin fecha de expiración dejarán de ser aceptadas por la API.
+
+Si su aplicación utiliza una de estas API Keys, deberá renovarla u obtener una nueva antes de esa fecha para evitar errores de autenticación (401 Unauthorized) . Las API Keys emitidas actualmente con una fecha de expiración válida no se verán afectadas por este cambio.
+
+### 2.9 ¿Cuánto tiempo es válida una API key?
+ℹ️ Las API Keys deben renovarse cada 3 meses desde su generación.
+
+Antes de que caduque una clave, puedes generar una nueva desde el apartado de Obtención de API Key y actualizarla en tus aplicaciones o scripts para seguir utilizando el servicio con normalidad.
+🔹 La validez de cada clave es de 3 meses.
+🔹 Puedes generar una nueva clave antes de que expire la actual.
+🔹 No existe límite en el número de renovaciones.
+
+### 2.10 ¿Qué ocurre cuando una API key caduca?
+⚠️ Cuando una API key alcanza su fecha de caducidad deja de ser válida y las peticiones realizadas con ella serán rechazadas.
+
+El servicio devolverá una respuesta similar a la siguiente:
+Ejemplo de respuesta JSON
+
+{
+"descripcion": "La API Key ha expirado. Genere una nueva API Key.",
+"estado": 401
+}
+
+Simplemente deberás generar una nueva API key y actualizarla en las aplicaciones, scripts o sistemas que la utilicen.
+🔹 La clave caducada deja de funcionar.
+🔹 El acceso a los datos sigue disponible, pero será necesario generar una nueva API key para continuar utilizando la API.
+🔹 No es necesario realizar ningún trámite adicional.
+
+### 2.11 ¿Cómo obtengo una nueva API key?
+Puedes generar una nueva API key siquiendo los pasos que se indica en 2.3 ¿cómo se solicita la clave? en cualquier momento.
+El proceso es rápido y está diseñado para que puedas sustituir la clave anterior con el menor impacto posible en tus aplicaciones.
+🔹 Accede al apartado “Obtención API Key” de la pantalla de inicio .
+🔹 Actualiza la configuración de tus aplicaciones o scripts. Se recomienda realizar la sustitución antes de que la clave actual caduque.
+Así evitarás interrupciones en el servicio.
+
+### 2.12 ¿Por qué las API keys tienen fecha de caducidad?
+La renovación periódica de las API keys ayuda a mejorar la seguridad y la gestión del servicio.
+Esta medida contribuye a reducir el impacto de posibles usos indebidos y favorece una utilización más equilibrada de los recursos disponibles.
+🔹 Mejora la seguridad de las credenciales.
+🔹 Reduce el riesgo asociado a claves antiguas o expuestas.
+🔹 Ayuda a mantener un servicio estable para todos los usuarios.
+⚠️ si una API key caduca, bastará con generar una nueva para continuar utilizando la API.
+
+
+## 3 ACCESO GENERAL
+
+### 3.1 ¿Cómo accedo al servicio datos abiertos de Aemet?
+🔹 Siga los pasos en ¿Cómo se accede al servicio Aemet Open Data?
+🔹 Debe disponer de una clave de acceso.
+🔹 Si no tiene clave, siga los pasos indicados en ¿Cómo se solicita la clave de acceso?
+🔹 Si ya dispone de clave, seleccione acceso general e introduzca la clave o API Key en la barra superior, donde se indica “Introduzca su API Key”.
+
+🔹 A continuación aparece un listado de los datos o productos que están disponibles en este servicio.
+
+🔹 Debe seleccionar los datos o productos que desee descargarse
+🔹 Aparecerá un fichero en formato JSON que contiene: Mensaje https que indica el resultado de la consulta (Ejemplo: 200, si la consulta es correcta)
+La url con los datos.
+La url con los metadatos .
+
+🔹 Para consultar los datos : copie la dirección web que aparece a continuación de la etiqueta “datos”, en otra ventana del explorador (desde https hasta el final de la línea y sin las comillas). Se abrirá el fichero de datos (en formato JSON o CSV, según sea el caso), o bien el mapa (en formato GIF).
+🔹 Para identificar los campos que contiene el fichero de datos descargado metadatos : copie la dirección web que aparece a continuación de la etiqueta “metadatos”, en otra ventana del explorador (desde https hasta el final de la línea, y sin las comillas).
+🔹 Ambas URLs son temporales y sólo están activas durante unos 5 minutos. Si se accede a las mismas pasado ese tiempo devolverá un JSON cuyo contenido será:
+{ "descripcion" : "datos expirados", "estado" : 404 }
+Si por cualquier causa obtiene dicha respuesta puede volver a realizar la misma consulta y obtener los datos accediendo a la URL indicada en "datos". Por ello, tampoco debe reproducir los enlaces de este ejemplo.
+🔹 En el caso que no existan los datos solicitados , se genera un fichero con el siguiente aspecto:
+{ "descripcion": " No hay datos que satisfagan esos criterios", "estado": 404 }
+Estas líneas contienen etiquetas sobre el resultado fallido de la consulta.
+
+### 3.2 Facilidades para visualizar un JSON.
+Por homogeneidad, el servicio siempre contesta a una consulta con un JSON. Mediante los navegadores habituales puede visualizar la respuesta proporcionada por el servicio Aemet OpenData. También tiene la posibilidad de instalar componentes para su navegador disponibles en internet, que le proporcionarán una visualización más amigable así como funcionalidades de utilidad.
+
+### 3.3 No entiendo lo que significan los datos del fichero que me he descargado.
+Si no está seguro de comprender los campos que contiene un fichero, acceda a los metadatos copiando en un navegador la URL de metadatos del fichero JSON. Se abre entonces una ventana que explica el contenido de los campos. Por ejemplo:
+
+### 3.4 ¿Qué son los metadatos y para qué sirven?
+En el ámbito de Aemet, el término metadato se refiere a toda información acerca de los datos y productos meteorológicos o climáticos que elabora, y que sirve para entender su contenido, garantizando así su correcta utilización. En el caso concreto del servicio Aemet OpenData, los metadatos contienen las características principales del fichero descargado: quién lo elabora, cada cuánto tiempo se prepara, qué contiene y su formato, además de información sobre los campos de datos (variable meteorológica, unidad de medida, etc.). También se especifica el copyright y las condiciones de uso mediante la nota legal. Aemet facilita los metadatos en castellano.
+
+### 3.5 ¿Qué es el formato JSON?
+ℹ️ JSON (JavaScript Object Notation) es una estructura para intercambiar datos, que nació como una alternativa a XML.
+
+🔹 La unidad básica de intercambio de información (objeto JSON) recibe el nombre de elemento de datos y queda delimitado por llaves { … }.
+🔹 Cada elemento de datos JSON contiene pares de elementos "nombre": "valor". Los tipos de valores que podemos encontrar en JSON son los siguientes:
+🔹 Un número (entero o float)
+Un string (entre comillas simples)
+Un booleano (true o false)
+Un array (entre corchetes [] )
+Un objeto (entre llaves {})
+Null
+
+🔹 Una de las mayores ventajas que tiene el uso de JSON es que puede ser leído por cualquier lenguaje de programación . Por lo tanto, puede ser usado para el intercambio de información entre distintas tecnologías. Su fácil uso en javascript ha generado un gran número de seguidores de esta alternativa.
+🔹 Existen muchas utilidades online que transforman el formato JSON a CSV, XML, etc. y viceversa (de CSV, XML)
+Puede encontrar más información en el Sitio oficial de JSON: https://json.org ( https://www.json.org/json-es.html , en castellano).
+
+### 3.6 ¿Cómo puedo transformar un fichero en formato JSON a XML, XLS, CSV ó HTML?
+🔹 De JSON a XML https://convertjson.com/json-to-xml.htm
+https://www.freeformatter.com/json-to-xml-converter.html
+https://www.utilities-online.info/xmltojson/#.WFPqS1PhDbh
+
+🔹 De JSON a XLS https://www.json-xls.com/json2xls
+
+🔹 De JSON a CSV https://www.convertcsv.com/json-to-csv.htm
+
+🔹 De JSON a HTML https://convertjson.com/json-to-html-table.htm
+
+### 3.7 ¿Cómo puedo transformar un fichero en formato XML, XLS, CSV ó HTML a JSON?
+🔹 De XML a JSON https://www.utilities-online.info/xmltojson/#.WFPq61PhDbg
+
+🔹 De XLS a JSON https://codebeautify.org/excel-to-json
+
+🔹 De CSV a JSON http://www.convertcsv.com/csv-to-json.htm
+https://csvjson.com/
+
+🔹 De HTML a JSON[ https://beautifytools.com/html-to-json-converter.php
+
+
+## 4 ACCESO DESARROLLADORES
+
+### 4.1 ¿Qué contiene el acceso para desarrolladores?
+Este acceso dispone de tres apartados:
+🔹 Documentación Aemet OpenData. HATEOAS : Contiene documentación dinámica sobre el servicio Aemet OpenData y autodescubrimiento HATEOAS. Para cada tipo de producto descargable a través de este servicio, se facilitan los productos concretos disponibles, las operaciones a realizar y los posibles mensajes https según sea el resultado de la consulta.
+🔹 Ejemplos de programas cliente : Facilita un conjunto de programas cliente ejemplo en diferentes lenguajes de programación.
+🔹 Aemet Codegen : Es una aplicación que genera de manera automática programas cliente de Aemet OpenData, para los lenguajes de programación más utilizados en la comunidad de desarrolladores (no disponible en la actualidad).
+
+### 4.2 ¿En qué lenguajes están programados los ejemplos cliente del acceso para desarrolladores?
+Se ofrecen ejemplos en los siguientes lenguajes de programación: Curl, Java, Python, PHP, Ruby, HTTPS, C, C#, Go, JavaScript, NodeJS, Objective-C, OCame, Shell, Swift.
+
+### 4.3 No encuentro ejemplos en lenguaje Fortan, Matlab, R o Mathematica.
+No se facilitan programas en esos lenguajes, pero puede desarrollarlo partiendo de alguno similar (C, Python, etc.).
+
+### 4.4 ¿Para qué sirven los programas ejemplo?
+Los ejemplos de programas cliente sirven para facilitar la realización de procesos automáticos de descarga de datos y productos disponibles en el servicio Aemet OpenData.
+
+### 4.5 ¿Está limitado el número de conexiones?
+Sí. Para garantizar la estabilidad y disponibilidad del servicio se aplican límites de uso sobre las peticiones realizadas a la API.
+Estos límites ayudan a evitar situaciones de sobrecarga, promover un uso equilibrado de los recursos disponibles y garantizar una experiencia adecuada para todos los usuarios.
+🔹 Existen límites de uso aplicados a distintos niveles del servicio.
+🔹 Existe un límite individual general para toda la API de 40 consultas por minuto.
+🔹 Determinados recursos o funcionalidades pueden disponer de restricciones adicionales de uso.
+🔹 Cuando se supera algún límite, las peticiones podrán ser rechazadas temporalmente mediante una respuesta HTTP 429 hasta que vuelva a permitirse el acceso.
+
+### 4.6 ¿Por qué existen límites de uso y caducidad de las API Keys?
+Las limitaciones de uso y la caducidad de las API Keys tienen objetivos diferentes y complementarios.
+🔹 Los límites de uso ayudan a prevenir sobrecargas y a garantizar la disponibilidad del servicio.
+🔹 La caducidad de las API Keys contribuye a mejorar la seguridad y el control de las credenciales.
+🔹 Los límites de uso controlan el consumo de recursos, mientras que la caducidad controla la validez de las credenciales de acceso.
+Ambas medidas ayudan a mantener un servicio estable, seguro y accesible para todos los usuarios.
+
+### 4.7 ¿Cómo se accede a HATEOAS?
+Una vez en “Acceso Desarrolladores” entre en la opción “Documentación Aemet OpenData. HATEOAS”
+
+Aparecerá la siguiente pantalla:
+
+Pulsando en cualquiera de los apartados de la lista, ésta se desplegará y se mostrarán todos los recursos REST correspondientes a dicho apartado.
+
+### 4.8 ¿Cómo obtener los Valores Climatológicos Diarios?
+Ejemplo de uso de HATEOAS :
+Entramos en HATEOAS y pulsamos en “valores-climatológicos”
+
+Al seleccionar cualquiera de ellos, se muestran sus propiedades y un formulario con los parámetros necesarios y su formato para hacer la petición al servicio REST:
+
+Haciendo clic con el ratón en la casilla “Test Request” se mostrará una ventana en la que se cumplimentará la API Key y las variables en las casillas “Value” (en este caso “fechaIniStr”, “fechaFinStr” e ”idema”).
+
+Pulsamos el botón “send” y realizamos la petición:
+
+Una vez hecho esto se mostrará en pantalla la siguiente información:
+
+La respuesta mostrada en el Response Body será un JSON con este formato:
+{ "descripcion": "exito", "estado": 200, "datos": "https://opendata.aemet.es/opendata/sh/ec5cff98", "metadatos": "https://opendata.aemet.es/opendata/sh/b3aa9d28" }
+Donde descripcion es el resultado de la llamada, estado es el estado HTTP de la respuesta, datos muestra la URL de los datos devueltos y metadatos muestra la URL de los metadatos.
+
+🔹 Curl nos genera la petición realizada.
+curl -X 'GET' 'https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/2024-03-01T00%3A00%3A00UTC/fechafin/2024-03-10T00%A00%3A00UTC/estacion/B893' \-H 'accept: application/json' \-H 'api_key: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtcGFsb21hcnNAYWVtZfXQuZXMiLCJqdGkiOiI2YTg5Yzk3Zi1kNTI5LTQzYjQtYWU5Yy 00ZWFlN2QzM2RmNmUiLCJleHAiOjE0ODc2NzMxOTksImlzcyI6IkFFTUVUIiw iaWF0IjdoxNDc5ODk3MTk5LCJ1c2xVySWQiOiI2YTg5Yzk3Zi1'
+
+🔹 Request URL nos muestra la URL que se ha generado para acceder al recurso REST.
+https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/2024-03-01T00%3A00%3A00UTC/fechafin/2024-03-10T00%3A00%3A00UTC/estacion/B893
+
+Añadiéndole al final un API Key se puede utilizar para acceder a estos datos en programas propios, o directamente escribiéndola en la barra de direcciones del navegador. Por ejemplo:
+
+https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/2024-03-01T00%3A00%3A00UTC/fechafin/2024-03-10T00%3A00%3A00UTC/estacion/B893?api_key= eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtcGFsb 21hcnNAYWVtZXQuZXMiLCJqdGkiOiI2YTg5Yzk3Zi1kNTI5LTQzYjQtYWU5Yy 00ZWFlN2QzM2RmNmUiLCJleHAiOjE0ODc2NzMgxOTksImlzcyI6IkFFTUVUIiw iaWF0IjoxNDc5ODk3MTk5LCJ1c2VySWQiOiI2YTg5Yzk3Zi1
+
+Como hemos visto antes, la petición GET que hemos hecho en este ejemplo ha sido:
+🔹 /api/valores/climatologicos/diarios/datos/fechaini/{fechaIniStr}/fechafin/{fechaFinStr}/estacion/{idema}
+Los parámetros variables que hemos introducido por pantalla corresponden a los que están entre llaves:
+{fechaIniStr}
+{fechaFinStr}
+{idema}
+
+De manera que variando los valores correspondientes a dichas variables se pueden generar las peticiones que se quiera a este recurso.
+Por ejemplo, si se quisieran obtener los Valores Climatológicos Diarios de las estaciones con idema 8178D y 8050X entre las fechas 2024-03-01T00:00:00UTC y 2024-03-10T00:00:00UTC, se haría:
+https://opendata.aemet.es/opendata/api/valores/climatologicos/diarios/datos/fechaini/2024-03-01T00:00:00UTC/fechafin/2024-03-10T00:00:00UTC/estacion/8178D,8050X?api_key= eyJhbGciOiJUzI1NiJ9.eyJzdWIiOiJtcGFsb 21hcnNAYWVtZXQuZXMiLCJqdGkiOiI2YfTg5Yzk3Zi1kNTI5LTQzYjQtYWU5Yy 00ZWFlN2QzM2RmNmUiLCJleHAiOjE0ODc2NzOTksImlzcyI6IkFFTUVUIiw iaWF0IjoxNDc5ODk3MdTk5LCJ1c2VySWQiOiI2YTg5Yzk3Zi1
+
+### 4.9 ¿Cómo obtener la imagen del radar de Almería?
+Ejemplo de uso de HATEOAS :
+Entramos en HATEOAS en el apartado “red-radares” , seleccionamos ” Imagen gráfica radar regional. Tiempo actual estándar.” , miramos el código de Almería (am) y entramos en “Test Request”.
+
+Se introduce la variable radar para Almería (am) y se pulsa el botón “send”
+
+El parámetro que hemos introducido por pantalla corresponde al que está entre llaves en la llamada GET:
+GET /api/red/radar/regional/{radar}
+
+La URL es:
+https://opendata.aemet.es/opendata/api/red/radar/regional/am
+
+De manera que variando el valor correspondiente a dicho parámetro se pueden generar las peticiones que se quiera a este recurso.
+Para obtener la imagen de radar de Almería (código de radar = am) se haría:
+https://opendata.aemet.es/opendata/api/red/radar/regional/am?api_key= eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtcGFsb21hcnNAYWVtZXuZXMiLCJqdGk iOiI2YTg5Yzk3Zi1kNTI5LTQzYjQtYWU5Yy00ZWFlsN2QzM2RmNmUiLCJleHAi OjE0ODc2NzMxOTkfsImlzcyI6IkFFTUVUiaWF0IjoxNDc5ODk3MTk5LCJ1c2 VySWQiOiI2YTg5Yzk3Zi1
+
+La respuesta mostrada en el Response Body será un JSON como el del ejemplo anterior:
+{ "descripcion": "exito", "estado": 200, "datos": "https://opendata.aemet.es/opendata/sh/ec5b0183", "metadatos": "https://opendata.aemet.es/opendata/sh/f266ec14" }
+Donde descripcion es el resultado de la llamada, estado es el estado HTTP de la respuesta, datos muestra la URL de los datos devueltos y metadatos muestra la URL de los metadatos.
+
+🔹 Curl nos genera la petición realizada.
+curl -X 'GET' \ 'https://opendata.aemet.es/opendata/api/red/radar/regional/am' \ -H 'accept: application/json' \ -H 'api_key: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqZmFyYWdvYkBhZW1ldC5lcyIsImp0aSI6IjdjZjMzNzVkLWUyYzItNGJmNS05ODY1LWY3YmYxM2Q3Y2FhZiIsImlzcyI6IkFFTUVUIiwiaWF0IjoxNjUxMDYwNzMzLCJ1c2VySWQiOiI3Y2YzMzc1ZC1lMmMyLTRiZjUtOTg2NS1mN2JmMTNkN2NhYWYiLCJyb2xlIjoiIn0.SVReIoJrulVFHIwaHH_tA7z1rJ_MzwDctxRRPZZqpWs'
+
+🔹 Request URL nos muestra la URL que se ha generado para acceder al recurso REST.
+https://opendata.aemet.es/opendata/api/red/radar/regional/am
+
+Añadiéndole al final un API Key se puede utilizar para acceder a estos datos en programas propios, o directamente escribiéndola en la barra de direcciones del navegador. Por ejemplo:
+
+https://opendata.aemet.es/opendata/api/red/radar/regional/am?api_key= eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtcGFsb 21hcnNAYWVtZXQuZXMiLCJqdGkiOiI2YTg5Yzk3Zi1kNTI5LTQzYjQtYWU5Yy 00ZWFlN2QzM2RmNmUiLCJleHAiOjE0ODc2NzMgxOTksImlzcyI6IkFFTUVUIiw iaWF0IjoxNDc5ODk3MTk5LCJ1c2VySWQiOiI2YTg5Yzk3Zi1
+
+La petición GET que hemos hecho en este ejemplo ha sido:
+🔹 /api/red/radar/regional/{radar}
+La variable que hemos introducido por pantalla corresponden a el que está entre llaves:
+{radar}
+
+De manera que variando los valores correspondientes a dicha variable se pueden generar las peticiones que se quiera a este recurso.
+
+
+## 5 PRODUCTOS
+
+### 5.1 No encuentro una estación climatológica.
+Siguiendo criterios de calidad, en la sección VALORES CLIMATOLÓGICOS del servicio de datos abiertos de Aemet OpenData, se incluyen los datos validados de las estaciones de Aemet . El resto deben solicitarse según lo indicado en 1.6 ¿Puedo seleccionar un producto que no se encuentre en Aemet OpenData?
+
+### 5.2 ¿Cuál es el retraso de publicación de las climatologías diarias?
+⚠️ El retraso de publicación de las climatologías diarias es de aproximadamente 4 días.
+
+### 5.3 No encuentro salidas de modelos numéricos (HARMONIE-AROME, Centro Europeo, Polvo)
+Las salidas de modelos numéricos no se consideran, a fecha de hoy, datos abiertos. Puede solicitarlos por cualquiera de las vías utilizadas para cualquier petición, según lo indicado en 1.6 ¿Puedo seleccionar un producto que no se encuentre en Aemet OpenData?

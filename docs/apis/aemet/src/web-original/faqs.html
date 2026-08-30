@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width-device-width, initial-scale=1">
+
+<title>Aemet OpenData</title>
+
+<script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_1589107031|rpid=882335006|domain=aemet.es"></script><link rel="stylesheet" href="css/base2.css">
+
+<link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+
+<!-- Bootstrap -->
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="css/bootstrap-select.min.css" rel="stylesheet">
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-select.min.js"></script>
+
+    <!-- Cargamos el script independiente de forma segura -->
+    <script src="js/buscador-faqs.js"></script>
+
+    <style>
+      .select,
+      #locale {
+        width: 100%;
+      }
+      .like {
+        margin-right: 10px;
+      }
+      th {
+        background-color: #4875b9; 
+        color: #fff;
+      }
+    </style>
+
+    <style> /* Nuevo estilo mas moderno con detalles corporativos azul */
+		/* Espaciado general de la sección (Fondo limpio de alrededor en blanco) */
+		.seccion-faqs-moderna {
+		    padding: 40px 0;
+		    background-color: #ffffff; 
+		}
+		
+		/* Transformación de los Paneles rígidos a Tarjetas fluidas */
+		.acordeon-faqs-moderno .panel.panel-default {
+		    background: #ffffff !important;
+		    border: 1px solid #e2e8f0 !important; 
+		    border-radius: 8px !important;         
+		    margin-bottom: 14px !important;        
+		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02) !important; 
+		    overflow: hidden;
+		    transition: transform 0.2s ease, box-shadow 0.2s ease;
+		}
+		
+		/* Efecto interactivo al pasar el ratón por encima de la tarjeta de la FAQ */
+		.acordeon-faqs-moderno .panel.panel-default:hover {
+		    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05) !important;
+		}
+		
+		/* Cabecera de la pregunta */
+		.acordeon-faqs-moderno .panel-heading {
+		    background-color: #ffffff !important;
+		    padding: 16px 20px !important;
+		    border-bottom: none !important;
+		}
+		
+		/* Estilo base del texto de la pregunta */
+		.acordeon-faqs-moderno .panel-title,
+		.acordeon-faqs-moderno .panel-title a {
+		    color: #1e293b !important; 
+		    font-weight: 600 !important;
+		    font-size: 15px !important;
+		    text-decoration: none !important;
+		    transition: color 0.2s ease;
+		}
+
+		/* DETALLE AZUL: Cuando la pregunta está ABIERTA (no tiene clase .collapsed), se pinta con tu azul corporativo */
+		.acordeon-faqs-moderno .panel-title a:not(.collapsed) {
+		    color: #4875b9 !important;
+		}
+		
+		/* Caja de la respuesta (El contenido interior desplegado) */
+		.acordeon-faqs-moderno .panel-collapse {
+		    border-top: 1px solid #f1f5f9 !important; 
+		    background-color: #fafafa !important;     
+		    /* DETALLE AZUL: Añadimos un borde izquierdo elegante con tu azul corporativo para enmarcar la respuesta */
+		    border-left: 4px solid #4875b9 !important;
+		}
+		
+		.acordeon-faqs-moderno .panel-body {
+		    padding: 20px !important;
+		    color: #475569 !important; 
+		    font-size: 14px !important;
+		    line-height: 1.6 !important; 
+		}
+    </style>
+
+<script>
+
+</script>
+
+</head>
+<body>
+
+	<header>
+		<div class="container">
+
+			<div class="row">
+				<p class="text-center">&nbsp;</p>				
+			</div>
+		</div>
+	</header>
+
+	<section id="intro-header-rec">
+		<div class="container">
+
+			<div class="row vcenter" style="height:63px">
+				<div class="col-sm-4 text-right">
+
+					<a href="/centrodedescargas/inicio"><img src="./imgs/logo_opendata_p.png"></a>
+
+				</div>
+
+				<div class="col-sm-4 text-center">
+					<H1>
+						<b>FAQs de Aemet OpenData</b>
+					</H1>
+				</div>
+				<div class="col-sm-4 text-right">
+					
+						<h6>							
+							<a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a>
+						</h6>
+					
+				</div>
+				
+			</div>
+		</div>
+
+	</section>
+
+	<br>
+	
+
+
+<!--     SECTION BUSCADOR: Replica la estructura exacta de tus buscadores del portal -->
+<!--     <section id="buscador_rss"> -->
+<!--         <div class="container"> -->
+<!--             <div class="row" style="margin-left:30px; margin-right:30px; margin-top: 30px;"> -->
+<!--                 <div class="col-sm-12 text-center"> -->
+<!--                     <h2 style="margin-bottom: 20px;"><B>Preguntas Frecuentes</B></h2> -->
+<!--                 </div> -->
+<!--                 <div class="col-sm-12"> -->
+<!--                     <div class="input-group input-group-lg" style="margin-bottom: 20px;"> -->
+<!--                         <span class="input-group-addon">Buscar:</span> -->
+<!--                         <input type="text" id="buscadorFaq" class="form-control" placeholder="Escribe tu duda aqu&iacute;... (ej. descargar)"> -->
+<!--                     </div> -->
+<!--                     <div id="sinResultados" class="alert alert-warning text-center" style="display: none;"> -->
+<!--                         No hemos encontrado respuestas para tu b&uacute;squeda. -->
+<!--                     </div> -->
+<!--                 </div> -->
+<!--             </div> -->
+<!--         </div> -->
+<!--     </section> -->
+        <!-- SECTION BUSCADOR: Estilo moderno y limpio coordinado con el acordeón -->
+    <section id="buscador_rss">
+        <div class="container">
+            <!-- Limitamos el ancho del buscador y lo centramos (max-width) para que no se estire demasiado -->
+            <div class="row" style="max-width: 700px; margin: 30px auto 10px auto; padding: 0 15px;">
+                
+                <div class="col-sm-12 text-center">
+                    <h2 style="margin-bottom: 25px; font-weight: 700; color: #333;">Preguntas Frecuentes</h2>
+                </div>
+                
+                <div class="col-sm-12">
+                    <!-- Contenedor personalizado que simula una barra de búsqueda moderna -->
+                    <div style="
+                        display: flex; 
+                        align-items: center; 
+                        background-color: #ffffff; 
+                        border: 1px solid #e0e0e0; 
+                        border-radius: 50px; 
+                        padding: 6px 20px; 
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                        transition: box-shadow 0.2s ease-in-out;
+                        margin-bottom: 25px;
+                    ">
+                        <!-- Icono o texto sutil en lugar del bloque gris rígido -->
+                        <span style="
+                            color: #0275d8; 
+                            font-weight: 600; 
+                            margin-right: 12px; 
+                            font-size: 15px;
+                            user-select: none;
+                        ">
+                            <span class="glyphicon glyphicon-search"></span> Buscar:
+                        </span>
+                        
+                        <!-- Input limpio sin los bordes por defecto de Bootstrap -->
+                        <input type="text" id="buscadorFaq" class="form-control" placeholder="Escribe tu duda aqu&iacute;... (ej. descargar)" style="
+                            border: none !important; 
+                            box-shadow: none !important; 
+                            background: transparent; 
+                            padding-left: 0; 
+                            font-size: 16px; 
+                            height: 40px;
+                            width: 100%;
+                        ">
+                    </div>
+                    
+                    <!-- Alerta de "sin resultados" estilizada a juego -->
+                    <div id="sinResultados" class="alert alert-warning text-center" style="display: none; border-radius: 8px; margin-top: -10px; margin-bottom: 25px;">
+                        No hemos encontrado respuestas para tu b&uacute;squeda.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- SECTION DATOS: Maquetación idéntica a tus datos de RSS -->
+<!--     <section id="datos"> -->
+<!--         <div class="container"> -->
+<!--             <div class="row" style="margin-left:30px; margin-right:30px"> -->
+<!--                 <div class="col-sm-12"> -->
+                    
+<!--                     Aquí jQuery inyectará dinámicamente tus 30 páginas estructuradas en paneles -->
+<!--                     <div id="contenedorCategorias"></div> -->
+                    
+<!--                 </div> -->
+<!--             </div> -->
+<!--         </div> -->
+<!--     </section> -->
+    <section id="datos" class="seccion-faqs-moderna">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-sm-12">
+	                
+	                <!-- Tu jQuery inyectará aquí los datos igual que siempre -->
+	                <div id="contenedorCategorias" class="acordeon-faqs-moderno"></div>
+	                
+	            </div>
+	        </div>
+	    </div>
+	</section>
+    
+    <br><br>
+
+
+    <!-- Script del Motor de FAQs optimizado -->
+    <script>
+        var datosFaqs = [];
+
+        // 1. Descargar el JSON local de forma asíncrona
+        $.getJSON('json/faqs.json', function(data) {
+            datosFaqs = data;
+            renderizar(""); // Pintar todo al cargar la página
+        }).fail(function() {
+            console.error("No se pudo cargar el archivo faqs.json");
+        });
+
+        // 2. Pintar los bloques usando h3 y paneles clásicos de tu plantilla
+        function renderizar(filtro) {
+            var $contenedor = $('#contenedorCategorias');
+            $contenedor.empty();
+            var totalVisibles = 0;
+            var htmlFinal = "";
+
+            datosFaqs.forEach(function(cat, catIdx) {
+                var preguntasHtml = "";
+                var cuentaPreguntas = 0;
+
+                cat.preguntas.forEach(function(faq) {
+                    var dePregunta = faq.pregunta.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    var deRespuesta = faq.respuesta.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                    if (filtro === "" || dePregunta.indexOf(filtro) !== -1 || deRespuesta.indexOf(filtro) !== -1) {
+                        cuentaPreguntas++;
+                        totalVisibles++;
+
+                        // Estructura adaptada: El título usa <h3> <B> idéntico a tu ejemplo para mantener consistencia visual
+                        preguntasHtml += 
+                            '<div class="panel panel-default item-faq" style="margin-bottom: 15px; border-radius: 4px; border: 1px solid #ddd;">' +
+                                '<div class="panel-heading" style="cursor: pointer; padding: 15px;" data-toggle="collapse" data-target="#collapse-' + faq.id + '">' +
+                                    '<h3 class="panel-title" style="margin: 0; font-size: 18px;">' +
+                                        '<B>' + faq.pregunta + '</B>' +
+                                    '</h3>' +
+                                '</div>' +
+                                '<div id="collapse-' + faq.id + '" class="panel-collapse collapse">' +
+                                    '<div class="panel-body text-muted" style="padding: 15px; line-height: 1.6; font-size: 14px;">' + faq.respuesta + '</div>' +
+                                '</div>' +
+                            '</div>';
+                    }
+                });
+
+                if (cuentaPreguntas > 0) {
+                    // El título de la categoría actúa como separador estilizado
+                    htmlFinal += '<div class="bloque-categoria" style="margin-bottom: 40px; margin-top: 20px;">' +
+                        '<h2 style="border-bottom: 2px solid #4875b9; padding-bottom: 8px; margin-bottom: 25px; color: #4875b9; font-weight: bold;">' + cat.categoria + '</h2>' +
+                        '<div class="panel-group" id="acordeon-' + catIdx + '">' + preguntasHtml + '</div>' +
+                    '</div>';
+                }
+            });
+
+            $contenedor.append(htmlFinal);
+
+            if (totalVisibles === 0 && filtro !== "") {
+                $('#sinResultados').show();
+            } else {
+                $('#sinResultados').hide();
+            }
+        }
+
+        // 3. Buscador reactivo ultra rápido
+        $('#buscadorFaq').on('input', function() {
+            var termino = $(this).val().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            renderizar(termino);
+        });
+    </script>
+      
+   <section id="volver"> 
+   <div class="container">
+       <br><br><br><br><br><br><br><br><br><br>
+
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				&nbsp;
+				<p class="text-center">
+					<a href="/centrodedescargas/inicio"><b> Volver </b></a>
+				</p>
+			</div>
+		</div>
+	</div>
+    </section>
+
+
+	<footer>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-10 text-left">
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp;
+						| &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal"
+							target="new">Nota legal</a> <br>&nbsp;
+					</h5>
+				</div>
+
+
+				<div class="col-sm-2 text-right">
+					<p>
+					<h4 style="margin-top: 15px;">
+						<span class="glyphicon glyphicon-headphones"></span> &nbsp;&nbsp;<a
+							href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+							target="new">Contactar</a>
+					</h4>
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+</body>
+</html>

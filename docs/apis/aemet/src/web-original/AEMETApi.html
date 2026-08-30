@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+
+
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width-device-width, initial-scale=1">
+
+<title>Aemet OpenData</title>
+
+<script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_1751243954|rpid=-1606343658|domain=aemet.es"></script><link rel="stylesheet" href="css/base2.css">
+
+<link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+
+<!-- Bootstrap -->
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="css/bootstrap-select.min.css" rel="stylesheet">
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-select.min.js"></script>
+
+
+<!-- Bootstrap table -->
+<!-- <link rel="stylesheet" href="dist/bootstrap-table.min.css">		
+	<script src="dist/bootstrap-table.min.js"></script>		
+	<script src="dist/locale/bootstrap-table-es-SP.min.js"></script> -->
+
+<!-- dataTables -->
+<script src="media/js/jquery.dataTables.min.js"></script>
+<script src="media/js/dataTables.bootstrap.min.js"></script>
+<link href="media/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="media/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap datetimepicker -->
+<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+	media="screen">
+<script type="text/javascript" src="js/bootstrap-datetimepicker.js"
+	charset="UTF-8"></script>
+
+
+
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style type="text/css" media="screen">
+
+</style>
+
+<script>
+
+//Miramos si el usuario ha introducido su apikey
+var esValidado = $('esVal').val();
+if(esValidado != true){
+	alert(esValidado);
+	return alert("Debe introducir su API Key");
+}
+
+</script>
+
+</head>
+<body>
+
+	<header>
+		<div class="container">
+
+			<div class="row">
+				<p class="text-center">&nbsp;</p>				
+			</div>
+		</div>
+	</header>
+
+	<section id="intro-header-rec">
+		<div class="container">
+
+			<div class="row vcenter" style="height:63px">
+				<div class="col-sm-4 text-right">
+					
+					<a href="/centrodedescargas/inicio"><img src="./imgs/logo_opendata_p.png"></a>
+
+				</div>
+
+				<div class="col-sm-4 text-center">
+					<H1>
+						<b>Acceso Desarrolladores</b>
+					</H1>
+				</div>
+				<div class="col-sm-4 text-right">
+					
+						<h6>														
+							<a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a>
+						</h6>
+					
+				</div>
+
+			</div>
+		</div>
+		
+	</section>
+
+	<br>
+
+	<section id="datos">
+		
+		    <div class="container">
+       <div class="row">
+         <p>&nbsp;</p>
+       </div>
+       </div>
+
+       <div class="container">
+          <div class="jumbotron">
+          <div class="row">
+
+          <div class="col-sm-2 text-center">
+           <p><span class="glyphicon glyphicon-search"></span></p>
+          </div>
+          <div class="col-sm-8">
+              <h4 class="text-center">Documentaci&oacute;n Aemet OpenData. HATEOAS</h4>
+              <p><h6 class="text-center">Acceso a documentaci&oacute;n din&aacute;mica Aemet OpenData y autodescubrimiento HATEOAS, que permite conocer los recursos del API y sus detalles</h6></p>
+          </div>
+          <div class="col-sm-2 text-center">
+
+				<form action="https://opendata.aemet.es/dist/index.html" method="get" id="form2">
+	             	<button type="submit" class="btn btn-primary btn-lg" data-target="form2">Entrar</button>
+				</form>   				               
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+       <div class="container">
+          <div class="jumbotron">
+          <div class="row">
+
+          <div class="col-sm-2 text-center">            
+            <span class="glyphicon glyphicon-folder-open"></span>
+          </div>
+          <div class="col-sm-8">
+              <h4 class="text-center">Proyecto GitLab: Aemet OpenData API</h4>
+              <p><h6 class="text-center">Proyecto GitLab con una librer&iacute;a Python para consumir y explotar AEMET OpenData, APIs REST y fuentes RSS.</h6></p>
+          </div>
+          <div class="col-sm-2 text-center">
+
+				<form action="https://gitlab.aemet.es/opendata/API" method="get" id="form2">
+	             	<button type="submit" class="btn btn-primary btn-lg" data-target="form2">Entrar</button>
+				</form>   				               
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+
+       <div class="container">
+       <div class="jumbotron">
+       <div class="row">
+         <div class="col-sm-2 text-center">
+            <p><span class="glyphicon glyphicon-duplicate"></span></p>
+         </div>
+         <div class="col-sm-8 text-center">
+              <h4 class="text-center">Ejemplos de programas cliente</h4>
+              <p><h6 class="text-center">Acceso a un conjunto de programas cliente ejemplo</h6></p>
+          </div>
+         <div class="col-sm-2 text-center">
+
+                     
+                     <form action="/centrodedescargas/ejemProgramas" method="get" id="form2">
+                     	<button type="submit" class="btn btn-primary btn-lg" data-target="form2">Entrar</button>
+					 </form>
+
+
+            </div>
+            </div>
+            </div>
+            </div>
+
+
+
+		  <div class="container">
+       <div class="jumbotron">
+       <div class="row">
+         <div class="col-sm-2 text-center">
+            <p><span class="glyphicon glyphicon-equalizer"></span></p>
+         </div>
+
+         <div class="col-sm-8 text-center">
+              <h4 class="text-center">Aemet Codegen<br>&nbsp;</h4>
+              <p><h6 class="text-center">Utilidad que permite la creaci&oacute;n autom&aacute;tica de programas cliente de Aemet OpenData, para los lenguajes de programaci&oacute;n m&aacute;s utilizados en la comunidad de desarrolladores</h6></P>
+          </div>
+         <div class="col-sm-2 text-center">
+<!-- Trigger the modal with a button -->
+                <form action="/centrodedescargas/codegen" method="get" id="form2">
+	                 <button type="submit" class="btn btn-primary btn-lg" data-target="form2">Entrar</button>
+				</form> 
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+
+
+		
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				&nbsp;
+				<p class="text-center">
+					<a href="/centrodedescargas/inicio"><b> Volver </b></a>
+				</p>
+			</div>
+		</div>
+		
+	</section>
+	
+	<footer>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-10 text-left">
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp;
+						| &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal"
+							target="new">Nota legal</a> <br>&nbsp;
+					</h5>
+				</div>
+
+
+				<div class="col-sm-2 text-right">
+					<p>
+					<h4 style="margin-top: 15px;">
+						<span class="glyphicon glyphicon-headphones"></span> &nbsp;&nbsp;<a
+							href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+							target="new">Contactar</a>
+					</h4>
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+</body>
+</html>

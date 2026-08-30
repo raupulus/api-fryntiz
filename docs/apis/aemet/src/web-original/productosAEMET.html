@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+
+
+
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width-device-width, initial-scale=1">
+
+<title>Aemet OpenData</title>
+
+<script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_1399412431|rpid=-1711724593|domain=aemet.es"></script><link rel="stylesheet" href="css/base2.css">
+
+<link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+
+<!-- Bootstrap -->
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="css/bootstrap-select.min.css" rel="stylesheet">
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-select.min.js"></script>
+<script src="js/productosAEMET_20190313.js"></script>
+
+
+<!-- Bootstrap table -->
+<!-- <link rel="stylesheet" href="dist/bootstrap-table.min.css">		
+	<script src="dist/bootstrap-table.min.js"></script>		
+	<script src="dist/locale/bootstrap-table-es-SP.min.js"></script> -->
+
+<!-- dataTables -->
+<script src="media/js/jquery.dataTables.min.js"></script>
+<script src="media/js/dataTables.bootstrap.min.js"></script>
+<link href="media/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="media/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap datetimepicker -->
+<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+	media="screen">
+<script type="text/javascript" src="js/bootstrap-datetimepicker.js"
+	charset="UTF-8"></script>
+	
+
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style type="text/css" media="screen">
+#contextMenu {
+	position: absolute;
+	display: none;
+}
+
+tr.group, tr.group:hover {
+	background-color: #ddd !important;
+}
+
+
+</style>
+
+<script>
+	
+	
+	
+</script>
+
+</head>
+<body>
+	
+	<header>
+		<div class="container">
+
+			<div class="row">
+				<p class="text-center">&nbsp;</p>				
+			</div>
+		</div>
+	</header>
+
+	<section id="intro-header-rec">
+		<div class="container">
+
+			<div class="row vcenter" style="height:63px">
+				<div class="col-sm-4 text-right">
+
+					<a href="/centrodedescargas/inicio"><img src="./imgs/logo_opendata_p.png"></a>
+
+				</div>
+
+				<div class="col-sm-4 text-center">
+					<H1>
+						<b>Acceso General</b>
+					</H1>
+				</div>
+				<div class="col-sm-4 text-right">
+					
+						<h6>							
+							<a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a>
+						</h6>
+					
+				</div>
+
+			</div>
+		</div>		
+		
+	</section>
+
+	<br>	
+	<!-- Modal -->
+	<div class="modal fade" id="pleaseWaitDialog" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1>Cargando...</h1>
+				</div>
+				<div class="modal-body">
+					<div class="progress progress-striped active">
+						<div
+							class="progress-bar progress-bar-success  "
+							role="progressbar" aria-valuenow="40" aria-valuemin="0"
+							aria-valuemax="100" style="width: 40%">
+							<span class="sr-only">40% Complete (success)</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> 
+
+	<section id="datos">
+			<div id="loading"></div>
+			<div class="container">
+				<!-- <table id="example" class="display" cellspacing="0" width="100%">-->
+				<table id="table" class="display" cellspacing="0" width="100%" border=0>
+				
+				<div>
+					<h5><b>Introduzca su API Key:</b></h5>
+					<h5><input type="text" id="apikey" style="border-color: rgba(229, 103, 23, 0.8);" class="form-control" placeholder=""></h5>
+				</div>
+				
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					
+  				<div>
+					<p align="center" style="color:#337AB7"><b>En "Acceso Desarrolladores" en HATEOAS, podrá encontrar todas las API disponibles.</b></p>					
+				</div>
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+
+							<td>Mensajes de observación. Último elaborado</td>													
+							<td><select class="selectpicker" id="obs1" name="obs1"
+								data-live-search="true">								
+							</select>
+							</td>							
+							<td><!-- <select class="selectpicker" id="obs11" name="obs11"
+								data-live-search="true" disabled="disabled">
+									<option value="">Seleccione una estación</option>
+								</select> -->
+							</td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bobs1">Obtener</button></td>
+							<td>Observación convencional</td>
+						</tr>
+						<tr>
+
+							<td>Datos de observación. Último elaborado</td>
+							
+							<td><div id="dobs2"><select class="selectpicker" id="obs2" name="obs2"
+								data-live-search="true">
+								<option value="">Seleccione una provincia</option>								
+							</select>
+							</div>
+							</td>
+							
+							<td><select class="selectpicker" id="obs22" name="obs22"
+								data-live-search="true" disabled="disabled">
+								<option value="">Seleccione una estación</option>								
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bobs2">Obtener</button></td>
+							<td>Observación convencional</td>
+						</tr>
+						<tr>
+
+							<td>Datos de radiación global, directa o difusa. Último elaborado</td>
+							
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bredes1">Obtener</button></td>
+							<td>Redes especiales</td>
+						</tr>						
+						<tr>
+
+							<td>Perfiles verticales de ozono. Último elaborado</td>
+							
+							<td><select class="selectpicker" id="redes2" name="redes2"
+								data-live-search="true">														
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bredes2">Obtener</button></td>
+							<td>Redes especiales</td>
+						</tr>
+						<tr>
+
+							<td>Datos de contaminación de fondo. Último elaborado</td>
+							
+							<td><select class="selectpicker" id="redes3" name="redes3"
+								data-live-search="true">								
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bredes3">Obtener</button></td>
+							<td>Redes especiales</td>
+						</tr>
+						<tr>
+
+							<td>Contenido total de ozono. Último elaborado</td>
+							
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bredes4">Obtener</button></td>
+							<td>Redes especiales</td>
+						</tr>						
+						<tr>
+
+							<td>Mapa con los rayos registrados en periodo
+								estándar. Último elaborado</td>
+							
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="brayos1">Obtener</button></td>
+							<td>Red de rayos</td>
+						</tr>
+
+						</tr>						
+						<tr>
+
+							<td>Imágenes productos derivados de satélite. Último elaborado</td>
+							
+							<td>
+								<select class="selectpicker" id="sate1" name="sate1"
+								data-live-search="true">
+									<option value="">Seleccione tipo de imagen</option>
+									<option value="nvdi">Índice normalizado de vegetación</option>									
+									<option value="sst">Temperatura del agua del mar</option>
+								</select>
+							</td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bsate1">Obtener</button></td>
+							<td>Información de satélite</td>
+						</tr>
+						<tr>
+
+							<td>Imagen gráfica radar regional. Tiempo actual estándar</td>
+							
+							<td>
+								<select class="selectpicker" id="radar1" name="radar1"
+								data-live-search="true">									
+								</select>
+							</td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bradar1">Obtener</button></td>
+							<td>Red de radares</td>
+						</tr>
+						<tr>
+
+							<td>Imagen de la composición nacional de radares. Tiempo actual
+								estándar</td>
+							
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bradar2">Obtener</button></td>
+							<td>Red de radares</td>
+						</tr>
+				
+						<tr>
+							<td>Climatologías diarias</td>	
+													
+							<td>
+								<select class="selectpicker" id="clim1" name="clim1"
+								data-live-search="true" >
+								<option value="">Seleccione una provincia</option>
+								</select>
+							</td>								
+							<td>
+								<select class="selectpicker" id="clim11" name="clim11"
+								data-live-search="true" disabled="disabled">
+								<option value="">Seleccione una estación</option>
+								</select>
+							</td>
+							<td width="260" align="">
+								Fecha inicio:
+								<div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechaclim1'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+								Fecha fin:
+								<div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechaclim2'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+							</td>
+							<td><button type="button" class="btn btn-primary"
+									id="bclim1">Obtener</button></td>
+							<td>Valores Climatológicos</td>
+						</tr>												
+						
+						<tr>
+							<td>Climatologías mensuales/anuales</td>													
+							<td><select class="selectpicker" id="clim2" name="clim2"
+								data-live-search="true">
+								<option value="">Seleccione una provincia</option>
+							</select></td>
+							<td><select class="selectpicker" id="clim22" name="clim22"
+								data-live-search="true" disabled="disabled">
+								<option value="">Seleccione una estación</option>
+							</select>
+							</td>
+							<td align="center"> 
+								<div >
+								  Año (AAAA):<input style="width:100px;" type="text" class="form-control" id="anioIni2">
+								</div>							
+								
+							</td>
+							<td><button type="button" class="btn btn-primary"
+									id="bclim2">Obtener</button></td>
+							<td>Valores Climatológicos</td>
+						</tr>
+						
+						
+						<tr>
+							<td>Valores normales</td>
+							
+							<td><select class="selectpicker" id="clim3" name="clim3"
+								data-live-search="true">
+								<option value="">Seleccione una provincia</option>
+							</select></td>
+							<td><select class="selectpicker" id="clim33" name="clim33"
+								data-live-search="true" disabled="disabled">
+								<option value="">Seleccione una estación</option>
+							</select>
+							</td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bclim3">Obtener</button></td>
+							<td>Valores Climatológicos</td>
+						</tr>
+						
+						
+						<tr>
+							<td>Extremos registrados</td>
+							
+							<td><select class="selectpicker" id="clim4" name="clim4"
+								data-live-search="true">
+								<option value="">Seleccione una provincia</option>
+							</select></td>
+							<td><select class="selectpicker" id="clim44" name="clim44"
+								data-live-search="true" disabled="disabled">
+								<option value="">Seleccione una estación</option>
+							</select>
+							</td>
+							<td><select class="selectpicker" id=clim444 data-container="body" name="clim444"
+								data-live-search="true">
+								<option id="">Seleccione una variable</option>
+								<option id="T">Temperatura</option>
+								<option id="P">Precipitación</option>
+								<option id="V">Viento</option>
+							</select>							
+							</td>													
+							<td><button type="button" class="btn btn-primary"
+									id="bclim4">Obtener</button></td>
+							<td>Valores Climatológicos</td>
+						</tr>
+						
+																								
+						<tr>
+
+							<td>Inventario de estaciones de Valores Climatológicos</td>							
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bclim7">Obtener</button></td>
+							<td>Valores Climatológicos</td>
+						</tr>																											
+						
+						<tr>
+							<td>Balance hídrico nacional(documentos)</td>
+							
+							<td><!-- <select class="selectpicker" id="prodclim1" name="prodclim1"
+								data-live-search="true">
+							</select> --></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bprodclim1">Disponible en web</button></td>
+							<td>Productos Climatológicos</td>
+						</tr>
+						
+									
+						<tr>
+							<td>Resumen mensual climatológico nacional (documentos)</td>
+							
+							<td><!-- <select class="selectpicker" id="prodclim3" name="prodclim3"
+								data-live-search="true">
+							</select> --></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bprodclim3">Disponible en web</button></td>
+							<td>Productos Climatológicos</td>							
+						</tr>
+						
+						<tr>
+							<td>Avance mensual climatológico (documentos)</td>
+							
+							<td><!-- <select class="selectpicker" id="prodclim4" name="prodclim4"
+								data-live-search="true">
+							</select> --></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bprodclim4">Disponible en web</button></td>
+							<td>Productos Climatológicos</td>
+						</tr>
+						
+						<tr>
+							<td>Capas SHAPE de estaciones climatológicas de AEMET</td>
+							
+							<td><select class="selectpicker" id="cprodclim5" data-container="body"
+								name="cprodclim5" data-live-search="true">
+								<option value="">Seleccione tipo de estación</option>
+									<option value="completas">Estaciones climatológicas completas </option-->
+									<option value="termometricas">Estaciones climatológicas termométricas</option>
+									<option value="pluviometricas">Estaciones climatológicas pluviométricas</option>
+									<option value="automaticas">Estaciones climatológicas automáticas</option>									
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bprodclim5">Obtener</button></td>
+							<td>Productos Climatológicos</td>
+						</tr>
+						
+						<tr>
+							<td>Datos numericos diarios de proyecciones regionalizadas de cambio climatico para el siglo XXI</td>
+							
+							<td><select class="selectpicker" id="cclim1" name="cclim1"
+								data-live-search="true">
+								<option value="">Seleccione periodo</option>
+									<option value="0">Diario</option>
+									<option value="1">Mensual</option>
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bcclim1">Disponible en web</button></td>
+							<td>Predicción Climática</td>
+						</tr>
+						
+						<tr>
+							<td>Gráficos de proyecciones regionalizadas de cambio climático para el siglo XXI</td>
+							
+							<td><!-- <select class="selectpicker" id="cclim2" name="cclim2"
+								data-live-search="true">
+							</select> --></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bcclim2">Disponible en web</button></td>
+							<td>Predicción Climática</td>
+						</tr>
+						
+						<tr>
+							<td>Predicción mensual. Tiempo actual estandarizado</td>
+							
+							<td><!-- <select class="selectpicker" id="cclim3" name="cclim3"
+								data-live-search="true">
+							</select> --></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bcclim3">Disponible en web</button></td>
+							<td>Predicción Climática</td>
+						</tr>
+						
+						<tr>
+							<td>Boletín de predicción estacional. Último elaborado</td>
+							
+							<td><!-- <select class="selectpicker" id="cclim4" name="cclim4"
+								data-live-search="true">
+							</select> --></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bcclim4">Disponible en web</button></td>
+							<td>Predicción Climática</td>
+						</tr>
+																	
+						
+						<tr>
+							<td>Predicción nacional hoy. Último elaborado</td>
+							
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred1">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción nacional hoy. Archivo</td>
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred1'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredArch1">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+
+							<td>Predicción nacional mañana. Último elaborado</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred2">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción nacional mañana. Archivo</td>
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred2'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredArch2">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+
+							<td>Predicción nacional pasado mañana. Último elaborado</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred3">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción nacional pasado mañana. Archivo</td>
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred3'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredArch3">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>	
+						<tr>
+
+							<td>Predicción nacional medio plazo. Último elaborado</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred4">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción nacional medio plazo. Archivo</td>
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred4'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredArch4">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>													
+						<tr>
+
+							<td>Predicción nacional tendencia. Último elaborado</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred5">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción nacional tendencia. Archivo</td>
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred5'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>							
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredArch5">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>	
+						<tr>
+							<td>Predicción comunidad autónoma hoy. Último elaborado</td>
+														
+							<td><select class="selectpicker" id="pred6" name="pred6"
+								data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred6">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción comunidad autónoma hoy. Archivo</td>
+								
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred6'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+							</td>						
+							<td><select class="selectpicker" id="predArch6" name="predArch6"
+								data-live-search="true">
+							</select></td>
+							<td></td>							
+							<td><button type="button" class="btn btn-primary" id="bpredArch6">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+
+							<td>Predicción comunidad autónoma mañana. Último elaborado</td>	
+													
+							<td><select class="selectpicker" id="pred7" name="pred7"
+								data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred7">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción comunidad autónoma mañana. Archivo</td>	
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred7'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>						
+							<td><select class="selectpicker" id="predArch7" name="predArch7"
+								data-live-search="true">
+							</select></td>
+							<td></td>							
+							<td><button type="button" class="btn btn-primary" id="bpredArch7">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+
+							<td>Predicción comunidad autónoma pasado mañana. Último elaborado</td>							
+							
+							<td><select class="selectpicker" id="pred8" name="pred8"
+								data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred8">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>	
+						<tr>
+							<td>Predicción comunidad autónoma pasado mañana. Archivo</td>	
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred8'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>						
+							<td><select class="selectpicker" id="predArch8" name="predArch8"
+								data-live-search="true">
+							</select></td>		
+							<td></td>					
+							<td><button type="button" class="btn btn-primary" id="bpredArch8">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+
+							<td>Predicción comunidad autónoma medio plazo. Último elaborado</td>
+														
+							<td><select class="selectpicker" id="pred9" name="pred9"
+								data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred9">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción comunidad autónoma medio plazo. Archivo</td>	
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred9'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>						
+							<td><select class="selectpicker" id="predArch9" name="predArch9"
+								data-live-search="true">
+							</select></td>	
+							<td></td>						
+							<td><button type="button" class="btn btn-primary" id="bpredArch9">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						
+						
+						
+						<tr>
+							<td>Predicción provincial e insular hoy. Último elaborado</td>	
+													
+							<td><select class="selectpicker" id="pred10" name="pred10"
+								data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred10">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción provincial e insular hoy. Archivo</td>	
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred10'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>						
+							<td><select class="selectpicker" id="predArch10" name="predArch10"
+								data-live-search="true">
+							</select></td>
+							<td></td>							
+							<td><button type="button" class="btn btn-primary" id="bpredArch10">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+
+							<td>Predicción provincial e insular mañana. Último elaborado</td>	
+													
+							<td><select class="selectpicker" id="pred11" name="pred11"
+								data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpred11">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						<tr>
+							<td>Predicción provincial e insular mañana. Archivo</td>	
+							
+							<td width="210"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechapred11'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div></td>						
+							<td><select class="selectpicker" id="predArch11" name="predArch11"
+								data-live-search="true">
+							</select></td>	
+							<td></td>						
+							<td><button type="button" class="btn btn-primary" id="bpredArch11">Obtener</button></td>
+							<td>Predicción normalizadas en texto</td>
+						</tr>
+						
+						
+						<tr>
+							<td>Predicción de radiacion ultravioleta (UVI). Último elaborado</td>
+							
+							<td></td>
+							<td><select class="selectpicker" id="predes0" data-container="body"
+								name="predes0" data-live-search="true">
+								<option value="">Seleccione alcance</option>
+									<option value="0">D+0</option-->
+									<option value="1">D+1</option>
+									<option value="2">D+2</option>
+									<option value="3">D+3</option>
+									<option value="4">D+4</option>
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredes0">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						<tr>
+							<td>Predicción por municipios diaria. Último elaborado</td>
+							
+							<td><select class="selectpicker" id="predes1" name="predes1"
+								data-live-search="true">
+							</select></td>
+							<td><select class="selectpicker" id="predes11"
+								name="predes11" data-live-search="true" disabled="disabled">	
+								<option value="">Seleccione un municipio</option>													
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredes1">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						<tr>
+							<td>Predicción por municipios horaria. Último elaborado</td>
+							
+							<td><select class="selectpicker" id="predes2" name="predes2" 
+								data-live-search="true">								
+							</select></td>
+							<td><select class="selectpicker" id="predes22" 
+								name="predes22" data-live-search="true" disabled="disabled">	
+								<option value="">Seleccione un municipio</option>							
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredes2">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						<tr>
+							<td>Predicción para las playas. Último elaborado</td>
+							
+							<td><select class="selectpicker" id="predes3" name="predes3" 
+								data-live-search="true">								
+							</select></td>							
+							<td><select class="selectpicker" id="predes33" 
+								name="predes33" data-live-search="true" disabled="disabled">	
+								<option value="">Seleccione una playa</option>							
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredes3">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						<tr>
+							<td>Predicción de montaña. Último elaborado</td>
+							
+							<td><select class="selectpicker" id="predes4" data-container="body"
+								name="predes4" data-live-search="true">
+							</select></td>
+							<td><select class="selectpicker" id="predesDia4" data-container="body"
+								name="predesDia4" data-live-search="true">
+								<option id="">Seleccione alcance</option>
+								<option id="0">Hoy</option>
+								<option id="1">Mañana</option>
+								<option id="2">Pasado Mañana</option>
+								<option id="3">Dentro de 3 día</option>
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredes4">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						<tr>
+							<td>Predicción de montaña. Tiempo pasado</td>	
+							
+							<td></td>						
+							<td><select class="selectpicker" id="predesArch4" name="predesArch4"
+								data-live-search="true">
+							</select></td>				
+							<td></td>			
+							<td><button type="button" class="btn btn-primary" id="bpredesArch4">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						<tr>
+							<td>Información nivológica.</td>
+							
+							<td></td>
+							<td><select class="selectpicker" id="predes5" data-container="body"
+								name="predes5" data-live-search="true">
+								<option value="">Seleccione un área</option>
+								<option value="0">Pirineo Catalán</option>
+								<option value="1">Pirineo Navarro y Aragonés</option>
+							</select></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredes5">Obtener</button></td>
+							<td>Predicciones específicas</td>
+						</tr>
+						
+						<tr>
+							<td>Predicción marítima de alta mar.</td>
+														
+							<td><select class="selectpicker" id="predmar1" data-container="body"
+								name="predmar1" data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredmar1">Obtener</button></td>
+							<td>Predicción marítima</td>
+						</tr>
+						<tr>
+							<td>Predicción marítima costera.</td>
+														
+							<td><select class="selectpicker" id="predmar2" data-container="body"
+								name="predmar2" data-live-search="true">
+							</select></td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bpredmar2">Obtener</button></td>
+							<td>Predicción marítima</td>
+						</tr>					
+<!--						
+  						<tr>
+							<td>Mapas significativos. Último elaborado.</td>
+														
+							<td><select class="selectpicker" id="mapgra1" data-container="body"
+								name="mapgra1" data-live-search="true">
+								<option id="">Seleccione España o ccaa</option>								
+							</select></td>							
+							<td>
+								<select class="selectpicker" id="mapgra11" data-container="body"
+									name="mapgra11" data-live-search="true">
+									<option value="">Seleccione alcance</option>									
+									<option value="c">D+1 (00-12)</option>
+									<option value="d">D+1 (12-24)</option>
+									<option value="e">D+2 (00-12)</option>
+									<option value="f">D+2 (12-24)</option>	
+								</select>
+							</td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bmapgra1">Obtener</button></td>
+							<td>Mapas y gráficos</td>
+						</tr>
+						-->
+						<tr>
+							<td>Mapas significativos. Archivo. Hasta el 22/01/2020.</td>
+														
+							<td><select class="selectpicker" id="mapgra2" data-container="body"
+								name="mapgra2" data-live-search="true">
+								<option id="">Seleccione España o ccaa</option>								
+							</select></td>							
+							<td>
+								<select class="selectpicker" id="mapgra22" data-container="body"
+								name="mapgra22" data-live-search="true">
+								    <option value="">Seleccione alcance</option>
+									<option value="a">D+0 (00-12)</option>
+									<option value="b">D+0 (12-24)</option>
+									<option value="c">D+1 (00-12)</option>
+									<option value="d">D+1 (12-24)</option>
+									<option value="e">D+2 (00-12)</option>
+									<option value="f">D+2 (12-24)</option>	
+								</select>							
+							</td>
+							<td width="210" valign="bottom"><div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechamapgra1'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+							</td>							
+							<td><button type="button" class="btn btn-primary" id="bmapgra2">Obtener</button></td>
+							<td>Mapas y gráficos</td>
+						</tr>
+						<tr>
+							<td>Mapas de análisis. Última pasada.</td>
+							<td></td>
+							<td></td>
+							<td></td>							
+							<td><button type="button" class="btn btn-primary" id="bmapgra3">Obtener</button></td>
+							<td>Mapas y gráficos</td>
+						</tr>
+						<tr>
+							<td>Mapas previstos. Última pasada.</td>
+							<td><select class="selectpicker" id="mapgra0" data-container="body"
+								name="mapgra0" data-live-search="true">
+								<option value="">Seleccione alcance</option>
+									<option value="h12">H+12</option-->
+									<option value="h24">H+24</option>
+									<option value="h36">H+36</option>
+									<option value="h48">H+48</option>
+									<option value="h60">H+60</option>
+									<option value="h72">H+72</option>
+							</select></td>
+							<td></td>
+							<td></td>							
+							<td><button type="button" class="btn btn-primary" id="bmapgra4">Obtener</button></td>
+							<td>Mapas y gráficos</td>
+						</tr>
+						
+						<tr>
+							<td>Avisos de fenómenos meteorológicos adversos. Último elaborado.</td>							
+							<td>
+								<select class="selectpicker" id="avisos1" data-container="body"
+								name="avisos1" data-live-search="true">
+								<option id="">Seleccione España o ccaa</option>								
+							</select>
+							</td>
+							<td></td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bavisos1">Obtener</button></td>
+							<td>Avisos</td>
+						</tr>
+						<tr>
+							<td>Avisos de fenómenos meteorológicos adversos. Archivo (datos desde el 18/06/2018).</td>							
+							<td width="210" valign="bottom">
+								Fecha elaboración inicio <div class='input-group date' id='datetimepicker'>
+									 <input type='text' class="form-control" id='fechaavisos1'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+								<div class="form-group">
+									Hora elaboración inicio (HH:mm:ss) UTC <input type="text" class="form-control" id="horaavisos1">
+								</div>
+							</td>
+							<td width="210" valign="bottom">
+								Fecha elaboración fin <div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechaavisos2'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+								<div class="form-group">
+									Hora elaboración fin (HH:mm:ss) UTC <input type="text" class="form-control" id="horaavisos2">
+								</div>
+							</td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary" id="bavisos2">Obtener</button></td>
+							<td>Avisos</td>
+						</tr>
+						
+<!-- 						<tr> -->
+<!-- 							<td>Mapa de niveles de riesgo meteorológico de incendios forestales. Último elaborado</td> -->
+														
+<!-- 							<td><select class="selectpicker" id="incen1" name="incen1" data-live-search="true">								 -->
+<!-- 							</select></td>	 -->
+<!-- 							<td></td> -->
+<!-- 							<td></td>																																 -->
+<!-- 							<td><button type="button" class="btn btn-primary" id="bincen1">Obtener</button></td> -->
+<!-- 							<td>Índices de incendios</td> -->
+<!-- 						</tr> -->
+<!-- 						<tr> -->
+<!-- 							<td>Mapa de niveles de riesgo meteorológico de incendios forestales. Previsto</td> -->
+							
+<!-- 							<td><select class="selectpicker" id="incen2" data-container="body" -->
+<!-- 								name="incen2" data-live-search="true">														 -->
+<!-- 							</select></td>							 -->
+<!-- 							<td><select class="selectpicker" id="diaincen2" data-container="body" -->
+<!-- 								name="diaincen2" data-live-search="true"> -->
+<!-- 
+								<option id="">Seleccione día</option>
+								<option id="1">Mañana</option>
+								<option id="2">Pasado Mañana</option>
+								<option id="3">Dentro de 3 día</option>
+-->								
+<!-- 							</select></td> -->
+<!-- 							<td></td> -->
+<!-- 							<td><button type="button" class="btn btn-primary" id="bincen2">Obtener</button></td> -->
+<!-- 							<td>Índices de incendios</td> -->
+<!-- 						</tr> -->
+					
+						<tr>
+							<td>Datos de series largas de observación en la Antártida 
+							(en las bases de Juan Carlos I y Gabriel de Castilla).</td>
+							<td>
+								<select class="selectpicker" id="ant10" name="ant10"
+								data-live-search="true">
+								<option value="">Seleccione una estación</option>
+								</select>
+							</td>
+							<td width="260" align="">
+								Fecha inicio:
+								<div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechaant1'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+								Fecha fin:
+								<div class='input-group date' id='datetimepicker'>
+									<input type='text' class="form-control" id='fechaant2'
+										disabled="disabled" data-date-format="YYYY/MM/DD" /> <span
+										class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+							</td>
+							<td></td>
+							<td><button type="button" class="btn btn-primary"
+									id="bant10">Obtener</button></td>
+							<td>Antártida</td>
+						</tr>						
+						
+						
+					</tbody>
+				</table>
+				
+				<input type="hidden" id="restOpendata" name="restOpendata" value="https://opendata.aemet.es/opendata/api" />  
+				
+				<input type="hidden" id="urlBalanceHidrico" name="urlBalanceHidrico" value="http://www.aemet.es/es/serviciosclimaticos/vigilancia_clima/balancehidrico" />
+				<input type="hidden" id="" name="" value="" />
+				<input type="hidden" id="urlResMensClimNac" name="urlResMensClimNac" value="http://www.aemet.es/es/serviciosclimaticos/vigilancia_clima/resumenes" />
+				<input type="hidden" id="urlAvanceMen" name="urlAvanceMen" value="http://www.aemet.es/es/serviciosclimaticos/vigilancia_clima/resumenes?w=1" />
+				
+				<input type="hidden" id="urlPredEstacional" name="urlPredEstacional" value="http://www.aemet.es/es/serviciosclimaticos/prediccion_estacional" />
+				<input type="hidden" id="rutaFichPredClimMen" name="rutaFichPredClimMen" value="http://www.aemet.es/es/zona_portada_destacada" />
+				<input type="hidden" id="urlGrafProyXXI" name="urlGrafProyXXI" value="http://www.aemet.es/es/serviciosclimaticos/cambio_climat/result_graficos" />
+				<input type="hidden" id="urlDatosDiaProyXXI" name="urlDatosDiaProyXXI" value="http://www.aemet.es/es/serviciosclimaticos/cambio_climat/datos_diarios" />
+				<input type="hidden" id="urlDatosMesProyXXI" name="urlDatosMesProyXXI" value="http://www.aemet.es/es/serviciosclimaticos/cambio_climat/datos_mensuales" />
+							
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-12 text-center">
+			&nbsp;
+			<p class="text-center">
+				<a href="javascript:history.back()"><b> Volver </b></a>
+			</p>
+		</div>
+	</div>
+	
+	</section>
+	
+	<footer>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-10 text-left">
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp;
+						| &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal"
+							target="new">Nota legal</a> <br>&nbsp;
+					</h5>
+				</div>
+
+
+				<div class="col-sm-2 text-right">
+					<p>
+					<h4 style="margin-top: 15px;">
+						<span class="glyphicon glyphicon-headphones"></span> &nbsp;&nbsp;<a
+							href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+							target="new">Contactar</a>
+					</h4>
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+</body>
+</html>

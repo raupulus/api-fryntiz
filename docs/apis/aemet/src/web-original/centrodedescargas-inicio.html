@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+
+
+
+<!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%-->
+
+
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aemet OpenData</title>
+
+    <script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_1149506383|rpid=-1833806233|domain=aemet.es"></script><link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/base2.css">
+    <link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+    
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/main.js"></script>
+
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style>
+    .modal .modal-dialog { width: 100%; height: 100%; }
+/* Contenedor inteligente: alinea y separa sin usar &nbsp; */
+.contenedor-accesos-moderno {
+    display: inline-flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 0;
+}
+
+/* El botón moderno estilo "Outline" */
+.btn-portal-moderno {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: #0275d8; /* El azul estándar de Bootstrap / tu portal */
+    border: 1px solid #0275d8;
+    border-radius: 6px; /* Esquinas suavizadas modernas */
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out; /* Animación suave */
+}
+
+/* Efecto al pasar el ratón: se rellena de azul de forma fluida */
+.btn-portal-moderno:hover {
+    background-color: #0275d8;
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(2, 117, 216, 0.2); /* Sombra sutil */
+}
+    
+</style>
+
+
+
+
+
+  </head>
+  <body>
+    <header>
+      <div class="container">
+       
+        <div class="row">
+           <p class="text-center">&nbsp;</p>
+        </div>
+      </div>
+    </header>
+
+    <section id="intro-header">
+	  <div class="container">
+	    <div class="row">
+	      <div class="wrap-headline">
+	        <table width="100%" border="0">
+	          <tr>
+	            <td align="left"><img src="./imgs/logo_opendata_p.png"></td>
+	            <td align="center"><h1 class="text-center"><b>Aemet OpenData</b></h1></td>
+	            <td align="right"><a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a></td>
+	          </tr>
+	        </table>
+	        <h2 class="text-left"><b>Sistema para la difusión y reutilización de la información de Aemet</b></h2>
+	      </div>
+	    </div>
+	  </div>
+	</section>
+
+    <section id="datos">
+    
+       <div class="container">       
+       <div class="row">
+         <div class="col-sm-12 text-right">         	         	
+				<div class="contenedor-accesos-moderno">
+				    <a href="https://www.youtube.com/watch?v=wGNYqLOq4fE" target="_blank" class="btn-portal-moderno">
+				        Vídeos
+				    </a>
+				    
+				    <a href="/centrodedescargas/faqs" class="btn-portal-moderno">
+				        FAQs
+				    </a>
+				    
+				    <a href="/centrodedescargas/novedades" class="btn-portal-moderno">
+				        Novedades
+				    </a>
+				    
+				    <a href="/centrodedescargas/rssatom" class="btn-portal-moderno">
+				        RSS/Atom
+				    </a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+       <div class="row display-flex-bootstrap">
+  
+          <!-- PRIMER BLOQUE: Información Portal (Con offset para centrar el grupo) -->
+<!--           <div class="col-sm-2 col-sm-offset-2 text-center"> -->
+<!--           <div class="col-md-2 col-sm-6 text-center"> -->
+          <div class="col-md-2 col-md-offset-2 col-sm-6 text-center">
+            <div class="jumbotron">
+              <div class="card">
+                <p><span class="glyphicon glyphicon-book"></span></p>           
+                <div class="card-block">
+                  <h4 class="card-title">Aemet OpenData<br><br>&nbsp;</h4>
+                  <h6 class="text-justify">&nbsp;</h6>
+                  
+                  <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">¿Qué es?</button>
+                  
+                  <!-- Modal -->
+                  <div id="myModal1" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h5 class="modal-title">Aemet OpenData</h5>
+                        </div>
+                        <div class="modal-body">
+                          <iframe width="100%" height="750" src="/centrodedescargas/info" frameborder="0"></iframe>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>                
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEGUNDO BLOQUE: API Key -->
+<!--           <div class="col-sm-2 text-center"> -->
+          <div class="col-md-2 col-sm-6 text-center">
+            <div class="jumbotron">
+              <div class="card">
+                <p><span class="glyphicon glyphicon-lock"></span></p>            
+                <div class="card-block">
+                  <h4 class="card-title">Obtenci&oacute;n de API Key<br><br>&nbsp;</h4>
+                  <h6 class="text-justify">&nbsp;</h6>
+                                                         
+                  <form action="/centrodedescargas/altaUsuario" method="get" id="form-api">
+                    <button type="submit" class="btn btn-primary btn-lg">Solicitar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- TERCER BLOQUE: Acceso General -->
+<!--           <div class="col-sm-2 text-center"> -->
+          <div class="col-md-2 col-sm-6 text-center">
+            <div class="jumbotron">
+              <div class="card">
+                <p><span class="glyphicon glyphicon-user"></span></p>
+                <div class="card-block">
+                  <h4 class="card-title">Acceso <br>General<br>&nbsp;</h4>
+                  <h6 class="text-justify">&nbsp;</h6>                     
+                                                
+                  <form action="/centrodedescargas/productosAEMET" method="get" id="form-general">
+                     <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CUARTO BLOQUE: Acceso Desarrolladores -->
+<!--           <div class="col-sm-2 text-center"> -->
+          <div class="col-md-2 col-sm-6 text-center">
+            <div class="jumbotron">
+              <div class="card">
+                <p><span class="glyphicon glyphicon-wrench"></span></p>
+                <div class="card-block">
+                  <h4 class="card-title">Acceso Desarrolladores<br><br>&nbsp;</h4>
+                  <h6 class="text-justify">&nbsp;</h6>
+                                                    
+                  <form action="/centrodedescargas/AEMETApi" method="get" id="form-dev">
+                     <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                  </form>	  				
+                </div>
+              </div>
+            </div>
+          </div>
+
+       </div>
+      
+    </section>
+
+<footer>
+   <div class="container">
+      
+      <div class="row">
+      
+        <div class="col-sm-10 text-left">            
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp; | &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal" target="new">Nota legal</a>
+					<br>&nbsp;
+					</h5>
+        </div>
+                
+      
+		<div class="col-sm-2 text-right">
+		    <h4 style="margin-top: 15px;">
+		        <span class="glyphicon glyphicon-headphones"></span>
+		        &nbsp;&nbsp;<a href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+		                       target="_blank"
+		                       rel="noopener noreferrer">
+		            Contactar
+		        </a>
+		    </h4>
+		</div>
+      
+      </div>
+   </div>
+</footer>
+
+
+
+   <!--  <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/main.js"></script> -->
+  </body>
+</html>

@@ -1,0 +1,54 @@
+# <ICONO> <NOMBRE DEL DOMINIO>
+
+**`<N>` endpoints.** <Una frase: qué resuelve este grupo y cuándo se usa.>
+
+Requisitos previos: [`00-fundamentos.md`](00-fundamentos.md) · [`ERRATAS.md`](ERRATAS.md)
+
+Leyenda: 🟢 verificado (`<fecha>`) · 🔵 oficial sin comprobar · 🟡 inferido · 🔴 sin verificar
+
+---
+
+## Resumen
+
+| Endpoint | Estado | Formato real |
+|---|---|---|
+| `GET /...` | 🟢 | JSON `list[1]`, `<tamaño>` |
+| `GET /...` | 🔴 | 🔵 `<lo que dice la doc>` |
+
+<Si algo de este grupo tiene una trampa grave, ponla aquí arriba en un aviso, no enterrada.>
+
+---
+
+## <Endpoint 1> 🟢
+
+```
+GET /<ruta>/{param}
+```
+
+| | |
+|---|---|
+| `{param}` | <formato, ejemplo, y si tiene catálogo, enlace> |
+| Periodicidad | <de los metadatos o la doc oficial> |
+| Tamaño 🟢 | `<medido>` |
+| TTL 🟡 | `<sugerido, justificado por la periodicidad>` |
+
+Verificado con `<parámetros concretos>`.
+
+### Estructura 🟢
+
+<Árbol o JSON real recortado. Señala dónde está la fecha de elaboración.>
+
+### Detalles que importan 🟢
+
+<Lo que no se ve en el esquema: campos que son cadenas y parecen números, arrays de longitud
+variable, campos duplicados, valores codificados, campos opcionales según el caso.>
+
+---
+
+## Pendiente de verificar
+
+| # | Qué | Prioridad |
+|---|---|---|
+| 1 | | |
+
+<Nunca dejes esta sección vacía por comodidad. Si de verdad está todo verificado, escríbelo.>

@@ -1,0 +1,26 @@
+Aemet OpenData
+Aemet OpenData
+¿Qué es Aemet OpenData?
+Aemet OpenData es una API REST desarrollado por Aemet que permite la difusión y la reutilización de la información meteorológica y climatológica de la Agencia, en el sentido indicado en la Ley 18/2015, de 9 de julio, por la que se modifica la Ley 37/2007, de 16 de noviembre, sobre reutilización de la información del sector público.
+¿Qué es una API?
+Una API (del inglés: Application Programming Interface), es el conjunto de subrutinas, funciones y procedimientos que ofrece cierto ente (en este caso, Aemet) para ser utilizado por un software de un tercero para la obtención de datos, información, documentos...
+¿Qué es una API REST?
+Una API REST es una un API apoyada totalmente en el estándar HTTP. Visto de una forma más sencilla, una API REST es un servicio que nos provee de funciones que nos dan la capacidad de hacer uso de un servicio web que no es nuestro, dentro de una aplicación propia, de manera segura.
+¿A qué datos puedo acceder a través de Aemet OpenData?
+Aemet OpenData permite descargar gratuitamente los datos explicitados en el Anexo II de la resolución de 30 de diciembre de 2015 de Aemet, por la que se establecen los precios públicos que han de regir la prestación de servicios meteorológicos y climatológicos. Esta resolución ha sido publicada en el BOE nº 4 de 5 de enero de 2016. También están disponibles los datos obtenidos por Aemet en el marco del  convenio de colaboración  entre la Agencia Estatal de Investigación y la Agencia Estatal de Meteorología con respecto a las actividades españolas en la Antártida.
+Requerimientos para el acceso a los datos: API Key
+Para poder acceder a Aemet OpenData, es necesario solicitar una API Key. Una API Key es un identificador, mediante el cual se contabilizan e imputan los accesos que un usuario realiza al API. Puede crear tantas API Keys como necesite dependiendo de sus necesidades.
+Forma de solicitar la API Key
+La API Key se puede solicitar desde la opción "Obtención de API Key" de la página principal de Aemet OpenData introduciendo su dirección de correo electrónico.
+Características del API Key
+El API Key se genera a partir de la dirección de correo electrónico del usuario.
+La dirección de correo electrónico no se almacena en ningún fichero ni base de datos externa.
+Pueden solicitarse tantas API Key asociadas a una dirección de correo electrónico como se deseen.
+Formas de acceso
+Acceso general
+El acceso para el público en general tiene como finalidad el permitir el acceso a los datos para usuarios de una manera amigable. La interacción con los datos se caracteriza por ser puntual, realizada a través de interfaces amigables destinados a un humano, dirigida paso a paso y mediante la elección de distintas opciones.
+Acceso desarrolladores
+Aemet OpenData permite otro tipo de interacción con los datos: esta interacción se caracteriza por la posibilidad de ser periódica e incluso programada, realizada a través de un API destinada a un sistema informático, no se realiza a través de interfaces amigables y permite a los reutilizadores de información el incluir los datos de Aemet en sus propios sistemas de información.
+© Aemet. Autorizado el uso de la información y su reproducción citando a Aemet como autora de la misma.
+|   Nota legal
+Contactar

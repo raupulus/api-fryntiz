@@ -1,0 +1,6172 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width-device-width, initial-scale=1">
+
+<title>Aemet OpenData</title>
+
+<script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_1155464681|rpid=1962148094|domain=aemet.es"></script><link rel="stylesheet" href="css/base2.css">
+
+<link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+
+<!-- Bootstrap -->
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="css/bootstrap-select.min.css" rel="stylesheet">
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-select.min.js"></script>
+
+
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<!-- Bootstrap nuevo tabla -->
+
+<!-- <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table-locale-all.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/export/bootstrap-table-export.min.js"></script> -->
+
+<link href="css/bootstrap-table.min.css" rel="stylesheet">
+<script src="js/tableExport.min.js"></script>
+<script src="js/bootstrap-table.min.js"></script>
+<script src="js/bootstrap-table-locale-all.min.js"></script>
+<script src="js/bootstrap-table-export.min.js"></script>
+<!-- FIN Bootstrap nuevo tabla -->
+
+
+<style type="text/css" media="screen">
+
+/* ================================================== */
+/* TITULO */
+/* ================================================== */
+
+.titulo-novedades {
+    color: #4875b9;
+    border-bottom: 2px solid #4875b9;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* ================================================== */
+/* TARJETAS */
+/* ================================================== */
+
+.novedad-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    transition: all .25s ease;
+}
+
+.novedad-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,.15);
+}
+
+/* ================================================== */
+/* BORDES POR TIPO */
+/* ================================================== */
+
+.card-novedad {
+    border-left: 6px solid #4875b9;
+}
+
+.card-aviso {
+    border-left: 6px solid #6f7d8c;
+}
+
+.card-mantenimiento {
+    border-left: 6px solid #8b7a5e;
+}
+
+.card-incidencia {
+    border-left: 6px solid #b85c5c;
+}
+
+
+/* ================================================== */
+/* TITULOS */
+/* ================================================== */
+
+.novedad-header {
+    margin-bottom: 15px;
+}
+
+.novedad-titulo {
+    color: #4875b9;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* ================================================== */
+/* TEXTO */
+/* ================================================== */
+
+.novedad-body {
+    color: #444;
+}
+
+.novedad-body p {
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+/* ================================================== */
+/* FECHAS */
+/* ================================================== */
+
+.novedad-metadata {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 12px;
+}
+
+.fecha-publicacion {
+    color: #666;
+    margin-right: 20px;
+}
+
+.fecha-expiracion {
+    color: #999;
+}
+
+/* ================================================== */
+/* BADGES */
+/* ================================================== */
+
+.badge {
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.badge-novedad {
+    background-color: #4875b9; /* azul corporativo */
+    color: #fff;
+}
+
+.badge-aviso {
+    background-color: #6f7d8c; /* gris azulado */
+    color: #fff;
+}
+
+.badge-mantenimiento {
+    background-color: #8b7a5e; /* arena / bronce */
+    color: #fff;
+}
+
+.badge-incidencia {
+    background-color: #b85c5c; /* rojo suave */
+    color: #fff;
+}
+
+.badge-vigente {
+    background-color: transparent;
+    color: #000000;
+    border: 1px solid #000000;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
+    display: inline-block;
+}
+
+.badge-historico {
+    background-color: #f5f5f5;
+    color: #777;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+
+/* ================================================== */
+/* TABLAS */
+/* ================================================== */
+
+th {
+    background-color: #4875b9;
+    color: #fff;
+}
+
+/* ================================================== */
+/* BOTON CORPORATIVO */
+/* ================================================== */
+
+.btn-corporativo {
+    background-color: #4875b9;
+    border-color: #4875b9;
+    color: #ffffff !important;
+    border-radius: 20px;
+    padding: 6px 15px;
+    text-decoration: none;
+}
+
+.btn-corporativo:hover {
+    background-color: #365d98;
+    border-color: #365d98;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+
+
+
+</style>
+
+
+<script>
+
+</script>
+
+</head>
+<body>
+
+	<header>
+		<div class="container">
+
+			<div class="row">
+				<p class="text-center">&nbsp;</p>				
+			</div>
+		</div>
+	</header>
+	
+	<section id="intro-header-rec">
+		<div class="container">
+
+			<div class="row vcenter" style="height:63px">
+				<div class="col-sm-4 text-right">
+
+					<a href="/centrodedescargas/inicio"><img src="./imgs/logo_opendata_p.png"></a>
+
+				</div>
+
+				<div class="col-sm-4 text-center">
+					<H1>
+						<b> Novedades Aemet OpenData</b>
+					</H1>
+				</div>
+				<div class="col-sm-4 text-right">
+					
+						<h6>							
+							<a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a>
+						</h6>
+					
+				</div>
+				
+			</div>
+		</div>
+	</section>
+
+
+
+		<div class="container">
+<div class="container novedades-container">
+
+    <h2 class="page-header titulo-novedades">	        
+		Comunicados y novedades
+    </h2>
+
+    
+
+        
+
+        
+            
+        
+
+        
+
+        
+
+        <div class="novedad-card card-novedad">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nuevos endpoints en predicciones específicas para municipios.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+                            <span class="badge badge-novedad">Novedad</span>
+                        
+
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Ya se encuentran disponibles los dos nuevos endpoints: Predicción por municipios diaria y Predicción por municipios horaria. Ambos permiten la descarga del tiempo actual de todos los municipios en una única consulta.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						27/07/2026 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            27/09/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					    
+					        <span class="badge-vigente">
+					            Vigente
+					        </span>
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+            
+        
+
+        
+
+        
+
+        <div class="novedad-card card-novedad">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Proyecto GitLab: AEMET OpenData API para consumo de OpenData, REST y RSS
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+                            <span class="badge badge-novedad">Novedad</span>
+                        
+
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se encuentra disponible en GitLab el proyecto AEMET OpenData API, una librería desarrollada en Python que facilita el acceso, consumo y explotación de los servicios de AEMET OpenData, así como de APIs REST y fuentes RSS asociadas. Puede accederse al proyecto desde el apartado Acceso Desarrolladores.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						22/07/2026 12:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            22/09/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					    
+					        <span class="badge-vigente">
+					            Vigente
+					        </span>
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://gitlab.aemet.es/opendata/API?" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Expiración de API keys
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>A partir del 15 de octubre de 2026, las API Keys emitidas sin fecha de expiración dejarán de ser válidas y provocarán errores de autenticación (401 Unauthorized). Si su aplicación utiliza una de estas API Keys, deberá solicitar una nueva antes de esa fecha. Las nuevas API Keys se emiten con una validez de 3 meses. No es necesaria ninguna acción para las API Keys que ya disponen de fecha de expiración.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						20/07/2026 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            16/10/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					    
+					        <span class="badge-vigente">
+					            Vigente
+					        </span>
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es/centrodedescargas/faqs" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Cambio en la política de caducidad de API Keys
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>A partir de hoy, todas las nuevas API Keys que se soliciten tendrán una caducidad de 3 meses desde su fecha de creación. Os recomendamos tener este cambio en cuenta y planificar la renovación de vuestras claves con antelación para evitar posibles interrupciones en el servicio.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						16/07/2026 16:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            16/10/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					    
+					        <span class="badge-vigente">
+					            Vigente
+					        </span>
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+            
+        
+
+        
+
+        
+
+        <div class="novedad-card card-novedad">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva documentación de API
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+                            <span class="badge badge-novedad">Novedad</span>
+                        
+
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se ha actualizado la documentación de API en Aemet OpenData, disponible en el apartado Acceso Desarrolladores. En esta nueva documentación se pueden consultar los distintos endpoints disponibles, así como el detalle de cada uno de ellos.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						16/07/2026 16:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            16/08/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es/dist/index.html?" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+            
+        
+
+        
+
+        
+
+        <div class="novedad-card card-novedad">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva seción de Novedades y Comunicaciones
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+                            <span class="badge badge-novedad">Novedad</span>
+                        
+
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Hemos añadido una nueva sección de Comunicados y novedades para centralizar los avisos de mantenimiento, novedades, incidencias y comunicados de la plataforma. Este apartado se alimenta automáticamente del canal RSS de Noticias, mostrando todas las publicaciones disponibles en dicho canal.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						10/07/2026 16:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            09/08/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+            
+        
+
+        
+
+        
+
+        <div class="novedad-card card-novedad">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura de dos nuevas APIs.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+                            <span class="badge badge-novedad">Novedad</span>
+                        
+
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se informa de la incorporación de dos nuevas APIs a Prediciones Específicas: "Predicción por municipios diaria. Tiempo actual. Todos" y "Predicción por municipios horaria. Tiempo actual. Todos".</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						10/07/2026 12:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            09/09/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					    
+					        <span class="badge-vigente">
+					            Vigente
+					        </span>
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+            
+        
+
+        <div class="novedad-card card-incidencia">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Información disponibilidad de datos.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-incidencia">Incidencia</span>
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se informa de una laguna en la disponibilidad de los datos en los productos de "Avisos de fenómenos meteorológicos adversos" que se irá rellenando proximamente. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						14/05/2026 12:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            15/05/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, se verá afectado el funcionamiento de OpenData de 09:00 HOP a 12:30 HOP del 12 de mayo de 2026. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						11/05/2026 13:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            12/05/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, algunos de los conjuntos de datos de AEMET OpenData pueden no estar actualizados. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						28/04/2026 13:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            15/05/2026 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, el funcionamiento de AEMET OpenData puede verse comprometido el próximo lunes 1 de diciembre, entre las las 10:00 y las 11:30 Hora Oficial Peninsular (09:00 y 10:30 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						28/11/2025 13:45                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            01/12/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Generación de Api Key operativa.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>La generación de Api Key está operativa. Disculpen las posibles molestias generadas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						17/10/2025 07:45                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            17/10/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+            
+        
+
+        <div class="novedad-card card-incidencia">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Incidencia con la generación de Api Keys.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-incidencia">Incidencia</span>
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Estamos teniendo una incidencia con la generación de Api Keys que impiden que se generen correctamente. Disculpen las posibles molestias generadas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						15/10/2025 09:25                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            15/10/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento finalizadas.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Las labores de mantenimiento de hoy han sido finalizadas y el servicio se ha restablecido completamente. Disculpen por las posibles molestias generadas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						03/10/2025 13:55                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            03/10/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Debido a labores de mantenimiento, algunos de los conjuntos de datos de AEMET OpenData pueden no estar actualizados el día de hoy, 3 de octubre, entre las las 09:00 y las 23:59 Hora Oficial Peninsular (08:00 y 22:59 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						03/10/2025 07:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            03/10/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Debido a labores de mantenimiento, algunos de los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 18 de agosto entre las 12:00 y las 14:30 Hora Oficial Peninsular (11:00 y 13:30 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						18/08/2025 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            18/08/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Debido a labores de mantenimiento, algunos de los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 7 de agosto entre las 10:45 y las 12:30 Hora Oficial Peninsular (09:45 y 11:30 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						06/08/2025 14:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            07/08/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Cancelada labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Candelada labores de mantenimiento, el próximo 6 de agosto entre las 08:45 y las 10:30 Hora Oficial Peninsular (07:45 y 09:30 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						05/08/2025 17:15                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            06/08/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Debido a labores de mantenimiento, algunos de los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 6 de agosto entre las 08:45 y las 10:30 Hora Oficial Peninsular (07:45 y 09:30 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						05/08/2025 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            06/08/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> Debido a labores de mantenimiento, algunos de los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 24 de julio entre las 08:45 y las 10:15 Hora Oficial Peninsular (07:45 y 09:15 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						23/07/2025 13:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            24/07/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> El lunes, 21 de julio del 2025, entre las 12:45 y 13:30 h.o.p se realizarán unas labores de mantenimiento. En principio no se espera ninguna incidencia significativa pero algunos conjuntos de datos pueden no actualizarse durante la intervención.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						21/07/2025 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            21/07/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p> El martes, 06 de mayo del 2025, entre las 11:15 y 12:45 h.o.p se realizarán unas labores de mantenimiento. En principio no se espera ninguna incidencia significativa pero algunos conjuntos de datos pueden no actualizarse durante la intervención.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						05/05/2025 11:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            06/05/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento finalizada.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Actuación de mantenimiento del sistema finalizada, se está prestando el servicio con normalidad.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						11/04/2025 10:05                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            11/04/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+            
+        
+
+        
+
+        <div class="novedad-card card-mantenimiento">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+                            <span class="badge badge-mantenimiento">Mantenimiento</span>
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a actuaciones de mantenimiento del sistema, se está prestando un servicio degradado. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						11/04/2025 07:40                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            11/04/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+            
+        
+
+        
+
+        
+
+        <div class="novedad-card card-novedad">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: Avisos. Área.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+                            <span class="badge badge-novedad">Novedad</span>
+                        
+
+                        
+
+                        
+
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 07-05-2025 se disponen de nuevos canales RSS/ATOM que darán información de cuando se produce una nueva actualización en los conjuntos de avisos por área, último elaborado. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						07/04/2025 11:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            07/04/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento. (17 de marzo de 2025).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Hoy lunes, 17 de marzo del 2025, entre las 12:00 y 16:15 h.o.p se realizarán unas labores de mantenimiento, en principio no se espera ninguna incidencia significativa pero puede producir alguna ralentización de las consultas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						17/03/2025 11:15                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            17/03/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento. (13 de marzo de 2025).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Hoy jueves, 13 de marzo del 2025, entre las 10:00 y 18:00 h.o.p se realizarán unas labores de mantenimiento, en principio no se espera ninguna incidencia significativa pero puede producir alguna ralentización de las consultas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						13/03/2025 09:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            13/03/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento. (27 de febrero de 2025).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Hoy jueves, 27 de febrero del 2025, entre las 10:00 y 18:00 h.o.p se realizarán unas labores de mantenimiento, en principio no se espera ninguna incidencia significativa pero puede producir alguna ralentización de las consultas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						27/02/2025 09:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            27/02/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento. (19 de febrero de 2025).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Hoy miércoles, 19 de febrero del 2025, entre las 11:30 y 18:00 h.o.p se realizarán unas labores de mantenimiento, en principio no se espera ninguna incidencia significativa pero puede producir alguna ralentización de las consultas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						19/02/2025 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            19/02/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento. (18 de febrero de 2025).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Hoy martes, 18 de febrero del 2025, entre las 10:00 y 14:00 h.o.p se realizarán unas labores de mantenimiento, en principio no se espera ninguna incidencia significativa pero puede producir alguna ralentización de las consultas.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						18/02/2025 08:15                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            18/02/2025 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Modificación en Maestro: Municipio y Municipios (19-06-2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Las secciones de OpenData Maestro Municipio y Maestro Municipios pasarán a retornar datos y metadatos en lugar de retornarlos de forma directa.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						19/06/2024 12:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            19/06/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: Observación convencional mensajes (17 de junio de 2024)
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 17-06-2024 se disponen de cuatro nuevos canales RSS/ATOM que darán información de cuando se produce una nueva actualización en los conjuntos de datos de observación convencional mensajes (CLIMAT, SYNOP, TEMP, TODOS). Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						17/06/2024 11:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            17/06/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento. (16 de junio de 2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a actuaciones de mantenimiento del sistema, se está prestando un servicio degradado y no se están actualizando algunos conjuntos de datos. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						15/06/2024 00:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            16/06/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: Observación convencional horaria (11 de junio de 2024)
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 11-06-2024 se dispone de un nuevo canal RSS/ATOM que dará información de cuando se produce una nueva actualización en el conjunto de datos de la observación convencional horaria. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						11/06/2024 09:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            11/06/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Canales RSS/ATOM, predicciones específicas. (3 de junio de 2024)
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Están disponibles todos los canales RSS/ATOM de predicciones específicas, los cuales permiten conocer la última actualización de cada uno de los distintos conjuntos de datos. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						03/06/2024 08:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            03/06/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: predicción de radiación ultravioleta (UVI) (20 de mayo de 2024)
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 20-04-2024 se dispone de un nuevo canal RSS/ATOM que dará información de cuando se produce una nueva actualización en el conjuntos de datos de la predicción de radiación ultravioleta. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						20/05/2024 09:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            20/05/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actuación de mantenimiento
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a actuaciones de mantenimiento del sistema, se está prestando un servicio degradado. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						09/05/2024 10:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            10/05/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: predicciones específicas de montaña (29 de abril de 2024)
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 29-04-2024 se disponen de doce nuevos canales RSS/ATOM que darán información de cuando se produce una nueva actualización en los conjuntos de datos de las predicciones específicas de montaña. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						29/04/2024 10:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            29/04/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: predicciones específicas para las playas (17 de abril de 2024)
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 17-04-2024 se dispone de un nuevo canal RSS/ATOM que dará información de cuando se produce una nueva actualización en el conjunto de datos de las predicciones específicas para las playas. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						17/04/2024 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            17/04/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura Canal RSS/ATOM: predicciones específicas por municipios (15 de abril de 2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 15-04-2024 se dispone de un nuevo canal RSS/ATOM que dará información de cuando se produce una nueva actualización en el conjunto de datos de las predicciones específicas por municipios. Más información: https://opendata.aemet.es/centrodedescargas/rssatom</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						15/04/2024 11:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            15/04/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Cambio en los formatos de fechas (08 de abril de 2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Las fechas, para los conjuntos de datos de observación convencional y Antártida, cambian de formato, siendo a partir de ahora: YYYY-MM-DDTHH:mm:ss±hhmm acorde a las expresiones temporales según ISO-8601 con la hora local.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						08/04/2024 11:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            08/04/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Aumento en el número de estaciones de los valores climatológicos.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se ha aumentado hasta 947 el número de estaciones disponibles para las climatologías diarias, mensuales y anuales.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						01/03/2024 14:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            01/03/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Cambiado periodo de referencia de valores climatológicos normales (22 de febrero de 2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se ha cambiado el periodo de referencia de los valores climatológicos normales pasando de ser de 1981-2010 a 1991-2020.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						22/02/2024 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            22/02/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Finalizadas las labores de mantenimiento en "AEMET OpenData" (17 de enero de 2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Se han finalizado las labores de mantenimiento programadas para hoy 17 de enero de 2024, los conjuntos de datos de AEMET OpenData se encuentran actualizados y el servicio vuelve a funcionar con normalidad. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						17/01/2024 12:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            17/01/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (17 de enero de 2024).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los conjuntos de datos de AEMET OpenData no estarán actualizados el 17 de enero entre las 09:30 y las 10:30 Hora Oficial Peninsular (08:30 y 09:30 Hora Oficial Canarias). Así mismo, es posible que no se puedan recuperar algunos conjuntos de datos durante ese intervalo de tiempo. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						16/01/2024 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            17/01/2024 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (16 de noviembre de 2023).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los conjuntos de datos de AEMET OpenData no estarán actualizados hoy 16 de noviembre entre las 11:20 y las 12:20 Hora Oficial Peninsular (10:20 y 11:20 Hora Oficial Canarias). Así mismo, es posible que no se puedan recuperar algunos conjuntos de datos durante ese intervalo de tiempo. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						16/11/2023 08:40                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            16/11/2023 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (14 de noviembre de 2023).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 14 de noviembre entre las 09:45 y las 11:00 Hora Oficial Peninsular (08:45 y 10:00 Hora Oficial Canarias). Así mismo, es posible que no se puedan recuperar algunos conjuntos de datos durante ese intervalo de tiempo. Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						10/11/2023 13:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            14/11/2023 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (23 de octubre de 2023).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 23 de octubre entre las 08:30 y las 17:00 Hora Oficial Peninsular (07:30 y 16:00 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						20/10/2023 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            20/10/2023 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (18 de octubre de 2023).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 18 de octubre entre las 10:30 y las 11:00 Hora Oficial Peninsular (09:30 y 10:00 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						18/10/2023 08:00                        
+                    </span>                   
+                    
+
+                    
+                    
+					
+					    
+					    
+					        <span class="badge-vigente">
+					            Vigente
+					        </span>
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (13 de septiembre de 2023).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los conjuntos de datos de AEMET OpenData no estarán actualizados el próximo 13 de septiembre entre las 09:50 y las 10:20 Hora Oficial Peninsular (08:50 y 09:20 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						12/09/2023 17:12                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            13/09/2023 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actualización "AEMET OpenData" (12 de noviembre de 2019).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 12 de noviembre se subirá una actualización de la API "AEMET OpenData". Una de las modificaciones será el cambio del formato de fecha de la variable "elaborado" (pasando de ser "yyyy-MM-dd"" a "yyyy-MM-ddTHH:mm:ss") en los siguientes conjuntos de datos: "Predicción por municipios diaria. Último elaborado", "Predicción por municipios horaria. Último elaborado" y "Predicción para las playas. Último elaborado".</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						06/11/2019 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            07/12/2019 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Labores de mantenimiento en "AEMET OpenData" (24 de julio de 2019).
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Debido a labores de mantenimiento, los servicios de AEMET OpenData no estarán disponibles el próximo 24 de julio entre las 09:30 y las 16:30 Hora Oficial Peninsular (08:30 y 15:30 Hora Oficial Canarias). Disculpen las molestias.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						18/07/2019 09:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            31/07/2019 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva funcionalidad "AEMET Codegen".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 13 de marzo de 2019 se da de alta la opción "AEMET Codegen" en el "Acceso a desarrolladores" en AEMET OpenData. Es una utilidad que permite la creación automática de programas clientes de AEMET OpenData, para distintos lenguajes de programación. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						13/03/2019 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            12/04/2019 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Modificación Climatologías diarias.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 13 de marzo de 2019, la opción de AEMET OpenData "Climatologías diarias." permite descargas de periodos de 5 años.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						09/03/2019 12:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            09/04/2019 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva funcionalidad "Mensajes de observación. Último elaborado".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 13 de marzo de 2019 se da de alta la opción "Mensajes de observación. Úlmimo elaborado" en la sección "Observación convencional" en AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						13/03/2019 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            12/04/2019 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nuevas funcionalidades en la sección de "Avisos".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 25 de junio de 2018 se incluye un nuevo conjunto de datos en el sistema AEMET OpenData. Dicho conjunto de datos permite el acceso a los avisos de FMA en tiempo real; se permite el acceso al estado de aviso actual (Aviso de fenómenos meteorológicos adversos. Último elaborado), y también se permite el acceso al estado de avisos que estaba en vigor en una fecha específica (Avisos de fenómenos meteorológicos adversos. Archivo (datos desde 18/06/2018).</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						26/06/2018 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            26/07/2018 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva funcionalidad "Capas SHAPE de estaciones climatológicas de AEMET".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 25 de junio de 2018 se da de alta la opción "Capas SHAPE de estaciones climatológicas de AEMET" en la sección "Productos Climatológicos" en AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						26/06/2018 12:30                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            26/07/2018 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Supresión de la caducidad del API Key
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>A partir del día 13 de septiembre de 2017 a las 11:00 horas, todos los API Keys generados tendrán validez indefinida. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						13/09/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            13/10/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva funcionalidad "Extremos registrados".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 22 de marzo de 2017 se da de alta la opción "Extremos registrados." en AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						22/03/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            22/04/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Disponibilidad de Mapas de análisis y previstos. Última pasada.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 22 de marzo de 2017 vuelve a estar disponible la opción de AEMET OpenData "Mapas de análisis y previstos. Última pasada." </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						22/03/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            22/04/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nuevas funcionalidades en las secciones "Productos Climatológicos" y "Predicción Climática".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 22 de marzo de 2017 se dan de alta las opciones de las secciones "Productos Climatológicos." y "Predicción Climática" en AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						22/03/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            22/04/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nuevo apartado "FAQ".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 1 de marzo de 2017 se da de alta "FAQ (Preguntas frecuentes)" en la portada de AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						01/03/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            01/04/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva funcionalidad "Predicción de radiación ultravioleta (UVI). Último elaborado".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 9 de febrero de 2017 se da de alta la opción "Predicción de radiación ultravioleta (UVI). Ultimo elaborado." en AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						09/02/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            09/03/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Nueva funcionalidad "Información nivológica".
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 9 de febrero de 2017 se da de alta la opción "Información nivológica." en AEMET OpenData. </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						09/02/2017 11:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            09/03/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Modificación Climatologías diarias.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>Desde el día 9 de febrero de 2017, la opción de AEMET OpenData "Climatologías diarias." permite descargas de periodos de 31 días.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						09/02/2017 12:20                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            09/03/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Discontinuidad temporal Mapas de análisis y previstos. Última pasada.
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 1 de febrero de 2017 deja de estar habilitada la opción de AEMET OpenData "Mapas de análisis y previstos. Última pasada.", volverá a estar disponible próximamente.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						01/02/2017 11:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            01/03/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Actualización del interfaz para desarrolladores
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 22 de diciembre de 2016 se modifica el interfaz para desarrolladores completando la información disponible de cada URI de acceso, posibles valores de los parámetros y mensajes de respuesta HTTP.</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						22/12/2016 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            15/01/2017 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Inclusion de metadatos
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 13 de diciembre de 2016 se introduce una modificación en la salida del servicio AEMET OpenData para la inclusión de metadatos. Todas las peticiones devuelven documentos en formato json con entradas "estado" (indica el estado HTTP de la petición) y "descripcion" (breve descripción de lo que ha sucedido).  Asimismo, en el caso de que la petición produzca datos de salida además de las anteriores aparecerán las entradas "datos" (url de acceso a los datos) y "metadatos" (url de acceso a los metadatos).  </p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						12/12/2016 10:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            25/12/2016 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+        
+
+        
+
+        
+
+        
+
+        <div class="novedad-card card-aviso">
+
+            <div class="novedad-header">
+
+                <span class="novedad-titulo">
+                    Apertura AEMET OpenData
+                </span>
+
+                <span class="pull-right">
+
+                    
+
+                        
+
+                        
+
+                        
+
+                        
+                            <span class="badge badge-aviso">Aviso</span>
+                        
+
+                    
+
+                </span>
+
+            </div>
+
+            <div class="novedad-body">
+
+                <p>El día 23 de noviembre de 2016 se produce la apertura del API REST AEMET OpenData</p>
+
+                <div class="novedad-metadata">
+
+                    <span class="fecha-publicacion">
+						Publicado:
+						23/10/2016 16:00                        
+                    </span>                   
+                    
+
+                    
+                        <span class="fecha-expiracion">
+                            Vigente hasta:
+                            30/10/2016 23:59 
+                        </span>
+                    
+                    
+					
+					    
+					        <span class="badge-historico">
+					            Histórico
+					        </span>
+					    
+					    
+					
+                    
+
+                </div>                
+               
+
+				
+				    <div class="enlace-noticia">
+				        <a href="https://opendata.aemet.es" target="_blank" class="btn-corporativo btn-sm">
+				            Ver más información
+				        </a>
+				    </div>
+				
+
+
+
+            </div>
+
+        </div>
+
+    
+
+</div>
+</div>
+		
+
+
+ <section id="volver"> 
+ 		<div class="container">
+       <br><br><br><br><br><br><br><br><br><br>
+
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				&nbsp;
+				<p class="text-center">
+					<a href="/centrodedescargas/inicio"><b> Volver </b></a>
+				</p>
+			</div>
+		</div>
+		</div>
+    </section>
+
+
+	<footer>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-10 text-left">
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp;
+						| &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal"
+							target="new">Nota legal</a> <br>&nbsp;
+					</h5>
+				</div>
+
+
+				<div class="col-sm-2 text-right">
+					<p>
+					<h4 style="margin-top: 15px;">
+						<span class="glyphicon glyphicon-headphones"></span> &nbsp;&nbsp;<a
+							href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+							target="new">Contactar</a>
+					</h4>
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+
+</body>
+</html>

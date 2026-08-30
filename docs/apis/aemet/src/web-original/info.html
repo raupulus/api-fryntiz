@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+
+
+
+<!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%-->
+
+
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aemet OpenData</title>
+
+    <script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_1592254182|rpid=2123262006|domain=aemet.es"></script><link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/base2.css">
+    
+    <link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style>
+    .modal .modal-dialog { width: 100%; height: 100%; }
+</style>
+  </head>
+  <body>
+  
+    
+    <section id="intro-header-rec">
+		<div class="container">
+
+			<div class="row vcenter" style="height:63px">
+			
+				<div class="col-sm-4 text-right">
+				
+					<h5><img src="./imgs/logo_opendata_p.png"></h5>
+						
+				</div>
+				
+				<div class="col-sm-4 text-center" >
+							<H1><b>Aemet OpenData</b></H1>
+				</div>
+				
+				<div class="col-sm-4 text-right">
+									
+					<a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a> 
+						
+				</div>
+			
+			</div>
+		</div>
+	</section>
+	
+
+    <section id="about">
+      <div class="container">
+        <!-- row 3 -->
+        <div class="row" style="margin-left:30px; margin-right:30px">
+          
+          <div class="col-sm-12">
+            <h3><B>¿Qu&eacute; es Aemet OpenData?</B></h3>
+            <p>
+				Aemet OpenData es una API REST desarrollado por Aemet que permite la difusión y la reutilización de la información meteorológica y climatológica de la Agencia, en el sentido indicado en la <a href="https://www.boe.es/boe/dias/2015/07/10/pdfs/BOE-A-2015-7731.pdf" target="new">Ley 18/2015, de 9 de julio</a>, por la que se modifica la Ley 37/2007, de 16 de noviembre, sobre reutilización de la información del sector público.											             
+            </p>
+          </div>
+          
+          <div class="col-sm-1">          	         	
+          </div>          
+          <div class="col-sm-11">
+            <h4 style="margin-top: 25px;"><B>¿Qu&eacute; es una API?</B></h4>
+            <p>
+				Una API (del inglés: Application Programming Interface), es el conjunto de subrutinas, funciones y procedimientos que ofrece cierto ente (en este caso, Aemet) para ser utilizado por un software de un tercero para la obtención de datos, información, documentos...
+				             
+            </p>
+          </div>
+         
+                   
+          
+          <div class="col-sm-1">          	         		
+          </div>          
+          <div class="col-sm-11">
+            <h4 style="margin-top: 25px;"><B>¿Qu&eacute; es una API REST?</B></h4>
+            <p>
+				Una API REST es una un API apoyada totalmente en el estándar HTTP. Visto de una forma más sencilla, una API REST es un servicio que nos provee de funciones que nos dan la capacidad de hacer uso de un servicio web que no es nuestro, dentro de una aplicación propia, de manera segura.
+				             
+            </p>
+          </div>         
+		  
+          <div class="col-sm-1">          	         	
+          </div>     
+		  <div class="col-sm-11">
+            <h4 style="margin-top: 25px;"><B>¿A qu&eacute; datos puedo acceder a trav&eacute;s de Aemet OpenData?</B></h4>
+            <p>
+				Aemet OpenData permite descargar gratuitamente los datos explicitados en el Anexo II de la <a href="https://www.boe.es/boe/dias/2016/01/05/pdfs/BOE-A-2016-111.pdf" target="new">resolución de 30 de diciembre de 2015 de Aemet</a>, por la que se establecen los precios públicos que han de regir la prestación de servicios meteorológicos y climatológicos. Esta resolución ha sido publicada en el BOE nº 4 de 5 de enero de 2016. También están disponibles los datos obtenidos por Aemet en el marco del <a href="https://www.boe.es/boe/dias/2020/04/24/pdfs/BOE-A-2020-4634.pdf" target="new"> convenio de colaboración </a> entre la Agencia Estatal de Investigación y la Agencia Estatal de Meteorología con respecto a las actividades españolas en la Antártida.            
+            </p>
+          </div>
+          
+
+		  <div class="col-sm-12">
+            <h3 style="margin-top: 35px;"><B>Requerimientos para el acceso a los datos: API Key</B></h3>
+            <p>
+				Para poder acceder a Aemet OpenData, es necesario solicitar una API Key. Una API Key es un identificador, mediante el cual se contabilizan e imputan los accesos que un usuario realiza al API. Puede crear tantas API Keys como necesite dependiendo de sus necesidades.            
+            </p>
+          </div>
+          
+          <div class="col-sm-1">          	         	
+          </div>                    
+          <div class="col-sm-11">
+            <h4 style="margin-top: 25px;"><B>Forma de solicitar la API Key</B></h4>
+            <p>
+				La API Key se puede solicitar desde la opción "Obtención de API Key" de la página principal de Aemet OpenData introduciendo su dirección de correo electrónico.		            
+            </p>
+          </div>
+          
+          <div class="col-sm-1">          	         	
+          </div>          
+          <div class="col-sm-11">
+            <h4 style="margin-top: 25px;"><B>Características del API Key</B></h4>
+            <p>				
+				<ul> 
+					<li>El API Key se genera a partir de la dirección de correo electrónico del usuario.</li>
+					<li>La dirección de correo electrónico no se almacena en ningún fichero ni base de datos externa.</li>
+					<!-- <li>El API Key tiene una caducidad de 90 días.</li> -->
+					<li>Pueden solicitarse tantas API Key asociadas a una dirección de correo electrónico como se deseen.</li>				
+				</ul>        
+            </p>
+          </div>
+          
+          
+          <div class="col-sm-12">
+            <h3 style="margin-top: 35px;"><B>Formas de acceso</B></h3>
+          </div>
+          
+          <div class="col-sm-1">          	         	
+          </div>
+          <div class="col-sm-11">
+            <h4 style="margin-top: 25px;"><B>Acceso general</B></h4>
+            <p>
+				El acceso para el público en general tiene como finalidad el permitir el acceso a los datos para usuarios de una manera amigable. La interacción con los datos se caracteriza por ser puntual, realizada a través de interfaces amigables destinados a un humano, dirigida paso a paso y mediante la elección de distintas opciones.            
+            </p>
+	        </div>
+	        
+	        <div class="col-sm-1">          	         	
+          </div>
+	        <div class="col-sm-11">
+	            <h4 style="margin-top: 25px;"><B>Acceso desarrolladores</B></h4>
+	            <p>
+					Aemet OpenData permite otro tipo de interacción con los datos: esta interacción se caracteriza por la posibilidad de ser periódica e incluso programada, realizada a través de un API destinada a un sistema informático, no se realiza a través de interfaces amigables y permite a los reutilizadores de información el incluir los datos de Aemet en sus propios sistemas de información.            
+	            </p>
+	            <p>&nbsp;<br>&nbsp;</p>
+	        </div>
+          
+
+        </div>
+
+        
+       </div>
+       
+       
+    </section>
+
+   <footer>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-10 text-left">
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp;
+						| &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal"
+							target="new">Nota legal</a> <br>&nbsp;
+					</h5>
+				</div>
+
+
+				<div class="col-sm-2 text-right">
+					<p>
+					<h4 style="margin-top: 15px;">
+						<span class="glyphicon glyphicon-headphones"></span> &nbsp;&nbsp;<a
+							href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+							target="new">Contactar</a>
+					</h4>
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

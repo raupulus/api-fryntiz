@@ -1,0 +1,13 @@
+Aemet OpenData
+RSS/ATOM de Aemet OpenData
+¿Qué es el RSS?
+RSS es un medio de distribución de contenidos de un sitio web (o de alguna de sus secciones), permitiendo a sus suscriptores conocer las novedades a través de distintos canales (feeds) sin tener que acceder a la web en cuestión.
+¿Cómo se usa el RSS?
+Los suscriptores pueden acceder a la información mediante programas lectores de RSS (también conocidos como agregadores o lectores de noticias). Las versiones más modernas de los principales navegadores permiten leer RSS sin necesidad de programas adicionales.
+¿Por qué el RSS?
+Los Feed RSS indican si hay actualizaciones en los contenidos, facilitando el acceso a la información reciente. El internauta puede suscribirse en su lector de RSS a los feeds que desee, estando constantemente informado de las actualizaciones que se realizan en cada uno de ellos.
+Feed RSS/GeoRSS y ATOM
+Volver
+© Aemet. Autorizado el uso de la información y su reproducción citando a Aemet como autora de la misma.
+|   Nota legal
+Contactar

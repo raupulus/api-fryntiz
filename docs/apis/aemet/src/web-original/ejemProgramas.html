@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width-device-width, initial-scale=1">
+
+<title>Aemet OpenData</title>
+
+<script type="text/javascript" src="/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js" data-dtconfig="app=68ad0a79c0392138|cuc=v6ogc8fs|owasp=1|mel=100000|expw=1|featureHash=ICA7NVfqrux|dpvc=1|lastModification=1787050194477|tp=500,50,0|rdnt=1|uxrgce=1|srbbv=2|agentUri=/centrodedescargas/ruxitagentjs_ICA7NVfqrux_10343260715123811.js|reportUrl=/centrodedescargas/rb_bf68775ubu|rid=RID_-1658777595|rpid=-1108969239|domain=aemet.es"></script><link rel="stylesheet" href="css/base2.css">
+
+<link rel="shortcut icon" type="image/ico" href="imgs/favicon.ico" />
+
+<!-- Bootstrap -->
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="css/bootstrap-select.min.css" rel="stylesheet">
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-select.min.js"></script>
+
+
+<!-- Bootstrap table -->
+<!-- <link rel="stylesheet" href="dist/bootstrap-table.min.css">		
+	<script src="dist/bootstrap-table.min.js"></script>		
+	<script src="dist/locale/bootstrap-table-es-SP.min.js"></script> -->
+
+<!-- dataTables -->
+<script src="media/js/jquery.dataTables.min.js"></script>
+<script src="media/js/dataTables.bootstrap.min.js"></script>
+<link href="media/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="media/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap datetimepicker -->
+<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+	media="screen">
+<script type="text/javascript" src="js/bootstrap-datetimepicker.js"
+	charset="UTF-8"></script>
+
+
+
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style>
+    .modal .modal-dialog { width: 100%; height: 100%; }
+</style>
+
+<script>
+
+</script>
+
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="row">
+           <p class="text-center">&nbsp;</p>
+        </div>
+      </div>
+    </header>
+
+    <section id="intro-header-rec">
+		<div class="container">
+
+			<div class="row vcenter" style="height:63px">
+				<div class="col-sm-4 text-right">
+
+					<a href="/centrodedescargas/inicio"><img src="./imgs/logo_opendata_p.png"></a>
+
+				</div>
+
+				<div class="col-sm-4 text-center">
+					<H1>
+						<b>Ejemplos de Programas Cliente</b>
+					</H1>
+				</div>
+				<div class="col-sm-4 text-right">
+					
+						<h6>							
+							<a href="http://www.aemet.es" target="new"><img src="./imgs/logo_AEMET_web.png"></a>
+						</h6>
+					
+				</div>
+
+			</div>
+		</div>
+		
+	</section>
+
+    <section id="datos">
+       <div class="container">
+       <div class="row">
+         <div class="col-sm-12 text-center">
+         <p> &nbsp;</p>
+
+          </div>
+       </div>
+
+       <div class="row">
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/curl.jpg">
+            <div class="card-block">
+              <h4 class="card-title">CURL</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal1" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en cURL
+<pre>
+
+curl -X GET -H "Cache-Control: no-cache" https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	      
+                              </div>
+                              <div class="modal-footer">
+                              <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/java.jpg">
+            <div class="card-block">
+              <h4 class="card-title">Java</h4>
+
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal2">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal2" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">                                 
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Java (OK HTTP)
+<pre>
+
+OkHttpClient client = new OkHttpClient();
+
+Request request = new Request.Builder()
+  .url("https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw")
+  .get()
+  .addHeader("cache-control", "no-cache")
+  .build();
+
+Response response = client.newCall(request).execute();
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Java (Unirest)
+<pre>
+
+HttpResponse<String> response = Unirest.get("https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw")
+  .header("cache-control", "no-cache")
+  .asString();
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+                              	                                                                 
+                              </>
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+
+            </div>
+
+          </div>
+          </div>
+          </div>
+
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+    
+            <div class="card-block">
+               <img src="./imgs/imgs-lenguajes/python.jpg">
+              <h4 class="card-title">Python</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal3">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal3" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Python http.clien 
+<pre>
+
+import http.client
+import urllib.parse
+
+API_KEY = "TU_API_KEY"
+
+params = urllib.parse.urlencode({
+    "api_key": API_KEY
+})
+
+conn = http.client.HTTPSConnection(
+    "opendata.aemet.es",
+    timeout=30
+)
+
+conn.request(
+    "GET",
+    f"/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?{params}"
+)
+
+response = conn.getresponse()
+
+if response.status == 200:
+    print(response.read().decode("utf-8"))
+else:
+    print(f"Error HTTP {response.status}: {response.reason}")
+
+conn.close()
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Python Requests
+<pre>
+
+import requests
+
+API_KEY = "TU_API_KEY"
+
+url = (
+    "https://opendata.aemet.es/opendata/api/"
+    "valores/climatologicos/inventarioestaciones/todasestaciones/"
+)
+
+response = requests.get(
+    url,
+    params={"api_key": API_KEY},
+    timeout=30
+)
+
+response.raise_for_status()
+
+print(response.text)
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+       </div>
+
+       </div> 
+       
+    
+    
+    <div class="container">
+      <div class="row">
+         <div class="col-sm-12 text-center">
+         <p> &nbsp;</p>
+
+          </div>
+       </div>
+
+       <div class="row">
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/php.jpg">
+            <div class="card-block">
+              <h4 class="card-title">PHP</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal4">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal4" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en PHP Http Request
+<pre>
+
+&#60;?php
+
+$request = new HttpRequest();
+$request->setUrl('https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/');
+$request->setMethod(HTTP_METH_GET);
+
+$request->setQueryData(array(
+  'api_key' => 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw'
+));
+
+$request->setHeaders(array(  
+  'cache-control' => 'no-cache'
+));
+
+try {
+  $response = $request->send();
+
+  echo $response->getBody();
+} catch (HttpException $ex) {
+  echo $ex;
+}
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en PHP pecl-http
+<pre>
+
+&#60;?php
+
+$client = new http\Client;
+$request = new http\Client\Request;
+
+$request->setRequestUrl('https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/');
+$request->setRequestMethod('GET');
+$request->setQuery(new http\QueryString(array(
+  'api_key' => 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw'
+)));
+
+$request->setHeaders(array(
+  'cache-control' => 'no-cache'
+));
+
+$client->enqueue($request)->send();
+$response = $client->getResponse();
+
+echo $response->getBody();
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en PHP cURL
+<pre>
+
+&#60;?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 30,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET",
+  CURLOPT_HTTPHEADER => array(
+    "cache-control: no-cache"
+  ),
+));
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+
+curl_close($curl);
+
+if ($err) {
+  echo "cURL Error #:" . $err;
+} else {
+  echo $response;
+}
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/ruby.jpg">
+            <div class="card-block">
+              <h4 class="card-title">Ruby</h4>
+                    
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal5">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal5" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Ruby (NET::Http)
+<pre>
+
+require 'uri'
+require 'net/http'
+
+url = URI("https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw")
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+request = Net::HTTP::Get.new(url)
+request["cache-control"] = 'no-cache'
+response = http.request(request)
+puts response.read_body
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+
+           </div>
+ </div>
+          </div>
+          </div>
+
+           <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/http.jpg">
+            <div class="card-block">
+              <h4 class="card-title">HTTP</h4>
+
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal6">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal6" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en HTTP
+<pre>
+
+GET /opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw HTTP/1.1
+Host: opendata.aemet.es
+Cache-Control: no-cache
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+		</div>
+
+       </div>
+    
+      
+
+	<div class="container">
+       <div class="row">
+         <div class="col-sm-12 text-center">
+         <p> &nbsp;</p>
+
+          </div>
+       </div>
+
+       <div class="row">
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/c.jpg">
+            <div class="card-block">
+              <h4 class="card-title">C</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal7">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal7" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en C (libCurl)
+<pre>
+
+CURL *hnd = curl_easy_init();
+
+curl_easy_setopt(hnd, CURLOPT_CUSTOMREQUEST, "GET");
+curl_easy_setopt(hnd, CURLOPT_URL, "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw");
+
+struct curl_slist *headers = NULL;
+headers = curl_slist_append(headers, "cache-control: no-cache");
+curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
+
+CURLcode ret = curl_easy_perform(hnd);
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/csharp.jpg">
+            <div class="card-block">
+              <h4 class="card-title">C#</h4>
+
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal8">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal8" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en C# (RestSharp)
+<pre>
+
+var client = new RestClient("https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw");
+var request = new RestRequest(Method.GET);
+request.AddHeader("cache-control", "no-cache");
+IRestResponse response = client.Execute(request);
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+
+            </div>
+
+          </div>
+          </div>
+          </div>
+
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+    
+            <div class="card-block">
+               <img src="./imgs/imgs-lenguajes/go.png">
+              <h4 class="card-title">Go</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal9">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal9" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Go
+<pre>
+
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"io/ioutil"
+)
+
+func main() {
+
+	url := "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("cache-control", "no-cache")
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	fmt.Println(res)
+	fmt.Println(string(body))
+
+}
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+       </div>
+
+       </div> 
+       
+       
+       
+      <div class="container">
+      <div class="row">
+         <div class="col-sm-12 text-center">
+         <p> &nbsp;</p>
+
+          </div>
+       </div>
+
+       <div class="row">
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/js.jpg">
+            <div class="card-block">
+              <h4 class="card-title">JavaScript</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal10">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal10" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en JavaScrip Jquery AJAX
+<pre>
+
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw",
+  "method": "GET",
+  "headers": {
+    "cache-control": "no-cache"
+  }
+}
+
+$.ajax(settings).done(function (response) {
+  console.log(response);
+});
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en JavaScrip JavaScript XHR
+<pre>
+
+var data = null;
+
+var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === 4) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("GET", "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw");
+xhr.setRequestHeader("cache-control", "no-cache");
+xhr.send(data);
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/node.jpg">
+            <div class="card-block">
+              <h4 class="card-title">NodeJS</h4>
+                    
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal11">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal11" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en NodeJS Native
+<pre>
+
+var http = require("https");
+
+var options = {
+  "method": "GET",
+  "hostname": "opendata.aemet.es",
+  "path": "/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw",
+  "headers": {
+    "cache-control": "no-cache"
+  }
+};
+
+var req = http.request(options, function (res) {
+  var chunks = [];
+
+  res.on("data", function (chunk) {
+    chunks.push(chunk);
+  });
+
+  res.on("end", function () {
+    var body = Buffer.concat(chunks);
+    console.log(body.toString());
+  });
+});
+
+req.end();
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en NodeJS Request
+<pre>
+
+var request = require("request");
+
+var options = { method: 'GET',
+  url: 'https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/',
+  qs: { 'api_key': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw' },
+  headers: 
+   { 'cache-control': 'no-cache' } };
+
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+							  
+							   <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en NodeJS Unirest
+<pre>
+
+var unirest = require("unirest");
+
+var req = unirest("GET", "https://opendata.aemet.es/opendata/avisos/ahora/");
+
+req.query({
+  "api_key": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw"
+});
+
+req.headers({
+  "cache-control": "no-cache"
+});
+
+
+req.end(function (res) {
+  if (res.error) throw new Error(res.error);
+
+  console.log(res.body);
+});
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>		
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+
+           </div>
+ </div>
+          </div>
+          </div>
+
+           <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/objc.jpg">
+            <div class="card-block">
+              <h4 class="card-title">Objective-C</h4>
+
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal12">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal12" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Objective-C (NSURL)
+<pre>
+
+#import <Foundation/Foundation.h>
+
+NSDictionary *headers = @{ @"cache-control": @"no-cache"};
+
+NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw"]
+                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                   timeoutInterval:10.0];
+[request setHTTPMethod:@"GET"];
+[request setAllHTTPHeaderFields:headers];
+
+NSURLSession *session = [NSURLSession sharedSession];
+NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
+                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                                if (error) {
+                                                    NSLog(@"%@", error);
+                                                } else {
+                                                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                                                    NSLog(@"%@", httpResponse);
+                                                }
+                                            }];
+[dataTask resume];
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+       </div>
+      
+	</div>
+	
+	
+	<div class="container">
+      <div class="row">
+         <div class="col-sm-12 text-center">
+         <p> &nbsp;</p>
+
+          </div>
+       </div>
+
+       <div class="row">
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/ocaml.jpg">
+            <div class="card-block">
+              <h4 class="card-title">OCaml</h4>
+                     
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal13">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal13" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en OCaml (Cohttp)
+<pre>
+
+open Cohttp_lwt_unix
+open Cohttp
+open Lwt
+
+let uri = Uri.of_string "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw" in
+let headers = Header.init ()
+  |> fun h -> Header.add h "cache-control" "no-cache"
+  in
+
+Client.call ~headers `GET uri
+>>= fun (res, body_stream) ->
+  (* Do stuff with the result *)
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+                     
+            </div>
+          </div>
+          </div>
+          </div>
+
+         <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/bash.jpg">
+            <div class="card-block">
+              <h4 class="card-title">Shell</h4>
+                    
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal14">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal14" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Shell wget
+<pre>
+
+wget --quiet \
+  --method GET \
+  --header 'cache-control: no-cache' \
+  --output-document \
+  - 'https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw'
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Shell Httpie
+<pre>
+
+http GET 'https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw' \
+  cache-control:no-cache \
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>
+							  
+							  <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Shell cURL
+<pre>
+
+curl --request GET \
+  --url 'https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw' \
+  --header 'cache-control: no-cache' \
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+
+           </div>
+ </div>
+          </div>
+          </div>
+
+           <div class="col-sm-4 text-center">
+          <div class="jumbotron">
+          <div class="card">
+            <img src="./imgs/imgs-lenguajes/swift.jpeg">
+            <div class="card-block">
+              <h4 class="card-title">Swift</h4>
+
+                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal15">Entrar</button>
+					
+                     <!-- Modal -->
+                     <div id="myModal15" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                                 <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 	<button type="submit" class="close">x</button>                                                                 
+                              	 </form>
+                                 <h5 class="modal-title">Aemet OpenData</h5>
+                              </div>
+                              <div class="modal-body">
+                              	
+                              <div class="container">
+								<div class="panel panel-default">
+								  <div class="panel-body" align="left">
+Ejemplo en Swift (NSURL)
+<pre>
+
+import Foundation
+
+let headers = [
+  "cache-control": "no-cache"
+]
+
+var request = NSMutableURLRequest(URL: NSURL(string: "https://opendata.aemet.es/opendata/api/valores/climatologicos/inventarioestaciones/todasestaciones/?api_key=jyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqbW9udGVyb2dAYWVtZXQuZXMiLCJqdGkiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJleHAiOjE0NzUwNTg3ODcsImlzcyI6IkFFTUVUIiwiaWF0IjoxNDc0NjI2Nzg3LCJ1c2VySWQiOiI3NDRiYmVhMy02NDEyLTQxYWMtYmYzOC01MjhlZWJlM2FhMWEiLCJyb2xlIjoiIn0.xh3LstTlsP9h5cxz3TLmYF4uJwhOKzA0B6-vH8lPGGw")!,
+                                        cachePolicy: .UseProtocolCachePolicy,
+                                    timeoutInterval: 10.0)
+request.HTTPMethod = "GET"
+request.allHTTPHeaderFields = headers
+
+let session = NSURLSession.sharedSession()
+let dataTask = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
+  if (error != nil) {
+    println(error)
+  } else {
+    let httpResponse = response as? NSHTTPURLResponse
+    println(httpResponse)
+  }
+})
+
+dataTask.resume()
+
+</pre>
+
+								  </div>
+								</div>
+							  </div>	
+                              	                                                                 
+                              
+                              </div>
+                              <div class="modal-footer">
+                                 <!-- <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button> --> 
+                              <form action="/centrodedescargas/ejemProgramas" method="get" id="formCerrar">
+                                 <button type="submit" class="btn btn-primary">Cerrar</button>                                                                 
+                              </form>
+                              </div>
+                           </div>
+                     </div>
+                     </div>
+
+            </div>
+          </div>
+          </div>
+          </div>
+		</div>
+
+       </div> 
+	
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				&nbsp;
+				<p class="text-center">
+					<a href="/centrodedescargas/AEMETApi"><b> Volver </b></a>
+				</p>
+			</div>
+		</div>
+
+  </section>
+
+
+
+
+
+	<footer>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-10 text-left">
+					<h5 style="margin-top: 20px;">&#169; Aemet. Autorizado el uso de la informaci&#243;n y su reproducci&#243;n citando a Aemet como autora de la misma.&nbsp;&nbsp;
+						| &nbsp;&nbsp;<a href="http://www.aemet.es/es/nota_legal"
+							target="new">Nota legal</a> <br>&nbsp;
+					</h5>
+				</div>
+
+
+				<div class="col-sm-2 text-right">
+					<p>
+					<h4 style="margin-top: 15px;">
+						<span class="glyphicon glyphicon-headphones"></span> &nbsp;&nbsp;<a
+							href="http://www.aemet.es/es/lineas_de_interes/atencion_al_ciudadano"
+							target="new">Contactar</a>
+					</h4>
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

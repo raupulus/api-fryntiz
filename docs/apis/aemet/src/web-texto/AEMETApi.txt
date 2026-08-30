@@ -1,0 +1,18 @@
+Aemet OpenData
+Acceso Desarrolladores
+Documentación Aemet OpenData. HATEOAS
+Acceso a documentación dinámica Aemet OpenData y autodescubrimiento HATEOAS, que permite conocer los recursos del API y sus detalles
+Entrar
+Proyecto GitLab: Aemet OpenData API
+Proyecto GitLab con una librería Python para consumir y explotar AEMET OpenData, APIs REST y fuentes RSS.
+Entrar
+Ejemplos de programas cliente
+Acceso a un conjunto de programas cliente ejemplo
+Entrar
+Aemet Codegen
+Utilidad que permite la creación automática de programas cliente de Aemet OpenData, para los lenguajes de programación más utilizados en la comunidad de desarrolladores
+Entrar
+Volver
+© Aemet. Autorizado el uso de la información y su reproducción citando a Aemet como autora de la misma.
+|   Nota legal
+Contactar

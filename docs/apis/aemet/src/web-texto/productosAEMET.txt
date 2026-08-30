@@ -1,0 +1,261 @@
+Aemet OpenData
+Acceso General
+Cargando...
+40% Complete (success)
+Introduzca su API Key:
+En "Acceso Desarrolladores" en HATEOAS, podrá encontrar todas las API disponibles.
+Mensajes de observación. Último elaborado
+Obtener
+Observación convencional
+Datos de observación. Último elaborado
+Seleccione una provincia
+Seleccione una estación
+Obtener
+Observación convencional
+Datos de radiación global, directa o difusa. Último elaborado
+Obtener
+Redes especiales
+Perfiles verticales de ozono. Último elaborado
+Obtener
+Redes especiales
+Datos de contaminación de fondo. Último elaborado
+Obtener
+Redes especiales
+Contenido total de ozono. Último elaborado
+Obtener
+Redes especiales
+Mapa con los rayos registrados en periodo
+estándar. Último elaborado
+Obtener
+Red de rayos
+Imágenes productos derivados de satélite. Último elaborado
+Seleccione tipo de imagen
+Índice normalizado de vegetación
+Temperatura del agua del mar
+Obtener
+Información de satélite
+Imagen gráfica radar regional. Tiempo actual estándar
+Obtener
+Red de radares
+Imagen de la composición nacional de radares. Tiempo actual
+estándar
+Obtener
+Red de radares
+Climatologías diarias
+Seleccione una provincia
+Seleccione una estación
+Fecha inicio:
+Fecha fin:
+Obtener
+Valores Climatológicos
+Climatologías mensuales/anuales
+Seleccione una provincia
+Seleccione una estación
+Año (AAAA):
+Obtener
+Valores Climatológicos
+Valores normales
+Seleccione una provincia
+Seleccione una estación
+Obtener
+Valores Climatológicos
+Extremos registrados
+Seleccione una provincia
+Seleccione una estación
+Seleccione una variable
+Temperatura
+Precipitación
+Viento
+Obtener
+Valores Climatológicos
+Inventario de estaciones de Valores Climatológicos
+Obtener
+Valores Climatológicos
+Balance hídrico nacional(documentos)
+Disponible en web
+Productos Climatológicos
+Resumen mensual climatológico nacional (documentos)
+Disponible en web
+Productos Climatológicos
+Avance mensual climatológico (documentos)
+Disponible en web
+Productos Climatológicos
+Capas SHAPE de estaciones climatológicas de AEMET
+Seleccione tipo de estación
+Estaciones climatológicas completas
+Estaciones climatológicas termométricas
+Estaciones climatológicas pluviométricas
+Estaciones climatológicas automáticas
+Obtener
+Productos Climatológicos
+Datos numericos diarios de proyecciones regionalizadas de cambio climatico para el siglo XXI
+Seleccione periodo
+Diario
+Mensual
+Disponible en web
+Predicción Climática
+Gráficos de proyecciones regionalizadas de cambio climático para el siglo XXI
+Disponible en web
+Predicción Climática
+Predicción mensual. Tiempo actual estandarizado
+Disponible en web
+Predicción Climática
+Boletín de predicción estacional. Último elaborado
+Disponible en web
+Predicción Climática
+Predicción nacional hoy. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción nacional hoy. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción nacional mañana. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción nacional mañana. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción nacional pasado mañana. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción nacional pasado mañana. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción nacional medio plazo. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción nacional medio plazo. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción nacional tendencia. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción nacional tendencia. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma hoy. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma hoy. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma mañana. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma mañana. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma pasado mañana. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma pasado mañana. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma medio plazo. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción comunidad autónoma medio plazo. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción provincial e insular hoy. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción provincial e insular hoy. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción provincial e insular mañana. Último elaborado
+Obtener
+Predicción normalizadas en texto
+Predicción provincial e insular mañana. Archivo
+Obtener
+Predicción normalizadas en texto
+Predicción de radiacion ultravioleta (UVI). Último elaborado
+Seleccione alcance
+D+0
+D+1
+D+2
+D+3
+D+4
+Obtener
+Predicciones específicas
+Predicción por municipios diaria. Último elaborado
+Seleccione un municipio
+Obtener
+Predicciones específicas
+Predicción por municipios horaria. Último elaborado
+Seleccione un municipio
+Obtener
+Predicciones específicas
+Predicción para las playas. Último elaborado
+Seleccione una playa
+Obtener
+Predicciones específicas
+Predicción de montaña. Último elaborado
+Seleccione alcance
+Hoy
+Mañana
+Pasado Mañana
+Dentro de 3 día
+Obtener
+Predicciones específicas
+Predicción de montaña. Tiempo pasado
+Obtener
+Predicciones específicas
+Información nivológica.
+Seleccione un área
+Pirineo Catalán
+Pirineo Navarro y Aragonés
+Obtener
+Predicciones específicas
+Predicción marítima de alta mar.
+Obtener
+Predicción marítima
+Predicción marítima costera.
+Obtener
+Predicción marítima
+Mapas significativos. Archivo. Hasta el 22/01/2020.
+Seleccione España o ccaa
+Seleccione alcance
+D+0 (00-12)
+D+0 (12-24)
+D+1 (00-12)
+D+1 (12-24)
+D+2 (00-12)
+D+2 (12-24)
+Obtener
+Mapas y gráficos
+Mapas de análisis. Última pasada.
+Obtener
+Mapas y gráficos
+Mapas previstos. Última pasada.
+Seleccione alcance
+H+12
+H+24
+H+36
+H+48
+H+60
+H+72
+Obtener
+Mapas y gráficos
+Avisos de fenómenos meteorológicos adversos. Último elaborado.
+Seleccione España o ccaa
+Obtener
+Avisos
+Avisos de fenómenos meteorológicos adversos. Archivo (datos desde el 18/06/2018).
+Fecha elaboración inicio
+Hora elaboración inicio (HH:mm:ss) UTC
+Fecha elaboración fin
+Hora elaboración fin (HH:mm:ss) UTC
+Obtener
+Avisos
+Datos de series largas de observación en la Antártida
+(en las bases de Juan Carlos I y Gabriel de Castilla).
+Seleccione una estación
+Fecha inicio:
+Fecha fin:
+Obtener
+Antártida
+Volver
+© Aemet. Autorizado el uso de la información y su reproducción citando a Aemet como autora de la misma.
+|   Nota legal
+Contactar
