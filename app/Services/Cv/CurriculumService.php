@@ -5,29 +5,83 @@ declare(strict_types=1);
 namespace App\Services\Cv;
 
 use App\Models\CV\Curriculum;
-use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
- * Servicio encargado de gestionar las distintas entidades que componen un Currículum Vitae.
+ * Currículums.
+ *
+ * Antes este servicio sólo sabía hacer una cosa: «dame el CV de este usuario»,
+ * con `->first()`. Con dieciocho tablas preparadas para tener varios CV, eso
+ * significaba que sólo se podía llegar a uno, y por azar (el primero que
+ * devolviera la base de datos).
  */
 class CurriculumService
 {
     /**
-     * Obtiene el Currículum completo de un usuario, cargando ansiosamente (eager loading)
-     * todas sus relaciones y secciones asociadas (experiencia, proyectos, educación, habilidades...).
+     * Todas las relaciones de secciones, para cargarlas de una vez.
      *
-     * @param  User  $user  Instancia del usuario.
-     * @return Curriculum|null Modelo Curriculum instanciado o null si no posee.
+     * @var array<int, string>
      */
-    public function getFullCurriculum(User $user): ?Curriculum
+    public const SECTIONS = [
+        'repositories', 'services', 'collaborations', 'hobbies',
+        'jobs', 'projects', 'academicTraining',
+        'academicComplementary', 'academicComplementaryOnline',
+        'experienceAccredited', 'experienceNoAccredited',
+        'experienceSelfEmployed', 'experienceAdditional',
+        'experienceOther', 'skills',
+    ];
+
+    /**
+     * Listado público paginado (B3): sólo los marcados como públicos.
+     *
+     * @return LengthAwarePaginator<int, Curriculum>
+     */
+    public function publicOnly(int $porPagina = 25): LengthAwarePaginator
     {
-        return Curriculum::with([
-            'repositories', 'services', 'collaborations', 'hobbies',
-            'jobs', 'projects', 'academicTraining',
-            'academicComplementary', 'academicComplementaryOnline',
-            'experienceAccredited', 'experienceNoAccredited',
-            'experienceSelfEmployed', 'experienceAdditional',
-            'experienceOther', 'skills',
-        ])->where('user_id', $user->id)->first();
+        return Curriculum::query()
+            ->publicOnly()
+            ->orderByDesc('is_default')
+            ->orderBy('title')
+            ->paginate($porPagina);
+    }
+
+    /**
+     * Un CV por su slug, con todas sus secciones.
+     */
+    public function bySlug(string $slug): ?Curriculum
+    {
+        return Curriculum::query()
+            ->with(self::SECTIONS)
+            ->where('slug', $slug)
+            ->first();
+    }
+
+    /**
+     * Un CV por su token de compartición.
+     *
+     * Se busca por token y luego se comprueba la visibilidad, para que un token
+     * de un CV que ha pasado a privado deje de valer.
+     */
+    public function byShareToken(string $token): ?Curriculum
+    {
+        $cv = Curriculum::query()
+            ->with(self::SECTIONS)
+            ->where('share_token', $token)
+            ->first();
+
+        return $cv?->isVisibleTo($token) ? $cv : null;
+    }
+
+    /**
+     * El CV predeterminado de la plataforma: el marcado como `is_default`
+     * entre los públicos.
+     */
+    public function defaultCurriculum(): ?Curriculum
+    {
+        return Curriculum::query()
+            ->with(self::SECTIONS)
+            ->publicOnly()
+            ->orderByDesc('is_default')
+            ->first();
     }
 }

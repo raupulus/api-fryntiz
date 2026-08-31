@@ -25,6 +25,7 @@ use App\Models\CV\CurriculumSkill;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class SeedCvDebugCommand extends Command
 {
@@ -51,8 +52,11 @@ class SeedCvDebugCommand extends Command
 
         $this->info('Creando curriculum base...');
 
+        $title = 'Curriculum de Raúl Caro';
+
         $cv = Curriculum::firstOrCreate(['user_id' => $user->id], [
-            'title' => 'Curriculum de Raúl Caro',
+            'title' => $title,
+            'slug' => Str::slug($title),
             'presentation' => fake()->paragraph(),
             'is_active' => true,
             'is_downloadable' => true,

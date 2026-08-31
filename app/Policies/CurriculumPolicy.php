@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\CV\Curriculum;
 use App\Models\User;
+use App\Support\Auth\TokenAbilities;
 
 class CurriculumPolicy
 {
@@ -21,7 +22,7 @@ class CurriculumPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return ! TokenAbilities::deviceRequest($user);
     }
 
     public function update(User $user, Curriculum $curriculum): bool
