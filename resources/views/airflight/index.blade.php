@@ -259,13 +259,16 @@
     <script type="text/javascript" src="{{ asset('resources/airflight/config.js') }}"></script>
 
     {{-- Endpoints del mapa: se componen en tiempo de request desde API_URL (.env)
-         hacia la API v2, en vez de quedar hardcodeados en el asset estático. --}}
+         hacia la API v2, en vez de quedar hardcodeados en el asset estático.
+
+         No se definen urlHistory ni urlDb: el backend no guarda snapshots de
+         historial (ver AirFlightController::receiver(), 'history' => 0) ni
+         expone un catálogo de matrículas/tipos por ICAO. script.js y
+         dbloader.js ya comprueban su ausencia y no llaman a esos endpoints. --}}
     <script>
         var airflightApiBase = "{{ rtrim(config('app.api_url'), '/') }}/v2/airflight";
         var urlAircrafts = airflightApiBase + '/aircrafts';
         var urlReceiver = airflightApiBase + '/receiver';
-        var urlHistory = airflightApiBase + '/history';
-        var urlDb = airflightApiBase + '/db';
     </script>
 
     <script type="text/javascript" src="{{ asset('resources/airflight/markers.js') }}"></script>

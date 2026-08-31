@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
+use App\Support\Auth\TokenAbilities;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -22,7 +23,7 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function can_get_history(): void
     {
-        $response = $this->getJson($this->apiUrl('airflight/history'));
+        $response = $this->getJson($this->apiUrl('airflight/aircrafts'));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -30,8 +31,8 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function can_store_aircraft_authenticated(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('airflight/register'), [
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts'), [
             'icao' => 'ABC123',
         ], $headers);
         $this->assertSuccessResponse($response, 201);
@@ -41,15 +42,15 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function cannot_store_aircraft_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('airflight/register'), [], $this->guestHeaders());
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function store_aircraft_validates_lat_range(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('airflight/register'), [
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts'), [
             'icao' => 'ABC123',
             'lat' => 100,
         ], $headers);
@@ -60,8 +61,8 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function store_aircraft_validates_lon_range(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('airflight/register'), [
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts'), [
             'icao' => 'ABC123',
             'lon' => -200,
         ], $headers);
@@ -72,8 +73,8 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function can_store_batch_authenticated(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('airflight/register/batch'), [
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts/batch'), [
             'data' => [['icao' => 'ABC123'], ['icao' => 'DEF456']],
         ], $headers);
         $this->assertSuccessResponse($response, 201);
@@ -83,15 +84,15 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function cannot_store_batch_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('airflight/register/batch'), [], $this->guestHeaders());
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts/batch'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function store_batch_validates_data_required(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('airflight/register/batch'), [], $headers);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts/batch'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['data']);
     }
@@ -99,8 +100,8 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function store_batch_validates_data_must_be_array(): void
     {
-        $headers = $this->asUser();
-        $response = $this->postJson($this->apiUrl('airflight/register/batch'), ['data' => 'not-array'], $headers);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts/batch'), ['data' => 'not-array'], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['data']);
     }

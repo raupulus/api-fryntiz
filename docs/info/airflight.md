@@ -81,8 +81,10 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 |--------|------|------|----------|-------------|
 | GET | `/api/v2/airflight/aircrafts` | No | — | Aviones recientes |
 | GET | `/api/v2/airflight/history` | No | — | Historial extendido (100) |
-| POST | `/api/v2/airflight/register` | Sí | api-store | Registrar un avión |
-| POST | `/api/v2/airflight/register/batch` | Sí | api-store-batch | Registrar lote (max 500) |
+| GET | `/api/v2/airflight/receiver` | No | — | Información del receptor ADS-B |
+| GET | `/api/v2/airflight/db/{bkey}` | No | — | Consulta a la base de datos de aeronaves por clave |
+| POST | `/api/v2/airflight/register` | Sí (`ability:airflight:write`) | api-store | Registrar un avión |
+| POST | `/api/v2/airflight/register/batch` | Sí (`ability:airflight:write`) | api-store-batch | Registrar lote (max 500) |
 
 ## Rutas Web
 
@@ -114,3 +116,7 @@ php artisan debug:seed-airflight --planes=10 --routes=100
 # cada uno con su propia línea de ~25 puntos:
 php artisan debug:seed-airflight --planes=1 --routes=25
 ```
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-19

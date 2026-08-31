@@ -30,6 +30,11 @@ function getAircraftData(icao) {
 
         if (icao in _aircraft_cache) {
                 defer = _aircraft_cache[icao];
+        } else if (typeof urlDb === "undefined" || !urlDb) {
+                // No hay catálogo de matrículas/tipos de avión en el backend
+                // (ver AirFlightController::receiver()): se resuelve solo con
+                // registration_from_hexid() en planeObject.js.
+                defer = _aircraft_cache[icao] = $.Deferred().reject();
         } else {
                 // load from blocks:
                 defer = _aircraft_cache[icao] = $.Deferred();

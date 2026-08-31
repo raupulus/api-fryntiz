@@ -4,15 +4,25 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\AirFlight\V2;
 
+use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\AirFlight\V2\StoreAirFlightRequest;
 use App\Http\Requests\Api\AirFlight\V2\StoreBatchAirFlightRequest;
 use App\Http\Resources\V2\AirFlight\AirFlightResource;
+use App\Models\AirFlight\AirFlightAirPlane;
 use App\Services\AirFlight\AirFlightService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
- * Controlador de vuelos detectados para API V2.
+ * AirFlight.
+ *
+ * `GET /airflight/db/{bkey}` se ha retirado: devolvía siempre 404 porque el
+ * dataset del registro OACI no se mantiene. Un endpoint que sólo sabe decir
+ * «no encontrado» es peor que no tenerlo — parece que existe (cierra P-REST-1).
+ *
+ * `GET /airflight/history` tampoco está: el historial es la misma colección de
+ * aviones acotada por fechas, no otro recurso.
  */
 class AirFlightController extends BaseApiController
 {
@@ -36,35 +46,40 @@ class AirFlightController extends BaseApiController
     }
 
     /**
-     * Lista aviones vistos en los últimos minutos, con su última posición.
-     */
-    public function aircrafts(): JsonResponse
-    {
-        return $this->successResponse(
-            AirFlightResource::collection($this->service->getActiveAircrafts())
-        );
-    }
-
-    /**
-     * Base de datos de matrícula/tipo de avión por prefijo ICAO.
+     * Aviones detectados.
      *
-     * No se mantiene ese dataset (requeriría importar el registro OACI
-     * completo), así que se responde "no encontrado" de forma consistente.
+     * Absorbe lo que era `GET /airflight/history`: el historial no es otro
+     * recurso, es la misma colección sin la ventana de actividad reciente.
+     *
+     *   (sin parámetros)      los vistos en los últimos 10 minutos — el mapa en vivo
+     *   ?minutes=60           ventana de actividad a medida
+     *   ?from=&to=            historial por fechas, paginado
      */
-    public function db(string $bkey): JsonResponse
+    public function aircrafts(Request $request): JsonResponse
     {
-        return $this->notFoundResponse('Sin datos de matrícula/tipo para este prefijo ICAO');
-    }
+        $porFechas = $request->filled('from') || $request->filled('to');
 
-    /**
-     * Historial extendido de aviones (últimos 100).
-     */
-    public function history(): JsonResponse
-    {
-        $history = $this->service->getAircraftHistory(100);
+        // El mapa en vivo pide "lo que hay ahora": son pocas filas y las quiere
+        // todas de golpe, sin paginar.
+        if (! $porFechas) {
+            $minutes = max(1, min($request->integer('minutes') ?: 10, 1440));
 
-        return $this->successResponse(
-            AirFlightResource::collection($history)
+            return $this->successResponse(
+                AirFlightResource::collection($this->service->getActiveAircrafts($minutes))->resolve()
+            );
+        }
+
+        $collectionQuery = new CollectionQuery(
+            filterable: ['icao', 'seen_last_at', 'created_at'],
+            sortable: ['seen_last_at', 'created_at'],
+            defaultSortColumn: 'seen_last_at',
+        );
+
+        $query = AirFlightAirPlane::query()->with('latestRoute');
+
+        return $this->paginatedResponse(
+            $collectionQuery->paginate($query, $request),
+            AirFlightResource::class
         );
     }
 
@@ -73,7 +88,11 @@ class AirFlightController extends BaseApiController
      */
     public function store(StoreAirFlightRequest $request): JsonResponse
     {
-        $airplane = $this->service->addAircraft($request->validated());
+        $airplane = $this->service->addAircraft(
+            $request->validated(),
+            auth()->id(),
+            $request->integer('hardware_device_id') ?: null
+        );
 
         return $this->createdResponse(
             new AirFlightResource($airplane),
@@ -86,7 +105,11 @@ class AirFlightController extends BaseApiController
      */
     public function storeBatch(StoreBatchAirFlightRequest $request): JsonResponse
     {
-        $stored = $this->service->addAircraftBatch($request->validated()['data']);
+        $stored = $this->service->addAircraftBatch(
+            $request->validated()['data'],
+            auth()->id(),
+            $request->integer('hardware_device_id') ?: null
+        );
 
         return $this->createdResponse([
             'count' => count($stored),

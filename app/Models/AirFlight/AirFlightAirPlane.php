@@ -338,10 +338,10 @@ class AirFlightAirPlane extends BaseModel
     public static function searchHex($icao)
     {
         try {
-            $hexa = base_convert('0x'.$icao, 16, 10);
+            $hexColor = base_convert('0x'.$icao, 16, 10);
 
             foreach (self::FLAGS as $f) {
-                if ($hexa >= $f['start'] && $hexa <= $f['end']) {
+                if ($hexColor >= $f['start'] && $hexColor <= $f['end']) {
                     return $f;
                 }
             }
@@ -356,7 +356,7 @@ class AirFlightAirPlane extends BaseModel
     /**
      * Busca la bandera para los aviones que no tengan aún la bandera.
      *
-     * @param  $hexa
+     * @param  $hexColor
      * @return mixed|null
      */
     public static function searchFlag($icao)

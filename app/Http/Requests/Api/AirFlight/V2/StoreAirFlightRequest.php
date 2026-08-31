@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\AirFlight\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\OwnedHardwareDevice;
 
 /**
  * Validación para registrar un avión en API V2.
@@ -19,7 +20,10 @@ class StoreAirFlightRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'icao' => ['nullable', 'string', 'max:10'],
+            // Opcional: no todos los receptores lo mandan. Si viene, se
+            // comprueba que sea del usuario (**N293**).
+            'hardware_device_id' => ['nullable', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
+            'icao' => ['required', 'string', 'max:10'],
             'flight' => ['nullable', 'string', 'max:20'],
             'squawk' => ['nullable', 'string', 'max:10'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
@@ -30,17 +34,6 @@ class StoreAirFlightRequest extends BaseFormRequest
             'seen' => ['nullable', 'numeric'],
             'seen_pos' => ['nullable', 'numeric'],
             'messages' => ['nullable', 'integer', 'min:0'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'lat.between' => 'La latitud debe estar entre -90 y 90.',
-            'lon.between' => 'La longitud debe estar entre -180 y 180.',
-            'altitude.min' => 'La altitud no puede ser negativa.',
-            'speed.min' => 'La velocidad no puede ser negativa.',
-            'track.between' => 'El rumbo debe estar entre 0 y 360 grados.',
         ];
     }
 }
