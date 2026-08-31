@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 /**
  * @extends Factory<SocialNetwork>
  */
-class SocialNetworkFactory extends Factory
+class SocialMediaFactory extends Factory
 {
     protected $model = SocialNetwork::class;
 
@@ -22,7 +22,7 @@ class SocialNetworkFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->company().' Network';
+        $name = $this->faker->unique()->company().' Social';
 
         return [
             'name' => $name,

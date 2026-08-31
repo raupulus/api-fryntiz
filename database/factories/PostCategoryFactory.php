@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 /**
  * @extends Factory<Category>
  */
-class CategoryFactory extends Factory
+class PostCategoryFactory extends Factory
 {
     protected $model = Category::class;
 
