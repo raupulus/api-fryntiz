@@ -4,16 +4,26 @@ Listado completo de los comandos Artisan personalizados del proyecto, agrupados 
 
 > Para los comandos `debug:seed-*` (datos de prueba), ver además [debug-commands.md](debug-commands.md).
 
+> ✅ **El scheduler ya no llama a comandos inventados.** Durante mucho tiempo programó
+> `aemet:adverse-events`, `aemet:contamination`, `aemet:predictions` y `keycounter:maintenance`
+> sin que ninguno existiera, y ése era el motivo de fondo de que los datos de AEMET
+> llevaran años sin actualizarse: artisan no encuentra el comando, la tarea «termina»
+> y no se queja nadie. `tests/Feature/Consola/SchedulerTest.php` comprueba ahora que
+> todo lo programado —y todo botón del panel de AEMET— apunte a un comando que existe.
+
 ---
 
 ## 1. Comandos de proyecto
 
-| Comando | Descripción | Archivo |
-|---------|-------------|---------|
-| `project:install` | Instalación inicial: migra, semilla básica y enlaces de storage. | `app/Console/Commands/ProjectInstallCommand.php` |
-| `project:clear` | Limpia cachés (config, route, view, event, opcache). | `app/Console/Commands/ProjectClearCommand.php` |
-| `force:clear` | Variante agresiva de `project:clear` para entornos rotos. | `app/Console/Commands/ForceClearCommand.php` |
-| `sitemap:generate` | Genera el sitemap XML público. | `app/Console/Commands/SitemapGeneratorCommand.php` |
+| Comando | Alias | Descripción | Archivo |
+|---------|-------|-------------|---------|
+| `project:install` | `xerintel:install` | Instalación inicial: migra, semilla básica y enlaces de storage. | `app/Console/Commands/ProjectInstallCommand.php` |
+| `project:clear` | `xerintel:clear` | Limpia todas las cachés, colas, regenera clave segura y recompone autoload. | `app/Console/Commands/ProjectClearCommand.php` |
+| `project:dummy` | `xerintel:dummy` | Genera contenido y telemetría corporativa de ejemplo para todos los módulos. | `app/Console/Commands/ProjectDummyCommand.php` |
+| `force:clear` | — | Variante agresiva de `project:clear` para entornos rotos. | `app/Console/Commands/ForceClearCommand.php` |
+| `sitemap:generate` | — | Genera el sitemap XML público navegable del sitio. | `app/Console/Commands/SitemapGeneratorCommand.php` |
+| `mcp:inspector` | — | Lanza el inspector de MCP contra el servidor del proyecto. | `app/Console/Commands/Mcp/InspectorCommand.php` |
+| `serve` | — | Sobrescribe el `serve` nativo de Laravel: si `BROADCAST_CONNECTION=reverb`, arranca también `reverb:start` en segundo plano (mismo ciclo de vida, se detiene al cerrar `serve`). | `app/Console/Commands/ServeCommand.php` |
 
 ---
 
@@ -21,17 +31,31 @@ Listado completo de los comandos Artisan personalizados del proyecto, agrupados 
 
 Documentación técnica: [apis/aemet.md](apis/aemet.md).
 
-| Comando | Frecuencia recomendada | Descripción |
-|---------|------------------------|-------------|
-| `aemet:update-daily` | 1×/día | Predicción diaria municipio (placeholder). |
-| `aemet:update-daily8` | 08:00 | Playas, alta mar, radiación solar. |
-| `aemet:update-daily12` | 12:00 | Costa, ozono. |
-| `aemet:update-daily20` | 20:00 | Costa (segunda actualización). |
-| `aemet:update-every4h` | Cada 4 h | Predicción horaria. |
-| `aemet:update-every30m` | Cada 30 min | Avisos CAP (eventos adversos). |
-| `aemet:update-every10m` | Cada 10 min | Contaminación. |
+**Un comando por producto.** Antes eran comandos por horario (`aemet:update-daily8`,
+`aemet:update-every4h`…), que agrupaban productos distintos y hacían imposible
+relanzar uno solo: el botón «Alta mar» del panel acababa trayendo la predicción
+horaria. La cadencia de cada uno sale de la `periodicidad` que declara AEMET, no
+de un número inventado.
+
+| Comando | Cuándo | Producto |
+|---------|--------|----------|
+| `aemet:adverse-events` | Cada 30 min | Avisos de fenómenos adversos (CAP) |
+| `aemet:contamination` | Cada hora | Contaminación atmosférica |
+| `aemet:hourly-prediction` | Cada 3 h | Predicción horaria del municipio |
+| `aemet:beaches` | Diario | Predicción de playas |
+| `aemet:coast` | Diario | Predicción de costa |
+| `aemet:high-sea` | 08:15 | Alta mar |
+| `aemet:sun-radiation` | 08:25 | Radiación solar |
+| `aemet:ozone` | 12:25 | Ozono en superficie |
+| `aemet:check-api-key` | 08:00 | **Vigila la caducidad de la clave** |
 
 Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de persistir.
+
+⚠️ `aemet:check-api-key` no trae datos: comprueba la clave. Existe porque la
+`AEMET_API_KEY` es un JWT que caduca a los ~100 días y **su caducidad no da
+error** —AEMET responde 200 con el cuerpo vacío—, así que sin esto la
+integración se queda muda y no se entera nadie. Sale con código 1 cuando hay que
+renovarla. Ver [apis/aemet.md](apis/aemet.md).
 
 ---
 
@@ -122,7 +146,6 @@ El token se registra en Sanctum como `device:{id}` para facilitar la trazabilida
 | Comando | Opciones | Descripción |
 |---------|----------|-------------|
 | `debug:seed-all` | `--small` | Ejecuta todos los seeders debug. `--small` divide por 5 las cantidades por defecto. |
-| `debug:seed-users` | `--count=5` | Crea usuarios de prueba. |
 | `debug:seed-hardware` | `--count=5` | Crea dispositivos hardware. |
 | `debug:seed-weatherstation` | `--count=20` | Crea registros de sensores meteo. |
 | `debug:seed-airflight` | `--planes=10 --routes=100` | Crea aviones con trayectorias coherentes (rumbo/velocidad/altitud continuos). |
@@ -141,7 +164,7 @@ Todos los comandos `debug:seed-*` usan el trait `ResolvesDebugDefaults` para res
 
 ## 8. Comandos del scheduler
 
-El scheduler está definido en `bootstrap/app.php` (sustituye a `app/Console/Kernel.php` en Laravel 11+). Cron debe estar configurado en el host con:
+El scheduler está definido en **`routes/console.php`** (sustituye a `app/Console/Kernel.php` desde Laravel 11). Cron debe estar configurado en el host con:
 
 ```cron
 * * * * * cd /ruta/al/proyecto && php artisan schedule:run >> /dev/null 2>&1
@@ -153,9 +176,49 @@ Para listar los comandos planificados activos:
 php artisan schedule:list
 ```
 
+### Contenido actual de `routes/console.php`
+
+Lo programado sale de `routes/console.php`, y `SchedulerTest` comprueba que
+todo apunte a un comando real. Todas las tareas llevan `withoutOverlapping()`,
+las pesadas `runInBackground()`, las que tienen que caer a una hora local
+concreta `->timezone('Europe/Madrid')` para que no se muevan con el cambio de
+hora, y todas dejan constancia del fallo con `onFailure()`.
+
+```bash
+php artisan schedule:list   # la lista de verdad, siempre actualizada
+```
+
 ---
 
-## 9. Comandos estándar de Laravel más usados
+## 9. Generación de Sitemap (`sitemap:generate`)
+
+El comando `php artisan sitemap:generate` rastrea y consolida todos los recursos públicos navegables de la plataforma en un archivo XML compatible con los estándares de motores de búsqueda (`sitemap.xml`).
+
+### Lógica de Funcionamiento
+1. **Control de Concurrencia:** Utiliza la clave de caché `sitemap_generation_lock` con TTL de 1 hora para evitar ejecuciones duplicadas simultáneas. Puede forzarse con `--force`.
+2. **URLs Estáticas Base:**
+   - Portada (`home`, prioridad 1.0, frecuencia mensual).
+   - Índice de Plantas Inteligentes (`smartplant.index`, prioridad 0.7, frecuencia semanal).
+3. **URLs Dinámicas de Módulos:**
+   - **SmartPlant:** Registra la vista de detalle de cada planta (`smartplant.show`) con fecha de modificación real y frecuencia semanal.
+   - **WeatherStation:** Registra el índice del módulo y las vistas de detalle de cada sensor activo (`weather_station.sensor`) por estación meteorológica (`HardwareDevice::weatherStations()`), obteniendo la fecha exacta del último registro persistido (`max('created_at')`).
+4. **Escritura Atómica con Respaldo:**
+   - Realiza copia de seguridad previa de `public/sitemap.xml` a `public/sitemap_backup.xml`.
+   - Escribe el nuevo XML y valida que no esté vacío antes de eliminar el backup. En caso de excepción, restaura automáticamente el backup previo.
+
+### Opciones
+- `--force`: Fuerza la regeneración omitiendo el bloqueo de caché.
+- `--chunk=100`: Configura el tamaño de bloque para la consulta de registros.
+
+### Ejecución Periódica
+El comando está programado en `routes/console.php` para ejecutarse **diariamente**:
+```php
+Schedule::command('sitemap:generate')->daily();
+```
+
+---
+
+## 10. Comandos estándar de Laravel más usados
 
 Comandos del framework que se usan habitualmente en este proyecto:
 
@@ -166,14 +229,19 @@ Comandos del framework que se usan habitualmente en este proyecto:
 | `queue:work` | Worker de colas (ver Supervisor en [deploy-vps.md](../deploys/deploy-vps.md)). |
 | `cache:clear` / `config:cache` / `route:cache` / `view:cache` | Cachés. |
 | `storage:link` | Link de `public/storage` a `storage/app/public`. |
-| `reverb:start` | Inicia el servidor WebSocket Reverb (ver [websockets.md](websockets.md)). |
 | `test` | Suite PHPUnit. |
 | `tinker` | REPL interactiva. |
 | `optimize` / `optimize:clear` | Atajos de cachés combinados. |
+| `sanctum:prune-expired` | Purga tokens caducados (no programado todavía). |
+
+> `reverb:start` levanta el servidor de WebSockets. Está **implementado pero apagado**
+> por defecto (`BROADCAST_CONNECTION=null`). Poniéndolo a `reverb` en `.env`, el propio
+> `php artisan serve` lo arranca en segundo plano (ver `serve` arriba); también puede
+> lanzarse suelto para producción. Ver [websockets.md](websockets.md).
 
 ---
 
-## 10. Cómo añadir un comando nuevo
+## 11. Cómo añadir un comando nuevo
 
 1. Generar:
    ```bash
@@ -183,3 +251,7 @@ Comandos del framework que se usan habitualmente en este proyecto:
 3. Si necesita correr en cron, registrarlo en `bootstrap/app.php` (sección `withSchedule`).
 4. Añadir entrada en esta tabla.
 5. Si afecta a un módulo concreto, mencionar el comando en el `docs/info/<modulo>.md` correspondiente.
+
+---
+
+> Creado: 2026-05-26 · Última revisión: 2026-08-30

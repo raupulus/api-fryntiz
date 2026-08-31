@@ -255,6 +255,23 @@ sudo -u www-data php artisan test --testsuite=Feature           # opción bare-m
 
 ---
 
+## 4-bis. WebSockets (Laravel Reverb)
+
+El servidor de WebSockets es un **demonio aparte**: no basta con desplegar la
+aplicación. Está apagado por defecto (`BROADCAST_CONNECTION=null`) y encenderlo
+son cuatro cosas —instalar el paquete, poner las variables, levantar el demonio
+y montar su sitio virtual—, todas en
+[`websockets-reverb.md`](websockets-reverb.md).
+
+> ⚠️ **`REVERB_ALLOWED_ORIGINS` no puede quedarse en `*`.** Es lo único que
+> impide que cualquier web abra un socket contra el servidor. Van los dominios
+> que consumen la API, separados por comas.
+
+Y en cada despliegue posterior, `sudo systemctl restart api-fryntiz-reverb`: es
+un proceso de PHP de larga vida y un `git pull` no le llega.
+
+---
+
 ## 5. Backups
 
 ### Base de datos

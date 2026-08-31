@@ -47,3 +47,24 @@ Gestión de impresoras y su cola de impresión desde el panel de administración
 - La cola de impresión se gestiona como RelationManager dentro de la edición de cada impresora.
 - Al crear un registro de cola, `user_id` se asigna automáticamente al usuario autenticado
   (`CreateAction::mutateDataUsing`).
+
+---
+
+## Estado del módulo (2026-08-19)
+
+| Capa | Estado |
+|------|--------|
+| Modelos (`Printer`, `PrinterStack`, `PrinterAvailableType`) | ✅ |
+| Migraciones | ✅ (`2022_02_17_*`) |
+| Panel Filament (`PrinterResource` + `PrinterStackRelationManager`) | ✅ |
+| **API V2** | ❌ **No existe ningún endpoint** |
+| Policy | ❌ No existe `PrinterPolicy` |
+| Rutas web | ❌ |
+| Tests | ❌ |
+
+Sin API, la cola de impresión no es consumible desde una Raspberry Pi u otro cliente.
+Se aborda en la fase 07 del roadmap (tarea T4).
+
+---
+
+> Creado: 2026-06-17 · Última revisión: 2026-08-30

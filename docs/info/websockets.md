@@ -1,260 +1,193 @@
 # WebSockets — Laravel Reverb
 
-> Estado actual: WebSockets **no están habilitados por defecto**. Esta documentación es la referencia para activarlos cuando el módulo correspondiente lo requiera (notificaciones en tiempo real, sincronización de KeyCounter, alertas AEMET, etc.).
+Las estaciones meteorológicas suben lecturas cada pocos segundos. Sin
+WebSockets, una web que quiera enseñarlas «en vivo» tiene que preguntar en
+bucle: con ocho webs y una lectura cada cinco segundos, casi todas esas
+peticiones devuelven lo mismo que la anterior. Esto invierte el sentido: la API
+avisa cuando hay algo nuevo.
 
-## 1. Resumen
+## Estado
 
-El proyecto está preparado para usar **[Laravel Reverb](https://reverb.laravel.com/)** como servidor WebSocket nativo, con **Laravel Echo** en el frontend.
-
-| Componente | Responsabilidad |
-|------------|-----------------|
-| `laravel/reverb` (backend) | Servidor WebSocket que mantiene las conexiones. |
-| `pusher-js` + `laravel-echo` (frontend) | Cliente JS que se conecta a Reverb. |
-| `config/broadcasting.php` | Driver de broadcasting (`reverb`). |
-| Eventos `ShouldBroadcast` | Eventos PHP que se emiten al canal. |
-| `routes/channels.php` | Autorización de canales privados/presence. |
+**Implementado e instalado en el código, apagado por defecto.**
+`laravel/reverb`, `laravel-echo` y `pusher-js` ya están en `composer.json` y
+`package.json`. `BROADCAST_CONNECTION=null` es el valor de fábrica: no se
+emite nada hasta que se pone `reverb` **y** el demonio está corriendo.
+Encenderlo es una decisión de despliegue, no de instalación.
 
 ---
 
-## 2. Instalación
+## 1. Qué se emite
 
-### 2.1 Backend (Reverb)
+Un evento, `App\Events\WeatherStation\ReadingsReceived`, **una vez por
+petición** de subida.
+
+| | |
+|---|---|
+| Canal | `weather-station.{id}` — público |
+| Nombre del evento | `readings.received` |
+| Se emite desde | `SensorReadingController::store()` y `::storeReadings()`, después de la transacción |
+
+Carga:
+
+```json
+{
+  "station_id": 3,
+  "sensors": {
+    "temperatures": [{ "value": 21.4, "hardware_device_id": 3, "created_at": "…" }],
+    "humidities":   [{ "value": 63.2, "hardware_device_id": 3, "created_at": "…" }]
+  },
+  "at": "2026-08-30T02:41:07.000000Z"
+}
+```
+
+Lleva **lo que se acaba de insertar**, no la foto completa de la estación. Se
+podría volver a consultar todo y mandar el mismo JSON que devuelve
+`GET /weather-stations/{id}`, pero eso son doce consultas por escritura y la
+estación escribe cada pocos segundos. El cliente ya tiene el resto del estado;
+esto le dice qué ha cambiado.
+
+### Por qué el canal es público
+
+Estas lecturas se sirven **sin autenticar** por
+`GET /api/v2/weather-stations/{id}`. Pedir un token para escuchar por socket lo
+que se puede leer por HTTP sin él no protegería nada y complicaría a las ocho
+webs que consumen la API. Los canales privados —los que sí hay que
+autorizar— se declaran en `routes/channels.php`.
+
+### Por qué hay un evento y no nueve
+
+Antes había nueve (`TemperatureUpdateEvent`, `HumidityUpdateEvent`…), el mismo
+fichero con distinto nombre, y **los nueve emitían al mismo canal**: la
+separación no permitía ni suscribirse a un sensor suelto.
+
+Además no se emitieron nunca. Colgaban de `$dispatchesEvents['created']` de
+cada modelo, y el camino de escritura de la API inserta el lote con `insert()`
+del query builder, que no pasa por Eloquent y por tanto **no dispara eventos de
+modelo**. En `main` el driver de broadcasting era `log`, así que tampoco allí.
+
+Están en `_to_delete/`.
+
+---
+
+## 2. Encenderlo en un despliegue
+
+Backend y frontend ya están instalados; sólo falta configurar y arrancar.
+
+### 2.1 Backend
+
+`php artisan reverb:install` **no hace falta**: `config/reverb.php` y la
+conexión `reverb` de `config/broadcasting.php` ya están en el repositorio, con
+sus comentarios. Lo único que hay que hacer es rellenar las credenciales en el
+`.env`:
 
 ```bash
-composer require laravel/reverb
-php artisan reverb:install
+php -r 'printf("REVERB_APP_ID=%d\nREVERB_APP_KEY=%s\nREVERB_APP_SECRET=%s\n", random_int(100000,999999), bin2hex(random_bytes(16)), bin2hex(random_bytes(16)));'
 ```
 
-El install:
+### 2.2 Frontend
 
-- Añade `BROADCAST_DRIVER=reverb` y vars `REVERB_*` al `.env`.
-- Publica `config/reverb.php`.
-- Cambia `config/broadcasting.php` a `'default' => env('BROADCAST_DRIVER', 'reverb')`.
+`resources/js/echo.js` ya existe y `resources/js/app.js` lo importa. **No se
+instancia nada si `VITE_REVERB_APP_KEY` está vacía**, para que el panel no
+intente abrir un socket contra un servidor que no existe.
 
-### 2.2 Frontend (Echo)
-
-```bash
-pnpm add laravel-echo pusher-js
-```
-
-Crear/editar `resources/js/echo.js`:
-
-```js
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-
-window.Pusher = Pusher;
-
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
-    enabledTransports: ['ws', 'wss'],
-});
-```
-
-Importarlo desde `resources/js/app.js`:
-
-```js
-import './echo';
-```
+Reverb habla el protocolo de Pusher: por eso el cliente es `pusher-js`. No hay
+ninguna cuenta de Pusher detrás ni sale un byte fuera del servidor.
 
 ---
 
 ## 3. Variables de entorno
 
-```env
-BROADCAST_DRIVER=reverb
+Están documentadas en `.env.example` y `.env.example.production`. Las que
+importan y por qué se separan:
 
-REVERB_APP_ID=local
-REVERB_APP_KEY=local-key
-REVERB_APP_SECRET=local-secret
-REVERB_HOST="localhost"
-REVERB_PORT=8080
-REVERB_SCHEME=http
+| Variable | Qué es |
+|---|---|
+| `BROADCAST_CONNECTION` | `null` (nada) o `reverb`. En la v1 se llamaba `BROADCAST_DRIVER`; aquí no se mantiene ese nombre |
+| `REVERB_HOST` / `REVERB_PORT` / `REVERB_SCHEME` | Cómo **llega** el cliente: lo que ve el navegador. En producción, `ws.dominio.tld:443` por `https` |
+| `REVERB_SERVER_HOST` / `REVERB_SERVER_PORT` | Dónde **escucha** el demonio en la máquina. Detrás de nginx se queda en `127.0.0.1`: el demonio no se expone |
+| `REVERB_ALLOWED_ORIGINS` | Dominios que pueden abrir un socket, separados por comas. `*` sólo en local |
+| `VITE_REVERB_*` | Copias de las anteriores. Vite sólo expone al navegador las que empiezan por `VITE_` |
 
-# Frontend (Vite expone solo las VITE_*)
-VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
-VITE_REVERB_HOST="${REVERB_HOST}"
-VITE_REVERB_PORT="${REVERB_PORT}"
-VITE_REVERB_SCHEME="${REVERB_SCHEME}"
-```
-
-En producción cambiar `REVERB_SCHEME=https` y `REVERB_HOST=ws.dominio.tld`.
+> ⚠️ `REVERB_ALLOWED_ORIGINS=*` en producción deja que cualquier web abra un
+> socket contra el servidor. Es la única de la lista que es un problema de
+> seguridad si se deja como está.
 
 ---
 
-## 4. Levantar el servidor Reverb
-
-### Local
-
-```bash
-php artisan reverb:start
-# Por defecto escucha en 0.0.0.0:8080
-```
-
-### Producción (Supervisor)
-
-Crear `/etc/supervisor/conf.d/api-fryntiz-reverb.conf`:
-
-```ini
-[program:api-fryntiz-reverb]
-process_name=%(program_name)s
-command=php /var/www/api-fryntiz/artisan reverb:start --host=0.0.0.0 --port=8080
-autostart=true
-autorestart=true
-user=www-data
-redirect_stderr=true
-stdout_logfile=/var/log/api-fryntiz-reverb.log
-stopwaitsecs=10
-```
-
-```bash
-sudo supervisorctl reread && sudo supervisorctl update
-sudo supervisorctl start api-fryntiz-reverb
-```
-
-### Producción (systemd, alternativa)
-
-`/etc/systemd/system/api-fryntiz-reverb.service`:
-
-```ini
-[Unit]
-Description=Api Fryntiz Reverb WebSocket
-After=network.target
-
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/var/www/api-fryntiz
-ExecStart=/usr/bin/php artisan reverb:start --host=0.0.0.0 --port=8080
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now api-fryntiz-reverb
-```
-
----
-
-## 5. Proxy reverso para WebSockets (Nginx)
-
-Añadir un bloque `location` específico para WSS:
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name ws.dominio.tld;
-
-    ssl_certificate     /etc/letsencrypt/live/ws.dominio.tld/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/ws.dominio.tld/privkey.pem;
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # WebSocket upgrade
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Long-lived connections
-        proxy_read_timeout 3600s;
-        proxy_send_timeout 3600s;
-    }
-}
-```
-
-Generar certificado con Certbot:
-
-```bash
-sudo certbot --nginx -d ws.dominio.tld
-```
-
----
-
-## 6. Emitir un evento desde Laravel
-
-```php
-// app/Events/SensorReadingReceived.php
-namespace App\Events;
-
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
-
-class SensorReadingReceived implements ShouldBroadcast
-{
-    use Dispatchable, InteractsWithSockets;
-
-    public function __construct(public int $deviceId, public array $payload) {}
-
-    public function broadcastOn(): Channel
-    {
-        return new Channel("sensor.{$this->deviceId}");
-    }
-}
-```
-
-Disparar:
-
-```php
-event(new SensorReadingReceived($device->id, ['temp' => 21.3]));
-```
-
-Escuchar en el frontend:
+## 4. Escuchar desde una web
 
 ```js
-window.Echo.channel(`sensor.${deviceId}`)
-    .listen('SensorReadingReceived', (e) => {
-        console.log('Lectura recibida', e);
+window.Echo.channel(`weather-station.${idDeLaEstacion}`)
+    .listen('.readings.received', (evento) => {
+        // evento.station_id, evento.sensors, evento.at
     });
 ```
 
+El punto delante de `.readings.received` no es una errata: le dice a Echo que
+es un nombre propio y no la clase PHP. El nombre lo fija `broadcastAs()`
+justamente para que mover o renombrar la clase no rompa a los clientes.
+
+El id de la estación principal sale de `GET /api/v2/weather-stations`, que
+devuelve una colección con la principal cuando no se le pasa `?zone=`.
+
 ---
 
-## 7. Verificación
+## 5. La cola
+
+`ReadingsReceived` implementa `ShouldBroadcast`, así que la emisión se
+encola. Con `QUEUE_CONNECTION=sync` —el valor por defecto— eso significa que
+se emite **dentro de la petición** de la estación: si Reverb no responde, la
+subida se queda esperando. Por eso la conexión tiene `timeout => 5`.
+
+En producción, con `QUEUE_CONNECTION=database` y un worker corriendo, la subida
+responde y el aviso sale por detrás. Es la configuración recomendada.
+
+---
+## 6. Puesta en marcha
+
+Todo lo que hay que hacer en la máquina —el demonio (systemd o Supervisor), el
+sitio virtual de nginx, el certificado, el cortafuegos y la lista de
+comprobación— está en
+[`docs/deploys/websockets-reverb.md`](../deploys/websockets-reverb.md), que es
+donde vive la documentación de despliegue.
+
+> ⚠️ De ahí, lo único que puede hacer daño si se deja mal:
+> **`REVERB_ALLOWED_ORIGINS` no puede quedarse en `*` en producción.** Es lo
+> único que impide que cualquier web abra un socket contra el servidor.
+
+---
+
+## 7. Comprobar que funciona
 
 ```bash
-# 1. Servidor levantado
-curl -I http://localhost:8080
-# Debe responder con headers de Reverb.
+# 1. ¿Está escuchando?
+ss -lntp | grep 8080
 
-# 2. Test handshake WSS desde el navegador
-# DevTools → Network → WS → ws://localhost:8080/app/<key>?protocol=7
-
-# 3. Disparar evento manualmente
-php artisan tinker --execute='event(new \App\Events\SensorReadingReceived(1, ["temp" => 20]));'
+# 2. Emitir a mano y ver si el cliente lo recibe
+php artisan tinker
+>>> event(new \App\Events\WeatherStation\ReadingsReceived(3, ['temperatures' => [['value' => 21.4]]]));
 ```
 
----
+Para ver qué se emitiría sin levantar nada, `BROADCAST_CONNECTION=log`: el
+evento entero acaba en el log de la aplicación.
 
-## 8. Troubleshooting
-
-| Síntoma | Causa | Solución |
-|---------|-------|----------|
-| Frontend no conecta | `VITE_REVERB_*` no recompilado | `pnpm run build` y limpiar cache del navegador. |
-| 502 Bad Gateway al WSS | Nginx sin upgrade headers | revisar `proxy_set_header Upgrade $http_upgrade;` |
-| Eventos no llegan | `ShouldBroadcast` falta o cola sin worker | añadir `implements ShouldBroadcast` y `queue:work`. |
-| Canal privado falla con 403 | `routes/channels.php` no autoriza | añadir `Broadcast::channel('canal.{id}', fn () => ...)`. |
-| Reverb se cae con muchas conexiones | Límite de `ulimit -n` bajo | subir a 65536 en `/etc/security/limits.conf`. |
+Los tests están en `tests/Feature/WeatherStation/ReadingsBroadcastTest.php` y
+comprueban lo que fallaba antes sin que nadie se enterara: que **se emite**,
+que el lote multisensor emite **uno solo**, que el canal y el nombre del evento
+son los pactados, y que una petición rechazada no emite nada.
 
 ---
 
-## 9. Referencias
+## 8. Qué NO usa WebSockets
 
-- Documentación oficial: [reverb.laravel.com](https://reverb.laravel.com/)
-- Echo: [github.com/laravel/echo](https://github.com/laravel/echo)
-- Guía de deploy VPS: [../deploys/deploy-vps.md](../deploys/deploy-vps.md)
+- **El panel de Filament.** Sus notificaciones van por polling. Añadirlas por
+  socket es posible (`Broadcast::channel('App.Models.User.{id}')` ya está
+  declarado) pero hoy no está montado.
+- **Los demás módulos IoT** —energía, plantas, contador de pulsaciones,
+  vuelos—. No hay pantalla que los mire en vivo. Si algún día la hay, el patrón
+  está aquí: un evento por petición, canal por dispositivo, emitido desde el
+  controlador después de la transacción.
+
+---
+
+> Creado: 2026-08-19 · Última revisión: 2026-08-30

@@ -1,5 +1,26 @@
 # Imágenes por defecto — Catálogo
 
+> ⛔ **AVISO (2026-08-30, N269): lo que sigue es una PROPUESTA, no el estado del
+> código.** Este documento planifica 27 imágenes por módulo en directorios «a
+> crear», y eso es un **tercer esquema** que no casa con ninguno de los dos que
+> existen de verdad:
+>
+> | Esquema | Dónde vive | Estado |
+> |---|---|---|
+> | 5 imágenes por tamaño (`micro`, `small`, `medium`, `normal`, `large`) | `public/images/default/` | ✅ existe y se usa |
+> | 10 imágenes de error (`not_found`, `not_authorized`…) | `public/images/default/errors/` | 🟠 declaradas en `App\Traits\HasGenericImages`; **sólo existe `not_found.webp`** |
+> | 27 por módulo, en directorios por módulo | — | 🔴 **no existe nada**, y nada lo leería |
+>
+> Si alguien crea los directorios de este documento, **no los va a leer ningún
+> código**. Antes de tocar nada aquí hay que decidir cuál de los tres esquemas
+> se queda, y hoy el que manda es `HasGenericImages`.
+>
+> Lo que sí hace falta de verdad: **crear las 9 imágenes de error que faltan** en
+> `public/images/default/errors/`. Mientras no estén, `genericImagePath()` las
+> sustituye por `not_found.webp` para no reventar, pero un «no autorizado» y un
+> «no es una imagen» se ven igual.
+
+
 Ruta base: `public/images/default/`
 
 Todas las imágenes deben ser optimizadas para web (WebP o PNG comprimido).
@@ -162,3 +183,7 @@ public/images/default/
 ├── social/
 └── (archivos generales: placeholder, logo, og-image)
 ```
+
+---
+
+> Creado: 2026-06-17 · Última revisión: 2026-08-30

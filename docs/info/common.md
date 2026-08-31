@@ -129,3 +129,7 @@ Todos son idempotentes (`firstOrCreate` por `slug`) y están registrados en
 | Ruta | Descripción |
 |------|-------------|
 | `/languages/ajax/get/languages` | AJAX obtener idiomas |
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-19

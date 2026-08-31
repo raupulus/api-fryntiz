@@ -190,3 +190,6 @@ php artisan debug:seed-all --small
   `meteorology_resume_today`, `meteorology_resume_historical`, `meteorology_uv_index`,
   `meteorology_uva` y `meteorology_uvb`.
 
+---
+
+> Creado: 2026-05-26 · Última revisión: 2026-08-19

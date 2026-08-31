@@ -1,2 +1,29 @@
+# Lo que no debe salir en un buscador.
+#
+# Antes este fichero era un `Disallow:` vacío, o sea «indexa todo»: el panel de
+# administración, el de usuario, los formularios de sesión y las páginas de
+# gestión de la newsletter —que llevan un token de un solo uso en la URL—
+# estaban abiertos a cualquier rastreador.
+
 User-agent: *
-Disallow:
+
+# Paneles de administración y de usuario.
+Disallow: /admin
+Disallow: /panel
+Disallow: /livewire
+
+# Sesión y cuenta.
+Disallow: /login
+Disallow: /register
+Disallow: /user/
+Disallow: /two-factor-challenge
+
+# URLs con token: no son páginas, son enlaces personales de un solo uso.
+Disallow: /newsletter/
+Disallow: /cv/s/
+
+# La API se consume con un cliente, no se lee en un buscador. La documentación
+# (/docs) sí se indexa a propósito.
+Disallow: /api/
+
+Sitemap: https://raupulus.dev/sitemap.xml

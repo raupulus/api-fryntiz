@@ -14,7 +14,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/Platform/V2/PlatformController.php` | API V2 | index, show, featured |
+| `app/Http/Controllers/Api/Platform/V2/PlatformController.php` | API V2 | index, show, featured, categories, contentByType |
 
 ### Servicios
 | Archivo | Descripción |
@@ -72,6 +72,8 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | GET | `/api/v2/platform` | No | Listar plataformas |
 | GET | `/api/v2/platform/{slug}` | No | Ver plataforma por slug |
 | GET | `/api/v2/platform/{slug}/featured` | No | Contenido destacado de plataforma |
+| GET | `/api/v2/platform/{slug}/categories` | No | Categorías de la plataforma |
+| GET | `/api/v2/platform/{slug}/content/type/{contentType}` | No | Contenido de la plataforma filtrado por tipo |
 
 ## Caché
 
@@ -83,3 +85,6 @@ El modelo Platform usa caché intensivamente para categorías y contenido destac
 php artisan debug:seed-platform --count=3
 ```
 
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-19

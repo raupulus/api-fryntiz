@@ -161,6 +161,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 |--------|------|------|-------------|
 | GET | `/api/v2/content/{platform:slug}/{content:slug}` | No | Ver contenido por plataforma y slug |
 | GET | `/api/v2/content/{content:slug}/pages` | No | Páginas de un contenido |
+| GET | `/api/v2/content/{content:slug}/pages/{order}` | No | Una página concreta del contenido por su orden (numérico) |
 | GET | `/api/v2/content/{content:slug}/related` | No | Contenido relacionado |
 
 ## Comando de debug
@@ -266,3 +267,6 @@ para escribir a mano el `gallery_id`). Implementado por completo:
   Blade propia del panel debe usar CSS en línea (`<style>`/`style=""`), no
   clases Tailwind: no hay ningún build que las genere.
 
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-19
