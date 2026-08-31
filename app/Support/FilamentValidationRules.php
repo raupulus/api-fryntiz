@@ -45,13 +45,13 @@ class FilamentValidationRules
 
     /**
      * Contraseña segura estándar.
+     *
+     * Parte de la política global (`Password::defaults()`, definida en
+     * `AppServiceProvider`) y le añade símbolos. Así hay un único sitio donde
+     * subir el listón para todo el proyecto.
      */
     public static function passwordStrong(): Password
     {
-        return Password::min(8)
-            ->letters()
-            ->mixedCase()
-            ->numbers()
-            ->symbols();
+        return Password::default()->symbols();
     }
 }

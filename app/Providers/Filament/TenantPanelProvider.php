@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Tenant\Pages\Dashboard;
+use App\Filament\Tenant\Pages\EditProfile;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -35,6 +38,14 @@ class TenantPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets'), for: 'App\\Filament\\Tenant\\Widgets')
             ->pages([
                 Dashboard::class,
+            ])
+            // El perfil se abre desde el menú de usuario, como en el panel de
+            // administración.
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->label('Mis datos')
+                    ->icon(Heroicon::OutlinedUserCircle)
+                    ->url(fn () => EditProfile::getUrl()),
             ])
             ->middleware([
                 EncryptCookies::class,

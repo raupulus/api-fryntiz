@@ -95,7 +95,9 @@ class AdminPanelProvider extends PanelProvider
                             ->icon('heroicon-o-rectangle-stack')
                             ->group('Contenido')
                             ->sort(10 + $p->id)
-                            ->url('/admin/content/contents?filters[platform_id][value]='.$p->id)
+                            ->url(fn (): string => route('filament.admin.resources.content.contents.index', [
+                                'filters' => ['platform_id' => ['value' => $p->id]],
+                            ]))
                         )->all();
                     } catch (\Throwable) {
                         return [];
