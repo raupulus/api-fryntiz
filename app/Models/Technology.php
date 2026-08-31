@@ -48,7 +48,7 @@ class Technology extends BaseModel
 
     protected $table = 'technologies';
 
-    protected $fillable = ['name', 'slug', 'description', 'color'];
+    protected $fillable = ['name', 'slug', 'description', 'color', 'image_id'];
 
     /**
      * Asocia con la imagen de la tecnología.

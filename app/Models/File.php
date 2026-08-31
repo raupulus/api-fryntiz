@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use App\Traits\HasGenericImages;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +22,8 @@ use function explode;
 use function file_exists;
 use function getimagesize;
 use function in_array;
+use function is_dir;
+use function mkdir;
 use function preg_replace;
 use function route;
 use function storage_path;
@@ -76,25 +79,14 @@ use function storage_path;
  */
 class File extends BaseModel
 {
+    use HasGenericImages;
+
     public static $thumbnailsSizeWidth = [
         'micro' => 50,
         'small' => 160,
         'medium' => 320,
         'normal' => 640,
         'large' => 1280,
-    ];
-
-    public static $genericImages = [
-        'error' => 'error.png',
-        'default' => 'default.png',
-        'not_found' => 'images/default/errors/not_found.webp',
-        'not_image' => 'not_image.png',  // No Es una imagen
-        'not_authorized' => 'not_authorized.png',
-        'not_allowed' => 'not_allowed.png',
-        'not_allowed_extension' => 'not_allowed_extension.png',
-        'not_allowed_size' => 'not_allowed_size.png',
-        'not_allowed_type' => 'not_allowed_type.png',
-        'not_available' => 'not_available.png',
     ];
 
     public static $imageMimeCanEdit = [
@@ -310,7 +302,7 @@ class File extends BaseModel
             $oldThumbnail->delete();
         }
 
-        $canEditImage = $file->fileType && in_array($file->fileType?->mime, self::$imageMimeCanEdit);
+        $canEditImage = $file->fileType && in_array($file->fileType->mime, self::$imageMimeCanEdit);
 
         // # Compruebo si es una imagen editable
         if (! $canEditImage) {
@@ -330,8 +322,8 @@ class File extends BaseModel
 
                 $img->scale(width: $size);
 
-                if (! \File::isDirectory($newPath)) {
-                    \File::makeDirectory($newPath, 493, true);
+                if (! is_dir($newPath)) {
+                    mkdir($newPath, 0755, true);
                 }
 
                 // TODO: Anadir metadatos EXIF
@@ -416,7 +408,7 @@ class File extends BaseModel
             ]);
         }
 
-        return asset(self::$genericImages['not_found']);
+        return self::genericImageUrl('not_found');
     }
 
     /**
@@ -438,35 +430,58 @@ class File extends BaseModel
      */
     public function thumbnail(string $key = 'small'): string
     {
-        // # En caso de no ser una imagen, devuelvo la url del archivo directamente.
-        if ($this->fileType && ! ($this->fileType->type === 'image')) {
-            return $this->url;
+        $thumbnailFound = $this->thumbnailModel($key);
+
+        return $thumbnailFound ? $thumbnailFound->url : $this->url;
+    }
+
+    /**
+     * La miniatura, como modelo, para quien necesite más que su URL.
+     *
+     * Las etiquetas `og:image:width`, `og:image:height` y `og:image:type`
+     * necesitan las dimensiones y el mime, que sólo están en la fila. Sin
+     * ellas, al compartir un enlace la red social tiene que descargar la
+     * imagen para saber cómo maquetar la tarjeta, y hasta entonces enseña un
+     * hueco.
+     *
+     * Si la clave pedida no existe se cae a la mayor de las **menores**, nunca
+     * a una más grande: es una miniatura, no vale servir el original de 1280 px
+     * donde se pedía uno de 160.
+     *
+     * @param  string  $key  Clave de la miniatura (`micro`, `small`, `medium`, `normal`, `large`).
+     */
+    public function thumbnailModel(string $key = 'small'): ?FileThumbnail
+    {
+        // No es una imagen: no hay miniaturas que buscar.
+        if ($this->fileType && $this->fileType->type !== 'image') {
+            return null;
         }
 
-        // # Obtenemos la miniatura en base a la clave.
-        $thumbnail = $this->thumbnails()->where('key', $key)->first();
+        $keys = array_keys(self::$thumbnailsSizeWidth);
+        $position = array_search($key, $keys, true);
 
-        // # Si no encontramos la miniatura, buscamos iterativamente la miniatura de menor tamaño
-        if (! $thumbnail) {
-            $keys = array_keys(self::$thumbnailsSizeWidth);
-            $pos = array_search($key, $keys, true);
+        // Claves candidatas: la pedida y las de menor tamaño, en ese orden.
+        $candidatas = $position === false
+            ? [$key]
+            : array_reverse(array_slice($keys, 0, $position + 1));
 
-            // Iteramos hacia abajo para encontrar una miniatura existente
-            for ($i = $pos; $i >= 0; $i--) {
-                $thumbnail = $this->thumbnails()->where('key', $keys[$i])->first();
-                if ($thumbnail) {
-                    return $thumbnail->url;
-                }
+        // Una sola consulta. Antes era un `first()` por cada tamaño hacia
+        // abajo: hasta cinco consultas para pintar una miniatura, y esto se
+        // llama una vez por fila en cualquier listado con imágenes.
+        $miniaturas = $this->thumbnails()
+            ->whereIn('key', $candidatas)
+            ->get()
+            ->keyBy('key');
+
+        foreach ($candidatas as $candidata) {
+            $thumbnailFound = $miniaturas->get($candidata);
+
+            if ($thumbnailFound instanceof FileThumbnail) {
+                return $thumbnailFound;
             }
         }
 
-        // # Si encontramos la miniatura, devolvemos su URL.
-        if ($thumbnail) {
-            return $thumbnail->url;
-        }
-
-        // # Si no se ha encontrado ninguna miniatura, devolvemos la URL de la imagen principal.
-        return $this->url;
+        return null;
     }
 
     /**

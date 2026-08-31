@@ -7,54 +7,54 @@ namespace App\Policies;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use RoleHelper;
 
 /**
- * Class CategoryPolicy
+ * Autorización sobre categorys.
+ *
+ * Los nombres de los métodos son los que llama el framework (`viewAny`,
+ * `view`, `create`, `update`, `delete`…). Antes eran `index`, `store` y
+ * `show`, que no los llama nadie: la policy parecía escrita y no se ejecutaba
+ * ni una línea.
+ *
+ * Un editor necesita la taxonomía para poder clasificar lo que escribe, así que
+ * puede crearla y editarla; borrarla queda para administración.
  */
 class CategoryPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->isAdmin() || $user->isEditor();
     }
 
-    public function index(User $user)
+    public function view(User $user, Category $category): bool
     {
-        return true;
+        return $user->isAdmin() || $user->isEditor();
     }
 
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
+        return $user->isAdmin() || $user->isEditor();
     }
 
-    public function store(User $user)
+    public function update(User $user, Category $category): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
+        return $user->isAdmin() || $user->isEditor();
     }
 
-    public function delete(User $user, Category $category)
+    public function delete(User $user, Category $category): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
-        // return $category->user_id === $user->id;
+        return $user->isAdmin();
     }
 
-    public function show(User $user, Category $tag)
+    public function restore(User $user, Category $category): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
-    public function update(User $user, Category $category)
+    public function forceDelete(User $user, Category $category): bool
     {
-        return RoleHelper::isAdmin($user->role_id);
-        // return $category->user_id === $user->id;
+        return $user->isSuperAdmin();
     }
 }

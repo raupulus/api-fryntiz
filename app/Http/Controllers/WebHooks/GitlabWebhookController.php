@@ -66,9 +66,7 @@ class GitlabWebhookController extends Controller
         return response()->json('ko', 500);
     }
 
-    /**
-     * Procesa las notificaciones de eventos realizados en gitlab como
-     * un bot, correo, procesar dato... etc...
-     */
-    public function apiNotification(Request $request) {}
+    // `apiNotification()` estaba aquí con el cuerpo vacío y sin ruta que lo
+    // llamara desde 2022. Se retira: cuando haga falta procesar notificaciones
+    // de GitLab se escribe entera, con su ruta y su firma verificada.
 }

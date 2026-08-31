@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use App\Traits\HasGenericImages;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 use function route;
@@ -29,6 +31,7 @@ use function storage_path;
  * @property string|null $deleted_at
  * @property-read string $storage_path_file
  * @property-read string $url
+ * @property-read FileType|null $fileType
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FileThumbnail newQuery()
@@ -52,24 +55,39 @@ use function storage_path;
  */
 class FileThumbnail extends BaseModel
 {
+    use HasGenericImages;
+
     protected $table = 'file_thumbnails';
 
     protected $guarded = [
         'id',
     ];
 
-    public static $genericImages = [
-        'error' => 'error.png',
-        'default' => 'default.png',
-        'not_found' => 'images/default/errors/not_found.webp',
-        'not_image' => 'not_image.png',  // No Es una imagen
-        'not_authorized' => 'not_authorized.png',
-        'not_allowed' => 'not_allowed.png',
-        'not_allowed_extension' => 'not_allowed_extension.png',
-        'not_allowed_size' => 'not_allowed_size.png',
-        'not_allowed_type' => 'not_allowed_type.png',
-        'not_available' => 'not_available.png',
-    ];
+    /**
+     * Fichero original del que esta miniatura es una versión reducida.
+     *
+     * `file_thumbnails` **no tiene** `is_private` ni `user_id`: la privacidad y
+     * el dueño viven en `files`. Faltaba esta relación, y por eso
+     * `FileThumbnailController` comprobaba dos atributos inexistentes —siempre
+     * `null`— y servía las miniaturas de los ficheros privados a cualquiera
+     * (**N175**).
+     */
+    public function file(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'file_id');
+    }
+
+    /**
+     * Tipo del fichero de la miniatura.
+     *
+     * La columna `file_type_id` estaba desde el principio y no la leía nadie.
+     * Hace falta para el `mime`, que es lo que va en `og:image:type` al
+     * compartir un contenido.
+     */
+    public function fileType(): BelongsTo
+    {
+        return $this->belongsTo(FileType::class, 'file_type_id');
+    }
 
     /**
      * Devuelve la ruta hacia la imagen.
@@ -87,7 +105,7 @@ class FileThumbnail extends BaseModel
             ]);
         }
 
-        return self::$genericImages['not_found'];
+        return self::genericImageUrl('not_found');
     }
 
     /**

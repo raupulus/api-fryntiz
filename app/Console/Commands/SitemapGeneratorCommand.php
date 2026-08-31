@@ -60,9 +60,18 @@ class SitemapGeneratorCommand extends Command
         $sitemap = Sitemap::create();
 
         // # URLs estáticas con prioridades y frecuencia de actualización
+        //
+        // Estaban sólo la portada y las plantas: faltaban «Sobre mí», vuelos,
+        // el contador de pulsaciones, el panel de energía y la documentación
+        // de la API, que son páginas públicas y no se indexaban.
         $staticUrls = [
             ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly'],
+            ['url' => route('about'), 'priority' => 0.8, 'changefreq' => 'monthly'],
+            ['url' => route('documentation'), 'priority' => 0.8, 'changefreq' => 'weekly'],
             ['url' => route('smartplant.index'), 'priority' => 0.7, 'changefreq' => 'weekly'],
+            ['url' => route('hardware.energy.index'), 'priority' => 0.7, 'changefreq' => 'daily'],
+            ['url' => route('keycounter.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
+            ['url' => route('airflight.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
         ];
 
         foreach ($staticUrls as $urlData) {
@@ -146,7 +155,12 @@ class SitemapGeneratorCommand extends Command
         $this->info('💾 Escribiendo sitemap a archivo...');
 
         $sitemapPath = public_path('sitemap.xml');
-        $backupPath = public_path('sitemap_backup.xml');
+
+        // La copia de seguridad NO va en `public/`: ahí la sirve el servidor
+        // web, y con ella se puede leer el sitemap anterior entero desde fuera
+        // —incluidas las URL que se hayan quitado a propósito—. Además queda
+        // suelta en el repositorio si la generación se corta a medias.
+        $backupPath = storage_path('app/sitemap_backup.xml');
 
         // # Creo backup del sitemap anterior si existe
         if (file_exists($sitemapPath)) {
@@ -161,10 +175,11 @@ class SitemapGeneratorCommand extends Command
                 throw new \Exception('El archivo sitemap.xml está vacío o no se pudo crear');
             }
 
-            // # Elimino backup si todo salió bien
-            if (file_exists($backupPath)) {
-                unlink($backupPath);
-            }
+            // Borrar la copia es limpieza, no parte del trabajo. Si el sistema
+            // de ficheros no deja —permisos, un montaje de sólo lectura— el
+            // sitemap ya está escrito y es correcto: no se tira el resultado
+            // por no poder borrar un fichero temporal, se avisa y punto.
+            $this->deleteBackup($backupPath);
 
             $this->info('   ✓ Sitemap escrito correctamente');
 
@@ -172,9 +187,23 @@ class SitemapGeneratorCommand extends Command
             // # Restaura backup si algo sale mal
             if (file_exists($backupPath)) {
                 copy($backupPath, $sitemapPath);
-                unlink($backupPath);
+                $this->deleteBackup($backupPath);
             }
             throw $e;
+        }
+    }
+
+    /**
+     * Borra la copia de seguridad sin que un fallo al borrar tumbe el comando.
+     */
+    private function deleteBackup(string $path): void
+    {
+        if (! file_exists($path)) {
+            return;
+        }
+
+        if (! @unlink($path)) {
+            $this->warn('   No se ha podido borrar la copia de seguridad: '.$path);
         }
     }
 

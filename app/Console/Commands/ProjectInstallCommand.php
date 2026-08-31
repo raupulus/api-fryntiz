@@ -13,6 +13,9 @@ class ProjectInstallCommand extends Command
         {--seed : Ejecutar seeders despues de las migraciones}
         {--fresh : Ejecutar migrate:fresh en lugar de migrate}';
 
+    /** @var array<string> */
+    protected $aliases = ['xerintel:install'];
+
     protected $description = 'Inicializar el proyecto en un entorno de desarrollo';
 
     public function handle(): int
@@ -32,7 +35,7 @@ class ProjectInstallCommand extends Command
             $this->info('Archivo .env creado');
         }
 
-        $this->info('Generando clave de aplicacion...');
+        $this->info('Generando clave de aplicación...');
         $this->call('key:generate', ['--force' => true]);
 
         if ($this->option('fresh')) {

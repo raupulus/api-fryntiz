@@ -25,17 +25,30 @@ class FileThumbnailController extends Controller
      */
     public function get(string $module, int $id, ?string $slug = null)
     {
-        $file = FileThumbnail::find($id);
+        $thumbnail = FileThumbnail::with('file')->find($id);
+
+        if (! $thumbnail) {
+            return response()->file(FileThumbnail::genericImagePath('not_found'));
+        }
+
+        // N175: `file_thumbnails` no tiene `is_private` ni `user_id`. Se
+        // comprobaban sobre la propia miniatura, así que siempre eran `null` y
+        // la condición nunca se cumplía: **las miniaturas de los ficheros
+        // privados se servían a cualquiera, sin autenticar**. Y `large` son
+        // 1280 px, o sea que para una foto la miniatura *es* la foto.
+        //
+        // La privacidad vive en el fichero padre. Si la miniatura ha quedado
+        // huérfana no se sabe de quién es: no se sirve.
+        $file = $thumbnail->file;
 
         if (! $file) {
-            return response()->file(FileThumbnail::$genericImages['not_found']);
+            return response()->file(FileThumbnail::genericImagePath('not_found'));
         }
 
-        // # Compruebo si es un archivo privado.
-        if ($file->is_private && ($file->user_id !== auth()->id())) {
-            return response()->file(FileThumbnail::$genericImages['not_authorized']);
+        if ($file->is_private && (int) $file->user_id !== (int) auth()->id()) {
+            return response()->file(FileThumbnail::genericImagePath('not_authorized'));
         }
 
-        return response()->file($file->storagePathFile);
+        return response()->file($thumbnail->storagePathFile);
     }
 }
