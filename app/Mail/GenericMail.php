@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 use function array_merge;
 use function config;
 
-class GenericMail extends Mailable
+class GenericMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
