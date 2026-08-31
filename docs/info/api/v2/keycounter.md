@@ -124,6 +124,7 @@ Blade directamente contra la base de datos.
 | `pulsation_average` | number | `required`, mín. 0 |
 | `score` | int | `required`, mín. 0 |
 | `weekday` | int | `required`, entre 0 y 6 (0 = domingo) |
+| `hardware_device_info` | object\|null | opcional. Último estado conocido del propio dispositivo que sube la sesión (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status` (`temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`, `ip_local`, `ip_public`, `extra`); si viene, se aplica sobre `hardware_device_id` en la misma petición. Contrato completo en [`hardware.md`](./hardware.md) |
 
   Dos campos del modelo **no se envían**, se calculan/fuerzan en el servidor
   antes de validar (`prepareForValidation`):
@@ -248,6 +249,7 @@ Blade directamente contra la base de datos.
 | `total_clicks` | int | `required`, mín. 0 |
 | `clicks_average` | int | opcional (`nullable`), mín. 0 |
 | `weekday` | int | `required`, entre 0 y 6 |
+| `hardware_device_info` | object\|null | opcional. Igual que en teclado: aplica el estado del dispositivo en la misma petición. Contrato completo en [`hardware.md`](./hardware.md) |
 
   Igual que en teclado: `duration` se calcula server-side a partir de
   `start_at`/`end_at` (lo que envíe el cliente se ignora) y `user_id` se fuerza
@@ -301,4 +303,4 @@ Antes el módulo solo tenía escritura; los `GET` (`keyboard-sessions` /
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-08-31

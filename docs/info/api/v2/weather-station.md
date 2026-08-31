@@ -305,6 +305,13 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
   ejemplo) se descarta sin error: solo se guardan los campos declarados
   arriba.
 
+  Admite además, en la raíz (junto a la lectura o el lote), una clave opcional
+  `hardware_device_info` (object|null) con el último estado del propio
+  dispositivo (`temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`,
+  `ip_local`, `ip_public`, `extra`); si viene, se aplica sobre `{station}` en
+  la misma petición. Mismos campos que `PUT /hardware/devices/{device}/status`
+  — contrato completo en [`hardware.md`](./hardware.md).
+
 - **Respuesta 201**:
 
 ```json
@@ -378,6 +385,11 @@ batería, donde cada petición de radio tiene coste.
   esta petición. Una clave que no esté en la tabla de arriba se rechaza con
   `422` (antes se ignoraba en silencio y esa lectura se perdía sin avisar).
 
+  Igual que en el `POST` individual, admite en la raíz una clave opcional
+  `hardware_device_info` con el estado del dispositivo — se aplica sobre
+  `{station}` en la misma petición. Contrato completo en
+  [`hardware.md`](./hardware.md).
+
 - **Respuesta 201**:
 
 ```json
@@ -407,4 +419,4 @@ batería, donde cada petición de radio tiene coste.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-08-31

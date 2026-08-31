@@ -357,4 +357,62 @@ class WeatherStationPersistenceTest extends ApiTestCase
             'Una lectura se guardó contra un dispositivo que no es del usuario autenticado.'
         );
     }
+
+    /**
+     * WeatherStation era el módulo con más endpoints sin `hardware_device_info`
+     * (12 de los 19 originales, AUDITORIA-HARDWARE-DEVICE-INFO.md): ni el sensor
+     * individual ni el lote multi-sensor lo admitían.
+     */
+    #[Test]
+    public function the_individual_sensor_endpoint_updates_the_device_status_when_hardware_device_info_is_sent(): void
+    {
+        $this->postJson(
+            $this->apiUrl("weather-stations/{$this->device->id}/temperatures"),
+            [
+                'hardware_device_id' => $this->device->id,
+                'value' => 21.4,
+                'hardware_device_info' => ['battery_level' => 72, 'cpu' => 33.5],
+            ],
+            $this->moduleHeaders($this->user, TokenAbilities::WEATHERSTATION_WRITE)
+        )->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertSame(72, $this->device->battery_level);
+        $this->assertEqualsWithDelta(33.5, (float) $this->device->cpu, 0.001);
+        $this->assertNotNull($this->device->last_seen_at);
+    }
+
+    #[Test]
+    public function the_batch_endpoint_updates_the_device_status_when_hardware_device_info_is_sent(): void
+    {
+        $this->postJson(
+            $this->apiUrl("weather-stations/{$this->device->id}/readings"),
+            [
+                'hardware_device_id' => $this->device->id,
+                'data' => ['temperature' => [['value' => 19.8]]],
+                'hardware_device_info' => ['uptime' => 86400, 'ip_local' => '10.0.0.5'],
+            ],
+            $this->moduleHeaders($this->user, TokenAbilities::WEATHERSTATION_WRITE)
+        )->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertSame(86400, $this->device->uptime);
+        $this->assertSame('10.0.0.5', $this->device->ip_local);
+    }
+
+    #[Test]
+    public function a_reading_without_hardware_device_info_does_not_touch_the_device_status(): void
+    {
+        $this->postJson(
+            $this->apiUrl("weather-stations/{$this->device->id}/temperatures"),
+            ['hardware_device_id' => $this->device->id, 'value' => 21.4],
+            $this->moduleHeaders($this->user, TokenAbilities::WEATHERSTATION_WRITE)
+        )->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertNull($this->device->last_seen_at, 'Omitir `hardware_device_info` no debe tocar el estado del dispositivo.');
+    }
 }

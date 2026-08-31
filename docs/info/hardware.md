@@ -61,7 +61,7 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `app/Traits/SummarisesEnergyDay.php` | Resumen del día: una fila por elemento y día |
 | `app/Traits/AccumulatesEnergyHistory.php` | Acumulado, recalculado desde los resúmenes diarios |
 | `database/seeders/EnergySystemsSeeder.php` | Las cuatro instalaciones reales |
-| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas existentes |
+| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas IoT — lo usan Energía y Solar (este módulo) y también KeyCounter, SmartPlant, WeatherStation y AirFlight |
 | `app/Rules/OwnedHardwareDevice.php` | Regla de validación: pertenencia del dispositivo (por usuario + ligado estricto por token) |
 | `app/Console/Commands/IoT/IssueDeviceTokenCommand.php` | Comando `iot:device-token` (usa `DeviceTokenService`) |
 
@@ -97,7 +97,7 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
 | `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
 
-> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `POST /api/v2/hardware/device-status` o adjuntando una clave opcional `hardware_device_info` en cualquier subida IoT del módulo (energía, carga solar).
+> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía y carga solar (este módulo), y también KeyCounter, SmartPlant, WeatherStation y AirFlight — ver `docs/planning/PLAN-HARDWARE-DEVICE-INFO.md` para el histórico de por qué se generalizó.
 | `battery_voltage` | decimal | Batería del **propio** dispositivo (V). D108 |
 | `battery_percentage` | int | Batería del propio dispositivo (%) |
 | `battery_read_at` | timestamp | Cuándo se midió esa batería |
@@ -475,4 +475,4 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-08-31

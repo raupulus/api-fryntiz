@@ -100,6 +100,14 @@ Las rutas eran `/keycounter/keyboard` y `/keycounter/mouse` (sólo POST). El
 recurso es la **sesión**, así que pasan a `keyboard-sessions` y `mouse-sessions`,
 y listar sale gratis con el `GET` de la misma URL (fase 5).
 
+Los dos `POST` admiten, además, una clave opcional `hardware_device_info` con
+el último estado del propio dispositivo (batería, temperatura, uptime...). Se
+aplica sobre `hardware_device_id` en la misma petición mediante el trait
+`App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo`
+(mismo mecanismo que `/hardware/energy-readings` y `/hardware/solar-readings`).
+Contrato completo de campos en [`docs/info/hardware.md`](hardware.md) y en
+[`docs/info/api/v2/keycounter.md`](api/v2/keycounter.md).
+
 > **Cómo leer la columna «Auth».** Un `ability:` **no** es «hace falta estar
 > autenticado»: es «hace falta un token **con esa ability concreta**». Un token
 > de otro cacharro está autenticado y aquí no entra. Poner «Sí» a secas —que es

@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\AirFlight\V2;
 
 use App\Http\Api\CollectionQuery;
+use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\AirFlight\V2\StoreAirFlightRequest;
 use App\Http\Requests\Api\AirFlight\V2\StoreBatchAirFlightRequest;
 use App\Http\Resources\V2\AirFlight\AirFlightResource;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Services\AirFlight\AirFlightService;
+use App\Services\Hardware\HardwareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,7 +28,12 @@ use Illuminate\Http\Request;
  */
 class AirFlightController extends BaseApiController
 {
-    public function __construct(private AirFlightService $service) {}
+    use HandlesHardwareDeviceInfo;
+
+    public function __construct(
+        private AirFlightService $service,
+        private HardwareService $hardwareService,
+    ) {}
 
     /**
      * Información del receptor (posición, refresco, historial).
@@ -94,6 +101,12 @@ class AirFlightController extends BaseApiController
             $request->integer('hardware_device_id') ?: null
         );
 
+        // `hardware_device_info` solo tiene sentido si esta misma petición trae
+        // un dispositivo al que aplicárselo: no todos los receptores lo mandan.
+        if ($request->filled('hardware_device_id')) {
+            $this->storeDeviceInfoIfPresent($request, $this->hardwareService, $request->integer('hardware_device_id'));
+        }
+
         return $this->createdResponse(
             new AirFlightResource($airplane),
             'Avion registrado'
@@ -110,6 +123,10 @@ class AirFlightController extends BaseApiController
             auth()->id(),
             $request->integer('hardware_device_id') ?: null
         );
+
+        if ($request->filled('hardware_device_id')) {
+            $this->storeDeviceInfoIfPresent($request, $this->hardwareService, $request->integer('hardware_device_id'));
+        }
 
         return $this->createdResponse([
             'count' => count($stored),

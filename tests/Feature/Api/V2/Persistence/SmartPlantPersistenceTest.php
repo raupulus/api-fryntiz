@@ -199,4 +199,36 @@ class SmartPlantPersistenceTest extends ApiTestCase
             'La lectura no quedó ligada a la planta del usuario autenticado.'
         );
     }
+
+    /**
+     * SmartPlant era uno de los siete endpoints IoT sin `hardware_device_info`
+     * (AUDITORIA-HARDWARE-DEVICE-INFO.md).
+     */
+    #[Test]
+    public function a_reading_updates_the_device_status_when_hardware_device_info_is_sent(): void
+    {
+        $payload = array_merge($this->payload(), [
+            'hardware_device_info' => ['battery_level' => 54, 'temp' => 24.1],
+        ]);
+
+        $this->postJson($this->apiUrl("smartplant/plants/{$this->plant->id}/readings"), $payload, $this->moduleHeaders($this->user, TokenAbilities::SMARTPLANT_WRITE))
+            ->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertSame(54, $this->device->battery_level);
+        $this->assertEqualsWithDelta(24.1, (float) $this->device->temp, 0.001);
+        $this->assertNotNull($this->device->last_seen_at);
+    }
+
+    #[Test]
+    public function a_reading_without_hardware_device_info_does_not_touch_the_device_status(): void
+    {
+        $this->postJson($this->apiUrl("smartplant/plants/{$this->plant->id}/readings"), $this->payload(), $this->moduleHeaders($this->user, TokenAbilities::SMARTPLANT_WRITE))
+            ->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertNull($this->device->last_seen_at, 'Omitir `hardware_device_info` no debe tocar el estado del dispositivo.');
+    }
 }

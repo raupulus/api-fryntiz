@@ -87,6 +87,13 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 Era `POST /smartplant/register`, un verbo. El recurso es la **lectura de una
 planta**, y por eso ahora cuelga de ella (fase 5).
 
+El `POST` admite además una clave opcional `hardware_device_info` con el
+último estado del propio dispositivo (batería, temperatura, uptime...), igual
+que `/hardware/energy-readings` y `/hardware/solar-readings` (mismo trait
+`HandlesHardwareDeviceInfo`). Contrato completo en
+[`docs/info/hardware.md`](hardware.md) y en
+[`docs/info/api/v2/smart-plant.md`](api/v2/smart-plant.md).
+
 > **Cómo leer la columna «Auth».** Un `ability:` **no** es «hace falta estar
 > autenticado»: es «hace falta un token **con esa ability concreta**». Un token
 > de otro cacharro está autenticado y aquí no entra. Poner «Sí» a secas —que es

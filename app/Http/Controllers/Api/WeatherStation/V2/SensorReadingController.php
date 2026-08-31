@@ -6,9 +6,11 @@ namespace App\Http\Controllers\Api\WeatherStation\V2;
 
 use App\Events\WeatherStation\ReadingsReceived;
 use App\Http\Api\CollectionQuery;
+use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\WeatherStation\V2\StoreGenericRequest;
 use App\Http\Requests\Api\WeatherStation\V2\StoreSensorReadingsRequest;
+use App\Services\Hardware\HardwareService;
 use App\Support\WeatherStation\SensorCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +32,10 @@ use Illuminate\Support\Facades\DB;
  */
 class SensorReadingController extends BaseApiController
 {
+    use HandlesHardwareDeviceInfo;
+
+    public function __construct(private HardwareService $hardwareService) {}
+
     /**
      * Lecturas de un sensor de una estación, paginadas.
      *
@@ -108,6 +114,8 @@ class SensorReadingController extends BaseApiController
         // deshace, nadie se ha enterado de una lectura que no existe.
         ReadingsReceived::dispatch($station, [$sensor => $rows]);
 
+        $this->storeDeviceInfoIfPresent($request, $this->hardwareService, $station);
+
         return $this->createdResponse(
             ['stored' => count($rows)],
             count($rows) === 1 ? 'Lectura almacenada' : 'Lecturas almacenadas',
@@ -165,6 +173,8 @@ class SensorReadingController extends BaseApiController
         if ($emitted !== []) {
             ReadingsReceived::dispatch($station, $emitted);
         }
+
+        $this->storeDeviceInfoIfPresent($request, $this->hardwareService, $station);
 
         return $this->createdResponse(['stored' => $total], 'Lecturas almacenadas');
     }

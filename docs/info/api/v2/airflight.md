@@ -223,6 +223,7 @@ por fechas; no son recursos distintos.
 | `seen` | number\|null | opcional (no se persiste: el esquema guarda `seen_at`, calculado al recibir la petición, no "hace cuántos segundos") |
 | `seen_pos` | number\|null | opcional (mismo caso que `seen`, no se persiste) |
 | `messages` | int\|null | opcional, mín. 0 |
+| `hardware_device_info` | object\|null | opcional. Último estado conocido del receptor (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status`; solo tiene efecto si esta misma petición trae también `hardware_device_id` — sin dispositivo no hay a quién aplicarle el estado, y se ignora sin error. Contrato completo en [`hardware.md`](./hardware.md) |
 
   El avión se busca/crea por `icao` (no se duplica una fila por cada sondeo
   del mismo aparato): si ya existe, se actualiza `seen_last_at` y se añade una
@@ -296,6 +297,7 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.seen` | number\|null | opcional (no se persiste) |
 | `data.*.seen_pos` | number\|null | opcional (no se persiste) |
 | `data.*.messages` | int\|null | opcional, mín. 0 |
+| `hardware_device_info` | object\|null | opcional. Igual que en el alta individual: solo tiene efecto si el lote trae también `hardware_device_id` en la raíz |
 
   El `hardware_device_id` es único para todo el lote (no por elemento). Cada
   elemento de `data` se procesa igual que en el alta individual (buscar/crear
@@ -342,4 +344,4 @@ cada petición trae hasta 500 filas).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-08-31

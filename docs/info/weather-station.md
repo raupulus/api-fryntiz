@@ -181,6 +181,15 @@ Todos los sensores heredan estos campos:
 
 > Todas las escrituras usan `throttle:api-store` y token IoT con ability `weatherstation:write`.
 
+> **Nota (2026-08-31):** esta tabla usa los nombres de ruta antiguos
+> (`/weatherstation/{sensor}/store`); las rutas reales en `routes/weather_station/v2.php`
+> son `POST /api/v2/weather-stations/{station}/{sensor}` (individual) y
+> `POST /api/v2/weather-stations/{station}/readings` (lote multi-sensor). Contrato
+> exacto en [`docs/info/api/v2/weather-station.md`](api/v2/weather-station.md), que sí
+> está actualizado. Ambas escrituras admiten desde ahora una clave opcional
+> `hardware_device_info` con el estado del propio dispositivo (batería, temperatura,
+> uptime...), igual que `/hardware/energy-readings` y `/hardware/solar-readings`.
+
 ### Endpoints de estación (datos formateados)
 
 `StationController` + `WeatherStationResource` (`app/Http/Resources/V2/WeatherStation/`).

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\KeyCounter\V2;
 
 use App\Http\Api\CollectionQuery;
+use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\KeyCounter\V2\StoreKeyboardRequest;
 use App\Http\Resources\V2\KeyCounter\KeyboardResource;
 use App\Models\KeyCounter\Keyboard;
+use App\Services\Hardware\HardwareService;
 use App\Services\KeyCounter\KeyCounterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +23,12 @@ use Illuminate\Http\Request;
  */
 class KeyboardController extends BaseApiController
 {
-    public function __construct(private KeyCounterService $service) {}
+    use HandlesHardwareDeviceInfo;
+
+    public function __construct(
+        private KeyCounterService $service,
+        private HardwareService $hardwareService,
+    ) {}
 
     /**
      * Sesiones de keyboard del usuario autenticado.
@@ -51,7 +58,11 @@ class KeyboardController extends BaseApiController
      */
     public function store(StoreKeyboardRequest $request): JsonResponse
     {
-        $keyboard = $this->service->storeKeyboard($request->validated());
+        $data = $request->validated();
+
+        $keyboard = $this->service->storeKeyboard($data);
+
+        $this->storeDeviceInfoIfPresent($request, $this->hardwareService, (int) $data['hardware_device_id']);
 
         return $this->createdResponse(
             new KeyboardResource($keyboard),

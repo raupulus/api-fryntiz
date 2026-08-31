@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\V2\Persistence;
 
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
+use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
 use App\Support\Auth\TokenAbilities;
 use PHPUnit\Framework\Attributes\Test;
@@ -210,5 +211,73 @@ class AirFlightPersistenceTest extends ApiTestCase
     {
         $this->postJson($this->apiUrl('airflight/aircrafts'), $this->probe())
             ->assertStatus(401);
+    }
+
+    /**
+     * AirFlight era uno de los siete endpoints IoT sin `hardware_device_info`
+     * (AUDITORIA-HARDWARE-DEVICE-INFO.md), con la particularidad de que aquí
+     * `hardware_device_id` es opcional: no todos los receptores lo mandan.
+     */
+    #[Test]
+    public function the_receiver_status_is_updated_when_hardware_device_id_and_info_are_both_sent(): void
+    {
+        $receiver = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Receptor ADS-B']);
+
+        $payload = array_merge($this->probe(), [
+            'hardware_device_id' => $receiver->id,
+            'hardware_device_info' => ['battery_level' => 65, 'temp' => 28.0],
+        ]);
+
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $payload,
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $receiver->refresh();
+
+        $this->assertSame(65, $receiver->battery_level);
+        $this->assertEqualsWithDelta(28.0, (float) $receiver->temp, 0.001);
+        $this->assertNotNull($receiver->last_seen_at);
+    }
+
+    /**
+     * Sin `hardware_device_id` no hay a quién aplicarle el estado: el
+     * `hardware_device_info` se ignora en vez de romper la petición.
+     */
+    #[Test]
+    public function hardware_device_info_without_a_device_id_does_not_break_the_request(): void
+    {
+        $payload = array_merge($this->probe(), [
+            'hardware_device_info' => ['battery_level' => 65],
+        ]);
+
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $payload,
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $this->assertNotNull(AirFlightAirPlane::query()->latest('id')->first());
+    }
+
+    #[Test]
+    public function the_batch_endpoint_also_updates_the_receiver_status(): void
+    {
+        $receiver = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Receptor ADS-B']);
+
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts/batch'),
+            [
+                'hardware_device_id' => $receiver->id,
+                'hardware_device_info' => ['uptime' => 12345],
+                'data' => [$this->probe('3444d2')],
+            ],
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $receiver->refresh();
+
+        $this->assertSame(12345, $receiver->uptime);
     }
 }

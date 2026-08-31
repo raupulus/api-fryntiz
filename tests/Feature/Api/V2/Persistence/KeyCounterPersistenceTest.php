@@ -163,4 +163,55 @@ class KeyCounterPersistenceTest extends ApiTestCase
 
         $this->assertSame(0, Keyboard::query()->count());
     }
+
+    /**
+     * KeyCounter era uno de los siete endpoints IoT sin `hardware_device_info`
+     * (AUDITORIA-HARDWARE-DEVICE-INFO.md): el dispositivo que sube pulsaciones
+     * no podía reportar su propio estado (batería, temperatura, uptime...) en
+     * la misma petición.
+     */
+    #[Test]
+    public function keyboard_session_updates_the_device_status_when_hardware_device_info_is_sent(): void
+    {
+        $payload = array_merge($this->keyboardPayload(), [
+            'hardware_device_info' => ['temp' => 39.5, 'battery_level' => 61, 'uptime' => 4200],
+        ]);
+
+        $this->postJson($this->apiUrl('keycounter/keyboard-sessions'), $payload, $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_WRITE))
+            ->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertEqualsWithDelta(39.5, (float) $this->device->temp, 0.001);
+        $this->assertSame(61, $this->device->battery_level);
+        $this->assertSame(4200, $this->device->uptime);
+        $this->assertNotNull($this->device->last_seen_at);
+    }
+
+    #[Test]
+    public function mouse_session_updates_the_device_status_when_hardware_device_info_is_sent(): void
+    {
+        $payload = array_merge($this->mousePayload(), [
+            'hardware_device_info' => ['voltage' => 4.9, 'battery_level' => 88],
+        ]);
+
+        $this->postJson($this->apiUrl('keycounter/mouse-sessions'), $payload, $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_WRITE))
+            ->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertEqualsWithDelta(4.9, (float) $this->device->voltage, 0.001);
+        $this->assertSame(88, $this->device->battery_level);
+    }
+
+    #[Test]
+    public function keyboard_session_without_hardware_device_info_does_not_touch_the_device_status(): void
+    {
+        $this->postJson($this->apiUrl('keycounter/keyboard-sessions'), $this->keyboardPayload(), $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_WRITE))
+            ->assertStatus(201);
+
+        $this->device->refresh();
+
+        $this->assertNull($this->device->last_seen_at, 'Omitir `hardware_device_info` no debe tocar el estado del dispositivo.');
+    }
 }

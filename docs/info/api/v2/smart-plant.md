@@ -218,6 +218,7 @@ una lectura. Por eso:
 | `full_water_tank` | boolean\|null | opcional |
 | `waterpump_enabled` | boolean\|null | opcional |
 | `vaporizer_enabled` | boolean\|null | opcional |
+| `hardware_device_info` | object\|null | opcional. Último estado conocido del propio dispositivo (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status`; si viene, se aplica sobre `hardware_device_id` en la misma petición. Contrato completo en [`hardware.md`](./hardware.md) |
 
   `plant_id` **no se envía en el body**: se toma de `{plant}` en la URL y se
   valida igualmente contra `exists:smartplant_plants,id` + `OwnedSmartPlant`
@@ -272,4 +273,4 @@ cubre lo que un dispositivo necesita: leer sus plantas y escribir lecturas.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-08-31

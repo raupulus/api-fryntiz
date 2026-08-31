@@ -86,6 +86,17 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 | POST | `/api/v2/airflight/register` | Sí (`ability:airflight:write`) | api-store | Registrar un avión |
 | POST | `/api/v2/airflight/register/batch` | Sí (`ability:airflight:write`) | api-store-batch | Registrar lote (max 500) |
 
+> **Nota (2026-08-31):** tabla desactualizada. Las rutas reales en
+> `routes/airflight/v2.php` son `GET /api/v2/airflight/aircrafts`,
+> `GET /api/v2/airflight/receiver`, `POST /api/v2/airflight/aircrafts` y
+> `POST /api/v2/airflight/aircrafts/batch` (`/history` y `/db/{bkey}` ya no
+> existen, ver `AirFlightController`). Contrato exacto en
+> [`docs/info/api/v2/airflight.md`](api/v2/airflight.md), que sí está
+> actualizado. Los dos `POST` admiten desde ahora una clave opcional
+> `hardware_device_info` con el estado del receptor (batería, temperatura,
+> uptime...), solo aplicable si la petición trae también `hardware_device_id`
+> (aquí es opcional, no todos los receptores lo mandan).
+
 ## Rutas Web
 
 | Ruta | Descripción |
