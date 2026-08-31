@@ -78,7 +78,11 @@ class WeatherStationResource extends JsonResource
             ],
             'lightning' => fn () => [
                 'last_at' => $data['lightning']['last_at']?->toISOString(),
-                'last_six_hours' => (int) $data['lightning']['last_six_hours'],
+                // La ventana ya no está fija a seis horas: se configura y se
+                // devuelve junto a la cuenta, para que el que lo pinta sepa de
+                // qué periodo está hablando (C3).
+                'window_minutes' => (int) ($data['lightning']['window_minutes'] ?? 60),
+                'count_in_window' => (int) ($data['lightning']['count_in_window'] ?? 0),
                 'distance' => $this->toFloat($data['lightning']['distance']),
                 'energy' => $this->toInt($data['lightning']['energy']),
             ],

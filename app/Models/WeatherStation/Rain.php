@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\RainUpdateEvent;
 use Illuminate\Support\Carbon;
 
 /**
@@ -87,10 +86,6 @@ class Rain extends BaseWeatherStation
             'delete' => 'Eliminar Lluvia',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => RainUpdateEvent::class,
-    ];
 
     /**
      * Devuelve todos los elementos del modelo.

@@ -42,12 +42,23 @@ class ShowZoneRequest extends BaseFormRequest
         ];
     }
 
+    /**
+     * Sólo lo que el mensaje por defecto no puede decir.
+     *
+     * El resto salía de aquí escrito a mano —98 cadenas repartidas por 19
+     * ficheros, la mitad sin tildes y todas sólo en español— para acabar
+     * diciendo lo mismo que ya dice `lang/{es,en}/validation.php`. Los nombres
+     * de campo viven ahora en su bloque `attributes`, así que «El campo
+     * hardware_device_id es obligatorio» sale ya como «El campo dispositivo es
+     * obligatorio», en los dos idiomas y para todas las reglas.
+     *
+     * @return array<string,string>
+     */
     public function messages(): array
     {
         return [
-            'sensors.array' => 'El parametro sensors debe ser una lista de sensores.',
-            'sensors.*.in' => 'Alguno de los sensores solicitados no es valido.',
-            'location_type.in' => 'La ubicacion debe ser indoor u outdoor.',
+            'sensors.*.in' => 'Alguno de los sensores solicitados no existe.',
+            'location_type.in' => 'La ubicación debe ser «indoor» u «outdoor».',
         ];
     }
 }

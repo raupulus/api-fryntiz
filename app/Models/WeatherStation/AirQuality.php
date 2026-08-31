@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\AirQualityUpdateEvent;
 use Illuminate\Support\Carbon;
 
 /**
@@ -79,10 +78,6 @@ class AirQuality extends BaseWeatherStation
             'delete' => 'Eliminar Calidad del aire',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => AirQualityUpdateEvent::class,
-    ];
 
     /**
      * Devuelve todos los elementos del modelo.

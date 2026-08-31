@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\HumidityUpdateEvent;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
@@ -76,10 +75,6 @@ class Humidity extends BaseWeatherStation
             'delete' => 'Eliminar Humedad',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => HumidityUpdateEvent::class,
-    ];
 
     /****************** Métodos para tablas dinámicas ******************/
 

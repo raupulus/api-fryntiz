@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\PressureUpdateEvent;
 use Illuminate\Support\Carbon;
 
 /**
@@ -69,10 +68,6 @@ class Pressure extends BaseWeatherStation
             'delete' => 'Eliminar Presión',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => PressureUpdateEvent::class,
-    ];
 
     /****************** Métodos para tablas dinámicas ******************/
 

@@ -87,7 +87,11 @@ class WeatherStationService
         $now = now();
         $hour = (int) $now->format('H');
 
-        $lightningCount = Lightning::where('created_at', '>=', now()->subHours(6))
+        // Ventana configurable (C3): v1 contaba 10 minutos, v2 seis horas. Por
+        // defecto una hora, parametrizable.
+        $minutosDeRayos = (int) config('weather_station.lightning_window_minutes', 60);
+
+        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($minutosDeRayos))
             ->where('hardware_device_id', $stationId)
             ->count();
 
@@ -126,7 +130,8 @@ class WeatherStationService
             ],
             'lightning' => [
                 'last_at' => $lastLightning?->created_at,
-                'last_six_hours' => $lightningCount,
+                'window_minutes' => $minutosDeRayos,
+                'count_in_window' => $lightningCount,
                 'distance' => $lastLightning?->distance,
                 'energy' => $lastLightning?->energy,
             ],
@@ -171,77 +176,5 @@ class WeatherStationService
         return $modelClass::latestRecord()
             ->when($stationId, fn (Builder $q) => $q->where('hardware_device_id', $stationId))
             ->first();
-    }
-
-    /**
-     * Obtiene los datos históricos de un tipo de sensor específico en un rango de fechas.
-     * Si no se proveen fechas, se devuelven los registros de los últimos 7 días.
-     *
-     * @param  string  $sensorType  Nombre identificador del tipo de sensor (ej: 'temperature', 'humidity').
-     * @param  string|null  $from  Fecha inicial en formato compatible.
-     * @param  string|null  $to  Fecha final en formato compatible.
-     * @return Collection Colección con los datos solicitados.
-     */
-    public function getPreparedData(string $sensorType, ?string $from = null, ?string $to = null): Collection
-    {
-        $model = $this->resolveSensorModel($sensorType);
-        $query = $model::query()->orderBy('created_at', 'desc');
-
-        if ($from && $to) {
-            $query->betweenDates($from, $to);
-        } else {
-            $query->lastDays(7);
-        }
-
-        return $query->get();
-    }
-
-    /**
-     * Almacena masivamente datos genéricos enviados por la estación física,
-     * resolviendo el modelo correspondiente en función de la clave del array enviado.
-     *
-     * @param  array  $data  Datos estructurados por tipo de sensor.
-     * @param  int  $hardwareDeviceId  Identificador del dispositivo de hardware que envía la data.
-     * @return array Colección con todos los modelos Eloquent almacenados en la base de datos.
-     */
-    public function storeGenericData(array $data, int $hardwareDeviceId): array
-    {
-        $stored = [];
-        foreach ($data as $sensorType => $values) {
-            $model = $this->resolveSensorModel($sensorType);
-            if ($model && is_array($values)) {
-                foreach ($values as $record) {
-                    $record['hardware_device_id'] = $hardwareDeviceId;
-                    $stored[] = $model::create($record);
-                }
-            }
-        }
-
-        return $stored;
-    }
-
-    /**
-     * Resuelve y devuelve la clase de modelo Eloquent apropiada según el tipo de sensor.
-     *
-     * @param  string  $type  Nombre en cadena de texto del sensor.
-     * @return string|null Namespace de la clase del modelo correspondiente, o null si no existe.
-     */
-    private function resolveSensorModel(string $type): ?string
-    {
-        $map = [
-            'temperature' => Temperature::class,
-            'humidity' => Humidity::class,
-            'pressure' => Pressure::class,
-            'light' => Light::class,
-            'wind' => Wind::class,
-            'wind_direction' => WindDirection::class,
-            'rain' => Rain::class,
-            'eco2' => Eco2::class,
-            'tvoc' => Tvoc::class,
-            'air_quality' => AirQuality::class,
-            'lightning' => Lightning::class,
-        ];
-
-        return $map[$type] ?? null;
     }
 }

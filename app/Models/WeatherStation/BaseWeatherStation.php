@@ -241,8 +241,16 @@ class BaseWeatherStation extends BaseModel
                 $result['tvoc'] = $airQualityTvoc->value;
             }
 
-            $airQualityEco2Datas = $airQualityEco2->prepareApiResponse();
-            $airQualityTvocDatas = $airQualityTvoc->prepareApiResponse();
+            // N294: dos líneas más arriba se comprueba el null y aquí NO se
+            // comprobaba. Con `meteorology_eco2` o `meteorology_tvoc` vacías
+            // —base recién montada, o histórico purgado— esto reventaba con
+            // "Call to a member function prepareApiResponse() on null", y lo
+            // hacía DESPUÉS del INSERT, porque cuelga del evento `created`:
+            // la fila quedaba guardada y el dispositivo recibía un 500.
+            // El bloque de `wind`, justo encima, sí tiene la guarda dentro del
+            // `if`; este es una copia a la que se le perdió.
+            $airQualityEco2Datas = $airQualityEco2?->prepareApiResponse();
+            $airQualityTvocDatas = $airQualityTvoc?->prepareApiResponse();
 
             if ($airQualityEco2Datas && $airQualityEco2Datas['historical'] &&
                 count($airQualityEco2Datas['historical'])) {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\LightningUpdateEvent;
 use Illuminate\Support\Carbon;
 
 /**
@@ -83,10 +82,6 @@ class Lightning extends BaseWeatherStation
             'delete' => 'Eliminar Rayos/Relámpagos',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => LightningUpdateEvent::class,
-    ];
 
     /****************** Métodos para tablas dinámicas ******************/
 

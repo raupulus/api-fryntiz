@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\LightUpdateEvent;
 use Illuminate\Support\Carbon;
 
 /**
@@ -92,10 +91,6 @@ class Light extends BaseWeatherStation
             'delete' => 'Eliminar Luz',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => LightUpdateEvent::class,
-    ];
 
     /**
      * Devuelve todos los elementos del modelo.

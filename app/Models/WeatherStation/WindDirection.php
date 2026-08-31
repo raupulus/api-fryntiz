@@ -85,9 +85,6 @@ class WindDirection extends BaseWeatherStation
     // Esto se realiza dentro del modelo para la velocidad del viento.
     // Por ahora no se contempla tener un evento para la dirección del viento.
     /*
-    protected $dispatchesEvents = [
-        'created' => WeatherStationUpdateEvent::class,
-    ];
     */
 
     /**

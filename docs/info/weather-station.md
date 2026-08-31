@@ -155,13 +155,31 @@ Todos los sensores heredan estos campos:
 |--------|------|------|-------------|
 | GET | `/api/v2/weatherstation/station/{id?}` | No | Una estación (datos formateados). Sin `id` → primera de exterior. `?sensors=` para acotar sensores |
 | GET | `/api/v2/weatherstation/zone/{zone}` | No | Colección de estaciones de una zona. `?location_type=indoor\|outdoor` y `?sensors=` opcionales |
-| GET | `/api/v2/weatherstation/temperature` | No | Listado de temperaturas |
+| GET | `/api/v2/weatherstation/temperature` | No | Listado de temperaturas (`?from=&to=` opcional) |
 | GET | `/api/v2/weatherstation/humidity` | No | Listado de humedad |
 | GET | `/api/v2/weatherstation/pressure` | No | Listado de presión |
-| POST | `/api/v2/weatherstation/generic/store` | Sí | Store multi-sensor |
-| POST | `/api/v2/weatherstation/temperature/store` | Sí | Store temperatura |
-| POST | `/api/v2/weatherstation/humidity/store` | Sí | Store humedad |
-| POST | `/api/v2/weatherstation/pressure/store` | Sí | Store presión |
+| GET | `/api/v2/weatherstation/light` | No | Listado de luz |
+| GET | `/api/v2/weatherstation/wind` | No | Listado de viento |
+| GET | `/api/v2/weatherstation/wind-direction` | No | Listado de dirección del viento |
+| GET | `/api/v2/weatherstation/rain` | No | Listado de lluvia |
+| GET | `/api/v2/weatherstation/eco2` | No | Listado de eCO2 |
+| GET | `/api/v2/weatherstation/tvoc` | No | Listado de TVOC |
+| GET | `/api/v2/weatherstation/air-quality` | No | Listado de calidad del aire |
+| GET | `/api/v2/weatherstation/lightning` | No | Listado de rayos |
+| POST | `/api/v2/weatherstation/generic/store` | Sí (`ability:weatherstation:write`) | Store multi-sensor |
+| POST | `/api/v2/weatherstation/temperature/store` | Sí (`ability:weatherstation:write`) | Store temperatura |
+| POST | `/api/v2/weatherstation/humidity/store` | Sí (`ability:weatherstation:write`) | Store humedad |
+| POST | `/api/v2/weatherstation/pressure/store` | Sí (`ability:weatherstation:write`) | Store presión |
+| POST | `/api/v2/weatherstation/light/store` | Sí (`ability:weatherstation:write`) | Store luz |
+| POST | `/api/v2/weatherstation/wind/store` | Sí (`ability:weatherstation:write`) | Store viento |
+| POST | `/api/v2/weatherstation/wind-direction/store` | Sí (`ability:weatherstation:write`) | Store dirección del viento |
+| POST | `/api/v2/weatherstation/rain/store` | Sí (`ability:weatherstation:write`) | Store lluvia |
+| POST | `/api/v2/weatherstation/eco2/store` | Sí (`ability:weatherstation:write`) | Store eCO2 |
+| POST | `/api/v2/weatherstation/tvoc/store` | Sí (`ability:weatherstation:write`) | Store TVOC |
+| POST | `/api/v2/weatherstation/air-quality/store` | Sí (`ability:weatherstation:write`) | Store calidad del aire |
+| POST | `/api/v2/weatherstation/lightning/store` | Sí (`ability:weatherstation:write`) | Store rayos |
+
+> Todas las escrituras usan `throttle:api-store` y token IoT con ability `weatherstation:write`.
 
 ### Endpoints de estación (datos formateados)
 
@@ -247,3 +265,22 @@ y tienen relaciones `user()` y `hardwareDevice()`.
 > **Nota fix_11:** todos los modelos de sensores tienen ahora `user_id` en su
 > `$fillable` (añadido en `BaseWeatherStation` y en los modelos que sobrescriben
 > `$fillable`).
+
+---
+
+## Estado del módulo (2026-08-19)
+
+| Capa | Estado |
+|------|--------|
+| Modelos (18 sensores + 9 AEMET) | ✅ |
+| API V2 (27 rutas) | ✅ |
+| Tests (22 métodos) | ✅ |
+| Comandos AEMET (7) | ✅ existen |
+| **Scheduler de AEMET** | ✅ Arreglado: un comando por producto, con la cadencia que declara AEMET. `SchedulerTest` impide que vuelva a programar comandos que no existen |
+| Frontend público | ✅ |
+| **Panel Filament** | 🟠 Sin Resource de sensores. Sí hay panel de AEMET (`/admin/aemet`) con una tarjeta por producto y su botón de resincronizar |
+| Broadcasting en vivo | 🟠 Implementado y **apagado por defecto**. Un evento por subida (`ReadingsReceived`) al canal público `weather-station.{id}`. Falta `composer require laravel/reverb` y levantar el demonio. Ver [websockets.md](websockets.md) |
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-30

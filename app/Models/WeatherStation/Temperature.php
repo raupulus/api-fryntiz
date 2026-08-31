@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\WeatherStation;
 
-use App\Events\WeatherStation\TemperatureUpdateEvent;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
@@ -76,10 +75,6 @@ class Temperature extends BaseWeatherStation
             'delete' => 'Eliminar Temperatura',
         ];
     }
-
-    protected $dispatchesEvents = [
-        'created' => TemperatureUpdateEvent::class,
-    ];
 
     /****************** Métodos para tablas dinámicas ******************/
 
