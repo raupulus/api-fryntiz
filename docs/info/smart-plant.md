@@ -78,9 +78,21 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 
 ## Rutas API V2
 
-| Método | Ruta | Auth | Throttle | Descripción |
-|--------|------|------|----------|-------------|
-| POST | `/api/v2/smartplant/register` | Sí | api-store | Store registro de sensores |
+| Método | Ruta | Auth | Throttle | Qué hace |
+|--------|------|------|----------|----------|
+| GET | `/api/v2/smartplant/plants` | `ability:smartplant:write` | — | Listar plantas |
+| GET | `/api/v2/smartplant/plants/{plant}/readings` | `ability:smartplant:write` | — | Lecturas de una planta |
+| POST | `/api/v2/smartplant/plants/{plant}/readings` | `ability:smartplant:write` | `api-store` | Registrar una lectura |
+
+Era `POST /smartplant/register`, un verbo. El recurso es la **lectura de una
+planta**, y por eso ahora cuelga de ella (fase 5).
+
+> **Cómo leer la columna «Auth».** Un `ability:` **no** es «hace falta estar
+> autenticado»: es «hace falta un token **con esa ability concreta**». Un token
+> de otro cacharro está autenticado y aquí no entra. Poner «Sí» a secas —que es
+> lo que ponía antes esta tabla— borra justo esa diferencia, que es toda la que
+> queda si alguien roba el token de un sensor (**N263**).
+
 
 ## Rutas Web
 
@@ -98,3 +110,7 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 ```bash
 php artisan debug:seed-smartplant --plants=5 --registers=50
 ```
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-08-30

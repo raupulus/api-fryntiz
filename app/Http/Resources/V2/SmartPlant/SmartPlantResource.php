@@ -31,7 +31,7 @@ class SmartPlantResource extends JsonResource
             'details' => $this->details,
             // Accessor del modelo: resuelve a la imagen por defecto si la planta no tiene una propia asignada.
             'image_url' => $this->url_image,
-            'start_at' => $this->start_at?->toISOString(),
+            'start_at' => $this->start_at->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

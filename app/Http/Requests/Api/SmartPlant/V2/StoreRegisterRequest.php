@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api\SmartPlant\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Rules\OwnedHardwareDevice;
+use App\Rules\OwnedSmartPlant;
 
 /**
  * Validación para almacenar registro de planta en API V2.
@@ -19,11 +20,21 @@ class StoreRegisterRequest extends BaseFormRequest
 
     protected function prepareForValidation(): void
     {
-        $mergeData = [
-            'user_id' => auth()->id(),
-        ];
+        // Sin `user_id`: `smartplant_registers` no tiene esa columna y
+        // `SmartPlantRegister::$fillable` tampoco la incluye. Se validaba con
+        // `exists:users,id` un dato que se evaporaba (**N288**). De quién es la
+        // lectura se sabe por su planta, y de eso se encarga `OwnedSmartPlant`.
+        $mergeData = [];
 
-        if ($this->has('plant_id')) {
+        // La planta viene en la URL (`POST /smartplant/plants/4/readings`), no
+        // en el cuerpo. Anidarla es lo que cierra H5: con `plant_id` suelto y
+        // validado sólo con `exists`, cualquiera con la ability escribía en la
+        // planta de otro.
+        if ($this->route('plant') !== null) {
+            $mergeData['plant_id'] = (int) $this->route('plant');
+        }
+
+        if ($this->route('plant') === null && $this->has('plant_id')) {
             $mergeData['plant_id'] = (int) $this->plant_id;
         }
         if ($this->has('hardware_device_id')) {
@@ -39,8 +50,7 @@ class StoreRegisterRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
-            'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id'],
+            'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id', new OwnedSmartPlant],
             'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'uv' => ['nullable', 'numeric'],
             'pressure' => ['nullable', 'numeric'],
@@ -51,18 +61,6 @@ class StoreRegisterRequest extends BaseFormRequest
             'full_water_tank' => ['nullable', 'boolean'],
             'waterpump_enabled' => ['nullable', 'boolean'],
             'vaporizer_enabled' => ['nullable', 'boolean'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'plant_id.required' => 'La planta es obligatoria.',
-            'plant_id.exists' => 'La planta especificada no existe.',
-            'hardware_device_id.required' => 'El dispositivo hardware es obligatorio.',
-            'hardware_device_id.exists' => 'El dispositivo hardware especificado no existe.',
-            'soil_humidity.required' => 'La humedad del suelo es obligatoria.',
-            'soil_humidity.numeric' => 'La humedad del suelo debe ser un valor numerico.',
         ];
     }
 }

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -54,6 +55,7 @@ use Illuminate\Support\Carbon;
 class SmartPlantPlant extends BaseModel
 {
     use BelongsToUser;
+    use SoftDeletes;
 
     protected $table = 'smartplant_plants';
 
