@@ -1,6 +1,18 @@
 <template>
     <div class="box-weather-chipiona">
-        <div class="weather-container">
+        <!--
+            Estados visibles. Antes, si la petición fallaba, el widget se
+            quedaba enseñando ceros: 0 ºC, 0 % de humedad y 0 km/h de viento,
+            que no es «no hay dato», es un dato falso.
+        -->
+        <p v-if="loading" class="widget-state">Cargando datos del clima…</p>
+
+        <p v-else-if="error" class="widget-state widget-state-error">
+            No se han podido cargar los datos de la estación.
+            <button type="button" class="widget-state-retry" @click="fetchData()">Reintentar</button>
+        </p>
+
+        <div v-else class="weather-container">
             <div class="box-resume">
                 <div class="box-resume-center">
                     <div class="resume-gradient"></div>
@@ -43,9 +55,9 @@
                                     <span class="icon icon-pressure color-yellow"></span>
                                     {{ roundTo2(info.pressure) }} mb
                                 </div>
-                                <div class="mt-5" v-if="lightning.quantityLastSixHours > 0">
+                                <div class="mt-5" v-if="lightning.inWindow > 0" :title="`Rayos en los últimos ${lightning.windowMinutes} minutos`">
                                     <span class="icon icon-lightning color-yellow"></span>
-                                    {{ lightning.quantityLastSixHours }}
+                                    {{ lightning.inWindow }}
                                 </div>
                             </div>
 
@@ -114,11 +126,14 @@
  * @component ChipionaWeatherComponent
  * @description Widget en tiempo casi-real que muestra los datos de la
  *              estación meteorológica de Chipiona (información instantánea,
- *              viento, calidad del aire y luz). Se refresca periódicamente
- *              llamando al endpoint `apiBaseUrl + apiPath`.
+ *              viento, calidad del aire y luz).
+ *
+ *              Se refresca por WebSocket cuando hay Reverb montado, y por
+ *              sondeo cuando no. Sin Reverb el sondeo es cada 65 s; con él
+ *              pasa a cada 5 minutos y sólo como red de seguridad.
  *
  * @prop {String} apiBaseUrl - Base URL del backend que sirve los datos.
- * @prop {String} apiPath    - Ruta relativa al endpoint de una estación (default 'api/v2/weatherstation/station').
+ * @prop {String} apiPath    - Ruta de la colección de estaciones (default 'api/v2/weather-stations').
  * @prop {String} station    - Id de la estación cuyo resumen mostrar. Si se
  *                             deja vacío, la API resuelve la estación principal
  *                             (por defecto la primera de exterior). Permite
@@ -132,9 +147,15 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    /**
+     * Ruta de la COLECCIÓN de estaciones. Con `station` se le añade el id.
+     *
+     * Apuntaba a `api/v2/weatherstation/station`, que es la ruta de la v1 y en
+     * la v2 no existe: el widget llevaba pidiendo un 404 y enseñando ceros.
+     */
     apiPath: {
         type: String,
-        default: 'api/v2/weatherstation/station',
+        default: 'api/v2/weather-stations',
     },
     station: {
         type: [String, Number],
@@ -149,9 +170,16 @@ const info = ref({ temperature: 0, humidity: 0, pressure: 0 });
 const wind = ref({ average: 0, min: 0, max: 0, direction: 'N' });
 const air_quality = ref({ quality: 100, co2_eco2: 0, tvoc: 0 });
 const light = ref({ light: 0, index: 0, uva: 0, uvb: 0 });
-const lightning = ref({ last: '', quantityLastSixHours: 0 });
+const lightning = ref({ last: '', inWindow: 0, windowMinutes: 60 });
+
+const loading = ref(true);
+const error = ref(false);
+
+/** Id real de la estación que se está mostrando, para suscribirse a su channel. */
+const stationId = ref(props.station !== '' && props.station != null ? Number(props.station) : null);
 
 let intervalId = null;
+let channel = null;
 
 const roundTo2 = (num) => {
     const value = Number(num);
@@ -165,70 +193,165 @@ const menuSelect = (item) => {
     });
 };
 
-const getApiData = async () => {
+/**
+ * Vuelca la respuesta de la API en el estado del widget.
+ */
+const apply = (data) => {
+    stationId.value = data.id ?? stationId.value;
+
+    location.value = {
+        name: data.name ?? location.value.name,
+        label: data.location_label ?? '',
+    };
+
+    instant.value = data.instant ?? instant.value;
+    info.value = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure };
+    wind.value = {
+        direction: data.wind?.direction,
+        average: data.wind?.average,
+        min: data.wind?.min,
+        max: data.wind?.max,
+    };
+    light.value = {
+        light: data.light?.lux,
+        index: data.light?.uv_index,
+        uva: data.light?.uva,
+        uvb: data.light?.uvb,
+    };
+    air_quality.value = {
+        quality: data.air_quality?.quality,
+        tvoc: data.air_quality?.tvoc,
+        co2_eco2: data.air_quality?.eco2,
+    };
+    lightning.value = {
+        last: data.lightning?.last_at,
+        // La ventana es configurable (C3): ya no son «las últimas seis horas».
+        inWindow: data.lightning?.count_in_window ?? 0,
+        windowMinutes: data.lightning?.window_minutes ?? 60,
+    };
+};
+
+const fetchData = async () => {
+    error.value = false;
+
     try {
-        // Endpoint de una sola estación: /station/{id?}. Sin id, la API
-        // devuelve la estación principal (primera de exterior).
-        const stationSegment = props.station !== '' && props.station != null
-            ? `/${encodeURIComponent(props.station)}`
-            : '';
-        const url = `${props.apiBaseUrl}/${props.apiPath}${stationSegment}`;
+        // Con id, el recurso: `data` es un objeto. Sin id, la colección: `data`
+        // es una lista y la principal es la primera.
+        const conId = props.station !== '' && props.station != null;
+        const url = `${props.apiBaseUrl}/${props.apiPath}${conId ? `/${encodeURIComponent(props.station)}` : ''}`;
+
         const response = await fetch(url, {
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            headers: { Accept: 'application/json' },
             method: 'GET',
             mode: 'cors',
         });
+
+        if (!response.ok) {
+            throw new Error(`La API ha respondido ${response.status}`);
+        }
+
         const json = await response.json();
-        // La API V2 envuelve la carga útil en { success, message, data }.
-        const data = json?.data ?? json;
-        if (!data) return;
+        const carga = json?.data ?? json;
+        const data = Array.isArray(carga) ? carga[0] : carga;
 
-        // Ubicación dinámica de la estación (nombre + interior/exterior).
-        location.value = {
-            name: data.name ?? location.value.name,
-            label: data.location_label ?? '',
-        };
+        if (!data) {
+            throw new Error('No hay ninguna estación que mostrar');
+        }
 
-        // Los valores ya llegan formateados (km/h, 2 decimales) como números.
-        instant.value = data.instant ?? instant.value;
-        info.value = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure };
-        wind.value = {
-            direction: data.wind?.direction,
-            average: data.wind?.average,
-            min: data.wind?.min,
-            max: data.wind?.max,
-        };
-        light.value = {
-            light: data.light?.lux,
-            index: data.light?.uv_index,
-            uva: data.light?.uva,
-            uvb: data.light?.uvb,
-        };
-        air_quality.value = {
-            quality: data.air_quality?.quality,
-            tvoc: data.air_quality?.tvoc,
-            co2_eco2: data.air_quality?.eco2,
-        };
-        lightning.value = {
-            last: data.lightning?.last_at,
-            quantityLastSixHours: data.lightning?.last_six_hours,
-        };
-    } catch (error) {
-        console.error('Error al obtener datos desde la API:', error);
+        apply(data);
+        subscribe();
+    } catch (e) {
+        // Sólo se marca error si aún no hay nada que enseñar: si ya había datos
+        // en pantalla, un fallo puntual de red no debe borrarlos.
+        if (loading.value) {
+            error.value = true;
+        }
+
+        console.error('Error al obtener datos desde la API:', e);
+    } finally {
+        loading.value = false;
     }
 };
 
+/**
+ * Escucha por WebSocket, si el servidor está montado.
+ *
+ * `window.Echo` sólo existe cuando hay Reverb configurado. Sin él, esto no
+ * hace nada y el widget se queda con el refresco periódico de siempre.
+ */
+const subscribe = () => {
+    if (channel || !window.Echo || !stationId.value) {
+        return;
+    }
+
+    channel = window.Echo.channel(`weather-station.${stationId.value}`);
+
+    channel.listen('.readings.received', () => {
+        // El evento dice QUÉ ha cambiado, no el estado completo formateado
+        // (km/h, redondeos, hora legible). Se vuelve a pedir, que es una
+        // consulta y sólo cuando de verdad hay algo nuevo.
+        fetchData();
+    });
+
+    // Con avisos en vivo, el sondeo pasa a ser sólo una red de seguridad por
+    // si el socket se cae sin que el cliente se entere.
+    rescheduleRefresh(300000);
+};
+
+const rescheduleRefresh = (milisegundos) => {
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+
+    intervalId = setInterval(fetchData, milisegundos);
+};
+
 onBeforeMount(() => {
-    getApiData();
-    intervalId = setInterval(getApiData, 65000);
+    fetchData();
+    rescheduleRefresh(65000);
 });
 
 onBeforeUnmount(() => {
-    if (intervalId) clearInterval(intervalId);
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+
+    if (channel && window.Echo && stationId.value) {
+        window.Echo.leave(`weather-station.${stationId.value}`);
+        channel = null;
+    }
 });
 </script>
 
 <style scoped>
+/* Estados de carga y de error del widget. */
+.widget-state {
+    margin: 0;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--color-on-surface-variant, #464651);
+}
+
+.widget-state-error {
+    color: var(--color-error, #ba1a1a);
+}
+
+.widget-state-retry {
+    display: inline-block;
+    margin-left: .5rem;
+    padding: .25rem .75rem;
+    border: 1px solid currentColor;
+    border-radius: .375rem;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.widget-state-retry:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
 .m-0 { margin: 0; }
 .p-0 { padding: 0; }
 

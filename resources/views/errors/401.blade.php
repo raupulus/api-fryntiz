@@ -1,5 +1,11 @@
-@extends('errors::minimal')
+@extends('layouts.app')
 
-@section('title', __('Unauthorized'))
-@section('code', '401')
-@section('message', __('Unauthorized'))
+@section('title', 'Error 401 · No has iniciado sesión')
+
+@section('content')
+    @include('errors._page', [
+        'code' => '401',
+        'title' => 'No has iniciado sesión',
+        'message' => 'Esta página pide que te identifiques antes de entrar.',
+    ])
+@endsection

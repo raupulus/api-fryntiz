@@ -139,3 +139,9 @@ html.dark .navbar-main {
     font-weight: 600;
     opacity: 1;
 }
+
+/* Ocultar elementos Alpine.js durante la inicialización */
+[x-cloak] {
+    display: none !important;
+}
+
