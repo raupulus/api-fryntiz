@@ -4,40 +4,46 @@ declare(strict_types=1);
 
 namespace App\Mcp\Tools;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
+use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
 
+#[Description('Gets structural information about an Eloquent model (fillable fields, relationships, scopes) using Reflection.')]
 class GetModelInfoTool extends Tool
 {
     /**
-     * @return non-empty-string
+     * @return array<string, mixed>
      */
-    public function description(): string
+    public function schema(JsonSchema $schema): array
     {
-        return 'Gets structural information about an Eloquent model (fillable fields, relationships, scopes) using Reflection.';
+        return [
+            'modelClass' => $schema->string()
+                ->description('Fully qualified class name of the model (e.g. App\\Models\\User).')
+                ->required(),
+        ];
     }
 
-    /**
-     * @param  string  $modelClass  The fully qualified class name of the model (e.g. App\\Models\\User).
-     */
-    public function handle(string $modelClass): string
+    public function handle(Request $request): Response|ResponseFactory
     {
+        $modelClass = (string) $request->string('modelClass');
+
         if (! class_exists($modelClass)) {
-            return "Error: Class '{$modelClass}' does not exist.";
+            return Response::error("Error: Class '{$modelClass}' does not exist.");
         }
 
         try {
             $reflection = new ReflectionClass($modelClass);
             $model = new $modelClass;
 
-            // Get fillable
             $fillable = $model->getFillable();
-
-            // Get table
             $table = $model->getTable();
 
-            // Find scopes and relations heuristically
             $scopes = [];
             $relations = [];
 
@@ -47,7 +53,8 @@ class GetModelInfoTool extends Tool
                 }
 
                 $returnType = $method->getReturnType();
-                if ($returnType && str_contains($returnType->getName(), 'Illuminate\\Database\\Eloquent\\Relations\\')) {
+                if ($returnType instanceof ReflectionNamedType
+                    && str_contains($returnType->getName(), 'Illuminate\\Database\\Eloquent\\Relations\\')) {
                     $relations[] = [
                         'method' => $method->getName(),
                         'type' => class_basename($returnType->getName()),
@@ -55,15 +62,15 @@ class GetModelInfoTool extends Tool
                 }
             }
 
-            return json_encode([
+            return Response::structured([
                 'class' => $modelClass,
                 'table' => $table,
                 'fillable' => $fillable,
                 'scopes' => $scopes,
                 'relations' => $relations,
-            ], JSON_PRETTY_PRINT);
+            ]);
         } catch (\Throwable $e) {
-            return 'Error analyzing model: '.$e->getMessage();
+            return Response::error('Error analyzing model: '.$e->getMessage());
         }
     }
 }
