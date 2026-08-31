@@ -62,12 +62,13 @@ class SitemapGeneratorCommand extends Command
         // # URLs estáticas con prioridades y frecuencia de actualización
         //
         // Estaban sólo la portada y las plantas: faltaban «Sobre mí», vuelos,
-        // el contador de pulsaciones, el panel de energía y la documentación
-        // de la API, que son páginas públicas y no se indexaban.
+        // el contador de pulsaciones y el panel de energía, que son páginas
+        // públicas y no se indexaban. La documentación de la API (/docs) ya
+        // no aparece aquí: ahora exige sesión iniciada y no tiene sentido
+        // indexarla ni ofrecerla a rastreadores anónimos.
         $staticUrls = [
             ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly'],
             ['url' => route('about'), 'priority' => 0.8, 'changefreq' => 'monthly'],
-            ['url' => route('documentation'), 'priority' => 0.8, 'changefreq' => 'weekly'],
             ['url' => route('smartplant.index'), 'priority' => 0.7, 'changefreq' => 'weekly'],
             ['url' => route('hardware.energy.index'), 'priority' => 0.7, 'changefreq' => 'daily'],
             ['url' => route('keycounter.index'), 'priority' => 0.6, 'changefreq' => 'daily'],

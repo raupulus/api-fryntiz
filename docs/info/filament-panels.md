@@ -20,16 +20,17 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Opción | Valor |
 |--------|-------|
 | Panel por defecto | Sí (`->default()`) |
-| Login | `App\Filament\Admin\Pages\Login` (custom) |
+| Login | `App\Filament\Admin\Pages\Login` (custom, con reCAPTCHA v3 — ver [auth.md](auth.md)) |
 | Tema | Oscuro por defecto (`ThemeMode::Dark`) |
 | Fuente | Figtree |
 | Paleta | primary `Sky`, gray `Zinc`, danger `Rose`, info `Blue`, success `Emerald`, warning `Orange` |
 | CSS | `resources/css/filament/admin/theme.css` |
-| Grupos de navegación | Sistema · Contenido · Hardware · Gestión · Módulos · Configuración |
+| Grupos de navegación | Sistema · Contenido · Hardware · Gestión · Módulos · Configuración · Documentación |
 | Descubrimiento | Resources, Pages, Widgets y Clusters automáticos desde `app/Filament/Admin/` |
 | Menú de usuario | Entrada "Editar perfil" → `App\Filament\Admin\Pages\Profile` |
 | Navegación dinámica | Un ítem por cada `Platform` bajo el grupo Contenido, enlazando al listado de contenidos filtrado |
-| Render hooks | `SCRIPTS_AFTER` para `@push('scripts')` y para cargar Editor.js en `EditContent` |
+| Navegación estática extra | "Documentación de la API" → `route('scribe')` (`/docs`), se abre en pestaña nueva |
+| Render hooks | `SCRIPTS_AFTER` para `@push('scripts')` y Editor.js en `EditContent`; `AUTH_LOGIN_FORM_BEFORE` para el script de reCAPTCHA v3 del login |
 
 ### Resources (23)
 
@@ -110,6 +111,8 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 ### Concerns y soporte
 
 - `app/Filament/Concerns/HasImageFileUpload.php` — trait de subida de imágenes.
+- `app/Filament/Concerns/HasRecaptchaLogin.php` — trait de reCAPTCHA v3 para el
+  login, compartido con el panel Tenant (ver [auth.md](auth.md)).
 - `app/Support/FilamentValidationRules.php` — reglas de validación reutilizables.
 
 ---
@@ -120,7 +123,8 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 
 ```
 app/Filament/Tenant/
-├── Pages/Dashboard.php     ← único fichero (14 líneas, título "Mi Panel")
+├── Pages/Dashboard.php     ← título "Mi Panel"
+├── Pages/Login.php         ← custom, sólo añade reCAPTCHA v3 (HasRecaptchaLogin)
 ├── Resources/              ← vacío
 └── Widgets/                ← vacío
 ```
@@ -129,9 +133,10 @@ app/Filament/Tenant/
 
 | Opción | Valor |
 |--------|-------|
-| Login | Genérico de Filament (`->login()`) |
+| Login | `App\Filament\Tenant\Pages\Login` (custom, con reCAPTCHA v3 — ver [auth.md](auth.md)) |
 | Paleta | primary `Blue` |
-| Grupos de navegación declarados | Dispositivos · Mi Cuenta (sin contenido) |
+| Grupos de navegación declarados | Dispositivos · Mi Cuenta · Documentación |
+| Navegación estática | "Documentación de la API" → `route('scribe')` (`/docs`), se abre en pestaña nueva |
 
 ### Advertencia de seguridad
 
@@ -178,9 +183,11 @@ php artisan make:filament-widget      # nuevo Widget
 
 ## Tests
 
-Ninguno a fecha de esta revisión. Pendiente en la
-fase 09 del roadmap.
+- `tests/Feature/Filament/HardwareDeviceSelectOptionsTest.php`
+- `tests/Feature/Filament/RecaptchaLoginTest.php` — reCAPTCHA v3 en los dos logins
+
+Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-08-31

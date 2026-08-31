@@ -20,6 +20,28 @@ El modelo `App\Models\User` implementa `Filament\Models\Contracts\FilamentUser` 
 | `admin` | `is_active` y (`isAdmin()` o `isEditor()`) — es decir, SuperAdmin, Admin o Editor |
 | `tenant` (`/panel`) | `is_active` (cualquier usuario autenticado activo) |
 
+### reCAPTCHA v3 en el login
+
+Igual que el formulario de contacto (`RecaptchaService`): sin
+`RECAPTCHA_SECRET_KEY`/`RECAPTCHA_SITE_KEY` en el entorno no se aplica nada, ni
+siquiera se carga el script de Google (desarrollo sin claves configuradas
+sigue funcionando igual). Con las claves puestas (producción):
+
+1. `resources/views/filament/components/recaptcha-login-script.blade.php` (vía
+   render hook `AUTH_LOGIN_FORM_BEFORE` en ambos `PanelProvider`) carga
+   `recaptcha/api.js` y refresca un token cada 100 s (caduca a los 2 min),
+   escribiéndolo en un input oculto ligado por `wire:model` a la propiedad
+   `recaptchaToken` — no hace falta interceptar el submit del formulario.
+2. `App\Filament\Concerns\HasRecaptchaLogin::verifyRecaptcha()` se llama al
+   principio de `authenticate()` en ambos Login (`Admin\Pages\Login` y
+   `Tenant\Pages\Login`) y corta el intento con el mismo mensaje genérico de
+   credenciales incorrectas si el token no es válido — no se distingue
+   «bloqueado por captcha» de «contraseña mala».
+
+Política del proyecto: **todo formulario abierto a quien no tiene sesión**
+lleva este mismo patrón (activo solo si hay claves). Cubre hoy el contacto y
+los dos logins; cualquier formulario público nuevo debe seguirlo también.
+
 ### Assets de Filament
 
 Las vistas `/admin/login` y `/panel/login` dependen de los assets compilados de Filament que viven en `public/css/filament/`, `public/js/filament/` y `public/fonts/filament/`. Si la página carga sin CSS o el botón "Iniciar sesión" no responde, lo más probable es que estos assets no estén publicados:
@@ -75,6 +97,10 @@ php artisan filament:upgrade
 | `app/Filament/Admin/Resources/UserResource/Pages/*.php` | Páginas CRUD (List, Create, Edit) |
 | `app/Filament/Admin/Pages/Dashboard.php` | Dashboard panel Admin |
 | `app/Filament/Tenant/Pages/Dashboard.php` | Dashboard panel Tenant |
+| `app/Filament/Admin/Pages/Login.php` | Login custom del panel Admin: logging + reCAPTCHA v3 |
+| `app/Filament/Tenant/Pages/Login.php` | Login custom del panel Tenant: reCAPTCHA v3 (antes usaba el genérico de Filament) |
+| `app/Filament/Concerns/HasRecaptchaLogin.php` | Trait compartido: propiedad `recaptchaToken` + `verifyRecaptcha()` |
+| `resources/views/filament/components/recaptcha-login-script.blade.php` | Script de reCAPTCHA v3 + input oculto, inyectado por render hook `AUTH_LOGIN_FORM_BEFORE` |
 
 ### Enums
 | Archivo | Descripción |
@@ -299,4 +325,4 @@ Si se pierde la contraseña del administrador, se restablece por consola en el s
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-08-31

@@ -73,10 +73,15 @@ class AdminPanelProvider extends PanelProvider
                 'Gestión',
                 'Módulos',
                 'Configuración',
+                'Documentación',
             ])
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): string => view()->yieldPushContent('scripts'),
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
+                fn (): string => view('filament.components.recaptcha-login-script')->render(),
             )
             // Editor.js debe cargarse con la página: los modales (EditorJsField
             // en el RelationManager de páginas) se montan por Livewire y un
@@ -104,6 +109,14 @@ class AdminPanelProvider extends PanelProvider
                     }
                 })()
             )
+            ->navigationItems([
+                NavigationItem::make('Documentación de la API')
+                    ->icon(Heroicon::OutlinedBookOpen)
+                    ->group('Documentación')
+                    ->sort(100)
+                    ->openUrlInNewTab()
+                    ->url(fn (): string => route('scribe')),
+            ])
             ->userMenuItems([
                 'profile' => MenuItem::make()
                     ->label('Editar perfil')

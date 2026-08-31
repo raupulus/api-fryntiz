@@ -77,6 +77,9 @@ Módulo para enviar formularios de contacto vía API con verificación reCAPTCHA
 4. `ContactService::sendContactForm()` envía el `ContactMail`
 5. Respuesta: `{ success: true, message: "Mensaje enviado correctamente" }`
 
+> Este mismo patrón de reCAPTCHA (activo solo con claves en `.env`) protege
+> también el login de los dos paneles Filament — ver [auth.md](auth.md).
+
 ## Comando de debug
 
 ```bash
@@ -85,4 +88,4 @@ php artisan debug:seed-contact --count=10
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-26
+> Creado: 2026-05-25 · Última revisión: 2026-08-31

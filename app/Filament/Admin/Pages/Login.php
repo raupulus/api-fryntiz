@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Concerns\HasRecaptchaLogin;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
+    use HasRecaptchaLogin;
+
     public function authenticate(): ?LoginResponse
     {
         try {
@@ -18,6 +21,8 @@ class Login extends BaseLogin
                 'email' => $this->data['email'] ?? 'sin email',
                 'ip' => request()->ip(),
             ]);
+
+            $this->verifyRecaptcha();
 
             $result = parent::authenticate();
 

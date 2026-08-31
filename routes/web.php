@@ -27,10 +27,9 @@ Route::get('/about', function () {
     return redirect()->route('home');
 })->name('about');
 
-// # Documentación
-Route::middleware(['auth:sanctum', 'verified'])->get('/docs', function () {
-    return view('documentation');
-})->name('documentation');
+// La ruta /docs la registra Scribe (config/scribe.php: laravel.docs_url),
+// protegida con el middleware 'auth' del guard web compartido por los
+// paneles Filament.
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

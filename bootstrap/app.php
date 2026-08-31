@@ -64,6 +64,16 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../routes/channels.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // A dónde mandar a un invitado que choca con `auth` fuera de la API.
+        //
+        // Aquí no existe una vista de login genérica de Fortify (sólo hay
+        // reset/verify): el login real siempre pasa por Filament. Sin esto,
+        // el guard por defecto cae a `route('login')` —la ruta de Fortify—
+        // que revienta con BindingResolutionException porque nadie registró
+        // `Fortify::loginView()`. El panel Tenant es el login abierto a
+        // cualquier usuario activo, admins incluidos.
+        $middleware->redirectGuestsTo(fn () => route('filament.tenant.auth.login'));
+
         // CORS global basado en config/cors.php (fix_10 fase 02).
         $middleware->prepend(HandleCors::class);
 
