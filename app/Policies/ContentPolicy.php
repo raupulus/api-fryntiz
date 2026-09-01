@@ -47,7 +47,7 @@ class ContentPolicy
     public function delete(User $user, Content $content): bool
     {
         return $user->isAdmin()
-            || ($this->reaches($user, $content) && (int) $content->user_id === (int) $user->id);
+            || ($this->reaches($user, $content) && $this->isAuthor($user, $content));
     }
 
     public function restore(User $user, Content $content): bool
@@ -70,12 +70,30 @@ class ContentPolicy
             return true;
         }
 
-        if ((int) $content->user_id === (int) $user->id) {
+        if ($this->isAuthor($user, $content)) {
             return true;
         }
 
         return $user->canManagePlatform(
             $content->platform_id === null ? null : (int) $content->platform_id
         );
+    }
+
+    /**
+     * Autoría del contenido.
+     *
+     * La columna es `author_id`, no `user_id`. Aquí se leía `$content->user_id`,
+     * que en `contents` no existe: siempre valía null, así que la comparación
+     * con el id del usuario nunca se cumplía y un autor NO alcanzaba su propio
+     * contenido — sólo llegaba a él si además era admin o tenía la plataforma
+     * asignada. En `delete()` el efecto era total: nadie que no fuese admin
+     * podía borrar lo suyo.
+     *
+     * PHPStan ya lo señalaba; estaba silenciado en el baseline.
+     */
+    private function isAuthor(User $user, Content $content): bool
+    {
+        return $content->author_id !== null
+            && (int) $content->author_id === (int) $user->id;
     }
 }
