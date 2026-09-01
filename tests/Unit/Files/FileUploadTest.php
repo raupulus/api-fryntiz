@@ -251,4 +251,51 @@ class FileUploadTest extends TestCase
 
         return "\xFF\xE1".pack('n', strlen($payload) + 2).$payload;
     }
+
+    // ─── /file/resize ───
+
+    /**
+     * La ruta de redimensionado devolvía SIEMPRE la imagen genérica "no es una
+     * imagen", para cualquier fichero: comprobaba `$file->type`, que no existe
+     * en `File` ni como columna ni como accessor, así que `null !== 'image'`
+     * era siempre cierto y no llegaba nunca a redimensionar.
+     *
+     * PHPStan lo señalaba y estaba silenciado en el baseline.
+     */
+    public function test_resize_devuelve_la_imagen_y_no_el_marcador_de_no_es_imagen(): void
+    {
+        $archivo = UploadedFile::fake()->image('foto.jpg', 1200, 800);
+        $file = File::addFile($archivo, $this->directorio, is_private: false);
+
+        $this->assertNotNull($file);
+
+        $ancho = File::$thumbnailsSizeWidth['small'];
+
+        $response = $this->get("/file/resize/{$file->module}/{$file->id}/{$ancho}/foto");
+
+        $response->assertOk();
+        $this->assertStringStartsWith('image/', (string) $response->headers->get('Content-Type'));
+
+        // El marcador de "no es una imagen" se sirve desde public/images; si la
+        // respuesta fuera ese fichero, el ancho no coincidiría con el pedido.
+        $contenido = $response->streamedContent() ?: $response->getContent();
+        $tmp = tempnam(sys_get_temp_dir(), 'resize');
+        file_put_contents($tmp, $contenido);
+        [$anchoServido] = getimagesize($tmp) ?: [null];
+        @unlink($tmp);
+
+        $this->assertSame($ancho, $anchoServido);
+    }
+
+    public function test_resize_ignora_un_ancho_fuera_del_catalogo(): void
+    {
+        $archivo = UploadedFile::fake()->image('foto.jpg', 1200, 800);
+        $file = File::addFile($archivo, $this->directorio, is_private: false);
+
+        // 7 px no está en el catálogo y es menor que el más pequeño: no hay
+        // nada que servir.
+        $response = $this->get("/file/resize/{$file->module}/{$file->id}/7/foto");
+
+        $response->assertOk();
+    }
 }

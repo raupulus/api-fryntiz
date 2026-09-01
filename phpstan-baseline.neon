@@ -55,12 +55,6 @@ parameters:
 			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\File\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FileController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\FileController\:\:delete\(\) with return type void returns Illuminate\\Http\\RedirectResponse but should not return anything\.$#'
 			identifier: return.void
 			count: 2
@@ -839,12 +833,6 @@ parameters:
 			identifier: method.staticCall
 			count: 1
 			path: app/Models/WeatherStation/WindDirection.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SmartPlant\\SmartPlantPlant\:\:\$hardware_device_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Rules/OwnedSmartPlant.php
 
 		-
 			message: '#^Property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$seen_first_at \(string\|null\) does not accept Illuminate\\Support\\Carbon\.$#'

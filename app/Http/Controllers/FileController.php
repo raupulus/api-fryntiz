@@ -60,12 +60,18 @@ class FileController extends Controller
      * disco tiene sentido y un ancho enorme deja de ser una forma gratuita de
      * hacer trabajar al servidor.
      *
+     * ⚠️ El orden de los parámetros importa: Laravel los pasa por POSICIÓN, y
+     * la ruta es `/resize/{module}/{id}/{width}/{slug?}`. La firma los tenía
+     * cruzados (`$slug` antes que `$width`), así que con `strict_types` el
+     * slug llegaba al parámetro `int $width` y la ruta respondía 500 con un
+     * TypeError. Si se toca la ruta, hay que tocar esto a la vez.
+     *
      * @param  string  $module  Grupo del archivo.
      * @param  int  $id  Identificador del archivo.
-     * @param  string  $slug  Slug del archivo.
      * @param  int  $width  Ancho del archivo a redimensionar.
+     * @param  string|null  $slug  Slug del archivo (decorativo, no se usa).
      */
-    public function resizeAndGet(string $module, int $id, string $slug, int $width)
+    public function resizeAndGet(string $module, int $id, int $width, ?string $slug = null)
     {
 
         $file = File::find($id);
@@ -74,7 +80,12 @@ class FileController extends Controller
             return response()->file(File::genericImagePath('not_found'));
         }
 
-        if ($file->type !== 'image') {
+        // El tipo vive en `file_types`, no en `files`: `$file->type` no existe
+        // como columna ni como accessor, así que esto era `null !== 'image'`,
+        // siempre cierto. Es decir, la ruta devolvía SIEMPRE la imagen genérica
+        // "no es una imagen" y no llegaba a redimensionar nunca. PHPStan lo
+        // señalaba y estaba silenciado en el baseline.
+        if ($file->fileType?->type !== 'image') {
             return response()->file(File::genericImagePath('not_image'));
         }
 
@@ -115,7 +126,7 @@ class FileController extends Controller
             return response()->file($cachedPath);
         }
 
-        $encoded = $image->encodeUsingMediaType($file->fileType?->mime ?: 'image/jpeg');
+        $encoded = $image->encodeUsingMediaType($file->fileType->mime ?: 'image/jpeg');
 
         return response($encoded->toString())
             ->header('Content-Type', $encoded->mediaType());

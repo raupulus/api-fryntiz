@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use App\Models\SmartPlant\SmartPlantPlant;
-use App\Support\Auth\TokenAbilities;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -53,12 +52,22 @@ class OwnedSmartPlant implements ValidationRule
             return;
         }
 
-        // Ligado estricto: un token emitido para el dispositivo X no escribe en
-        // una planta que cuelga del dispositivo Y, aunque ambos sean del mismo
-        // dueño.
-        if ($plant->hardware_device_id !== null
-            && ! TokenAbilities::tokenReachesDevice($user, (int) $plant->hardware_device_id)) {
-            $fail('El token utilizado no está autorizado para la planta indicada.');
-        }
+        // Aquí había un "ligado estricto" que pretendía impedir que un token
+        // emitido para el dispositivo X escribiera en una planta colgada del
+        // dispositivo Y. No hacía nada: leía `$plant->hardware_device_id`, y
+        // `smartplant_plants` NO tiene esa columna —una planta se relaciona con
+        // el hardware a través de sus lecturas, no directamente—, así que el
+        // valor era siempre null y la condición nunca se cumplía.
+        //
+        // Se retira en lugar de dejarlo: un bloque que aparenta una protección
+        // que no existe es peor que no tener el bloque, porque quien lo lee da
+        // por hecho que el caso está cubierto. Es el mismo despiste que había
+        // en SmartPlantPolicy::isOwnedBy(), y PHPStan lo señalaba en los dos
+        // sitios; estaba silenciado en el baseline.
+        //
+        // Lo que esta regla SÍ garantiza es lo que importa y lo que motivó su
+        // existencia (H5): que no se escriban lecturas en la planta de otro
+        // usuario. Para acotar además por dispositivo haría falta una columna
+        // que ligue planta y hardware, y hoy no la hay.
     }
 }
