@@ -153,7 +153,11 @@ class ContentSeo extends BaseModel
         return collect([
             'twitter:card' => $this->twitter_card,
             'twitter:site' => '@raupulus',
-            'twitter:title' => $this->twitter_title,
+            // No existe columna `twitter_title` en content_seo: esto salía
+            // SIEMPRE vacío y las tarjetas de X se compartían sin titular. Se
+            // usa el mismo título que Open Graph, que es para lo que está, y el
+            // del contenido como último recurso.
+            'twitter:title' => $this->og_title ?: $this->content?->title,
             'twitter:description' => $this->description,
             'twitter:creator' => $this->content?->author?->name,
             // La misma imagen que `og:image`: no hay motivo para que difieran, y

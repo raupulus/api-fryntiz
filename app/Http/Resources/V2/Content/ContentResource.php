@@ -40,8 +40,16 @@ class ContentResource extends JsonResource
             // las etiquetas Open Graph completas. Salían vacías y por eso al
             // compartir un enlace no aparecía la imagen (B9).
             'image' => $this->whenLoaded('image', fn () => new SocialImageResource($this->image)),
-            'seo_title' => $this->seo_title,
-            'seo_description' => $this->seo_description,
+            // El SEO vive en la relación `seo` (tabla content_seo), no en
+            // `contents`. Esto leía `$this->seo_title` y `$this->seo_description`,
+            // que no existen ni como columna ni como accessor: la API prometía
+            // metadatos SEO y devolvía null SIEMPRE. Las webs que consumen esto
+            // los necesitan justo para construir sus meta tags.
+            //
+            // `og_title` es el título pensado para compartir; si no se ha
+            // rellenado se cae al título del contenido, que es mejor que nada.
+            'seo_title' => $this->seo?->og_title ?: $this->title,
+            'seo_description' => $this->seo?->description ?: $this->excerpt,
             'platform' => $this->whenLoaded('platform', fn () => [
                 'id' => $this->platform->id,
                 'name' => $this->platform->title,

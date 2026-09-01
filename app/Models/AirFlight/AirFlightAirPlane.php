@@ -61,6 +61,9 @@ use function file_exists;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane forDevice(int $deviceId)
  *
+ * @property-read Collection<int, AirFlightRoute> $trail Rastro con posición conocida, en orden
+ * @property-read AirFlightRoute|null $latestRoute Última posición conocida (vive en airflight_routes)
+ *
  * @mixin \Eloquent
  */
 class AirFlightAirPlane extends BaseModel

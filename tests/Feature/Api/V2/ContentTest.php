@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\V2;
 
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
+use App\Models\Content\ContentSeo;
 use App\Models\Platform;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
@@ -168,5 +169,45 @@ class ContentTest extends ApiTestCase
         ]);
 
         return [$platform, $content];
+    }
+
+    // ─── Metadatos SEO en la respuesta ───
+
+    /**
+     * `seo_title` y `seo_description` salían SIEMPRE null: el resource leía
+     * `$content->seo_title`, que no existe ni como columna ni como accessor —el
+     * SEO vive en la relación `seo`—. Las webs que consumen la API los usan
+     * para construir sus meta tags, así que devolvían páginas sin SEO.
+     */
+    #[Test]
+    public function content_exposes_the_seo_metadata_of_its_relation(): void
+    {
+        [$platform, $content] = $this->makePublishedContent();
+
+        ContentSeo::create([
+            'content_id' => $content->id,
+            'og_title' => 'Título para compartir',
+            'description' => 'Descripción para buscadores',
+        ]);
+
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}"));
+
+        $response->assertOk();
+        $response->assertJsonPath('data.seo_title', 'Título para compartir');
+        $response->assertJsonPath('data.seo_description', 'Descripción para buscadores');
+    }
+
+    #[Test]
+    public function seo_metadata_falls_back_to_the_content_itself(): void
+    {
+        // Sin fila de SEO se devuelve el título y el extracto del contenido:
+        // es mejor que un null que obliga a la web a inventarse el meta.
+        [$platform, $content] = $this->makePublishedContent();
+
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}"));
+
+        $response->assertOk();
+        $response->assertJsonPath('data.seo_title', $content->title);
+        $this->assertNotNull($response->json('data.seo_title'));
     }
 }

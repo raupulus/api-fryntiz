@@ -187,6 +187,43 @@ hay urgencia. **Se aplicará cuando Reverb admita `psr7` 3.**
 
 ---
 
+---
+
+## Calidad
+
+### D14 · El baseline de PHPStan se revisa, no se hereda
+
+`phpstan-baseline.neon` silencia errores para que la suite quede en verde, y eso lo convierte en
+un sitio perfecto donde esconder bugs de verdad. En la resolución de la auditoría de 2026-09-01,
+**cinco fallos reales estaban ahí dentro**, señalados por PHPStan y silenciados:
+
+| Silenciado como | Era en realidad |
+|---|---|
+| `SmartPlantPlant::$hardware_device_id` en la policy | `GET /smartplant/plants/{id}/readings` devolvía 404 a todo el mundo |
+| `Content::$user_id` en la policy | Un autor no alcanzaba su propio contenido; nadie salvo admin podía borrar lo suyo |
+| `SmartPlantPlant::$hardware_device_id` en la regla | El ligado por dispositivo no se comprobaba nunca |
+| `File::$type` en el controlador | `/file/resize` devolvía siempre «no es una imagen» |
+| `ContentSeo::$twitter_title` y `Content::$seo_*` | Las tarjetas de X salían sin título y la API devolvía el SEO a null |
+
+De las 45 entradas `property.notFound` que había, **16 se resolvieron** (5 bugs + tipado que
+faltaba). Las **29 restantes están revisadas una a una** y son tipado dinámico legítimo:
+
+- **`AirFlightAirPlane`** (13): un `select()` con alias trae columnas de `airflight_routes` sobre
+  el modelo del avión, y después se mutan. Las columnas existen; expresar ese tipo obligaría a
+  reescribir el método entero con un DTO.
+- **`BaseWeatherStation`, `CurriculumBaseSection`, `BaseModel`** : clases base que leen propiedades
+  que definen sus hijos. `BaseModel::$image` es defensivo a propósito — comprueba si el hijo tiene
+  imagen antes de borrarla.
+- **`Platform`, `User`, `ContentPage`, `KeyCounterController`, `FileThumbnailController`,
+  `TokensRelationManager`**: accessors y agregaciones resueltas en tiempo de ejecución.
+
+**Criterio para la próxima vez.** Ante una entrada `property.notFound`, la pregunta es: *¿esa
+propiedad existe en algún sitio —columna, accessor, alias de un select— o no existe en absoluto?*
+Si no existe en absoluto, **es un bug**, no ruido de tipado: el valor será `null` siempre y la
+condición que lo use dará siempre el mismo resultado. Los cinco de arriba eran de ese tipo.
+
+---
+
 ## Cómo mantener este documento
 
 Se añade una entrada cuando se decide **no** hacer algo que parece que habría que hacer, o hacerlo de

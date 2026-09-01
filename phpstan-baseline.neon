@@ -115,84 +115,6 @@ parameters:
 			path: app/Http/Controllers/WeatherStation/WeatherStationController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$altitude\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$flight\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lat\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lon\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$messages\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$rssi\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$seen_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$speed\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$squawk\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$track\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$vert_rate\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$seo_description\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Content/ContentResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$seo_title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Content/ContentResource.php
-
-		-
 			message: '#^Parameter \#2 \$name of method Illuminate\\Mail\\Mailable\:\:to\(\) expects string\|null, array given\.$#'
 			identifier: argument.type
 			count: 1
@@ -437,12 +359,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Models/Content/ContentPage.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Content\\ContentSeo\:\:\$twitter_title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Content/ContentSeo.php
 
 		-
 			message: '#^If condition is always true\.$#'
