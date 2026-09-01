@@ -34,5 +34,20 @@ use Illuminate\Support\Carbon;
  */
 class HardwareAvailableComponent extends BaseModel
 {
+    /**
+     * @var list<string> Campos que admiten asignación masiva.
+     *
+     * Sin esta lista el modelo NO admitía asignación masiva en absoluto:
+     * sin `$fillable` ni `$guarded` propios, Eloquent aplica su
+     * `$guarded = ['*']` por defecto y descarta —o rechaza con
+     * MassAssignmentException— cualquier `create()` o `fill()`.
+     */
+    protected $fillable = [
+        'name',
+        'type',
+        'slug',
+        'description',
+    ];
+
     use HasFactory;
 }

@@ -48,6 +48,26 @@ class Language extends BaseModel
     protected $table = 'languages';
 
     /**
+     * @var list<string> Campos que admiten asignación masiva.
+     *
+     * Sin esta lista el modelo NO admitía asignación masiva en absoluto:
+     * sin `$fillable` ni `$guarded` propios, Eloquent aplica su
+     * `$guarded = ['*']` por defecto y descarta —o rechaza con
+     * MassAssignmentException— cualquier `create()` o `fill()`.
+     */
+    protected $fillable = [
+        'locale',
+        'iso_locale',
+        'iso2',
+        'iso3',
+        'name',
+        'iso_language',
+        'icon16',
+        'icon32',
+        'icon64',
+    ];
+
+    /**
      * Devuelve la ruta hacia los iconos en tamaño 64x64 píxeles.
      *
      * @return string

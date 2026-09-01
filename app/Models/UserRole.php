@@ -34,4 +34,19 @@ use Illuminate\Support\Carbon;
 class UserRole extends BaseModel
 {
     protected $table = 'user_roles';
+
+    /**
+     * @var list<string> Campos que admiten asignación masiva.
+     *
+     * Sin esta lista el modelo NO admitía asignación masiva en absoluto:
+     * sin `$fillable` ni `$guarded` propios, Eloquent aplica su
+     * `$guarded = ['*']` por defecto y descarta —o rechaza con
+     * MassAssignmentException— cualquier `create()` o `fill()`.
+     */
+    protected $fillable = [
+        'name',
+        'display_name',
+        'slug',
+        'description',
+    ];
 }

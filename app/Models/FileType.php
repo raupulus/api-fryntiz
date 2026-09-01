@@ -63,6 +63,15 @@ class FileType extends BaseModel
         'type',
         'mime',
         'extension',
+        // Los cuatro iconos SÍ son asignables: `FileTypeResource` los ofrece
+        // como campos de subida del formulario. El `$guarded` anterior los
+        // excluía, así que Filament los descartaba en silencio y el icono que
+        // se subía desde el panel no se guardaba nunca. Nada más los escribe:
+        // sólo se llenan desde ese formulario.
+        'icon16',
+        'icon32',
+        'icon64',
+        'icon128',
     ];
 
     /**

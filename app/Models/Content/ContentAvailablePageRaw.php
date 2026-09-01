@@ -37,4 +37,19 @@ class ContentAvailablePageRaw extends BaseModel
     use HasFactory;
 
     protected $table = 'content_available_page_raw';
+
+    /**
+     * @var list<string> Campos que admiten asignación masiva.
+     *
+     * Sin esta lista el modelo NO admitía asignación masiva en absoluto:
+     * sin `$fillable` ni `$guarded` propios, Eloquent aplica su
+     * `$guarded = ['*']` por defecto y descarta —o rechaza con
+     * MassAssignmentException— cualquier `create()` o `fill()`.
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'type',
+        'extension',
+    ];
 }
