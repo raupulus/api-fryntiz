@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\V2;
 
 use App\Models\Content\Content;
+use App\Models\Content\ContentPage;
 use App\Models\Platform;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
@@ -106,5 +107,66 @@ class ContentTest extends ApiTestCase
         $response = $this->getJson($this->apiUrl("platforms/{$content->platform->slug}/contents/{$content->slug}/related"));
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
+    }
+
+    // ─── Una página concreta (GET /platforms/{p}/contents/{c}/pages/{order}) ───
+
+    #[Test]
+    public function can_get_a_content_page_by_its_order(): void
+    {
+        [$platform, $content] = $this->makePublishedContent();
+
+        ContentPage::create([
+            'content_id' => $content->id,
+            'title' => 'Segunda parte',
+            'slug' => 'segunda-parte',
+            'content' => 'Cuerpo de la página.',
+            'order' => 2,
+        ]);
+
+        $response = $this->getJson(
+            $this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}/pages/2")
+        );
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.title', 'Segunda parte');
+    }
+
+    #[Test]
+    public function an_order_with_no_page_is_a_404(): void
+    {
+        [$platform, $content] = $this->makePublishedContent();
+
+        $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}/pages/99"))
+            ->assertStatus(404);
+    }
+
+    #[Test]
+    public function a_page_of_an_unknown_content_is_a_404(): void
+    {
+        $platform = Platform::factory()->create();
+
+        $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/no-existe/pages/1"))
+            ->assertStatus(404);
+    }
+
+    /**
+     * Contenido publicado y visible, que es la condición para que la API lo
+     * sirva.
+     *
+     * @return array{0: Platform, 1: Content}
+     */
+    private function makePublishedContent(): array
+    {
+        $platform = Platform::factory()->create();
+
+        $content = Content::factory()->create([
+            'platform_id' => $platform->id,
+            'is_active' => true,
+            'status_id' => 2,
+            'published_at' => now()->subDay(),
+        ]);
+
+        return [$platform, $content];
     }
 }

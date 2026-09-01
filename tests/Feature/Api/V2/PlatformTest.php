@@ -63,4 +63,23 @@ class PlatformTest extends ApiTestCase
         $response = $this->getJson($this->apiUrl('platforms/no-existe/contents?featured=1'));
         $this->assertErrorResponse($response, 404);
     }
+
+    // ─── Categorías de una plataforma (GET /platforms/{slug}/categories) ───
+
+    #[Test]
+    public function can_get_categories_of_a_platform(): void
+    {
+        $platform = Platform::factory()->create();
+
+        $response = $this->getJson($this->apiUrl('platforms/'.$platform->slug.'/categories'));
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonStructure(['success', 'message', 'data']);
+    }
+
+    #[Test]
+    public function categories_of_an_unknown_platform_is_a_404(): void
+    {
+        $this->getJson($this->apiUrl('platforms/no-existe/categories'))->assertStatus(404);
+    }
 }

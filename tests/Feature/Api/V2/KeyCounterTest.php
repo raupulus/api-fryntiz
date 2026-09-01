@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
+use App\Models\KeyCounter\Keyboard;
 use App\Support\Auth\TokenAbilities;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
@@ -62,5 +63,56 @@ class KeyCounterTest extends ApiTestCase
         $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::KEYCOUNTER_WRITE);
         $response = $this->getJson($this->apiUrl('keycounter/mouse-sessions?sort=pulsations'), $headers);
         $this->assertPaginatedResponse($response);
+    }
+
+    // ─── Lectura de sesiones de teclado (GET /keycounter/keyboard-sessions) ───
+
+    #[Test]
+    public function can_list_own_keyboard_sessions(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::KEYCOUNTER_WRITE);
+
+        $response = $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $headers);
+
+        $this->assertPaginatedResponse($response);
+    }
+
+    #[Test]
+    public function keyboard_sessions_only_shows_your_own(): void
+    {
+        // La colección filtra por user_id: el listado de otro no debe asomar
+        // aunque se pregunte con un token válido.
+        $user = $this->createAuthenticatedUser();
+        $otro = $this->createAuthenticatedUser();
+
+        Keyboard::create([
+            'user_id' => $otro->id,
+            'pulsations' => 1234,
+            'pulsations_special_keys' => 12,
+            'pulsation_average' => 0.34,
+            'score' => 10,
+            'weekday' => (int) now()->dayOfWeek,
+            'duration' => 3600,
+            'start_at' => now()->subHour(),
+            'end_at' => now(),
+        ]);
+
+        $response = $this->getJson(
+            $this->apiUrl('keycounter/keyboard-sessions'),
+            $this->moduleHeaders($user, TokenAbilities::KEYCOUNTER_WRITE)
+        );
+
+        $response->assertStatus(200);
+        $this->assertSame(0, $response->json('meta.total'));
+    }
+
+    #[Test]
+    public function cannot_list_keyboard_sessions_unauthenticated(): void
+    {
+        $this->assertErrorResponse(
+            $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $this->guestHeaders()),
+            401
+        );
     }
 }

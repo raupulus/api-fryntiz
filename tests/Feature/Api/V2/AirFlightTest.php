@@ -105,4 +105,26 @@ class AirFlightTest extends ApiTestCase
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['data']);
     }
+
+    // ─── Receptor ADS-B (GET /airflight/receiver) ───
+
+    #[Test]
+    public function receiver_returns_the_map_configuration(): void
+    {
+        // Es pública y sin base de datos detrás: devuelve la configuración fija
+        // que el mapa necesita para centrarse y refrescar.
+        $response = $this->getJson($this->apiUrl('airflight/receiver'));
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonStructure(['data' => ['history', 'lat', 'lon', 'refresh', 'version']]);
+    }
+
+    #[Test]
+    public function receiver_reports_history_disabled(): void
+    {
+        // No se guardan snapshots temporales, sólo la última posición de cada
+        // avión, así que el mapa no debe ofrecer reproducción de recorrido.
+        $this->getJson($this->apiUrl('airflight/receiver'))
+            ->assertJsonPath('data.history', 0);
+    }
 }
