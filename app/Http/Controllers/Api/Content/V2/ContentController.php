@@ -56,6 +56,11 @@ class ContentController extends BaseApiController
 
         $query = Content::query()
             ->with(['type', 'status', 'seo', 'metadata', 'image.fileType'])
+            // Los dos contadores que el resource expone se resuelven aquí, en
+            // agregados de la misma consulta: sin esto salían `views_count` a 0
+            // y `pages_count` ausente para siempre, porque nadie los contaba.
+            ->withCount('pages')
+            ->withSum('dailyViews as views_count', 'views')
             ->forPlatform($platform->id)
             ->published();
 

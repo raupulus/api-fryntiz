@@ -257,10 +257,10 @@ contenido no público).
         "alt": "Estación meteorológica ESP32",
         "thumbnails": { "medium": "https://cdn.raupulus.es/files/def456-medium.webp" }
       },
-      "seo_title": null,
-      "seo_description": null,
-      "pages_count": null,
-      "views_count": 0,
+      "seo_title": "Título para compartir",
+      "seo_description": "Descripción para buscadores",
+      "pages_count": 3,
+      "views_count": 412,
       "published_at": "2026-08-20T10:00:00.000000Z",
       "created_at": "2026-08-15T09:00:00.000000Z",
       "updated_at": "2026-08-20T10:00:00.000000Z"
@@ -295,16 +295,21 @@ contenido no público).
     `whenLoaded` nunca puede detectarlas como cargadas. En la práctica, estas
     tres claves **nunca aparecen** en la respuesta de este endpoint tal como
     está el código hoy. `technologies` sí se carga en `show` (ver más abajo).
-  - `seo_title` y `seo_description` no son columnas ni accesores de `Content`
-    (el SEO real vive en la relación `seo` → modelo `ContentSeo`, con
-    `description`, `og_title`, `twitter_card`, etc., que este Resource no
-    expone). Salen siempre `null`.
-  - `pages_count` depende de `whenCounted('pages')`; ningún controlador hace
-    `withCount('pages')`, así que esta clave **nunca aparece** en ningún
-    endpoint de contenido actual (ni aquí ni en `show`).
-  - `views_count` no es una columna ni relación contada de `Content` (existe
-    `daily_views_count` vía la relación `dailyViews`, no `views_count`), así
-    que sale siempre `0` pase lo que pase con las visitas reales.
+  - `seo_title` y `seo_description` salen de la relación `seo` (modelo
+    `ContentSeo`): `og_title` y `description` respectivamente. Si el contenido
+    no tiene fila de SEO, caen al `title` y al `excerpt` del propio contenido.
+    **Antes salían siempre `null`**, porque el Resource leía
+    `$content->seo_title`, que no existe ni como columna ni como accesor.
+  - `pages_count` es el número de páginas del contenido. **Antes no aparecía
+    nunca**: depende de `whenCounted('pages')` y ningún controlador hacía el
+    `withCount`. Ahora lo agregan tanto el índice como `show`.
+  - `views_count` es la suma real de visitas, agregada desde
+    `content_daily_views` —la tabla que rellena `ProcessContentViewJob`— con
+    `withSum`. **Antes salía siempre `0`**, aunque las visitas sí se estuvieran
+    contabilizando. Un contenido sin visitas devuelve `0`, no `null`.
+
+  Los tres se resuelven como agregados de la misma consulta, así que no añaden
+  una consulta por elemento en los listados.
 
 ### `GET /platforms/{platform:slug}/contents/{content:slug}` — Un contenido publicado
 
@@ -315,8 +320,8 @@ contenido no público).
 - **Efecto secundario**: encola `ProcessContentViewJob` para contabilizar la
   visita; no bloquea ni retrasa la respuesta.
 - **Respuesta 200**: un único `ContentResource` (misma forma que cada elemento
-  del índice de arriba, con las mismas salvedades de `seo_title`/
-  `seo_description`/`pages_count`/`views_count`). Aquí también carga
+  del índice de arriba, incluidos `seo_title`, `seo_description`, `pages_count`
+  y `views_count`, que aquí también vienen resueltos). Aquí también carga
   `technologies` además de `type`, `status`, `seo`, `metadata`, `pages` e
   `image.fileType`, así que `technologies` **sí** puede aparecer en esta
   respuesta (según lo que tenga asociado el contenido); `platform`,

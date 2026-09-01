@@ -59,7 +59,9 @@ class ContentResource extends JsonResource
             'tags' => $this->whenLoaded('tags'),
             'technologies' => $this->whenLoaded('technologies'),
             'pages_count' => $this->whenCounted('pages'),
-            'views_count' => $this->views_count ?? 0,
+            // `withSum` devuelve null cuando el contenido no tiene ninguna
+            // visita todavía, no 0.
+            'views_count' => (int) ($this->views_count ?? 0),
             'published_at' => $this->published_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

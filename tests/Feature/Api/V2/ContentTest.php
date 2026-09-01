@@ -8,6 +8,7 @@ use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentSeo;
 use App\Models\Platform;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -209,5 +210,44 @@ class ContentTest extends ApiTestCase
         $response->assertOk();
         $response->assertJsonPath('data.seo_title', $content->title);
         $this->assertNotNull($response->json('data.seo_title'));
+    }
+
+    #[Test]
+    public function content_reports_its_real_view_count_and_page_count(): void
+    {
+        // `views_count` salía 0 SIEMPRE y `pages_count` no aparecía nunca:
+        // ninguna consulta los agregaba, aunque las visitas sí se contaban en
+        // `content_daily_views` (las escribe ProcessContentViewJob).
+        [$platform, $content] = $this->makePublishedContent();
+
+        ContentPage::create([
+            'content_id' => $content->id,
+            'title' => 'Una página',
+            'slug' => 'una-pagina',
+            'content' => 'Cuerpo.',
+            'order' => 1,
+        ]);
+
+        DB::table('content_daily_views')->insert([
+            ['content_id' => $content->id, 'date' => now()->subDay()->toDateString(), 'views' => 7, 'created_at' => now(), 'updated_at' => now()],
+            ['content_id' => $content->id, 'date' => now()->toDateString(), 'views' => 5, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}"));
+
+        $response->assertOk();
+        $response->assertJsonPath('data.views_count', 12);
+        $response->assertJsonPath('data.pages_count', 1);
+    }
+
+    #[Test]
+    public function a_content_without_views_reports_zero_and_not_null(): void
+    {
+        [$platform, $content] = $this->makePublishedContent();
+
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}"));
+
+        $response->assertOk();
+        $response->assertJsonPath('data.views_count', 0);
     }
 }

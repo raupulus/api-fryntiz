@@ -26,6 +26,8 @@ class ContentService
     public function getBySlug(string $platformSlug, string $contentSlug): ?Content
     {
         return Content::with(['type', 'status', 'pages', 'seo', 'metadata', 'technologies', 'image.fileType'])
+            ->withCount('pages')
+            ->withSum('dailyViews as views_count', 'views')
             ->whereHas('platform', fn ($q) => $q->where('slug', $platformSlug))
             ->where('slug', $contentSlug)
             ->published()
