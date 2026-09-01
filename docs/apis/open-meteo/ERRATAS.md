@@ -1,6 +1,5 @@
 # ⚠️ Erratas y trampas de Open-Meteo
 
-> **Última actualización:** 2026-09-01
 
 > [!CAUTION]
 > **Lectura obligatoria antes de implementar o modificar cualquier endpoint.**
@@ -582,3 +581,5 @@ y el `cell_selection` por defecto de Marine (→ [`C3`](#c3--la-columna-default-
 3. Incluye **la evidencia literal**: URL, código HTTP, cabecera o fragmento de cuerpo.
 4. Marca la fiabilidad y **actualiza la fecha** de la cabecera.
 5. Si afecta a un endpoint concreto, añade un aviso en su módulo enlazando aquí.
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

@@ -52,6 +52,65 @@ $imageMimeCanEdit = [
 ];
 ```
 
+Decide si una imagen se **puede reprocesar** (rotar, escalar, generar miniaturas). No decide si se
+**acepta**: para eso está `SAFE_MIMES`.
+
+## Política de subida
+
+`File::addFile()` recibe `bool $validate = true` como último parámetro.
+
+| Valor | Qué hace | Quién lo usa |
+|---|---|---|
+| `true` (por defecto) | El MIME real tiene que estar en `File::SAFE_MIMES` y el tamaño por debajo de `File::MAX_FILE_SIZE` (20 MB) | Los campos que esperan una imagen o un documento: avatar, portada de contenido, foto de producto |
+| `false` | Entra cualquier cosa, sin límite de tipo | El editor de contenido y los archivos adjuntos, donde se sube lo que haga falta |
+
+El parámetro va el último de la firma para que ninguna llamada existente cambie de comportamiento.
+
+⚠️ **`SAFE_MIMES` no sale de la tabla `file_types`, y no debe salir nunca.** `file_types` es un
+catálogo de metadatos (icono, extensión, tipo legible) que se rellena desde el panel con toda clase
+de formatos — impresión 3D, vectores, proyectos de edición, documentos. Es entrada de usuario:
+usarla como lista de tipos seguros sería validar el input contra el propio input. Para aceptar un
+tipo nuevo se añade a la constante del modelo, a mano.
+
+El tope de 20 MB es el techo del modelo, no el de la interfaz: cada campo de Filament pone el suyo,
+más estricto (`ImageCropperUpload` está en 4 MB). Una foto de alta calidad entra grande y el cropper
+la deja en un megabyte o menos.
+
+La validación ocurre **antes de `store()`**: si se comprobara después, el archivo rechazado ya
+estaría escrito en el disco.
+
+## Metadatos de las imágenes
+
+Al almacenar una imagen editable, `processStoredImage()` hace tres cosas **en este orden**:
+
+1. **Rota los píxeles de verdad** según la orientación EXIF. Si no, al limpiar los metadatos se iría
+   el flag de orientación y las fotos de móvil quedarían tumbadas para siempre.
+2. **Acota el ancho** a `File::MAX_IMAGE_WIDTH` (2560 px).
+3. **Limpia los metadatos**: `stripMetadata()` vacía el EXIF y quita el perfil ICC, y además se
+   guarda con `strip` en el encoder. Son dos capas para lo mismo, a propósito.
+
+Se aplica a **todas** las imágenes, privadas y públicas: una foto pública con las coordenadas de
+casa dentro es el mismo problema con más gente mirándola.
+
+La limpieza se hace **aunque la librería ya descarte los metadatos por su cuenta** — hoy lo hace el
+driver GD. Esa garantía es un accidente de la implementación, no una decisión del proyecto; el
+motivo completo está en [decisiones-tecnicas.md](decisiones-tecnicas.md) D3.
+
+Escribir los metadatos **de plataforma** (autoría, datos de la web) sigue pendiente: ver
+[`docs/future/metadatos-imagenes.md`](../future/metadatos-imagenes.md).
+
+## Redimensionado bajo demanda (`/file/resize`)
+
+El ancho no se acepta tal cual: se resuelve contra `File::$thumbnailsSizeWidth`, los tamaños que el
+proyecto ya genera. Un ancho fuera de esa lista cae al mayor permitido que no lo supere.
+
+Con la lista cerrada el número de variantes es finito, así que el resultado **se cachea en disco**,
+en la misma ruta donde `createThumbnails()` escribe las miniaturas. Para los anchos del catálogo la
+imagen suele existir ya y se sirve sin tocar la librería de imagen.
+
+Antes el ancho llegaba libre y sin caché: cada petición reprocesaba la imagen entera, y un ancho
+enorme era una forma gratuita de agotar la memoria del servidor. La ruta lleva ahora `throttle:api`.
+
 ## Imágenes genéricas
 
 Se definen en `File::$genericImages`:

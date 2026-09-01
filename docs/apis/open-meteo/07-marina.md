@@ -1,6 +1,5 @@
 # 🌊 Meteorología marina
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Oleaje, mar de fondo, corrientes y temperatura superficial del mar.
 
@@ -101,3 +100,5 @@ Para Canarias hay que ir a un modelo global (`ncep_gfswave025`, `ecmwf_wam025`) 
 | 1 | El `cell_selection` por defecto de las **demás** APIs (en marina ya está confirmado: `sea`) | Media |
 | 2 | Cobertura de los modelos de oleaje no probados (`dwd_gwam`, `ecmwf_wam`, `ncep_gfswave016`, `era5_ocean`) | Baja |
 | 3 | Distancia máxima a la que `cell_selection=sea` busca celda de mar | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

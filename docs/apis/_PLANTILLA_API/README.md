@@ -11,7 +11,7 @@
 - **Última verificación contra la API real:** **<AAAA-MM-DD>** (`<N>` de `<TOTAL>` endpoints)
 
 > [!TIP]
-> Este directorio documenta **la API oficial de \<PROVEEDOR\>**. Para saber **cómo la usa Sansimar**
+> Este directorio documenta **la API oficial de \<PROVEEDOR\>**. Para saber **cómo la usa Api Raupulus**
 > (servicios, comandos, modelos, caché), ver `docs/info/apis/`. Ver la
 > [distinción entre ambos](../README.md#no-confundir-con-docsinfoapis).
 

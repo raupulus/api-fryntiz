@@ -1,6 +1,5 @@
 # 🧱 Fundamentos de Open-Meteo
 
-> **Última actualización:** 2026-09-01
 
 > [!IMPORTANT]
 > **Lectura obligatoria antes de cualquier otro archivo.**
@@ -99,7 +98,7 @@ Dos reglas verificadas el 2026-08-31:
 > El `303` importa: un cliente HTTP que **no siga redirecciones** recibirá un cuerpo vacío con un
 > código que no es de error para muchas librerías. Detalle en [`ERRATAS.md`](ERRATAS.md#a4--apikey-en-el-dominio-libre-provoca-un-303-con-location-malformado-).
 
-La clave nunca se escribe aquí: iría en `.env` como `OPEN_METEO_API_KEY`. **Sansimar no tiene
+La clave nunca se escribe aquí: iría en `.env` como `OPEN_METEO_API_KEY`. **Api Raupulus no tiene
 todavía ninguna suscripción contratada** — ver la advertencia de uso comercial en
 [`LIMITACIONES.md`](LIMITACIONES.md#uso-comercial--el-límite-que-no-es-técnico).
 
@@ -359,3 +358,5 @@ Obsérvese que la coordenada devuelta (`40.4375, -3.6875`) **no es la pedida**
 | 2 | Comportamiento con `timezone` sin codificar la barra | Baja |
 | 3 | Si los dominios `customer-` aceptan exactamente los mismos parámetros | Baja (sin suscripción no se puede probar) |
 | 4 | Si `Accept-Encoding: gzip` a secas devuelve `gzip` o también `deflate` | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

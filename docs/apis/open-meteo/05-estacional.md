@@ -1,6 +1,5 @@
 # 🗓️ Predicción estacional
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Previsión de largo alcance basada en ECMWF SEAS5 y EC46, con
 agregaciones semanales y mensuales, anomalías e índices de extremos.
@@ -115,3 +114,5 @@ variantes `*_ensemble_mean`.
 | 2 | Por qué `weekly` devuelve 27 pasos (6 meses) cuando la documentación habla de 6 semanas | Media |
 | 3 | Si `forecast_days=217` es realmente el máximo | Baja |
 | 4 | Si `sot10` y las variables de precipitación se comportan igual que las probadas | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

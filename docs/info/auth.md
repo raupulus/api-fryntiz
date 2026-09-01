@@ -42,6 +42,24 @@ Política del proyecto: **todo formulario abierto a quien no tiene sesión**
 lleva este mismo patrón (activo solo si hay claves). Cubre hoy el contacto y
 los dos logins; cualquier formulario público nuevo debe seguirlo también.
 
+
+#### Si Google no responde, se deja pasar
+
+`RecaptchaService::verify()` devuelve `valid: true` cuando la petición a Google falla —excepción de
+red o un status que no sea 2xx— y el envío se acepta.
+
+**Es una decisión, no un descuido.** Si Google no responde no se puede afirmar que quien envía sea un
+bot, y no se va a cerrar el acceso al sitio porque un tercero se caiga. En principio no debería
+ocurrir; si ocurriera de verdad, la salida sería buscar otro proveedor, no dejar a la gente fuera
+mientras tanto.
+
+**Qué vigilar.** Los dos `Log::warning` de `RecaptchaService` («no se ha podido verificar» y
+«respuesta no satisfactoria») son la señal de alerta: si aparecen a ráfagas, alguien está provocando
+el fallo para saltarse la comprobación. Ahí sí toca mirar.
+
+Hay dos tests en `RecaptchaServiceTest` que fijan este comportamiento, precisamente para que no se
+"arregle" sin querer. Ver [decisiones-tecnicas.md](decisiones-tecnicas.md) D10.
+
 ### Assets de Filament
 
 Las vistas `/admin/login` y `/panel/login` dependen de los assets compilados de Filament que viven en `public/css/filament/`, `public/js/filament/` y `public/fonts/filament/`. Si la página carga sin CSS o el botón "Iniciar sesión" no responde, lo más probable es que estos assets no estén publicados:

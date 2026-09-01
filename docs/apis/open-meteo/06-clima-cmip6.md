@@ -1,6 +1,5 @@
 # 🌍 Proyecciones climáticas (CMIP6)
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Datos climáticos diarios de modelos CMIP6 reescalados a 10 km y corregidos de sesgo
 contra ERA5, de **1950 a 2050**.
@@ -97,3 +96,5 @@ La corrección lineal **no altera la señal de cambio climático** 🔵, solo aj
 | 2 | Efecto medible de `disable_bias_correction` | Baja |
 | 3 | Si acepta `format=csv` (no probado en esta API) | Baja |
 | 4 | Fecha inicial de los cuatro modelos no probados (comprobado 🟢 que `CMCC_CM2_VHR4`, `EC_Earth3P_HR` y `NICAM16_8S` tienen dato el 1950-01-01) | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

@@ -53,3 +53,5 @@ son un puñado comparado con 250.000, y son justo los que importan.
 - El cliente del mapa dejará de pedirlo. Si el JavaScript lo llama, se le quita
   la llamada en la misma ventana.
 - No hay nada que migrar: no había datos.
+
+> Creado: 2026-08-30 · Última revisión: 2026-09-01

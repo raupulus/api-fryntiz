@@ -28,6 +28,7 @@
 | [debug-commands.md](debug-commands.md) | Comandos de Debug | Inserción de datos de prueba para desarrollo |
 | [filament-panels.md](filament-panels.md) | Paneles Filament | Inventario de Resources, widgets, clusters y permisos |
 | [commands.md](commands.md) | Catálogo de comandos | Todos los comandos Artisan personalizados |
+| [decisiones-tecnicas.md](decisiones-tecnicas.md) | Decisiones técnicas | Qué se decidió a conciencia y por qué. ⚠️ **Léelo antes de "arreglar"** el fail-open de reCAPTCHA, los resources sin `whenLoaded` o la subida sin validar del editor |
 | [websockets.md](websockets.md) | WebSockets (Reverb) | Aviso en vivo de lecturas de estación. Instalado e implementado, **apagado por defecto** (`BROADCAST_CONNECTION=null`) |
 | [frontend.md](frontend.md) | Frontend público | Vistas Blade, entrypoints de Vite, tokens de color, los dos componentes Vue, páginas de error y SEO |
 | [i18n.md](i18n.md) | Idiomas (i18n) | Cómo se elige el idioma de la respuesta, dónde viven las traducciones y por qué los FormRequests ya no escriben mensajes |

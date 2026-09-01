@@ -1,6 +1,5 @@
 # 🗄️ Archivo de predicciones pasadas
 
-> **Última actualización:** 2026-09-01
 
 **3 endpoints.** Tres formas distintas de recuperar **lo que se predijo en el pasado** (no lo que
 realmente ocurrió, que es el [histórico ERA5](02-historico-reanalisis.md)). Se usan para medir el
@@ -134,3 +133,5 @@ correcta (2026-09-01).
 | 1 | Fecha exacta de inicio de Historical Forecast (entre 2016-06 y 2017-06) y de Previous Runs (anterior a 2023-06) | Media |
 | 2 | Cuántos días sueltos faltan en Previous Runs y si el patrón se repite en otras coordenadas | Media |
 | 3 | Si aceptan `POST` como la Forecast API (ya comprobados 🟢 `format=csv` en Historical Forecast, multi-localización en Previous Runs y `timeformat=unixtime` en Single Runs) | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

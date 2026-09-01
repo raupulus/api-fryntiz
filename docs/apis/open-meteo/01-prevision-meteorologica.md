@@ -1,6 +1,5 @@
 # 🌤️ Previsión meteorológica
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** El núcleo de Open-Meteo: previsión horaria, diaria, cuarto-horaria y condiciones
 actuales para cualquier coordenada del mundo, combinando más de 30 modelos numéricos.
@@ -330,3 +329,5 @@ curl -s "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.70
 | 2 | Techo real de coordenadas en multi-localización: 200 funcionan, no se ha buscado el límite | Baja |
 | 3 | Si `forecast_days=16` es realmente el máximo (la spec y la web coinciden, pero no se probó) | Baja |
 | 4 | Lista completa y actual de variables `daily` (la spec está incompleta y la web no la numera) | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

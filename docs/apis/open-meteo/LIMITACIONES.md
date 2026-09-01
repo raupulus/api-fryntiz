@@ -1,6 +1,5 @@
 # 🚧 Limitaciones y condiciones de Open-Meteo
 
-> **Última actualización:** 2026-09-01
 
 > [!CAUTION]
 > **Lectura obligatoria antes de diseñar cualquier automatismo** (comando programado, job, cron,
@@ -271,3 +270,5 @@ de atribución visible. No es opcional ni negociable con la licencia elegida.
 3. Añade siempre **la consecuencia para el diseño**. Una limitación sin consecuencia práctica es un
    dato inútil.
 4. Actualiza la fecha de verificación de la cabecera.
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

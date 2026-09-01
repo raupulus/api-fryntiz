@@ -96,3 +96,5 @@ Cuando el cuerpo lleva otros datos (energía, sensores, etc.), agrupa el estado 
 - Solo se guarda el **último estado conocido** (no hay histórico); cada envío sobrescribe los valores anteriores.
 - Tras recibir los datos, `last_seen_at` se actualiza automáticamente al timestamp actual.
 - Todos los campos de estado son opcionales: envía solo los que tu dispositivo pueda medir.
+
+> Creado: 2026-08-30 · Última revisión: 2026-09-01

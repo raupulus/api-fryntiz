@@ -75,6 +75,37 @@ renovarla. Ver [apis/aemet.md](apis/aemet.md).
 
 ---
 
+## 4-bis. Currículum
+
+| Comando | Descripción |
+|---------|-------------|
+| `cv:regenerate-pdfs` | Regenera los PDF de los currículos marcados con `pdf_needs_regeneration`. |
+
+Es la red de seguridad de la regeneración manual desde Filament: si una regeneración falla o alguien
+edita el CV sin pasar por el panel, el comando lo recoge en la siguiente pasada del scheduler.
+
+---
+
+## 4-ter. Usuarios
+
+```bash
+php artisan user:make-admin [--email=] [--name=] [--password=] [--superadmin]
+```
+
+Crea un usuario administrador. Está pensado para el **primer arranque en un servidor**, y sustituye
+al recorte de `tinker` que traía la guía de despliegue.
+
+| Opción | Qué hace |
+|---|---|
+| `--email` | Correo del administrador. Si falta, se pregunta. |
+| `--name` | Nombre visible. Si falta, se pregunta (por defecto «Administrador»). |
+| `--password` | Contraseña. **Si falta se pide por consola con `secret()`**, que es lo recomendable: así no queda en el historial del shell ni en la lista de procesos del servidor. |
+| `--superadmin` | Crea la cuenta con rol SuperAdmin en vez de Admin. |
+
+Enlazado desde [`docs/deploys/deploy-vps.md`](../deploys/deploy-vps.md).
+
+---
+
 ## 5. KeyCounter
 
 | Comando | Descripción |
@@ -136,6 +167,17 @@ Guarda este token ahora (no se volverá a mostrar):
 > ⚠️ El token en texto plano **solo se muestra una vez**. Guárdalo en el `.env` del dispositivo o en el gestor de secretos antes de cerrar la terminal.
 
 El token se registra en Sanctum como `device:{id}` para facilitar la trazabilidad en la tabla `personal_access_tokens`. El propietario del token es el usuario asociado al `HardwareDevice`.
+
+---
+
+## 6-bis. IoT — Vigilancia de dispositivos
+
+| Comando | Descripción |
+|---------|-------------|
+| `iot:check-silent-devices` | Avisa cuando un dispositivo lleva demasiado tiempo sin reportar. |
+
+Programado en el scheduler (ver §8). Es la única forma de enterarse de que un cacharro se ha caído:
+no hay nadie mirando la gráfica todos los días.
 
 ---
 
@@ -248,10 +290,10 @@ Comandos del framework que se usan habitualmente en este proyecto:
    php artisan make:command Module/Foo/MyCommand
    ```
 2. Implementar `signature`, `description`, y `handle()`.
-3. Si necesita correr en cron, registrarlo en `bootstrap/app.php` (sección `withSchedule`).
+3. Si necesita correr en cron, programarlo en **`routes/console.php`**, que es donde vive el scheduler desde Laravel 11 (ver §8). No en `bootstrap/app.php`.
 4. Añadir entrada en esta tabla.
 5. Si afecta a un módulo concreto, mencionar el comando en el `docs/info/<modulo>.md` correspondiente.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-08-30
+> Creado: 2026-05-26 · Última revisión: 2026-09-01

@@ -1,6 +1,5 @@
 # 📍 Geocodificación y elevación
 
-> **Última actualización:** 2026-09-01
 
 **3 endpoints.** Resolver nombres de lugar a coordenadas, consultar una localidad por su
 identificador y obtener la altitud del terreno. Son las piezas de apoyo del resto de APIs.
@@ -148,3 +147,5 @@ Error real con coordenada inválida 🔵:
 |---|---|---|
 | 1 | Si un código postal ambiguo devuelve varias localidades ordenadas por población | Baja |
 | 2 | Si `/v1/search` acepta multi-idioma o solo un `language` por petición | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

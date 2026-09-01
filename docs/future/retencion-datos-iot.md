@@ -64,3 +64,5 @@ Independientemente de la retención, y con coste bajo:
   Es el patrón de consulta habitual del panel y de la API.
 - Vigilar el tamaño total de la base desde el chequeo de salud del sistema, para enterarse
   del crecimiento antes de que sea un problema.
+
+> Creado: 2026-08-30 · Última revisión: 2026-09-01

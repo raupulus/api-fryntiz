@@ -13,3 +13,5 @@ no versionada) y de `docs/info/` (documentación técnica de lo que existe).
 | [`revisar-aemet.md`](revisar-aemet.md) | Decidir qué endpoints de AEMET sin implementar interesan (el endurecimiento del parseo y de errores/cuota ya se hizo) | Sin fecha; no bloquea el despliegue |
 
 > Última revisión: 2026-08-30
+
+> Creado: 2026-08-30 · Última revisión: 2026-09-01

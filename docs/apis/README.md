@@ -6,7 +6,7 @@
 > externa, ignóralo por completo: leerlo gasta contexto sin aportar nada.
 
 Este directorio contiene la **documentación técnica destilada de las APIs oficiales de terceros**
-que consume (o consumirá) Sansimar, para que una persona o un agente de IA pueda resolver una duda
+que consume (o consumirá) Api Raupulus, para que una persona o un agente de IA pueda resolver una duda
 concreta sin leer especificaciones enteras ni navegar por webs oficiales.
 
 ---
@@ -18,7 +18,7 @@ desincronizada:
 
 | | `docs/apis/` (este directorio) | `docs/info/apis/` |
 |---|---|---|
-| **Qué documenta** | La API **oficial de un tercero**: qué endpoints existen, qué devuelven, qué límites tiene | **Cómo la usamos nosotros** dentro de Sansimar: servicios, comandos, modelos, caché, configuración |
+| **Qué documenta** | La API **oficial de un tercero**: qué endpoints existen, qué devuelven, qué límites tiene | **Cómo la usamos nosotros** dentro de Api Raupulus: servicios, comandos, modelos, caché, configuración |
 | **De quién es la verdad** | De AEMET, Brevo, Google… Nosotros solo la transcribimos y verificamos | Nuestra. Es nuestro código |
 | **Cuándo cambia** | Cuando el tercero cambia su API | Cuando cambiamos nuestro código |
 | **Ejemplo de contenido** | "El endpoint `X` devuelve un `tar` sin comprimir en ISO-8859-15" | "`AemetService::getAvisos()` cachea 5 min y descomprime el `tar`" |

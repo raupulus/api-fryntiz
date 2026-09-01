@@ -66,3 +66,5 @@ Sin tocar la API, dejar lo que existe **optimizado, documentado y validando dato
 - ¿Cómo se representa el contenido a imprimir? (texto plano, ESC/POS, plantilla, adjunto)
 - ¿Reintentos automáticos si la impresora está offline? ¿TTL de los trabajos en cola?
 - Si se ofrece como servicio a terceros: cuotas por usuario y aislamiento entre clientes.
+
+> Creado: 2026-08-30 · Última revisión: 2026-09-01

@@ -1,6 +1,5 @@
 # 🌦️ Open-Meteo — Referencia técnica
 
-> **Última actualización:** 2026-09-01
 
 API meteorológica global y abierta que agrega la salida de más de 30 modelos numéricos de una
 quincena de servicios meteorológicos nacionales (ECMWF, DWD, NOAA, Météo-France, UK Met Office,
@@ -15,7 +14,7 @@ JMA, KMA…) en un único formato JSON.
 - **Última verificación contra la API real:** **2026-09-01** (`16` de `16` endpoints · 190 peticiones en tres rondas ([desglose](ERRATAS.md)))
 
 > [!TIP]
-> Este directorio documenta **la API oficial de Open-Meteo**. Para saber **cómo la usa Sansimar**
+> Este directorio documenta **la API oficial de Open-Meteo**. Para saber **cómo la usa Api Raupulus**
 > (servicios, comandos, modelos, caché), ver `docs/info/apis/`. Ver la
 > [distinción entre ambos](../README.md#no-confundir-con-docsinfoapis).
 >
@@ -164,3 +163,5 @@ los 18 modelos individuales (incluida la de Google WeatherNext) **no son endpoin
 7. **Acepta `POST`** aunque no lo documente: es la vía para consultar cientos de coordenadas en una
    sola llamada (500 comprobadas) sin chocar con el límite de longitud de la URL.
 8. **La atribución CC BY 4.0 es obligatoria** allí donde se muestren los datos.
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

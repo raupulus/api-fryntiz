@@ -1,6 +1,5 @@
 # 🛰️ Radiación solar por satélite
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Irradiancia solar **observada** desde satélites geoestacionarios, no simulada por
 modelos, desde 1983.
@@ -131,3 +130,5 @@ Detalles que la documentación sí explica y conviene no pasar por alto 🔵:
 | 1 | **De dónde salen** los valores de relleno cuando no se pasa `models`. Descartados: la Forecast API (valores distintos) y `shortwave_radiation_clear_sky` (vacío en España) | Media |
 | 2 | Cómo obtener realmente el paso de 10/15/30 min: ¿otro nombre de parámetro? Preguntar en el repositorio de GitHub | Media |
 | 3 | Lista completa de valores válidos de `models=` en esta API: no está publicada y los del catálogo interno no sirven aquí | Media |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

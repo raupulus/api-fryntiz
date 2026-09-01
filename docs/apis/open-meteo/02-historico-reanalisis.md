@@ -1,6 +1,5 @@
 # 📜 Histórico y reanálisis (ERA5)
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Datos meteorológicos reales del pasado a partir de reanálisis: series horarias y
 diarias globales **desde 1940**.
@@ -134,3 +133,5 @@ están incompletos ([`C7`](ERRATAS.md#c7--los-enum-de-las-specs-están-incomplet
 | 1 | Qué cubre `ecmwf_ifs_analysis_long_window`: responde con datos en España y tiene `meta.json` en `archive-api`, pero no está documentado en ninguna fuente | Media |
 | 2 | Si `era5_land` cubre toda España peninsular e islas con la misma resolución | Baja |
 | 3 | Fecha exacta en que termina `cerra` (hay dato en 2021-06 y no en 2022-06) | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

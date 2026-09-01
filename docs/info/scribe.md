@@ -81,3 +81,5 @@ que la URL que anuncia es la pública.
 > Los *response calls* se ejecutan sólo sobre `GET` y dentro de una transacción
 > (`database_connections_to_transact` en `config/scribe.php`), así que generar
 > la documentación no deja datos en la base de datos local.
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

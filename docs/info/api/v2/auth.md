@@ -86,25 +86,44 @@ El token es el recurso; no hay verbos sueltos (`login`/`logout`).
 
 ### `GET /auth/tokens` — Listar mis tokens
 
-- **Auth**: `auth:sanctum` + `ability:session`.
-- **Respuesta 200** — array de:
+- **Auth**: `auth:sanctum` + `ability:session` + `throttle:api`.
+- **Respuesta 200** — **paginada** (25 por página, orden descendente por `created_at`). Antes
+  devolvía la lista entera con un `->get()`: con un token por cacharro y varios años acumulando,
+  viajaba todo en cada consulta.
 
 ```json
 {
-  "id": 3,
-  "name": "api-session",
-  "abilities": ["session"],
-  "device_ids": [],
-  "is_device_token": false,
-  "last_used_at": "2026-08-29T10:00:00.000000Z",
-  "expires_at": "2026-09-29T12:00:00.000000Z",
-  "is_expired": false,
-  "created_at": "2026-08-30T12:00:00.000000Z"
+  "success": true,
+  "message": "Operación exitosa",
+  "data": [
+    {
+      "id": 3,
+      "name": "api-session",
+      "abilities": ["session"],
+      "device_ids": [],
+      "is_device_token": false,
+      "last_used_at": "2026-08-29T10:00:00.000000Z",
+      "expires_at": "2026-09-29T12:00:00.000000Z",
+      "is_expired": false,
+      "created_at": "2026-08-30T12:00:00.000000Z"
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "per_page": 25,
+    "current_page": 1,
+    "last_page": 1,
+    "from": 1,
+    "to": 1
+  }
 }
 ```
 
-  Nunca incluye el token en claro. `device_ids` solo tiene contenido en tokens
-  de dispositivo (ver abajo).
+  Admite los parámetros de colección de la V2: `?page=`, `?per_page=` (máximo 100),
+  `?sort=-created_at`, y filtros por `name`, `created_at` y `last_used_at`.
+
+  **Nunca incluye el token en claro**, tampoco en el listado. `device_ids` sólo tiene contenido en
+  tokens de dispositivo (ver abajo).
 
 ### `POST /auth/tokens/devices` — Emitir un token de dispositivo IoT
 

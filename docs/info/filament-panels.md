@@ -7,7 +7,7 @@ Inventario real de los dos paneles de administración construidos con Filament 5
 | Panel | ID | Ruta | Acceso | Estado |
 |-------|----|------|--------|--------|
 | Admin | `admin` | `/admin` | Admin y SuperAdmin (`User::isAdmin()`) | ✅ Operativo, ~70 % completo |
-| Tenant | `tenant` | `/panel` | ⚠️ Cualquier usuario autenticado | ❌ **Vacío** — solo una página Dashboard |
+| Tenant | `tenant` | `/panel` | ⚠️ Cualquier usuario autenticado | ✅ En marcha — 3 páginas y 1 Resource (tokens de API) |
 
 Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvider.php`.
 
@@ -32,7 +32,7 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Navegación estática extra | "Documentación de la API" → `route('scribe')` (`/docs`), se abre en pestaña nueva |
 | Render hooks | `SCRIPTS_AFTER` para `@push('scripts')` y Editor.js en `EditContent`; `AUTH_LOGIN_FORM_BEFORE` para el script de reCAPTCHA v3 del login |
 
-### Resources (23)
+### Resources (24)
 
 | Grupo | Resource | Modelo |
 |-------|----------|--------|
@@ -52,6 +52,7 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Hardware | `HardwareTypeResource` | `HardwareType` |
 | Hardware | `HardwareAvailableComponentResource` | `HardwareAvailableComponent` |
 | Hardware | `HardwareEnergyResource` | `HardwareEnergy` |
+| Hardware | `EnergySystemResource` | `EnergySystem` |
 | Hardware | `PrinterResource` | `Printer` |
 | Módulos | `AirFlightAirPlaneResource` | `AirFlightAirPlane` |
 | Módulos | `AirFlightRouteResource` | `AirFlightRoute` |
@@ -125,9 +126,12 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 app/Filament/Tenant/
 ├── Pages/Dashboard.php     ← título "Mi Panel"
 ├── Pages/Login.php         ← custom, sólo añade reCAPTCHA v3 (HasRecaptchaLogin)
-├── Resources/              ← vacío
-└── Widgets/                ← vacío
+├── Pages/EditProfile.php   ← edición de los datos propios
+└── Resources/ApiTokens/    ← ApiTokenResource + Pages/{CreateApiToken,ListApiTokens}
 ```
+
+El panel ya **no está vacío**: tiene 3 páginas y un Resource, con el que cada usuario gestiona sus
+propios tokens de API sin pasar por el panel de administración. `Widgets/` no existe.
 
 ### Configuración
 
@@ -138,14 +142,17 @@ app/Filament/Tenant/
 | Grupos de navegación declarados | Dispositivos · Mi Cuenta · Documentación |
 | Navegación estática | "Documentación de la API" → `route('scribe')` (`/docs`), se abre en pestaña nueva |
 
-### Advertencia de seguridad
+### Nota de seguridad
 
-`User::canAccessPanel()` devuelve `true` para cualquier usuario autenticado en el panel
-`tenant`. Como no hay Resources, hoy no se filtra ninguna información, pero **en cuanto se
-añada el primero habrá que implementar el filtrado por usuario** en `getEloquentQuery()`.
+`User::canAccessPanel()` devuelve `true` para cualquier usuario autenticado en el panel `tenant`, así
+que **el aislamiento lo pone cada Resource**, no la puerta de entrada.
 
-El futuro de este panel (construirlo o eliminarlo) se decide en la
-fase 06 del roadmap.
+`ApiTokenResource` ya lo hace: su `getEloquentQuery()` filtra por `tokenable_id`, de modo que cada
+usuario ve únicamente sus propios tokens. **Todo Resource nuevo de este panel tiene que hacer lo
+mismo**; si no filtra, expone los datos de todos los usuarios a cualquiera que entre.
+
+(La advertencia anterior decía que el filtrado haría falta «en cuanto se añada el primer Resource».
+Ese primero ya existe y filtra.)
 
 ---
 

@@ -1,6 +1,5 @@
 # 🌊 Caudal fluvial e inundaciones
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Caudal diario de ríos a partir del modelo hidrológico GloFAS de Copernicus, con
 previsión de meses y archivo desde 1984.
@@ -83,3 +82,5 @@ Modelos 🔵: `seamless_v4`, `forecast_v4`, `consolidated_v4` y sus equivalentes
 | 1 | Por qué el dato se corta hacia el día 185 si acepta 366 | Media |
 | 2 | Si la hora de publicación de GloFAS (12:49 UTC) se repite en días sucesivos | Baja |
 | 3 | `cell_selection`: por defecto coincide con `nearest` 🟢 (costa de Cádiz, misma celda); falta comparar con `land` | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

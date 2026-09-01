@@ -110,6 +110,8 @@ tiene efecto.
 
 ### 2.6 Crear el primer usuario administrador
 
+> Opciones completas del comando en [`docs/info/commands.md`](../info/commands.md) §4-ter.
+
 ```bash
 docker compose exec app php artisan user:make-admin --superadmin
 ```
@@ -364,3 +366,5 @@ Estrategia mínima:
 - [Documentación AEMET](../info/apis/aemet.md)
 - [WebSockets en VPS](../info/websockets.md)
 - [Configuración de autenticación](../info/auth.md)
+
+> Creado: 2026-05-26 · Última revisión: 2026-09-01

@@ -1,6 +1,5 @@
 # 💨 Calidad del aire y polen
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Contaminantes, índices AQI europeo y estadounidense, polen y UV, a partir del
 servicio Copernicus CAMS.
@@ -111,3 +110,5 @@ Las unidades son `μg/m³` salvo `carbon_dioxide` (ppm), los índices (adimensio
 | 2 | `cell_selection`: en la costa de Cádiz las tres opciones dan la **misma** celda, así que la prueba no discrimina; repetir donde la rejilla sea más fina | Baja |
 | 3 | Hora exacta de publicación en días sucesivos (solo se ha medido una) | Baja |
 | 4 | Si `current` incluye `interval` como en la Forecast API | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

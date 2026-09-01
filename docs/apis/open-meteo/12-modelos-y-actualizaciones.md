@@ -1,6 +1,5 @@
 # 🧭 Catálogo de modelos y metadata API
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint** (la metadata API) más el catálogo de referencia de los modelos que alimentan al
 resto. Es el archivo que hay que consultar para decidir **qué modelo usar** y **cuándo lanzar un
@@ -210,3 +209,5 @@ general, `best_match`.
 | 2 | Dominio geográfico exacto de `meteofrance_arome_france` sobre España — matriz parcial ya medida en [`01`](01-prevision-meteorologica.md#cobertura-real-en-españa-) | Media |
 | 3 | Correspondencia completa entre los 148 identificadores del catálogo y los valores de `models=` | Baja |
 | 4 | Si los tiempos de disponibilidad medidos se repiten en días sucesivos (una sola muestra por modelo) | Media |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

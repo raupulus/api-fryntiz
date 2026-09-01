@@ -223,7 +223,7 @@ PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PH
 api-fryntiz/
 ├── app/                      # Lógica principal de la aplicación (arquitectura MVC + Service Layer)
 │   ├── Actions/              # Operaciones atómicas reutilizables (Fortify, PublishContent, StoreSensorData)
-│   ├── Console/Commands/     # 34 comandos Artisan propios (AEMET/, Debug/, IoT/, Mcp/, CV/, Project...)
+│   ├── Console/Commands/     # 36 comandos Artisan propios (AEMET/, Debug/, IoT/, Mcp/, CV/, Project...)
 │   ├── Enums/                # Backed Enums tipados en PHP 8.4 (sufijo Enum)
 │   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
@@ -241,7 +241,6 @@ api-fryntiz/
 │   │   ├── Requests/         # 20 FormRequests con reglas estrictas de validación
 │   │   └── Resources/V2/     # 31 JsonResources para transformación de datos en API V2
 │   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
-│   ├── Listeners/            # Oyentes de eventos (BroadcastWeatherStationUpdate)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
 │   ├── Models/               # 107 Modelos Eloquent con PHPDoc completo
@@ -255,7 +254,7 @@ api-fryntiz/
 │   ├── Policies/             # 16 Policies para autorización de modelos
 │   ├── Providers/            # Service Providers de Laravel y paneles Filament (AdminPanelProvider, TenantPanelProvider)
 │   ├── Rules/                # Reglas de validación personalizadas (OwnedHardwareDevice, OwnedSmartPlant, KnownSensor)
-│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (14 servicios)
+│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (15 servicios + el DTO `CaptchaResult`)
 │   ├── Support/              # Clases de soporte general (Auth, TokenAbilities, FilamentValidationRules)
 │   └── Traits/               # Traits reutilizables (ApiResponseTrait, BelongsToUser, HasSlug, Filterable...)
 ├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)
@@ -402,7 +401,7 @@ Los endpoints de escritura llevan `auth:sanctum` + `ability:<scope>` + `throttle
 
 Todos los comandos Artisan personalizados del proyecto están especificados y documentados en detalle en [`docs/info/commands.md`](docs/info/commands.md).
 
-34 comandos propios en total (`find app/Console/Commands -iname '*.php' | grep -v Concerns | wc -l`).
+36 comandos propios en total (`find app/Console/Commands -iname '*.php' | grep -v Concerns | wc -l`).
 
 ### Comandos del Proyecto
 - `php artisan project:install`: Instalación guiada del entorno (migraciones, seeders y storage:link).
@@ -423,7 +422,16 @@ Todos los comandos Artisan personalizados del proyecto están especificados y do
 - **KeyCounter:** `keycounter:generate_duration`, `keycounter:remove_duplicate`.
 - **IoT:** `iot:device-token` (emisión de tokens de hardware con abilities específicas), `iot:check-silent-devices` (avisa cuando un dispositivo deja de reportar).
 - **MCP:** `mcp:inspector` (inspector de servidores MCP; `mcp:start` lo aporta el propio paquete).
+- **Usuarios:** `user:make-admin` (crea un administrador; pensado para el primer arranque en un
+  servidor, sustituye al recorte de tinker de la guía de despliegue). Opciones: `--email`, `--name`,
+  `--password`, `--superadmin`. Sin `--password` la pide por consola con `secret()`, para que no
+  quede en el historial del shell ni en la lista de procesos.
 - **Datos de prueba técnicos:** `debug:seed-all` y comandos individuales `debug:seed-{airflight,contact,content,cv,energy,hardware,keycounter,newsletter,platform,smartplant,weatherstation}`.
+
+### Comandos sobrescritos
+- `php artisan serve`: sobrescribe el `serve` nativo (`App\Console\Commands\ServeCommand`) para
+  levantar también `reverb:start` cuando `BROADCAST_CONNECTION=reverb`. Se registra con el mismo
+  nombre que el del framework, así que Artisan lo sustituye en el auto-discovery.
 
 Catálogo detallado: [`docs/info/commands.md`](docs/info/commands.md).
 
@@ -478,7 +486,7 @@ El CORS real lo aplica `Illuminate\Http\Middleware\HandleCors` (prepend global) 
 
 ## 11. Base de datos
 
-- PostgreSQL. 133 migraciones, 105 factories, 18 seeders.
+- PostgreSQL. 133 migraciones, 105 factories, 19 ficheros de seeder (18 seeders + `DatabaseSeeder`).
 - Toda columna lleva `->comment()` en español.
 - Foreign keys con `onDelete`/`onUpdate` explícitos.
 - Índices en las columnas de búsqueda frecuente.
@@ -503,6 +511,8 @@ Cosas que sorprenden y hacen perder tiempo. Léelas antes de depurar.
 | **`Collection::macro('comment')`** | Macro definida en `AppServiceProvider` para poder hacer `$table->timestamps()->comment(...)` en migraciones. |
 | **`Sanctum::usePersonalAccessTokenModel(ApiToken::class)`** | El modelo de token es `App\Models\ApiToken`, no el de Sanctum. |
 | **Tests sin rate limit** | Todos los limiters devuelven `Limit::none()` en el entorno `testing`. Si testeas rate limiting, ajústalo. |
+| **No lances la suite con `serve` o `mcp:start` vivos** | `RefreshDatabase` hace `migrate:fresh`, que pide `AccessExclusiveLock`. Con otro proceso conectado a la BD de test revienta con `Deadlock detected` y la deja a medio migrar: salen `QueryException` por todas partes que **parecen bugs del código y no lo son**. Se arregla cerrando todo y relanzando. |
+| **Decisiones ya tomadas** | Antes de "arreglar" el fail-open de reCAPTCHA, los resources sin `whenLoaded` o la subida sin validar del editor, lee [decisiones-tecnicas.md](docs/info/decisiones-tecnicas.md): son deliberadas y tienen tests que las fijan. |
 | **`docs/planning` NO va en git, y es a propósito** | Es material de trabajo local para preparar cómo se adapta el proyecto; no es el proyecto. `docs/planning/archived` guarda lo ya ejecutado, **no es fiable como estado actual** y es la excepción, no la norma: no existe en un clon nuevo y se borrará por completo en cuanto se verifiquen sus planificaciones. Lo que sí se versiona es `docs/apis` (oficial de terceros) y `docs/info` (técnica de esta plataforma). **No lo saques del `.gitignore`.** |
 | **Envelope de respuesta** | Nunca devuelvas un array pelado desde un controlador API. Usa `BaseApiController`. |
 | **Directorios vacíos sueltos** | Quedan algunos tras la fase 8 (`app/Http/Middleware/`, `app/Services/Auth/`…). Git no versiona directorios vacíos, así que sólo están en la copia local. |
@@ -661,6 +671,8 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 - **Validación:** siempre en FormRequests bajo `app/Http/Requests/`, nunca en el controlador. Formularios con reglas permisivas pero seguras.
 - **Filament y formularios:** Todo error de formulario se gestiona mediante notificaciones nativas de Filament, sin exponer bloques de HTML crudo.
 - **Subida de imágenes backend:** Todo campo `FileUpload` para imágenes se implementará con cropper/editor por defecto (`->imageEditor()` o componente `ImageCropperUpload`).
+- **Metadatos de imágenes:** toda subida limpia los metadatos EXIF/GPS **antes** de escribir los propios de la plataforma. Son dos pasos distintos y explícitos, y el primero se hace **siempre**, aunque la librería de imagen ya los descarte por su cuenta: hoy los pierde el driver por casualidad, y el día que cambie el driver nadie va a volver a mirar esto. Aplica a **todas** las imágenes, privadas y públicas. La rotación se conserva rotando los píxeles de verdad, no dejando el flag EXIF. Se resuelve en `File::addFile()`, no en cada formulario. Ver [decisiones-tecnicas.md](docs/info/decisiones-tecnicas.md) D3-D6.
+- **Validación de subida:** `File::addFile()` valida por defecto contra `File::SAFE_MIMES`. Los campos que esperan una imagen usan el valor por defecto; el editor de contenido y los adjuntos llaman con `validate: false` y aceptan lo que sea. **La tabla `file_types` NO es fuente de validación** (D2).
 - **Lógica de negocio:** en `app/Services/`, no en controladores ni en modelos.
 - **Autorización:** en Policies + `authorize()` en el controlador o en el FormRequest.
 - **Tests automatizados:** Toda funcionalidad implementada tiene que tener tests automatizados que la validen para seguir funcionando (`php artisan test --compact`).

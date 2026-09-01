@@ -1,6 +1,5 @@
 # 🎲 Predicción por conjuntos (ensemble)
 
-> **Última actualización:** 2026-09-01
 
 **1 endpoint.** Previsión probabilística: en vez de un único valor, devuelve **todos los miembros**
 del conjunto para cada variable e instante, hasta 51 por modelo y hasta 35 días.
@@ -134,3 +133,5 @@ final del horizonte.
 | 1 | Miembros de los modelos no probados (GEM, BOM, MOGREPS, AIFS) | Baja |
 | 2 | Por qué `ncep_hgefs025_ensemble_mean` devuelve **una sola serie pero con valores nulos** en Madrid: ¿cobertura o producto vacío? | Media |
 | 3 | Cobertura de los EPS no probados en España (comprobados 🟢: IFS, GEFS e ICON global/EU sí; ICON-D2 no) | Baja |
+
+> Creado: 2026-09-01 · Última revisión: 2026-09-01

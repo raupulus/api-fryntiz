@@ -11,7 +11,7 @@ Documentación destilada de la API REST oficial de la **Agencia Estatal de Meteo
 - **Última verificación contra la API real:** **2026-08-26** — **los 64 endpoints (100 %)** ✅
 
 > [!TIP]
-> Este directorio documenta **la API oficial de AEMET**. Para saber **cómo la usa Sansimar**
+> Este directorio documenta **la API oficial de AEMET**. Para saber **cómo la usa Api Raupulus**
 > (servicios, comandos, modelos, caché), ver `docs/info/apis/`. Ver la
 > [distinción entre ambos](../README.md#no-confundir-con-docsinfoapis).
 
