@@ -48,9 +48,13 @@ class WeatherStationController extends BaseApiController
             ]);
         }
 
-        $readings = $this->service
-            ->getZoneStations($zone, $request->query('location_type'))
-            ->map(fn ($device) => $this->service->getStationReadings($device));
+        // API-06: esto llamaba a getStationReadings() por estación, o sea doce
+        // consultas multiplicadas por el número de estaciones de la zona. La
+        // versión por lotes agrupa por sensor y el coste deja de crecer con el
+        // número de estaciones.
+        $readings = $this->service->getStationsReadings(
+            $this->service->getZoneStations($zone, $request->query('location_type'))
+        );
 
         return $this->successResponse(
             WeatherStationResource::collection($readings)->resolve()

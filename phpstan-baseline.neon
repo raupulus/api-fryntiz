@@ -187,18 +187,6 @@ parameters:
 			path: app/Http/Resources/V2/AirFlight/AirFlightResource.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parent\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$parentCategory\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/V2/Content/ContentFeaturedResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\V2\\Content\\ContentResource\:\:\$seo_description\.$#'
 			identifier: property.notFound
 			count: 1

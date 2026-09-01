@@ -416,6 +416,7 @@ class Content extends BaseModel
      * Prepara la consulta sin ejecutarla para las etiquetas asociadas.
      *
      * @param  int|null  $platformId  Id de la plataforma
+     * @return Builder<Category>
      */
     public function subcategoriesQuery(?int $platformId = null): Builder
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Auth\V2;
 
+use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Auth\V2\IssueDeviceTokenRequest;
 use App\Http\Requests\Api\Auth\V2\LoginRequest;
@@ -83,12 +84,20 @@ class TokenController extends BaseApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $tokens = $request->user()
-            ->tokens()
-            ->orderByDesc('created_at')
-            ->get();
+        // API-03: esto hacía `->get()` sobre todos los tokens del usuario. Con
+        // un cacharro por token y varios años de trastear, la lista completa
+        // viajaba en cada consulta. Va paginada como el resto de colecciones de
+        // la V2, con los 25 por página y el orden descendente por fecha de
+        // creación que CollectionQuery ya trae por defecto.
+        $collectionQuery = new CollectionQuery(
+            filterable: ['name', 'created_at', 'last_used_at'],
+            sortable: ['name', 'created_at', 'last_used_at'],
+        );
 
-        return $this->successResponse(ApiTokenResource::collection($tokens)->resolve());
+        return $this->paginatedResponse(
+            $collectionQuery->paginate($request->user()->tokens()->getQuery(), $request),
+            ApiTokenResource::class
+        );
     }
 
     /**
