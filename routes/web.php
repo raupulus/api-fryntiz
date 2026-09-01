@@ -102,7 +102,7 @@ Route::group(['prefix' => '/file'], function () {
     // contra la lista de tamaños del proyecto y el resultado se cachea en
     // disco; el throttle cierra la puerta de la calle.
     Route::get('/resize/{module}/{id}/{width}/{slug?}', [FileController::class, 'resizeAndGet'])
-        ->middleware('throttle:api')
+        ->middleware('throttle:file-resize')
         ->name('file.resize');
 
     // N27: `delete` borra del disco y estaba sin autenticar: cualquiera podía

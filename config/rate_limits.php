@@ -45,6 +45,21 @@ return [
     'api_per_minute' => (int) env('RATE_LIMIT_API', 60),
 
     /*
+     * Servir imágenes redimensionadas (`/file/resize`). Va aparte y MUY por
+     * encima del resto a propósito: no es una llamada de API, es una etiqueta
+     * <img> de una página web. Una galería o un artículo ilustrado dispara
+     * decenas de peticiones en UNA sola carga, así que con el límite de la API
+     * (60/min) el visitante se quedaría sin imágenes a la segunda página.
+     *
+     * El freno de verdad contra el abuso no es este número, es que el ancho
+     * sólo puede ser uno del catálogo y que el resultado se cachea en disco:
+     * cada variante se genera una vez y las siguientes se sirven como fichero.
+     * Esto es sólo el tope superior para que nadie barra el catálogo entero en
+     * bucle.
+     */
+    'file_resize_per_minute' => (int) env('RATE_LIMIT_FILE_RESIZE', 600),
+
+    /*
      * Login. Por IP, y bajo: es la defensa contra fuerza bruta. Depende de que
      * TRUSTED_PROXIES esté bien puesto; si no, la IP es la del proxy y este
      * límite pasa a ser un cupo global compartido por todos los visitantes.

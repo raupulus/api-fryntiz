@@ -185,6 +185,7 @@ class AppServiceProvider extends ServiceProvider
 
         if (app()->environment('testing')) {
             RateLimiter::for('api', fn () => Limit::none());
+            RateLimiter::for('file-resize', fn () => Limit::none());
             RateLimiter::for('sensor-data', fn () => Limit::none());
             RateLimiter::for('contact', fn () => Limit::none());
             RateLimiter::for('api-auth', fn () => Limit::none());
@@ -197,6 +198,14 @@ class AppServiceProvider extends ServiceProvider
             RateLimiter::for('api', function (Request $request) {
                 return Limit::perMinute((int) config('rate_limits.api_per_minute'))
                     ->by(self::rateKey($request));
+            });
+
+            // Imágenes de páginas web, no llamadas de API: ver la nota de
+            // config/rate_limits.php. Por IP, que es lo único que hay en una
+            // ruta pública.
+            RateLimiter::for('file-resize', function (Request $request) {
+                return Limit::perMinute((int) config('rate_limits.file_resize_per_minute'))
+                    ->by($request->ip());
             });
 
             RateLimiter::for('sensor-data', function (Request $request) {
