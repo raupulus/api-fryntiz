@@ -177,11 +177,8 @@ cuyo `GdDriver` llama a `ImageManager::usingDriver()`, un método que **sólo ex
 Con la 3 instalada, cualquier `Image::read()` reventaba y las miniaturas y `/file/resize` no
 funcionaban.
 
-**`guzzlehttp/guzzle` 7 → 8 está bloqueado, y no por decisión.** Guzzle 8 requiere
-`guzzlehttp/psr7 ^3`, mientras `laravel/reverb` —en su última versión, v1.11.1— sigue exigiendo
-`psr7 ^2.6`. Subir Guzzle obligaría a quitar Reverb, que es el WebSocket del proyecto. Guzzle 7.15.5
-está al día dentro de su rama y `roave/security-advisories` no reporta avisos para ella, así que no
-hay urgencia. **Se aplicará cuando Reverb admita `psr7` 3.**
+**La excepción es `guzzlehttp/guzzle`**, bloqueado por una incompatibilidad de dependencias. Ver
+**D16**: asunto cerrado, no hace falta volver a levantarlo.
 
 *Origen: DEP-01, DEP-02, DEP-03.*
 
@@ -221,6 +218,56 @@ faltaba). Las **29 restantes están revisadas una a una** y son tipado dinámico
 propiedad existe en algún sitio —columna, accessor, alias de un select— o no existe en absoluto?*
 Si no existe en absoluto, **es un bug**, no ruido de tipado: el valor será `null` siempre y la
 condición que lo use dará siempre el mismo resultado. Los cinco de arriba eran de ese tipo.
+
+
+### D15 · `project:clear` regenera la `APP_KEY` por defecto, y así se queda
+
+El comando regenera la clave salvo que se pase `--no-key`.
+
+**Por qué.** `project:clear` deja el proyecto **como recién instalado**: ése es su propósito.
+Conservar la clave sería hacer media limpieza. No es un descuido ni un comportamiento heredado.
+
+**Las salvaguardas ya están donde deben.** En producción pide confirmación explícita, avisa de
+cuántos usuarios tienen 2FA activo —Fortify cifra `two_factor_secret` con la `APP_KEY`, así que esos
+usuarios tendrán que volver a darlo de alta— y `--no-key` existe precisamente para limpiar sin tocar
+la clave.
+
+⚠️ **Esto lleva propuesto en varias auditorías seguidas**, siempre con el mismo argumento («el
+comportamiento por defecto es destructivo»). Está decidido, revisado y confirmado más de una vez.
+**No hay que invertir la lógica.** El comentario del propio comando remite aquí.
+
+### D16 · `guzzlehttp/guzzle` se queda en 7 — asunto cerrado
+
+No es una preferencia ni algo por decidir: **es una incompatibilidad**. Guzzle 8 requiere
+`guzzlehttp/psr7 ^3`, y `laravel/reverb` —en su última versión— exige `psr7 ^2.6`. Subir Guzzle
+obligaría a quitar Reverb, que es el WebSocket del proyecto.
+
+Guzzle 7 está al día dentro de su rama y `roave/security-advisories` no reporta nada para ella.
+
+**No hace falta volver a levantarlo.** Se aplicará solo, sin discusión, el día que Reverb admita
+`psr7` 3 — y hasta entonces `composer outdated` lo seguirá listando, que no significa nada.
+
+
+### D17 · La escritura de sensores se queda en el controlador
+
+`SensorReadingController::store()` y `storeReadings()` arman las filas, abren la transacción, hacen
+el `insert` y disparan el evento **dentro del controlador**, en lugar de delegarlo en
+`WeatherStationService` como manda la convención de AGENTS.md §14. Lo mismo, en menor medida, en
+algún fragmento de `ContentController`, `AirFlightController` y `TokenController`.
+
+**No está roto.** Es una cuestión de dónde vive el código, no de qué hace: son las rutas más
+cubiertas por tests de todo el proyecto (`WeatherStationPersistenceTest`, 25 casos), están
+comentadas y funcionan.
+
+**Por qué no se mueve.** Es la ruta más caliente del proyecto —lecturas IoT cada pocos segundos, con
+un `insert` por lote pensado a propósito para no multiplicar el trabajo del servidor—, y moverla es
+puro refactor de organización: cero cambio funcional a cambio de tocar el camino por el que entra
+todo lo que miden los cacharros. El riesgo no lo paga la mejora.
+
+Se hará, si se hace, en un refactor de consolidación con calma, nunca como parte de otra tarea ni
+antes de un despliegue.
+
+*Origen: API-01 y API-04 de la auditoría 2026-09-01.*
 
 ---
 

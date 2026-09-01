@@ -53,8 +53,22 @@ class ProjectClearCommand extends Command
 
         // 3. Regeneración de clave segura en .env
         if (! $this->option('no-key')) {
-            // Regenerar la clave es una decisión deliberada de este proyecto
-            // (cierra todas las sesiones y obliga a los clientes a recargar).
+            // ⚠️ REGENERAR POR DEFECTO ES INTENCIONADO. NO INVERTIRLO.
+            //
+            // Cada auditoría propone lo mismo: que la clave sólo se regenere
+            // con un flag explícito, porque «el comportamiento por defecto es
+            // destructivo». Y sí lo es: ése es justamente el propósito del
+            // comando. `project:clear` deja el proyecto como recién instalado;
+            // conservar la clave sería hacer media limpieza.
+            //
+            // Las salvaguardas ya están puestas donde tienen que estar: en
+            // producción pide confirmación explícita, avisa de cuántos usuarios
+            // tienen 2FA, y existe `--no-key` para quien quiera limpiar sin
+            // tocar la clave.
+            //
+            // Está decidido y revisado varias veces. Ver
+            // docs/info/decisiones-tecnicas.md D15 antes de volver a proponerlo.
+            //
             // Lo que no se ve venir es el 2FA: Fortify guarda
             // `two_factor_secret` CIFRADO con la APP_KEY, así que quien lo tenga
             // activo se queda sin poder completar el segundo factor y hay que
