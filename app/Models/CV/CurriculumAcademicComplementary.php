@@ -85,6 +85,32 @@ class CurriculumAcademicComplementary extends CurriculumBaseSection
     protected $table = 'cv_academic_complementary';
 
     /**
+     * @var string[] Campos que admiten asignación masiva.
+     *
+     * Va en cada modelo y no en CurriculumBaseSection: las secciones
+     * comparten clase padre pero no esquema, así que una lista única en la
+     * abstracta descartaría en silencio las columnas propias de cada una.
+     */
+    protected $fillable = [
+        'curriculum_id',
+        'image_id',
+        'title',
+        'entity',
+        'credential_id',
+        'credential_url',
+        'learned',
+        'description',
+        'note',
+        'hours',
+        'instructor',
+        'expires',
+        'expires_at',
+        'expedition_at',
+        'start_at',
+        'end_at',
+    ];
+
+    /**
      * Devuelve un array con todos los títulos de una tabla.
      *
      * @return array

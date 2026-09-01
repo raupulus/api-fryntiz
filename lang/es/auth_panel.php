@@ -9,6 +9,7 @@ return [
     'password' => 'Contraseña',
     'remember_me' => 'Recordarme',
     'forgot_password' => '¿Olvidaste tu contraseña?',
+    'login_failed' => 'No se ha podido completar el acceso. Inténtalo de nuevo.',
     'access_denied' => 'No tienes permiso para acceder a este panel.',
     'welcome' => 'Bienvenido',
     'profile' => 'Perfil',

@@ -51,12 +51,18 @@ class FileType extends BaseModel
 
     protected $table = 'file_types';
 
-    protected $guarded = [
-        'id',
-        'icon128',
-        'icon64',
-        'icon32',
-        'icon16',
+    /**
+     * @var string[] Campos que admiten asignación masiva.
+     *
+     * Lista explícita en lugar de `$guarded = ['id']`: con guarded, cualquier
+     * columna nueva queda abierta a mass assignment el día que se añada, sin
+     * que nadie tenga que decidirlo (SEC-08).
+     */
+    protected $fillable = [
+        'user_id',
+        'type',
+        'mime',
+        'extension',
     ];
 
     /**

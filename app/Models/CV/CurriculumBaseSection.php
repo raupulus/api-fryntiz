@@ -32,12 +32,14 @@ abstract class CurriculumBaseSection extends BaseModel
      */
     public static $imagePath;
 
-    /**
-     * @var string[] Campos que se pueden llenar mediante el uso de mass-assignment.
+    /*
+     * La asignación masiva se declara en cada sección concreta con su propio
+     * `$fillable`. Aquí no hay lista: las secciones comparten esta clase pero
+     * no el esquema —una formación no tiene las columnas de un proyecto—, así
+     * que una lista común descartaría en silencio la mitad de los campos de
+     * cada una. El `$guarded = ['id']` que había aquí dejaba abierta cualquier
+     * columna futura de las quince tablas a la vez (SEC-08).
      */
-    protected $guarded = [
-        'id',
-    ];
 
     /**
      * Relaciona con el curriculum.

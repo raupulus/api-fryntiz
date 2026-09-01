@@ -54,14 +54,25 @@ class RecaptchaService
                     'remoteip' => $ip,
                 ]));
         } catch (\Throwable $e) {
-            // Si Google no responde no se puede afirmar que sea un bot. Se deja
-            // pasar como dudoso: el mensaje se guardará y quedará en el panel.
+            // FALLO EN ABIERTO — decisión tomada, no un descuido (SEC-05).
+            //
+            // Si Google no responde no se puede afirmar que quien envía sea un
+            // bot, y no se va a cerrar el acceso al sitio porque un tercero se
+            // haya caído. En principio no debería pasar; si pasa y resulta ser
+            // un problema real, la salida es buscar otro proveedor, no dejar a
+            // la gente fuera mientras tanto.
+            //
+            // Este warning y el de más abajo son la señal de alerta: si
+            // aparecen a ráfagas en el log, alguien está provocando el fallo
+            // para saltarse la comprobación. Está documentado en
+            // docs/info/auth.md y en docs/info/decisiones-tecnicas.md.
             Log::warning('reCAPTCHA: no se ha podido verificar', ['message' => $e->getMessage()]);
 
             return new CaptchaResult(valid: true, score: null, configured: true);
         }
 
         if (! $response->successful()) {
+            // Mismo criterio que arriba: fallo en abierto deliberado.
             Log::warning('reCAPTCHA: respuesta no satisfactoria', ['status' => $response->status()]);
 
             return new CaptchaResult(valid: true, score: null, configured: true);

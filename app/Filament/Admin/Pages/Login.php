@@ -17,11 +17,6 @@ class Login extends BaseLogin
     public function authenticate(): ?LoginResponse
     {
         try {
-            Log::info('[Admin Login] Intento de autenticación', [
-                'email' => $this->data['email'] ?? 'sin email',
-                'ip' => request()->ip(),
-            ]);
-
             $this->verifyRecaptcha();
 
             $result = parent::authenticate();
@@ -32,6 +27,8 @@ class Login extends BaseLogin
 
             return $result;
         } catch (ValidationException $e) {
+            // Esta rama es el «credenciales incorrectas» de toda la vida: se
+            // relanza para que Filament pinte el error del formulario.
             Log::warning('[Admin Login] Fallo de validación/credenciales', [
                 'email' => $this->data['email'] ?? 'sin email',
                 'errors' => $e->errors(),
@@ -39,12 +36,17 @@ class Login extends BaseLogin
 
             throw $e;
         } catch (\Throwable $e) {
+            // Sin el stack trace: Laravel ya escribe la excepción completa por
+            // su cuenta, y aquí sólo servía para duplicar el volcado dentro del
+            // log de accesos.
             Log::error('[Admin Login] Error inesperado: '.$e->getMessage(), [
                 'email' => $this->data['email'] ?? 'sin email',
-                'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->addError('data.email', 'Error interno: '.$e->getMessage());
+            // El mensaje que ve quien intenta entrar es genérico. El
+            // getMessage() de una excepción interna puede describir la
+            // aplicación por dentro, y la pantalla de login es pública.
+            $this->addError('data.email', __('auth_panel.login_failed'));
 
             return null;
         }

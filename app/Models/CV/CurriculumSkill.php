@@ -63,6 +63,22 @@ class CurriculumSkill extends CurriculumBaseSection
     protected $table = 'cv_skills';
 
     /**
+     * @var string[] Campos que admiten asignación masiva.
+     *
+     * Va en cada modelo y no en CurriculumBaseSection: las secciones
+     * comparten clase padre pero no esquema, así que una lista única en la
+     * abstracta descartaría en silencio las columnas propias de cada una.
+     */
+    protected $fillable = [
+        'curriculum_id',
+        'image_id',
+        'name',
+        'level',
+        'description',
+        'position',
+    ];
+
+    /**
      * Devuelve un array con todos los títulos de una tabla.
      *
      * @return array

@@ -71,6 +71,25 @@ class CurriculumExperienceSelfEmployed extends CurriculumBaseSection
     protected $table = 'cv_experience_self_employed';
 
     /**
+     * @var string[] Campos que admiten asignación masiva.
+     *
+     * Va en cada modelo y no en CurriculumBaseSection: las secciones
+     * comparten clase padre pero no esquema, así que una lista única en la
+     * abstracta descartaría en silencio las columnas propias de cada una.
+     */
+    protected $fillable = [
+        'curriculum_id',
+        'image_id',
+        'title',
+        'position',
+        'company',
+        'description',
+        'note',
+        'start_at',
+        'end_at',
+    ];
+
+    /**
      * Devuelve un array con todos los títulos de una tabla.
      *
      * @return array

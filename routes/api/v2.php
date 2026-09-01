@@ -37,7 +37,15 @@ Route::prefix('auth')->group(function () {
         ->middleware('throttle:api-auth')
         ->name('api.v2.auth.tokens.store');
 
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SESSION])->group(function () {
+    // SEC-10: estas cuatro iban sin throttle mientras el resto de escrituras sí
+    // lo llevaban. `POST /tokens/devices` emite tokens de dispositivo, así que
+    // un token de sesión filtrado podía fabricarlos sin freno.
+    //
+    // El limiter es `api`, no `api-auth`: este último reparte por IP y por
+    // email, y aquí no hay email en el input, con lo que la segunda clave
+    // degeneraría en una sola compartida por todo el mundo. `api` reparte por
+    // token, que es quien llama en una ruta autenticada.
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SESSION, 'throttle:api'])->group(function () {
         Route::get('/tokens', [TokenController::class, 'index'])->name('api.v2.auth.tokens.index');
         Route::post('/tokens/devices', [TokenController::class, 'storeDeviceToken'])->name('api.v2.auth.tokens.devices.store');
         Route::delete('/tokens/current', [TokenController::class, 'destroyCurrent'])->name('api.v2.auth.tokens.destroy_current');

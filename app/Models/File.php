@@ -161,8 +161,27 @@ class File extends BaseModel
 
     protected $table = 'files';
 
-    protected $guarded = [
-        'id',
+    /**
+     * @var string[] Campos que admiten asignación masiva.
+     *
+     * Lista explícita en lugar de `$guarded = ['id']`: con guarded, cualquier
+     * columna nueva queda abierta a mass assignment el día que se añada, sin
+     * que nadie tenga que decidirlo (SEC-08).
+     */
+    protected $fillable = [
+        'user_id',
+        'file_type_id',
+        'module',
+        'path',
+        'storage_path',
+        'name',
+        'width',
+        'height',
+        'original_name',
+        'size',
+        'alt',
+        'title',
+        'is_private',
     ];
 
     /**
