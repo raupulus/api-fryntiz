@@ -71,7 +71,7 @@ class CurriculumExperienceOther extends CurriculumBaseSection
     protected $table = 'cv_experience_others';
 
     /**
-     * @var string[] Campos que admiten asignación masiva.
+     * @var list<string> Campos que admiten asignación masiva.
      *
      * Va en cada modelo y no en CurriculumBaseSection: las secciones
      * comparten clase padre pero no esquema, así que una lista única en la

@@ -37,7 +37,7 @@ class GalleryImage extends BaseModel
     protected $table = 'gallery_images';
 
     /**
-     * @var string[] Campos que admiten asignación masiva.
+     * @var list<string> Campos que admiten asignación masiva.
      *
      * Lista explícita en lugar de `$guarded = ['id']`: con guarded, cualquier
      * columna nueva queda abierta a mass assignment el día que se añada, sin
