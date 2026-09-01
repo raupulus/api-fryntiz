@@ -14,7 +14,7 @@
         "intervention/image-laravel": "^4",
         "laravel/fortify": "^1.24",
         "laravel/framework": "^13.0",
-        "laravel/mcp": "^0.8.1",
+        "laravel/mcp": "^0.9",
         "laravel/reverb": "^1.11",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
