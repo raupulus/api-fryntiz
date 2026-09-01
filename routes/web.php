@@ -96,7 +96,13 @@ Route::group(['prefix' => '/file'], function () {
     Route::get('/download/{module}/{id}/{slug?}', [FileController::class, 'download'])
         ->name('file.download');
 
+    // SEC-04: el ancho llegaba arbitrario y sin caché, así que cada petición
+    // reprocesaba la imagen entera y un ancho enorme era un agotamiento de
+    // memoria a coste cero para quien lo pidiera. El ancho se resuelve ahora
+    // contra la lista de tamaños del proyecto y el resultado se cachea en
+    // disco; el throttle cierra la puerta de la calle.
     Route::get('/resize/{module}/{id}/{width}/{slug?}', [FileController::class, 'resizeAndGet'])
+        ->middleware('throttle:api')
         ->name('file.resize');
 
     // N27: `delete` borra del disco y estaba sin autenticar: cualquiera podía

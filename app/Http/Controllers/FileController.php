@@ -8,9 +8,19 @@ use App\Models\File;
 use Intervention\Image\Laravel\Facades\Image;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+use function array_filter;
+use function array_values;
 use function auth;
+use function dirname;
+use function in_array;
+use function is_dir;
+use function is_file;
+use function max;
+use function mkdir;
 use function redirect;
 use function response;
+use function sort;
+use function storage_path;
 
 /**
  * Class FileController
@@ -44,6 +54,12 @@ class FileController extends Controller
     /**
      * Redimensiona una imagen y la devuelve a ese tamaño.
      *
+     * El ancho no se acepta tal cual (SEC-04): se resuelve contra los tamaños
+     * que el proyecto ya genera en `File::$thumbnailsSizeWidth`. Con una lista
+     * cerrada el número de variantes posibles es finito, así que la caché en
+     * disco tiene sentido y un ancho enorme deja de ser una forma gratuita de
+     * hacer trabajar al servidor.
+     *
      * @param  string  $module  Grupo del archivo.
      * @param  int  $id  Identificador del archivo.
      * @param  string  $slug  Slug del archivo.
@@ -55,34 +71,91 @@ class FileController extends Controller
         $file = File::find($id);
 
         if (! $file) {
-            // TODO → Resize this file.
             return response()->file(File::genericImagePath('not_found'));
         }
 
-        // TODO → Check if file is an image.
-
         if ($file->type !== 'image') {
-            // TODO → Resize this file.
             return response()->file(File::genericImagePath('not_image'));
         }
 
         // # Compruebo si es un archivo privado.
         if ($file->is_private && ($file->user_id !== auth()->id())) {
-            // TODO → Resize this file.
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
-        $image = Image::read($file->storagePathFile);
-        $image->scale(width: (int) $width);
+        $resolvedWidth = $this->resolveWidth($width);
 
-        // TODO → Cachear la imagen o comprobar si ya existe ahí.
+        if (! $resolvedWidth) {
+            return response()->file(File::genericImagePath('not_found'));
+        }
 
-        $encoded = $image->encodeByMediaType();
+        // # Si la miniatura ya existe se sirve del disco. Es el caso normal:
+        // createThumbnails() escribe justo en esta ruta, así que para los
+        // anchos del catálogo no hay que tocar la librería de imagen.
+        $cachedPath = $this->cachedPath($file, $resolvedWidth);
+
+        if ($cachedPath && is_file($cachedPath)) {
+            return response()->file($cachedPath);
+        }
+
+        $image = Image::decodePath($file->storagePathFile);
+        $image->scale(width: $resolvedWidth);
+
+        // # Se guarda para que la siguiente petición del mismo ancho salga por
+        // la rama de arriba y no vuelva a reprocesar.
+        if ($cachedPath) {
+            $directory = dirname($cachedPath);
+
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $image->save($cachedPath);
+
+            return response()->file($cachedPath);
+        }
+
+        $encoded = $image->encodeUsingMediaType($file->fileType?->mime ?: 'image/jpeg');
 
         return response($encoded->toString())
             ->header('Content-Type', $encoded->mediaType());
-        // return response()->file($file->storagePathFile)->deleteFileAfterSend();
+    }
 
+    /**
+     * Resuelve el ancho pedido contra el catálogo de tamaños del proyecto.
+     *
+     * Un ancho que no esté en la lista cae al mayor de los permitidos que no lo
+     * supere; por debajo del más pequeño no hay nada que servir y devuelve null.
+     */
+    private function resolveWidth(int $width): ?int
+    {
+        if ($width < 1) {
+            return null;
+        }
+
+        $allowed = array_values(File::$thumbnailsSizeWidth);
+        sort($allowed);
+
+        if (in_array($width, $allowed, true)) {
+            return $width;
+        }
+
+        $candidates = array_filter($allowed, static fn (int $size): bool => $size <= $width);
+
+        return $candidates ? max($candidates) : null;
+    }
+
+    /**
+     * Ruta en disco de la variante cacheada, que es donde `createThumbnails()`
+     * escribe las miniaturas.
+     */
+    private function cachedPath(File $file, int $width): ?string
+    {
+        if (! $file->storage_path || ! $file->name) {
+            return null;
+        }
+
+        return storage_path('app/'.$file->storage_path.'/'.$width.'/'.$file->name);
     }
 
     /**

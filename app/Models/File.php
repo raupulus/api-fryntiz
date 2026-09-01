@@ -12,21 +12,31 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Intervention\Image\Collection as ImageCollection;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\Laravel\Facades\Image;
 
 use function array_filter;
 use function asset;
 use function auth;
+use function clearstatcache;
 use function count;
 use function explode;
 use function file_exists;
+use function filesize;
 use function getimagesize;
 use function in_array;
 use function is_dir;
+use function mb_strtolower;
 use function mkdir;
+use function pathinfo;
+use function preg_match;
 use function preg_replace;
 use function route;
 use function storage_path;
+use function strlen;
 
 /**
  * Class File
@@ -89,6 +99,11 @@ class File extends BaseModel
         'large' => 1280,
     ];
 
+    /**
+     * MIME de imagen que la aplicación sabe reprocesar (rotar, escalar, generar
+     * miniaturas). Decide si se PUEDE editar, no si se ACEPTA: para eso está
+     * `SAFE_MIMES`.
+     */
     public static $imageMimeCanEdit = [
         'image/jpeg',
         'image/pjpeg',
@@ -99,6 +114,50 @@ class File extends BaseModel
         'image/x-ms-bmp',
         'image/bmp',
     ];
+
+    /**
+     * Tipos aceptados cuando la validación está activa (`$validate = true`).
+     *
+     * Es lo que se espera cuando un campo pide «una imagen» o «un documento»:
+     * el avatar, la portada de un contenido, la foto de un producto. Los campos
+     * sin expectativa de tipo —el editor de contenido, los archivos adjuntos—
+     * llaman a `addFile()` con `$validate = false` y suben lo que haga falta.
+     * Esta lista no es el inventario de lo que la plataforma admite; es el de lo
+     * que un campo de imagen debe recibir.
+     *
+     * ⚠️ NO conectar esto con la tabla `file_types`. `file_types` es un catálogo
+     * de metadatos (icono, extensión, tipo legible) que se rellena desde el
+     * panel con toda clase de formatos —impresión 3D, vectores, software de
+     * edición, documentos— y que por tanto es entrada de usuario. Usarla como
+     * lista de tipos seguros sería validar el input contra el propio input.
+     * Para añadir un tipo aceptado se añade AQUÍ, a mano.
+     */
+    public const SAFE_MIMES = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/x-windows-bmp',
+        'image/x-ms-bmp',
+        'image/bmp',
+        'application/pdf',
+    ];
+
+    /**
+     * Techo de tamaño cuando la validación está activa: 20 MB.
+     *
+     * No es el límite de experiencia de usuario, que lo pone cada campo de
+     * Filament y es más estricto (`ImageCropperUpload` está en 4 MB). Una foto
+     * de alta calidad entra grande y el cropper la deja en un megabyte o menos
+     * según para qué se vaya a usar; esto sólo corta lo absurdo.
+     */
+    public const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+    /**
+     * Ancho máximo al que se guarda el original de una imagen.
+     */
+    public const MAX_IMAGE_WIDTH = 2560;
 
     protected $table = 'files';
 
@@ -150,16 +209,29 @@ class File extends BaseModel
      * Almacena y devuelve un archivo recibiendo el objeto de tipo UploadFile.
      * Lo devuelve una vez almacenado.
      *
+     * La validación es opcional y viene activada. Con `$validate = true` sólo
+     * se aceptan los tipos de `SAFE_MIMES` y hasta `MAX_FILE_SIZE`: es lo que
+     * usan los campos que esperan una imagen o un documento concreto. Con
+     * `$validate = false` entra cualquier cosa, que es lo que necesitan el
+     * editor de contenido y los archivos adjuntos, donde no hay nada que
+     * restringir. El parámetro va el último para que ninguna llamada existente
+     * cambie de comportamiento: todas quedan validadas sin tocarlas.
+     *
+     * Si es una imagen editable se rota según su orientación EXIF, se acota a
+     * `MAX_IMAGE_WIDTH` y se le retiran los metadatos (ver `stripMetadata()`).
+     *
      * @param  string  $path  Directorio dónde guardarlo.
      * @param  bool  $is_private  Si es privado o público.
      * @param  int|null  $file_id  Id del archivo si existiera.
      * @param  bool  $has_thumbnails  Si tiene miniaturas.
+     * @param  bool  $validate  Si se comprueban tipo y tamaño contra SAFE_MIMES/MAX_FILE_SIZE.
      */
     public static function addFile(UploadedFile $uploadedFile,
         string $path = 'upload',
         bool $is_private = true,
         ?int $file_id = null,
-        bool $has_thumbnails = true
+        bool $has_thumbnails = true,
+        bool $validate = true
     ): ?File {
 
         $fullPath = ($is_private ? 'private' : 'public').'/'.$path;
@@ -173,8 +245,14 @@ class File extends BaseModel
         $size = $uploadedFile->getSize();
         $mime = $uploadedFile->getMimeType() ?: $uploadedFile->getClientMimeType();
         $originalName = $uploadedFile->getClientOriginalName();
-        $originalExtension = $uploadedFile->getClientOriginalExtension();
+        $originalExtension = self::sanitizeExtension($uploadedFile->getClientOriginalExtension());
         [$width, $height] = @getimagesize($uploadedFile->getRealPath()) ?: [null, null];
+
+        // # La validación va ANTES de store(): si se comprueba después, el
+        // archivo rechazado ya está escrito en el disco.
+        if ($validate && ! self::passesValidation($mime, $size, $originalName)) {
+            return null;
+        }
 
         $imageFullPath = $uploadedFile->store($fullPath);
         $imageNameArray = explode('/', $imageFullPath);
@@ -194,10 +272,16 @@ class File extends BaseModel
             }
         }
 
-        // # Redimensiono la imagen si supera el ancho máximo lógico para web.
+        // # Rotación real, acotado de ancho y limpieza de metadatos. Devuelve
+        // las medidas y el tamaño del archivo ya procesado, porque cualquiera
+        // de las tres operaciones los cambia y la fila debe describir el
+        // archivo que hay en el disco, no el que llegó.
         if ($canEditImage) {
-            // TODO → Máximo tamaño de archivo original si es imagen 2560x1800px
-            // TODO → Borrar o cambiar metadatos de los archivos si es privado.
+            $processed = self::processStoredImage(storage_path('app/'.$imageFullPath));
+
+            if ($processed) {
+                [$width, $height, $size] = $processed;
+            }
         }
 
         if ($fileType?->type !== 'image') {
@@ -235,6 +319,145 @@ class File extends BaseModel
     }
 
     /**
+     * Comprueba tipo y tamaño contra la política del modelo.
+     *
+     * Devuelve false y deja rastro en el log cuando algo no encaja: quien llama
+     * recibe null, que es lo que `addFile()` ya declaraba poder devolver.
+     */
+    protected static function passesValidation(?string $mime, ?int $size, ?string $originalName): bool
+    {
+        if (! $mime || ! in_array($mime, self::SAFE_MIMES, true)) {
+            Log::warning('File: tipo de archivo no aceptado', [
+                'mime' => $mime,
+                'original_name' => $originalName,
+            ]);
+
+            return false;
+        }
+
+        if ($size !== null && $size > self::MAX_FILE_SIZE) {
+            Log::warning('File: archivo por encima del tamaño máximo', [
+                'size' => $size,
+                'max' => self::MAX_FILE_SIZE,
+                'original_name' => $originalName,
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Deja la extensión en algo que se pueda escribir en una ruta sin sustos.
+     *
+     * Se aplica SIEMPRE, se valide el tipo o no: no restringe qué se puede
+     * subir, evita que un `../`, un nombre con barras o una ristra rara acaben
+     * formando parte de una ruta del disco.
+     */
+    protected static function sanitizeExtension(?string $extension): string
+    {
+        $extension = mb_strtolower((string) $extension);
+
+        return preg_match('/^[a-z0-9]{1,8}$/', $extension) === 1 ? $extension : '';
+    }
+
+    /**
+     * Prepara una imagen ya almacenada: la rota, la acota y le quita los
+     * metadatos.
+     *
+     * @return array{0: int|null, 1: int|null, 2: int|null}|null Ancho, alto y tamaño resultantes.
+     */
+    protected static function processStoredImage(string $absolutePath): ?array
+    {
+        if (! file_exists($absolutePath)) {
+            return null;
+        }
+
+        try {
+            $image = Image::decodePath($absolutePath);
+
+            // # 1. Rotación real. La orientación viaja como un flag EXIF, y ese
+            // flag se va con los metadatos en el paso 3: si no se rotan los
+            // píxeles antes, las fotos de móvil quedan tumbadas para siempre.
+            $image->orient();
+
+            // # 2. Acotado al ancho máximo lógico para web.
+            if ($image->width() > self::MAX_IMAGE_WIDTH) {
+                $image->scale(width: self::MAX_IMAGE_WIDTH);
+            }
+
+            // # 3. Limpieza de metadatos. Ver stripMetadata().
+            self::stripMetadata($image);
+
+            // # Se guarda con `strip`, que es la segunda capa de lo mismo.
+            $image->save($absolutePath, ...self::stripEncoderOptions($absolutePath));
+        } catch (\Throwable $e) {
+            Log::warning('File: no se ha podido procesar la imagen', [
+                'path' => $absolutePath,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        clearstatcache(true, $absolutePath);
+
+        [$width, $height] = @getimagesize($absolutePath) ?: [null, null];
+        $size = @filesize($absolutePath);
+
+        return [$width, $height, $size === false ? null : $size];
+    }
+
+    /**
+     * Retira los metadatos de una imagen: EXIF, GPS, IPTC y perfiles.
+     *
+     * Es un paso propio y deliberado, no un efecto secundario. Según el driver
+     * y la versión de la librería, reescribir una imagen ya descarta los
+     * metadatos por su cuenta — y justamente por eso esto está aquí: esa
+     * garantía es un accidente de la implementación, no una decisión del
+     * proyecto. El día que se cambie de driver, o que la librería suba de
+     * major, nadie va a volver a mirar esta línea y las coordenadas GPS de una
+     * foto empezarían a viajar otra vez sin que nada avise.
+     *
+     * Se aplica a TODAS las imágenes, privadas y públicas. Una foto pública con
+     * el GPS de casa dentro es el mismo problema, sólo que con más gente
+     * mirándola.
+     *
+     * Los metadatos propios de la plataforma —autoría, datos de la web— se
+     * escriben DESPUÉS y son otra cosa; ver el TODO de `createThumbnails()` y
+     * `docs/future/metadatos-imagenes.md`.
+     */
+    protected static function stripMetadata(ImageInterface $image): void
+    {
+        // No hay un "borra todos los metadatos" de una pieza: se vacía el EXIF
+        // y se quita el perfil ICC por separado. Se hace sobre la instancia, y
+        // ADEMÁS se codifica con `strip` (ver stripEncoderOptions()). Son dos
+        // capas para lo mismo a propósito: si una deja de funcionar en una
+        // versión futura, la otra sigue en pie y el test de EXIF avisa.
+        $image->setExif(new ImageCollection);
+        $image->removeProfile();
+    }
+
+    /**
+     * Opciones de guardado que fuerzan el descarte de metadatos.
+     *
+     * `save()` elige el encoder por la extensión del destino. JPEG y WebP
+     * aceptan `strip`; el resto de formatos no lo necesitan porque no arrastran
+     * EXIF, y se guardan con las opciones por defecto.
+     *
+     * @return array<string, mixed>
+     */
+    protected static function stripEncoderOptions(string $path): array
+    {
+        $extension = mb_strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        return in_array($extension, ['jpg', 'jpeg', 'webp'], true)
+            ? ['strip' => true]
+            : [];
+    }
+
+    /**
      * Recibe un string en base64 y lo convierte en un archivo.
      *
      * @param  string  $base64  Cadena en base64
@@ -242,15 +465,31 @@ class File extends BaseModel
      * @param  bool  $is_private  Indica si pertenece al espacio privado
      * @param  int|null  $file_id  Id del archivo si existiera
      * @param  bool  $has_thumbnails  Indica si se deben generar miniaturas
+     * @param  bool  $validate  Igual que en addFile(): tipo y tamaño contra la política del modelo.
      */
     public static function addFileFromBase64(string $base64,
         string $path = 'upload',
         bool $is_private = true,
         ?int $file_id = null,
-        bool $has_thumbnails = true): ?File
+        bool $has_thumbnails = true,
+        bool $validate = true): ?File
     {
+        $payload = (string) Arr::last(explode(',', $base64));
+
+        // # El tamaño se comprueba sobre la CADENA, antes de decodificar: una
+        // cadena de 500 MB no debe llegar a materializarse en memoria ni en el
+        // disco sólo para descubrir después que sobraba.
+        if ($validate && (int) (strlen($payload) * 3 / 4) > self::MAX_FILE_SIZE) {
+            Log::warning('File: base64 por encima del tamaño máximo', [
+                'approx_size' => (int) (strlen($payload) * 3 / 4),
+                'max' => self::MAX_FILE_SIZE,
+            ]);
+
+            return null;
+        }
+
         // Get file data base64 string
-        $fileData = base64_decode(Arr::last(explode(',', $base64)));
+        $fileData = base64_decode($payload);
 
         // Create temp file and get its absolute path
         $tempFile = tmpfile();
@@ -261,6 +500,14 @@ class File extends BaseModel
 
         $tempFileObject = new \Illuminate\Http\File($tempFilePath);
 
+        // # El MIME real se comprueba ANTES de construir el UploadedFile, para
+        // descartar el temporal cuanto antes si no encaja.
+        if ($validate && ! self::passesValidation($tempFileObject->getMimeType(), $tempFileObject->getSize() ?: null, $tempFileObject->getFilename())) {
+            fclose($tempFile);
+
+            return null;
+        }
+
         $uploadedFile = new UploadedFile(
             $tempFileObject->getPathname(),
             $tempFileObject->getFilename(),
@@ -269,7 +516,7 @@ class File extends BaseModel
             true // Mark it as test, since the file isn't from real HTTP POST.
         );
 
-        $file = self::addFile($uploadedFile, $path, $is_private, $file_id, $has_thumbnails);
+        $file = self::addFile($uploadedFile, $path, $is_private, $file_id, $has_thumbnails, $validate);
 
         // Close this file after response is sent.
         // Closing the file will cause to remove it from temp director!
@@ -309,7 +556,7 @@ class File extends BaseModel
             return $thumbnails;
         }
 
-        $imgOriginal = Image::read($file->storagePathFile);
+        $imgOriginal = Image::decodePath($file->storagePathFile);
 
         // # Genero las nuevas miniaturas.
         foreach ($sizes as $key => $size) {
@@ -326,18 +573,29 @@ class File extends BaseModel
                     mkdir($newPath, 0755, true);
                 }
 
-                // TODO: Anadir metadatos EXIF
+                // TODO: escribir en la miniatura los metadatos DE PLATAFORMA
+                // (datos de la web y autoría) más la orientación, heredando lo
+                // que se decida para el original. Sigue pendiente porque no es
+                // una línea: GD no escribe EXIF y la librería no expone API
+                // para ello, haría falta Imagick (no instalado) o una
+                // dependencia tipo lsolesen/pel; y estas miniaturas se guardan
+                // en WebP, donde los metadatos van en un chunk XMP con soporte
+                // pobre en PHP. Análisis y opciones en
+                // docs/future/metadatos-imagenes.md.
+                // Ojo: esto es lo CONTRARIO de stripMetadata(), que limpia lo
+                // que trae el archivo de origen. Primero se limpia lo ajeno,
+                // después se escribe lo nuestro.
 
                 $extension = $file->fileType->extension;
 
                 if ($file->fileType->mime === 'image/jpeg') {
                     $newName = preg_replace('/\.jpeg$/i', '.webp', $file->name);
                     $newName = preg_replace('/\.jpg$/i', '.webp', $newName);
-                    $img->toWebp(90)->save($newPath.'/'.$newName);
+                    $img->encode(new WebpEncoder(quality: 90, strip: true))->save($newPath.'/'.$newName);
                     $extension = 'webp';
                 } elseif ($file->fileType->mime === 'image/png') {
                     $newName = preg_replace('/\.png$/i', '.webp', $file->name);
-                    $img->toWebp(90)->save($newPath.'/'.$newName);
+                    $img->encode(new WebpEncoder(quality: 90, strip: true))->save($newPath.'/'.$newName);
                     $extension = 'webp';
                 } else {
                     $newName = $file->name;

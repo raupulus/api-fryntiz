@@ -23,8 +23,13 @@ trait HasImageFileUpload
      * - Si el valor es un UploadedFile, lo almacena con File::addFile y deja el id.
      * - Si el valor está vacío, elimina la clave para no sobrescribir la FK.
      * - Si ya es un id (int), lo deja tal cual.
+     *
+     * `$validate` viaja tal cual a `File::addFile()`. Se deja en `true` en los
+     * campos que esperan una imagen —que hoy son todos los que usan este
+     * trait—, y se pasa `false` allí donde no hay tipo que exigir: el editor de
+     * contenido y los archivos adjuntos, donde se sube lo que haga falta.
      */
-    protected function resolveImageUpload(array $data, string $field, string $module, bool $isPrivate = false): array
+    protected function resolveImageUpload(array $data, string $field, string $module, bool $isPrivate = false, bool $validate = true): array
     {
         $value = $data[$field] ?? null;
 
@@ -34,7 +39,7 @@ trait HasImageFileUpload
         }
 
         if ($value instanceof UploadedFile) {
-            $file = File::addFile($value, $module, $isPrivate);
+            $file = File::addFile($value, $module, $isPrivate, validate: $validate);
             $data[$field] = $file?->id;
 
             return $data;
