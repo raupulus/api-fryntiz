@@ -850,12 +850,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\SmartPlant\\SmartPlantPlant\:\:\$hardware_device_id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Policies/SmartPlantPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SmartPlant\\SmartPlantPlant\:\:\$hardware_device_id\.$#'
-			identifier: property.notFound
-			count: 1
 			path: app/Rules/OwnedSmartPlant.php
 
 		-
