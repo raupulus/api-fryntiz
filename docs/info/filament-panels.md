@@ -157,7 +157,6 @@ fase 06 del roadmap.
 | Weather Station — AEMET | Los 9 modelos de `Models/WeatherStation/AEMET/` |
 | Newsletter | `Newsletter` |
 | Hardware | `SolarCharge`, `HardwareComponent` |
-| Webhooks | `GitlabWebhook`, `SimpleWebhookModel` |
 | Catálogos | `Language`, `UserRole`, `PrinterAvailableType`, `ContentAvailable*` |
 | Analítica | `ContentDailyView` |
 

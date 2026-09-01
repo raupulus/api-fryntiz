@@ -23,11 +23,6 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            // === Webhooks ===
-            Route::middleware('api')
-                ->prefix('')
-                ->group(base_path('routes/webhook.php'));
-
             // === Rutas web de módulos ===
             Route::middleware('web')
                 ->prefix('hardware')

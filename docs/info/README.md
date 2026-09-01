@@ -22,7 +22,6 @@
 | [newsletter.md](newsletter.md) | Newsletter | Suscripción, verificación, gestión de baja |
 | [auth.md](auth.md) | Autenticación y Usuarios | Sanctum, Fortify, roles, gestión de usuarios |
 | [contact.md](contact.md) | Formulario de Contacto | Mensajes de contacto con reCAPTCHA y filtro de prioridad |
-| [webhooks.md](webhooks.md) | Webhooks | GitLab. ⚠️ **Desactivado y con la validación rota** |
 | [files.md](files.md) | Gestión de Archivos | Uploads, thumbnails, redimensión de imágenes |
 | [common.md](common.md) | Entidades Comunes | Categorías, tags, tecnologías, idiomas |
 | [default-images.md](default-images.md) | Imágenes por defecto | Catálogo de imágenes por defecto por módulo |
@@ -69,7 +68,6 @@ Comprobados contra el código el 2026-08-30.
 
 | Aviso | Documento afectado |
 |-------|--------------------|
-| **El webhook de GitLab no puede validar su token**: `config('app.gitlab_token_deploy_api')` no existe. Las rutas están comentadas, así que hoy no expone nada | [webhooks.md](webhooks.md) |
 | **Faltan 9 de las 10 imágenes de error.** `genericImagePath()` las sustituye por `not_found.webp` para no reventar, pero un «no autorizado» se ve igual que un «no encontrado» | [default-images.md](default-images.md), [files.md](files.md) |
 | **`default-images.md` describe un esquema que no existe** (27 imágenes por módulo). Es una propuesta, no el estado del código | [default-images.md](default-images.md) |
 
