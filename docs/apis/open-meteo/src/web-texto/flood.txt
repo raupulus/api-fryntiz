@@ -1,0 +1,389 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Global Flood API
+
+Simulated river discharge at 5 km resolution from 1984 up to 7 months forecast
+
+Flood
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+3 months (default)
+Forecast days
+
+0 days (default)
+Past days
+
+By default, we provide forecasts for 3 months, but you can access forecasts for up to 12 months. If you're interested in past weather data, you can use the Past Days feature
+to access archived forecasts.
+
+Daily Flood Variables
+
+River Discharge
+
+River Discharge Mean
+
+River Discharge Median
+
+River Discharge Maximum
+
+River Discharge Minimum
+
+River Discharge 25th Percentile
+
+River Discharge 75th Percentile
+
+All 50 Ensemble Members
+
+Flood models
+
+GloFAS v4 Seamless
+
+GloFAS v4 Forecast
+
+GloFAS v4 Consolidated
+
+GloFAS v3 Seamless
+
+GloFAS v3 Forecast
+
+GloFAS v3 Consolidated
+
+Note: Seamless combines forecast and consolidated historical data. Per default,
+GloFAS version 4 with data from 1984 up to 7 months of forecast is used.
+
+Settings
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+This API uses reanalysis and forecast data from the Global Flood Awareness System (GloFAS). Per default, GloFAS version 4 with seamless data from 1984 until 7 months of forecast is
+used.
+
+Please note: Due to the 5 km resolution the closest river might not be selected correctly.
+Varying coordiantes by 0.1° can help to get a more representable discharge rate. The GloFAS
+website provides additional maps to help understand how rivers are covered in this dataset.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Data Length | Update frequency
+
+| GloFAS v4 Reanalysis |
+
+🌍
+
+Global
+| 0.05° (~5 km) | Daily | 1984 - July 2022 | -
+
+| GloFAS v4 Forecast |
+
+🌍
+
+Global
+| 0.05° (~5 km) | Daily | 30 days forecast | Daily
+
+| GloFAS v4 Seasonal Forecast |
+
+🌍
+
+Global
+| 0.05° (~5 km) | Daily | 7 months forecast | Monthly
+
+| GloFAS v3 Reanalysis |
+
+🌍
+
+Global
+| 0.1° (~11 km) | Daily | 1984 - July 2022 | -
+
+| GloFAS v3 Forecast |
+
+🌍
+
+Global
+| 0.1° (~11 km) | Daily | 30 days forecast | Daily
+
+| GloFAS v3 Seasonal Forecast |
+
+🌍
+
+Global
+| 0.1° (~11 km) | Daily | 7 months forecast | Monthly
+
+API Documentation
+
+The API endpoint /v1/flood accepts a geographical coordinate and returns river discharge
+data from the largest river in a 5 km area for the given coordinates. All URL parameters are listed
+below:
+
+| Parameter | Format | Required | Default | Description
+
+| latitude, longitude | Floating point | Yes | | Geographical WGS84 coordinates of the location. Multiple coordinates can be comma
+separated. E.g. &latitude=52.52,48.85&longitude=13.41,2.35. To return
+data for multiple locations the JSON output changes to a list of structures. CSV and
+XLSX formats add a column location_id.
+
+| daily | String array | No | | A list of weather variables which should be returned. Values can be comma separated,
+or multiple &daily= parameter in the URL can be used.
+
+| timeformat | String | No | iso8601 | If format unixtime is selected, all time values are returned in UNIX epoch
+time in seconds. Please note that all time is then in GMT+0!
+
+| past_days | Integer | No | 0 | If past_days is set, past data can be returned.
+
+| forecast_days | Integer (0-210) | No | 92 | Per default, only 92 days are returned. Up to 210 days of forecast are possible.
+
+| start_date
+
+end_date | String (yyyy-mm-dd) | No | | The time interval to get data. A day must be specified as an ISO8601 date (e.g. 2022-06-30). Data are available from 1984-01-01 until 7 month forecast.
+
+| ensemble | Boolean | No | | If True all forecast ensemble members will be returned
+
+| cell_selection | String | No | nearest | Set a preference how grid-cells are selected. The default land finds a
+suitable grid-cell on land with similar elevation to the requested coordinates using a 90-meter digital elevation
+model. sea prefers grid-cells on sea. nearest selects the nearest possible
+grid-cell.
+
+| apikey | String | No | | Only required to commercial use to access reserved API resources for customers. The
+server URL requires the prefix customer-. See pricing for more information.
+
+Additional optional URL parameters will be added. For API stability, no required parameters will
+be added in the future!
+
+Daily Parameter Definition
+
+The parameter &daily= accepts the following values:
+
+| Variable | Unit | Description
+
+| river_discharge | m³/s | Daily river discharge rate in m³/s
+
+| river_discharge_mean
+
+river_discharge_median
+
+river_discharge_max
+
+river_discharge_min
+
+river_discharge_p25
+
+river_discharge_p75 | m³/s | Statistical analysis from ensemble members for river discharge rate in m³/s. Only
+available for forecasts and not for consolidated historical data.
+
+JSON Return Object
+
+On success a JSON object will be returned.
+
+{
+"latitude": 59.9,
+"longitude": 10.75,
+"generationtime_ms": 0.0627040863037109,
+"utc_offset_seconds": 0,
+"timezone": "GMT",
+"timezone_abbreviation": "GMT",
+"daily_units": {
+"river_discharge": "m³/s"
+},
+"daily": {
+"time": ["2025-03-03", "2025-03-04", "2025-03-05", ...],
+"river_discharge": [8.04, 8.75, 8.93, ...]
+}
+}
+
+| Parameter | Format | Description
+
+| latitude, longitude | Floating point | WGS84 of the center of the weather grid-cell which was used to generate this
+forecast. This coordinate might be a few kilometres away from the requested
+coordinate.
+
+| generationtime_ms | Floating point | Generation time of the weather forecast in milliseconds. This is mainly used for
+performance monitoring and improvements.
+
+| daily | Object | For each selected weather variable, data will be returned as a floating point array.
+Additionally a time array will be returned with ISO8601 timestamps.
+
+| daily_units | Object | For each selected weather variable, the unit will be listed here.
+
+Errors
+
+In case an error occurs, for example a URL parameter is not correctly specified, a JSON error
+object is returned with a HTTP 400 status code.
+
+{
+"error": true,
+"reason": "Cannot initialize WeatherVariable from invalid String value river_discharge for key daily"
+}
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

@@ -1,0 +1,1035 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Historical Forecast API
+
+Archived High-Resolution Weather Forecasts
+
+Historical Forecast
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Historical forecasts archived from the Weather Forecast API — same models, same parameters, same response format. Coverage starts around 2022. Each run's first
+few hours are stitched into a continuous hourly timeseries. To access the full forecast horizon of
+individual runs, use the Single Runs API.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Start date
+
+End date
+
+Past weather forecasts from 2022 onwards are available.
+
+Quick: 2022 2023 2024 2025
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation Probability
+
+Precipitation (rain + showers + snow)
+
+Rain
+
+Showers
+
+Snowfall
+
+Snow Depth
+
+Weather code
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Visibility
+
+Evapotranspiration
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Speed (80 m)
+
+Wind Speed (100 m)
+
+Wind Speed (120 m)
+
+Wind Speed (180 m)
+
+Wind Speed (200 m)
+
+Wind Direction (10 m)
+
+Wind Direction (80 m)
+
+Wind Direction (100 m)
+
+Wind Direction (120 m)
+
+Wind Direction (180 m)
+
+Wind Direction (200 m)
+
+Wind Gusts (10 m)
+
+Temperature (80 m)
+
+Temperature (120 m)
+
+Temperature (180 m)
+
+Soil Temperature (0 cm)
+
+Soil Temperature (6 cm)
+
+Soil Temperature (18 cm)
+
+Soil Temperature (54 cm)
+
+Soil Moisture (0-1 cm)
+
+Soil Moisture (1-3 cm)
+
+Soil Moisture (3-9 cm)
+
+Soil Moisture (9-27 cm)
+
+Soil Moisture (27-81 cm)
+
+Additional Variables And Options
+
+UV Index
+
+UV Index Clear Sky
+
+Is Day or Night
+
+Sunshine Duration
+
+Wet Bulb Temperature (2 m)
+
+Total Column Integrated Water Vapour
+
+CAPE
+
+Lifted Index
+
+Convective Inhibition
+
+Freezing Level Height
+
+Boundary Layer Height PBL
+
+Hail (only Met Office UK 2km)
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Relative Humidity
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+975 hPa (320 m)
+
+950 hPa (500 m)
+
+925 hPa (800 m)
+
+900 hPa (1000 m)
+
+850 hPa (1500 m)
+
+800 hPa (1900 m)
+
+700 hPa (3 km)
+
+600 hPa (4.2 km)
+
+500 hPa (5.6 km)
+
+400 hPa (7.2 km)
+
+300 hPa (9.2 km)
+
+250 hPa (10.4 km)
+
+200 hPa (11.8 km)
+
+150 hPa (13.5 km)
+
+100 hPa (15.8 km)
+
+70 hPa (17.7 km)
+
+50 hPa (19.3 km)
+
+30 hPa (22 km)
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea level.
+
+Weather models
+
+Best match
+
+ECMWF IFS HRES 9km
+
+ECMWF IFS 0.25°
+
+ECMWF AIFS 0.25° Single
+
+CMA GRAPES Global
+
+BOM ACCESS Global
+
+NCEP GFS Seamless
+
+NCEP GFS Global 0.11°/0.25°
+
+NCEP HRRR U.S. Conus
+
+NCEP NBM U.S. Conus
+
+NCEP NAM U.S. Conus
+
+NCEP AIGFS 0.25°
+
+NCEP HGEFS 0.25° Ensemble Mean
+
+JMA Seamless
+
+JMA MSM
+
+JMA GSM
+
+KMA Seamless
+
+KMA LDPS
+
+KMA GDPS
+
+DWD ICON Seamless
+
+DWD ICON Global
+
+DWD ICON EU
+
+DWD ICON D2
+
+GEM Seamless
+
+GEM Global
+
+GEM Regional
+
+GEM HRDPS Continental
+
+GEM HRDPS West
+
+Météo-France Seamless
+
+Météo-France ARPEGE World
+
+Météo-France ARPEGE Europe
+
+Météo-France AROME France
+
+Météo-France AROME France HD
+
+ItaliaMeteo ARPAE ICON 2I
+
+MET Norway Nordic Seamless (with ECMWF)
+
+MET Norway Nordic
+
+KNMI Seamless (with ECMWF)
+
+KNMI Harmonie AROME Europe
+
+KNMI Harmonie AROME Netherlands
+
+DMI Seamless (with ECMWF)
+
+DMI Harmonie AROME Europe
+
+UK Met Office Seamless
+
+UK Met Office Global 10km
+
+UK Met Office UK 2km
+
+MeteoSwiss ICON Seamless
+
+MeteoSwiss ICON CH1
+
+MeteoSwiss ICON CH2
+
+GeoSphere Seamless (with ECMWF)
+
+GeoSphere AROME Austria
+
+CHMI Aladin Seamless
+
+CHMI Aladin Central Europe 2km
+
+CHMI Aladin CZ 1km
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+15-Minutely Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + showers + snow)
+
+Rain
+
+Snowfall
+
+Snowfall Height
+
+Freezing Level Height
+
+Sunshine Duration
+
+Weather code
+
+Wind Speed (10 m)
+
+Wind Speed (80 m)
+
+Wind Direction (10 m)
+
+Wind Direction (80 m)
+
+Wind Gusts (10 m)
+
+Visibility
+
+CAPE
+
+Lightning Potential Index LPI
+
+Is Day or Night
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Only available in Central Europe and North America. Other regions use
+interpolated hourly data. Solar radiation is averaged over the 15 minutes. Use instant for radiation at the indicated time.
+
+Note: You can further adjust the forecast time range for 15-minutely weather variables
+using &forecast_minutely_15= and &past_minutely_15= as shown below.
+
+- (default)
+Forecast Minutely 15
+
+- (default)
+Past Minutely 15
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+UV Index
+
+UV Index Clear Sky
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Moonrise
+
+Moonset
+
+Moon Phase
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Sum
+
+Precipitation Hours
+
+Precipitation Probability Max
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Additional Daily Variables
+
+Mean Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Mean Apparent Temperature (2 m)
+
+Mean CAPE
+
+Maximum CAPE
+
+Minimum CAPE
+
+Mean Cloud Cover
+
+Maximum Cloud Cover
+
+Minimum Cloud Cover
+
+Mean Dewpoint (2 m)
+
+Maximum Dewpoint (2 m)
+
+Minimum Dewpoint (2 m)
+
+Reference Evapotranspiration Sum (ET₀)
+
+Growing Degree Days Base 0 Limit 50
+
+Mean Leaf Wetness Probability
+
+Mean Precipitation Probability
+
+Minimum Precipitation Probability
+
+Mean Relative Humidity (2 m)
+
+Maximum Relative Humidity (2 m)
+
+Minimum Relative Humidity (2 m)
+
+Snowfall Water Equivalent Sum
+
+Mean Sea Level Pressure
+
+Maximum Sea Level Pressure
+
+Minimum Sea Level Pressure
+
+Mean Surface Pressure
+
+Maximum Surface Pressure
+
+Minimum Surface Pressure
+
+Maximum Updraft
+
+Mean Visibility
+
+Minimum Visibility
+
+Maximum Visibility
+
+Dominant Wind Direction (10m)
+
+Mean Wind Gusts (10 m)
+
+Mean Wind Speed (10 m)
+
+Minimum Wind Gusts (10 m)
+
+Minimum Wind Speed (10 m)
+
+Mean Wet Bulb Temperature (2 m)
+
+Maximum Wet Bulb Temperature (2 m)
+
+Minimum Wet Bulb Temperature (2 m)
+
+Maximum Vapour Pressure Deficit
+
+Mean Soil Moisture (0-100 cm)
+
+Mean Soil Moisture (0-10 cm)
+
+Mean Soil Moisture (0-7 cm)
+
+Mean Soil Moisture (28-100 cm)
+
+Mean Soil Moisture (7-28 cm)
+
+Mean Soil Temperature (0-100 cm)
+
+Mean Soil Temperature (0-7 cm)
+
+Mean Soil Temperature (28-100 cm)
+
+Mean Soil Temperature (7-28 cm)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+The weather data precisely aligns with the weather forecast API, created by continuously
+integrating weather forecast model data. Each update from the weather models' initial hours is
+compiled into a seamless time series. This extensive dataset is ideal for training machine
+learning models and combining them with forecast data to generate optimised predictions.
+
+Weather models are initialized using data from weather stations, satellites, radar, airplanes,
+soundings, and buoys. With high update frequencies of 1, 3, or 6 hours, the resulting time
+series is nearly as accurate as direct measurements and offers global coverage. In regions
+like North America and Central Europe, the difference from local weather stations is minimal.
+However, for precise values such as precipitation, local measurements are preferable when
+available.
+
+The Historical Forecast API archives comprehensive data, including atmospheric pressure
+levels, from all accessible weather forecast models. Depending on the model and public archive
+availability, data is available starting from 2021 or 2022.
+
+The default Best Match option selects the most suitable high-resolution weather models
+for any global location, though users can also manually specify the weather model. Open-Meteo utilises
+the following weather forecast models:
+
+| National Weather Provider | Weather Model | Region | Spatial Resolution | Temporal Resolution | Update Frequency | Available Since
+
+| Deutscher Wetterdienst (DWD) | ICON |
+
+🌍
+
+Global
+| 0.1° (~11 km) | Hourly | Every 6 hours | 2022-11-24
+
+| ICON-EU |
+
+Europe
+| 0.0625° (~7 km) | Hourly | Every 3 hours | 2022-11-24
+
+| ICON-D2 |
+
+Central Europe
+| 0.02° (~2 km) | Hourly | Every 3 hours | 2022-11-24
+
+| NOAA NCEP | GFS |
+
+🌍
+
+Global
+| 0.11° (~13 km) | Hourly | Every 6 hours | 2021-03-23
+
+| GFS Pressure Variables |
+
+🌍
+
+Global
+| 0.25° (~25 km) | Hourly | Every 6 hours | 2021-03-23
+
+| HRRR |
+
+U.S. Conus
+| 3 km | Hourly | Every hour | 2018-01-01
+
+| NAM |
+
+U.S. Conus
+| 3 km | Hourly | Every 6 hours | 2025-09-01
+
+| NBM |
+
+U.S. Conus
+| 3 km | Hourly | Every hour | 2024-10-08
+
+| AIGFS |
+
+🌍
+
+Global
+| 0.25° (~25 km) | 6-Hourly | Every 6 hours | 2026-01-07
+
+| HGEFS |
+
+🌍
+
+Global
+| 0.25° (~25 km) | 6-Hourly | Every 6 hours | 2026-01-07
+
+| Météo-France | ARPEGE World |
+
+🌍
+
+Global
+| 0.25° (~25 km) | Hourly | Every 6 hours | 2024-01-02
+
+| ARPEGE Europe |
+
+Europe
+| 0.1° (~11 km) | Hourly | Every 6 hours | 2022-11-13
+
+| AROME France |
+
+France
+| 0.025° (~2.5 km) | Hourly | Every 3 hours | 2024-01-02
+
+| AROME France HD |
+
+France
+| 0.01° (~1.5 km) | Hourly | Every 3 hours | 2022-11-13
+
+| ECMWF | IFS 0.4° |
+
+🌍
+
+Global
+| 0.4° (~44 km) | 3-Hourly | Every 6 hours | 2022-11-07
+
+| IFS 0.25° |
+
+🌍
+
+Global
+| 0.25° (~25 km) | 3-Hourly | Every 6 hours | 2024-02-03
+
+| AIFS 0.25° Single |
+
+🌍
+
+Global
+| 0.25° (~25 km) | 6-Hourly | Every 6 hours | 2025-02-20
+
+| IFS HRES |
+
+🌍
+
+Global
+| 9 km (O1280 grid) | Hourly | Every 6 hours | 2017-01-01
+
+| UK Met Office | UKMO Global |
+
+🌍
+
+Global
+| 0.09° (~10 km) | Hourly | Every 6 hours | 2022-03-01
+
+| UKMO UKV |
+
+UK and Ireland
+| 2 km | Hourly | Every hour | 2022-03-01
+
+| JMA | GSM |
+
+🌍
+
+Global
+| 0.5° (~55 km) | 6-Hourly | Every 6 hours | 2016-01-01
+
+| MSM |
+
+Japan
+| 0.05° (~5 km) | Hourly | Every 3 hours | 2016-01-01
+
+| MET Norway | MET Nordic |
+
+Norway, Denmark, Sweden, Finland
+| 1 km | Hourly | Every hour | 2022-11-15
+
+| Canadian Weather Service | GEM Global |
+
+🌍
+
+Global
+| 0.15° (~15 km) | 3-Hourly | Every 12 hours | 2022-11-23
+
+| GEM Regional |
+
+North America, North Pole
+| 10 km | Hourly | Every 6 hours | 2022-11-23
+
+| HRDPS Continental |
+
+Canada, Nothern US
+| 2.5 km | Hourly | Every 6 hours | 2023-03-03
+
+| China Meteorological Administration (CMA) | GFS GRAPES |
+
+🌍
+
+Global
+| 0.125° (~15 km) | 3-hourly | Every 6 hours | 2023-12-31
+
+| Australian Bureau of Meteorology (BOM) | ACCESS-G |
+
+🌍
+
+Global
+| 0.15° (~15 km) | Hourly | Every 6 hours | 2024-01-18
+
+| ItaliaMeteo ItaliaMeteo-ARPAE | ICON 2I |
+
+Southern Europe
+| 2 km | Hourly | Every 12 hours | 2025-04-13
+
+| DMI | HARMONIE AROME DINI |
+
+Central & Northern Europe
+| 2 km | Hourly | Every 3 hours | 2024-07-01
+
+| KNMI | HARMONIE AROME Netherlands |
+
+Netherlands, Belgium
+| 2 km | Hourly | Every hour | 2024-07-01
+
+| HARMONIE AROME Europe |
+
+Central & Northern Europe up to Iceland
+| 5.5 km | Hourly | Every hour | 2024-07-01
+
+| MeteoSwiss | ICON CH1 |
+
+Central Europe
+| 1 km | Hourly | Every 3 hours | 2025-07-29
+
+| ICON CH2 |
+
+Central Europe
+| 2 km | Hourly | Every 6 hours | 2025-07-29
+
+Which Historical Weather Data to Use?
+
+Open-Meteo offers four distinct historical weather datasets, each suited to different use
+cases. Only a small fraction of the Earth's surface has reliable, continuous weather station
+coverage; all four datasets use numerical weather models to fill that gap globally.
+
+Historical Weather API: ERA5 reanalysis at 0.25° (~25 km) from 1940, ERA5-Land at 0.1° (~9 km) from 1950, and ECMWF
+IFS analysis at 9 km from 2017. Optimised for long-term consistency rather than day-to-day accuracy
+— the right choice for climate trend analysis.
+
+Historical Forecast API: A continuous hourly timeseries built by stitching the first hours of each successive model run.
+Closely tracks actual conditions because each run is initialised from real measurements. Coverage
+starts around 2021. Not suitable for long time series due to model version changes over time.
+
+Previous Runs API: Archives the same high-resolution models as the Historical Forecast API, but provides each variable
+at a fixed lead-time offset: 1, 2, 3, up to 7 days ahead. Useful for evaluating forecast skill
+at specific lead times. Data starts from January 2024 (GFS from March 2021, JMA from 2018).
+
+Single Runs API: Retrieves the complete forecast horizon of any individual model run, selected by initialisation
+time using the run= parameter (e.g. run=2025-09-01T00:00). Unlike the Historical Forecast API — which stitches runs
+into a continuous timeseries — the Single Runs API preserves the original run structure.
+ECMWF IFS HRES at 9 km is archived from March 2024; all other models from 2nd of April 2026.
+
+Choosing the Right Dataset:
+
+For multi-decade climate analysis, use the Historical Weather API (ERA5 from
+1940).
+
+For the most accurate representation of past conditions over the last few years, use the Historical Forecast API.
+
+To assess how forecast accuracy degrades at longer lead times, use the Previous Runs API.
+
+To retrieve the full output of a specific model run — for example to reproduce a forecast
+issued on a given date — use the Single Runs API.
+
+For training machine learning models on consistent weather model output, the Historical Forecast API and Single Runs API both provide data directly from the operational model runs.
+
+API Endpoint
+
+As the API is identical to the Forecast API, please refer to the Weather Forecast API
+documentation for all available variables and parameters. The only notable difference is the
+API host "historical-forecast-api.open-meteo.com" as historical data is moved to a different
+set of servers with access to a large storage system.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

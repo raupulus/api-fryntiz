@@ -1,0 +1,576 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Google WeatherNext 2 API
+
+Weather forecasts from the Google WeatherNext 2 AI model
+
+Google WeatherNext
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical Forecast
+
+Time:
+
+Forecast Length Time Interval
+
+7 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 7 days, but you can
+access forecasts for up to 15 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Sea Surface Temperature
+
+Precipitation (6-hourly)
+
+Rain
+
+Snowfall
+
+Snowfall (Water Equivalent)
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Speed (100 m)
+
+Wind Direction (100 m)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Pressure Level Variables
+
+Temperature
+
+Relative Humidity
+
+Dew Point
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Vertical Velocity
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+925 hPa (800 m)
+
+850 hPa (1500 m)
+
+700 hPa (3 km)
+
+600 hPa (4.2 km)
+
+500 hPa (5.6 km)
+
+400 hPa (7.2 km)
+
+300 hPa (9.2 km)
+
+250 hPa (10.4 km)
+
+200 hPa (11.8 km)
+
+150 hPa (13.5 km)
+
+100 hPa (15.8 km)
+
+50 hPa (19.3 km)
+
+Ensemble Spread Variables
+
+Temperature (2 m)
+
+Precipitation (rain + snow)
+
+Sea Level Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Wind Speed (10 m)
+
+Wind Speed (100 m)
+
+Wind Direction (10 m)
+
+Wind Direction (100 m)
+
+Note: Ensemble spread variables are calculated by Open-Meteo.
+
+Weather models
+
+1 / 2
+
+Google WeatherNext 2 Ensemble
+
+Google WeatherNext 2 Ensemble Mean
+
+Note: Mean values are calculated by Open-Meteo.
+
+Daily Weather Variables
+
+Mean Temperature (2 m)
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Mean Cloud Cover
+
+Minimum Cloud Cover
+
+Maximum Cloud Cover
+
+Precipitation Sum
+
+Precipitation Hours
+
+Rain Sum
+
+Snowfall Sum
+
+Mean Sea Level Pressure
+
+Minimum Sea Level Pressure
+
+Maximum Sea Level Pressure
+
+Mean Surface Pressure
+
+Minimum Surface Pressure
+
+Maximum Surface Pressure
+
+Mean Wind Speed (10 m)
+
+Minimum Wind Speed (10 m)
+
+Maximum Wind Speed (10 m)
+
+Dominant Wind Direction (10 m)
+
+Mean Wind Speed (100 m)
+
+Minimum Wind Speed (100 m)
+
+Maximum Wind Speed (100 m)
+
+Dominant Wind Direction (100 m)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Note: This API call is equivalent to 6.4 calls because
+of factors like long time intervals, the number of locations, variables, or models involved.
+
+Data Sources
+
+Google DeepMind WeatherNext 2 is a global AI ensemble weather model with 64 members on a regular 0.25° latitude-longitude grid.
+The ensemble describes a range of possible weather developments and can be used to estimate forecast
+uncertainty and the risk of less likely events.
+
+The source dataset contains 60 forecast steps at 6-hour intervals. It does not include
+forecast hour zero: the first value is valid 6 hours after model initialization and the last
+value is valid at 360 hours, or 15 days. Google produces runs initialized at 00, 06, 12 and 18
+UTC. At present, Open-Meteo processes the 00 and 12 UTC runs because the 06 and 18 UTC data do
+not arrive in time for the current update schedule. See Google's dissemination schedule for upstream release times.
+
+You can find Open-Meteo's current update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| Google WeatherNext 2 |
+
+🌍
+
+Global
+| 0.25° | 6-hourly | 15 days | Every 12 hours
+
+Native Model Variables
+
+WeatherNext directly predicts the atmospheric fields listed below. Open-Meteo retains these
+fields or uses them to calculate more convenient API variables. In particular, the source
+model provides specific humidity and wind components rather than relative humidity, wind speed
+or wind direction.
+
+| Native WeatherNext field | Level | Use in the Open-Meteo API
+
+| 2 m temperature | 2 m above ground | temperature_2m
+
+| Sea-surface temperature | Surface | sea_surface_temperature
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Total precipitation | Surface | precipitation, accumulated over the preceding 6 hours
+
+| U and V wind components | 10 m and 100 m above ground | Wind speed and direction at 10 and 100 m height above ground
+
+| Temperature | 13 pressure levels | Temperature and humidity-related pressure-level variables
+
+| Specific humidity | 13 pressure levels | Input for derived relative humidity
+
+| Geopotential | 13 pressure levels | Geopotential height
+
+| U and V wind components | 13 pressure levels | Pressure-level wind speed and direction
+
+| Vertical velocity | 13 pressure levels | Geometric vertical velocity
+
+The pressure levels are 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100 and 50
+hPa. See Google's model specification and data schema for the original dataset layout.
+
+Derived Variables
+
+Several convenient API variables are not predicted directly by WeatherNext. Open-Meteo derives
+them from the native fields for every ensemble member and forecast step.
+
+| Derived Variable | How is it derived?
+
+| Relative humidity | Calculated at every pressure level from WeatherNext specific humidity, temperature and
+pressure. Native specific humidity is not exposed as a selectable API variable.
+
+| Low cloud cover | Derived from relative humidity at 1000, 925 and 850 hPa.
+
+| Mid cloud cover | Derived from relative humidity at 700, 600, 500 and 400 hPa.
+
+| High cloud cover | Derived from relative humidity at 300, 250, 200, 150, 100 and 50 hPa.
+
+| Total cloud cover | Calculated by combining the derived low, mid and high cloud layers.
+
+| Wind speed and direction | Calculated from the native U and V wind components.
+
+| Dew point and pressure-level cloud cover | Calculated by the API from pressure-level temperature and relative humidity.
+
+| Rain, snowfall and weather code | Estimated from total precipitation, temperature and the derived cloud information.
+WeatherNext does not predict these fields directly.
+
+Cloud cover is an estimate based on the vertical humidity profile. It is not a native cloud
+fraction forecast from WeatherNext.
+
+API Documentation
+
+Use the endpoint /v1/ensemble with models=google_weathernext2_ensemble. The tables below describe the variables
+specific to this model. Refer to the general Ensemble API documentation for URL parameters, response formats and the naming of individual ensemble members.
+
+Hourly Parameter Definition
+
+The API uses the common &hourly= parameter name. The table describes the default
+hourly output. WeatherNext provides native values every 6 hours, which the API interpolates to
+hourly time steps. Set temporal_resolution=native to return only the original 6-hour
+model intervals. At native resolution, precipitation is the accumulated sum of the preceding 6 hours;
+for hourly output, this total is distributed over the six corresponding hourly intervals while preserving
+the sum.
+
+| Variable | Valid time | Unit | Description
+
+| temperature_2m
+
+sea_surface_temperature | Indicated hour | °C (°F) | Air temperature 2 m above ground and water temperature at the sea surface,
+interpolated from the 6-hourly model values.
+
+| pressure_msl
+
+surface_pressure | Indicated hour | hPa | Pressure at mean sea level and estimated pressure at the selected surface elevation,
+based on interpolated 6-hourly model values.
+
+| precipitation | Preceding hour sum | mm (inch) | Total liquid and frozen precipitation. Each native 6-hour accumulation is distributed
+over six hourly intervals.
+
+| rain
+
+snowfall
+
+snowfall_water_equivalent | Preceding hour sum | mm or cm (inch) | Rain and snowfall components derived from the hourly precipitation and temperature
+values.
+
+| cloud_cover
+
+cloud_cover_low
+
+cloud_cover_mid
+
+cloud_cover_high | Indicated hour | % | Cloud cover is derived from relative humidity at the native 6-hour timestamps and
+then interpolated for hourly output.
+
+| wind_speed_10m
+
+wind_speed_100m | Indicated hour | km/h (m/s, mph, knots) | Wind speed derived after interpolating the native U and V components.
+
+| wind_direction_10m
+
+wind_direction_100m | Indicated hour | ° | Wind direction derived after interpolating the native U and V components.
+
+| weather_code
+
+is_day | Indicated hour | WMO code / boolean | Weather code is derived from the hourly weather fields. Day-or-night status is
+calculated directly for every requested timestamp.
+
+Pressure-Level Parameter Definition
+
+Append a supported pressure level to the variable name, for example temperature_500hPa or relative_humidity_850hPa. Native
+pressure-level fields are available at 6-hour intervals and are interpolated for the default
+hourly output.
+
+| Variable pattern | Unit | Description
+
+| temperature_*hPa | °C (°F) | Air temperature interpolated from native 6-hourly pressure-level values.
+
+| relative_humidity_*hPa
+
+dew_point_*hPa | % / °C (°F) | Relative humidity is interpolated from the 6-hourly derived values. Dew point is
+calculated from hourly temperature and relative humidity.
+
+| cloud_cover_*hPa | % | Estimated for each hour from the interpolated relative humidity.
+
+| wind_speed_*hPa
+
+wind_direction_*hPa | km/h (m/s, mph, knots) / ° | Wind speed and direction derived after interpolating native U and V components.
+
+| vertical_velocity_*hPa | km/h (m/s, mph, knots) | Geometric vertical velocity interpolated from 6-hourly values.
+
+| geopotential_height_*hPa | m | Height of the selected pressure surface above mean sea level, interpolated from
+6-hourly values.
+
+Daily Parameter Definition
+
+Daily values are calculated from the 6-hourly forecast steps within the selected timezone. The
+available parameters include mean, minimum and maximum 2 m temperature; precipitation, rain
+and snowfall sums; precipitation hours; mean, minimum and maximum wind speed at 10 m and 100
+m; dominant wind direction; mean, minimum and maximum cloud cover; and mean, minimum and
+maximum mean-sea-level and surface pressure. Select a timezone when requesting daily data so
+that the aggregation matches the intended local calendar day.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

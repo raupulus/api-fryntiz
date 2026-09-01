@@ -1,0 +1,493 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+CHMI Forecast API
+
+Weather forecasts from the Czech Hydrometeorological Institute
+
+CHMI Aladin
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+3 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+By default, we provide forecasts for 3 days, but you can access forecasts for up to 15 days. If you're interested in past weather data, you can use the Past Days feature
+to access archived forecasts.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + snow)
+
+Rain
+
+Snowfall
+
+Snow Depth Water Equivalent
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Visibility
+
+Weather code
+
+Sea Level Pressure
+
+Surface Pressure
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Surface Temperature
+
+CAPE
+
+Additional Variables And Options
+
+Is Day or Night
+
+Wet Bulb Temperature (2 m)
+
+Sunshine Duration
+
+Snowfall Water Equivalent
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Relative Humidity
+
+Dewpoint
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Vertical Velocity
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+950 hPa (500 m)
+
+925 hPa (800 m)
+
+850 hPa (1500 m)
+
+800 hPa (1900 m)
+
+700 hPa (3 km)
+
+600 hPa (4.2 km)
+
+500 hPa (5.6 km)
+
+450 hPa (6.3 km)
+
+400 hPa (7.2 km)
+
+350 hPa (8.1 km)
+
+300 hPa (9.2 km)
+
+275 hPa (9.7 km)
+
+250 hPa (10.4 km)
+
+200 hPa (11.8 km)
+
+150 hPa (13.5 km)
+
+100 hPa (15.8 km)
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea level.
+
+Weather models
+
+CHMI Aladin Seamless
+
+CHMI Aladin Central Europe 2km
+
+CHMI Aladin CZ 1km
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Precipitation Sum
+
+Rain Sum
+
+Snowfall Sum
+
+Precipitation Hours
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+The Czech Hydrometeorological Institute (CHMI) runs the ALADIN limited-area weather model and
+publishes forecasts as open data. Both domains provide hourly forecasts for 3 days and are updated every 6 hours. The Central
+Europe domain additionally includes atmospheric data on 17 pressure levels. The CHMI Aladin Seamless model automatically uses the 1 km Czech Republic domain
+where available and falls back to the Central Europe domain otherwise. After 3 days,
+Open-Meteo combines forecasts with the ECMWF IFS HRES 9 km model to provide up to 15 days of forecast.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| CHMI Aladin Central Europe 2km |
+
+Central Europe
+| 2.3 km | Hourly | 3 days | Every 6 hours
+
+| CHMI Aladin CZ 1km |
+
+Czech Republic
+| 1 km | Hourly | 3 days | Every 6 hours
+
+Click to enlarge CHMI Aladin Central Europe Model Area. Source: Open-Meteo. Click to enlarge CHMI Aladin CZ Model Area. Source: Open-Meteo.
+
+Derived Variables
+
+ALADIN natively provides temperature, humidity, wind, pressure, cloud cover, precipitation,
+radiation, CAPE, visibility and sunshine duration. Several convenient API variables are not
+predicted directly by the model. Open-Meteo derives them from the native fields for every
+forecast step.
+
+| Derived Variable | How is it derived?
+
+| Weather code | Computed from cloud cover, precipitation, snowfall, wind gusts, CAPE and visibility.
+ALADIN does not publish a usable WMO weather symbol.
+
+| Snowfall | Converted from the native snowfall water equivalent, assuming 1 mm of water equals 0.7
+cm of snow.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Apparent temperature | Combines 2 m temperature, relative humidity, wind speed and shortwave radiation.
+
+| Diffuse solar radiation | Difference between the native shortwave (global) and native direct solar radiation. No
+radiation separation model is required.
+
+| Direct normal irradiance DNI and global tilted irradiance GTI | Calculated from direct and diffuse radiation using solar geometry and, for GTI, the
+selected panel tilt and azimuth.
+
+| Reference evapotranspiration ET₀ | FAO-56 Penman-Monteith equation using temperature, humidity, wind speed and solar
+radiation.
+
+| Vapour pressure deficit and wet bulb temperature | Calculated from 2 m temperature, relative humidity and dew point.
+
+| Terrestrial radiation and day-or-night flag | Astronomical calculations for every grid cell and timestamp.
+
+| Pressure-level wind speed and direction | Calculated from the native U and V wind components (Central Europe domain only).
+
+| Pressure-level dew point and cloud cover | Calculated from pressure-level temperature and relative humidity (Central Europe
+domain only).
+
+Unlike most regional weather models, ALADIN natively provides direct solar radiation and
+sunshine duration, so these are not estimated by Open-Meteo.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+Pressure Level Data: Forecasts on pressure levels are only available for
+the Central Europe 2km domain on 17 levels (1000, 950, 925, 850, 800, 700, 600, 500, 450,
+400, 350, 300, 275, 250, 200, 150 and 100 hPa), e.g. temperature_850hPa or wind_speed_500hPa.
+
+Snow Depth: ALADIN provides the snow cover as water equivalent (snow_depth_water_equivalent). A snow depth in metres is not available.
+
+Forecast Length: Forecasts cover 3 days. Selecting more forecast days will return
+empty values for the additional days.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

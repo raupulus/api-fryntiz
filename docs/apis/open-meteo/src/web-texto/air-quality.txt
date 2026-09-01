@@ -1,0 +1,648 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Air Quality API
+
+Pollutants and pollen forecast in 11 km resolution
+
+Air Quality
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+5 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+By default, we provide forecasts for 5 days, but you can access forecasts for up to 7 days. If you're interested in past weather data, you can use the Past Days feature
+to access archived forecasts.
+
+Hourly Air Quality Variables
+
+Particulate Matter PM10
+
+Particulate Matter PM2.5
+
+Carbon Monoxide CO
+
+Carbon Dioxide CO2
+
+Nitrogen Dioxide NO2
+
+Sulphur Dioxide SO2
+
+Ozone O3
+
+Aerosol Optical Depth
+
+Dust
+
+UV Index
+
+UV Index Clear Sky
+
+Ammonia NH3 (*)
+
+Methane CH4
+
+Alder Pollen (*)
+
+Birch Pollen (*)
+
+Grass Pollen (*)
+
+Mugwort Pollen (*)
+
+Olive Pollen (*)
+
+Ragweed Pollen (*)
+
+* Only available in Europe during pollen season with 4 days forecast
+
+European Air Quality Index
+
+European AQI
+
+European AQI PM2.5
+
+European AQI PM10
+
+European AQI NO2
+
+European AQI O3
+
+European AQI SO2
+
+Pollutant thresholds from the European Environment Agency (EEA) are given below, using the bands revised in 2024. Hourly concentrations are used for all
+five pollutants.
+
+Index values are interpolated between the thresholds of each band. The overall
+European AQI is the highest of the five pollutant indices and can exceed 100.
+
+| Pollutant (hourly) | Good | Fair | Moderate | Poor | Very poor | Extremely poor
+
+| AQI | 0-20 | 20-40 | 40-60 | 60-80 | 80-100 | >100
+
+| PM2.5 (μg/m³) | 0-5 | 5-15 | 15-50 | 50-90 | 90-140 | >140
+
+| PM10 (μg/m³) | 0-15 | 15-45 | 45-120 | 120-195 | 195-270 | >270
+
+| NO2 (μg/m³) | 0-10 | 10-25 | 25-60 | 60-100 | 100-150 | >150
+
+| O3 (μg/m³) | 0-60 | 60-100 | 100-120 | 120-160 | 160-180 | >180
+
+| SO2 (μg/m³) | 0-20 | 20-40 | 40-125 | 125-190 | 190-275 | >275
+
+United States Air Quality Index
+
+United States AQI
+
+United States AQI PM2.5
+
+United States AQI PM10
+
+United States AQI NO2
+
+United States AQI CO
+
+United States AQI O3
+
+United States AQI SO2
+
+Pollutant thresholds from the United States Environmental Protection Agency (EPA) are given below. Some thresholds are in parts per billion (ppb) instead of μg/m³. Conversion
+explained here. Particulate Matter (PM) uses a rolling average over the preceding 24 hours, carbon
+monoxide over the preceding 8 hours. Ozone is calculated from both hourly values and
+an 8 hour rolling average, sulphur dioxide from both hourly values and a 24 hour
+rolling average, using whichever yields the higher index. Nitrogen dioxide uses hourly
+values.
+
+Index values are interpolated between the thresholds of each band. The overall
+United States AQI is the highest of the six pollutant indices and can exceed 500.
+
+| Pollutant | Timespan | Good | Moderate | Unhealthy for
+
+Sensitive Groups | Unhealthy | Very Unhealthy | Hazardous
+
+| AQI | 0-50 | 51-100 | 101-150 | 151-200 | 201-300 | 301-400 | 401-500
+
+| O3 (ppb) | 8h | 0-55 | 55-70 | 70-85 | 85-105 | 105-200 | - | -
+
+| O3 (ppb) | 1h | - | - | 125-165 | 165-205 | 205-405 | 405-505 | 505-605
+
+| PM2.5 (μg/m³) | 24h | 0-9 | 9-35.4 | 35.5-55.4 | 55.5-125.4 | 125.5-225.4 | 225.5-325.4 | 325.5-500.4
+
+| PM10 (μg/m³) | 24h | 0-55 | 55-155 | 155-255 | 255-355 | 355-425 | 425-505 | 505-605
+
+| CO (ppm) | 8h | 0-4.4 | 4.5-9.4 | 9.5-12.4 | 12.5-15.4 | 15.5-30.4 | 30.5-40.4 | 40.5-50.5
+
+| SO2 (ppb) | 1h | 0-35 | 35-75 | 75-185 | 185-305 | - | - | -
+
+| SO2 (ppb) | 24h | - | - | - | - | 305-605 | 605-805 | 805-1005
+
+| NO2 (ppb) | 1h | 0-54 | 54-100 | 100-360 | 360-650 | 650-1250 | 1250-1650 | 1650-2050
+
+Additional Variables And Options
+
+Formaldehyde CH₂O
+
+Glyoxal C₂H₂O₂
+
+Non Methane Volatile Organic Compounds (*)
+
+PM10 caused by wildfires (*)
+
+Peroxyacyl Nitrates PAN
+
+Secondary Inorganic Aerosol (*)
+
+Residential Elementary Carbon (*)
+
+Total Elementary Carbon (*)
+
+PM2.5 Total Organic Matter (*)
+
+Sea Salt Aerosol
+
+Nitrogen Monoxide NO
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Current Conditions
+
+European AQI
+
+United States AQI
+
+Particulate Matter PM10
+
+Particulate Matter PM2.5
+
+Carbon Monoxide CO
+
+Nitrogen Dioxide NO2
+
+Sulphur Dioxide SO2
+
+Ozone O3
+
+Aerosol Optical Depth
+
+Dust
+
+UV Index
+
+UV Index Clear Sky
+
+Ammonia NH3 (*)
+
+Alder Pollen (*)
+
+Birch Pollen (*)
+
+Grass Pollen (*)
+
+Mugwort Pollen (*)
+
+Olive Pollen (*)
+
+Ragweed Pollen (*)
+
+Note: Current conditions are based on 15-minutely weather model data. Every weather variable
+available in hourly data, is available as current condition as well.
+
+Settings
+
+Global + European
+Domain
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+Forecast is based on the 11 kilometre CAMS European air quality forecast and the 45 kilometre
+CAMS global atmospheric composition forecasts. The European and global domain are not coupled
+and may show different forecasts.
+
+You can find the update timings in the model updates documentation.
+
+| Data Set | Region | Spatial Resolution | Temporal Resolution | Data Availability | Update frequency
+
+| CAMS European Air Quality Forecast |
+
+Europe
+| 0.1° (~11 km) | Hourly | October 2023 onwards | Every 24 hours, 4 days forecast
+
+| CAMS European Air Quality Reanalysis |
+
+Europe
+| 0.1° (~11 km) | Hourly | 2013 onwards | -
+
+| CAMS Global Atmospheric Composition Forecasts |
+
+🌍
+
+Global
+| 0.4° (~45 km) | 3-Hourly | August 2022 onwards | Every 12 hours, 5 days forecast
+
+| CAMS Global Greenhouse Gas Forecast |
+
+🌍
+
+Global
+| 0.1° (~11 km) | 3-Hourly | November 2024 onwards | Every 24 hours, 5 days forecast
+
+Click to enlarge CAMS Europe Model Area. Source: Open-Meteo.
+
+API Documentation
+
+The API endpoint /v1/air-quality accepts a geographical coordinate, a list of weather
+variables and responds with a JSON hourly air quality forecast for 5 days. Time always starts at
+0:00 today.
+
+All URL parameters are listed below:
+
+| Parameter | Format | Required | Default | Description
+
+| latitude, longitude | Floating point | Yes | | Geographical WGS84 coordinates of the location. Multiple coordinates can be comma
+separated. E.g. &latitude=52.52,48.85&longitude=13.41,2.35. To return
+data for multiple locations the JSON output changes to a list of structures. CSV and
+XLSX formats add a column location_id.
+
+| hourly | String array | No | | A list of weather variables which should be returned. Values can be comma separated,
+or multiple &hourly= parameter in the URL can be used.
+
+| current | String array | No | | A list of variables to get current conditions.
+
+| domains | String | No | auto | Automatically combine both domains auto or specifically select the
+European cams_europe or global domain cams_global.
+
+| timeformat | String | No | iso8601 | If format unixtime is selected, all time values are returned in UNIX
+epoch time in seconds. Please note that all timestamp are in GMT+0! For daily values
+with unix timestamps, please apply utc_offset_seconds again to get the correct date.
+
+| timezone | String | No | GMT | If timezone is set, all timestamps are returned as local-time and data
+is returned starting at 00:00 local-time. Any time zone name from the time zone database is supported. If auto is set as a time zone, the coordinates will be automatically
+resolved to the local time zone. For multiple coordinates, a comma separated list of timezones
+can be specified.
+
+| past_days | Integer (0-92) | No | 0 | If past_days is set, yesterday or the day before yesterday data are also returned.
+
+| forecast_days | Integer (0-7) | No | 5 | Per default, 5 days are returned. Up to 7 days of forecast are possible.
+
+| forecast_hours
+
+past_hours | Integer (>0) | No | | Similar to forecast_days, the number of timesteps of hourly data can controlled.
+Instead of using the current day as a reference, the current hour is used.
+
+| start_date
+
+end_date | String (yyyy-mm-dd) | No | | The time interval to get weather data. A day must be specified as an ISO8601 date
+(e.g. 2022-06-30).
+
+| start_hour
+
+end_hour | String (yyyy-mm-ddThh:mm) | No | | The time interval to get weather data for hourly data. Time must be specified as an
+ISO8601 date (e.g. 2022-06-30T12:00).
+
+| cell_selection | String | No | nearest | Set a preference how grid-cells are selected. The default land finds a
+suitable grid-cell on land with similar elevation to the requested coordinates using a 90-meter digital elevation
+model. sea prefers grid-cells on sea. nearest selects the nearest possible
+grid-cell.
+
+| apikey | String | No | | Only required to commercial use to access reserved API resources for customers. The
+server URL requires the prefix customer-. See pricing for more information.
+
+Additional optional URL parameters will be added. For API stability, no required parameters
+will be added in the future!
+
+Hourly Parameter Definition
+
+The parameter &hourly= accepts the following values. Most weather variables are given
+as an instantaneous value for the indicated hour. Some variables like precipitation are calculated
+from the preceding hour as an average or sum.
+
+| Variable | Valid time | Unit | Description
+
+| pm10
+
+pm2_5 | Instant | μg/m³ | Particulate matter with diameter smaller than 10 µm (PM10) and smaller
+than 2.5 µm (PM2.5) close to surface (10 meter above ground)
+
+| carbon_monoxide
+
+nitrogen_dioxide
+
+sulphur_dioxide
+
+ozone | Instant | μg/m³ | Atmospheric gases close to surface (10 meter above ground)
+
+| carbon_dioxide | Instant | ppm | CO2 close to surface (10 meter above ground)
+
+| ammonia | Instant | μg/m³ | Ammonia concentration. Only available for Europe.
+
+| aerosol_optical_depth | Instant | Dimensionless | Aerosol optical depth at 550 nm of the entire atmosphere to indicate haze.
+
+| methane | Instant | μg/m³ | Methane close to surface (10 meter above ground)
+
+| dust | Instant | μg/m³ | Saharan dust particles close to surface level (10 meter above ground).
+
+| uv_index
+
+uv_index_clear_sky | Instant | Index | UV index considering clouds and clear sky. See ECMWF UV Index recommendation for more information
+
+| alder_pollen
+
+birch_pollen
+
+grass_pollen
+
+mugwort_pollen
+
+olive_pollen
+
+ragweed_pollen | Instant | Grains/m³ | Pollen for various plants. Only available in Europe as provided by CAMS European Air
+Quality forecast.
+
+| european_aqi
+
+european_aqi_pm2_5
+
+european_aqi_pm10
+
+european_aqi_nitrogen_dioxide
+
+european_aqi_ozone
+
+european_aqi_sulphur_dioxide | Instant | European AQI | European Air Quality Index (AQI) calculated for different particulate matter and
+gases individually. The consolidated european_aqi returns the maximum of all
+individual indices. Ranges from 0-20 (good), 20-40 (fair), 40-60 (moderate), 60-80 (poor),
+80-100 (very poor) and exceeds 100 for extremely poor conditions.
+
+| us_aqi
+
+us_aqi_pm2_5
+
+us_aqi_pm10
+
+us_aqi_nitrogen_dioxide
+
+us_aqi_ozone
+
+us_aqi_sulphur_dioxide
+
+us_aqi_carbon_monoxide | Instant | U.S. AQI | United States Air Quality Index (AQI) calculated for different particulate matter and
+gases individually. The consolidated us_aqi returns the maximum of all individual
+indices. Ranges from 0-50 (good), 51-100 (moderate), 101-150 (unhealthy for sensitive groups),
+151-200 (unhealthy), 201-300 (very unhealthy) and 301-500 (hazardous).
+
+JSON Return Object
+
+On success a JSON object will be returned.
+
+{
+"latitude": 52.52,
+"longitude": 13.419,
+"elevation": 44.812,
+"generationtime_ms": 2.2119,
+"utc_offset_seconds": 0,
+"timezone": "Europe/Berlin",
+"timezone_abbreviation": "CEST",
+"hourly": {
+"time": ["2022-07-01T00:00", "2022-07-01T01:00", "2022-07-01T02:00", ...],
+"pm10": [1, 1.7, 1.7, 1.5, 1.5, 1.8, 2.0, 1.9, 1.3, ...]
+},
+"hourly_units": {
+"pm10": "μg/m³"
+},
+}
+
+| Parameter | Format | Description
+
+| latitude, longitude | Floating point | WGS84 of the center of the weather grid-cell which was used to generate this
+forecast. This coordinate might be a few kilometres away from the requested
+coordinate.
+
+| generationtime_ms | Floating point | Generation time of the weather forecast in milliseconds. This is mainly used for
+performance monitoring and improvements.
+
+| utc_offset_seconds | Integer | Applied timezone offset from the &timezone= parameter.
+
+| timezone
+
+timezone_abbreviation | String | Timezone identifier (e.g. Europe/Berlin) and abbreviation (e.g. CEST)
+
+| hourly | Object | For each selected weather variable, data will be returned as a floating point array.
+Additionally a time array will be returned with ISO8601 timestamps.
+
+| hourly_units | Object | For each selected weather variable, the unit will be listed here.
+
+Errors
+
+In case an error occurs, for example a URL parameter is not correctly specified, a JSON error
+object is returned with a HTTP 400 status code.
+
+{
+"error": true,
+"reason": "Cannot initialize WeatherVariable from invalid String value
+tempeture_2m for key hourly"
+}
+
+Citation & Acknowledgement
+
+METEO FRANCE, Institut national de l'environnement industriel et des risques (Ineris), Aarhus
+University, Norwegian Meteorological Institute (MET Norway), Jülich Institut für Energie- und
+Klimaforschung (IEK), Institute of Environmental Protection – National Research Institute
+(IEP-NRI), Koninklijk Nederlands Meteorologisch Instituut (KNMI), Nederlandse Organisatie voor
+toegepast-natuurwetenschappelijk onderzoek (TNO), Swedish Meteorological and Hydrological
+Institute (SMHI), Finnish Meteorological Institute (FMI), Italian National Agency for New
+Technologies, Energy and Sustainable Economic Development (ENEA) and Barcelona Supercomputing
+Center (BSC) (2022): CAMS European air quality forecasts, ENSEMBLE data. Copernicus Atmosphere
+Monitoring Service (CAMS) Atmosphere Data Store (ADS). (Updated twice daily).
+
+All users of Open-Meteo data must provide a clear attribution to CAMS ENSEMBLE data provider as well as a reference to Open-Meteo.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

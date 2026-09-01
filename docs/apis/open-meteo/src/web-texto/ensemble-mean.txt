@@ -1,0 +1,959 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Ensemble Mean API
+
+Mean Ensemble Weather Forecasts from Multiple Models
+
+Ensemble Mean API
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+7 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+By default, we provide forecasts for 7 days, but you can access forecasts for up to 35 days. If you're interested in past weather data, you can use the Past Days feature
+to access archived forecasts.
+
+Ensemble Models
+
+DWD ICON EPS Seamless Mean
+
+DWD ICON EPS Global Mean
+
+DWD ICON EPS EU Mean
+
+DWD ICON EPS D2 Mean
+
+GFS Ensemble Seamless Mean
+
+GFS Ensemble 0.25° Mean
+
+GFS Ensemble 0.5° Mean
+
+AIGEFS 0.25° Mean
+
+HGEFS 0.25° Mean
+
+ECMWF IFS 0.25° Ensemble Mean
+
+ECMWF IFS 9 km (O1280) Europe Ensemble Mean
+
+ECMWF AIFS 0.25° Ensemble Mean
+
+ECMWF AIFS 31 km (N320) Europe Ensemble Mean
+
+UK MetOffice Global 20km Mean
+
+UK MetOffice UK 2km Mean
+
+GEM Global Ensemble Mean
+
+MeteoSwiss ICON CH1 Mean
+
+MeteoSwiss ICON CH2 Mean
+
+Google WeatherNext 2 Ensemble Mean
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Mean
+
+Spread
+
+Relative Humidity (2 m)
+
+Mean
+
+Spread
+
+Dewpoint (2 m)
+
+Mean
+
+Spread
+
+Apparent Temperature
+
+Mean
+
+Spread
+
+Precipitation (rain + snow)
+
+Mean
+
+Spread
+
+Rain
+
+Mean
+
+Spread
+
+Snowfall
+
+Mean
+
+Spread
+
+Snow Depth
+
+Mean
+
+Spread
+
+Weather code
+
+Mean
+
+Sea Level Pressure
+
+Mean
+
+Spread
+
+Surface Pressure
+
+Mean
+
+Spread
+
+Cloud Cover Total
+
+Mean
+
+Spread
+
+Cloud Cover Low
+
+Mean
+
+Spread
+
+Cloud Cover Mid
+
+Mean
+
+Spread
+
+Cloud Cover High
+
+Mean
+
+Spread
+
+Visibility
+
+Mean
+
+Spread
+
+Reference Evapotranspiration (ET₀)
+
+Mean
+
+Spread
+
+Vapour Pressure Deficit
+
+Mean
+
+Spread
+
+Wind Speed (10 m)
+
+Mean
+
+Spread
+
+Wind Speed (80 m)
+
+Mean
+
+Spread
+
+Wind Speed (100 m)
+
+Mean
+
+Spread
+
+Wind Speed (120 m)
+
+Mean
+
+Spread
+
+Wind Direction (10 m)
+
+Mean
+
+Spread
+
+Wind Direction (80 m)
+
+Mean
+
+Spread
+
+Wind Direction (100 m)
+
+Mean
+
+Spread
+
+Wind Direction (120 m)
+
+Mean
+
+Spread
+
+Wind Gusts (10 m)
+
+Mean
+
+Spread
+
+Temperature (80 m)
+
+Mean
+
+Spread
+
+Temperature (120 m)
+
+Mean
+
+Spread
+
+Surface Temperature
+
+Mean
+
+Spread
+
+Soil Temperature (0-10 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (10-40 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (40-100 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (100-200 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (0-10 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (10-40 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (40-100 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (100-400 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (0-7 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (7-28 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (28-100 cm)
+
+Mean
+
+Spread
+
+Soil Temperature (100-255 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (0-7 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (7-28 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (28-100 cm)
+
+Mean
+
+Spread
+
+Soil Moisture (100-255 cm)
+
+Mean
+
+Spread
+
+Additional Variables And Options
+
+Is Day or Night
+
+Mean
+
+UV Index
+
+Mean
+
+Spread
+
+UV Index Clear Sky
+
+Mean
+
+Spread
+
+Temperature 3-Hourly Minimum (2 m)
+
+Mean
+
+Spread
+
+Temperature 3-Hourly Maximum (2 m)
+
+Mean
+
+Spread
+
+Wet Bulb Temperature (2 m)
+
+Mean
+
+Spread
+
+CAPE
+
+Mean
+
+Spread
+
+Convective Inhibition (CIN)
+
+Mean
+
+Spread
+
+Freezing Level Height
+
+Mean
+
+Spread
+
+Snowfall Height
+
+Mean
+
+Spread
+
+Sunshine Duration
+
+Mean
+
+Spread
+
+Snowfall (Water Equivalent)
+
+Mean
+
+Spread
+
+Snow Depth (Water Equivalent)
+
+Mean
+
+Spread
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Mean
+
+Spread
+
+Direct Solar Radiation
+
+Mean
+
+Spread
+
+Diffuse Solar Radiation DHI
+
+Mean
+
+Spread
+
+Direct Normal Irradiance DNI
+
+Mean
+
+Spread
+
+Global Tilted Radiation GTI
+
+Mean
+
+Spread
+
+Shortwave Solar Radiation GHI (Instant)
+
+Mean
+
+Spread
+
+Direct Solar Radiation (Instant)
+
+Mean
+
+Spread
+
+Diffuse Solar Radiation DHI (Instant)
+
+Mean
+
+Spread
+
+Direct Normal Irradiance DNI (Instant)
+
+Mean
+
+Spread
+
+Global Tilted Radiation GTI (Instant)
+
+Mean
+
+Spread
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Relative Humidity
+
+Dew Point
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Vertical Velocity
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+Mean
+
+Spread
+
+925 hPa (800 m)
+
+Mean
+
+Spread
+
+850 hPa (1500 m)
+
+Mean
+
+Spread
+
+700 hPa (3 km)
+
+Mean
+
+Spread
+
+600 hPa (4.2 km)
+
+Mean
+
+Spread
+
+500 hPa (5.6 km)
+
+Mean
+
+Spread
+
+400 hPa (7.2 km)
+
+Mean
+
+Spread
+
+300 hPa (9.2 km)
+
+Mean
+
+Spread
+
+250 hPa (10.4 km)
+
+Mean
+
+Spread
+
+200 hPa (11.8 km)
+
+Mean
+
+Spread
+
+150 hPa (13.5 km)
+
+Mean
+
+Spread
+
+100 hPa (15.8 km)
+
+Mean
+
+Spread
+
+50 hPa (19.3 km)
+
+Mean
+
+Spread
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea
+level.
+
+Daily Weather Variables
+
+Mean Temperature (2 m)
+
+Mean
+
+Minimum Temperature (2 m)
+
+Mean
+
+Maximum Temperature (2 m)
+
+Mean
+
+Mean Apparent Temperature
+
+Mean
+
+Minimum Apparent Temperature
+
+Mean
+
+Maximum Apparent Temperature
+
+Mean
+
+Mean Wind Speed (10 m)
+
+Mean
+
+Minimum Wind Speed (10 m)
+
+Mean
+
+Maximum Wind Speed (10 m)
+
+Mean
+
+Dominant Wind Direction (10 m)
+
+Mean
+
+Mean Wind Gusts (10 m)
+
+Mean
+
+Minimum Wind Gusts (10 m)
+
+Mean
+
+Maximum Wind Gusts (10 m)
+
+Mean
+
+Mean Wind Speed (100 m)
+
+Mean
+
+Minimum Wind Speed (100 m)
+
+Mean
+
+Maximum Wind Speed (100 m)
+
+Mean
+
+Dominant Wind Direction (100m)
+
+Mean
+
+Mean Cloud Cover
+
+Mean
+
+Minimum Cloud Cover
+
+Mean
+
+Maximum Cloud Cover
+
+Mean
+
+Precipitation Sum
+
+Mean
+
+Precipitation Hours
+
+Mean
+
+Rain Sum
+
+Mean
+
+Snowfall Sum
+
+Mean
+
+Mean Sea Level Pressure
+
+Mean
+
+Minimum Sea Level Pressure
+
+Mean
+
+Maximum Sea Level Pressure
+
+Mean
+
+Mean Surface Pressure
+
+Mean
+
+Minimum Surface Pressure
+
+Mean
+
+Maximum Surface Pressure
+
+Mean
+
+Mean Relative Humidity (2 m)
+
+Mean
+
+Minimum Relative Humidity (2 m)
+
+Mean
+
+Maximum Relative Humidity (2 m)
+
+Mean
+
+Mean CAPE
+
+Mean
+
+Minimum CAPE
+
+Mean
+
+Maximum CAPE
+
+Mean
+
+Mean Dewpoint (2 m)
+
+Mean
+
+Minimum Dewpoint (2 m)
+
+Mean
+
+Maximum Dewpoint (2 m)
+
+Mean
+
+Reference Evapotranspiration (ET₀)
+
+Mean
+
+Shortwave Radiation Sum
+
+Mean
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Documentation
+
+The Ensemble Mean API offers access to mean and spread (standard deviation) directly
+calculated from ensemble models using individual members. These ensemble means are stored for
+an extended period, with most available since March 2026. Individual ensemble members,
+however, are only stored for up to three days.
+
+The Ensemble Mean API uses the same data sources as the regular Ensemble API. Please refer to
+the Ensemble API for a detailed list of ensemble models.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

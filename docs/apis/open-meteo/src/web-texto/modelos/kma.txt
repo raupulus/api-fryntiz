@@ -1,0 +1,514 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+KMA Weather API
+
+Weather forecasts from the Korea Meteorological Administration KMA
+
+KMA Korea
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+KMA discontinued their UM-based models at the end of March 2026 and switched to the new
+KIM-based model, which uses a different data distribution system. KMA data updates are currently
+suspended while Open-Meteo migrates to the new KIM model source.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical Forecast
+
+Time:
+
+Forecast Length Time Interval
+
+7 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 7 days, but you can
+access forecasts for up to 8 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + snow + showers)
+
+Rain
+
+Showers
+
+Snowfall
+
+Weather code
+
+Visibility
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Cloud Cover / Fog (2m)
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Speed (50 m)
+
+Wind Gusts (10 m)
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Additional Variables And Options
+
+Is Day or Night
+
+Wet Bulb Temperature (2 m)
+
+CAPE
+
+Sunshine Duration
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Weather models
+
+KMA Seamless
+
+KMA GDPS 12km
+
+KMA LDPS 1.5km
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Sum
+
+Precipitation Hours
+
+Precipitation Probability Max
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Current Weather
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Apparent Temperature
+
+Is Day or Night
+
+Precipitation
+
+Rain
+
+Showers
+
+Snowfall
+
+Weather code
+
+Cloud Cover Total
+
+Sea Level Pressure
+
+Surface Pressure
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Note: Current conditions are based on 1 or 3-hourly weather model data. Every weather variable
+available in hourly data, is available as current condition as well.
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+This API uses global KMA GDPS 10 km weather forecasts and combines them with high-resolution
+LDPS 1.5 km model for the North and South Korea. Information about KMA weather models is
+available here.
+For GDPS Global, values are interpolated from 3-hourly to 1-hourly time-steps.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| KMA GDPS |
+
+🌍
+
+Global
+| 0.13° (~12 km) | 3-Hourly | 12 days | Every 6 hours
+
+| KMA LDPS |
+
+South And North Korea
+| 1.5 km | Hourly | 2 days | Every 6 hours
+
+Click to enlarge KMA LDPS domain area at 1.5 km resolution. Source: Open-Meteo.
+
+Native Model Variables
+
+KMA directly predicts the fields listed below. Open-Meteo retains these fields or uses them to
+calculate more convenient API variables. KMA provides both global and direct solar radiation
+and a native 2 m cloud cover (fog) field.
+
+| Native KMA field | Level | Use in the Open-Meteo API
+
+| Temperature | 2 m, surface | temperature_2m, surface_temperature
+
+| Relative humidity | 2 m | Relative humidity and dew point
+
+| U and V wind components | 10 m, 50 m (GDPS) | Wind speed and direction
+
+| Wind gusts | 10 m | wind_gusts_10m
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Precipitation, convective precipitation (GDPS) and snowfall | Surface | precipitation, rain, showers, snowfall
+
+| Global and direct solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover low, mid, high and fog fraction | Surface | Cloud cover layers and cloud_cover_2m
+
+| Visibility and CAPE (GDPS) | Surface | visibility, cape and weather-code inputs
+
+CAPE, 50 m wind and convective precipitation are only available in the global GDPS model. The
+total cloud cover is combined from the layers because the native total reads too high.
+
+Derived Variables
+
+KMA publishes relative humidity, cloud cover layers, a 2 m cloud cover (fog) field and both
+global and direct solar radiation natively. Open-Meteo derives the remaining API variables
+from these native fields.
+
+| Derived Variable | How is it derived?
+
+| Total cloud cover | Combined from the native low, mid and high cloud layers. KMA's own total cloud field
+is not used because it reads too high.
+
+| Weather code | Computed from cloud cover, rain, snowfall, wind gusts, visibility and, for the global
+GDPS model, CAPE and showers.
+
+| Wind speed and direction | Calculated from the native U and V wind components at 10 m and 50 m.
+
+| Snowfall and rain | Snowfall converts the native snowfall water equivalent with 0.7 cm per mm. Rain is
+total precipitation minus snowfall water equivalent (and showers for GDPS).
+
+| Diffuse radiation and DNI | Diffuse radiation is separated from global radiation with the Razo, Müller Witwer
+model. DNI follows from native direct radiation, together with GTI and instant values.
+
+| Dew point, vapour pressure deficit and wet bulb temperature | Calculated from native 2 m temperature and relative humidity.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Apparent temperature, ET₀ and sunshine duration | Combine temperature, humidity, wind speed and solar radiation. ET₀ follows the FAO-56
+Penman-Monteith equation; sunshine duration counts time with native DNI above 120
+W/m².
+
+Sunrise, sunset, daylight duration and the day-or-night flag are astronomical calculations.
+Daily values are aggregated from hourly data.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+Direct Solar Radiation: KMA provides direct solar radiation. Many other weather
+models only provide global solar radiation and direct solar radiation must be calculated user
+separation models.
+
+Cloud Cover (2m): KMA provides cloud cover at 2 metre above ground which can
+be interpreted as fog. This is remarkable, because only very weather models are capable of modeling
+low level cloud cover and fog with a good degree of accuracy.
+
+Showers:Showers are only computed in the global GDPS model. Since LDPS is a
+convection-resolving model, it incorporates showers within the regular rain parameter,
+resulting in a constant value of 0 for the showers variable in LDPS.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

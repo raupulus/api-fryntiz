@@ -1,0 +1,522 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Satellite Radiation API
+
+Real-time Solar Irradiance From Multiple Satellites
+
+Satellite Radiation
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Solar radiation data from NASA GOES satellites has not been integrated yet, so data is currently
+unavailable for North America.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+1 day (default)
+Forecast days
+
+0 days (default)
+Past days
+
+By default, solar radiation for the current day is returned. If you're interested in
+past satellite data, you can use the Past Days feature to access archived data.
+
+Hourly Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Clear Sky Radiation (only DWD MTG)
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Clear Sky Radiation (only DWD MTG) (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Sunshine Duration
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+Native Model Resolution
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Satellite Data Sources
+
+Automatic Selection
+
+DWD EUMETSAT MTG (Europe, Africa, 10-minutely, since 2025, 20 minutes delay)
+
+EUMETSAT MSG (Europe, Africa, South America, 15-minutely, since 2025, 2 hours delay)
+
+EUMETSAT IODC (Europe, Africa, India, 15-minutely, since 2025, 2 hours delay)
+
+EUMETSAT Sarah3 (Europe, Africa, 30-minutely, since 1983, 1 day delay)
+
+JMA JAXA Himawari (India, Asia, Australia, New Zealand, 10-minutely, since 2023, 30 minutes delay)
+
+JMA JAXA EUMETSAT MTG (Europe, Africa, India, 10-minutely, since 2025, 30 minutes delay)
+
+You can also compare solar radiation directly with weather models by selecting a model
+below
+
+Best match
+
+ECMWF IFS HRES 9km
+
+ECMWF IFS 0.25°
+
+ECMWF AIFS 0.25° Single
+
+CMA GRAPES Global
+
+BOM ACCESS Global
+
+NCEP GFS Seamless
+
+NCEP GFS Global 0.11°/0.25°
+
+NCEP HRRR U.S. Conus
+
+NCEP NBM U.S. Conus
+
+NCEP NAM U.S. Conus
+
+NCEP AIGFS 0.25°
+
+NCEP HGEFS 0.25° Ensemble Mean
+
+JMA Seamless
+
+JMA MSM
+
+JMA GSM
+
+KMA Seamless
+
+KMA LDPS
+
+KMA GDPS
+
+DWD ICON Seamless
+
+DWD ICON Global
+
+DWD ICON EU
+
+DWD ICON D2
+
+GEM Seamless
+
+GEM Global
+
+GEM Regional
+
+GEM HRDPS Continental
+
+GEM HRDPS West
+
+Météo-France Seamless
+
+Météo-France ARPEGE World
+
+Météo-France ARPEGE Europe
+
+Météo-France AROME France
+
+Météo-France AROME France HD
+
+ItaliaMeteo ARPAE ICON 2I
+
+MET Norway Nordic Seamless (with ECMWF)
+
+MET Norway Nordic
+
+KNMI Seamless (with ECMWF)
+
+KNMI Harmonie AROME Europe
+
+KNMI Harmonie AROME Netherlands
+
+DMI Seamless (with ECMWF)
+
+DMI Harmonie AROME Europe
+
+UK Met Office Seamless
+
+UK Met Office Global 10km
+
+UK Met Office UK 2km
+
+MeteoSwiss ICON Seamless
+
+MeteoSwiss ICON CH1
+
+MeteoSwiss ICON CH2
+
+GeoSphere Seamless (with ECMWF)
+
+GeoSphere AROME Austria
+
+CHMI Aladin Seamless
+
+CHMI Aladin Central Europe 2km
+
+CHMI Aladin CZ 1km
+
+ECMWF IFS 9km HRES
+
+ERA5-Seamless
+
+ERA5
+
+ERA5-Land
+
+ERA5-Ensemble
+
+CERRA
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Radiation Variables
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Shortwave Radiation Sum
+
+Settings
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+| Provider | Satellite | Region | Spatial Resolution | Temporal Resolution | Update frequency | Delay | Archive since
+
+| DWD | EUMETSAT MTG |
+Europe, Africa
+| 0.025° (~ 2.5km) | 10 minutely | Every 10 minutes | 20 Minutes | Feb. 2026
+
+| EUMETSAT LSA SAF | MSG |
+Europe, Africa, South America (only land)
+| 0.05° (~ 5km) | 15 minutely | Every Hour | 2 Hours | 2025
+
+| IODC |
+Europe, Africa, India (only land)
+| 0.05° (~ 5km) | 15 minutely | Every Hour | 2 Hours | 2025
+
+| EUMETSAT CM SAF SARAH3 | MSG |
+Europe, Africa, South America
+| 0.05° (~ 5km) | 30 minutely | Every Hour | 2 Days | 1983
+
+| JMA JAXA | Himawari-9 |
+India, Asia, Australia, New Zealand
+| 0.05° (~ 5km) | 10 minutely | Every 10 minutes | 30 Minutes | 2015
+
+| EUMETSAT MTG |
+Europe, Africa
+| 0.05° (~ 5km) | 10 minutely | Every 10 minutes | 30 Minutes | 2025
+
+| NASA (not yet available) | GOES-East |
+North & South America
+| 0.05° (~ 5km) | N/A | N/A | N/A | N/A
+
+| GOES-West |
+Pacific Ocean & Alaska
+| N/A | N/A | N/A | N/A | N/A
+
+Click to enlarge Geostationary satellites for solar radiation. Source: Open-Meteo.
+
+API Documentation
+
+The Satellite Radiation API integrate solar radiation data from various satellite datasets
+into a single consistent endpoint. Different geostationary satellites are used to provide
+global coverage.
+
+Himawari direct and diffuse radiation JMA JAXA provides only shortwave
+radiation data and does not offer direct or diffuse solar radiation. Open-Meteo applies the
+separation model from Razo, Müller Witwer to calculate direct radiation from shortwave solar radiation.
+
+Clear-Sky solar shortwave radiation is only available for DWD satellite shortwave
+radiation data.
+
+Instantaneous Values Correction: All satellites provide data as
+instantaneous values. However, a full Earth scan takes approximately 10–15 minutes. As a
+result, the top and bottom of each scan have a significant time difference. To ensure
+comparability with data sources like weather models, OpenMeteo corrects for these scan time
+differences and derives backward-averaged values.
+
+Different temporal resolutions: Data is available in 10, 15 or 30–minutely steps.
+For compatibility, the API returns 1–hourly data. If you want to access the underlying time resolution,
+make sure to set "Temporal resolution for hourly data" to "native".
+
+Hourly Parameter Definition
+
+The parameter &hourly= accepts the following values. All data is provided in W/m².
+Solar radiation parameters are available as either instantaneous values or backward averages over
+the past hour. If you select 10/15/30-minute data, the backward averages will use the same 10/15/30-minute
+intervals.
+
+| Variable | Valid time | Description
+
+| shortwave_radiation | Preceding hour mean | Shortwave solar radiation is the average incoming solar radiation over the preceding
+hour at the surface. It corresponds to the total global horizontal irradiance (GHI),
+defined as the sum of direct and diffuse solar radiation. It accounts for atmospheric
+effects including clouds and aerosols.
+
+| diffuse_radiation | Preceding hour mean | Diffuse solar radiation is the average refracted and scattered component of solar
+radiation reaching the surface over the preceding hour. It excludes the direct solar
+beam and results from interactions of sunlight with atmospheric molecules, aerosols,
+and clouds.
+
+| direct_radiation | Preceding hour mean | Direct solar radiation is the average solar radiation over the preceding hour on a
+horizontal surface that comes straight from the sun. It excludes any scattered or
+reflected light and represents the unaltered solar beam reaching the surface.
+
+| direct_normal_irradiance | Preceding hour mean | Direct normal irradiance (DNI) is the average direct solar radiation over the
+preceding hour measured on a surface perpendicular to the sun’s rays. “Perpendicular”
+means the surface always faces the sun directly, as if mounted on a solar tracker,
+capturing the maximum direct solar beam without scattering.
+
+| global_tilted_irradiance | Preceding hour mean | Total radiation received on a tilted pane as average of the preceding hour. The
+calculation is assuming a fixed albedo of 20% and in isotropic sky. Please specify
+tilt and azimuth parameter. Tilt ranges from 0° to 90° and is typically around 45°.
+Azimuth should be close to 0° (0° south, -90° east, 90° west, ±180 north). If azimuth
+is set to "nan", the calculation assumes a vertical tracker (east-west). If tilt is
+set to "nan", it is assumed that the panel has a horizontal tracker (up-down). If both
+are set to "nan", a bi-axial tracker is assumed.
+
+| shortwave_radiation_clear_sky | Preceding hour mean | Clear-sky shortwave radiation is the solar radiation reaching the surface in the
+absence of clouds. Atmospheric effects such as gas absorption, aerosol scattering, and
+refraction due to air density are included, while cloud particles are excluded. Under
+perfectly clear conditions, the regular shortwave radiation can be as high as the
+clear-sky shortwave radiation.
+
+| terrestrial_radiation | Preceding hour mean | The solar radiation at the top of the atmosphere, unaffected by clouds or aerosols.
+It is purely calculated using the solar position factor multiplied by the solar
+constant of 1367.7 W/m². This differs from clear sky radiation, which accounts for
+aerosols but not clouds.
+
+| *_instant | Instant | All solar radiation parameters can be expressed as instantaneous values by accounting
+for the solar zenith angle at a specific moment. Instantaneous values are useful for
+direct comparison with local measurements. However, for energy calculations or model
+evaluations, backward-averaged (preceding hour) data is preferred. By default, the
+Open-Meteo API provides backward-averaged solar radiation to simplify energy
+calculations.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

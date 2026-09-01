@@ -1,0 +1,218 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Elevation API
+
+90 meter resolution digital elevation model
+
+Elevation
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Get more information on how weather forecasts are improved with elevation models in our blog article.
+
+Select Coordinates or City
+
+Latitude
+
+Longitude
+
+Search
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+Preview and API URL
+
+{"elevation":[38.0]}
+
+API URL (Open in new tab)
+
+You can copy this API URL into your application
+
+API Documentation
+
+The API endpoint /v1/elevation accepts one or multiple geographical coordinate and
+returns the terrain elevation for those points.
+
+Data is based on the Copernicus DEM 2021 release GLO-90 with 90 meters resolution. The GLO-90 dataset is available worldwide with a free licence.
+
+All URL parameters are listed below:
+
+| Parameter | Format | Required | Default | Description
+
+| latitude
+
+longitude | Floating point array | Yes | | Geographical WGS84 coordinates of the location. Multiple coordinates can be comma , separated. Up to 100 coordinates can be requested at once. Example for multiple coordinates.
+
+| apikey | String | No | | Only required to commercial use to access reserved API resources for customers. The
+server URL requires the prefix customer-. See pricing for more information.
+
+Additional optional URL parameters will be added. For API stability, no required parameters will
+be added in the future!
+
+JSON Return Object
+
+On success a JSON object is returned with just one attribute elevation. It is
+always an array, even if only one coordinate is requested.
+
+{
+"elevation": [38.0]
+}
+
+Errors
+
+In case an error occurs, for example a URL parameter is not correctly specified, a JSON error
+object is returned with a HTTP 400 status code.
+
+{
+"error":true,
+"reason":"Latitude must be in range of -90 to 90°. Given: 522.52."
+}
+
+Citation & Acknowledgement
+
+ESA - EUsers, who, in their research, use the Copernicus DEM, are requested to use the following DOI when citing the data source in their publications:
+
+https://doi.org/10.5270/ESA-c5d3d65
+
+All users of Open-Meteo data must provide a clear attribution to the Copernicus program as well
+as a reference to Open-Meteo.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

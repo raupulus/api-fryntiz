@@ -1,0 +1,531 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+KNMI Forecast API
+
+Weather forecasts from the Royal Netherlands Meteorological Institute
+
+KNMI Netherlands
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+3 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 3 days, but you can
+access forecasts for up to 15 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + snow)
+
+Rain
+
+Snowfall
+
+Snow Depth Water Equivalent
+
+Weather code
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Visibility
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Speed (50 m)
+
+Wind Speed (100 m)
+
+Wind Speed (200 m)
+
+Wind Speed (300 m)
+
+Wind Direction (10 m)
+
+Wind Direction (50 m)
+
+Wind Direction (100 m)
+
+Wind Direction (200 m)
+
+Wind Direction (300 m)
+
+Wind Gusts (10 m)
+
+Surface Temperature
+
+Temperature (5 m)
+
+Temperature (100 m)
+
+Temperature (200 m)
+
+Temperature (300 m)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Wet Bulb Temperature (2 m)
+
+Sunshine Duration
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Dewpoint
+
+Relative Humidity
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Geopotential Height
+
+Temperature
+
+925 hPa (800 m)
+
+850 hPa (1500 m)
+
+700 hPa (3 km)
+
+500 hPa (5.6 km)
+
+300 hPa (9.2 km)
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea level.
+
+Weather models
+
+KNMI Seamless (with ECMWF)
+
+KNMI Harmonie AROME Europe
+
+KNMI Harmonie AROME Netherlands
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+UV Index
+
+UV Index Clear Sky
+
+Precipitation Sum
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Hours
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+KNMI provides weather forecasts from the HARMONIE AROME model with ECMWF IFS initialization.
+This is a collaboration of multiple European national weather services under the name "United
+Weather Centres-West" (UWC-West). Two model configuration one for Europe (5.5 km resolution)
+and an inset for the Netherlands (2 km resolution) are available. All data is updated hourly
+and provides forecast for up to 2.5 days. After 2.5 days, Open-Meteo combines forecasts with
+the ECMWF IFS HRES 9 km model to provide up to 15 days of forecast.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| KNMI HARMONIE AROME Netherlands |
+
+Netherlands, Belgium
+| 2 km | 1-hourly | 2.5 days | Every hour
+
+| KNMI HARMONIE AROME Europe |
+
+Central & Northern Europe up to Iceland
+| 5.5 km | 1-hourly | 2.5 days | Every hour
+
+Click to enlarge KNMI HARMONIE AROME Europe Model Area. Source: Open-Meteo. Click to enlarge KNMI HARMONIE AROME Netherlands Model Area. Source: Open-Meteo.
+
+Native Model Variables
+
+HARMONIE AROME directly predicts the fields listed below. Open-Meteo retains these fields or
+uses them to calculate more convenient API variables. The model provides wind as U and V
+components and only global solar radiation.
+
+| Native KNMI field | Level | Use in the Open-Meteo API
+
+| Temperature | 2 m, 50/100/200/300 m, surface, pressure levels | temperature_2m and upper-level temperature
+
+| Relative humidity | 2 m, pressure levels | Relative humidity, dew point and pressure-level cloud cover
+
+| U and V wind components | 10 m to 300 m, pressure levels | Wind speed and direction
+
+| Wind gust components | 10 m | wind_gusts_10m
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Precipitation, rain and snowfall water equivalent | Surface | precipitation, rain, snowfall, showers
+
+| Global solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover total, low, mid and high | Surface | cloud_cover and the individual layers
+
+| Visibility and snow depth | Surface | visibility, snow_depth_water_equivalent
+
+| Geopotential | Pressure levels (Europe) | geopotential_height
+
+Pressure-level data and wind above 10 m are only available in the Europe 5.5 km model.
+
+Derived Variables
+
+HARMONIE AROME natively provides temperature, relative humidity, cloud cover, precipitation,
+visibility and global solar radiation. Several convenient API variables are not direct model
+output — Open-Meteo derives them from the native fields for every forecast step.
+
+| Derived Variable | How is it derived?
+
+| Wind speed and direction | Calculated from the native U and V wind components. On the rotated Europe grid the
+direction is corrected for the projection; without this correction it would be off by
+up to 15°.
+
+| Direct and diffuse solar radiation | Only global horizontal irradiance GHI is native. Diffuse radiation is separated using
+the Razo, Müller Witwer model; direct radiation is the remainder. DNI, GTI and instant
+values follow from solar geometry.
+
+| Weather code | Computed from cloud cover, precipitation, snowfall, wind gusts and visibility. KNMI
+provides no CAPE, so thunderstorm codes are not produced.
+
+| Snowfall and showers | Snowfall converts the native snowfall water equivalent with 0.7 cm per mm. Showers are
+precipitation minus the native rain and snowfall water equivalent.
+
+| Dew point, vapour pressure deficit and wet bulb temperature | Calculated from native 2 m temperature and relative humidity.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Sunshine duration | Seconds per hour with derived direct normal irradiance above the WMO threshold of 120
+W/m².
+
+| Apparent temperature and reference evapotranspiration ET₀ | Combine temperature, humidity, wind speed and solar radiation. ET₀ follows the FAO-56
+Penman-Monteith equation.
+
+| Pressure-level cloud cover and dew point | Estimated from pressure-level relative humidity and temperature (Europe model only).
+
+Sunrise, sunset, daylight duration and the day-or-night flag are astronomical calculations.
+Daily values are aggregated from hourly data.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+Solar Radiation: KNMI supplies only global solar radiation data and does
+not offer direct or diffuse solar radiation. Open-Meteo applies the separation model from Razo, Müller Witwer to calculate direct radiation from shortwave solar radiation.
+
+Wind Direction Correction: Wind direction has been calculated from U/V wind
+component vectors. Special care has been taken to correct for the Rotated Lat Long projection. Without this correction, wind directions have an error
+of up to 15°.
+
+Wind on 50, 100, 200, 300m: Wind forecasts for higher altitudes are only available
+for the Netherlands area.
+
+Pressure Level Data: Forecasts on pressure level are only available for the European
+model.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

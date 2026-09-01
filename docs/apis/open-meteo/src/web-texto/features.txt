@@ -1,0 +1,353 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Features
+
+Global weather data from forecast to archive — free, no sign-up, one JSON API.
+
+Available APIs Pricing
+
+30+ Weather Models
+
+Open-Meteo integrates numerical weather prediction models from over 15 national weather
+services, including ECMWF, DWD, NOAA, Météo-France, JMA, KMA, KNMI, DMI, MeteoSwiss, UK Met
+Office, BOM, CMA, and GeoSphere Austria.
+
+The best_match option automatically selects the most suitable high-resolution model
+for any location. Individual models can also be selected directly, enabling model-specific workflows
+and comparisons.
+
+Up to 1 km Resolution
+
+The API selects the highest-resolution model available for each location. In Central Europe,
+France, Switzerland, the UK, and North America, high-resolution models at 1–2 km are used
+for the first few days of the forecast. Global models at 9–11 km cover the remainder of the
+forecast horizon worldwide.
+
+All data is optimised to the requested coordinates and normalised to a consistent hourly
+time step, regardless of the native model resolution or output interval.
+
+Frequent Updates
+
+Most global models are updated every 6 hours. High-resolution regional models such as
+ICON-D2, HRRR, and AROME update every 1–3 hours. Each update ingests the latest observations
+from weather stations, radiosondes, aircraft, radar, and satellites.
+
+15-minutely data is available for Central Europe and North America, interpolated from hourly
+model output elsewhere.
+
+Multiple Historical Data Layers
+
+Open-Meteo provides four distinct historical data products, each suited to different use
+cases:
+
+Weather reanalysis back to 1940 — climate analysis and long-range baselines
+
+Historical Forecast archive from ~2021 — seamless weather model time series
+matching the live forecast API
+
+Previous Runs API — continuous time series at a fixed lead-time offset of 1–7
+days, from January 2024
+
+Single Runs API — archived individual runs from April 2026 (ECMWF IFS HRES
+from March 2024)
+
+Specialised Forecasts
+
+Beyond standard surface variables, the APIs provide: solar radiation (including global
+tilted irradiance for arbitrary panel orientation), wind at multiple altitudes (10 m to 300
+m+), pressure levels (1000–10 hPa), soil moisture and temperature at multiple depths, ocean
+waves, air quality with pollen, and ensemble probabilistic forecasts.
+
+Seasonal Forecasts
+
+The Seasonal Forecast API provides ECMWF SEAS5 forecasts
+out to 9 months and sub-seasonal ECMWF EC46 forecasts out to 6 weeks, both at 36 km resolution
+with 51 ensemble members.
+
+The ensemble spread represents uncertainty at these extended horizons. Data are not
+bias-corrected and should be interpreted as probabilistic area guidance — whether the coming
+weeks or months are likely to be warmer, colder, wetter, or drier than the climatological
+average.
+
+Historical Weather Data for AI and Research
+
+Training weather post-processing models, backtesting energy forecasts, and measuring weather
+model skill all require different types of historical data. Open-Meteo provides four
+complementary APIs covering distinct use cases.
+
+Weather Reanalysis — back to 1940
+
+Historical Weather API
+
+ERA5 and ERA5-Land reanalysis data from the European Centre for Medium-Range Weather
+Forecasts (ECMWF) covers the globe at 9–25 km resolution with hourly data from January
+1940 to the present. Unlike weather station data, reanalysis provides spatially complete,
+consistent coverage with no missing values.
+
+This is the standard dataset for climate baselines, anomaly detection, long-range
+correlations, and training models where decades of labelled examples are needed. The API
+delivers data lightning-fast — a multi-decade time series for a single location returns in
+under 100 ms.
+
+Historical Forecast Archive — from 2021
+
+Historical Forecast API
+
+The Historical Forecast API archives the initial hours of each weather model update into a
+seamless, continuously updated time series — the same data structure as the live Forecast
+API. This makes it directly comparable to real operational forecasts.
+
+This is the right dataset when you need weather model output that is consistent with the
+live forecast for training bias-correction and post-processing models: the historical
+archive and real-time forecast use the same variables, units, and time alignment. Data is
+available for all models supported by the Forecast API.
+
+Previous Model Runs — from January 2024
+
+Previous Runs API
+
+The Previous Runs API provides time-series data at a fixed lead-time offset from 1 to 7
+days. Instead of returning individual runs in full, it returns a continuous time series
+where each value was forecast exactly N days in advance — e.g. a `_previous_day2` series
+contains only values taken from the run initialised 48 hours before valid time. Data is
+available from January 2024.
+
+This makes it straightforward to compute systematic forecast error (bias) at each lead
+time, compare model skill across offsets, and build training datasets where the forecast
+horizon is a controlled variable.
+
+Single Runs Archive — from April 2026
+
+Single Runs API
+
+The Single Runs API provides access to archived individual model runs, selected by their
+exact initialisation time via the run= parameter. Each run covers the full forecast
+horizon, typically 7–10 days. ECMWF IFS HRES at native 9 km resolution is available from March
+2024 via hindcasts.
+
+This is the correct dataset for: training weather post-processing models without
+look-ahead bias (each training sample is a single run paired with verifying observations);
+reconstructing the exact forecast available at a past decision time for energy trading or
+grid operation backtests; and run-level model intercomparison across providers.
+
+Available APIs
+
+All APIs share the same JSON format and parameter conventions. Switching between them requires
+only a change of hostname or endpoint.
+
+Forecast API
+
+Up to 16-day forecast
+
+Hourly and daily weather forecasts for any global location. Returns temperature, wind,
+precipitation, solar radiation, soil variables, and more. Supports multiple models or
+automatic best-match selection. Past days parameter provides seamless access to recent
+history without switching endpoints.
+
+Historical Weather API
+
+ERA5 reanalysis since 1940
+
+ERA5 and ERA5-Land data at hourly resolution from January 1940 to present. Global coverage
+at 9–25 km with no missing data. Used for climate analysis, anomaly detection, and as
+ground truth for training machine learning models.
+
+Historical Forecast API
+
+Weather archive from 2021
+
+Seamless archive of weather forecast model output, built by continuously storing the
+initial-hours data from each model update. The format is identical to the live Forecast
+API, making it the standard dataset for training bias-correction and post-processing
+pipelines.
+
+Previous Runs API
+
+Fixed lead-time series from January 2024
+
+Returns a continuous time series where every value was forecast at a fixed lead-time
+offset of 1–7 days. Available from January 2024. Suited for systematic bias analysis,
+lead-time-stratified ML training, and operational forecast skill assessment.
+
+Single Runs API
+
+Archived runs from April 2026
+
+Access any individual archived model run by its initialisation time using the run= parameter. ECMWF IFS HRES at 9 km is available from March 2024. Required for
+bias-free ML training on (forecast, observation) pairs and for backtesting operational decision
+workflows.
+
+Ensemble API
+
+Probabilistic forecasts
+
+Access ensemble forecasts from ECMWF IFS ENS, GFS ENS, ICON EPS, GEM EPS, and others, with
+up to 51 members and a 35-day horizon. Returns each member individually, enabling
+probability distributions, percentiles, and spread calculations.
+
+Climate Change API
+
+CMIP6 projections to 2050
+
+CMIP6 climate model output downscaled to 10 km resolution and statistically bias-corrected
+against ERA5. Daily resolution from 1950 to 2050 under multiple emissions scenarios.
+Suitable for long-range climate risk assessment and adaptation planning.
+
+Marine Weather API
+
+Ocean wave forecasts
+
+Wave height, period, and direction from global and regional ocean wave models. Covers open
+ocean and coastal areas, with forecasts updated every 6 hours.
+
+Air Quality API
+
+Pollution and pollen
+
+Hourly forecasts for PM2.5, PM10, NO₂, O₃, SO₂, CO, dust, UV index, and pollen (grass,
+birch, alder) from the Copernicus Atmosphere Monitoring Service (CAMS) with global and
+European coverage.
+
+Flood API
+
+River discharge forecasts
+
+Ensemble river discharge forecasts from the Global Flood Awareness System (GloFAS),
+providing probabilistic flood guidance for rivers worldwide up to 30 days ahead.
+
+Seasonal Forecast API
+
+ECMWF SEAS5 out to 9 months
+
+ECMWF SEAS5 seasonal forecasts to 9 months and EC46 sub-seasonal forecasts to 6 weeks,
+both at 36 km resolution with 51 ensemble members. Data are not bias-corrected and should
+be interpreted as probabilistic area guidance for anomaly direction, not as precise local
+values.
+
+Satellite Radiation API
+
+Observed solar radiation from 1983
+
+Shortwave and direct radiation derived from geostationary satellite imagery rather than
+weather models. Sources include EUMETSAT CM SAF SARAH3 (Europe, Africa, South America,
+from 1983), JMA Himawari-9 (Asia, Australia, from 2015), and DWD MTG (Europe, Africa, from
+February 2026) at 2.5–5 km resolution with 10–30 minute intervals. Suited for solar energy
+yield analysis and forecast bias assessment.
+
+Geocoding API
+
+Place name to coordinates
+
+Resolves city and place names to WGS84 coordinates, country, timezone, and elevation.
+Supports partial name search in multiple languages with ranked results.
+
+Elevation API
+
+Terrain height from coordinates
+
+Returns terrain elevation in metres for any set of WGS84 coordinates using a 90 m
+resolution digital elevation model. Accepts batches of up to 100 coordinate pairs per
+request.
+
+Technical Properties
+
+Low Latency
+
+Weather data is stored on NVMe disks in columnar time-series format. A typical forecast
+request for a single location returns in under 10 ms. Historical requests spanning decades
+return in under 100 ms. Servers operate in Europe and North America.
+
+Simple JSON API
+
+All APIs use plain HTTP GET requests with query parameters and return JSON. No SDK or
+authentication is required for non-commercial use. Parameters are consistent across all
+endpoints: the same variable names, unit options, and output formats work everywhere.
+
+CSV and XLSX output formats are also available. Multiple locations can be queried in a
+single request by providing comma-separated coordinate lists.
+
+Stable API
+
+APIs follow semantic versioning. Breaking changes are introduced only as new major versions,
+with the previous version kept available for a transition period. All changes are documented
+in the GitHub repository.
+
+Get started
+
+The API documentation covers all parameters with examples. For
+commercial use, see the subscription plans. Bug reports and
+feature requests go through the GitHub repository.
+
+API Pricing Email us
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

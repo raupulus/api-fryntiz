@@ -1,0 +1,1086 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Météo-France API
+
+Global ARPEGE model combined with high resolution AROME model
+
+Météo-France
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+The API leverages Météo-France's AROME and ARPEGE weather models, tailored for Central Europe
+and specifically France. With updates for AROME every hour, nowcast is provided for Central
+Europe. However, the maximum forecast range is 4 days. For broader use cases, the Weather Forecast API is recommended, utilizing multiple local weather models for forecasts up to 16 days.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+4 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 4 days, but you can
+access forecasts for up to 4 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + snow)
+
+Rain
+
+Snowfall
+
+Weather code
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Speed (20 m)
+
+Wind Speed (50 m)
+
+Wind Speed (100 m)
+
+Wind Speed (150 m)
+
+Wind Speed (200 m)
+
+Wind Direction (10 m)
+
+Wind Direction (20 m)
+
+Wind Direction (50 m)
+
+Wind Direction (100 m)
+
+Wind Direction (150 m)
+
+Wind Direction (200 m)
+
+Wind Gusts (10 m)
+
+Temperature (20 m)
+
+Temperature (50 m)
+
+Temperature (100 m)
+
+Temperature (150 m)
+
+Temperature (200 m)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Sunshine Duration
+
+CAPE
+
+Wet Bulb Temperature (2 m)
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Dewpoint
+
+Relative Humidity
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+950 hPa (500 m)
+
+925 hPa (800 m)
+
+900 hPa (1000 m)
+
+850 hPa (1500 m)
+
+800 hPa (1900 m)
+
+750 hPa (2.5 km)
+
+700 hPa (3 km)
+
+650 hPa (3.6 km)
+
+600 hPa (4.2 km)
+
+550 hPa (4.9 km)
+
+500 hPa (5.6 km)
+
+450 hPa (6.3 km)
+
+400 hPa (7.2 km)
+
+350 hPa (8.1 km)
+
+300 hPa (9.2 km)
+
+275 hPa (9.7 km)
+
+250 hPa (10.4 km)
+
+225 hPa (11 km)
+
+200 hPa (11.8 km)
+
+175 hPa (12.6 km)
+
+150 hPa (13.5 km)
+
+125 hPa (14.6 km)
+
+100 hPa (15.8 km)
+
+70 hPa (17.7 km)
+
+50 hPa (19.3 km)
+
+30 hPa (22 km)
+
+20 hPa (23 km)
+
+10 hPa (26 km)
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea level.
+
+Weather models
+
+Best match
+
+ARPEGE Seamless
+
+ARPEGE World
+
+ARPEGE Europe
+
+AROME Seamless
+
+AROME France
+
+AROME France HD
+
+AROME France 15min
+
+AROME France HD 15min
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+15-Minutely Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + showers + snow)
+
+Rain
+
+Snowfall
+
+Wind Speed (10 m)
+
+Wind Speed (20 m)
+
+Wind Speed (50 m)
+
+Wind Speed (100 m)
+
+Wind Direction (10 m)
+
+Wind Direction (20 m)
+
+Wind Direction (50 m)
+
+Wind Direction (100 m)
+
+CAPE
+
+Is Day or Night
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Only available in Central Europe and North America. Other regions use
+interpolated hourly data. Solar radiation is averaged over the 15 minutes. Use instant for radiation at the indicated time.
+
+Note: You can further adjust the forecast time range for 15-minutely weather variables
+using &forecast_minutely_15= and &past_minutely_15= as shown below.
+
+- (default)
+Forecast Minutely 15
+
+- (default)
+Past Minutely 15
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+UV Index
+
+UV Index Clear Sky
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Sum
+
+Precipitation Hours
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Current Weather
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Apparent Temperature
+
+Is Day or Night
+
+Precipitation
+
+Rain
+
+Showers
+
+Snowfall
+
+Weather code
+
+Cloud Cover Total
+
+Sea Level Pressure
+
+Surface Pressure
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Note: Current conditions are based on 15-minutely weather model data. Every weather variable
+available in hourly data, is available as current condition as well.
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+This API uses global Météo-France ARPEGE weather forecast and combines them with
+high-resolution AROME forecasts. AROME is a 1.5 km high resolution model covering France and
+neighboring areas. For other locations, only ARPEGE is used. For ARPEGE, values are
+interpolated from 3 or 6-hourly to 1-hourly values after 72 or 96 hours respectively.
+
+* AROME France HD has the same model area, but at higher resolution with a smaller
+selection of weather variables.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| ARPEGE World |
+
+🌍
+
+Global
+| 0.25° (~25 km) | Hourly, 3-hourly after 2 days | 4 days | Every 6 hours
+
+| ARPEGE Europe |
+
+Europe
+| 0.1° (~11 km) | Hourly | 4 days | Every 6 hours
+
+| AROME France |
+
+France
+| 0.025° (~2.5 km) | Hourly | 2 days | Every 3 hours
+
+| AROME France HD (*) |
+
+France
+| 0.01° (~1.5 km) | Hourly | 2 days | Every 3 hours
+
+| AROME France 15 minutely |
+
+France
+| 0.025° (~2.5 km) | 15 Minutely | 6 hours | Every hour
+
+| AROME France HD 15 minutely (*) |
+
+France
+| 0.01° (~1.5 km) | 15 Minutely | 6 hours | Every hour
+
+Click to enlarge Météo-France ARPEGE Europe Model Area. Source: Open-Meteo. Click to enlarge Météo-France AROME France (HD) Model Area. Source: Open-Meteo.
+
+Native Model Variables
+
+AROME and ARPEGE directly predict the fields listed below. Open-Meteo retains these fields or
+uses them to calculate more convenient API variables. The models provide wind as U and V
+components and only global solar radiation.
+
+| Native Météo-France field | Level | Use in the Open-Meteo API
+
+| Temperature | 2 m, 20/50/100/150/200 m, pressure levels | temperature_2m and upper-level temperature
+
+| Relative humidity | 2 m, pressure levels | Relative humidity, dew point and pressure-level cloud cover
+
+| U and V wind components | 10 m to 200 m, pressure levels | Wind speed and direction
+
+| Wind gusts | 10 m | wind_gusts_10m
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Total precipitation and snowfall water equivalent | Surface | precipitation, rain, snowfall
+
+| Global solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover total, low, mid and high | Surface | cloud_cover and the individual layers
+
+| CAPE | Surface | cape and weather-code inputs
+
+| Geopotential and vertical velocity | Pressure levels | geopotential_height, vertical_velocity
+
+The AROME France HD model and the 15-minutely models carry only a reduced set of native fields
+and have no pressure levels.
+
+Derived Variables
+
+AROME and ARPEGE natively provide temperature, humidity, wind components, cloud cover,
+precipitation, global solar radiation, wind gusts and CAPE. Several convenient API variables
+are not direct model output — Open-Meteo derives them from the native fields for every
+forecast step.
+
+| Derived Variable | How is it derived?
+
+| Weather code | Computed from cloud cover, precipitation, snowfall, CAPE and wind gusts. Météo-France
+does not publish a WMO weather symbol.
+
+| Wind speed and direction | Calculated from the native U and V wind components at 10 m to 200 m height and on all
+pressure levels.
+
+| Direct and diffuse solar radiation | Only global horizontal irradiance GHI is native. Diffuse radiation is separated using
+the Razo, Müller Witwer model; direct radiation is the remainder. DNI, GTI and instant
+values follow from solar geometry.
+
+| Snowfall and rain | Snowfall converts the native snowfall water equivalent with 0.7 cm per mm. Rain is
+total precipitation minus the snowfall water equivalent.
+
+| Dew point, vapour pressure deficit and wet bulb temperature | Calculated from native 2 m temperature and relative humidity.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Apparent temperature and reference evapotranspiration ET₀ | Combine temperature, humidity, wind speed and solar radiation. ET₀ follows the FAO-56
+Penman-Monteith equation.
+
+| Sunshine duration | Seconds per hour with derived direct normal irradiance above the WMO threshold of 120
+W/m².
+
+| Pressure-level cloud cover and dew point | Estimated from pressure-level relative humidity and temperature.
+
+Sunrise, sunset, daylight duration and the day-or-night flag are astronomical calculations.
+Daily values are aggregated from hourly data.
+
+API Documentation
+
+The API endpoint /v1/meteofrance accepts a geographical coordinate, a list of weather
+variables and responds with a JSON hourly weather forecast for 4 days. Time always starts at 0:00
+today and contains 168 hours. All URL parameters are listed below:
+
+| Parameter | Format | Required | Default | Description
+
+| latitude, longitude | Floating point | Yes | | Geographical WGS84 coordinates of the location. Multiple coordinates can be comma
+separated. E.g. &latitude=52.52,48.85&longitude=13.41,2.35. To return
+data for multiple locations the JSON output changes to a list of structures. CSV and
+XLSX formats add a column location_id.
+
+| elevation | Floating point | No | | The elevation used for statistical downscaling. Per default, a 90 meter digital elevation model is used. You can manually set the elevation to correctly match mountain peaks. If &elevation=nan is specified, downscaling will be disabled and the API uses
+the average grid-cell height. For multiple locations, elevation can also be comma separated.
+
+| hourly | String array | No | | A list of weather variables which should be returned. Values can be comma separated,
+or multiple &hourly= parameter in the URL can be used.
+
+| daily | String array | No | | A list of daily weather variable aggregations which should be returned. Values can be
+comma separated, or multiple &daily= parameter in the URL can be used. If
+daily weather variables are specified, parameter timezone is required.
+
+| current | String array | No | | A list of weather variables to get current conditions.
+
+| temperature_unit | String | No | celsius | If fahrenheit is set, all temperature values are converted to Fahrenheit.
+
+| wind_speed_unit | String | No | kmh | Other wind speed speed units: ms, mph and kn
+
+| precipitation_unit | String | No | mm | Other precipitation amount units: inch
+
+| timeformat | String | No | iso8601 | If format unixtime is selected, all time values are returned in UNIX
+epoch time in seconds. Please note that all timestamp are in GMT+0! For daily values
+with unix timestamps, please apply utc_offset_seconds again to get the correct date.
+
+| timezone | String | No | GMT | If timezone is set, all timestamps are returned as local-time and data
+is returned starting at 00:00 local-time. Any time zone name from the time zone database is supported. If auto is set as a time zone, the coordinates will be automatically
+resolved to the local time zone. For multiple coordinates, a comma separated list of timezones
+can be specified.
+
+| past_days | Integer | No | 0 | If past_days is set, past weather data can be returned.
+
+| forecast_days | Integer (0-4) | No | 4 | Per default, 4 days are returned. Up to 4 days of forecast are possible.
+
+| forecast_hours
+
+past_hours | Integer (>0) | No | | Similar to forecast_days, the number of timesteps of hourly data can controlled.
+Instead of using the current day as a reference, the current hour is used.
+
+| start_date
+
+end_date | String (yyyy-mm-dd) | No | | The time interval to get weather data. A day must be specified as an ISO8601 date
+(e.g. 2022-06-30).
+
+| start_hour
+
+end_hour | String (yyyy-mm-ddThh:mm) | No | | The time interval to get weather data for hourly data. Time must be specified as an
+ISO8601 date (e.g. 2022-06-30T12:00).
+
+| models | String array | No | auto | Manually select one or more weather models. Per default, the best suitable weather
+models will be combined.
+
+| cell_selection | String | No | land | Set a preference how grid-cells are selected. The default land finds a
+suitable grid-cell on land with similar elevation to the requested coordinates using a 90-meter digital elevation
+model. sea prefers grid-cells on sea. nearest selects the nearest possible
+grid-cell.
+
+| apikey | String | No | | Only required to commercial use to access reserved API resources for customers. The
+server URL requires the prefix customer-. See pricing for more information.
+
+Additional optional URL parameters will be added. For API stability, no required parameters will
+be added in the future!
+
+Hourly Parameter Definition
+
+The parameter &hourly= accepts the following values. Most weather variables are given
+as an instantaneous value for the indicated hour. Some variables like precipitation are calculated
+from the preceding hour as an average or sum.
+
+| Variable | Valid time | Unit | Description
+
+| temperature_2m
+
+temperature_20m
+
+temperature_50m
+
+temperature_100m
+
+temperature_150m
+
+temperature_200m | Instant | °C (°F) | Air temperature at 2 meters above ground (standard level) and upper air levels 20,
+50, 100, 150 and 200 above ground. Upper air levels are not available in the AROME HD
+model.
+
+| relative_humidity_2m | Instant | % | Relative humidity at 2 meters above ground
+
+| dew_point_2m | Instant | °C (°F) | Dew point temperature at 2 meters above ground
+
+| apparent_temperature | Instant | °C (°F) | Apparent temperature is the perceived feels-like temperature combining wind chill
+factor, relative humidity and solar radiation
+
+| pressure_msl
+
+surface_pressure | Instant | hPa | Atmospheric air pressure reduced to mean sea level (msl) or pressure at surface.
+Typically pressure on mean sea level is used in meteorology. Surface pressure gets
+lower with increasing elevation.
+
+| cloud_cover | Instant | % | Total cloud cover as an area fraction
+
+| cloud_cover_low | Instant | % | Low level clouds and fog up to 3 km altitude
+
+| cloud_cover_mid | Instant | % | Mid level clouds from 3 to 8 km altitude
+
+| cloud_cover_high | Instant | % | High level clouds from 8 km altitude
+
+| wind_speed_10m
+
+wind_speed_20m
+
+wind_speed_50m
+
+wind_speed_100m
+
+wind_speed_150m
+
+wind_speed_200m | Instant | km/h (mph, m/s, knots) | Wind speed at 10 meters above ground or upper air levels 20, 50, 100, 150 and 200
+meter above ground. Wind speed on 10 meters is the standard level. Upper levels above
+100 meter are not available in the AROME HD model.
+
+| wind_direction_10m
+
+wind_direction_20m
+
+wind_direction_50m
+
+wind_direction_100m
+
+wind_direction_150m
+
+wind_direction_200m | Instant | ° | Wind direction at 10 meters above ground and upper air levels. Upper levels above 100
+meter are not available in the AROME HD model.
+
+| wind_gusts_10m | Preceding hour max | km/h (mph, m/s, knots) | Gusts at 10 meters above ground as a maximum of the preceding hour
+
+| shortwave_radiation | Preceding hour mean | W/m² | Shortwave solar radiation as average of the preceding hour. This is equal to the
+total global horizontal irradiation
+
+| direct_radiation
+
+direct_normal_irradiance | Preceding hour mean | W/m² | Direct solar radiation as average of the preceding hour on the horizontal plane and
+the normal plane (perpendicular to the sun). Météo-France does not offers diffuse and
+direct radiation directly. It is approximated based on Razo, Müller Witwer
+
+| diffuse_radiation | Preceding hour mean | W/m² | Diffuse solar radiation as average of the preceding hour. HRRR offers diffuse
+radiation directly. Météo-France does not offers diffuse and direct radiation
+directly. It is approximated based on Razo, Müller Witwer
+
+| global_tilted_irradiance | Preceding hour mean | W/m² | Total radiation received on a tilted pane as average of the preceding hour. The
+calculation is assuming a fixed albedo of 20% and in isotropic sky. Please specify
+tilt and azimuth parameter. Tilt ranges from 0° to 90° and is typically around 45°.
+Azimuth should be close to 0° (0° south, -90° east, 90° west, ±180 north). If azimuth
+is set to "nan", the calculation assumes a vertical tracker (east-west). If tilt is
+set to "nan", it is assumed that the panel has a horizontal tracker (up-down). If both
+are set to "nan", a bi-axial tracker is assumed.
+
+| sunshine_duration | Preceding hour sum | Seconds | Number of seconds of sunshine of the preceding hour per hour calculated by direct
+normalized irradiance exceeding 120 W/m², following the WMO definition.
+
+| vapour_pressure_deficit | Instant | kPa | Vapor Pressure Deficit (VPD) in kilopascal (kPa). For high VPD (>1.6), water
+transpiration of plants increases. For low VPD (<0.4), transpiration decreases
+
+| et0_fao_evapotranspiration | Preceding hour sum | mm (inch) | ET₀ Reference Evapotranspiration of a well watered grass field. Based on FAO-56 Penman-Monteith equations ET₀ is calculated from temperature, wind speed, humidity and solar radiation. Unlimited
+soil water is assumed. ET₀ is commonly used to estimate the required irrigation for plants.
+
+| weather_code | Instant | WMO code | Weather condition as a numeric code. Follow WMO weather interpretation codes. See
+table below for details. Weather code is calculated from cloud cover analysis,
+precipitation, snowfall, cape and gusts.
+
+| precipitation | Preceding hour sum | mm (inch) | Total precipitation (rain, showers, snow) sum of the preceding hour
+
+| snowfall | Preceding hour sum | cm (inch) | Snowfall amount of the preceding hour in centimeters. For the water equivalent in
+millimeter, divide by 7. E.g. 7 cm snow = 10 mm precipitation water equivalent
+
+| cape | Instant | J/kg | Convective available potential energy. See Wikipedia.
+
+Pressure Level Variables
+
+Pressure level variables do not have fixed altitudes. Altitude varies with atmospheric
+pressure. 1000 hPa is roughly between 60 and 160 meters above sea level. Estimated altitudes
+are given below. Altitudes are in meters above sea level (not above ground). For precise
+altitudes, geopotential_height can be used.
+
+| Level (hPa) | 1000 | 950 | 925 | 900 | 850 | 800 | 750 | 700 | 650 | 600 | 550 | 500 | 450 | 400 | 350 | 300 | 275 | 250 | 225 | 200 | 175 | 150 | 125 | 100 | 70 | 50 | 30 | 20 | 10
+
+| Altitude | 110 m | 500 m | 800 m | 1000 m | 1500 m | 1900 m | 2.5 km | 3 km | 3.6 km | 4.2 km | 4.9 km | 5.6 km | 6.3 km | 7.2 km | 8.1 km | 9.2 km | 9.7 km | 10.4 km | 11 km | 11.8 km | 12.6 km | 13.5 km | 14.6 km | 15.8 km | 17.7 km | 19.3 km | 22 km | 23 km | 26 km
+
+All pressure levels have valid times of the indicated hour (instant).
+
+| Variable | Unit | Description
+
+| weather_code | WMO code | The most severe weather condition on a given day
+
+| temperature_1000hPa
+
+temperature_975hPa, ... | °C (°F) | Air temperature at the specified pressure level. Air temperatures decrease linearly
+with pressure.
+
+| relative_humidity_1000hPa
+
+relative_humidity_975hPa, ... | % | Relative humidity at the specified pressure level.
+
+| dew_point_1000hPa
+
+dew_point_975hPa, ... | °C (°F) | Dew point temperature at the specified pressure level.
+
+| cloud_cover_1000hPa
+
+cloud_cover_975hPa, ... | % | Cloud cover at the specified pressure level. ARPEGE Wold and Europe includes
+parameterised cloud cover directly. AROME cloud cover is approximated based on
+relative humidity using Sundqvist et al. (1989). It may not match perfectly with low, mid and high cloud cover variables.
+
+| wind_speed_1000hPa
+
+wind_speed_975hPa, ... | km/h (mph, m/s, knots) | Wind speed at the specified pressure level.
+
+| wind_direction_1000hPa
+
+wind_direction_975hPa, ... | ° | Wind direction at the specified pressure level.
+
+| geopotential_height_1000hPa
+
+geopotential_height_975hPa, ... | meter | Geopotential height at the specified pressure level. This can be used to get the
+correct altitude in meter above sea level of each pressure level. Be careful not to
+mistake it with altitude above ground.
+
+Daily Parameter Definition
+
+Aggregations are a simple 24 hour aggregation from hourly values. The parameter &daily= accepts the following values:
+
+| Variable | Unit | Description
+
+| temperature_2m_max
+
+temperature_2m_min | °C (°F) | Maximum and minimum daily air temperature at 2 meters above ground
+
+| apparent_temperature_max
+
+apparent_temperature_min | °C (°F) | Maximum and minimum daily apparent temperature
+
+| precipitation_sum | mm | Sum of daily precipitation (including rain, showers and snowfall)
+
+| snowfall_sum | cm | Sum of daily snowfall
+
+| precipitation_hours | hours | The number of hours with rain
+
+| sunrise
+
+sunset | iso8601 | Sun rise and set times
+
+| sunshine_duration | seconds | The number of seconds of sunshine per day is determined by calculating direct
+normalized irradiance exceeding 120 W/m², following the WMO definition. Sunshine
+duration will consistently be less than daylight duration due to dawn and dusk.
+
+| daylight_duration | seconds | Number of seconds of daylight per day
+
+| wind_speed_10m_max
+
+wind_gusts_10m_max | km/h (mph, m/s, knots) | Maximum wind speed and gusts on a day
+
+| wind_direction_10m_dominant | ° | Dominant wind direction
+
+| shortwave_radiation_sum | MJ/m² | The sum of solar radiation on a given day in Megajoules
+
+| et0_fao_evapotranspiration | mm | Daily sum of ET₀ Reference Evapotranspiration of a well watered grass field
+
+JSON Return Object
+
+On success a JSON object will be returned.
+
+{
+"latitude": 52.52,
+"longitude": 13.419,
+"elevation": 44.812,
+"generationtime_ms": 2.2119,
+"utc_offset_seconds": 0,
+"timezone": "Europe/Berlin",
+"timezone_abbreviation": "CEST",
+"hourly": {
+"time": ["2022-07-01T00:00", "2022-07-01T01:00", "2022-07-01T02:00", ...],
+"temperature_2m": [13, 12.7, 12.7, 12.5, 12.5, 12.8, 13, 12.9, 13.3, ...]
+},
+"hourly_units": {
+"temperature_2m": "°C"
+}
+}
+
+| Parameter | Format | Description
+
+| latitude, longitude | Floating point | WGS84 of the center of the weather grid-cell which was used to generate this
+forecast. This coordinate might be a few kilometres away from the requested
+coordinate.
+
+| elevation | Floating point | The elevation from a 90 meter digital elevation model. This effects which grid-cell
+is selected (see parameter cell_selection). Statistical downscaling is
+used to adapt weather conditions for this elevation. This elevation can also be
+controlled with the query parameter elevation. If &elevation=nan is specified, all downscaling is disabled and the average grid-cell
+elevation is used.
+
+| generationtime_ms | Floating point | Generation time of the weather forecast in milliseconds. This is mainly used for
+performance monitoring and improvements.
+
+| utc_offset_seconds | Integer | Applied timezone offset from the &timezone= parameter.
+
+| timezone
+
+timezone_abbreviation | String | Timezone identifier (e.g. Europe/Berlin) and abbreviation (e.g. CEST)
+
+| hourly | Object | For each selected weather variable, data will be returned as a floating point array.
+Additionally a time array will be returned with ISO8601 timestamps.
+
+| hourly_units | Object | For each selected weather variable, the unit will be listed here.
+
+| daily | Object | For each selected daily weather variable, data will be returned as a floating point
+array. Additionally a time array will be returned with ISO8601 timestamps.
+
+| daily_units | Object | For each selected daily weather variable, the unit will be listed here.
+
+Errors
+
+In case an error occurs, for example a URL parameter is not correctly specified, a JSON error
+object is returned with a HTTP 400 status code.
+
+{
+"error": true,
+"reason": "Cannot initialize WeatherVariable from invalid String value
+tempeture_2m for key hourly"
+}
+
+Weather variable documentation
+
+WMO Weather interpretation codes (WW)
+
+| Code | Description
+
+| 0 | Clear sky
+
+| 1, 2, 3 | Mainly clear, partly cloudy, and overcast
+
+| 45, 48 | Fog and depositing rime fog
+
+| 51, 53, 55 | Drizzle: Light, moderate, and dense intensity
+
+| 56, 57 | Freezing Drizzle: Light and dense intensity
+
+| 61, 63, 65 | Rain: Slight, moderate and heavy intensity
+
+| 66, 67 | Freezing Rain: Light and heavy intensity
+
+| 71, 73, 75 | Snow fall: Slight, moderate, and heavy intensity
+
+| 77 | Snow grains
+
+| 80, 81, 82 | Rain showers: Slight, moderate, and violent
+
+| 85, 86 | Snow showers slight and heavy
+
+| 95 * | Thunderstorm: Slight or moderate
+
+| 96, 99 * | Thunderstorm with slight and heavy hail
+
+(*) Thunderstorm forecast with hail is only available in Central Europe
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

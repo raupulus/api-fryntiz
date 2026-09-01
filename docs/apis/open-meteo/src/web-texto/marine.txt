@@ -1,0 +1,695 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Marine Weather API
+
+Hourly wave forecasts at 5 km resolution
+
+Marine Forecast
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+7 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 7 days, but you can
+access forecasts for up to 16 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Marine Variables
+
+Wave Height
+
+Wave Direction
+
+Wave Period
+
+Wave Peak Period
+
+Wind Wave Height
+
+Wind Wave Direction
+
+Wind Wave Period
+
+Wind Wave Peak Period
+
+Swell Wave Height
+
+Swell Wave Direction
+
+Swell Wave Period
+
+Swell Wave Peak Period
+
+Secondary Swell Wave Height
+
+Secondary Swell Wave Period
+
+Secondary Swell Wave Direction
+
+Tertiary Swell Wave Height
+
+Tertiary Swell Wave Period
+
+Tertiary Swell Wave Direction
+
+Sea Level Height including tides (above global mean sea level)
+
+Sea Surface Temperature SST
+
+Ocean Current Velocity
+
+Ocean Current Direction
+
+Note: Tides and ocean currents are computed at 0.08° (~8 km) resolution using numerical
+models. Accuracy at coastal areas is limited. This is not suitable for coastal navigation
+and does not replace your nautical almanac. Use with caution!
+
+Note: Secondary swell components are only available for some models. Tertiary components
+are only available for the GFS wave models.
+
+Additional Variables And Options
+
+Inverted Barometer Height
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Prefer Sea
+Grid Cell Selection
+
+Weather models
+
+Best match
+
+MeteoFrance Wave
+
+MeteoFrance Ocean Currents
+
+DWD EWAM
+
+DWD GWAM
+
+ECMWF WAM
+
+ECMWF WAM 0.25
+
+GFS Wave 0.25°
+
+GFS Wave 0.16°
+
+ERA5-Ocean
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+15-Minutely Weather Variables
+
+Ocean Current Velocity
+
+Ocean Current Direction
+
+Sea Level Height including tides (above global mean sea level)
+
+Note: Only available in Central Europe and North America. Other regions use
+interpolated hourly data. Solar radiation is averaged over the 15 minutes. Use instant for radiation at the indicated time.
+
+Note: You can further adjust the forecast time range for 15-minutely weather variables
+using &forecast_minutely_15= and &past_minutely_15= as shown below.
+
+- (default)
+Forecast Minutely 15
+
+- (default)
+Past Minutely 15
+
+Daily Marine Variables
+
+Wave Height Max
+
+Wave Direction Dominant
+
+Wave Period Max
+
+Wind Wave Height Max
+
+Wind Wave Direction Dominant
+
+Wind Wave Period Max
+
+Wind Wave Peak Period Max
+
+Swell Wave Height Max
+
+Swell Wave Direction Dominant
+
+Swell Wave Period Max
+
+Swell Wave Peak Period Max
+
+Current Conditions
+
+Wave Height
+
+Wave Direction
+
+Wave Period
+
+Wave Peak Period
+
+Wind Wave Height
+
+Wind Wave Direction
+
+Wind Wave Period
+
+Wind Wave Peak Period
+
+Swell Wave Height
+
+Swell Wave Direction
+
+Swell Wave Period
+
+Swell Wave Peak Period
+
+Secondary Swell Wave Height
+
+Secondary Swell Wave Period
+
+Secondary Swell Wave Direction
+
+Tertiary Swell Wave Height
+
+Tertiary Swell Wave Period
+
+Tertiary Swell Wave Direction
+
+Sea Level Height including tides (above global mean sea level)
+
+Sea Surface Temperature SST
+
+Ocean Current Velocity
+
+Ocean Current Direction
+
+Note: Current conditions are based on 15-minutely weather model data. Every weather variable
+available in hourly data, is available as current condition as well.
+
+Settings
+
+Metric
+Length Unit
+
+km/h
+Velocity Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+The Marine API combines wave models from different sources.
+
+You can find the update timings in the model updates documentation.
+
+| Data Set | Region | | Spatial Resolution | Temporal Resolution | Data Availability | Update frequency
+
+| MeteoFrance MFWAM |
+
+🌍
+
+Global
+| Map | 0.08° (~8 km) | 3-Hourly | October 2021 with 10 day forecast | Every 12 hours
+
+| MeteoFrance SMOC Currents, Tides |
+
+🌍
+
+Global
+| Map | 0.08° (~8 km) | Hourly | January 2022 with 10 day forecast | Every 24 hours
+
+| MeteoFrance Sea Surface Temperature |
+
+🌍
+
+Global
+| Map | 0.08° (~8 km) | 6-Hourly | January 2022 with 10 day forecast | Every 24 hours
+
+| ECMWF WAM |
+
+🌍
+
+Global
+| | 9 km | Hourly | November 2025 with 15 day forecast | Every 6 hours
+
+| ECMWF WAM 0.25 |
+
+🌍
+
+Global
+| | 0.25° (~25 km) | 3-Hourly | March 2024 with 15 day forecast | Every 6 hours
+
+| NCEP GFS Wave |
+
+🌍
+
+Global
+| | 0.25° (~25 km) | Hourly | June 2024 with 16 day forecast | Every 6 hours
+
+| NCEP GFS Wave |
+
+🌍
+
+Latitude 52.5°N - 15°S
+| | 0.16° (~16 km) | Hourly | October 2024 with 16 day forecast | Every 6 hours
+
+| DWD EWAM |
+
+Europe
+| | 0.05° (~5 km) | Hourly | August 2022 with 8 day forecast | Every 12 hours
+
+| DWD GWAM |
+
+🌍
+
+Global
+| | 0.25° (~25 km) | Hourly | August 2022 with 4 day forecast | Every 12 hours
+
+| ERA5-Ocean |
+
+🌍
+
+Global
+| | 0.5° (~50 km) | Hourly | 1940 to present | Daily with 5 days delay
+
+Click to enlarge NCEP GFS Wave 0.16° Model Area. Source: Open-Meteo. Click to enlarge DWD EWAM Wave Model Area. Source: Open-Meteo.
+
+API Documentation
+
+The API endpoint /v1/marine accepts a geographical coordinate, a list of marine variables
+and responds with a JSON hourly marine weather forecast for 7 days. Time always starts at 0:00 today.
+All URL parameters are listed below:
+
+| Parameter | Format | Required | Default | Description
+
+| latitude, longitude | Floating point | Yes | | Geographical WGS84 coordinates of the location. Multiple coordinates can be comma
+separated. E.g. &latitude=52.52,48.85&longitude=13.41,2.35. To return
+data for multiple locations the JSON output changes to a list of structures. CSV and
+XLSX formats add a column location_id.
+
+| hourly | String array | No | | A list of weather variables which should be returned. Values can be comma separated,
+or multiple &hourly= parameter in the URL can be used.
+
+| daily | String array | No | | A list of daily weather variable aggregations which should be returned. Values can be
+comma separated, or multiple &daily= parameter in the URL can be used. If
+daily weather variables are specified, parameter timezone is required.
+
+| current | String array | No | | A list of variables to get current conditions.
+
+| timeformat | String | No | iso8601 | If format unixtime is selected, all time values are returned in UNIX
+epoch time in seconds. Please note that all timestamp are in GMT+0! For daily values
+with unix timestamps, please apply utc_offset_seconds again to get the correct date.
+
+| timezone | String | No | GMT | If timezone is set, all timestamps are returned as local-time and data
+is returned starting at 00:00 local-time. Any time zone name from the time zone database is supported. If auto is set as a time zone, the coordinates will be automatically
+resolved to the local time zone. For multiple coordinates, a comma separated list of timezones
+can be specified.
+
+| past_days | Integer (0-92) | No | 0 | If past_days is set, yesterday or the day before yesterday data are also returned.
+
+| forecast_days | Integer (0-8) | No | 5 | Per default, 7 days are returned. Up to 8 days of forecast are possible.
+
+| forecast_hours
+
+past_hours | Integer (>0) | No | | Similar to forecast_days, the number of timesteps of hourly data can controlled.
+Instead of using the current day as a reference, the current hour is used.
+
+| start_date
+
+end_date | String (yyyy-mm-dd) | No | | The time interval to get weather data. A day must be specified as an ISO8601 date
+(e.g. 2022-06-30).
+
+| start_hour
+
+end_hour | String (yyyy-mm-ddThh:mm) | No | | The time interval to get weather data for hourly data. Time must be specified as an
+ISO8601 date (e.g. 2022-06-30T12:00).
+
+| length_unit | String | No | metric | Options metric and imperial
+
+| cell_selection | String | No | sea | Set a preference how grid-cells are selected. The default land finds a
+suitable grid-cell on land with similar elevation to the requested coordinates using a 90-meter digital elevation
+model. sea prefers grid-cells on sea. nearest selects the nearest possible
+grid-cell.
+
+| apikey | String | No | | Only required to commercial use to access reserved API resources for customers. The
+server URL requires the prefix customer-. See pricing for more information.
+
+Additional optional URL parameters will be added. For API stability, no required parameters will
+be added in the future!
+
+Hourly Parameter Definition
+
+The parameter &hourly= accepts the following values. Most weather variables are given
+as an instantaneous value for the indicated hour. Some variables like precipitation are calculated
+from the preceding hour as an average or sum.
+
+| Variable | Valid time | Unit | Description
+
+| wave_height
+
+wind_wave_height
+
+swell_wave_height
+
+secondary_swell_wave_height
+
+tertiary_swell_wave_height | Instant | Meter | Wave height of significant mean, wind and swell waves. Wave directions are always
+reported as the direction the waves come from. 0° = From north towards south; 90° =
+From east
+
+| wave_direction
+
+wind_wave_direction
+
+swell_wave_direction
+
+secondary_swell_wave_direction
+
+tertiary_swell_wave_direction | Instant | ° | Mean direction of mean, wind and swell waves
+
+| wave_period
+
+wind_wave_period
+
+swell_wave_period
+
+secondary_swell_wave_period
+
+tertiary_swell_wave_period | Instant | Seconds | Period between mean, wind and swell waves.
+
+| wind_wave_peak_period
+
+swell_wave_peak_period | Instant | Seconds | Peak period between wind and swell waves.
+
+| ocean_current_velocity | Instant | km/h (mph, m/s, knots) | Velocity of ocean current considering Eulerian, Waves and Tides.
+
+| ocean_current_direction | Instant | ° | Direction following the flow of the current. E.g. where the current is heading
+towards. 0° = Going north; 90° = Towards east.
+
+| sea_surface_temperature | Instant | Celsius | The sea surface temperature close to the water surface
+
+| sea_level_height_msl | Instant | metre | The sea level height accounts for ocean tides, the inverted barometer effect, sea
+surface height, global mean steric variation, and global mean mass volume variation.
+The reference (datum) height is the global mean sea level, not the lowest astronomical
+tide. Accuracy is limited in coastal areas—while it can be reasonably accurate near
+unobstructed coasts, it may be completely unreliable further inland. This data is not
+suitable for coastal navigation.
+
+| invert_barometer_height | Instant | metre | Invert barometer effect is the height low and high pressure systems effect the sea
+level height. This is already considered in sea_level_height_msl
+
+Daily Parameter Definition
+
+Aggregations are a simple 24 hour aggregation from hourly values. The parameter &daily= accepts the following values:
+
+| Variable | Unit | Description
+
+| wave_height_max
+
+wind_wave_height_max
+
+swell_wave_height_max | Meter | Maximum wave height on a given day for mean, wind and swell waves
+
+| wave_direction_dominant
+
+wind_wave_direction_dominant
+
+swell_wave_direction_dominant | ° | Dominant wave direction of mean, wind and swell waves
+
+| wave_period_max
+
+wind_wave_period_max
+
+swell_wave_period_max | Seconds | Maximum wave period of mean, wind and swell
+
+| wind_wave_peak_period_max
+
+swell_wave_peak_period_max | Seconds | Maximum peak period between wind and swell waves.
+
+JSON Return Object
+
+On success a JSON object will be returned.
+
+{
+"latitude": 52.52,
+"longitude": 13.419,
+"generationtime_ms": 2.2119,
+"utc_offset_seconds": 0,
+"timezone": "Europe/Berlin",
+"timezone_abbreviation": "CEST",
+"hourly": {
+"time": ["2022-07-01T00:00", "2022-07-01T01:00", "2022-07-01T02:00", ...],
+"wave_height": [1, 1.7, 1.7, 1.5, 1.5, 1.8, 2.0, 1.9, 1.3, ...]
+},
+"hourly_units": {
+"wave_height": "m"
+},
+}
+
+| Parameter | Format | Description
+
+| latitude, longitude | Floating point | WGS84 of the center of the weather grid-cell which was used to generate this
+forecast. This coordinate might be a few kilometres away from the requested
+coordinate.
+
+| generationtime_ms | Floating point | Generation time of the weather forecast in milliseconds. This is mainly used for
+performance monitoring and improvements.
+
+| utc_offset_seconds | Integer | Applied timezone offset from the &timezone= parameter.
+
+| timezone
+
+timezone_abbreviation | String | Timezone identifier (e.g. Europe/Berlin) and abbreviation (e.g. CEST)
+
+| hourly | Object | For each selected weather variable, data will be returned as a floating point array.
+Additionally a time array will be returned with ISO8601 timestamps.
+
+| hourly_units | Object | For each selected weather variable, the unit will be listed here.
+
+| daily | Object | For each selected daily weather variable, data will be returned as a floating point
+array. Additionally a time array will be returned with ISO8601 timestamps.
+
+| daily_units | Object | For each selected daily weather variable, the unit will be listed here.
+
+Errors
+
+In case an error occurs, for example a URL parameter is not correctly specified, a JSON error
+object is returned with a HTTP 400 status code.
+
+{
+"error": true,
+"reason": "Cannot initialize WeatherVariable from invalid String value
+tempeture_2m for key hourly"
+}
+
+Citation & Acknowledgement
+
+Citation & Acknowledgement
+
+Generated using ICON Wave forecast from the German Weather Service DWD.
+
+All users of Open-Meteo data must provide a clear attribution to DWD as well as a reference to
+Open-Meteo.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

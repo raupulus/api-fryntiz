@@ -1,0 +1,464 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+GeoSphere Austria API
+
+Weather forecasts from the GeoSphere Austria API
+
+GeoSphere Austria
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+3 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 3 days, but you can
+access forecasts for up to 15 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Surface Temperature
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Weather code
+
+Precipitation (rain + snow)
+
+Rain
+
+Snowfall
+
+Snow Depth Water Equivalent
+
+Snowfall Height
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Sunshine Duration
+
+Wet Bulb Temperature (2 m)
+
+CAPE
+
+Convective Inhibition
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Weather models
+
+GeoSphere Seamless (with ECMWF)
+
+GeoSphere AROME Austria
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunshine Duration
+
+Precipitation Sum
+
+Rain Sum
+
+Snowfall Sum
+
+Precipitation Hours
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+The high-resolution weather forecast model AROME (Application of Research to Operations at
+Mesoscale) provides meteorological forecasts for the wider Alpine region on a 2.5-kilometre
+grid. It is updated every 3 hours and provides forecasts for 60 hours. The AROME model code is
+being further developed in collaboration with the partner meteorological services of the
+ACCORD consortium. After 2.5 days, Open-Meteo combines forecasts with the ECMWF IFS HRES 9 km model to provide up to 15 days of forecast.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| GeoSphere AROME Austria |
+
+Central Europe
+| 2.5 km | Hourly | 2.5 days | Every 3 hours
+
+Click to enlarge GeoSphere AROME Austria Model Area. Source: Open-Meteo.
+
+Native Model Variables
+
+AROME directly predicts the fields listed below. Open-Meteo retains these fields or uses them
+to calculate more convenient API variables. AROME provides native relative humidity, a native
+sunshine duration, hourly minimum and maximum temperature and its own weather symbol.
+
+| Native AROME field | Level | Use in the Open-Meteo API
+
+| Temperature, hourly minimum and maximum | 2 m, surface | temperature_2m, surface_temperature
+
+| Relative humidity | 2 m | Relative humidity and dew point
+
+| U and V wind components, gust components | 10 m | Wind speed, direction and wind_gusts_10m
+
+| Surface pressure | Surface | pressure_msl and surface_pressure
+
+| Total precipitation, rain and snowfall water equivalent | Surface | precipitation, rain, snowfall
+
+| Global solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover total, low, mid and high | Surface | cloud_cover and the individual layers
+
+| Sunshine duration | Surface | sunshine_duration
+
+| Weather symbol | Surface | weather_code (converted to WMO codes)
+
+| CAPE, convective inhibition, snow depth, snowfall height | Surface | Corresponding API variables
+
+AROME provides no pressure-level data. Beyond 2.5 days the seamless model continues with ECMWF
+IFS.
+
+Derived Variables
+
+AROME publishes native relative humidity, cloud cover layers, sunshine duration, hourly
+minimum and maximum temperature and its own weather symbol. Open-Meteo derives the remaining
+API variables from these native fields.
+
+| Derived Variable | How is it derived?
+
+| Weather code | GeoSphere's own weather symbol converted to the WMO weather code scheme.
+
+| Direct and diffuse solar radiation | Only global horizontal irradiance GHI is native. Diffuse radiation is separated using
+the Razo, Müller Witwer model; direct radiation is the remainder. DNI, GTI and instant
+values follow from solar geometry.
+
+| Wind speed and direction | Calculated from the native U and V wind components at 10 m.
+
+| Snowfall | Native snowfall water equivalent converted with 0.7 cm per mm.
+
+| Snowfall height | Native snowfall height converted from metres above ground to metres above sea level,
+for consistency with other models.
+
+| Mean sea-level and surface pressure | Mean sea-level pressure is reduced from the native surface pressure; surface pressure
+is then re-derived for the requested elevation.
+
+| Dew point, vapour pressure deficit and wet bulb temperature | Calculated from native 2 m temperature and relative humidity.
+
+| Apparent temperature and reference evapotranspiration ET₀ | Combine temperature, humidity, wind speed and solar radiation. ET₀ follows the FAO-56
+Penman-Monteith equation.
+
+Sunshine duration is a native field and is not derived. Sunrise, sunset, daylight duration and
+the day-or-night flag are astronomical calculations. Daily values are aggregated from hourly
+data.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+Weather codes are used from the GeoSphere von converted to WMO weather codes.
+
+Solar Radiation: GeoSphere supplies only global solar radiation data and
+does not offer direct or diffuse solar radiation. Open-Meteo applies the separation model
+from Razo, Müller Witwer to calculate direct radiation from shortwave solar radiation.
+
+Snowfall is given as amount of water equivalent. Open-Meteo assumes a constant
+conversion factor of 1 mm snow water = 7 snowfall.
+
+Snowfall height has been converted to metre above sea level. GeoSphere provides
+snowfall height in metre above ground. For consistency with other weather models, it has been
+converted to metre above sea level.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

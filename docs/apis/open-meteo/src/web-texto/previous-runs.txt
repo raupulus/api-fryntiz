@@ -1,0 +1,1496 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Previous Model Runs API
+
+Weather Forecasts from Previous Days to Compare Run-To-Run Performance
+
+Previous Model Runs
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Data from past model runs is aligned to fixed lead-time offsets of 1–7 days. Requesting temperature_2m_previous_day1 returns the value predicted 24 hours before valid
+time; _previous_day2 returns 48 hours before, and so on up to day 7. Comparing
+these offsets against observations or reanalysis makes it straightforward to measure how
+forecast skill degrades with lead time and to train bias-correction models. Most models are
+archived from January 2024. GFS 2 m temperature extends back to March 2021.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+1 day (default)
+Forecast days
+
+1 week (default)
+Past days
+
+By default, we provide forecasts for 1 day, but you can access forecasts for up to 16 days. If you're interested in past weather data, you can use the Past Days feature
+to access archived forecasts.
+
+Hourly Weather Variables
+
+| Temperature (2 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Relative Humidity (2 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Dewpoint (2 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Apparent Temperature |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Precipitation (rain + showers + snow) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Rain |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Showers |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Snowfall |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Weather code |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Sea Level Pressure |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Surface Pressure |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Cloud Cover Total |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Speed (10 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Direction (10 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+Additional Options
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+| Shortwave Solar Radiation GHI |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Direct Solar Radiation |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Diffuse Solar Radiation DHI |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Direct Normal Irradiance DNI |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Global Tilted Radiation GTI |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Shortwave Solar Radiation GHI (Instant) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Direct Solar Radiation (Instant) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Diffuse Solar Radiation DHI (Instant) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Direct Normal Irradiance DNI (Instant) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Global Tilted Radiation GTI (Instant) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Terrestrial Solar Radiation (Instant) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI
+please specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Wind on 80, 120 and 180 meter
+
+| Wind Speed (80 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Speed (100 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Speed (120 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Speed (180 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Speed (200 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Direction (80 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Direction (100 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Direction (120 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Direction (180 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+| Wind Direction (200 m) |
+
+Day 0
+
+|
+
+Day 1
+
+|
+
+Day 2
+
+|
+
+Day 3
+
+|
+
+Day 4
+
+|
+
+Day 5
+
+|
+
+Day 6
+
+|
+
+Day 7
+
+Weather models
+
+Best match
+
+ECMWF IFS HRES 9km
+
+ECMWF IFS 0.25°
+
+ECMWF AIFS 0.25° Single
+
+CMA GRAPES Global
+
+BOM ACCESS Global
+
+NCEP GFS Seamless
+
+NCEP GFS Global 0.11°/0.25°
+
+NCEP HRRR U.S. Conus
+
+NCEP NBM U.S. Conus
+
+NCEP NAM U.S. Conus
+
+NCEP AIGFS 0.25°
+
+NCEP HGEFS 0.25° Ensemble Mean
+
+JMA Seamless
+
+JMA MSM
+
+JMA GSM
+
+KMA Seamless
+
+KMA LDPS
+
+KMA GDPS
+
+DWD ICON Seamless
+
+DWD ICON Global
+
+DWD ICON EU
+
+DWD ICON D2
+
+GEM Seamless
+
+GEM Global
+
+GEM Regional
+
+GEM HRDPS Continental
+
+GEM HRDPS West
+
+Météo-France Seamless
+
+Météo-France ARPEGE World
+
+Météo-France ARPEGE Europe
+
+Météo-France AROME France
+
+Météo-France AROME France HD
+
+ItaliaMeteo ARPAE ICON 2I
+
+MET Norway Nordic Seamless (with ECMWF)
+
+MET Norway Nordic
+
+KNMI Seamless (with ECMWF)
+
+KNMI Harmonie AROME Europe
+
+KNMI Harmonie AROME Netherlands
+
+DMI Seamless (with ECMWF)
+
+DMI Harmonie AROME Europe
+
+UK Met Office Seamless
+
+UK Met Office Global 10km
+
+UK Met Office UK 2km
+
+MeteoSwiss ICON Seamless
+
+MeteoSwiss ICON CH1
+
+MeteoSwiss ICON CH2
+
+GeoSphere Seamless (with ECMWF)
+
+GeoSphere AROME Austria
+
+CHMI Aladin Seamless
+
+CHMI Aladin Central Europe 2km
+
+CHMI Aladin CZ 1km
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Availability
+
+Most models are archived from January 2024. Some models were added to the
+archive later in 2024 or 2025 and have correspondingly shorter coverage. Exceptions with
+longer history:
+
+GFS 2 m temperature — available from March 2021
+
+JMA GSM and MSM — available from 2018
+
+Additional historical coverage can be reconstructed on request, subject to upstream
+availability from the originating weather service.
+
+API Documentation
+
+The Previous Runs API exposes forecast data at fixed lead-time offsets rather than as a
+seamless time-series. _previous_day0 is the current model run (equivalent to the
+live Forecast API). _previous_day1 is the value that was predicted 24 hours
+before valid time, _previous_day2 48 hours before, and so on up to day 7. For local
+models with shorter forecast horizons (2–5 days), only offsets within that horizon are populated.
+
+This structure is suited to aggregated skill analysis — for example, computing the mean
+absolute error of all _previous_day3 forecasts against ERA5 over a calendar year.
+For workflows that need the complete output of a specific model run (initialisation
+datetime, all forecast hours, multiple variables), use the Single Runs API instead,
+which stores each run independently and is queryable by its UTC initialisation time via the &run= parameter.
+
+Models: The Previous Runs API supports the same models as the Weather Forecast API. See the Forecast API
+documentation for the full model and variable list.
+
+Update cadence: Global models update every 6 hours; regional models (e.g.
+ICON-D2, HRRR, AROME) update every 1–3 hours. The available lead-time window for each model is
+limited to its forecast horizon, so a model with a 3-day horizon will have at most _previous_day3 populated.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

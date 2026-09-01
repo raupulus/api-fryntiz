@@ -1,0 +1,512 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+DMI Forecast API
+
+Weather forecasts from the Danish Meteorological Institute
+
+DMI Denmark
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+3 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 3 days, but you can
+access forecasts for up to 15 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + snow)
+
+Rain
+
+Snowfall
+
+Snow Depth Water Equivalent
+
+Weather code
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Cloud Cover / Fog (2m)
+
+Visibility
+
+Cloud Base
+
+Cloud Top
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Speed (50 m)
+
+Wind Speed (100 m)
+
+Wind Speed (150 m)
+
+Wind Speed (250 m)
+
+Wind Speed (350 m)
+
+Wind Speed (450 m)
+
+Wind Direction (10 m)
+
+Wind Direction (50 m)
+
+Wind Direction (100 m)
+
+Wind Direction (150 m)
+
+Wind Direction (250 m)
+
+Wind Direction (350 m)
+
+Wind Direction (450 m)
+
+Wind Gusts (10 m)
+
+Surface Temperature
+
+Temperature (50 m)
+
+Temperature (100 m)
+
+Temperature (150 m)
+
+Temperature (250 m)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Sunshine Duration
+
+Freezing Level Height
+
+Wet Bulb Temperature (2 m)
+
+CAPE
+
+Convective Inhibition
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Weather models
+
+DMI Seamless (with ECMWF)
+
+DMI Harmonie AROME Europe
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+UV Index
+
+UV Index Clear Sky
+
+Precipitation Sum
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Hours
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+DMI provides weather forecasts from the HARMONIE AROME model with ECMWF IFS initialization.
+This is a collaboration of multiple European national weather services under the name "United
+Weather Centres-West" (UWC-West). Forecasts for Europe use 2 km resolution and provide a large
+range of weather variables. All data is updated every 3 hours and provides forecast for up to
+2.5 days. After 2.5 days, Open-Meteo combines forecasts with the ECMWF IFS HRES 9 km model to provide up to 15 days of forecast.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| DMI HARMONIE AROME DINI |
+
+Central & Northern Europe up to Iceland (green area below)
+| 2 km | Hourly | 2.5 days | Every 3 hours
+
+Click to enlarge DMI HARMONIE AROME DINI Model Area. Source: Open-Meteo.
+
+Native Model Variables
+
+HARMONIE AROME DINI directly predicts the fields listed below. Open-Meteo retains these fields
+or uses them to calculate more convenient API variables. Notably, DMI provides direct solar
+radiation, 10 m wind speed and direction, and a 2 m cloud cover (fog) field natively.
+
+| Native DMI field | Level | Use in the Open-Meteo API
+
+| Temperature | 2 m, 50/100/150/250 m, surface | temperature_2m and upper-level temperature
+
+| Relative humidity | 2 m | Relative humidity and dew point
+
+| Wind speed and direction (10 m), U/V components (aloft) | 10 m to 450 m | wind_speed_10m and upper-level wind
+
+| Wind gusts | 10 m | wind_gusts_10m
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Precipitation and snowfall water equivalent | Surface | precipitation, rain, snowfall
+
+| Direct solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover total, low, mid, high and fog fraction | Surface | cloud_cover, layers and cloud_cover_2m
+
+| CAPE, convective inhibition, visibility, cloud base and top, freezing level | Surface | Corresponding API variables and weather-code inputs
+
+Pressure-level data is not available for this model.
+
+Derived Variables
+
+HARMONIE AROME DINI publishes an unusually complete set of native fields, including direct
+solar radiation, 10 m wind speed and direction, CAPE, convective inhibition and a 2 m cloud
+cover (fog) field. The remaining API variables are derived by Open-Meteo.
+
+| Derived Variable | How is it derived?
+
+| Wind speed and direction at height | Calculated from the native U and V wind components at 50 m to 450 m, corrected for the
+Lambert projection. The 10 m wind is native and needs no correction.
+
+| Diffuse radiation and DNI | Diffuse radiation is global minus native direct radiation. DNI follows from native
+direct radiation and solar geometry, together with GTI and instant values.
+
+| Weather code | Computed from cloud cover, precipitation, snowfall, wind gusts, CAPE, convective
+inhibition and visibility, so thunderstorm codes are possible.
+
+| Snowfall and rain | Snowfall converts the native snowfall water equivalent with 0.7 cm per mm. Rain is
+total precipitation minus the snowfall water equivalent.
+
+| Dew point, vapour pressure deficit and wet bulb temperature | Calculated from native 2 m temperature and relative humidity.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Sunshine duration | Seconds per hour with native direct normal irradiance above the WMO threshold of 120
+W/m².
+
+| Apparent temperature and reference evapotranspiration ET₀ | Combine temperature, humidity, wind speed and solar radiation. ET₀ follows the FAO-56
+Penman-Monteith equation.
+
+Sunrise, sunset, daylight duration and the day-or-night flag are astronomical calculations.
+Daily values are aggregated from hourly data.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+Direct Solar Radiation: DMI provides direct solar radiation. Many other weather
+models only provide global solar radiation and direct solar radiation must be calculated user
+separation models.
+
+Direct Normalized Irradiance (DNI): Although DNI is available, it has not been
+integrated. Open-Meteo uses solar position algorithms which calculate DNI from direct radiation
+with (almost) the same results.
+
+Wind Direction Correction: Wind direction has been calculated from U/V wind
+component vectors. Special care has been taken to correct for the Lambert Conformal Conic projection. Without this correction, wind directions have
+an error of up to 15°.
+
+Cloud Cover (2m): DMI provides cloud cover at 2 metre abouve ground which can
+be interpreted as fog. This is remarkable, because only very weather models are capable of modeling
+low level cloud cover and fog with a good degree of accuracy.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

@@ -41,6 +41,7 @@ El comando cachea 30 min porque AEMET actualiza este producto dos veces al día
 | API | Directorio | Estado | Descripción |
 |---|---|---|---|
 | **AEMET OpenData** | [aemet/](aemet/README.md) | 🟢 Documentada · **los 64 endpoints verificados (100 %)** · 2026-08-26 | Datos meteorológicos y climatológicos oficiales de España. 64 endpoints REST. |
+| **Open-Meteo** | [open-meteo/](open-meteo/README.md) | 🟡 **En reserva, sin integrar** · 16 endpoints verificados · 2026-09-01 | API meteorológica global sin autenticación. Traída de otro proyecto como posible alternativa o complemento a AEMET. **No leer ni trabajar contra ella salvo que se pida explícitamente**: hoy no hay ninguna integración en el código. |
 
 ---
 

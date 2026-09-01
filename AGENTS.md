@@ -610,6 +610,7 @@ parte de la tarea, no un extra.**
 | API | Estado |
 |---|---|
 | [`docs/apis/aemet/`](docs/apis/aemet/) | 64 endpoints verificados con petición real (2026-08-26). 16 archivos + `ERRATAS.md` y `LIMITACIONES.md` |
+| [`docs/apis/open-meteo/`](docs/apis/open-meteo/) | **En reserva, sin integrar.** 16 endpoints verificados (2026-09-01), traída de otro proyecto como alternativa o complemento futuro a AEMET. **Ignórala salvo que se pida explícitamente trabajar con Open-Meteo** — hoy no hay ninguna integración en el código. |
 
 ### AEMET — las cinco trampas que rompen la integración en silencio
 

@@ -1,0 +1,531 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+MeteoSwiss ICON CH
+
+Open data weather forecasts from MeteoSwiss
+
+MeteoSwiss
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+3 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 3 days, but you can
+access forecasts for up to 8 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + snow)
+
+Rain
+
+Snowfall
+
+Snow Depth
+
+Evapotranspiration
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Weather code
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Sea Level Pressure
+
+Surface Pressure
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Wet Bulb Temperature (2 m)
+
+Cloud Base
+
+CAPE
+
+Convective Inhibition
+
+Freezing Level Height
+
+Snowfall Height
+
+Sunshine Duration
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Weather models
+
+MeteoSwiss Seamless
+
+MeteoSwiss ICON CH1
+
+MeteoSwiss ICON CH2
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Sum
+
+Precipitation Hours
+
+Precipitation Probability Max
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Current Weather
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Apparent Temperature
+
+Is Day or Night
+
+Precipitation
+
+Rain
+
+Showers
+
+Snowfall
+
+Weather code
+
+Cloud Cover Total
+
+Sea Level Pressure
+
+Surface Pressure
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Note: Current conditions are based on 1 hourly weather model data. Every weather variable
+available in hourly data, is available as current condition as well.
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+This API uses MeteoSwiss high-resolution ICON Central Europe forecasts. Information about
+MeteoSwiss weather models is available here.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| ICON CH1 |
+
+Central Europe
+| 0.01° (~1 km) | Hourly | 33 hours | Every 3 hours
+
+| ICON CH2 |
+
+Central Europe
+| 0.02° (~2 km) | Hourly | 120 hours | Every 6 hours
+
+Click to enlarge ICON CH1 & CH2 Model Area. Source: Open-Meteo.
+
+Native Model Variables
+
+ICON-CH directly predicts the fields listed below. Open-Meteo retains these fields or uses
+them to calculate more convenient API variables. In particular, ICON-CH provides both direct
+and diffuse solar radiation and a native sunshine duration.
+
+| Native ICON-CH field | Level | Use in the Open-Meteo API
+
+| Temperature | 2 m, surface | temperature_2m, surface_temperature
+
+| Dew point | 2 m | Relative humidity and dew point
+
+| U and V wind components | 10 m | Wind speed and direction
+
+| Wind gusts | 10 m | wind_gusts_10m
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Total precipitation | Surface | precipitation, rain, snowfall
+
+| Direct and diffuse solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover total, low, mid and high | Surface | cloud_cover and the individual layers
+
+| Sunshine duration | Surface | sunshine_duration
+
+| CAPE, convective inhibition, cloud base, freezing level, snow depth | Surface | Corresponding API variables and weather-code inputs
+
+Precipitation probability is calculated from the matching ICON-CH1 or ICON-CH2 ensemble.
+Pressure-level and height-level data is not yet integrated.
+
+Derived Variables
+
+ICON-CH publishes cloud cover, both direct and diffuse solar radiation and sunshine duration
+natively. Several convenient API variables are not direct model output — Open-Meteo derives
+them from the native fields for every forecast step.
+
+| Derived Variable | How is it derived?
+
+| Weather code | Computed from cloud cover, precipitation, snowfall, wind gusts, CAPE and convective
+inhibition. MeteoSwiss does not publish a WMO weather symbol.
+
+| Snowfall and rain | Precipitation counts as snow where the native snow line is below the location
+elevation, converted with 0.7 cm per mm. Rain is total precipitation minus the
+snowfall water equivalent.
+
+| Wind speed and direction | Calculated from the native U and V wind components at 10 m.
+
+| Precipitation probability | Share of the ICON-CH1 or ICON-CH2 ensemble members with more than 0.1 mm/h of
+precipitation.
+
+| Dew point | Calculated from 2 m temperature and relative humidity. MeteoSwiss publishes dew point,
+from which relative humidity is stored, then dew point is recomputed on request.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Diffuse radiation, DNI and GTI | Diffuse radiation is global minus native direct radiation. Direct normal irradiance,
+global tilted irradiance and instant values follow from solar geometry. No radiation
+separation model is required.
+
+| Apparent temperature, ET₀, vapour pressure deficit and wet bulb temperature | Standard formulas combining 2 m temperature, humidity, wind speed and solar radiation.
+ET₀ follows the FAO-56 Penman-Monteith equation.
+
+Sunrise, sunset, daylight duration and the day-or-night flag are astronomical calculations.
+Daily values are aggregated from hourly data.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+Grid and Projection: MeteoSwiss data is originally provided on an unstructured
+icosahedral grid. To enable fast access and map rendering, Open-Meteo reprojects the data onto
+a rotated lat/lon grid with similar resolution. The domain area is cropped by 20 km along the
+borders to eliminate edge artifacts.
+
+Precipitation: With the high spatial resolution of 1–2 km, the model captures
+intense, convective showers. However, due to the highly localised nature of these events, actual
+precipitation at a specific location may be over- or underestimated. Precipitation probability
+is derived from all ensemble members to indicate the likelihood of precipitation occurring.
+
+Direct Solar Radiation: The ICON models from MeteoSwiss include direct solar
+radiation as a native output. In contrast, many other weather models only supply global radiation,
+requiring users to estimate direct radiation via separation models.
+
+Wind, Temperature, and Cloud Forecasts at Heights of 100m and Above: Forecasts
+at elevated height levels are not yet integrated. If this data is of interest to you, please reach
+out to discuss possible integration.
+
+Sunshine Duration is natively computed by the ICON model. For other weather models,
+Open-Meteo derives sunshine duration using direct normal irradiance (DNI).
+
+Snowfall and Freezing Level Height may show invalid values if the computed level
+lies below ground. To address this, Open-Meteo adjusts these levels to extend below ground level
+when necessary—similar to the handling in models like GFS.
+
+CAPE and Convective Inhibition are calculated using mean-layer values, consistent
+with other ICON domains. Convective inhibition may be -1 indicating that the model could not calculate
+convective inhibition.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

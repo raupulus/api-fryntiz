@@ -1,0 +1,533 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Climate API
+
+Explore Climate Change on a Local Level with High-Resolution Climate Data
+
+Climate Change
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Read the blog article with more information about climate models and how data is downscaled to 10 km resolution.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Start date
+
+End date
+
+Past weather forecasts from 2022 onwards are available.
+
+Quick: 1950-2050 2015-2050
+
+Daily Weather Variables
+
+Mean Temperature (2 m)
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Mean Wind Speed (10 m)
+
+Max Wind Speed (10 m)
+
+Mean Cloud Cover
+
+Shortwave Radiation Sum
+
+Mean Relative Humidity (2 m)
+
+Maximum Relative Humidity (2 m)
+
+Minimum Relative Humidity (2 m)
+
+Mean Dewpoint (2 m)
+
+Minimum Dewpoint (2 m)
+
+Maximum Dewpoint (2 m)
+
+Precipitation Sum
+
+Rain Sum
+
+Snowfall Sum
+
+Sea Level Pressure
+
+Mean Soil Moisture (0-10 cm)
+
+Reference Evapotranspiration (ET₀)
+
+Climate models
+
+7 / 7
+
+CMCC_CM2_VHR4
+
+FGOALS_f3_H
+
+HiRAM_SIT_HR
+
+MRI_AGCM3_2_S
+
+EC_Earth3P_HR
+
+MPI_ESM1_2_XR
+
+NICAM16_8S
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+Raw data disabled.
+
+Statistic downscaling with ERA5-Land (10km)
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Note: This API call is equivalent to 1844.5 calls because
+of factors like long time intervals, the number of locations, variables, or models involved.
+
+Data Sources
+
+This API utilises regional downscaled climate models with up to 20 kilometre resolution from
+the HighResMip working group, which are part of the IPCC CMIP6 project.
+
+The API offers climate data at a regional, rather than continental, level by downsizing it to
+a 10 km resolution. This allows for direct comparison of various climate models to identify
+vulnerable regions to climate change impacts or assessing the impact of climate change on
+specific sectors, such as agriculture or public health. The reference point used is ERA5-Land,
+which is accessible through the Historical Weather API.
+
+With typical weather variables in daily resolution data from 1950 to 2050 data allows
+estimation of common climate parameters like the number of days with temperatures exceeding
+30°C or duration and frequency of droughts. Furthermore, daily data enables running of models
+to predict crop yield, pest infestation, and water balance.
+
+While the data from past and recent years is available, it should not be mistaken for actual
+measurements, as it serves the purpose of model validation rather than showing actual past
+weather.
+
+Projections beyond 2050 are highly dependent on different emission scenarios. The high
+resolution climate models are as close to RCP8.5 as possible within CMIP6. While other models
+consider different emission scenarios, the variations in these scenarios are less noticeable
+until 2050. Projections until 2100 are not part of this API.
+
+The climate models available in this API vary in their accuracy and level of uncertainty, and
+depending on the analysis, some models may be more suitable than others. It is not possible to
+provide a general recommendation on which model is better. It is recommended to run analyses
+with multiple models and evaluate their performance afterward.
+
+| Climate Model | Origin | Run by | Resolution | Description
+
+| CMCC-CM2-VHR4 | Italy | Fondazione Centro Euro-Mediterraneo sui Cambiamenti Climatici, Lecce (CMCC) | 30 km |
+
+| FGOALS_f3_H | China | Chinese Academy of Sciences, Beijing (CAS) | 28 km | Model
+
+| HiRAM_SIT_HR | Taiwan | Research Center for Environmental Changes, Academia Sinica, Nankang, Taipei (AS-RCEC) | 25 km |
+
+| MRI_AGCM3_2_S | Japan | Meteorological Research Institute, Tsukuba, Ibaraki (MRI) | 20 km |
+
+| EC_Earth3P_HR | Europe | EC-Earth consortium, Rossby Center, Swedish Meteorological and Hydrological
+Institute/SMHI, Norrkoping, Sweden | 29 km | Model
+
+| MPI_ESM1_2_XR | Germany | Max Planck Institute for Meteorology, Hamburg 20146, Germany | 51 km | Model
+
+| NICAM16_8S | Japan | Japan Agency for Marine-Earth Science and Technology, Kanagawa 236-0001, Japan
+(MIROC) | 31 km | Model
+
+Some weather variables may not be available in all climate models. Notably, soil moisture is
+only available in MRI-AGCM3-2-S and EC_Earth3P_HR. Additionally, some models may not
+provide certain aggregations, such as maximum relative humidity. However, mean relative
+humidity is generally available. The table below outlines the weather variables that are
+available in each model:
+
+⚠️ = Only daily mean values available. No daily minima or maxima.
+
+| Model | Temperature | Relative
+
+Humidity | Wind | Precipitation | Snowfall,
+
+Solar Radiation &
+
+Clouds | Soil moisture
+
+| CMCC-CM2-VHR4 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌
+
+| FGOALS-f3-H | ✅ | ⚠️ | ⚠️ | ✅ | ✅ | ❌
+
+| HiRAM-SIT-HR | ✅ | ⚠️ | ⚠️ | ✅ | ✅ | ❌
+
+| MRI-AGCM3-2-S | ✅ | ✅ | ✅ | ✅ | ✅ | ✅
+
+| EC_Earth3P_HR | ✅ | ✅ | ✅ | ✅ | ✅ | ✅
+
+| MPI_ESM1_2_XR | ✅ | ⚠️ | ✅ | ✅ | ✅ | ❌
+
+| NICAM16_8S | ✅ | ✅ | ✅ | ✅ | ✅ | ❌
+
+API Documentation
+
+The API endpoint /v1/climate allows users to retrieve climate weather data from multiple
+climate models. To use this endpoint, you can specify a geographical coordinate, a time interval,
+and a list of weather variables that they are interested in. It is recommended to use the full time
+range of 1950 to 2050.
+
+All URL parameters are listed below:
+
+| Parameter | Format | Required | Default | Description
+
+| latitude
+
+longitude | Floating point | Yes | | Geographical WGS84 coordinates of the location. Multiple coordinates can be comma
+separated. E.g. &latitude=52.52,48.85&longitude=13.41,2.35. To return
+data for multiple locations the JSON output changes to a list of structures. CSV and
+XLSX formats add a column location_id.
+
+| start_date
+
+end_date | String (yyyy-mm-dd) | Yes | | The time interval to get weather data. A day must be specified as an ISO8601 date
+(e.g. 2022-12-31). Data is available from 1950-01-01 until 2050-01-01.
+
+| models | String array | Yes | | A list of climate models separated by comma. 7 climate models are available CMCC_CM2_VHR4, FGOALS_f3_H, HiRAM_SIT_HR MRI_AGCM3_2_S, EC_Earth3P_HR, MPI_ESM1_2_XR, and NICAM16_8S are
+supported.
+
+| daily | String array | Yes | | A list of daily weather variable aggregations which should be returned. Values can be
+comma separated, or multiple &daily= parameter in the URL can be used.
+
+| temperature_unit | String | No | celsius | If fahrenheit is set, all temperature values are converted to Fahrenheit.
+
+| wind_speed_unit | String | No | kmh | Other wind speed speed units: ms, mph and kn
+
+| precipitation_unit | String | No | mm | Other precipitation amount units: inch
+
+| timeformat | String | No | iso8601 | If format unixtime is selected, all time values are returned in UNIX
+epoch time in seconds. Please note that all time is then in GMT+0! For daily values
+with unix timestamp, please apply utc_offset_seconds again to get the correct date.
+
+| disable_bias_correction | Bool | No | false | Setting disable_bias_correction to true disables statistical
+downscaling and bias correction onto ERA5-Land. By default, all data is corrected using
+linear bias correction, and coefficients have been calculated for each month over a 50-year
+time series. The climate change signal is not affected by linear bias correction.
+
+| cell_selection | String | No | land | Set a preference how grid-cells are selected. The default land finds a
+suitable grid-cell on land with similar elevation to the requested coordinates using a 90-meter digital elevation
+model. sea prefers grid-cells on sea. nearest selects the nearest possible
+grid-cell.
+
+| apikey | String | No | | Only required to commercial use to access reserved API resources for customers. The
+server URL requires the prefix customer-. See pricing for more information.
+
+Additional optional URL parameters may be added. For API stability, no required parameters will
+be added in the future!
+
+Daily Parameter Definition
+
+The climate data in this API is presented as daily aggregations. Multiple weather variables
+can be retrieved at once. The parameter &daily= accepts the following values as comma
+separated list:
+
+| Variable | Unit | Description
+
+| temperature_2m_max
+
+temperature_2m_min
+
+temperature_2m_mean | °C (°F) | Maximum, minimum and mean daily air temperature at 2 meters above ground.
+Additionally, temperature is downscaled using a 90-meter digital elevation model.
+Climate models are not perfect, and they have inherent uncertainties and biases that
+can affect the accuracy of their temperature predictions. However, the temperature
+anomaly over a long period of time is a good indicator the future Earth's climate. The
+following paper analyses the robustness of CMIP6 temperature predictions.
+
+| cloud_cover_mean | % | Mean cloud cover on a given day. Cloud cover in climate models is generally
+represented through simplified parameterizations that estimate the cloud amount,
+height, and thickness based on atmospheric conditions such as temperature, humidity,
+and wind speed. These parameterizations have been shown to provide reasonable
+estimates of global cloud cover but they can have significant uncertainties and biases
+on regional and local scales. Systematic biases have been corrected using the weather
+reanalysis ERA5.
+
+| relative_humidity_2m_max
+
+relative_humidity_2m_min
+
+relative_humidity_2m_mean | % | Maximum, minimum and mean daily relative humidity at 2 meters above ground. While
+systematic biases in relative humidity have been removed through bias correction,
+caution should still be exercised when using relative humidity data as raw data shows
+larger differences between different climate models.
+
+| soil_moisture_0_to_10cm_mean | m³/m³ | Daily mean soil moisture fraction within 0-10 cm. Soil moisture data is only
+available by MRI_AGCM3_2_S and EC_Earth3P_HR. Due to the
+limited number of climate models that provide soil moisture data, it is not possible
+to make a general statement about their accuracy. As a result, it may be advisable to
+conduct your own water balance modeling.
+
+| precipitation_sum | mm | Sum of daily precipitation (including rain, showers and snowfall). Climate models
+have been able to capture some of the large-scale patterns of precipitation and
+associated droughts and extreme precipitation events, particularly over longer time
+scales. However, there are still uncertainties associated with the representation of
+precipitation at smaller geographical scales including thunderstorm. Please compare
+different climate models for drought duration or extreme precipitation events. The
+following papers analyze extreme precipitation and droughts in CMIP6 models.
+
+| rain_sum | mm | Sum of daily liquid rain, excluding snow.
+
+| snowfall_sum | cm | Sum of daily snowfall. Please note that snowfall data may have larger biases in
+complex terrain, as it is not adjusted for different terrain elevations. Use this data
+with caution to estimate how mountainous regions will be effected by reduced snowfall.
+
+| wind_speed_10m_mean
+
+wind_speed_10m_max | km/h (mph, m/s, knots) | Mean and maximum wind speed 10 meter above ground on a day. Simulations of winds and
+pressure systems in climate models are greatly influenced by the resolution used to
+model the terrain. Without bias correction, wind speed can vary significantly between
+different climate models, particularly in complex terrain. Although, data is bias
+corrected with ERA5, it might not accurately represent local conditions.
+
+| pressure_msl_mean | hPa | Daily mean air pressure reduced to mean sea level.
+
+| shortwave_radiation_sum | MJ/m² | The sum of solar radiation on a given day in Megajoules. Shortwave radiation
+predictions are impacted by aerosols and clouds present in the atmosphere. The future
+composition of gases in the atmosphere is a key area of study in climate modeling. As
+there are uncertainties associated with aerosols and clouds, it is important to take
+these into account when using shortwave radiation data.
+
+JSON Return Object
+
+On success a JSON object will be returned.
+
+{
+"latitude": 52.52,
+"longitude": 13.419,
+"generationtime_ms": 2.2119,
+"timezone": "Europe/Berlin",
+"timezone_abbreviation": "CEST",
+"daily": {
+"time": ["2022-07-01", "2022-07-01", "2022-07-01", ...],
+"temperature_2m_max": [13, 12.7, 12.7, 12.5, 12.5, 12.8, ...]
+},
+"daily_units": {
+"temperature_2m": "°C"
+},
+}
+
+| Parameter | Format | Description
+
+| latitude, longitude | Floating point | WGS84 of the center of the weather grid-cell which was used to generate this
+forecast. This coordinate might be a few kilometres away from the requested
+coordinate.
+
+| generationtime_ms | Floating point | Generation time of the weather forecast in milliseconds. This is mainly used for
+performance monitoring and improvements.
+
+| utc_offset_seconds | Integer | Applied timezone offset from the &timezone= parameter.
+
+| timezone
+
+timezone_abbreviation | String | Timezone identifier (e.g. Europe/Berlin) and abbreviation (e.g. CEST)
+
+| daily | Object | For each selected daily weather variable, data will be returned as a floating point
+array. Additionally a time array will be returned with ISO8601 timestamps.
+
+| daily_units | Object | For each selected daily weather variable, the unit will be listed here.
+
+Errors
+
+In case an error occurs, for example a URL parameter is not correctly specified, a JSON error
+object is returned with a HTTP 400 status code.
+
+{
+"error": true,
+"reason": "Cannot initialize WeatherVariable from invalid String value tempeture_2m_max for key daily"
+}
+
+Citation & Acknowledgement
+
+CMIP6 model data is licenced under a Creative Commons Attribution 4.0 International Licence (CC BY 4.0). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for
+terms of use governing CMIP6 output, including citation requirements and proper acknowledgment.
+The data producers and data providers make no warranty, either express or implied, including, but
+not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities
+arising from the supply of the information (including any liability arising in negligence) are excluded
+to the fullest extent permitted by law.
+
+All users of Open-Meteo data must provide a clear attribution to the CMIP6 program as well as
+a reference to Open-Meteo.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

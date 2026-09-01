@@ -1,0 +1,155 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Licence
+
+Data Sources
+
+Open-Meteo utilises open-data from various national weather services including:
+
+Atmospheric, ensemble and wave forecasts from Deutscher Wetterdienst DWD (CC-BY Licence)
+
+Atmospheric, ensemble and wave forecasts from European Centre for Medium-Range Weather Forecasts ECMWF (CC-BY Licence)
+
+Atmospheric, ensemble and wave forecasts from NOAA NCEP (Licence)
+
+Atmospheric and ensemble forecasts from Canadian Meteorological Centre CMC (Licence)
+
+Atmospheric and wave forecasts from Météo-France (Licence)
+
+Atmospheric forecasts from Japan Meteorological Agency JMA (Licence)
+
+Atmospheric forecasts from Norwegian Meteorological Institute (CC-BY Licence)
+
+Atmospheric forecasts from Chinese Meteorological Administration CMA (CC-BY Licence)
+
+Atmospheric forecasts from Australian Bureau of Meteorology BOM (CC-BY Licence)
+
+Atmospheric forecasts from Royal Netherlands Meteorological Institute KNMI (CC-BY Licence)
+
+Atmospheric forecasts from Danish Meteorological Institute DMI (CC-BY Licence)
+
+Atmospheric forecasts from UK Met Office (CC-BY-SA Licence)
+
+Atmospheric forecasts from ItaliaMeteo-ARPAE (CC-BY Licence)
+
+Atmospheric forecasts from MeteoSwiss (CC-BY Licence)
+
+Wave forecasts from Copernicus Marine Service (Licence)
+
+Weather reanalysis, air quality forecasts and elevation data from Copernicus Climate Change Service C3S (Licence)
+
+Flood forecasts from Global Flood Awareness System GloFAS (Licence)
+
+Location database from GeoNames (CC-BY Licence)
+
+Icons from Weather Icons (SIL OFL 1.1)
+
+Licence
+
+API data are offered under Attribution 4.0 International (CC BY 4.0)
+
+You are free to share: copy and redistribute the material in any medium or
+format and adapt: remix, transform, and build upon the material.
+
+Attribution: You must give appropriate credit, provide a link to the licence, and
+indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests
+the licensor endorses you or your use.
+
+You must include a link next to any location Open-Meteo data are displayed, for example:
+
+<a href="https://open-meteo.com/">
+Weather data by Open-Meteo.com
+</a>
+
+Open-Meteo is open-source
+
+Source code is available on GitHub under the GNU Affero General Public Licence Version 3 AGPLv3 or any later version. You can find the licence here.
+
+Citation
+
+We encourage researchers in the field of meteorology and related disciplines to cite
+Open-Meteo in their work. By acknowledging Open-Meteo as the source of weather data and
+forecasts used in their research, researchers contribute to the growing body of knowledge and
+advancements in the field. Citing Open-Meteo not only gives proper credit to the API but also
+promotes transparency, reproducibility, and collaboration within the scientific community.
+Together, let's foster a culture of recognition and support for open-source initiatives like
+Open-Meteo, ensuring that future researchers can benefit from the valuable resources it
+provides.
+
+Citation:
+
+APA MLA Harvard BibTeX
+
+Zippenfenig, P. (2023). Open-Meteo.com Weather API [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.7970649
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

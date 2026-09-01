@@ -1,0 +1,552 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+ItaliaMeteo ARPAE ICON-2i
+
+Open data weather forecasts from the Italian weather service ItaliaMeteo
+
+ItaliaMeteo
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+API Mode:
+
+ForecastHistorical ForecastSingle Run
+
+Time:
+
+Forecast Length Time Interval
+
+3 days (default)
+Forecast days
+
+0 days (default)
+Past days
+
+Forecast provides the latest, continuously updated weather forecast. By default, we provide forecasts for 3 days, but you can
+access forecasts for up to 8 days. Use Past Days to include recently archived forecasts.
+
+For older archived forecasts, switch to Historical Forecast mode.
+
+You can also check out our Historical Weather API with data going back to 1940.
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + showers + snow)
+
+Rain
+
+Showers
+
+Snowfall
+
+Snow Depth
+
+Weather code
+
+Sea Level Pressure
+
+Surface Pressure
+
+Cloud Cover Total
+
+Cloud Cover Low
+
+Cloud Cover Mid
+
+Cloud Cover High
+
+Visibility
+
+Evapotranspiration
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Soil Temperature (0 cm)
+
+Soil Temperature (6 cm)
+
+Soil Temperature (18 cm)
+
+Soil Temperature (54 cm)
+
+Soil Temperature (162 cm)
+
+Soil Temperature (486 cm)
+
+Soil Temperature (1458 cm)
+
+Soil Moisture (0-1 cm)
+
+Soil Moisture (1-3 cm)
+
+Soil Moisture (3-9 cm)
+
+Soil Moisture (9-27 cm)
+
+Soil Moisture (27-81 cm)
+
+Soil Moisture (81-243 cm)
+
+Soil Moisture (243-729 cm)
+
+Soil Moisture (729-2187 cm)
+
+Additional Variables And Options
+
+Is Day or Night
+
+Lightning Potential Index LPI (2)
+
+Wet Bulb Temperature (2 m)
+
+Convective Inhibition
+
+CAPE
+
+Freezing Level Height
+
+Snowfall Height (1)
+
+Sunshine Duration
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Relative Humidity
+
+Cloud Cover
+
+Wind Speed
+
+Wind Direction
+
+Vertical Velocity
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+925 hPa (800 m)
+
+850 hPa (1500 m)
+
+700 hPa (3 km)
+
+500 hPa (5.6 km)
+
+250 hPa (10.4 km)
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea level.
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Sum
+
+Precipitation Hours
+
+Precipitation Probability Max
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Current Weather
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Apparent Temperature
+
+Is Day or Night
+
+Precipitation
+
+Rain
+
+Showers
+
+Snowfall
+
+Weather code
+
+Cloud Cover Total
+
+Sea Level Pressure
+
+Surface Pressure
+
+Wind Speed (10 m)
+
+Wind Direction (10 m)
+
+Wind Gusts (10 m)
+
+Note: Current conditions are based on 1 hourly weather model data. Every weather variable
+available in hourly data, is available as current condition as well.
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+This API provides access to the ICON-2I model from ItaliaMeteo-ARPAE.
+
+You can find the update timings in the model updates documentation.
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| ICON 2I |
+
+Southern Europe
+| 0.02° (~2 km) | Hourly | 3 days | Every 12 hours
+
+Click to enlarge Italia Meteo ARPAE ICON 2I Model Area. Source: Open-Meteo.
+
+Native Model Variables
+
+ICON-2I directly predicts the fields listed below. Open-Meteo retains these fields or uses
+them to calculate more convenient API variables. ICON-2I provides native weather codes, direct
+solar radiation and dew point rather than relative humidity.
+
+| Native ICON-2I field | Level | Use in the Open-Meteo API
+
+| Temperature and dew point | 2 m, pressure levels | temperature_2m, relative humidity and dew point
+
+| U and V wind components | 10 m, pressure levels | Wind speed and direction
+
+| Wind gusts | 10 m | wind_gusts_10m
+
+| Mean sea-level pressure | Mean sea level | pressure_msl and derived surface pressure
+
+| Total, grid-scale and convective rain and snow | Surface | precipitation, rain, showers, snowfall
+
+| Direct solar radiation | Surface | Global, direct, diffuse radiation, DNI and GTI
+
+| Cloud cover total, low, mid and high | Surface | cloud_cover and the individual layers
+
+| Weather code (WW) | Surface | weather_code (with temperature-based corrections)
+
+| CAPE, convective inhibition, lightning potential, freezing level, snow depth | Surface | Corresponding API variables and weather-code inputs
+
+| Geopotential, vertical velocity and relative humidity | Pressure levels | geopotential_height, vertical_velocity, pressure-level cloud
+cover
+
+| Soil temperature and moisture | Multiple depths | Soil temperature and moisture variables
+
+Visibility is not available for this model.
+
+Derived Variables
+
+ICON-2I publishes native weather codes, direct solar radiation, wind gusts, cloud cover
+layers, CAPE, convective inhibition and lightning potential. Open-Meteo derives the remaining
+API variables from these native fields.
+
+| Derived Variable | How is it derived?
+
+| Wind speed and direction | Calculated from the native U and V wind components at 10 m and on all pressure levels.
+
+| Relative humidity and dew point | ICON-2I publishes dew point; relative humidity is computed from temperature and dew
+point, and dew point is then recomputed on request.
+
+| Weather code corrections | The native ICON WW code is adjusted so precipitation codes without precipitation fall
+back to cloud cover, and snow and rain codes swap based on temperature and snow line.
+
+| Rain, showers and snowfall | Split from the native grid-scale and convective rain and snow fields. Snowfall
+converts the water equivalent with 0.7 cm per mm.
+
+| Diffuse radiation | Global minus native direct radiation. DNI, GTI and instant values follow from solar
+geometry. No radiation separation model is required.
+
+| Surface pressure | Calculated from mean sea-level pressure, 2 m temperature and terrain elevation.
+
+| Vertical velocity | Native omega in Pa/s converted to geometric velocity in m/s using the temperature at
+each pressure level.
+
+| Pressure-level cloud cover | Estimated from native pressure-level relative humidity.
+
+| Apparent temperature, ET₀, sunshine duration and wet bulb temperature | Combine temperature, humidity, wind speed and solar radiation. ET₀ follows the FAO-56
+Penman-Monteith equation; sunshine duration counts time with DNI above 120 W/m².
+
+Sunrise, sunset, daylight duration and the day-or-night flag are astronomical calculations.
+Daily values are aggregated from hourly data.
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

@@ -1,0 +1,1083 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Seasonal Forecast API
+
+Sub-Seasonal and Long Range Forecast for 7 Months
+
+Seasonal Forecast
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+This API provides seasonal ECMWF SEAS5 and sub-seasonal ECMWF EC46 forecasts at a 36 km
+resolution with 51 ensemble members. The data are not bias-corrected and may not accurately
+reflect local conditions. They should be interpreted as area forecasts, giving an indication
+of whether the coming months are likely to be warmer, colder, wetter, or drier than average.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Time:
+
+Forecast Length Time Interval
+
+6 months (default)
+Forecast days
+
+0 days (default)
+Past days
+
+By default, we provide forecasts for 6 months, but you can access forecasts for up to 7 months. If you're interested in past weather data, you can use the Past Days feature
+to access archived forecasts.
+
+6-Hourly Weather Variables
+
+Temperature (2 m)
+
+Temperature 6h Maximum (2 m)*
+
+Temperature 6h Minimum (2 m)*
+
+Dew Point (2 m)
+
+Relative Humidity (2 m)
+
+Apparent Temperature (2 m)
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Sea Level Pressure
+
+Weather Code
+
+Total Precipitation
+
+Showers*
+
+Snowfall
+
+Rain
+
+Wave Height*
+
+Wave Direction*
+
+Wave Period*
+
+Wave Peak Period*
+
+Total Cloud Cover
+
+Sunshine Duration*
+
+Wind Speed (10 m)
+
+Wind Speed (100 m)
+
+Wind Speed (200 m)
+
+Wind Direction (10 m)
+
+Wind Direction (100 m)
+
+Wind Direction (200 m)
+
+Wind Gusts (10 m)*
+
+Sea Surface Temperature
+
+Soil Temperature (0-7 cm)
+
+Soil Temperature (7-28 cm)*
+
+Soil Temperature (28-100 cm)*
+
+Soil Temperature (100-255 cm)*
+
+Soil Moisture (0-7 cm)*
+
+Soil Moisture (7-28 cm)*
+
+Soil Moisture (28-100 cm)*
+
+Soil Moisture (100-255 cm)*
+
+* Only available for 46 days, based on ECMWF EC46.
+
+Additional Options
+
+6 Hourly (default)
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Ensemble Spread Variables
+
+Temperature (2 m)
+
+Temperature 6h Maximum (2 m)*
+
+Temperature 6h Minimum (2 m)*
+
+Dew Point (2 m)
+
+Relative Humidity (2 m)
+
+Apparent Temperature (2 m)
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Sea Level Pressure
+
+Weather Code
+
+Total Precipitation
+
+Showers*
+
+Snowfall
+
+Rain
+
+Wave Height*
+
+Wave Direction*
+
+Wave Period*
+
+Wave Peak Period*
+
+Total Cloud Cover
+
+Sunshine Duration*
+
+Wind Speed (10 m)
+
+Wind Speed (100 m)
+
+Wind Speed (200 m)
+
+Wind Direction (10 m)
+
+Wind Direction (100 m)
+
+Wind Direction (200 m)
+
+Wind Gusts (10 m)*
+
+Sea Surface Temperature
+
+Soil Temperature (0-7 cm)
+
+Soil Temperature (7-28 cm)*
+
+Soil Temperature (28-100 cm)*
+
+Soil Temperature (100-255 cm)*
+
+Soil Moisture (0-7 cm)*
+
+Soil Moisture (7-28 cm)*
+
+Soil Moisture (28-100 cm)*
+
+Soil Moisture (100-255 cm)*
+
+Note: You need to select an Ensemble Mean in the model selection below to retrieve
+ensemble spread data. Selecting an Ensemble Mean model will also return the ensemble mean
+value for hourly data instead of values for each individual member.
+
+Models
+
+ECMWF Seasonal Seamless (EC46 + SEAS5), All 51 members
+
+ECMWF SEAS5, All 51 members
+
+ECMWF EC46, All 51 members
+
+ECMWF Seasonal Seamless (EC46 + SEAS5), Ensemble Mean
+
+ECMWF SEAS5, Ensemble Mean
+
+ECMWF EC46, Ensemble Mean
+
+Note: The default ECMWF Seasonal Seamless uses all 51 members from EC46 for
+the first 46 days and switches to SEAS5 afterwards. Some weather variables may only be available
+for either weather model.
+
+Note: If an Ensemble Mean model is selected, the API will return the mean value
+of all ensemble members instead of individual members. Ensemble mean values are stored for
+a longer period of time.
+
+Daily Weather Variables
+
+Temperature (2 m)
+
+Min
+
+Mean
+
+Max
+
+Apparent Temperature
+
+Min
+
+Mean
+
+Max
+
+Relative Humidity (2 m)
+
+Min
+
+Mean
+
+Max
+
+Dew Point (2 m)
+
+Min
+
+Mean
+
+Max
+
+Precipitation
+
+Sum
+
+Rain Sum
+
+Sum
+
+Showers*
+
+Sum
+
+Snowfall
+
+Sum
+
+Snowfall Water Equivalent
+
+Sum
+
+Sealevel Pressure
+
+Min
+
+Mean
+
+Max
+
+Surface Pressure
+
+Min
+
+Mean
+
+Max
+
+Sea Surface Temperature
+
+Min
+
+Mean
+
+Max
+
+Cloud Cover
+
+Min
+
+Mean
+
+Max
+
+Reference Evapotranspiration (ET₀)
+
+Sum
+
+Shortwave Radiation
+
+Sum
+
+Sun
+
+Sunrise
+
+Sunset
+
+Weather code
+
+Weather code
+
+Wet Bulb Temperature (2 m)
+
+Min
+
+Mean
+
+Max
+
+Vapour Pressure Deficit
+
+Min
+
+Mean
+
+Max
+
+Wind Speed (10 m)
+
+Min
+
+Mean
+
+Max
+
+Wind Speed (100 m)*
+
+Min
+
+Mean
+
+Max
+
+Wind Speed (200 m)*
+
+Min
+
+Mean
+
+Max
+
+Wind Gusts (10 m)*
+
+Min
+
+Mean
+
+Max
+
+Wind Direction (10 m)
+
+Dominant
+
+Wind Direction (100 m)*
+
+Dominant
+
+Wind Direction (200 m)*
+
+Dominant
+
+Soil Temperature (0-7 cm)
+
+Mean
+
+Soil Temperature (7-28 cm)
+
+Mean
+
+Soil Temperature (28-100 cm)
+
+Mean
+
+Soil Temperature (100-255 cm)
+
+Mean
+
+Soil Moisture (0-7 cm)
+
+Mean
+
+Soil Moisture (7-28 cm)
+
+Mean
+
+Soil Moisture (28-100 cm)
+
+Mean
+
+Soil Moisture (100-255 cm)
+
+Mean
+
+* Only available for 46 days, based on ECMWF EC46.
+
+Weekly Weather Variables
+
+Temperature (2 m)
+
+Mean
+
+Anomaly
+
+Temperature (2 m) Max 6h
+
+Mean
+
+Anomaly
+
+Temperature (2 m) Min 6h
+
+Mean
+
+Anomaly
+
+Dew Point (2 m)
+
+Mean
+
+Anomaly
+
+Soil Temperature (0-7 cm)
+
+Mean
+
+Anomaly
+
+Precipitation
+
+Mean
+
+Anomaly
+
+Snowfall
+
+Mean
+
+Anomaly
+
+Snow Depth
+
+Mean
+
+Anomaly
+
+Pressure Mean Sea Level
+
+Mean
+
+Anomaly
+
+Sea Surface Temperature
+
+Mean
+
+Anomaly
+
+Sunshine Duration
+
+Mean
+
+Anomaly
+
+Cloud Cover
+
+Mean
+
+Anomaly
+
+Wind Speed (10 m)
+
+Mean
+
+Anomaly
+
+Wind Speed (100 m)
+
+Mean
+
+Anomaly
+
+Wind Direction (10 m)
+
+Mean
+
+Anomaly
+
+Wind Direction (100 m)
+
+Mean
+
+Anomaly
+
+Additional Weekly Variables
+
+Snow Density
+
+Mean
+
+Anomaly
+
+Snow Depth Water Equivalent
+
+Mean
+
+Anomaly
+
+Snowfall Water Equivalent
+
+Mean
+
+Anomaly
+
+Total Column Integrated Water Vapour
+
+Mean
+
+Anomaly
+
+Anomaly Probabilities, Extreme Forecast Index (EFI) & Shift of tails (SOT)
+
+Temperature (2 m) Extreme Forecast Index
+
+Temperature (2 m) Shift of Tails 10
+
+Temperature (2 m) Shift of Tails 90
+
+Temperature (2 m) Anomaly Greater than 0K
+
+Temperature (2 m) Anomaly Greater than 1K
+
+Temperature (2 m) Anomaly Greater than 2K
+
+Temperature (2 m) Anomaly Lower than -1K
+
+Temperature (2 m) Anomaly Lower than -2K
+
+Precipitation Extreme Forecast Index
+
+Precipitation Shift of Tails 90
+
+Precipitation Anomaly Greater than 0mm
+
+Precipitation Anomaly Greater than 10mm
+
+Precipitation Anomaly Greater than 20mm
+
+Pressure Mean Sea Level Greater than 0Pa
+
+Surface Temperature Anomaly Greater than 0K
+
+Monthly Weather Variables
+
+Temperature (2 m)
+
+Mean
+
+Anomaly
+
+Temperature (2 m) Max 24h
+
+Mean
+
+Anomaly
+
+Temperature (2 m) Min 24h
+
+Mean
+
+Anomaly
+
+Dew Point (2 m)
+
+Mean
+
+Anomaly
+
+Precipitation
+
+Mean
+
+Anomaly
+
+Showers
+
+Mean
+
+Anomaly
+
+Snowfall
+
+Mean
+
+Anomaly
+
+Snow Depth
+
+Mean
+
+Anomaly
+
+Cloud Cover
+
+Mean
+
+Anomaly
+
+Cloud Cover Low
+
+Mean
+
+Anomaly
+
+Sunshine Duration
+
+Mean
+
+Anomaly
+
+Shortwave Radiation
+
+Mean
+
+Anomaly
+
+Sealevel Pressure
+
+Mean
+
+Anomaly
+
+Sea Surface Temperature
+
+Mean
+
+Anomaly
+
+Wind Speed (10 m)
+
+Mean
+
+Anomaly
+
+Wind Gusts (10 m)
+
+Anomaly
+
+Soil Temperature (0-7 cm)
+
+Mean
+
+Anomaly
+
+Soil Temperature (7-28 cm)
+
+Mean
+
+Anomaly
+
+Soil Temperature (28-100 cm)
+
+Mean
+
+Anomaly
+
+Soil Temperature (100-255 cm)
+
+Mean
+
+Anomaly
+
+Soil Moisture (0-7 cm)
+
+Mean
+
+Anomaly
+
+Soil Moisture (7-28 cm)
+
+Mean
+
+Anomaly
+
+Soil Moisture (28-100 cm)
+
+Mean
+
+Anomaly
+
+Soil Moisture (100-255 cm)
+
+Mean
+
+Anomaly
+
+Additional Monthly Variables
+
+Runoff
+
+Mean
+
+Anomaly
+
+Evapotranspiration
+
+Mean
+
+Anomaly
+
+Snow Density
+
+Mean
+
+Anomaly
+
+Snow Depth (Water Equivalent)
+
+Mean
+
+Anomaly
+
+Total Column Integrated Water Vapour
+
+Mean
+
+Anomaly
+
+Sea Ice Cover
+
+Mean
+
+Anomaly
+
+Longwave Radiation
+
+Mean
+
+Anomaly
+
+Snowfall Water Equivalent
+
+Mean
+
+Anomaly
+
+Albedo
+
+Mean
+
+Anomaly
+
+Latent Heat Flux
+
+Mean
+
+Anomaly
+
+Sensible Heat Flux
+
+Mean
+
+Anomaly
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Note: This API call is equivalent to 1.3 calls because
+of factors like long time intervals, the number of locations, variables, or models involved.
+
+Data Sources
+
+This API provides data from the ECMWF EC46 and SEAS5 seasonal forecast models. SEAS5 generates
+forecasts up to 7 months in advance, EC46 provides forecasts for up to 46 days ahead. Both
+models are ensemble forecast systems with 51 members, each initialized with slightly different
+starting conditions. This approach allows the models to estimate not only the most likely
+future weather but also the range of possible outcomes and their associated uncertainties.
+
+In addition to the 51 individual member forecasts, Open-Meteo also provides ensemble mean and
+spread values. If an Ensemble Mean model is selected in the model selection above,
+the API returns the ensemble mean instead of individual member forecasts. Ensemble mean and spread
+values are stored for a longer period of time and can be used for bias correction later on. Forecasts
+for all 51 individual members are only kept for one month.
+
+Forecasts from EC46 for the next 46 days are updated every day at around 20:30 GMT+0. Seasonal
+SEAS5 forecast update every month on the 5th.
+
+For short-term forecasting consider using the 15-days ECMWF forecast
+
+| Weather Model | Region | Spatial Resolution | Temporal Resolution | Forecast Length | Update frequency
+
+| EC46 |
+
+🌍
+
+Global
+| 36 km (O320 grid) | 6-hourly | 46 days | Daily at 20:30Z
+
+| SEAS5 |
+
+🌍
+
+Global
+| 36 km (O320 grid) | 6-hourly | 7 months | Every month on the 5th
+
+API Documentation
+
+For a detailed list of all available weather variables please refer to the general Weather Forecast API. Only notable remarks are listed below
+
+6-hourly resolution: Forecast data is provided at a native 6-hour interval. While
+it can be interpolated to 3-hourly or 1-hourly steps, this does not increase forecast accuracy.
+However, using 1-hourly resolution may be practical for applications such as solar PV modeling.
+
+Data is available for 51 ensemble members, which can be useful for
+applications such as running pest or energy production models using each member individually
+and averaging the results. Although EC46 generates 100 ensemble members, providing 51 offers
+a good balance between data volume and accuracy and is sufficient for most use cases.
+
+Solar Radiation: SEAS5 only contains global solar radiation data and does
+not offer direct or diffuse solar radiation. Open-Meteo applies the separation model from Razo, Müller Witwer to calculate direct radiation from shortwave solar radiation. EC46 used for the first 46 days
+directly models direct and diffuse solar radiation.
+
+Weekly and monthly data are computed directly by the ECMWF SEAS5 and EC46 models.
+Monthly data is available from SEAS5 for up to 7 months ahead, based on 51 ensemble members, while
+weekly data is available from EC46 for up to 6 weeks ahead, using 100 ensemble members.
+
+Anomalies are calculated by comparing forecast values against a long-term
+model climatology (a baseline of past simulations from the same forecasting system). ECMWF
+runs past forecasts (typically covering the last 20–30+ years) using the same model
+configuration. These hindcasts build a model-consistent climatology. For each forecast, the
+anomaly is obtained by subtracting the model climatology from the forecast value: Anomaly = Forecast - Model Climatology
+
+The Extreme Forecast Index (EFI) highlights potential extreme events in
+temperature or precipitation relative to the expected climate. Rather than showing absolute
+values, the EFI expresses how unusual a forecast is compared to the model climate. For
+temperature, EFI values near +1 indicate a high likelihood of much warmer-than-normal
+conditions, while values near –1 suggest much colder-than-normal conditions. For
+precipitation, EFI values close to +1 point to much wetter-than-normal conditions, and those
+near –1 indicate much drier-than-normal conditions. More information in the ECMWF documentation.
+
+The Shift of Tails (SOT) is a complementary metric to the Extreme Forecast
+Index (EFI) that indicates how extreme an event could potentially become. While the EFI is
+limited by the historical extremes of the model climate, the SOT examines the outer tails of
+the forecast distribution — capturing rare, exceptional events that may exceed anything
+previously simulated by the model. The SOT is computed for the 10th and 90th percentiles
+across all 100 EC46 ensemble members. More information in the ECMWF documentation.
+
+Bias correction: The dataset is currently provided without bias adjustment. Future
+versions of the API may include bias-corrected and downscaled outputs for improved local accuracy.
+Parameters such as anomalies, EFI, and SOT are expressed relative to the model climate, which
+inherently reduces some systematic biases.
+
+This service is based on data and products of the European Centre for Medium-Range Weather
+Forecasts (ECMWF). Source www.ecmwf.int. ECMWF does not
+accept any liability whatsoever for any error or omission in the data, their availability, or
+for any loss or damage arising from their use.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com

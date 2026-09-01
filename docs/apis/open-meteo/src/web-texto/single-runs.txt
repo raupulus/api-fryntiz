@@ -1,0 +1,826 @@
+Open-Meteo
+
+Home Features Pricing API Docs
+
+Animations
+
+Toggle theme
+
+Single Runs API
+
+Access any individual model run by initialisation time — ECMWF IFS from March 2024, all other models from 2nd of April 2026.
+
+Single Runs
+
+Weather Forecast
+
+DWD Germany
+
+NOAA U.S.
+
+Météo-France
+
+ECMWF
+
+UK Met Office
+
+KMA Korea
+
+JMA Japan
+
+MeteoSwiss
+
+MET Norway
+
+GEM Canada
+
+BOM Australia
+
+CMA China
+
+KNMI Netherlands
+
+DMI Denmark
+
+ItaliaMeteo
+
+GeoSphere Austria
+
+CHMI Aladin
+
+Historical Weather
+
+Historical Forecast
+
+Single Runs
+
+Previous Model Runs
+
+Ensemble Models
+
+Ensemble Mean API
+
+Google WeatherNext
+
+Seasonal Forecast
+
+Climate Change
+
+Marine Forecast
+
+Air Quality
+
+Satellite Radiation
+
+Geocoding
+
+Elevation
+
+Flood
+
+Model Updates
+
+Retrieve the full forecast horizon of any individual model run using the &run= parameter (e.g. &run=2025-09-01T00:00). Most models are archived from 2nd of April
+2026. ECMWF IFS HRES at 9 km is available from March 2024.
+
+Location and Time
+
+Location:
+
+Coordinates List Bounding box
+
+Latitude
+
+Longitude
+
+Not set (GMT+0)
+Timezone
+
+Search
+
+Run (yyyy-mm-ddThh:mm)
+
+7 days (default)
+Forecast days
+
+Hourly Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation Probability
+
+Precipitation (rain + showers + snow)
+
+Rain
+
+Showers
+
+Snowfall
+
+Snow Depth
+
+Weather code
+
+Sealevel Pressure
+
+Surface Pressure
+
+Cloud cover Total
+
+Cloud cover Low
+
+Cloud cover Mid
+
+Cloud cover High
+
+Visibility
+
+Evapotranspiration
+
+Reference Evapotranspiration (ET₀)
+
+Vapour Pressure Deficit
+
+Wind Speed (10 m)
+
+Wind Speed (80 m)
+
+Wind Speed (100 m)
+
+Wind Speed (120 m)
+
+Wind Speed (180 m)
+
+Wind Speed (200 m)
+
+Wind Direction (10 m)
+
+Wind Direction (80 m)
+
+Wind Direction (100 m)
+
+Wind Direction (120 m)
+
+Wind Direction (180 m)
+
+Wind Direction (200 m)
+
+Wind Gusts (10 m)
+
+Temperature (80 m)
+
+Temperature (120 m)
+
+Temperature (180 m)
+
+Soil Temperature (0 cm)
+
+Soil Temperature (6 cm)
+
+Soil Temperature (18 cm)
+
+Soil Temperature (54 cm)
+
+Soil Moisture (0-1 cm)
+
+Soil Moisture (1-3 cm)
+
+Soil Moisture (3-9 cm)
+
+Soil Moisture (9-27 cm)
+
+Soil Moisture (27-81 cm)
+
+Additional Variables And Options
+
+UV Index
+
+UV Index Clear Sky
+
+Is Day or Night
+
+Sunshine Duration
+
+Wet Bulb Temperature (2 m)
+
+Total Column Integrated Water Vapour
+
+CAPE
+
+Lifted Index
+
+Convective Inhibition
+
+Freezing Level Height
+
+Boundary Layer Height PBL
+
+Hail (only Met Office UK 2km)
+
+Note: You can further adjust the forecast time range for hourly weather variables using &forecast_hours= and &past_hours= as shown below.
+
+- (default)
+Forecast Hours
+
+- (default)
+Past Hours
+
+1 Hourly
+Temporal Resolution For Hourly Data
+
+Terrain Optimised, Prefers Land
+Grid Cell Selection
+
+Solar Radiation Variables
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Solar radiation is averaged over the past hour. Use instant for radiation at the indicated time. For global tilted irradiance GTI please
+specify Tilt and Azimuth below.
+
+Panel Tilt (0° horizontal)
+
+Panel Azimuth (0° S, -90° E, 90° W, ±180° N)
+
+Pressure Level Variables
+
+Temperature
+
+Relative Humidity
+
+Cloud cover
+
+Wind Speed
+
+Wind Direction
+
+Geopotential Height
+
+Temperature
+
+1000 hPa (110 m)
+
+925 hPa (800 m)
+
+850 hPa (1500 m)
+
+700 hPa (3 km)
+
+600 hPa (4.2 km)
+
+500 hPa (5.6 km)
+
+400 hPa (7.2 km)
+
+300 hPa (9.2 km)
+
+250 hPa (10.4 km)
+
+200 hPa (11.8 km)
+
+150 hPa (13.5 km)
+
+100 hPa (15.8 km)
+
+50 hPa (19.3 km)
+
+Note: Altitudes are approximate and in meters above sea level (not above ground). Use geopotential_height to get precise altitudes above sea level.
+
+Weather models
+
+1 / 58
+
+Best match
+
+ECMWF IFS HRES 9km
+
+ECMWF IFS 0.25°
+
+ECMWF AIFS 0.25° Single
+
+CMA GRAPES Global
+
+BOM ACCESS Global
+
+NCEP GFS Seamless
+
+NCEP GFS Global 0.11°/0.25°
+
+NCEP HRRR U.S. Conus
+
+NCEP NBM U.S. Conus
+
+NCEP NAM U.S. Conus
+
+NCEP AIGFS 0.25°
+
+NCEP HGEFS 0.25° Ensemble Mean
+
+JMA Seamless
+
+JMA MSM
+
+JMA GSM
+
+KMA Seamless
+
+KMA LDPS
+
+KMA GDPS
+
+DWD ICON Seamless
+
+DWD ICON Global
+
+DWD ICON EU
+
+DWD ICON D2
+
+GEM Seamless
+
+GEM Global
+
+GEM Regional
+
+GEM HRDPS Continental
+
+GEM HRDPS West
+
+Météo-France Seamless
+
+Météo-France ARPEGE World
+
+Météo-France ARPEGE Europe
+
+Météo-France AROME France
+
+Météo-France AROME France HD
+
+ItaliaMeteo ARPAE ICON 2I
+
+MET Norway Nordic Seamless (with ECMWF)
+
+MET Norway Nordic
+
+KNMI Seamless (with ECMWF)
+
+KNMI Harmonie AROME Europe
+
+KNMI Harmonie AROME Netherlands
+
+DMI Seamless (with ECMWF)
+
+DMI Harmonie AROME Europe
+
+UK Met Office Seamless
+
+UK Met Office Global 10km
+
+UK Met Office UK 2km
+
+MeteoSwiss ICON Seamless
+
+MeteoSwiss ICON CH1
+
+MeteoSwiss ICON CH2
+
+GeoSphere Seamless (with ECMWF)
+
+GeoSphere AROME Austria
+
+CHMI Aladin Seamless
+
+CHMI Aladin Central Europe 2km
+
+CHMI Aladin CZ 1km
+
+ECMWF IFS 9km HRES
+
+ERA5-Seamless
+
+ERA5
+
+ERA5-Land
+
+ERA5-Ensemble
+
+CERRA
+
+Note: The default Best Match provides the best forecast for any given
+location worldwide. Seamless combines all models from a given provider into a
+seamless prediction.
+
+15-Minutely Weather Variables
+
+Temperature (2 m)
+
+Relative Humidity (2 m)
+
+Dewpoint (2 m)
+
+Apparent Temperature
+
+Precipitation (rain + showers + snow)
+
+Rain
+
+Snowfall
+
+Snowfall Height
+
+Freezing Level Height
+
+Sunshine Duration
+
+Weather code
+
+Wind Speed (10 m)
+
+Wind Speed (80 m)
+
+Wind Direction (10 m)
+
+Wind Direction (80 m)
+
+Wind Gusts (10 m)
+
+Visibility
+
+CAPE
+
+Lightning Potential Index LPI
+
+Is Day or Night
+
+Shortwave Solar Radiation GHI
+
+Direct Solar Radiation
+
+Diffuse Solar Radiation DHI
+
+Direct Normal Irradiance DNI
+
+Global Tilted Radiation GTI
+
+Terrestrial Solar Radiation
+
+Shortwave Solar Radiation GHI (Instant)
+
+Direct Solar Radiation (Instant)
+
+Diffuse Solar Radiation DHI (Instant)
+
+Direct Normal Irradiance DNI (Instant)
+
+Global Tilted Radiation GTI (Instant)
+
+Terrestrial Solar Radiation (Instant)
+
+Note: Only available in Central Europe and North America. Other regions use
+interpolated hourly data. Solar radiation is averaged over the 15 minutes. Use instant for radiation at the indicated time.
+
+Note: You can further adjust the forecast time range for 15-minutely weather variables
+using &forecast_minutely_15= and &past_minutely_15= as shown below.
+
+- (default)
+Forecast Minutely 15
+
+- (default)
+Past Minutely 15
+
+Daily Weather Variables
+
+Weather code
+
+Maximum Temperature (2 m)
+
+Minimum Temperature (2 m)
+
+Maximum Apparent Temperature (2 m)
+
+Minimum Apparent Temperature (2 m)
+
+UV Index
+
+UV Index Clear Sky
+
+Sunrise
+
+Sunset
+
+Daylight Duration
+
+Sunshine Duration
+
+Moonrise
+
+Moonset
+
+Moon Phase
+
+Rain Sum
+
+Showers Sum
+
+Snowfall Sum
+
+Precipitation Sum
+
+Precipitation Hours
+
+Precipitation Probability Max
+
+Maximum Wind Speed (10 m)
+
+Maximum Wind Gusts (10 m)
+
+Dominant Wind Direction (10 m)
+
+Shortwave Radiation Sum
+
+Reference Evapotranspiration (ET₀)
+
+Additional Daily Variables
+
+Mean Temperature (2 m)
+
+Mean Apparent Temperature (2 m)
+
+Mean CAPE
+
+Maximum CAPE
+
+Minimum CAPE
+
+Mean Cloud cover
+
+Maximum Cloud cover
+
+Minimum Cloud cover
+
+Mean Dewpoint (2 m)
+
+Maximum Dewpoint (2 m)
+
+Minimum Dewpoint (2 m)
+
+Reference Evapotranspiration Sum (ET₀)
+
+Growing Degree Days Base 0 Limit 50
+
+Mean Leaf Wetness Probability
+
+Mean Precipitation Probability
+
+Minimum Precipitation Probability
+
+Mean Relative Humidity (2 m)
+
+Maximum Relative Humidity (2 m)
+
+Minimum Relative Humidity (2 m)
+
+Snowfall Water Equivalent Sum
+
+Mean Sealevel Pressure
+
+Maximum Sealevel Pressure
+
+Minimum Sealevel Pressure
+
+Mean Surface Pressure
+
+Maximum Surface Pressure
+
+Minimum Surface Pressure
+
+Maximum Updraft
+
+Mean Visibility
+
+Minimum Visibility
+
+Maximum Visibility
+
+Dominant Wind Direction (10m)
+
+Mean Wind Gusts (10 m)
+
+Mean Wind Speed (10 m)
+
+Minimum Wind Gusts (10 m)
+
+Minimum Wind Speed (10 m)
+
+Mean Wet Bulb Temperature (2 m)
+
+Maximum Wet Bulb Temperature (2 m)
+
+Minimum Wet Bulb Temperature (2 m)
+
+Maximum Vapour Pressure Deficit
+
+Mean Soil Moisture (0-100 cm)
+
+Mean Soil Moisture (0-10 cm)
+
+Mean Soil Moisture (0-7 cm)
+
+Mean Soil Moisture (28-100 cm)
+
+Mean Soil Moisture (7-28 cm)
+
+Mean Soil Temperature (0-100 cm)
+
+Mean Soil Temperature (0-7 cm)
+
+Mean Soil Temperature (28-100 cm)
+
+Mean Soil Temperature (7-28 cm)
+
+Settings
+
+Celsius °C
+Temperature Unit
+
+km/h
+Wind Speed Unit
+
+Millimeter
+Precipitation Unit
+
+ISO 8601 (e.g. 2026-08-27)
+Timeformat
+
+Usage licence:
+
+Non-Commercial Commercial Self-Hosted
+
+API Response
+
+Preview:
+
+Chart & URL Python TypeScript Swift Other
+
+Loading...
+
+Download XLSX Download CSV
+
+API URL (Open in new tab, copy this URL into your application, or paste an API URL to restore its settings)
+
+Data Sources
+
+Weather models are initialised and computed multiple times per day. Each run ingests the
+latest observations — radiosondes, weather stations, aircraft, satellites, and ocean buoys —
+and produces a complete forecast out to the model's full horizon (typically 7–16 days). The
+operational Open-Meteo Forecast API stitches the most recent run of each model into a
+seamless, continuously updated time-series. That approach is ideal for end-user applications
+but discards the individual run structure required for research, post-processing, and
+backtesting workflows.
+
+The Single Runs API preserves this structure. Each run is stored and retrievable
+independently, so you can request the exact forecast issued at a specific initialisation
+time. The &run= parameter identifies the run by its UTC initialisation
+datetime, e.g. &run=2025-09-01T00:00.
+
+The &run= parameter specifies the model's initialisation time — the UTC reference time at which the observations are taken — not the time at which the forecast
+output becomes publicly available. After initialisation, the model requires additional computation
+time before results are distributed: typically 4–6 hours for global models (e.g. ECMWF IFS, GFS)
+and 1–3 hours for regional models. This means a run initialised at 00 UTC is generally accessible
+from approximately 04–06 UTC onwards. The exact availability times for each model are listed on
+the model updates page.
+
+Archival runs are available from 2nd of April 2026 for most models. ECMWF IFS HRES at native 9 km resolution is available from March 14, 2024 (IFS Cycle 49R1 hindcasts). From May 12, 2026 06 UTC, runs
+use the updated IFS Cycle 50R1. ECMWF IFS HRES is the highest-quality
+global weather model and the backbone of the Open-Meteo Historical Weather API. Access to individual ECMWF runs is particularly valuable for renewable energy
+forecasting, where the full forecast horizon from a single run drives production scheduling
+and trading decisions.
+
+| Weather Provider | Model | Region | Resolution | Temporal Resolution | Forecast Horizon | Run Frequency | Available From
+
+| ECMWF | IFS HRES 9 km |
+
+🌍
+
+Global
+| 9 km (O1280 grid) | Hourly | 10 days | 4× daily (00, 06, 12, 18 UTC) | 2024-03-14
+
+| Others | - |
+
+🌍
+
+Global & Regional
+| up to 1 km | up to 15 minutely | up to 16 days | - | 2026-04-02
+
+API Endpoint
+
+The API endpoint https://single-runs-api.open-meteo.com/v1/forecast accepts the
+same parameters as the Weather Forecast API, with one additional
+required parameter: run. All weather variables, units, and output formats
+available in the Forecast API are supported. Data is served from a dedicated archive storage
+system, so response times may be higher than the real-time forecast API.
+
+| Parameter | Format | Required | Default | Description
+
+| run | ISO 8601 datetime | Yes | | The initialisation date and time of the model run to retrieve. Must be provided in
+ISO 8601 format without seconds, e.g. &run=2024-06-01T00:00. The time
+must correspond to a valid run cycle for the selected model (e.g. 00, 06, 12, 18 UTC
+for most global models). Runs that are not available will return an error.
+
+All other parameters from the Forecast API — including latitude, longitude, hourly, daily, and others — are also
+accepted unchanged. Please refer to the Weather Forecast API documentation for a complete
+parameter reference.
+
+Open-Meteo
+
+Features
+
+Pricing
+
+About us & Contact
+
+Licence
+
+Terms & Privacy
+
+Weather APIs
+
+Weather Forecast API
+
+Historical Weather API
+
+ECMWF API
+
+GFS & HRRR Forecast API
+
+Météo-France API
+
+DWD ICON API
+
+GEM API
+
+JMA API
+
+Met Norway API
+
+Other APIs
+
+Ensemble API
+
+Climate Change API
+
+Marine Weather API
+
+Air Quality API
+
+Geocoding API
+
+Elevation API
+
+Flood API
+
+External
+
+X
+
+Blog
+
+GitHub
+
+Mastodon
+
+Service status and uptime
+
+Model Updates Overview
+
+Animations
+
+© 2022-2026 Copyright: Open-Meteo.com
