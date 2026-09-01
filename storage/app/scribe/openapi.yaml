@@ -10,6 +10,15 @@ tags:
   -
     name: Endpoints
     description: ''
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: 'Los tokens se obtienen con <code>POST /api/v2/auth/tokens</code> (sesión) o desde el panel de usuario, en <b>Tokens de API</b>, para los dispositivos. Un token de dispositivo lleva sólo las abilities del módulo que necesite: no existe comodín.'
+security:
+  -
+    default: []
 paths:
   /api/v2/auth/tokens:
     post:
@@ -88,7 +97,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'airflight:write'
+                    - 'smartplant:write'
                   items:
                     type: string
                     enum:
@@ -106,7 +115,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-09-24'
+                  example: '2052-09-25'
                   nullable: true
               required:
                 - device_id
@@ -1225,7 +1234,7 @@ paths:
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-01T09:14:32'
+                  example: '2026-09-01T15:17:49'
                   nullable: true
                 temperature:
                   type: number
@@ -1287,7 +1296,7 @@ paths:
                       read_at:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2026-09-01T09:14:32'
+                        example: '2026-09-01T15:17:49'
                         nullable: true
                       battery_voltage:
                         type: number
@@ -1328,11 +1337,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-01T09:14:32'
+                  example: '2026-09-01T15:17:49'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-01T09:14:32'
+                  example: '2026-09-01T15:17:49'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1416,7 +1425,7 @@ paths:
                 light_status:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 light_brightness:
                   type: integer
@@ -1600,11 +1609,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 09:14:32'
+                  example: '2026-09-01 15:17:49'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 09:14:32'
+                  example: '2026-09-01 15:17:49'
                 duration:
                   type: integer
                   description: ''
@@ -1693,11 +1702,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 09:14:32'
+                  example: '2026-09-01 15:17:49'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 09:14:32'
+                  example: '2026-09-01 15:17:49'
                 duration:
                   type: integer
                   description: ''
@@ -1846,7 +1855,7 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 waterpump_enabled:
                   type: boolean
@@ -1856,7 +1865,7 @@ paths:
                 vaporizer_enabled:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
               required:
                 - plant_id
@@ -1898,7 +1907,7 @@ paths:
                       instant:
                         day_name: martes
                         date_human_format: '1 de septiembre de 2026'
-                        time: '09:14'
+                        time: '15:17'
                         day_status: Día
                       temperature: 36.95
                       humidity: 93.22
@@ -1946,7 +1955,7 @@ paths:
                         instant:
                           day_name: martes
                           date_human_format: '1 de septiembre de 2026'
-                          time: '09:14'
+                          time: '15:17'
                           day_status: Día
                         temperature: 36.95
                         humidity: 93.22
@@ -2004,7 +2013,7 @@ paths:
                               example: '1 de septiembre de 2026'
                             time:
                               type: string
-                              example: '09:14'
+                              example: '15:17'
                             day_status:
                               type: string
                               example: Día
@@ -2102,7 +2111,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - humidity
+                    - wind
                   items:
                     type: string
                     enum:
@@ -2159,7 +2168,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - rain
+                    - humidity
                   items:
                     type: string
                     enum:

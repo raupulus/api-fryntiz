@@ -7,7 +7,9 @@ namespace Tests\Feature\Docs;
 use App\Models\User;
 use Database\Seeders\RolesTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\Yaml\Yaml;
 use Tests\TestCase;
 
 /**
@@ -73,5 +75,124 @@ class ScribeDocsTest extends TestCase
 
         $this->actingAs($user)->get('/docs.openapi')->assertOk();
         $this->actingAs($user)->get('/docs.postman')->assertOk();
+    }
+
+    /**
+     * La documentación se genera a mano con `php artisan scribe:generate` y se
+     * commitea; el despliegue no la regenera, porque Scribe está en
+     * `require-dev` y en el servidor no existe.
+     *
+     * Consecuencia: es facilísimo tocar una ruta y subir la documentación
+     * anterior, que es peor que no tener ninguna — quien la lee se fía. Este
+     * test cruza las rutas reales de la API con las que hay documentadas y
+     * falla nombrando las que faltan o las que sobran.
+     */
+    #[Test]
+    public function the_generated_documentation_covers_every_api_route(): void
+    {
+        $documentadas = $this->documentedRoutes();
+
+        $this->assertNotEmpty(
+            $documentadas,
+            'No hay documentación generada en .scribe/endpoints/. Ejecuta: php artisan scribe:generate'
+        );
+
+        $reales = $this->apiRoutes();
+
+        $sinDocumentar = array_values(array_diff($reales, $documentadas));
+        $fantasma = array_values(array_diff($documentadas, $reales));
+
+        $this->assertSame([], $sinDocumentar, sprintf(
+            "%d ruta(s) de la API sin documentar. Ejecuta `php artisan scribe:generate`:\n  - %s\n",
+            count($sinDocumentar),
+            implode("\n  - ", $sinDocumentar)
+        ));
+
+        $this->assertSame([], $fantasma, sprintf(
+            "%d ruta(s) documentadas que ya NO existen. Ejecuta `php artisan scribe:generate`:\n  - %s\n",
+            count($fantasma),
+            implode("\n  - ", $fantasma)
+        ));
+    }
+
+    /**
+     * Rutas de la API que Scribe debería recoger, en formato `MÉTODO uri`.
+     *
+     * @return list<string>
+     */
+    private function apiRoutes(): array
+    {
+        $rutas = [];
+
+        foreach (Route::getRoutes() as $route) {
+            $uri = $route->uri();
+
+            if (! str_starts_with($uri, 'api/v2')) {
+                continue;
+            }
+
+            foreach ($route->methods() as $metodo) {
+                if (in_array($metodo, ['HEAD', 'OPTIONS'], true)) {
+                    continue;
+                }
+
+                $rutas[] = $metodo.' '.self::normaliza($uri);
+            }
+        }
+
+        sort($rutas);
+
+        return array_values(array_unique($rutas));
+    }
+
+    /**
+     * Rutas presentes en los ficheros que genera Scribe.
+     *
+     * Se leen los YAML de `.scribe/endpoints/` en vez de la vista Blade porque
+     * son la fuente de la que sale todo lo demás (la página, el OpenAPI y la
+     * colección de Postman).
+     *
+     * @return list<string>
+     */
+    private function documentedRoutes(): array
+    {
+        $rutas = [];
+
+        foreach (glob(base_path('.scribe/endpoints/*.yaml')) ?: [] as $fichero) {
+            $datos = Yaml::parseFile($fichero);
+
+            foreach ($datos['endpoints'] ?? [] as $endpoint) {
+                $uri = $endpoint['uri'] ?? null;
+
+                if (! is_string($uri) || ! str_starts_with($uri, 'api/v2')) {
+                    continue;
+                }
+
+                foreach ($endpoint['httpMethods'] ?? [] as $metodo) {
+                    if (in_array($metodo, ['HEAD', 'OPTIONS'], true)) {
+                        continue;
+                    }
+
+                    $rutas[] = $metodo.' '.self::normaliza($uri);
+                }
+            }
+        }
+
+        sort($rutas);
+
+        return array_values(array_unique($rutas));
+    }
+
+    /**
+     * Iguala el nombre de los parámetros de ruta.
+     *
+     * Laravel y Scribe no los llaman igual cuando hay binding de modelo: la
+     * ruta declara `{platform:slug}`, el router la expone como `{platform}` y
+     * Scribe la documenta como `{slug}`. Es la misma ruta, así que se compara
+     * la forma y no el nombre.
+     */
+    private static function normaliza(string $uri): string
+    {
+        return preg_replace('/\{[^}]+\}/', '{param}', $uri) ?? $uri;
     }
 }

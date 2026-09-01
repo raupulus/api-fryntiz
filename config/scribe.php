@@ -146,31 +146,39 @@ return [
         'csrf_url' => '/sanctum/csrf-cookie',
     ],
 
-    // How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
+    /*
+     * Autenticación de la API.
+     *
+     * Estaba en `enabled => false` mientras casi toda la API va con Sanctum, y
+     * eso tenía dos efectos feos: la documentación publicada no explicaba en
+     * ningún sitio cómo autenticarse —siendo lo primero que necesita quien la
+     * lee—, y las llamadas de ejemplo salían sin cabecera, así que todo
+     * endpoint protegido quedaba documentado con su 401 como única respuesta.
+     *
+     * `default => false` a propósito: hay endpoints públicos de verdad
+     * (contenidos, plataformas, aviones). Cada endpoint protegido se marca con
+     * `@authenticated` en su controlador.
+     */
     'auth' => [
-        // Set this to true if ANY endpoints in your API use authentication.
-        'enabled' => false,
+        'enabled' => true,
 
-        // Set this to true if your API should be authenticated by default. If so, you must also set `enabled` (above) to true.
-        // You can then use @unauthenticated or @authenticated on individual endpoints to change their status from the default.
         'default' => false,
 
-        // Where is the auth value meant to be sent in a request?
         'in' => AuthIn::BEARER->value,
 
-        // The name of the auth parameter (e.g. token, key, apiKey) or header (e.g. Authorization, Api-Key).
-        'name' => 'key',
+        'name' => 'Authorization',
 
-        // The value of the parameter to be used by Scribe to authenticate response calls.
-        // This will NOT be included in the generated documentation. If empty, Scribe will use a random value.
+        // Token real con el que Scribe llama a los endpoints protegidos al
+        // generar. Sin él, esas llamadas devuelven 401 y la documentación se
+        // queda sin la respuesta buena. NO se publica en la documentación.
         'use_value' => env('SCRIBE_AUTH_KEY'),
 
-        // Placeholder your users will see for the auth parameter in the example requests.
-        // Set this to null if you want Scribe to use a random value as placeholder instead.
-        'placeholder' => '{YOUR_AUTH_KEY}',
+        'placeholder' => '{TU_TOKEN}',
 
-        // Any extra authentication-related info for your users. Markdown and HTML are supported.
-        'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
+        'extra_info' => 'Los tokens se obtienen con <code>POST /api/v2/auth/tokens</code> '.
+            '(sesión) o desde el panel de usuario, en <b>Tokens de API</b>, para los '.
+            'dispositivos. Un token de dispositivo lleva sólo las abilities del módulo '.
+            'que necesite: no existe comodín.',
     ],
 
     // Example requests for each endpoint will be shown in each of these languages.
