@@ -7,7 +7,7 @@
     wire:model a la propiedad `recaptchaToken` del trait HasRecaptchaLogin, sin
     necesidad de interceptar el submit del formulario.
 --}}
-@if ($siteKey = config('services.recaptcha.site_key'))
+@if ($siteKey = config('google.recaptcha.site_key'))
     <input type="hidden" wire:model="recaptchaToken" id="recaptcha-login-token">
 
     <script src="https://www.google.com/recaptcha/api.js?render={{ $siteKey }}"></script>

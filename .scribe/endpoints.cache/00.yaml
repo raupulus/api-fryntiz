@@ -172,7 +172,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-09-23'
+        example: '2052-09-24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -183,7 +183,7 @@ endpoints:
       abilities:
         - 'airflight:write'
       name: 'n'
-      expires_at: '2052-09-23'
+      expires_at: '2052-09-24'
     fileParameters: []
     responses: []
     responseFields: []
@@ -378,7 +378,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -423,7 +423,7 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: false
+      privacity: true
       contactme: false
       attributes:
         - v
@@ -763,7 +763,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operacion exitosa","data":[],"meta":{"total":0,"per_page":25,"current_page":1,"last_page":1,"from":null,"to":null}}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":1,"name":"Borer, Kirlin and Collins","title":"Borer, Kirlin and Collins","slug":"borer-kirlin-and-collins-Kilhs","domain":"lind.com","description":"Repellendus voluptas in enim et.","image":null,"created_at":"2026-08-30T15:45:09.000000Z"},{"id":4,"name":"GreenEnergy Smart Monitor","title":"GreenEnergy Smart Monitor","slug":"greenenergy-smart-monitor","domain":"energy.raupulus.dev","description":"Monitorizaci\u00f3n avanzada de generaci\u00f3n fotovoltaica, bater\u00edas y consumos industriales.","image":null,"created_at":"2026-08-30T15:45:11.000000Z"},{"id":3,"name":"Portal de Telemetr\u00eda IoT","title":"Portal de Telemetr\u00eda IoT","slug":"portal-de-telemetria-iot","domain":"iot.raupulus.dev","description":"Plataforma cloud para supervisi\u00f3n en tiempo real de estaciones meteorol\u00f3gicas y energ\u00eda solar.","image":null,"created_at":"2026-08-30T15:45:11.000000Z"},{"id":2,"name":"Raupulus Tech & Consulting","title":"Raupulus Tech & Consulting","slug":"raupulus-tech-consulting","domain":"tech.raupulus.dev","description":"Soluciones integrales de hardware IoT, telemetr\u00eda y software distribuido para empresas.","image":null,"created_at":"2026-08-30T15:45:11.000000Z"}],"meta":{"total":4,"per_page":25,"current_page":1,"last_page":1,"from":1,"to":4}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -799,14 +799,14 @@ endpoints:
         name: slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      slug: 16
+      slug: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -852,14 +852,14 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -911,14 +911,14 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -964,7 +964,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -982,7 +982,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 1
       slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1029,7 +1029,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1047,7 +1047,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 1
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1094,7 +1094,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1123,7 +1123,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 1
       content_slug: architecto
       order: '564'
     queryParameters: []
@@ -1171,7 +1171,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1189,7 +1189,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 1
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1247,7 +1247,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operacion exitosa","data":[]}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1288,7 +1288,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operacion exitosa","data":{"history":0,"lat":36.7381,"lon":-6.4301,"refresh":5000,"version":"api raupulus v2"}}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":{"history":0,"lat":36.7381,"lon":-6.4301,"refresh":5000,"version":"api raupulus v2"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1975,7 +1975,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-08-30T14:59:03'
+        example: '2026-09-01T09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2108,7 +2108,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-08-30T14:59:03'
+        example: '2026-09-01T09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2139,7 +2139,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-08-30T14:59:03'
+      read_at: '2026-09-01T09:14:32'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2152,7 +2152,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-08-30T14:59:03'
+          read_at: '2026-09-01T09:14:32'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2201,7 +2201,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-08-30T14:59:03'
+        example: '2026-09-01T09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2212,7 +2212,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-08-30T14:59:03'
+        example: '2026-09-01T09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2682,8 +2682,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-08-30T14:59:03'
-      read_at: '2026-08-30T14:59:03'
+      date: '2026-09-01T09:14:32'
+      read_at: '2026-09-01T09:14:32'
       hardware: 'n'
       version: g
       serial_number: z
@@ -2871,7 +2871,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-08-30 14:59:03'
+        example: '2026-09-01 09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2882,7 +2882,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-08-30 14:59:03'
+        example: '2026-09-01 09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2957,8 +2957,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-08-30 14:59:03'
-      end_at: '2026-08-30 14:59:03'
+      start_at: '2026-09-01 09:14:32'
+      end_at: '2026-09-01 09:14:32'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3022,7 +3022,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-08-30 14:59:03'
+        example: '2026-09-01 09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3033,7 +3033,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-08-30 14:59:03'
+        example: '2026-09-01 09:14:32'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3119,8 +3119,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-08-30 14:59:03'
-      end_at: '2026-08-30 14:59:03'
+      start_at: '2026-09-01 09:14:32'
+      end_at: '2026-09-01 09:14:32'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3357,7 +3357,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3368,7 +3368,7 @@ endpoints:
         name: waterpump_enabled
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3379,7 +3379,7 @@ endpoints:
         name: vaporizer_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3394,9 +3394,9 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 4326.41688
       soil_humidity_raw: 4326.41688
-      full_water_tank: true
-      waterpump_enabled: false
-      vaporizer_enabled: true
+      full_water_tank: false
+      waterpump_enabled: true
+      vaporizer_enabled: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -3435,7 +3435,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - light
+          - humidity
         type: 'string[]'
         enumValues:
           - temperature
@@ -3464,14 +3464,14 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - light
+        - humidity
       location_type: indoor
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operacion exitosa","data":[]}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":2,"name":"Estaci\u00f3n Azotea (Azotea)","zone":"Azotea","location_type":"outdoor","location_label":"Exterior","instant":{"day_name":"martes","date_human_format":"1 de septiembre de 2026","time":"09:14","day_status":"D\u00eda"},"temperature":36.95,"humidity":93.22,"pressure":1039.28,"wind":{"average":13.1,"min":6.55,"max":24.57,"direction":"NW","direction_grades":304},"light":{"lux":209.34,"uv_index":10.04,"uva":486.96,"uvb":287.4},"air_quality":{"quality":56.41,"eco2":1111,"tvoc":322},"rain":{"value":2.5,"intensity":14.11},"lightning":{"last_at":"2026-08-30T15:44:10.000000Z","window_minutes":60,"count_in_window":0,"distance":15,"energy":593}}]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -3524,7 +3524,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - temperature
+          - rain
         type: 'string[]'
         enumValues:
           - temperature
@@ -3540,7 +3540,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - temperature
+        - rain
     fileParameters: []
     responses:
       -
@@ -3809,7 +3809,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operacion exitosa","data":[],"meta":{"total":0,"per_page":25,"current_page":1,"last_page":1,"from":null,"to":null}}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[],"meta":{"total":0,"per_page":25,"current_page":1,"last_page":1,"from":null,"to":null}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json

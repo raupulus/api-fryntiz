@@ -19,7 +19,7 @@ use Tests\TestCase;
 
 /**
  * reCAPTCHA v3 en los logins de Filament (Admin y Tenant), mismo patrón que el
- * formulario de contacto: sin `services.recaptcha.secret_key` configurada no
+ * formulario de contacto: sin `google.recaptcha.secret_key` configurada no
  * se aplica ninguna comprobación; configurada, un token inválido corta el
  * login con el mismo error genérico de credenciales.
  */

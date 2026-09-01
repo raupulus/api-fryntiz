@@ -87,28 +87,45 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```bash
 docker compose exec app php artisan key:generate --force
 docker compose exec app php artisan migrate --force
+docker compose exec app php artisan db:seed --class=ProductionSeeder --force
 docker compose exec app php artisan storage:link
 docker compose exec app php artisan config:cache
 docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 docker compose exec app php artisan event:cache
+docker compose exec app php artisan filament:optimize
 ```
 
-### 2.6 Crear primer usuario admin
+Sobre `ProductionSeeder`: es `DatabaseSeeder` **menos** `UsersTableSeeder`, que
+crea `superadmin@domain.es` con la contraseña `123123`. Nunca ejecutes
+`db:seed` a secas en un servidor por ese motivo.
+
+Los catálogos que sí carga (idiomas, roles, tipos de hardware, tipos y estados
+de contenido, categorías, etiquetas, tecnologías, tipos de impresora, sistemas
+de energía…) comprueban uno a uno si la fila ya existe antes de insertarla, y
+ninguno hace `truncate` ni `delete`. **Se puede ejecutar sobre una base de datos
+ya poblada sin tocar los datos existentes**: sólo añade los catálogos nuevos que
+traiga la versión que estás desplegando. Es idempotente, así que repetirlo no
+tiene efecto.
+
+### 2.6 Crear el primer usuario administrador
 
 ```bash
-docker compose exec app php artisan tinker --execute='
-$role = \App\Models\UserRole::firstOrCreate(["name" => "admin"], ["display_name" => "Administrador"]);
-$user = \App\Models\User::create([
-    "name" => "Admin",
-    "email" => "admin@dominio.tld",
-    "password" => bcrypt("CAMBIA_ESTA_PASSWORD"),
-    "email_verified_at" => now(),
-    "user_role_id" => $role->id,
-]);
-echo "User #{$user->id} creado\n";
-'
+docker compose exec app php artisan user:make-admin --superadmin
 ```
+
+Pregunta correo, nombre y contraseña por consola. La contraseña se pide con
+entrada oculta, así que no queda en el historial del shell ni en la lista de
+procesos; para automatizarlo existe `--email`, `--name` y `--password`.
+
+Exige una contraseña de 12 caracteres con letras, mayúsculas y minúsculas,
+números y símbolos, y crea el usuario ya activo y con el correo verificado —sin
+esas dos cosas el panel de Filament no le deja entrar—. Necesita que los roles
+existan, o sea que va **después** del `ProductionSeeder` del paso anterior.
+
+> El recorte de `tinker` que había aquí antes no funcionaba: escribía en
+> `user_role_id`, cuando la columna se llama `role_id`, y creaba el rol sin
+> `slug`, que es NOT NULL UNIQUE.
 
 ### 2.7 Proxy reverso con TLS (host)
 
@@ -143,8 +160,8 @@ sudo apt install -y software-properties-common
 sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 sudo apt install -y \
-    php8.3-fpm php8.3-cli php8.3-pgsql php8.3-redis php8.3-mbstring \
-    php8.3-xml php8.3-zip php8.3-curl php8.3-gd php8.3-bcmath php8.3-intl \
+    php8.4-fpm php8.4-cli php8.4-pgsql php8.4-redis php8.4-mbstring \
+    php8.4-xml php8.4-zip php8.4-curl php8.4-gd php8.4-bcmath php8.4-intl \
     postgresql-16 redis-server nginx supervisor unzip git
 
 curl -sS https://getcomposer.org/installer | php
@@ -179,9 +196,25 @@ sudo -u www-data cp .env.example.production .env
 sudo -u www-data nano .env
 sudo -u www-data php artisan key:generate --force
 sudo -u www-data php artisan migrate --force
+sudo -u www-data php artisan db:seed --class=ProductionSeeder --force
 sudo -u www-data php artisan storage:link
-sudo -u www-data php artisan config:cache route:cache view:cache event:cache
+
+# Un comando por línea: `artisan` sólo ejecuta el primero que recibe, así que
+# `artisan config:cache route:cache view:cache event:cache` cacheaba únicamente
+# la configuración y trataba el resto como argumentos.
+sudo -u www-data php artisan config:cache
+sudo -u www-data php artisan route:cache
+sudo -u www-data php artisan view:cache
+sudo -u www-data php artisan event:cache
+sudo -u www-data php artisan filament:optimize
+
+# Primer administrador (ver la nota del apartado 2.6).
+sudo -u www-data php artisan user:make-admin --superadmin
 ```
+
+Vale aquí lo mismo que en Docker: `db:seed` **a secas nunca** en un servidor
+—crearía `superadmin@domain.es` con la contraseña `123123`—; `ProductionSeeder`
+sí, que es idempotente y no toca los datos existentes.
 
 ### 3.4 Configurar Nginx
 
@@ -250,7 +283,7 @@ sudo -u www-data php artisan test --testsuite=Feature           # opción bare-m
 |---------|----------------|----------|
 | HTTP 500 sin logs | `storage/` sin permisos | `chown -R www-data:www-data storage bootstrap/cache` |
 | HTTP 500 con "key not set" | falta `APP_KEY` | `php artisan key:generate --force` |
-| HTTP 502 Bad Gateway | PHP-FPM caído | `systemctl status php8.3-fpm` |
+| HTTP 502 Bad Gateway | PHP-FPM caído | `systemctl status php8.4-fpm` |
 | Login OK pero panel vacío | `php artisan config:cache` antes de editar `.env` | `php artisan config:clear` |
 
 ---
@@ -306,8 +339,9 @@ Estrategia mínima:
    git checkout v0.x.y
    composer install --no-dev --optimize-autoloader
    php artisan migrate:rollback --step=1   # solo si la migración la rompió
-   php artisan config:cache route:cache
-   sudo systemctl reload php8.3-fpm
+   php artisan config:cache
+   php artisan route:cache
+   sudo systemctl reload php8.4-fpm
    ```
 
 ---

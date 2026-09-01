@@ -95,7 +95,11 @@ docs/info/                # Documentación técnica de cada módulo
 
 - **PHP** >= 8.4
 - **Base de datos:** PostgreSQL >= 17 (**siempre PostgreSQL**, tanto en desarrollo, testing y producción)
-- **Caché y Colas:** Redis >= 7 (recomendado)
+- **Caché y Colas:** opcional. Las plantillas de `.env` vienen con
+  `CACHE_STORE=file`, `SESSION_DRIVER=file` y `QUEUE_CONNECTION=database`, que
+  funcionan sin instalar nada más —la cola necesita las tablas `jobs` y
+  `job_batches`, que crean las migraciones—. Redis >= 7 es una mejora de
+  rendimiento, no un requisito para arrancar
 - **Node.js** >= 20
 - **Gestor de paquetes JS:** `pnpm` (recomendado y predeterminado)
 - **Composer** >= 2.7
@@ -157,21 +161,48 @@ Pasos esenciales de despliegue:
 ```bash
 # 1. Configurar entorno de producción
 cp .env.example.production .env
-# Configurar credenciales reales de PostgreSQL, Redis, URLs y correo en .env
-# y las cuatro variables de la sección "Variables de entorno que hay que
-# rellenar a mano" (TRUSTED_PROXIES, SANCTUM_STATEFUL_DOMAINS, FRONTEND_URLS,
+# Configurar credenciales reales de PostgreSQL, URLs y correo en .env, y las
+# cuatro variables de la sección "Variables de entorno que hay que rellenar a
+# mano" (TRUSTED_PROXIES, SANCTUM_STATEFUL_DOMAINS, FRONTEND_URLS,
 # API_SESSION_DAYS).
+#
+# Sin Redis no hay que tocar nada: la plantilla ya viene con caché y sesión en
+# fichero y la cola en base de datos.
+#
+# Rellenar también RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY: sin ellas los
+# formularios públicos y el login de los paneles se quedan SIN captcha y sin
+# ningún aviso.
 
 # 2. Instalar dependencias optimizadas
 composer install --optimize-autoloader --no-dev
 pnpm install --frozen-lockfile
 pnpm run build
 
-# 3. Migraciones y enlaces de almacenamiento
+# 3. Migraciones, catálogos y enlaces de almacenamiento
 php artisan migrate --force
+
+#    ProductionSeeder = DatabaseSeeder MENOS el seeder de usuarios (que crea
+#    superadmin@domain.es con la contraseña 123123). Nunca `db:seed` a secas en
+#    un servidor. Sus catálogos comprueban si la fila existe antes de insertar y
+#    ninguno borra nada: es idempotente y no toca los datos ya presentes.
+php artisan db:seed --class=ProductionSeeder --force
+
 php artisan storage:link
 
+#    Primer administrador, sólo en el primer despliegue.
+php artisan user:make-admin --superadmin
+
 # 4. Limpieza y compilación de cachés de producción
+#
+#    OJO: `project:clear` REGENERA LA APP_KEY salvo que se le pase `--no-key`.
+#    Es deliberado en este proyecto —cierra todas las sesiones abiertas y obliga
+#    a los clientes a recargar—, pero tiene una consecuencia que no se ve venir:
+#    el 2FA de Fortify guarda `two_factor_secret` cifrado con esa clave, así que
+#    quien lo tuviera activo se queda sin poder completar el segundo factor y hay
+#    que volver a dárselo de alta. Los tokens de API de Sanctum NO se ven
+#    afectados: se guardan hasheados, no cifrados.
+#
+#    Para desplegar sin tocar la clave:  php artisan project:clear --production --no-key
 php artisan project:clear --production
 
 # 5. Supervisor y Cron  (los dos son obligatorios, no opcionales)
@@ -215,10 +246,14 @@ La API tiene una única versión:
 
 - **V2** (`/api/v2/...`): Versión actual y única, FULL REST, con JsonResources, validaciones mejoradas y mayor seguridad. La V1 legacy fue eliminada por completo.
 
-La documentación interactiva se genera con Scribe (ruta `/docs`). El contrato
-detallado y copiable de cada módulo (endpoints, auth, parámetros, forma de la
-respuesta) vive en [`docs/info/api/v2/`](docs/info/api/v2/), un archivo por
-módulo.
+La documentación interactiva se genera con Scribe y se sirve en `/docs`, detrás
+de login. **Se genera en local y se sube ya compilada**: Scribe es una
+dependencia de desarrollo y en el servidor no se instala. Procedimiento completo
+en [`docs/info/scribe.md`](docs/info/scribe.md).
+
+El contrato detallado y copiable de cada módulo (endpoints, auth, parámetros,
+forma de la respuesta) vive en [`docs/info/api/v2/`](docs/info/api/v2/), un
+archivo por módulo.
 
 ### Autenticación API
 
@@ -275,7 +310,9 @@ php artisan test --compact                # Ejecutar tests PHPUnit
 | Catálogo de comandos Artisan | [`docs/info/commands.md`](docs/info/commands.md) |
 | Despliegue en VPS | [`docs/deploys/deploy-vps.md`](docs/deploys/deploy-vps.md) |
 | Integración AEMET | [`docs/info/apis/aemet.md`](docs/info/apis/aemet.md) |
-| WebSockets (propuesta, no implementado) | [`docs/info/websockets.md`](docs/info/websockets.md) |
+| WebSockets — cómo funciona (implementado, apagado de fábrica) | [`docs/info/websockets.md`](docs/info/websockets.md) |
+| WebSockets — puesta en marcha en el VPS | [`docs/deploys/websockets-reverb.md`](docs/deploys/websockets-reverb.md) |
+| Documentación de la API (Scribe) | [`docs/info/scribe.md`](docs/info/scribe.md) |
 | Citación académica | [`CITATION.txt`](CITATION.txt) |
 
 ## Convenciones

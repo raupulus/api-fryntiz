@@ -26,7 +26,7 @@
             </style>
 
     <script>
-        var tryItOutBaseUrl = "http://localhost:8000";
+        var tryItOutBaseUrl = "https://api.raupulus.dev";
         var useCsrf = Boolean();
         var csrfUrl = "/sanctum/csrf-cookie";
     </script>
@@ -223,7 +223,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: August 30, 2026</li>
+        <li>Last updated: September 1, 2026</li>
     </ul>
 </div>
 
@@ -232,7 +232,7 @@
     <div class="content">
         <h1 id="introduction">Introduction</h1>
 <aside>
-    <strong>Base URL</strong>: <code>http://localhost:8000</code>
+    <strong>Base URL</strong>: <code>https://api.raupulus.dev</code>
 </aside>
 <pre><code>This documentation aims to provide all the information you need to work with our API.
 
@@ -260,7 +260,7 @@ recurso, y la cabecera <code>Location</code> apunta a la colección de tokens.</
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/auth/tokens" \
+    "https://api.raupulus.dev/api/v2/auth/tokens" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -272,7 +272,7 @@ recurso, y la cabecera <code>Location</code> apunta a la colección de tokens.</
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/auth/tokens"
+    "https://api.raupulus.dev/api/v2/auth/tokens"
 );
 
 const headers = {
@@ -406,14 +406,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/auth/tokens" \
+    --get "https://api.raupulus.dev/api/v2/auth/tokens" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/auth/tokens"
+    "https://api.raupulus.dev/api/v2/auth/tokens"
 );
 
 const headers = {
@@ -537,7 +537,7 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/auth/tokens/devices" \
+    "https://api.raupulus.dev/api/v2/auth/tokens/devices" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -546,14 +546,14 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
         \"airflight:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-09-23\"
+    \"expires_at\": \"2052-09-24\"
 }"
 </code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/auth/tokens/devices"
+    "https://api.raupulus.dev/api/v2/auth/tokens/devices"
 );
 
 const headers = {
@@ -567,7 +567,7 @@ let body = {
         "airflight:write"
     ],
     "name": "n",
-    "expires_at": "2052-09-23"
+    "expires_at": "2052-09-24"
 };
 
 fetch(url, {
@@ -699,10 +699,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-09-23"
+               value="2052-09-24"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-23</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-24</code></p>
         </div>
         </form>
 
@@ -719,14 +719,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/v2/auth/tokens/current" \
+    "https://api.raupulus.dev/api/v2/auth/tokens/current" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/auth/tokens/current"
+    "https://api.raupulus.dev/api/v2/auth/tokens/current"
 );
 
 const headers = {
@@ -830,14 +830,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/v2/auth/tokens/architecto" \
+    "https://api.raupulus.dev/api/v2/auth/tokens/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/auth/tokens/architecto"
+    "https://api.raupulus.dev/api/v2/auth/tokens/architecto"
 );
 
 const headers = {
@@ -954,14 +954,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/users/me" \
+    --get "https://api.raupulus.dev/api/v2/users/me" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/users/me"
+    "https://api.raupulus.dev/api/v2/users/me"
 );
 
 const headers = {
@@ -1083,7 +1083,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/contact-messages" \
+    "https://api.raupulus.dev/api/v2/contact-messages" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1091,7 +1091,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": false,
+    \"privacity\": true,
     \"contactme\": false,
     \"attributes\": [
         \"v\"
@@ -1103,7 +1103,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/contact-messages"
+    "https://api.raupulus.dev/api/v2/contact-messages"
 );
 
 const headers = {
@@ -1116,7 +1116,7 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": false,
+    "privacity": true,
     "contactme": false,
     "attributes": [
         "v"
@@ -1274,7 +1274,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -1339,7 +1339,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/newsletter/subscriptions" \
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1352,7 +1352,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/newsletter/subscriptions"
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions"
 );
 
 const headers = {
@@ -1499,14 +1499,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/newsletter/subscriptions/stats" \
+    --get "https://api.raupulus.dev/api/v2/newsletter/subscriptions/stats" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/newsletter/subscriptions/stats"
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/stats"
 );
 
 const headers = {
@@ -1630,7 +1630,7 @@ comprobar si una dirección está en la lista (auditoría A6).</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/newsletter/subscriptions/verification" \
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/verification" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1642,7 +1642,7 @@ comprobar si una dirección está en la lista (auditoría A6).</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/newsletter/subscriptions/verification"
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/verification"
 );
 
 const headers = {
@@ -1776,14 +1776,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/newsletter/subscriptions/architecto/confirmation" \
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/architecto/confirmation" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/newsletter/subscriptions/architecto/confirmation"
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/architecto/confirmation"
 );
 
 const headers = {
@@ -1903,14 +1903,14 @@ confunde a algunos clientes.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/newsletter/subscriptions/architecto/unsubscription" \
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/architecto/unsubscription" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/newsletter/subscriptions/architecto/unsubscription"
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/architecto/unsubscription"
 );
 
 const headers = {
@@ -2027,14 +2027,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/v2/newsletter/subscriptions/architecto" \
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/newsletter/subscriptions/architecto"
+    "https://api.raupulus.dev/api/v2/newsletter/subscriptions/architecto"
 );
 
 const headers = {
@@ -2151,14 +2151,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms" \
+    --get "https://api.raupulus.dev/api/v2/platforms" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms"
+    "https://api.raupulus.dev/api/v2/platforms"
 );
 
 const headers = {
@@ -2190,15 +2190,56 @@ vary: Accept-Language, Origin
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: [],
+    &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;Borer, Kirlin and Collins&quot;,
+            &quot;title&quot;: &quot;Borer, Kirlin and Collins&quot;,
+            &quot;slug&quot;: &quot;borer-kirlin-and-collins-Kilhs&quot;,
+            &quot;domain&quot;: &quot;lind.com&quot;,
+            &quot;description&quot;: &quot;Repellendus voluptas in enim et.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-08-30T15:45:09.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 4,
+            &quot;name&quot;: &quot;GreenEnergy Smart Monitor&quot;,
+            &quot;title&quot;: &quot;GreenEnergy Smart Monitor&quot;,
+            &quot;slug&quot;: &quot;greenenergy-smart-monitor&quot;,
+            &quot;domain&quot;: &quot;energy.raupulus.dev&quot;,
+            &quot;description&quot;: &quot;Monitorizaci&oacute;n avanzada de generaci&oacute;n fotovoltaica, bater&iacute;as y consumos industriales.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-08-30T15:45:11.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;name&quot;: &quot;Portal de Telemetr&iacute;a IoT&quot;,
+            &quot;title&quot;: &quot;Portal de Telemetr&iacute;a IoT&quot;,
+            &quot;slug&quot;: &quot;portal-de-telemetria-iot&quot;,
+            &quot;domain&quot;: &quot;iot.raupulus.dev&quot;,
+            &quot;description&quot;: &quot;Plataforma cloud para supervisi&oacute;n en tiempo real de estaciones meteorol&oacute;gicas y energ&iacute;a solar.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-08-30T15:45:11.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: &quot;Raupulus Tech &amp; Consulting&quot;,
+            &quot;title&quot;: &quot;Raupulus Tech &amp; Consulting&quot;,
+            &quot;slug&quot;: &quot;raupulus-tech-consulting&quot;,
+            &quot;domain&quot;: &quot;tech.raupulus.dev&quot;,
+            &quot;description&quot;: &quot;Soluciones integrales de hardware IoT, telemetr&iacute;a y software distribuido para empresas.&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-08-30T15:45:11.000000Z&quot;
+        }
+    ],
     &quot;meta&quot;: {
-        &quot;total&quot;: 0,
+        &quot;total&quot;: 4,
         &quot;per_page&quot;: 25,
         &quot;current_page&quot;: 1,
         &quot;last_page&quot;: 1,
-        &quot;from&quot;: null,
-        &quot;to&quot;: null
+        &quot;from&quot;: 1,
+        &quot;to&quot;: 4
     }
 }</code>
  </pre>
@@ -2289,14 +2330,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16"
+    "https://api.raupulus.dev/api/v2/platforms/1"
 );
 
 const headers = {
@@ -2411,10 +2452,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="slug"                data-endpoint="GETapi-v2-platforms--slug-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -2431,14 +2472,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16/categories" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1/categories" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16/categories"
+    "https://api.raupulus.dev/api/v2/platforms/1/categories"
 );
 
 const headers = {
@@ -2553,10 +2594,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--categories"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -2577,14 +2618,14 @@ eran dos rutas para dos filtros de la misma colección.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16/contents" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1/contents" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16/contents"
+    "https://api.raupulus.dev/api/v2/platforms/1/contents"
 );
 
 const headers = {
@@ -2699,10 +2740,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -2719,14 +2760,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16/contents/architecto" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16/contents/architecto"
+    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto"
 );
 
 const headers = {
@@ -2841,10 +2882,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--slug-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
@@ -2873,14 +2914,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16/contents/architecto/pages" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16/contents/architecto/pages"
+    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages"
 );
 
 const headers = {
@@ -2995,10 +3036,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3027,14 +3068,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16/contents/architecto/pages/564" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages/564" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16/contents/architecto/pages/564"
+    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages/564"
 );
 
 const headers = {
@@ -3149,10 +3190,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3193,14 +3234,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/platforms/16/contents/architecto/related" \
+    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/related" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/platforms/16/contents/architecto/related"
+    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/related"
 );
 
 const headers = {
@@ -3315,10 +3356,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--related"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3351,14 +3392,14 @@ recurso, es la misma colección sin la ventana de actividad reciente.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/airflight/aircrafts" \
+    --get "https://api.raupulus.dev/api/v2/airflight/aircrafts" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/airflight/aircrafts"
+    "https://api.raupulus.dev/api/v2/airflight/aircrafts"
 );
 
 const headers = {
@@ -3390,7 +3431,7 @@ vary: Accept-Language, Origin
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
     &quot;data&quot;: []
 }</code>
  </pre>
@@ -3481,14 +3522,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/airflight/receiver" \
+    --get "https://api.raupulus.dev/api/v2/airflight/receiver" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/airflight/receiver"
+    "https://api.raupulus.dev/api/v2/airflight/receiver"
 );
 
 const headers = {
@@ -3520,7 +3561,7 @@ vary: Accept-Language, Origin
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
     &quot;data&quot;: {
         &quot;history&quot;: 0,
         &quot;lat&quot;: 36.7381,
@@ -3617,7 +3658,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/airflight/aircrafts" \
+    "https://api.raupulus.dev/api/v2/airflight/aircrafts" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -3639,7 +3680,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/airflight/aircrafts"
+    "https://api.raupulus.dev/api/v2/airflight/aircrafts"
 );
 
 const headers = {
@@ -3903,7 +3944,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/airflight/aircrafts/batch" \
+    "https://api.raupulus.dev/api/v2/airflight/aircrafts/batch" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -3929,7 +3970,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/airflight/aircrafts/batch"
+    "https://api.raupulus.dev/api/v2/airflight/aircrafts/batch"
 );
 
 const headers = {
@@ -4209,14 +4250,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/hardware/devices" \
+    --get "https://api.raupulus.dev/api/v2/hardware/devices" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/hardware/devices"
+    "https://api.raupulus.dev/api/v2/hardware/devices"
 );
 
 const headers = {
@@ -4338,14 +4379,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/hardware/devices/architecto" \
+    --get "https://api.raupulus.dev/api/v2/hardware/devices/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/hardware/devices/architecto"
+    "https://api.raupulus.dev/api/v2/hardware/devices/architecto"
 );
 
 const headers = {
@@ -4481,7 +4522,7 @@ sobrescribiendo el mismo. Repetir la petición deja el sistema igual.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost:8000/api/v2/hardware/devices/architecto/status" \
+    "https://api.raupulus.dev/api/v2/hardware/devices/architecto/status" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -4500,7 +4541,7 @@ sobrescribiendo el mismo. Repetir la petición deja el sistema igual.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/hardware/devices/architecto/status"
+    "https://api.raupulus.dev/api/v2/hardware/devices/architecto/status"
 );
 
 const headers = {
@@ -4754,13 +4795,13 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/hardware/energy-readings" \
+    "https://api.raupulus.dev/api/v2/hardware/energy-readings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2026-08-30T14:59:03\",
+    \"read_at\": \"2026-09-01T09:14:32\",
     \"temperature\": 4326.41688,
     \"battery_voltage\": 77,
     \"battery_percentage\": 15,
@@ -4773,7 +4814,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
             \"energy_wh\": 4326.41688,
             \"temperature\": 4326.41688,
             \"fan\": 77,
-            \"read_at\": \"2026-08-30T14:59:03\",
+            \"read_at\": \"2026-09-01T09:14:32\",
             \"battery_voltage\": 8,
             \"battery_percentage\": 8
         }
@@ -4784,7 +4825,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/hardware/energy-readings"
+    "https://api.raupulus.dev/api/v2/hardware/energy-readings"
 );
 
 const headers = {
@@ -4795,7 +4836,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2026-08-30T14:59:03",
+    "read_at": "2026-09-01T09:14:32",
     "temperature": 4326.41688,
     "battery_voltage": 77,
     "battery_percentage": 15,
@@ -4808,7 +4849,7 @@ let body = {
             "energy_wh": 4326.41688,
             "temperature": 4326.41688,
             "fan": 77,
-            "read_at": "2026-08-30T14:59:03",
+            "read_at": "2026-09-01T09:14:32",
             "battery_voltage": 8,
             "battery_percentage": 8
         }
@@ -4928,10 +4969,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-energy-readings"
-               value="2026-08-30T14:59:03"
+               value="2026-09-01T09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-08-30T14:59:03</code></p>
+<p>Must be a valid date. Example: <code>2026-09-01T09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
@@ -5070,10 +5111,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="readings.0.read_at"                data-endpoint="POSTapi-v2-hardware-energy-readings"
-               value="2026-08-30T14:59:03"
+               value="2026-09-01T09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-08-30T14:59:03</code></p>
+<p>Must be a valid date. Example: <code>2026-09-01T09:14:32</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
@@ -5116,13 +5157,13 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/hardware/solar-readings" \
+    "https://api.raupulus.dev/api/v2/hardware/solar-readings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
-    \"date\": \"2026-08-30T14:59:03\",
-    \"read_at\": \"2026-08-30T14:59:03\",
+    \"date\": \"2026-09-01T09:14:32\",
+    \"read_at\": \"2026-09-01T09:14:32\",
     \"hardware\": \"n\",
     \"version\": \"g\",
     \"serial_number\": \"z\",
@@ -5171,7 +5212,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/hardware/solar-readings"
+    "https://api.raupulus.dev/api/v2/hardware/solar-readings"
 );
 
 const headers = {
@@ -5181,8 +5222,8 @@ const headers = {
 
 let body = {
     "hardware_device_id": 16,
-    "date": "2026-08-30T14:59:03",
-    "read_at": "2026-08-30T14:59:03",
+    "date": "2026-09-01T09:14:32",
+    "read_at": "2026-09-01T09:14:32",
     "hardware": "n",
     "version": "g",
     "serial_number": "z",
@@ -5328,10 +5369,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v2-hardware-solar-readings"
-               value="2026-08-30T14:59:03"
+               value="2026-09-01T09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-08-30T14:59:03</code></p>
+<p>Must be a valid date. Example: <code>2026-09-01T09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
@@ -5340,10 +5381,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-solar-readings"
-               value="2026-08-30T14:59:03"
+               value="2026-09-01T09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-08-30T14:59:03</code></p>
+<p>Must be a valid date. Example: <code>2026-09-01T09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware</code></b>&nbsp;&nbsp;
@@ -5876,14 +5917,14 @@ quiera pintarlos se meta en la base de datos por su cuenta.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/keycounter/keyboard-sessions" \
+    --get "https://api.raupulus.dev/api/v2/keycounter/keyboard-sessions" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/keycounter/keyboard-sessions"
+    "https://api.raupulus.dev/api/v2/keycounter/keyboard-sessions"
 );
 
 const headers = {
@@ -6007,14 +6048,14 @@ quiera pintarlos se meta en la base de datos por su cuenta.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/keycounter/mouse-sessions" \
+    --get "https://api.raupulus.dev/api/v2/keycounter/mouse-sessions" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/keycounter/mouse-sessions"
+    "https://api.raupulus.dev/api/v2/keycounter/mouse-sessions"
 );
 
 const headers = {
@@ -6136,14 +6177,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/keycounter/keyboard-sessions" \
+    "https://api.raupulus.dev/api/v2/keycounter/keyboard-sessions" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-08-30 14:59:03\",
-    \"end_at\": \"2026-08-30 14:59:03\",
+    \"start_at\": \"2026-09-01 09:14:32\",
+    \"end_at\": \"2026-09-01 09:14:32\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6156,7 +6197,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/keycounter/keyboard-sessions"
+    "https://api.raupulus.dev/api/v2/keycounter/keyboard-sessions"
 );
 
 const headers = {
@@ -6167,8 +6208,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-08-30 14:59:03",
-    "end_at": "2026-08-30 14:59:03",
+    "start_at": "2026-09-01 09:14:32",
+    "end_at": "2026-09-01 09:14:32",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6290,10 +6331,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-08-30 14:59:03"
+               value="2026-09-01 09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-08-30 14:59:03</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6302,10 +6343,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-08-30 14:59:03"
+               value="2026-09-01 09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-08-30 14:59:03</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6394,14 +6435,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/keycounter/mouse-sessions" \
+    "https://api.raupulus.dev/api/v2/keycounter/mouse-sessions" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-08-30 14:59:03\",
-    \"end_at\": \"2026-08-30 14:59:03\",
+    \"start_at\": \"2026-09-01 09:14:32\",
+    \"end_at\": \"2026-09-01 09:14:32\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -6415,7 +6456,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/keycounter/mouse-sessions"
+    "https://api.raupulus.dev/api/v2/keycounter/mouse-sessions"
 );
 
 const headers = {
@@ -6426,8 +6467,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-08-30 14:59:03",
-    "end_at": "2026-08-30 14:59:03",
+    "start_at": "2026-09-01 09:14:32",
+    "end_at": "2026-09-01 09:14:32",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -6550,10 +6591,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-08-30 14:59:03"
+               value="2026-09-01 09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-08-30 14:59:03</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6562,10 +6603,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-08-30 14:59:03"
+               value="2026-09-01 09:14:32"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-08-30 14:59:03</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 09:14:32</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6666,14 +6707,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/smartplant/plants" \
+    --get "https://api.raupulus.dev/api/v2/smartplant/plants" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/smartplant/plants"
+    "https://api.raupulus.dev/api/v2/smartplant/plants"
 );
 
 const headers = {
@@ -6795,14 +6836,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/smartplant/plants/architecto/readings" \
+    --get "https://api.raupulus.dev/api/v2/smartplant/plants/architecto/readings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/smartplant/plants/architecto/readings"
+    "https://api.raupulus.dev/api/v2/smartplant/plants/architecto/readings"
 );
 
 const headers = {
@@ -6937,7 +6978,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/smartplant/plants/architecto/readings" \
+    "https://api.raupulus.dev/api/v2/smartplant/plants/architecto/readings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -6949,16 +6990,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 4326.41688,
     \"soil_humidity_raw\": 4326.41688,
-    \"full_water_tank\": true,
-    \"waterpump_enabled\": false,
-    \"vaporizer_enabled\": true
+    \"full_water_tank\": false,
+    \"waterpump_enabled\": true,
+    \"vaporizer_enabled\": false
 }"
 </code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/smartplant/plants/architecto/readings"
+    "https://api.raupulus.dev/api/v2/smartplant/plants/architecto/readings"
 );
 
 const headers = {
@@ -6975,9 +7016,9 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 4326.41688,
     "soil_humidity_raw": 4326.41688,
-    "full_water_tank": true,
-    "waterpump_enabled": false,
-    "vaporizer_enabled": true
+    "full_water_tank": false,
+    "waterpump_enabled": true,
+    "vaporizer_enabled": false
 };
 
 fetch(url, {
@@ -7191,7 +7232,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -7213,7 +7254,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>vaporizer_enabled</code></b>&nbsp;&nbsp;
@@ -7235,7 +7276,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -7253,12 +7294,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/weather-stations" \
+    --get "https://api.raupulus.dev/api/v2/weather-stations" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"light\"
+        \"humidity\"
     ],
     \"location_type\": \"indoor\"
 }"
@@ -7267,7 +7308,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/weather-stations"
+    "https://api.raupulus.dev/api/v2/weather-stations"
 );
 
 const headers = {
@@ -7277,7 +7318,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "light"
+        "humidity"
     ],
     "location_type": "indoor"
 };
@@ -7306,8 +7347,54 @@ vary: Accept-Language, Origin
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Operacion exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: &quot;Estaci&oacute;n Azotea (Azotea)&quot;,
+            &quot;zone&quot;: &quot;Azotea&quot;,
+            &quot;location_type&quot;: &quot;outdoor&quot;,
+            &quot;location_label&quot;: &quot;Exterior&quot;,
+            &quot;instant&quot;: {
+                &quot;day_name&quot;: &quot;martes&quot;,
+                &quot;date_human_format&quot;: &quot;1 de septiembre de 2026&quot;,
+                &quot;time&quot;: &quot;09:14&quot;,
+                &quot;day_status&quot;: &quot;D&iacute;a&quot;
+            },
+            &quot;temperature&quot;: 36.95,
+            &quot;humidity&quot;: 93.22,
+            &quot;pressure&quot;: 1039.28,
+            &quot;wind&quot;: {
+                &quot;average&quot;: 13.1,
+                &quot;min&quot;: 6.55,
+                &quot;max&quot;: 24.57,
+                &quot;direction&quot;: &quot;NW&quot;,
+                &quot;direction_grades&quot;: 304
+            },
+            &quot;light&quot;: {
+                &quot;lux&quot;: 209.34,
+                &quot;uv_index&quot;: 10.04,
+                &quot;uva&quot;: 486.96,
+                &quot;uvb&quot;: 287.4
+            },
+            &quot;air_quality&quot;: {
+                &quot;quality&quot;: 56.41,
+                &quot;eco2&quot;: 1111,
+                &quot;tvoc&quot;: 322
+            },
+            &quot;rain&quot;: {
+                &quot;value&quot;: 2.5,
+                &quot;intensity&quot;: 14.11
+            },
+            &quot;lightning&quot;: {
+                &quot;last_at&quot;: &quot;2026-08-30T15:44:10.000000Z&quot;,
+                &quot;window_minutes&quot;: 60,
+                &quot;count_in_window&quot;: 0,
+                &quot;distance&quot;: 15,
+                &quot;energy&quot;: 593
+            }
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7428,12 +7515,12 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/weather-stations/564" \
+    --get "https://api.raupulus.dev/api/v2/weather-stations/564" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"temperature\"
+        \"rain\"
     ]
 }"
 </code></pre></div>
@@ -7441,7 +7528,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/weather-stations/564"
+    "https://api.raupulus.dev/api/v2/weather-stations/564"
 );
 
 const headers = {
@@ -7451,7 +7538,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "temperature"
+        "rain"
     ]
 };
 
@@ -7602,14 +7689,14 @@ un servidor caído.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings" \
+    --get "https://api.raupulus.dev/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings"
+    "https://api.raupulus.dev/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings"
 );
 
 const headers = {
@@ -7758,7 +7845,7 @@ coste de radio.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/weather-stations/564/readings" \
+    "https://api.raupulus.dev/api/v2/weather-stations/564/readings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -7772,7 +7859,7 @@ coste de radio.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/weather-stations/564/readings"
+    "https://api.raupulus.dev/api/v2/weather-stations/564/readings"
 );
 
 const headers = {
@@ -7923,7 +8010,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings" \
+    "https://api.raupulus.dev/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -7937,7 +8024,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings"
+    "https://api.raupulus.dev/api/v2/weather-stations/564/temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings"
 );
 
 const headers = {
@@ -8100,14 +8187,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/curricula" \
+    --get "https://api.raupulus.dev/api/v2/curricula" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/curricula"
+    "https://api.raupulus.dev/api/v2/curricula"
 );
 
 const headers = {
@@ -8139,7 +8226,7 @@ vary: Accept-Language, Origin
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Operacion exitosa&quot;,
+    &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
     &quot;data&quot;: [],
     &quot;meta&quot;: {
         &quot;total&quot;: 0,
@@ -8239,14 +8326,14 @@ alguien pega el enlace en cualquier sitio.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/curricula/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D" \
+    --get "https://api.raupulus.dev/api/v2/curricula/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/curricula/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D"
+    "https://api.raupulus.dev/api/v2/curricula/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D"
 );
 
 const headers = {
@@ -8381,14 +8468,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/curricula/architecto" \
+    --get "https://api.raupulus.dev/api/v2/curricula/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/curricula/architecto"
+    "https://api.raupulus.dev/api/v2/curricula/architecto"
 );
 
 const headers = {
@@ -8523,14 +8610,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/curricula/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs" \
+    --get "https://api.raupulus.dev/api/v2/curricula/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/curricula/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs"
+    "https://api.raupulus.dev/api/v2/curricula/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs"
 );
 
 const headers = {
@@ -8677,14 +8764,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v2/|{+-0p" \
+    --get "https://api.raupulus.dev/api/v2/|{+-0p" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v2/|{+-0p"
+    "https://api.raupulus.dev/api/v2/|{+-0p"
 );
 
 const headers = {

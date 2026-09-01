@@ -30,7 +30,7 @@ class ContactSendRequest extends BaseFormRequest
             // Campos libres que quiera añadir cada web (teléfono, empresa…).
             'attributes' => ['sometimes', 'array', 'max:20'],
             'attributes.*' => ['nullable', 'string', 'max:255'],
-            'g-recaptcha-response' => [! empty(config('services.recaptcha.secret_key')) ? 'required' : 'nullable', 'string'],
+            'g-recaptcha-response' => [! empty(config('google.recaptcha.secret_key')) ? 'required' : 'nullable', 'string'],
         ];
     }
 

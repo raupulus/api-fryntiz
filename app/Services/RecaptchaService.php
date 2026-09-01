@@ -23,7 +23,7 @@ class RecaptchaService
      */
     public function isConfigured(): bool
     {
-        return ! empty(config('services.recaptcha.secret_key'));
+        return ! empty(config('google.recaptcha.secret_key'));
     }
 
     /**
@@ -35,7 +35,7 @@ class RecaptchaService
      */
     public function verify(?string $token, ?string $ip = null): CaptchaResult
     {
-        $secret = config('services.recaptcha.secret_key');
+        $secret = config('google.recaptcha.secret_key');
 
         if (empty($secret)) {
             return new CaptchaResult(valid: true, score: null, configured: false);

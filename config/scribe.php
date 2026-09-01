@@ -11,6 +11,29 @@ use function Knuckles\Scribe\Config\removeStrategies;
 
 // Only the most common configs are shown. See the https://scribe.knuckles.wtf/laravel/reference/config for all.
 
+/*
+|--------------------------------------------------------------------------
+| Sin el paquete instalado, esta configuración se reduce al mínimo
+|--------------------------------------------------------------------------
+|
+| Scribe es una dependencia de desarrollo, y el servidor instala con
+| `composer install --no-dev`. Laravel carga TODOS los ficheros de `config/`,
+| así que sin esa comprobación el fichero reventaba con un error fatal en cuanto
+| llegaba a `Defaults::` o a `AuthIn::` —clases que ya no existen—, y con él
+| reventaba `php artisan config:cache`, es decir, el despliegue entero.
+|
+| Lo que sí sigue haciendo falta en el servidor es `base_url`, que usan las
+| rutas de documentación de `routes/web.php`. Todo lo demás sólo tiene sentido
+| al generar la documentación, que se hace en local.
+|
+*/
+if (! class_exists(Defaults::class)) {
+    return [
+        'title' => config('app.name').' API Documentation',
+        'base_url' => env('SCRIBE_BASE_URL', 'https://api.raupulus.dev'),
+    ];
+}
+
 return [
     // The HTML <title> for the generated documentation.
     'title' => config('app.name').' API Documentation',
@@ -28,7 +51,17 @@ return [
 
     // The base URL displayed in the docs.
     // If you're using `laravel` type, you can set this to a dynamic string, like '{{ config("app.tenant_url") }}' to get a dynamic base URL.
-    'base_url' => config('app.url'),
+    /*
+     * URL que aparece en la documentación y en el botón «Try it out».
+     *
+     * NO sale de `config('app.url')` a propósito. La documentación se genera en
+     * local y se sube ya compilada al repositorio (ver `docs/info/scribe.md`),
+     * así que con `app.url` la página publicada acababa anunciando
+     * `http://localhost:8000` como URL de la API. Con una variable propia se
+     * genera desde local apuntando ya al dominio público, sin tener que tocar
+     * `APP_URL` antes de generar.
+     */
+    'base_url' => env('SCRIBE_BASE_URL', 'https://api.raupulus.dev'),
 
     // Routes to include in the docs
     'routes' => [
@@ -70,7 +103,16 @@ return [
 
     'laravel' => [
         // Whether to automatically create a docs route for you to view your generated docs. You can still set up routing manually.
-        'add_routes' => true,
+        /*
+         * Las rutas de la documentación las registra la propia aplicación en
+         * `routes/web.php`, no Scribe.
+         *
+         * Scribe es una dependencia de desarrollo: en el servidor se instala con
+         * `composer install --no-dev`, o sea que su ServiceProvider no existe y
+         * la ruta que registraba aquí desaparecía. La documentación quedaba en
+         * 404 justo donde tiene que verse.
+         */
+        'add_routes' => false,
 
         // URL path to use for the docs endpoint (if `add_routes` is true).
         // By default, `/docs` opens the HTML page, `/docs.postman` opens the Postman collection, and `/docs.openapi` the OpenAPI spec.

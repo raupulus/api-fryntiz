@@ -131,7 +131,7 @@ class ContentResource extends Resource
                             YoutubeVideoField::make('youtube_video_id')
                                 ->label('Vídeo de YouTube')
                                 ->helperText('Busca un vídeo en el canal de la plataforma seleccionada y selecciónalo. La URL se genera automáticamente al guardar.')
-                                ->apiKey(config('google.google_api_key'))
+                                ->apiKey(config('google.api_key'))
                                 ->channels(fn () => Platform::query()
                                     ->whereNotNull('youtube_channel_id')
                                     ->pluck('youtube_channel_id', 'id')

@@ -27,9 +27,49 @@ Route::get('/about', function () {
     return redirect()->route('home');
 })->name('about');
 
-// La ruta /docs la registra Scribe (config/scribe.php: laravel.docs_url),
-// protegida con el middleware 'auth' del guard web compartido por los
-// paneles Filament.
+/*
+|--------------------------------------------------------------------------
+| Documentación de la API (Scribe)
+|--------------------------------------------------------------------------
+|
+| Las registra la aplicación, no Scribe (`laravel.add_routes => false`).
+|
+| Scribe es una dependencia de desarrollo y el servidor instala con
+| `composer install --no-dev`: su ServiceProvider no llega a producción, así que
+| la ruta que registraba él se quedaba en 404 justo donde hace falta. Lo que sí
+| viaja en el repositorio es el resultado ya generado —la vista
+| `resources/views/scribe/index.blade.php`, los assets de `public/vendor/scribe`
+| y los ficheros de `storage/app/scribe`—, que es HTML y no necesita el paquete
+| para servirse.
+|
+| La documentación se genera en local con `php artisan scribe:generate` y se
+| commitea. Ver `docs/info/scribe.md`.
+|
+| Detrás de 'auth': la documentación de la API es privada.
+|
+*/
+// Sólo 'auth': `withRouting(web: ...)` ya aplica el grupo 'web' a este fichero
+// entero, y repetirlo aquí ejecutaba `StartSession` dos veces por petición, lo
+// que dejaba la sesión inservible y devolvía al login a quien ya había entrado.
+Route::middleware('auth')->group(function () {
+    // La vista viaja en el repositorio, así que aquí no hay nada que comprobar.
+    // Los dos ficheros de abajo sí viven en `storage/` y pueden no estar.
+    Route::get('/docs', fn () => view('scribe.index'))->name('scribe');
+
+    Route::get('/docs.openapi', function () {
+        $path = storage_path('app/scribe/openapi.yaml');
+        abort_unless(is_file($path), 404, 'La especificación OpenAPI no está generada.');
+
+        return response()->file($path, ['Content-Type' => 'application/yaml']);
+    })->name('scribe.openapi');
+
+    Route::get('/docs.postman', function () {
+        $path = storage_path('app/scribe/collection.json');
+        abort_unless(is_file($path), 404, 'La colección de Postman no está generada.');
+
+        return response()->file($path, ['Content-Type' => 'application/json']);
+    })->name('scribe.postman');
+});
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

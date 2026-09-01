@@ -10,7 +10,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\HandleCors;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
@@ -77,26 +76,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // CORS global basado en config/cors.php (fix_10 fase 02).
         $middleware->prepend(HandleCors::class);
 
-        // Proxies de confianza.
-        //
-        // Sin esto, detrás de nginx/Cloudflare `$request->ip()` devuelve la IP
-        // del proxy, así que TODOS los rate limit por IP (login, contacto,
-        // newsletter) pasan a ser un cupo global compartido por todos los
-        // visitantes: ni frenan a un atacante ni dejan pasar el tráfico bueno.
-        //
-        // Por defecto se confía en los rangos privados (la red de Docker y el
-        // nginx del propio host), no en "*": si la aplicación quedara alcanzable
-        // directamente, "*" permitiría falsificar la IP con una cabecera.
-        $middleware->trustProxies(
-            at: array_values(array_filter(array_map('trim', explode(',', (string) env(
-                'TRUSTED_PROXIES',
-                '127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
-            ))))),
-            headers: Request::HEADER_X_FORWARDED_FOR
-                | Request::HEADER_X_FORWARDED_HOST
-                | Request::HEADER_X_FORWARDED_PORT
-                | Request::HEADER_X_FORWARDED_PROTO,
-        );
+        // Los proxies de confianza NO se configuran aquí: este callback corre
+        // como `afterResolving` del Kernel, antes de que exista el servicio
+        // `config`, así que sólo podría leerse con `env()` —y `env()` devuelve
+        // `null` en el servidor, donde el despliegue hace `config:cache` y
+        // Laravel ya no carga el `.env`. Se configura en
+        // `AppServiceProvider::boot()`, que sí corre con la config cargada y
+        // antes del pipeline de middleware. Ver `config/app.php`.
 
         // Sólo los alias que usa alguna ruta.
         //

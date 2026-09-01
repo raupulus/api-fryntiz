@@ -36,9 +36,9 @@ return [
         'api_key' => env('AEMET_API_KEY', ''),
     ],
 
-    'recaptcha' => [
-        'site_key' => env('RECAPTCHA_SITE_KEY', ''),
-        'secret_key' => env('RECAPTCHA_SECRET_KEY', ''),
-    ],
+    /*
+     * El reCAPTCHA se configura en `config/google.php`, con el resto de
+     * credenciales de Google.
+     */
 
 ];

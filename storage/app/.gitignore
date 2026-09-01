@@ -1,3 +1,9 @@
 *
 !public/
 !.gitignore
+# La especificación OpenAPI y la colección de Postman se generan en local y se
+# suben al repositorio: en el servidor no se instala Scribe, así que si no
+# viajaran aquí, /docs.openapi y /docs.postman responderían 404.
+# Ver docs/info/scribe.md
+!scribe/
+!scribe/**

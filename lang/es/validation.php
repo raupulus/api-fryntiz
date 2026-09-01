@@ -91,7 +91,23 @@ return [
     'not_in' => 'El campo :attribute seleccionado no es válido.',
     'not_regex' => 'El formato del campo :attribute no es válido.',
     'numeric' => 'El campo :attribute debe ser un número.',
-    'password' => 'La contraseña es incorrecta.',
+    /*
+     * `Password::defaults()` (12 caracteres, letras, mayúsculas y minúsculas y
+     * números) se aplica en el registro de la API, en el panel de usuarios y en
+     * el restablecimiento de contraseña. Sin estas claves, quien elegía una
+     * contraseña floja recibía el literal «validation.password.letters» en vez
+     * de un mensaje: la regla busca `validation.password.<comprobación>`, y aquí
+     * sólo había un `password` suelto que además no usaba ninguna regla —la
+     * comprobación de la contraseña actual se hace a mano con `Hash::check()`.
+     */
+    'password' => [
+        'letters' => 'El campo :attribute debe contener al menos una letra.',
+        'mixed' => 'El campo :attribute debe contener al menos una mayúscula y una minúscula.',
+        'numbers' => 'El campo :attribute debe contener al menos un número.',
+        'symbols' => 'El campo :attribute debe contener al menos un símbolo.',
+        'uncompromised' => 'El :attribute indicado ha aparecido en una filtración de datos. Elige otro distinto.',
+    ],
+    'current_password' => 'La contraseña es incorrecta.',
     'present' => 'El campo :attribute debe estar presente.',
     'regex' => 'El formato del campo :attribute no es válido.',
     'required' => 'El campo :attribute es obligatorio.',

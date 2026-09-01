@@ -18,7 +18,7 @@ class ContactTest extends ApiTestCase
     #[Test]
     public function contact_validates_required_fields(): void
     {
-        config(['services.recaptcha.secret_key' => 'test-secret']);
+        config(['google.recaptcha.secret_key' => 'test-secret']);
         $response = $this->postJson($this->apiUrl('contact-messages'), []);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['name', 'email', 'subject', 'message', 'g-recaptcha-response']);
@@ -27,7 +27,7 @@ class ContactTest extends ApiTestCase
     #[Test]
     public function contact_omits_recaptcha_validation_when_secret_key_is_empty(): void
     {
-        config(['services.recaptcha.secret_key' => null]);
+        config(['google.recaptcha.secret_key' => null]);
         $response = $this->postJson($this->apiUrl('contact-messages'), []);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['name', 'email', 'subject', 'message']);

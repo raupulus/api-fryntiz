@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 
 class ProjectClearCommand extends Command
@@ -52,6 +53,22 @@ class ProjectClearCommand extends Command
 
         // 3. Regeneración de clave segura en .env
         if (! $this->option('no-key')) {
+            // Regenerar la clave es una decisión deliberada de este proyecto
+            // (cierra todas las sesiones y obliga a los clientes a recargar).
+            // Lo que no se ve venir es el 2FA: Fortify guarda
+            // `two_factor_secret` CIFRADO con la APP_KEY, así que quien lo tenga
+            // activo se queda sin poder completar el segundo factor y hay que
+            // volver a darlo de alta. Los tokens de Sanctum no se ven afectados
+            // porque se guardan hasheados, no cifrados.
+            $con2fa = $this->contarUsuariosCon2fa();
+
+            if ($con2fa > 0) {
+                $this->warn(
+                    "Aviso: {$con2fa} usuario(s) tienen el doble factor activo. Al cambiar la APP_KEY "
+                    .'su `two_factor_secret` deja de poder descifrarse y tendrán que volver a configurarlo.'
+                );
+            }
+
             if (app()->environment('production') && ! $this->option('force') && ! $this->confirm(
                 'Vas a regenerar APP_KEY en producción: esto invalida sesiones, tokens y cualquier '
                 .'dato cifrado con la clave actual. ¿Deseas continuar?'
@@ -100,5 +117,21 @@ class ProjectClearCommand extends Command
         $this->info('✅ El proyecto ha quedado limpio y preparado.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Cuántas cuentas tienen el doble factor configurado.
+     *
+     * Consulta directa para no depender del modelo ni de sus casts, y tolerante
+     * a fallos: es un aviso, no puede tumbar la limpieza (por ejemplo, si se
+     * ejecuta sin base de datos disponible).
+     */
+    private function contarUsuariosCon2fa(): int
+    {
+        try {
+            return DB::table('users')->whereNotNull('two_factor_secret')->count();
+        } catch (\Throwable) {
+            return 0;
+        }
     }
 }

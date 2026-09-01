@@ -13,6 +13,7 @@ use Filament\Actions\EditAction;
 use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
@@ -44,6 +45,42 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Proxies de confianza.
+        //
+        // Sin esto, detrás de nginx/Cloudflare `$request->ip()` devuelve la IP
+        // del proxy, así que TODOS los rate limit por IP (login, contacto,
+        // newsletter) pasan a ser un cupo global compartido por todos los
+        // visitantes: ni frenan a un atacante ni dejan pasar el tráfico bueno.
+        //
+        // Va aquí y no en `bootstrap/app.php` a propósito. Allí el callback de
+        // `withMiddleware()` se ejecuta antes de que el contenedor tenga el
+        // servicio `config`, así que el valor sólo podía leerse con `env()`; y
+        // `env()` devuelve `null` en el servidor, porque el despliegue hace
+        // `config:cache` y entonces Laravel se salta la carga del `.env`.
+        // Resultado: `TRUSTED_PROXIES` se ignoraba en silencio y siempre se
+        // aplicaba el valor por defecto. Con nginx en la misma máquina no se
+        // notaba —el default cubre los rangos privados—, pero cualquier proxy
+        // con IP pública por delante (Cloudflare) dejaba de ser de confianza
+        // sin un solo aviso.
+        //
+        // `boot()` corre con la config ya cargada y antes del pipeline de
+        // middleware, que es justo lo que hace falta.
+        //
+        // Por defecto se confía en los rangos privados (la red de Docker y el
+        // nginx del propio host), no en "*": si la aplicación quedara alcanzable
+        // directamente, "*" permitiría falsificar la IP con una cabecera.
+        TrustProxies::at(array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) config('app.trusted_proxies'))
+        ))));
+
+        TrustProxies::withHeaders(
+            Request::HEADER_X_FORWARDED_FOR
+            | Request::HEADER_X_FORWARDED_HOST
+            | Request::HEADER_X_FORWARDED_PORT
+            | Request::HEADER_X_FORWARDED_PROTO
+        );
+
         // Soporte para comentarios en colecciones (e.g. $table->timestamps()->comment(...)) en Laravel 11/12/13
         Collection::macro('comment', function ($value) {
             return $this->each(fn ($column) => method_exists($column, 'comment') ? $column->comment($value) : null);

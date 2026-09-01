@@ -1,0 +1,2504 @@
+openapi: 3.0.3
+info:
+  title: 'Api Raupulus API Documentation'
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'https://api.raupulus.dev'
+tags:
+  -
+    name: Endpoints
+    description: ''
+paths:
+  /api/v2/auth/tokens:
+    post:
+      summary: 'Crea un token de sesión a partir de las credenciales.'
+      operationId: creaUnTokenDeSesinAPartirDeLasCredenciales
+      description: "Es lo que antes era `POST /auth/login`. Devuelve 201 porque crea un\nrecurso, y la cabecera `Location` apunta a la colección de tokens."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'El campo value debe ser una dirección de correo válida. El campo value no debe tener más de 255 caracteres.'
+                  example: gbailey@example.net
+                password:
+                  type: string
+                  description: 'El campo value debe tener al menos 6 caracteres.'
+                  example: '+-0pBNvYgxwmi/#iw'
+              required:
+                - email
+                - password
+      security: []
+    get:
+      summary: 'Lista los tokens del usuario autenticado.'
+      operationId: listaLosTokensDelUsuarioAutenticado
+      description: 'Nunca devuelve el token en claro: sólo existe en el momento de crearlo.'
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+  /api/v2/auth/tokens/devices:
+    post:
+      summary: 'Emite un token ligado a un dispositivo IoT.'
+      operationId: emiteUnTokenLigadoAUnDispositivoIoT
+      description: "Va por `DeviceTokenService`, que es la fuente única: comprueba que las\nabilities están en el catálogo, que el dispositivo es del usuario, y\nañade `device:{id}`. No emite nunca el comodín ni la ability de sesión."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                abilities:
+                  type: array
+                  description: ''
+                  example:
+                    - 'airflight:write'
+                  items:
+                    type: string
+                    enum:
+                      - 'hardware:read'
+                      - 'hardware:write'
+                      - 'weatherstation:write'
+                      - 'keycounter:write'
+                      - 'smartplant:write'
+                      - 'airflight:write'
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: 'n'
+                  nullable: true
+                expires_at:
+                  type: string
+                  description: 'Must be a valid date. Must be a date after <code>now</code>.'
+                  example: '2052-09-24'
+                  nullable: true
+              required:
+                - device_id
+      security: []
+  /api/v2/auth/tokens/current:
+    delete:
+      summary: 'Revoca el token con el que se ha hecho la petición.'
+      operationId: revocaElTokenConElQueSeHaHechoLaPeticin
+      description: 'Es el antiguo `POST /auth/logout`.'
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      security: []
+  '/api/v2/auth/tokens/{id}':
+    delete:
+      summary: 'Revoca un token concreto del usuario autenticado.'
+      operationId: revocaUnTokenConcretoDelUsuarioAutenticado
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the token.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v2/users/me:
+    get:
+      summary: 'Datos del dueño del token con el que se llama.'
+      operationId: datosDelDueoDelTokenConElQueSeLlama
+      description: 'No acepta ningún identificador: siempre es el propio usuario.'
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+  /api/v2/contact-messages:
+    post:
+      summary: ''
+      operationId: postApiV2ContactMessages
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 255 characters.'
+                  example: zbailey@example.net
+                subject:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: i
+                message:
+                  type: string
+                  description: 'Must be at least 10 characters. Must not be greater than 5000 characters.'
+                  example: 'y'
+                privacity:
+                  type: boolean
+                  description: ''
+                  example: true
+                contactme:
+                  type: boolean
+                  description: ''
+                  example: false
+                attributes:
+                  type: array
+                  description: 'Must not be greater than 255 characters.'
+                  example:
+                    - v
+                  items:
+                    type: string
+                    nullable: true
+                g-recaptcha-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+              required:
+                - name
+                - email
+                - subject
+                - message
+      security: []
+  /api/v2/newsletter/subscriptions:
+    post:
+      summary: 'Alta en la newsletter.'
+      operationId: altaEnLaNewsletter
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 255 characters.'
+                  example: gbailey@example.net
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: m
+                  nullable: true
+                platform_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+              required:
+                - email
+                - platform_id
+      security: []
+  /api/v2/newsletter/subscriptions/stats:
+    get:
+      summary: 'Estadísticas. La ruta exige `ability:session` y el gate `view-statistics`.'
+      operationId: estadsticasLaRutaExigeabilitysessionYElGateviewStatistics
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+  /api/v2/newsletter/subscriptions/verification:
+    post:
+      summary: 'Reenvía el email de verificación.'
+      operationId: reenvaElEmailDeVerificacin
+      description: "Responde siempre lo mismo exista o no la suscripción: antes devolvía 404\nsi el email no estaba suscrito y 200 si sí, o sea un oráculo público para\ncomprobar si una dirección está en la lista (auditoría A6)."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: gbailey@example.net
+                platform_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+              required:
+                - email
+                - platform_id
+      security: []
+  '/api/v2/newsletter/subscriptions/{token}/confirmation':
+    post:
+      summary: 'Confirma la suscripción.'
+      operationId: confirmaLaSuscripcin
+      description: 'Antes era `GET /newsletter/verify/{token}`.'
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: token
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/newsletter/subscriptions/{token}/unsubscription':
+    post:
+      summary: 'Baja de un clic (RFC 8058).'
+      operationId: bajaDeUnClicRFC8058
+      description: "Es la misma operación que `destroy`, pero por POST y devolviendo 200 con\ncuerpo, que es lo que espera el cliente de correo al procesar la cabecera\n`List-Unsubscribe-Post: List-Unsubscribe=One-Click`. Un 204 sin cuerpo\nconfunde a algunos clientes."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: token
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/newsletter/subscriptions/{token}':
+    delete:
+      summary: 'Baja de la newsletter.'
+      operationId: bajaDeLaNewsletter
+      description: 'Antes era `GET /newsletter/unsubscribe/{token}`.'
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: token
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v2/platforms:
+    get:
+      summary: ''
+      operationId: getApiV2Platforms
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'Operación exitosa'
+                  data:
+                    -
+                      id: 1
+                      name: 'Borer, Kirlin and Collins'
+                      title: 'Borer, Kirlin and Collins'
+                      slug: borer-kirlin-and-collins-Kilhs
+                      domain: lind.com
+                      description: 'Repellendus voluptas in enim et.'
+                      image: null
+                      created_at: '2026-08-30T15:45:09.000000Z'
+                    -
+                      id: 4
+                      name: 'GreenEnergy Smart Monitor'
+                      title: 'GreenEnergy Smart Monitor'
+                      slug: greenenergy-smart-monitor
+                      domain: energy.raupulus.dev
+                      description: 'Monitorización avanzada de generación fotovoltaica, baterías y consumos industriales.'
+                      image: null
+                      created_at: '2026-08-30T15:45:11.000000Z'
+                    -
+                      id: 3
+                      name: 'Portal de Telemetría IoT'
+                      title: 'Portal de Telemetría IoT'
+                      slug: portal-de-telemetria-iot
+                      domain: iot.raupulus.dev
+                      description: 'Plataforma cloud para supervisión en tiempo real de estaciones meteorológicas y energía solar.'
+                      image: null
+                      created_at: '2026-08-30T15:45:11.000000Z'
+                    -
+                      id: 2
+                      name: 'Raupulus Tech & Consulting'
+                      title: 'Raupulus Tech & Consulting'
+                      slug: raupulus-tech-consulting
+                      domain: tech.raupulus.dev
+                      description: 'Soluciones integrales de hardware IoT, telemetría y software distribuido para empresas.'
+                      image: null
+                      created_at: '2026-08-30T15:45:11.000000Z'
+                  meta:
+                    total: 4
+                    per_page: 25
+                    current_page: 1
+                    last_page: 1
+                    from: 1
+                    to: 4
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Operación exitosa'
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        name: 'Borer, Kirlin and Collins'
+                        title: 'Borer, Kirlin and Collins'
+                        slug: borer-kirlin-and-collins-Kilhs
+                        domain: lind.com
+                        description: 'Repellendus voluptas in enim et.'
+                        image: null
+                        created_at: '2026-08-30T15:45:09.000000Z'
+                      -
+                        id: 4
+                        name: 'GreenEnergy Smart Monitor'
+                        title: 'GreenEnergy Smart Monitor'
+                        slug: greenenergy-smart-monitor
+                        domain: energy.raupulus.dev
+                        description: 'Monitorización avanzada de generación fotovoltaica, baterías y consumos industriales.'
+                        image: null
+                        created_at: '2026-08-30T15:45:11.000000Z'
+                      -
+                        id: 3
+                        name: 'Portal de Telemetría IoT'
+                        title: 'Portal de Telemetría IoT'
+                        slug: portal-de-telemetria-iot
+                        domain: iot.raupulus.dev
+                        description: 'Plataforma cloud para supervisión en tiempo real de estaciones meteorológicas y energía solar.'
+                        image: null
+                        created_at: '2026-08-30T15:45:11.000000Z'
+                      -
+                        id: 2
+                        name: 'Raupulus Tech & Consulting'
+                        title: 'Raupulus Tech & Consulting'
+                        slug: raupulus-tech-consulting
+                        domain: tech.raupulus.dev
+                        description: 'Soluciones integrales de hardware IoT, telemetría y software distribuido para empresas.'
+                        image: null
+                        created_at: '2026-08-30T15:45:11.000000Z'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: 'Borer, Kirlin and Collins'
+                        title:
+                          type: string
+                          example: 'Borer, Kirlin and Collins'
+                        slug:
+                          type: string
+                          example: borer-kirlin-and-collins-Kilhs
+                        domain:
+                          type: string
+                          example: lind.com
+                        description:
+                          type: string
+                          example: 'Repellendus voluptas in enim et.'
+                        image:
+                          type: string
+                          example: null
+                          nullable: true
+                        created_at:
+                          type: string
+                          example: '2026-08-30T15:45:09.000000Z'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 4
+                      per_page:
+                        type: integer
+                        example: 25
+                      current_page:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      to:
+                        type: integer
+                        example: 4
+      tags:
+        - Endpoints
+      security: []
+  '/api/v2/platforms/{slug}':
+    get:
+      summary: ''
+      operationId: getApiV2PlatformsSlug
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Plataforma no encontrada'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Plataforma no encontrada'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v2/platforms/{platform_slug}/categories':
+    get:
+      summary: 'Categorías disponibles en una plataforma.'
+      operationId: categorasDisponiblesEnUnaPlataforma
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Plataforma no encontrada'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Plataforma no encontrada'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v2/platforms/{platform_slug}/contents':
+    get:
+      summary: 'Contenidos publicados de una plataforma.'
+      operationId: contenidosPublicadosDeUnaPlataforma
+      description: "Sustituye a `/{platform}/featured` y `/{platform}/content/type/{t}`, que\neran dos rutas para dos filtros de la misma colección.\n\n  ?featured=1        sólo destacados\n  ?type=tutorial     por slug del tipo de contenido\n  ?sort=-published_at"
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Plataforma no encontrada'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Plataforma no encontrada'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v2/platforms/{platform_slug}/contents/{slug}':
+    get:
+      summary: 'Un contenido publicado.'
+      operationId: unContenidoPublicado
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/pages':
+    get:
+      summary: 'Páginas de un contenido publicado.'
+      operationId: pginasDeUnContenidoPublicado
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/{order}':
+    get:
+      summary: 'Una página concreta, por su orden dentro del contenido.'
+      operationId: unaPginaConcretaPorSuOrdenDentroDelContenido
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+      -
+        in: path
+        name: order
+        description: ''
+        example: '564'
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/related':
+    get:
+      summary: 'Contenidos relacionados, también publicados.'
+      operationId: contenidosRelacionadosTambinPublicados
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v2/airflight/aircrafts:
+    get:
+      summary: 'Aviones detectados.'
+      operationId: avionesDetectados
+      description: "Absorbe lo que era `GET /airflight/history`: el historial no es otro\nrecurso, es la misma colección sin la ventana de actividad reciente.\n\n  (sin parámetros)      los vistos en los últimos 10 minutos — el mapa en vivo\n  ?minutes=60           ventana de actividad a medida\n  ?from=&to=            historial por fechas, paginado"
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'Operación exitosa'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Operación exitosa'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: 'Registra un avión detectado.'
+      operationId: registraUnAvinDetectado
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                  nullable: true
+                icao:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: ngzmiy
+                flight:
+                  type: string
+                  description: 'Must not be greater than 20 characters.'
+                  example: vdljnikhwaykcmyu
+                  nullable: true
+                squawk:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: wpwlvq
+                  nullable: true
+                lat:
+                  type: number
+                  description: 'Must be between -90 and 90.'
+                  example: -90
+                  nullable: true
+                lon:
+                  type: number
+                  description: 'Must be between -180 and 180.'
+                  example: -179
+                  nullable: true
+                altitude:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 57
+                  nullable: true
+                speed:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 86
+                  nullable: true
+                track:
+                  type: number
+                  description: 'Must be between 0 and 360.'
+                  example: 1
+                  nullable: true
+                seen:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                seen_pos:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                messages:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 77
+                  nullable: true
+              required:
+                - icao
+      security: []
+  /api/v2/airflight/receiver:
+    get:
+      summary: 'Información del receptor (posición, refresco, historial).'
+      operationId: informacinDelReceptorposicinRefrescoHistorial
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'Operación exitosa'
+                  data:
+                    history: 0
+                    lat: 36.7381
+                    lon: -6.4301
+                    refresh: 5000
+                    version: 'api raupulus v2'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Operación exitosa'
+                  data:
+                    type: object
+                    properties:
+                      history:
+                        type: integer
+                        example: 0
+                      lat:
+                        type: number
+                        example: 36.7381
+                      lon:
+                        type: number
+                        example: -6.4301
+                      refresh:
+                        type: integer
+                        example: 5000
+                      version:
+                        type: string
+                        example: 'api raupulus v2'
+      tags:
+        - Endpoints
+      security: []
+  /api/v2/airflight/aircrafts/batch:
+    post:
+      summary: 'Registra un lote de aviones detectados.'
+      operationId: registraUnLoteDeAvionesDetectados
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                  nullable: true
+                data:
+                  type: array
+                  description: 'Must have at least 1 items. Must not have more than 500 items.'
+                  example:
+                    - []
+                  items:
+                    type: object
+                    properties:
+                      icao:
+                        type: string
+                        description: 'Must not be greater than 10 characters.'
+                        example: bngzmi
+                      flight:
+                        type: string
+                        description: 'Must not be greater than 20 characters.'
+                        example: yvdljnikhwaykcmy
+                        nullable: true
+                      squawk:
+                        type: string
+                        description: 'Must not be greater than 10 characters.'
+                        example: uwpwlv
+                        nullable: true
+                      lat:
+                        type: number
+                        description: 'Must be between -90 and 90.'
+                        example: -90
+                        nullable: true
+                      lon:
+                        type: number
+                        description: 'Must be between -180 and 180.'
+                        example: -180
+                        nullable: true
+                      altitude:
+                        type: number
+                        description: 'Must be at least 0.'
+                        example: 4
+                        nullable: true
+                      speed:
+                        type: number
+                        description: 'Must be at least 0.'
+                        example: 57
+                        nullable: true
+                      track:
+                        type: number
+                        description: 'Must be between 0 and 360.'
+                        example: 0
+                        nullable: true
+                      seen:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                        nullable: true
+                      seen_pos:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                        nullable: true
+                      messages:
+                        type: integer
+                        description: 'Must be at least 0.'
+                        example: 77
+                        nullable: true
+                    required:
+                      - icao
+              required:
+                - data
+      security: []
+  /api/v2/hardware/devices:
+    get:
+      summary: 'Dispositivos del usuario autenticado.'
+      operationId: dispositivosDelUsuarioAutenticado
+      description: '?type=laptop,raspberry'
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+  '/api/v2/hardware/devices/{id}':
+    get:
+      summary: 'Un dispositivo del usuario autenticado.'
+      operationId: unDispositivoDelUsuarioAutenticado
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'API V2 - Endpoint no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'API V2 - Endpoint no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the device.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/hardware/devices/{device_id}/status':
+    put:
+      summary: 'Sustituye el último estado conocido del dispositivo.'
+      operationId: sustituyeElltimoEstadoConocidoDelDispositivo
+      description: "PUT y no POST: no se está creando un recurso nuevo cada vez, se está\nsobrescribiendo el mismo. Repetir la petición deja el sistema igual."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                temp:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                voltage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                battery_level:
+                  type: integer
+                  description: 'Must be between 0 and 100.'
+                  example: 0
+                  nullable: true
+                cpu:
+                  type: number
+                  description: 'Must be between 0 and 100.'
+                  example: 0
+                  nullable: true
+                disk:
+                  type: number
+                  description: 'Must be between 0 and 100.'
+                  example: 0
+                  nullable: true
+                uptime:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 60
+                  nullable: true
+                ip_local:
+                  type: string
+                  description: 'Must be a valid IP address.'
+                  example: 1.102.226.211
+                  nullable: true
+                ip_public:
+                  type: string
+                  description: 'Must be a valid IP address.'
+                  example: 1.102.226.211
+                  nullable: true
+                extra:
+                  type: array
+                  description: ''
+                  example: null
+                  items:
+                    type: string
+                    nullable: true
+              required:
+                - hardware_device_id
+      security: []
+    parameters:
+      -
+        in: path
+        name: device_id
+        description: 'The ID of the device.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v2/hardware/energy-readings:
+    post:
+      summary: 'Almacena las lecturas de un monitor de energía.'
+      operationId: almacenaLasLecturasDeUnMonitorDeEnerga
+      description: "La respuesta lleva `warnings` cuando algo es raro pero se ha guardado:\nuna corriente negativa, un elemento sin tensión, un canal sin dar de\nalta. Sin eso, un montaje mal configurado responde 201 durante meses."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                duration:
+                  type: integer
+                  description: 'Must be at least 1.'
+                  example: 22
+                  nullable: true
+                read_at:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-09-01T09:14:32'
+                  nullable: true
+                temperature:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                battery_voltage:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 77
+                  nullable: true
+                battery_percentage:
+                  type: integer
+                  description: 'Must be at least 0. Must not be greater than 100.'
+                  example: 15
+                  nullable: true
+                readings:
+                  type: array
+                  description: ''
+                  example:
+                    - []
+                  items:
+                    type: object
+                    properties:
+                      pos:
+                        type: integer
+                        description: 'Must be at least 0.'
+                        example: 27
+                      amperage:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                        nullable: true
+                      voltage:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                        nullable: true
+                      duration:
+                        type: integer
+                        description: 'Must be at least 1.'
+                        example: 27
+                        nullable: true
+                      energy_wh:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                        nullable: true
+                      temperature:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                        nullable: true
+                      fan:
+                        type: integer
+                        description: 'Must be at least 0.'
+                        example: 77
+                        nullable: true
+                      read_at:
+                        type: string
+                        description: 'Must be a valid date.'
+                        example: '2026-09-01T09:14:32'
+                        nullable: true
+                      battery_voltage:
+                        type: number
+                        description: 'Must be at least 0.'
+                        example: 8
+                        nullable: true
+                      battery_percentage:
+                        type: integer
+                        description: 'Must be at least 0. Must not be greater than 100.'
+                        example: 8
+                        nullable: true
+                    required:
+                      - pos
+              required:
+                - hardware_device_id
+                - readings
+      security: []
+  /api/v2/hardware/solar-readings:
+    post:
+      summary: 'Almacena una lectura del controlador solar.'
+      operationId: almacenaUnaLecturaDelControladorSolar
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                date:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-09-01T09:14:32'
+                read_at:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-09-01T09:14:32'
+                hardware:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: 'n'
+                  nullable: true
+                version:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: g
+                  nullable: true
+                serial_number:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: z
+                  nullable: true
+                battery_type:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: m
+                  nullable: true
+                battery_voltage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                battery_current:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                battery_power:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                battery_percentage:
+                  type: integer
+                  description: 'Must be at least 0. Must not be greater than 100.'
+                  example: 17
+                  nullable: true
+                battery_temperature:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                temperature:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                voltage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                amperage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                power:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                delta_seconds:
+                  type: integer
+                  description: 'Must be at least 1.'
+                  example: 27
+                  nullable: true
+                charging_status:
+                  type: integer
+                  description: ''
+                  example: 16
+                  nullable: true
+                charging_status_label:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: 'n'
+                  nullable: true
+                light_status:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+                light_brightness:
+                  type: integer
+                  description: 'Must be at least 0. Must not be greater than 100.'
+                  example: 7
+                  nullable: true
+                load_voltage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                load_current:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                load_power:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                load_fan:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 77
+                  nullable: true
+                day_battery_voltage_min:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_battery_voltage_max:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_charging_current_max:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_discharging_current_max:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_charging_power_max:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_discharging_power_max:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_charging_amp_hours:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_discharging_amp_hours:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_power_generation_wh:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                day_power_consumption_wh:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                total_operating_days:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 77
+                  nullable: true
+                total_battery_over_discharges:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 8
+                  nullable: true
+                total_battery_full_charges:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 76
+                  nullable: true
+                total_charging_amp_hours:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 60
+                  nullable: true
+                total_discharging_amp_hours:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 42
+                  nullable: true
+                total_power_generation_wh:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 37
+                  nullable: true
+                total_power_consumption_wh:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 9
+                  nullable: true
+                system_voltage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                system_intensity:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                nominal_battery_capacity:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 77
+                  nullable: true
+              required:
+                - hardware_device_id
+                - date
+                - read_at
+      security: []
+  /api/v2/keycounter/keyboard-sessions:
+    get:
+      summary: 'Sesiones de keyboard del usuario autenticado.'
+      operationId: sesionesDeKeyboardDelUsuarioAutenticado
+      description: "No existía: el módulo sólo tenía escritura y los datos se veían por\nBlade. Una API que sólo deja escribir obliga a que cualquier cliente que\nquiera pintarlos se meta en la base de datos por su cuenta."
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: 'Almacena un registro de pulsaciones de teclado.'
+      operationId: almacenaUnRegistroDePulsacionesDeTeclado
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                user_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                start_at:
+                  type: string
+                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+                  example: '2026-09-01 09:14:32'
+                end_at:
+                  type: string
+                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+                  example: '2026-09-01 09:14:32'
+                duration:
+                  type: integer
+                  description: ''
+                  example: 16
+                pulsations:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 39
+                pulsations_special_keys:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 84
+                pulsation_average:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 12
+                score:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 77
+                weekday:
+                  type: integer
+                  description: 'Must be at least 0. Must not be greater than 6.'
+                  example: 5
+              required:
+                - hardware_device_id
+                - user_id
+                - start_at
+                - end_at
+                - duration
+                - pulsations
+                - pulsations_special_keys
+                - pulsation_average
+                - score
+                - weekday
+      security: []
+  /api/v2/keycounter/mouse-sessions:
+    get:
+      summary: 'Sesiones de mouse del usuario autenticado.'
+      operationId: sesionesDeMouseDelUsuarioAutenticado
+      description: "No existía: el módulo sólo tenía escritura y los datos se veían por\nBlade. Una API que sólo deja escribir obliga a que cualquier cliente que\nquiera pintarlos se meta en la base de datos por su cuenta."
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: 'Almacena un registro de clicks de ratón.'
+      operationId: almacenaUnRegistroDeClicksDeRatn
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                user_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                start_at:
+                  type: string
+                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+                  example: '2026-09-01 09:14:32'
+                end_at:
+                  type: string
+                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+                  example: '2026-09-01 09:14:32'
+                duration:
+                  type: integer
+                  description: ''
+                  example: 16
+                clicks_left:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 39
+                clicks_right:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 84
+                clicks_middle:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 12
+                total_clicks:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 77
+                clicks_average:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 8
+                  nullable: true
+                weekday:
+                  type: integer
+                  description: 'Must be at least 0. Must not be greater than 6.'
+                  example: 1
+              required:
+                - hardware_device_id
+                - user_id
+                - start_at
+                - end_at
+                - duration
+                - clicks_left
+                - clicks_right
+                - clicks_middle
+                - total_clicks
+                - weekday
+      security: []
+  /api/v2/smartplant/plants:
+    get:
+      summary: 'Plantas del usuario autenticado.'
+      operationId: plantasDelUsuarioAutenticado
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'No autenticado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'No autenticado'
+      tags:
+        - Endpoints
+      security: []
+  '/api/v2/smartplant/plants/{plant_id}/readings':
+    get:
+      summary: 'Lecturas de una planta.'
+      operationId: lecturasDeUnaPlanta
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'API V2 - Endpoint no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'API V2 - Endpoint no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: 'Guarda una lectura en la planta indicada por la URL.'
+      operationId: guardaUnaLecturaEnLaPlantaIndicadaPorLaURL
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plant_id:
+                  type: number
+                  description: 'Must match an existing stored value.'
+                  example: 4326.41688
+                hardware_device_id:
+                  type: number
+                  description: 'Must match an existing stored value.'
+                  example: 4326.41688
+                uv:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                pressure:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                temperature:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                humidity:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                soil_humidity:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                soil_humidity_raw:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                full_water_tank:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+                waterpump_enabled:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+                vaporizer_enabled:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+              required:
+                - plant_id
+                - hardware_device_id
+                - soil_humidity
+      security: []
+    parameters:
+      -
+        in: path
+        name: plant_id
+        description: 'The ID of the plant.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v2/weather-stations:
+    get:
+      summary: 'Estaciones, opcionalmente de una zona.'
+      operationId: estacionesOpcionalmenteDeUnaZona
+      description: "?zone=chipiona\n  ?location_type=indoor|outdoor"
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'Operación exitosa'
+                  data:
+                    -
+                      id: 2
+                      name: 'Estación Azotea (Azotea)'
+                      zone: Azotea
+                      location_type: outdoor
+                      location_label: Exterior
+                      instant:
+                        day_name: martes
+                        date_human_format: '1 de septiembre de 2026'
+                        time: '09:14'
+                        day_status: Día
+                      temperature: 36.95
+                      humidity: 93.22
+                      pressure: 1039.28
+                      wind:
+                        average: 13.1
+                        min: 6.55
+                        max: 24.57
+                        direction: NW
+                        direction_grades: 304
+                      light:
+                        lux: 209.34
+                        uv_index: 10.04
+                        uva: 486.96
+                        uvb: 287.4
+                      air_quality:
+                        quality: 56.41
+                        eco2: 1111
+                        tvoc: 322
+                      rain:
+                        value: 2.5
+                        intensity: 14.11
+                      lightning:
+                        last_at: '2026-08-30T15:44:10.000000Z'
+                        window_minutes: 60
+                        count_in_window: 0
+                        distance: 15
+                        energy: 593
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Operación exitosa'
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 2
+                        name: 'Estación Azotea (Azotea)'
+                        zone: Azotea
+                        location_type: outdoor
+                        location_label: Exterior
+                        instant:
+                          day_name: martes
+                          date_human_format: '1 de septiembre de 2026'
+                          time: '09:14'
+                          day_status: Día
+                        temperature: 36.95
+                        humidity: 93.22
+                        pressure: 1039.28
+                        wind:
+                          average: 13.1
+                          min: 6.55
+                          max: 24.57
+                          direction: NW
+                          direction_grades: 304
+                        light:
+                          lux: 209.34
+                          uv_index: 10.04
+                          uva: 486.96
+                          uvb: 287.4
+                        air_quality:
+                          quality: 56.41
+                          eco2: 1111
+                          tvoc: 322
+                        rain:
+                          value: 2.5
+                          intensity: 14.11
+                        lightning:
+                          last_at: '2026-08-30T15:44:10.000000Z'
+                          window_minutes: 60
+                          count_in_window: 0
+                          distance: 15
+                          energy: 593
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 2
+                        name:
+                          type: string
+                          example: 'Estación Azotea (Azotea)'
+                        zone:
+                          type: string
+                          example: Azotea
+                        location_type:
+                          type: string
+                          example: outdoor
+                        location_label:
+                          type: string
+                          example: Exterior
+                        instant:
+                          type: object
+                          properties:
+                            day_name:
+                              type: string
+                              example: martes
+                            date_human_format:
+                              type: string
+                              example: '1 de septiembre de 2026'
+                            time:
+                              type: string
+                              example: '09:14'
+                            day_status:
+                              type: string
+                              example: Día
+                        temperature:
+                          type: number
+                          example: 36.95
+                        humidity:
+                          type: number
+                          example: 93.22
+                        pressure:
+                          type: number
+                          example: 1039.28
+                        wind:
+                          type: object
+                          properties:
+                            average:
+                              type: number
+                              example: 13.1
+                            min:
+                              type: number
+                              example: 6.55
+                            max:
+                              type: number
+                              example: 24.57
+                            direction:
+                              type: string
+                              example: NW
+                            direction_grades:
+                              type: integer
+                              example: 304
+                        light:
+                          type: object
+                          properties:
+                            lux:
+                              type: number
+                              example: 209.34
+                            uv_index:
+                              type: number
+                              example: 10.04
+                            uva:
+                              type: number
+                              example: 486.96
+                            uvb:
+                              type: number
+                              example: 287.4
+                        air_quality:
+                          type: object
+                          properties:
+                            quality:
+                              type: number
+                              example: 56.41
+                            eco2:
+                              type: integer
+                              example: 1111
+                            tvoc:
+                              type: integer
+                              example: 322
+                        rain:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              example: 2.5
+                            intensity:
+                              type: number
+                              example: 14.11
+                        lightning:
+                          type: object
+                          properties:
+                            last_at:
+                              type: string
+                              example: '2026-08-30T15:44:10.000000Z'
+                            window_minutes:
+                              type: integer
+                              example: 60
+                            count_in_window:
+                              type: integer
+                              example: 0
+                            distance:
+                              type: integer
+                              example: 15
+                            energy:
+                              type: integer
+                              example: 593
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sensors:
+                  type: array
+                  description: ''
+                  example:
+                    - humidity
+                  items:
+                    type: string
+                    enum:
+                      - temperature
+                      - humidity
+                      - pressure
+                      - wind
+                      - light
+                      - air_quality
+                      - rain
+                      - lightning
+                location_type:
+                  type: string
+                  description: ''
+                  example: indoor
+                  enum:
+                    - indoor
+                    - outdoor
+                  nullable: true
+      security: []
+  '/api/v2/weather-stations/{station}':
+    get:
+      summary: 'Una estación por id. Sin id, la principal (la primera de exterior).'
+      operationId: unaEstacinPorIdSinIdLaPrincipallaPrimeraDeExterior
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Estacion meteorologica no encontrada'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Estacion meteorologica no encontrada'
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sensors:
+                  type: array
+                  description: ''
+                  example:
+                    - rain
+                  items:
+                    type: string
+                    enum:
+                      - temperature
+                      - humidity
+                      - pressure
+                      - wind
+                      - light
+                      - air_quality
+                      - rain
+                      - lightning
+      security: []
+    parameters:
+      -
+        in: path
+        name: station
+        description: ''
+        example: '564'
+        required: true
+        schema:
+          type: string
+  '/api/v2/weather-stations/{station}/{sensor}':
+    get:
+      summary: 'Lecturas de un sensor de una estación, paginadas.'
+      operationId: lecturasDeUnSensorDeUnaEstacinPaginadas
+      description: "Antes `GET /weatherstation/temperature` hacía un `->get()` sobre una tabla\nde serie temporal: **todas** las temperaturas de **todas** las estaciones,\nsin paginar. Con 2,6 millones de filas eso no es una respuesta lenta, es\nun servidor caído."
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'API V2 - Endpoint no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'API V2 - Endpoint no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: 'Guarda una lectura o un lote de lecturas de un sensor.'
+      operationId: guardaUnaLecturaOUnLoteDeLecturasDeUnSensor
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                readings:
+                  type: array
+                  description: ''
+                  example:
+                    - []
+                  items:
+                    type: object
+              required:
+                - hardware_device_id
+                - readings
+      security: []
+    parameters:
+      -
+        in: path
+        name: station
+        description: ''
+        example: '564'
+        required: true
+        schema:
+          type: string
+      -
+        in: path
+        name: sensor
+        description: ''
+        example: temperatures|humidities|pressures|lights|winds|wind-directions|rains|eco2-readings|tvoc-readings|air-qualities|lightnings
+        required: true
+        schema:
+          type: string
+  '/api/v2/weather-stations/{station}/readings':
+    post:
+      summary: 'Lote multi-sensor: todos los sensores en una sola petición.'
+      operationId: loteMultiSensorTodosLosSensoresEnUnaSolaPeticin
+      description: "Es una excepción consciente al REST puro. En REST serían once peticiones,\ny para un microcontrolador con batería once peticiones son once veces el\ncoste de radio."
+      parameters: []
+      responses: {}
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                data:
+                  type: array
+                  description: 'Must have at least 1 items.'
+                  example:
+                    - []
+                  items:
+                    type: object
+              required:
+                - hardware_device_id
+                - data
+      security: []
+    parameters:
+      -
+        in: path
+        name: station
+        description: ''
+        example: '564'
+        required: true
+        schema:
+          type: string
+  /api/v2/curricula:
+    get:
+      summary: 'Listado público. Sólo los marcados como públicos (B3).'
+      operationId: listadoPblicoSloLosMarcadosComoPblicosB3
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'Operación exitosa'
+                  data: []
+                  meta:
+                    total: 0
+                    per_page: 25
+                    current_page: 1
+                    last_page: 1
+                    from: null
+                    to: null
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Operación exitosa'
+                  data:
+                    type: array
+                    example: []
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 0
+                      per_page:
+                        type: integer
+                        example: 25
+                      current_page:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: string
+                        example: null
+                        nullable: true
+                      to:
+                        type: string
+                        example: null
+                        nullable: true
+      tags:
+        - Endpoints
+      security: []
+  '/api/v2/curricula/shared/{shareToken}':
+    get:
+      summary: 'Un CV por su enlace privado.'
+      operationId: unCVPorSuEnlacePrivado
+      description: "La respuesta lleva `X-Robots-Tag: noindex` para que no acabe en Google si\nalguien pega el enlace en cualquier sitio."
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Currículum no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Currículum no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: shareToken
+        description: ''
+        example: 922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D
+        required: true
+        schema:
+          type: string
+  '/api/v2/curricula/{slug}':
+    get:
+      summary: 'Un CV completo por su slug. Sólo si es público.'
+      operationId: unCVCompletoPorSuSlugSloSiEsPblico
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Currículum no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Currículum no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: slug
+        description: 'The slug of the curriculum.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/curricula/{slug}/{section}':
+    get:
+      summary: 'Una sección concreta de un CV.'
+      operationId: unaSeccinConcretaDeUnCV
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'API V2 - Endpoint no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'API V2 - Endpoint no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: slug
+        description: 'The slug of the curriculum.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+      -
+        in: path
+        name: section
+        description: ''
+        example: experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs
+        required: true
+        schema:
+          type: string
+  '/api/v2/{any}':
+    get:
+      summary: ''
+      operationId: getApiV2Any
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'API V2 - Endpoint no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'API V2 - Endpoint no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: any
+        description: ''
+        example: '|{+-0p'
+        required: true
+        schema:
+          type: string
