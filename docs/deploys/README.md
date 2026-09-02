@@ -11,9 +11,41 @@ está **cómo se despliega**. Si un documento de `docs/info` acaba explicando un
 |---|---|
 | [`deploy-vps.md`](deploy-vps.md) | Guía completa del VPS: Docker o bare-metal, verificación, copias de seguridad, vuelta atrás y endurecimiento |
 | [`websockets-reverb.md`](websockets-reverb.md) | Servidor de WebSockets: paquete, variables, demonio, certificado y cortafuegos |
-| [`nginx.conf`](nginx.conf) | Sitio virtual de la aplicación (nginx) |
-| [`nginx-websocket.conf`](nginx-websocket.conf) | Sitio virtual del WebSocket (`ws.`), con el `upgrade` y los tiempos de espera largos |
-| [`apache.conf`](apache.conf) | Sitio virtual de la aplicación (Apache), alternativa a nginx |
+| [`vhosts/`](vhosts/) | **Todos** los sitios virtuales, uno por servidor |
+
+## Sitios virtuales (`vhosts/`)
+
+Están los tres servidores a propósito: hoy el VPS va con **Apache**, y tener
+nginx y Docker escritos y al día es lo que permite cambiar sin improvisar el
+día que toque.
+
+| Fichero | Servidor | Estado |
+|---|---|---|
+| [`vhosts/apache.conf`](vhosts/apache.conf) | Apache | **En uso en el VPS** |
+| [`vhosts/apache-dev.conf`](vhosts/apache-dev.conf) | Apache | Desarrollo local, sin TLS ni HSTS |
+| [`vhosts/nginx.conf`](vhosts/nginx.conf) | nginx | Listo para el cambio |
+| [`vhosts/nginx-websocket.conf`](vhosts/nginx-websocket.conf) | nginx | Subdominio `ws.` de Reverb |
+| [`vhosts/docker-nginx.conf`](vhosts/docker-nginx.conf) | nginx (contenedor) | Copia de `docker/nginx/default.conf` |
+
+⚠️ **`docker/nginx/default.conf` es el que se construye en la imagen** —el
+Dockerfile lo copia desde ahí—, y `vhosts/docker-nginx.conf` es su gemelo de
+referencia. Si tocas uno, toca el otro. Los dos lo dicen en su cabecera.
+
+### Por qué estaban repartidos y ya no
+
+Hasta el 2026-09-02 había **cuatro** configuraciones con contenidos distintos:
+`nginx.conf` y `apache.conf` en la raíz del repositorio, `docs/deploys/nginx.conf`
+y `docker/nginx/default.conf`. Ninguna estaba declarada como la buena, y las dos
+de la raíz —las más fáciles de copiar, por estar donde están— eran justo las que
+**no tenían ninguna cabecera de seguridad**: desplegar con ellas dejaba el panel
+de Filament clickjackeable. Además, el `apache.conf` de la raíz tenía un
+`Redirect permanent` dentro del propio vhost `:443`, o sea un **bucle de
+redirección**: por HTTPS no habría respondido nada.
+
+Ahora no hay ningún `.conf` en la raíz, todos viven aquí y todos llevan sus
+cabeceras. Y, por si acaso, **las cabeceras las pone también la aplicación**
+(`App\Http\Middleware\SecurityHeaders`), así que viajan con el código y no
+dependen de qué fichero se copió (auditoría AR-D01).
 
 ## Lo que más se olvida
 

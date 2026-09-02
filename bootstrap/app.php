@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -72,6 +73,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // CORS global basado en config/cors.php (fix_10 fase 02).
         $middleware->prepend(HandleCors::class);
+
+        // Cabeceras de seguridad en TODAS las respuestas, web y API (AR-D01).
+        //
+        // Van en la aplicación y no en el virtualhost porque había cuatro
+        // configuraciones de servidor distintas —dos sin ninguna cabecera— y la
+        // más obvia de copiar era una de esas dos. Aquí viajan con el código y
+        // valen con Apache, con nginx y con Docker por igual. Los virtualhosts
+        // de docs/deploys/ las repiten, que no hace daño.
+        $middleware->append(SecurityHeaders::class);
 
         // Los proxies de confianza NO se configuran aquí: este callback corre
         // como `afterResolving` del Kernel, antes de que exista el servicio

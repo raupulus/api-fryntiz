@@ -5,7 +5,7 @@ Esta guía explica cómo desplegar `api-fryntiz` en un VPS Linux. Cubre dos ruta
 - **Opción A — Docker (recomendada)**: usa los `docker-compose*.yml` del repo.
 - **Opción B — Bare-metal**: PHP-FPM + Nginx/Apache + PostgreSQL + Redis instalados directamente en el host.
 
-> Archivos de referencia: [`docker-compose.yml`](../../docker-compose.yml), [`docker-compose.prod.yml`](../../docker-compose.prod.yml), [`docker/app/Dockerfile`](../../docker/app/Dockerfile), [`nginx.conf`](nginx.conf), [`apache.conf`](apache.conf).
+> Archivos de referencia: [`docker-compose.yml`](../../docker-compose.yml), [`docker-compose.prod.yml`](../../docker-compose.prod.yml), [`docker/app/Dockerfile`](../../docker/app/Dockerfile), [`vhosts/nginx.conf`](nginx.conf), [`vhosts/apache.conf`](apache.conf).
 
 ---
 
@@ -141,11 +141,11 @@ api.dominio.tld {
 }
 ```
 
-Con Nginx + Certbot, ver `docs/deploys/nginx.conf` como plantilla y ejecutar:
+Con Nginx + Certbot, ver `docs/deploys/vhosts/nginx.conf` como plantilla y ejecutar:
 
 ```bash
 sudo apt install -y nginx certbot python3-certbot-nginx
-sudo cp docs/deploys/nginx.conf /etc/nginx/sites-available/api-fryntiz
+sudo cp docs/deploys/vhosts/nginx.conf /etc/nginx/sites-available/api-fryntiz
 sudo ln -s /etc/nginx/sites-available/api-fryntiz /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d api.dominio.tld
@@ -221,7 +221,7 @@ sí, que es idempotente y no toca los datos existentes.
 ### 3.4 Configurar Nginx
 
 ```bash
-sudo cp docs/deploys/nginx.conf /etc/nginx/sites-available/api-fryntiz
+sudo cp docs/deploys/vhosts/nginx.conf /etc/nginx/sites-available/api-fryntiz
 sudo ln -s /etc/nginx/sites-available/api-fryntiz /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d api.dominio.tld
@@ -256,10 +256,18 @@ sudo supervisorctl start api-fryntiz-worker:*
 
 ### 3.6 Scheduler con cron
 
+> Antes esta línea acababa en `>> /dev/null 2>&1`. `routes/console.php` se
+> molesta en poner `onFailure()` en las 16 tareas «porque antes un fallo no se
+> veía en ningún sitio», y el cron que las lanzaba tiraba a la basura todo lo
+> que escribieran. Si `schedule:run` no arrancaba —una dependencia rota, un
+> permiso, PHP actualizado— no quedaba ni rastro (auditoría AR-D04).
+>
+> El fichero lo rota `logrotate` como cualquier otro de `storage/logs`.
+
 ```bash
 sudo crontab -e -u www-data
 # Añadir:
-* * * * * cd /var/www/api-fryntiz && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/api-fryntiz && php artisan schedule:run >> /var/www/api-fryntiz/storage/logs/schedule.log 2>&1
 ```
 
 ---
@@ -353,7 +361,7 @@ Estrategia mínima:
 - **`.env` con permisos restringidos**: `chmod 640 .env` y propietario `www-data`.
 - **Firewall**: solo abrir 80/443 al público. SSH solo con keys.
 - **Fail2ban**: activar al menos las jaulas `sshd` y `nginx-http-auth`.
-- **Headers HTTP**: incluir HSTS, CSP, X-Frame-Options en el reverse proxy (ver `nginx.conf`).
+- **Headers HTTP**: incluir HSTS, CSP, X-Frame-Options en el reverse proxy (ver `vhosts/nginx.conf`).
 - **Actualizaciones**: `unattended-upgrades` para parches críticos del SO.
 - **Logs**: rotación con `logrotate` para `storage/logs/laravel.log`.
 
