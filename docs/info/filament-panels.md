@@ -178,6 +178,44 @@ Se abordan en la fase 05 del roadmap.
 - Las 16 Policies de `app/Policies/` se aplican por descubrimiento automático.
 - Gates auxiliares: `access-admin-panel`, `manage-settings`, `view-statistics`.
 
+### Reparto de roles: nadie sube por encima del suyo
+
+Dos reglas que hay que tener presentes al tocar `UserResource` o `UserPolicy`,
+porque su ausencia era una **escalada de privilegios real** (auditoría AR-P01,
+reproducida antes de arreglarla):
+
+1. **El propio registro no se edita desde el recurso de usuarios.**
+   `UserPolicy::update()` devuelve `false` cuando el sujeto y el objeto son el
+   mismo usuario. El autoservicio va por «Editar perfil»
+   (`Admin\Pages\Profile` y `Tenant\Pages\EditProfile`, ambos sobre el trait
+   `EditsOwnProfile`), que **no expone `role_id` ni `is_active`**. Es la misma
+   filosofía que D91 con el email.
+
+   Un SuperAdmin sí puede editarse desde el recurso, pero no por la policy:
+   `Gate::before` le concede todo antes de evaluarla. En su caso no hay nada que
+   escalar.
+
+2. **El `Select` de rol sólo ofrece lo que quien edita puede repartir.** El
+   criterio está en `UserRoleEnum::assignableRoles()`:
+
+   | Quien edita | Puede asignar |
+   |---|---|
+   | SuperAdmin | SuperAdmin · Admin · User · Editor |
+   | Admin | Admin · User · Editor |
+   | Editor · User | nada |
+
+   Se aplica **en dos capas**: el `modifyQueryUsing` de la relación acota lo que
+   se pinta, y una regla `Rule::in()` acota lo que se acepta al guardar. Las dos,
+   porque filtrar sólo las opciones se salta cambiando el `<select>` desde las
+   herramientas del navegador.
+
+   Sin la segunda regla, un Admin podía **crear** un SuperAdmin con una
+   contraseña elegida por él y entrar después con esa cuenta. Cerrar sólo la
+   edición del propio registro no habría bastado.
+
+Ambas están fijadas por `tests/Feature/Filament/RoleEscalationTest.php` y
+`tests/Unit/Policies/UserPolicyTest.php`.
+
 ## Comandos relacionados
 
 ```bash
@@ -196,4 +234,4 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-31
+> Creado: 2026-08-30 · Última revisión: 2026-09-02

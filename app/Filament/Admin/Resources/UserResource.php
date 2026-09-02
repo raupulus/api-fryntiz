@@ -36,6 +36,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 /**
@@ -59,6 +60,24 @@ class UserResource extends Resource
     protected static ?string $pluralModelLabel = 'Usuarios';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    /**
+     * Roles que puede repartir quien está usando el formulario ahora mismo.
+     *
+     * Nadie asigna un rol por encima del suyo: el criterio vive en
+     * {@see UserRoleEnum::assignableRoles()} y se aplica en dos capas —las
+     * opciones que se pintan y la regla de validación— porque acotar sólo las
+     * opciones se salta cambiando el `<select>` desde el navegador (AR-P01).
+     *
+     * Sin usuario en sesión no hay nada asignable: así el formulario falla
+     * cerrado en lugar de ofrecerlo todo.
+     *
+     * @return list<int>
+     */
+    protected static function assignableRoleIds(): array
+    {
+        return auth()->user()?->assignableRoleIds() ?? [];
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -108,8 +127,24 @@ class UserResource extends Resource
                         ->required(fn (string $operation) => $operation === 'create')
                         ->rule(Password::defaults())
                         ->label('Contraseña'),
+                    // AR-P01: las opciones se acotan a lo que quien edita puede
+                    // repartir. Sin esto, el `Select` ofrecía los cuatro roles a
+                    // cualquiera que llegase al formulario, así que un `Admin`
+                    // podía ponerse `SuperAdmin` —o dar de alta uno nuevo con
+                    // una contraseña elegida por él— y quedarse con el bypass
+                    // total de `Gate::before`.
+                    //
+                    // El filtro del `modifyQueryUsing` es lo que ve el
+                    // navegador; la regla `in` de abajo es lo que impide que
+                    // valga de nada trastear el `<select>` desde las
+                    // herramientas de desarrollo. Las dos, no una.
                     Select::make('role_id')
-                        ->relationship('role', 'display_name')
+                        ->relationship(
+                            'role',
+                            'display_name',
+                            fn (Builder $query) => $query->whereIn('id', self::assignableRoleIds()),
+                        )
+                        ->rule(Rule::in(self::assignableRoleIds()))
                         ->required()->preload()->searchable()
                         ->live()
                         ->label('Rol'),

@@ -45,12 +45,39 @@ class UserPolicyTest extends TestCase
     }
 
     #[Test]
-    public function cada_uno_se_ve_y_se_edita_a_si_mismo(): void
+    public function cada_uno_se_ve_a_si_mismo(): void
     {
         $user = $this->makeUser();
 
         $this->assertTrue($this->policy->view($user, $user));
-        $this->assertTrue($this->policy->update($user, $user));
+    }
+
+    #[Test]
+    public function nadie_se_edita_a_si_mismo_desde_el_recurso_de_usuarios(): void
+    {
+        // AR-P01. `update()` devolvía true para el propio registro, y el
+        // formulario del recurso incluye `role_id`: con las dos cosas juntas un
+        // Admin entraba en /admin/users/{su_id}/edit, se ponía SuperAdmin y se
+        // llevaba el bypass total de Gate::before.
+        //
+        // El autoservicio va por App\Filament\{Admin\Pages\Profile,
+        // Tenant\Pages\EditProfile}, que no exponen ni el rol ni is_active.
+        $user = $this->makeUser();
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+
+        $this->assertFalse($this->policy->update($user, $user));
+        $this->assertFalse($this->policy->update($admin, $admin));
+    }
+
+    #[Test]
+    public function un_admin_sigue_editando_a_otros_usuarios(): void
+    {
+        // Cerrar el autoservicio no puede llevarse por delante el trabajo real
+        // del panel.
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+
+        $this->assertTrue($this->policy->update($admin, $this->makeUser()));
+        $this->assertTrue($this->policy->update($admin, $this->makeUser(UserRoleEnum::Editor)));
     }
 
     #[Test]
@@ -110,5 +137,46 @@ class UserPolicyTest extends TestCase
     {
         $this->assertFalse($this->policy->create($this->makeUser()));
         $this->assertTrue($this->policy->create($this->makeUser(UserRoleEnum::Admin)));
+    }
+
+    #[Test]
+    public function nadie_reparte_un_rol_por_encima_del_suyo(): void
+    {
+        // La otra mitad de AR-P01: aunque no pueda editarse a sí mismo, un
+        // Admin podía dar de alta un SuperAdmin nuevo con una contraseña
+        // elegida por él y entrar con esa cuenta. El criterio está en el enum y
+        // el formulario lo aplica por partida doble (opciones + regla `in`).
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+        $superadmin = $this->makeUser(UserRoleEnum::SuperAdmin);
+
+        $this->assertFalse($admin->canAssignRole(UserRoleEnum::SuperAdmin));
+        $this->assertTrue($admin->canAssignRole(UserRoleEnum::Admin));
+        $this->assertTrue($admin->canAssignRole(UserRoleEnum::Editor));
+        $this->assertTrue($admin->canAssignRole(UserRoleEnum::User));
+
+        $this->assertTrue($superadmin->canAssignRole(UserRoleEnum::SuperAdmin));
+
+        $this->assertSame([2, 3, 4], $admin->assignableRoleIds());
+        $this->assertSame([1, 2, 3, 4], $superadmin->assignableRoleIds());
+    }
+
+    #[Test]
+    public function un_editor_y_un_usuario_no_reparten_ningun_rol(): void
+    {
+        $this->assertSame([], $this->makeUser(UserRoleEnum::Editor)->assignableRoleIds());
+        $this->assertSame([], $this->makeUser(UserRoleEnum::User)->assignableRoleIds());
+    }
+
+    #[Test]
+    public function un_rol_desconocido_no_reparte_nada(): void
+    {
+        // Falla cerrado: un `role_id` fuera del catálogo no debe abrir el
+        // formulario entero.
+        $user = $this->makeUser();
+        $user->role_id = 99;
+
+        $this->assertNull($user->roleEnum());
+        $this->assertSame([], $user->assignableRoleIds());
+        $this->assertFalse($user->canAssignRole(UserRoleEnum::User));
     }
 }

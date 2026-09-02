@@ -309,6 +309,35 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * El rol como enum, o `null` si el `role_id` no está en el catálogo.
+     */
+    public function roleEnum(): ?UserRoleEnum
+    {
+        return UserRoleEnum::tryFrom((int) $this->role_id);
+    }
+
+    /**
+     * ¿Puede este usuario asignar el rol indicado a alguien?
+     *
+     * Nadie reparte un rol por encima del suyo: ver
+     * {@see UserRoleEnum::assignableRoles()} para el porqué (AR-P01).
+     */
+    public function canAssignRole(UserRoleEnum|int|null $role): bool
+    {
+        return $role !== null && (bool) $this->roleEnum()?->canAssign($role);
+    }
+
+    /**
+     * Ids de los roles que este usuario puede repartir.
+     *
+     * @return list<int>
+     */
+    public function assignableRoleIds(): array
+    {
+        return $this->roleEnum()?->assignableRoleIds() ?? [];
+    }
+
+    /**
      * ¿Puede este usuario trabajar sobre la plataforma indicada?
      *
      * Un admin llega a todas. Un editor sólo a las que tiene asignadas. Un
