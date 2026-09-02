@@ -138,6 +138,36 @@ con firma HMAC, no reactivando aquello.
 
 ## API
 
+### D22 · Los índices de las series temporales van con `CONCURRENTLY`
+
+La migración `2026_09_02_000001_add_indexes_to_time_series_tables` declara
+`public $withinTransaction = false` y crea los veinte índices con
+`CREATE INDEX CONCURRENTLY IF NOT EXISTS`.
+
+**Por qué.** Un `CREATE INDEX` normal bloquea la tabla para escritura mientras
+se construye. Sobre `meteorology_*` eso significa parar la ingesta de los
+cacharros durante el despliegue, y un microcontrolador que recibe un error no
+reintenta indefinidamente: pierde la lectura.
+
+`CONCURRENTLY` no puede ejecutarse dentro de una transacción, y PostgreSQL sí
+soporta DDL transaccional, así que Laravel envuelve la migración por defecto. De
+ahí el `$withinTransaction = false`. El precio es que un fallo a mitad deja los
+índices ya creados; por eso todo va con `IF NOT EXISTS` y la migración se puede
+relanzar sin limpiar nada a mano.
+
+**El orden de las columnas no es cosmético.** `(hardware_device_id, created_at)`
+sirve para las tres cosas de la misma consulta: acota por dispositivo, acota el
+rango de fechas dentro de ese dispositivo, y devuelve las filas ya ordenadas por
+fecha, así que PostgreSQL se ahorra el `sort`. Al revés no serviría para lo
+primero, que es lo que más filas descarta.
+
+**Qué lo fija.** `tests/Feature/Database/TimeSeriesIndexesTest.php` comprueba que
+cada tabla tiene su índice y con las columnas en ese orden. No mide rendimiento
+—eso no se mide en una suite—: comprueba que el índice existe, que es lo que se
+pierde con un `dropIndex` de más o con una tabla nueva creada copiando una vieja.
+
+*Origen: AR-R01 de la auditoría 2026-09-02.*
+
 ### D18 · Hay DOS puertas de respuesta y se mantienen las dos
 
 `JsonHelper` (estático) y `ApiResponseTrait` (trait) devuelven exactamente lo mismo y coexisten a
