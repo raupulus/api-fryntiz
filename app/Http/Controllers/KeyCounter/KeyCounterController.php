@@ -223,30 +223,31 @@ class KeyCounterController extends Controller
     /**
      * Devuelve los datos en json para las pulsaciones de teclado.
      *
+     * ⚠️ Este método **no tiene ruta registrada** (`routes/keycounter/web.php`
+     * sólo declara `index`). Se conserva porque la vista de KeyCounter va a
+     * necesitarlo cuando se le añada el selector de mes; hasta entonces no lo
+     * llama nadie.
      *
-     * @return JsonResponse
+     * Hasta la revisión de 2026-09-02 hacía `response()->json(JsonHelper::success($data))`,
+     * es decir, metía un `JsonResponse` dentro de otro. El resultado no era el
+     * envelope sino el objeto de respuesta serializado:
+     * `{"headers":{},"original":{...},"exception":null}`. Como el método no
+     * estaba enrutado, nunca dio la cara.
      */
-    public function getKeyboardDataAjax(Request $request)
+    public function getKeyboardDataAjax(Request $request): JsonResponse
     {
         $month = (int) ($request->get('month') ?? date('m'));
         $year = (int) ($request->get('year') ?? date('Y'));
 
         $statistics = Keyboard::getStatisticsPreparedToGraphics($month, $year);
-        $keyboard_statistics = $statistics['keyboard_statistics'];
-        $labelsString = $statistics['labelsString'];
-        $datasetJson = $statistics['datasetJson'];
 
-        $data = [
+        return JsonHelper::success([
             'month' => $month,
             'year' => $year,
-            'labelsString' => $labelsString,
-            'datasetJson' => $datasetJson,
-            'keyboard_statistics' => $keyboard_statistics,
-        ];
-
-        $response = JsonHelper::success($data);
-
-        return response()->json($response);
+            'labelsString' => $statistics['labelsString'],
+            'datasetJson' => $statistics['datasetJson'],
+            'keyboard_statistics' => $statistics['keyboard_statistics'],
+        ]);
     }
 
     public function getMouseDataAjax()
