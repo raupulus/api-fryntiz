@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\KeyCounter\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\DeviceStatusPayload;
 use App\Rules\OwnedHardwareDevice;
 use Carbon\Carbon;
 
@@ -46,6 +47,10 @@ class StoreMouseRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
+            // AR-V01: este bloque llegaba sin validar y se lo comía
+            // `HardwareService::updateDeviceStatus()`. El servicio filtra las
+            // claves, pero no los valores.
+            'hardware_device_info' => ['nullable', new DeviceStatusPayload],
             'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'user_id' => ['required', 'integer', 'exists:users,id'],
             'start_at' => ['required', 'date_format:Y-m-d H:i:s'],

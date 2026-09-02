@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\Hardware\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\DeviceStatusPayload;
 use App\Rules\OwnedHardwareDevice;
-use Closure;
 
 /**
  * Validación para almacenar el último estado conocido de un dispositivo en la
@@ -31,18 +31,19 @@ class StoreDeviceStatusRequest extends BaseFormRequest
      * grupo, incluido `hardware_device_id` (fix1 #13). Aquí sólo pasan los
      * campos de estado, y `hardware_device_id` nunca es uno de ellos.
      *
-     * @var array<int, string>
+     * La lista sale de {@see DeviceStatusPayload::rules()}, que es la misma que
+     * usan los otros ocho endpoints que aceptan el bloque. Antes vivía sólo
+     * aquí, y por eso sólo protegía a esta ruta (AR-V01).
+     *
+     * @return array<int, string>
      */
-    /** Máximo de claves admitidas en `extra`. */
-    private const MAX_EXTRA_KEYS = 30;
-
-    /** Longitud máxima de cada valor de `extra` (o valor máximo si es número). */
-    private const MAX_EXTRA_LENGTH = 255;
-
-    private const STATUS_FIELDS = [
-        'temp', 'voltage', 'battery_level', 'cpu', 'disk',
-        'uptime', 'ip_local', 'ip_public', 'extra',
-    ];
+    private static function statusFields(): array
+    {
+        return array_values(array_filter(
+            array_keys(DeviceStatusPayload::rules()),
+            static fn (string $campo): bool => ! str_contains($campo, '.')
+        ));
+    }
 
     /**
      * Si el estado viene agrupado en `hardware_device_info`, lo aplana a la raíz
@@ -63,7 +64,7 @@ class StoreDeviceStatusRequest extends BaseFormRequest
             return;
         }
 
-        $allowed = array_intersect_key($info, array_flip(self::STATUS_FIELDS));
+        $allowed = array_intersect_key($info, array_flip(self::statusFields()));
 
         // Lo que ya viene en la raíz manda sobre lo agrupado.
         $allowed = array_diff_key($allowed, $this->except('hardware_device_info'));
@@ -77,39 +78,6 @@ class StoreDeviceStatusRequest extends BaseFormRequest
     {
         return [
             'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
-            'temp' => ['nullable', 'numeric'],
-            'voltage' => ['nullable', 'numeric'],
-            'battery_level' => ['nullable', 'integer', 'between:0,100'],
-            'cpu' => ['nullable', 'numeric', 'between:0,100'],
-            'disk' => ['nullable', 'numeric', 'between:0,100'],
-            'uptime' => ['nullable', 'integer', 'min:0'],
-            'ip_local' => ['nullable', 'ip'],
-            'ip_public' => ['nullable', 'ip'],
-            // `extra` es un cajón de sastre que se guarda en JSON. Sin límites,
-            // un cacharro (o quien le robe el token) puede engordar la fila sin
-            // freno (fix1 #12).
-            'extra' => ['nullable', 'array', 'max:'.self::MAX_EXTRA_KEYS],
-            'extra.*' => ['nullable', $this->simpleBoundedValue()],
-        ];
-    }
-
-    /**
-     * Cada valor de `extra` tiene que ser un dato simple y de longitud acotada.
-     * No vale una lista ni un objeto anidado: `extra` es un cajón de métricas,
-     * no un sitio donde meter un árbol entero.
-     */
-    private function simpleBoundedValue(): Closure
-    {
-        return function (string $atributo, mixed $value, Closure $failure): void {
-            if (is_array($value) || is_object($value)) {
-                $failure('Los valores de extra deben ser simples (número, texto o booleano).');
-
-                return;
-            }
-
-            if (is_string($value) && mb_strlen($value) > self::MAX_EXTRA_LENGTH) {
-                $failure('Cada valor de extra no puede superar los '.self::MAX_EXTRA_LENGTH.' caracteres.');
-            }
-        };
+        ] + DeviceStatusPayload::rules();
     }
 }

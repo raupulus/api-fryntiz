@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\AirFlight\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\DeviceStatusPayload;
 use App\Rules\OwnedHardwareDevice;
 
 /**
@@ -20,6 +21,10 @@ class StoreAirFlightRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
+            // AR-V01: este bloque llegaba sin validar y se lo comía
+            // `HardwareService::updateDeviceStatus()`. El servicio filtra las
+            // claves, pero no los valores.
+            'hardware_device_info' => ['nullable', new DeviceStatusPayload],
             // Opcional: no todos los receptores lo mandan. Si viene, se
             // comprueba que sea del usuario (**N293**).
             'hardware_device_id' => ['nullable', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\Hardware\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\DeviceStatusPayload;
 use App\Rules\OwnedHardwareDevice;
 
 /**
@@ -51,6 +52,10 @@ class StoreEnergyRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
+            // AR-V01: este bloque llegaba sin validar y se lo comía
+            // `HardwareService::updateDeviceStatus()`. El servicio filtra las
+            // claves, pero no los valores.
+            'hardware_device_info' => ['nullable', new DeviceStatusPayload],
             'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
 
             // Segundos que ha durado la medición. Sin esto no hay energía, sólo

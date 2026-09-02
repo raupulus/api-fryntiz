@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\SmartPlant\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
+use App\Rules\DeviceStatusPayload;
 use App\Rules\OwnedHardwareDevice;
 use App\Rules\OwnedSmartPlant;
 
@@ -50,6 +51,10 @@ class StoreRegisterRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
+            // AR-V01: este bloque llegaba sin validar y se lo comía
+            // `HardwareService::updateDeviceStatus()`. El servicio filtra las
+            // claves, pero no los valores.
+            'hardware_device_info' => ['nullable', new DeviceStatusPayload],
             'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id', new OwnedSmartPlant],
             'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'uv' => ['nullable', 'numeric'],
