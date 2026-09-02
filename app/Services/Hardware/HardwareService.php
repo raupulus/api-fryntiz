@@ -336,6 +336,11 @@ class HardwareService
         // vatios-hora del día los da él y no hay nada que derivar.
         $reading->energy_source = isset($data['day_power_generation_wh']) ? 'device' : 'derived';
 
+        // AD-Q04 (auditoría de datos 2026-09-02): se guarda antes de que el
+        // bloque siguiente lo sobrescriba con V×A, para poder comparar lo que
+        // dijo el aparato contra lo calculado.
+        $devicePower = $reading->power;
+
         if ($element !== null) {
             [$voltage, $fuente] = $element->resolveVoltage($reading->voltage);
             $reading->voltage = $voltage;
@@ -346,6 +351,25 @@ class HardwareService
         if ($reading->amperage !== null && $reading->amperage < 0) {
             $reading->markSuspicious('corriente negativa: revisar el conexionado');
             $warnings[] = 'El controlador ha mandado corriente negativa: revisa el conexionado.';
+        }
+
+        // AD-Q04: un Renogy Rover real en producción mandó `power` hasta 82 W
+        // distinto de V×A en un puñado de lecturas (hipo del firmware, no
+        // redondeo: el ruido normal de muestreo se queda por debajo de 20 W).
+        // Umbral absoluto y no porcentual: uno porcentual dispara en falso
+        // constantemente con corrientes bajas (p.ej. 0,03 A).
+        if ($devicePower !== null && $reading->power !== null
+            && abs($devicePower - $reading->power) > 20.0) {
+            $reading->markSuspicious(sprintf(
+                'potencia del aparato (%.2f W) muy distinta de V×A (%.2f W)',
+                $devicePower,
+                $reading->power
+            ));
+            $warnings[] = sprintf(
+                'El controlador ha mandado %.2f W pero V×A da %.2f W: revisa la calibración del sensor.',
+                $devicePower,
+                $reading->power
+            );
         }
 
         $reading->save();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\V2\Persistence;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwarePowerGeneratorSolar;
 use App\Models\User;
 use App\Support\Auth\TokenAbilities;
@@ -281,6 +282,72 @@ class SolarReadingPersistenceTest extends ApiTestCase
                 "El Resource devuelve `{$field}` a NULL: el cliente no puede leer lo que acaba de escribir."
             );
         }
+    }
+
+    /**
+     * AD-Q04 (auditoría de datos 2026-09-02): un Rover real en producción mandó
+     * `power` hasta 82 W distinto de V×A en un puñado de lecturas — un hipo del
+     * firmware, no ruido de redondeo. Con un elemento generador dado de alta,
+     * `power` se sobrescribe siempre con V×A (D115); lo que hay que comprobar
+     * es que la potencia que mandó el aparato, antes de perderse, deja una
+     * marca en vez de desaparecer sin más.
+     */
+    #[Test]
+    public function a_power_reading_far_from_v_times_a_is_flagged_but_not_discarded(): void
+    {
+        HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $payload = array_merge($this->fullPayload(), [
+            'solar_voltage' => 20.0,
+            'solar_current' => 5.0,
+            // V×A da 100 W; el aparato dice 10 W: 90 W de diferencia, muy por
+            // encima del umbral de 20 W.
+            'solar_power' => 10.0,
+        ]);
+
+        $this->send($payload)->assertStatus(201);
+
+        $row = HardwarePowerGeneratorSolar::query()->latest('id')->first();
+
+        $this->assertNotNull($row, 'La lectura sospechosa se descartó en vez de marcarse.');
+        $this->assertTrue((bool) $row->is_suspicious, 'La potencia inconsistente con V×A no se marcó.');
+        $this->assertNotNull($row->suspicious_reason);
+        $this->assertEqualsWithDelta(100.0, (float) $row->power, 0.01, 'El derivado V×A no se guardó: se quedó con el dato crudo del aparato.');
+    }
+
+    #[Test]
+    public function a_small_power_deviation_from_v_times_a_is_not_flagged(): void
+    {
+        // Ruido normal de muestreo: V, A y P no se leen en el mismo instante.
+        // No debe dispararse con cualquier diferencia, solo con una gorda.
+        HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $payload = array_merge($this->fullPayload(), [
+            'solar_voltage' => 20.0,
+            'solar_current' => 5.0,
+            // V×A da 100 W; el aparato dice 98 W: 2 W de diferencia.
+            'solar_power' => 98.0,
+        ]);
+
+        $this->send($payload)->assertStatus(201);
+
+        $row = HardwarePowerGeneratorSolar::query()->latest('id')->first();
+
+        $this->assertFalse((bool) $row->is_suspicious, 'Una diferencia de 2 W (ruido normal) se marcó como sospechosa.');
     }
 
     #[Test]

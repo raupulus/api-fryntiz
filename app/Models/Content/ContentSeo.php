@@ -182,15 +182,7 @@ class ContentSeo extends BaseModel
      */
     public function getHtmlGenericMetatags(): string
     {
-        $tags = $this->getGenericTags();
-
-        $html = '';
-
-        $tags->each(function ($value, $key) use (&$html) {
-            $html .= '<meta property="'.$key.'" content="'.$value.'">';
-        });
-
-        return $html;
+        return $this->renderMetaTags($this->getGenericTags());
     }
 
     /**
@@ -198,15 +190,7 @@ class ContentSeo extends BaseModel
      */
     public function getHtmlMetatagsOpenGraph(): string
     {
-        $tags = $this->getSocialTags();
-
-        $html = '';
-
-        $tags->each(function ($value, $key) use (&$html) {
-            $html .= '<meta property="'.$key.'" content="'.$value.'">';
-        });
-
-        return $html;
+        return $this->renderMetaTags($this->getSocialTags());
     }
 
     /**
@@ -214,15 +198,7 @@ class ContentSeo extends BaseModel
      */
     public function getHtmlMetatagsTwitter(): string
     {
-        $tags = $this->getTwitterTags();
-
-        $html = '';
-
-        $tags->each(function ($value, $key) use (&$html) {
-            $html .= '<meta property="'.$key.'" content="'.$value.'">';
-        });
-
-        return $html;
+        return $this->renderMetaTags($this->getTwitterTags());
     }
 
     /**
@@ -230,6 +206,26 @@ class ContentSeo extends BaseModel
      */
     public function getHtmlMetatags(): string
     {
-        return $this->getGenericTags().$this->getHtmlMetatagsOpenGraph().$this->getHtmlMetatagsTwitter();
+        return $this->getHtmlGenericMetatags().$this->getHtmlMetatagsOpenGraph().$this->getHtmlMetatagsTwitter();
+    }
+
+    /**
+     * Construye las etiquetas `<meta>` de una colección clave => valor.
+     *
+     * AD-S02 (auditoría de datos 2026-09-02): esto concatenaba `$key`/`$value`
+     * en el HTML sin escapar. Un `description` o `og_title` con una comilla
+     * doble seguida de HTML rompía el atributo e inyectaba código en la
+     * página pública. `content` y `og:description`/`autor` vienen de campos
+     * editables desde el panel, no de constantes del código.
+     */
+    private function renderMetaTags(Collection $tags): string
+    {
+        $html = '';
+
+        $tags->each(function ($value, $key) use (&$html) {
+            $html .= '<meta property="'.e($key).'" content="'.e((string) $value).'">';
+        });
+
+        return $html;
     }
 }

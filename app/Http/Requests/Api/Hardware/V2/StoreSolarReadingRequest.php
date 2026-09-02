@@ -120,6 +120,16 @@ class StoreSolarReadingRequest extends BaseFormRequest
             $merge['hardware_device_id'] = (int) $merge['hardware_device_id'];
         }
 
+        // AD-T05 (auditoría de datos 2026-09-02): un Rover real mandó "MPPT" en
+        // mayúsculas mezclado con "mppt" en minúsculas para el mismo estado. No
+        // se restringe a una lista cerrada —el Rover manda lo que le da la
+        // gana, y una lista rígida rechazaría un estado nuevo de firmware—,
+        // solo se normaliza la capitalización para no partir en dos el mismo
+        // valor al agruparlo o mostrarlo.
+        if (isset($merge['charging_status_label']) && is_string($merge['charging_status_label'])) {
+            $merge['charging_status_label'] = mb_strtolower($merge['charging_status_label']);
+        }
+
         $this->merge($merge);
     }
 
