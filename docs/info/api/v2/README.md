@@ -14,7 +14,7 @@
 > ver su `docs/info/<modulo>.md` correspondiente, enlazado desde cada
 > contrato.
 
-Verificado con `php artisan route:list --path=api` el 2026-08-30. Full REST:
+Verificado con `php artisan route:list --path=api` el 2026-09-02. Full REST:
 recursos en plural, sub-recursos anidados bajo su padre. El fallback
 `ANY /api/v2/{any}` devuelve siempre JSON 404 con envelope
 `{success, message}`, para cualquier método y ruta no reconocida.
@@ -25,6 +25,91 @@ etc.) sustituyó por completo las rutas de escritura IoT anteriores **sin
 alias de compatibilidad**. Antes de desplegar a un entorno con dispositivos
 físicos reales enviando datos, confirma que su firmware ya apunta a las
 rutas nuevas.
+
+---
+
+## Forma de la respuesta
+
+**Todas** las respuestas de `/api/v2/**` llevan el mismo sobre, con una única
+excepción: el `204` de un borrado, que por definición del protocolo no lleva
+cuerpo.
+
+```jsonc
+// Correcta
+{ "success": true,  "message": "Operación exitosa", "data": { } }
+
+// Colección: añade "meta"
+{ "success": true,  "message": "Operación exitosa", "data": [ ], "meta": {
+    "total": 40, "per_page": 25, "current_page": 1, "last_page": 2, "from": 1, "to": 25 } }
+
+// Se guardó, pero hay algo que mirar: añade "warnings"
+{ "success": true,  "message": "Lecturas de energia almacenadas", "data": [ ],
+  "warnings": ["El canal 3 no tiene ningún elemento activo dado de alta; su lectura no se ha guardado."] }
+
+// Error
+{ "success": false, "message": "Recurso no encontrado" }
+
+// Error de validación: añade "errors"
+{ "success": false, "message": "Los datos proporcionados no son válidos.",
+  "errors": { "email": ["El campo correo electrónico es obligatorio."] } }
+```
+
+Reglas del sobre:
+
+- `success` es siempre booleano y siempre está.
+- `message` es siempre texto y siempre está. Va **traducido**: sale de
+  `lang/{es,en}/api.php` y respeta la cabecera `Accept-Language` (o `?lang=`),
+  igual que los mensajes de validación. Ver `App\Http\Middleware\SetLocale`.
+- `data` sólo aparece en las respuestas correctas. En un error no hay recurso
+  que devolver, así que la clave no existe —no es `null`—.
+- `meta`, `warnings`, `errors` y `debug` son opcionales y van siempre detrás.
+- **No hay ninguna respuesta con la forma de Laravel.** Un `429`, un `500`, un
+  `413` o cualquier otro error que genere el framework se envuelven igual, y
+  siempre en JSON aunque el cliente mande `Accept: */*` o no mande `Accept`
+  —que es lo que hacen los microcontroladores—. Las cabeceras del error se
+  conservan: un `429` sigue trayendo su `Retry-After`.
+
+### El bloque `debug`
+
+Sólo existe con `APP_DEBUG=true`, o sea **nunca en producción**. Es el contexto
+que la V1 devolvía en `JsonHelper::siteData()`, recuperado para desarrollo:
+
+```jsonc
+"debug": {
+  "method": "GET",
+  "domain": "api.raupulus.dev",
+  "path": "api/v2/platforms",
+  "full_url": "https://api.raupulus.dev/api/v2/platforms?created_at=abc",
+  "locale": "es",
+  "parameters": { "created_at": "abc", "password": "[oculto]" },
+  "headers": { "accept": "application/json", "user-agent": "..." },
+  "exception": { "class": "...", "message": "...", "file": "...", "line": 42 }
+}
+```
+
+Dos cosas que **no** se copiaron de la V1:
+
+- Las cabeceras pasan por **lista blanca** (`ApiEnvelope::SAFE_HEADERS`), no por
+  lista negra. `Authorization` y `Cookie` no salen nunca. Con lista negra, la
+  cabecera que se invente mañana entraría sola.
+- Los campos sensibles del cuerpo se tapan (`ApiEnvelope::REDACTED_INPUT`). Sin
+  eso, el `debug` de `POST /auth/tokens` enseñaría la contraseña en claro.
+
+Es en desarrollo donde se pegan respuestas en capturas y en tickets, así que el
+filtrado también aplica ahí.
+
+### Dónde se construye
+
+| Pieza | Papel |
+|---|---|
+| `App\Support\Http\ApiEnvelope` | La **forma**. Único sitio donde está escrita, y donde vive el bloque `debug`. |
+| `App\Traits\ApiResponseTrait` | Puerta para los **controladores** (`successResponse()`, `notFoundResponse()`…). |
+| `JsonHelper` (`support/helpers/`) | Puerta **estática**, para donde un trait no llega: los handlers de `bootstrap/app.php`, la ruta de cierre de `routes/api/v2.php` y los `render()` de `app/Exceptions/`. |
+
+Las dos puertas son gemelas y devuelven exactamente lo mismo:
+`tests/Feature/Api/V2/ApiResponseParityTest.php` las compara método a método, y
+`tests/Feature/Api/V2/ErrorEnvelopeTest.php` fija que ningún error se salga del
+sobre. **Si tocas un método de una, toca su gemelo en la otra.**
 
 ---
 
@@ -100,4 +185,4 @@ No es un módulo de `api/v2` ni usa su envelope: vive en `/mcp/api-raupulus`
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-09-02

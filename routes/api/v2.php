@@ -151,8 +151,8 @@ require __DIR__.'/../cv/v2.php';
 | sencillamente no existe.
 */
 Route::any('{any}', function () {
-    return response()->json([
-        'success' => false,
-        'message' => 'API V2 - Endpoint no encontrado',
-    ], 404);
+    // Por `JsonHelper`, no a mano: es la puerta estática del mismo envelope que
+    // usan los controladores con `ApiResponseTrait`. Ver la nota de cabecera de
+    // cualquiera de los dos.
+    return JsonHelper::notFound(__('api.endpoint_not_found'));
 })->where('any', '.*')->name('api.v2.fallback');

@@ -138,6 +138,100 @@ con firma HMAC, no reactivando aquello.
 
 ## API
 
+### D18 · Hay DOS puertas de respuesta y se mantienen las dos
+
+`JsonHelper` (estático) y `ApiResponseTrait` (trait) devuelven exactamente lo mismo y coexisten a
+propósito.
+
+**Por qué.** Un trait sólo lo puede usar una clase que lo declare, así que los handlers de
+excepciones de `bootstrap/app.php`, la ruta de cierre de `routes/api/v2.php` y los `render()` de
+`app/Exceptions/` no podían usarlo: **tenían el envelope copiado a mano, once veces**. Una clase
+estática sí llega a esos sitios. Y el trait sigue siendo lo cómodo dentro de un controlador, donde
+están las 79 llamadas.
+
+Se valoró dejar sólo la clase estática y que el trait delegara. Se descartó: son dos maneras
+legítimas de pedir lo mismo desde dos contextos distintos, y quitar una obligaría a reescribir uno
+de los dos lados sin ganar nada.
+
+**Lo que sí es único es la forma.** `App\Support\Http\ApiEnvelope` es el único sitio donde está
+escrito qué claves lleva el sobre y qué entra en el bloque `debug`. Las dos puertas beben de ahí.
+Una lista blanca de cabeceras escrita dos veces es una lista blanca que algún día sólo se actualiza
+en una.
+
+**Qué lo fija.** `tests/Feature/Api/V2/ApiResponseParityTest.php` compara las dos salidas método a
+método —cuerpo y código HTTP— y además comprueba que ningún método de `JsonHelper` se queda sin
+gemelo en el trait. Ambos ficheros llevan en su cabecera un aviso apuntando al otro.
+
+*Origen: AR-A06 de la auditoría 2026-09-02.*
+
+### D19 · El envelope lo lleva TODA respuesta, también las que genera Laravel
+
+El `render()` de cierre de `bootstrap/app.php` atrapa cualquier `Throwable` de `api/*` y lo devuelve
+con el sobre, respetando el código HTTP de la excepción y sus cabeceras.
+
+**Por qué.** Hasta la revisión de 2026-09-02, el envelope sólo lo aplicaba el código propio. Todo lo
+que emitía el framework salía con la forma de Laravel —`{"message": ..., "exception": ..., "trace": [...]}`—
+y en **HTML** si el cliente no mandaba `Accept: application/json`, que es exactamente lo que hace un
+microcontrolador. Los dos casos que se veían:
+
+| Caso | Cómo salía antes |
+|---|---|
+| **429** del throttle | `{"message":"Too Many Attempts."}`, y con `APP_DEBUG` el stack trace completo con rutas absolutas del servidor |
+| **500** no controlado | igual, o HTML |
+
+Se valoró resolverlo con un middleware de normalización. **No sirve:** la excepción salta por encima
+del pipeline de middleware hasta el kernel, así que un middleware nunca la ve. Tiene que ser un
+`render()`.
+
+Va registrado **el último** porque los `render()` se prueban en orden y gana el primero que devuelva
+algo: así los handlers específicos (401, 403, 404, 405, 410) siguen mandando.
+
+Las cabeceras de la excepción HTTP se conservan: sin ellas un 429 perdería su `Retry-After` y el
+cliente no sabría cuánto esperar.
+
+**Qué lo fija.** `tests/Feature/Api/V2/ErrorEnvelopeTest.php`, que prueba cada tipo de error con
+`Accept: application/json`, con el comodín y sin cabecera `Accept`.
+
+*Origen: AR-E02 de la auditoría 2026-09-02.*
+
+### D20 · El borrado se queda en 204 sin cuerpo
+
+Es la única respuesta de la API que no lleva envelope, y así se queda.
+
+**Por qué.** Un 204 no lleva cuerpo por definición del protocolo, así que no hay dónde poner el
+sobre. Degradarlo a un 200 con un sobre vacío daría uniformidad a costa de dejar de ser REST, y en
+esta API el criterio es REST. Decisión tomada explícitamente el 2026-09-02, no heredada.
+
+**Qué lo fija.** `ApiResponseParityTest::test_borrado_es_identico_y_sigue_siendo_204_sin_cuerpo()` y
+`ErrorEnvelopeTest::test_el_borrado_sigue_siendo_204_sin_cuerpo()`.
+
+*Origen: decisión sobre AR-A06.*
+
+### D21 · El bloque `debug` sólo en desarrollo, con lista blanca
+
+Las respuestas llevan una clave `debug` con el contexto de la petición, y sólo con `APP_DEBUG=true`.
+
+**Por qué.** Es lo que la V1 hacía en `JsonHelper::siteData()` y se echaba de menos: en desarrollo
+interesa ver de dónde vino la petición y con qué. En producción no sale nunca.
+
+**Lo que NO se copió de la V1, y es lo importante:**
+
+- `siteData()` volcaba `request()->headers->all()` entero, o sea `Authorization: Bearer <token>` y
+  las cookies de sesión. Ahora las cabeceras pasan por **lista blanca**
+  (`ApiEnvelope::SAFE_HEADERS`). Con lista negra, la cabecera que se invente mañana entraría sola.
+- `parameters` viene de `$request->all()`, así que el `debug` de `POST /auth/tokens` habría enseñado
+  la contraseña en claro. Los campos de `ApiEnvelope::REDACTED_INPUT` salen como `[oculto]`.
+- `prepareError()` metía el objeto `Exception` entero en la respuesta. Ahora sólo van clase,
+  mensaje, fichero y línea, y dentro de `debug`.
+
+«Es sólo desarrollo» no es excusa: en desarrollo es donde se pegan respuestas en capturas y en
+tickets.
+
+**Qué lo fija.** Cuatro tests en `ApiResponseParityTest`, incluidos uno que manda un `Authorization`
+real y otro que manda una contraseña, y comprueban que no aparecen en el cuerpo.
+
+*Origen: AR-A06 de la auditoría 2026-09-02.*
+
 ### D9 · Los resources NO usan `whenLoaded`
 
 `AirFlightResource::latestRoute`, `ContentResource::type/status`,
@@ -280,4 +374,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-09-01
+> Creado: 2026-09-01 · Última revisión: 2026-09-02
