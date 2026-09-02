@@ -21,10 +21,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('smartplant')->group(function () {
     Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SMARTPLANT_WRITE])->group(function () {
-        Route::get('/plants', [SmartPlantRegisterController::class, 'plants'])->name('api.v2.smartplant.plants.index');
-        Route::get('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'index'])
-            ->whereNumber('plant')
-            ->name('api.v2.smartplant.plants.readings.index');
+        // AR-A01: las lecturas iban sin throttle, y `plants/{plant}/readings`
+        // pagina una tabla de serie temporal.
+        Route::middleware('throttle:api')->group(function () {
+            Route::get('/plants', [SmartPlantRegisterController::class, 'plants'])->name('api.v2.smartplant.plants.index');
+            Route::get('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'index'])
+                ->whereNumber('plant')
+                ->name('api.v2.smartplant.plants.readings.index');
+        });
 
         Route::post('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'store'])
             ->whereNumber('plant')

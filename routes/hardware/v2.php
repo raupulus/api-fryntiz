@@ -29,7 +29,11 @@ Route::prefix('hardware')->group(function () {
     // completo de todos los usuarios, con números de serie, iterando el id
     // (auditoría A3). La ability estaba declarada en el catálogo y no la pedía
     // ninguna ruta (A9).
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWARE_READ])->group(function () {
+    // AR-A01: el `throttle:api` faltaba. Estar autenticado acota el daño pero
+    // no lo elimina: un token filtrado —el escenario del que se defiende todo
+    // el diseño de abilities— podía iterar el inventario a la velocidad que
+    // diera el servidor.
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWARE_READ, 'throttle:api'])->group(function () {
         Route::get('/devices', [HardwareDeviceController::class, 'index'])->name('api.v2.hardware.devices.index');
         Route::get('/devices/{device}', [HardwareDeviceController::class, 'show'])
             ->whereNumber('device')

@@ -113,6 +113,39 @@ sobre. **Si tocas un método de una, toca su gemelo en la otra.**
 
 ---
 
+## Límites de peticiones
+
+**Toda** ruta de `api/*` tiene límite. El grupo `api` lleva un techo aplicado
+con `throttleApi('api-global')` en `bootstrap/app.php`, y encima de él cada ruta
+declara el suyo cuando necesita algo más estricto. El middleware de ruta corre
+después del de grupo, así que se aplican los dos y **manda el más estricto**.
+
+| Limitador | Por defecto | Reparto | Dónde |
+|---|---|---|---|
+| `api-global` | 300/min | token, o IP si no hay token | techo de todo el grupo `api` |
+| `api` | 60/min | token, o IP | lecturas autenticadas y gestión de tokens |
+| `api-store` | 60/min | token | escrituras IoT por sensor |
+| `api-store-batch` | 20/min | token | lotes (AirFlight y multi-sensor) |
+| `api-auth` | 10/min | IP **y** email | login y newsletter |
+| `contact` | 5/hora | IP | formulario de contacto |
+| `api-fallback` | 30/min | IP | ruta de cierre `ANY /api/v2/{any}` |
+
+Los números salen de `config/rate_limits.php`, que explica de dónde sale cada
+uno, y se pueden ajustar por `.env` sin tocar código.
+
+⚠️ **Todo lo que reparte por IP depende de `TRUSTED_PROXIES`.** Mal puesto,
+`$request->ip()` devuelve la IP de nginx y el límite pasa a ser un cupo global
+compartido por todos los visitantes: ni frena a nadie ni deja pasar el tráfico
+bueno.
+
+Hasta la revisión de 2026-09-02 esto **no era así**: desde Laravel 11 el grupo
+`api` no trae throttle de fábrica y nadie lo había pedido, así que catorce rutas
+públicas de lectura y siete autenticadas iban sin ningún límite (AR-S01,
+AR-A01). `tests/Feature/Api/V2/RouteContractTest.php` recorre el enrutador y no
+deja que vuelva a pasar con una ruta nueva.
+
+---
+
 ## Autenticación (`Api\Auth\V2\TokenController`)
 
 Contrato completo: [`auth.md`](auth.md).

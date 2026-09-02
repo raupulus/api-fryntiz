@@ -40,6 +40,43 @@ return [
     'iot_batch_per_minute' => (int) env('RATE_LIMIT_IOT_BATCH', 20),
 
     /*
+     * Techo global de TODO el grupo `api`, incluido lo que no declara un
+     * limitador propio.
+     *
+     * Desde Laravel 11 el grupo `api` **no trae throttle**: hay que pedirlo con
+     * `throttleApi()`. Nadie lo pidió, así que catorce rutas públicas —las
+     * plataformas, los contenidos, los currículums, las estaciones y los
+     * aviones— y la ruta de cierre estaban sin ningún límite (auditoría
+     * AR-S01). Sobre tablas de serie temporal sin índice, eso es un servidor
+     * caído a coste cero para quien lo pida.
+     *
+     * Es un TECHO, no un límite fino: las rutas que declaran `throttle:api`,
+     * `throttle:api-store` o `throttle:contact` siguen mandando en lo suyo,
+     * porque el middleware de ruta corre después del de grupo y el más
+     * estricto es el que corta.
+     *
+     * 300/min es holgado a propósito. Una web pública encadena varias llamadas
+     * por página —la plataforma, sus contenidos, el detalle, las relacionadas—
+     * y un visitante navegando rápido puede pasar de 60 sin ser un problema.
+     * Lo que corta esto es el barrido automatizado, no la navegación.
+     *
+     * Se reparte por token cuando hay token y por IP cuando no: contar por IP
+     * a los cacharros haría que varias estaciones de la misma casa se
+     * repartieran un solo cupo (es el mismo motivo de A8).
+     */
+    'api_global_per_minute' => (int) env('RATE_LIMIT_API_GLOBAL', 300),
+
+    /*
+     * Ruta de cierre de la API (`ANY /api/v2/{any}`).
+     *
+     * Va aparte y mucho más bajo que el techo global: quien llega aquí está
+     * pidiendo rutas que no existen, y eso es exactamente lo que hace el
+     * escaneo automático que se lleva la mayor parte del tráfico basura de un
+     * VPS. Un cliente legítimo no necesita 30 respuestas 404 por minuto.
+     */
+    'api_fallback_per_minute' => (int) env('RATE_LIMIT_API_FALLBACK', 30),
+
+    /*
      * Lecturas autenticadas de la API. Por token también.
      */
     'api_per_minute' => (int) env('RATE_LIMIT_API', 60),

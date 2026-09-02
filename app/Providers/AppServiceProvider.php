@@ -184,6 +184,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         if (app()->environment('testing')) {
+            RateLimiter::for('api-global', fn () => Limit::none());
+            RateLimiter::for('api-fallback', fn () => Limit::none());
             RateLimiter::for('api', fn () => Limit::none());
             RateLimiter::for('file-resize', fn () => Limit::none());
             RateLimiter::for('sensor-data', fn () => Limit::none());
@@ -194,6 +196,27 @@ class AppServiceProvider extends ServiceProvider
         } else {
             // Los números salen de config/rate_limits.php, que explica de dónde
             // sale cada uno. Antes estaban escritos aquí a mano.
+
+            // Techo de TODO el grupo `api`, lo pida la ruta o no (AR-S01).
+            //
+            // Se aplica desde `bootstrap/app.php` con `throttleApi('api-global')`.
+            // Desde Laravel 11 el grupo `api` no trae throttle de fábrica, así
+            // que sin esto las rutas públicas de lectura no tenían ninguno.
+            //
+            // No sustituye a los limitadores de abajo: el middleware de ruta
+            // corre después del de grupo, así que sobre una escritura IoT
+            // siguen aplicando los dos y manda el más estricto.
+            RateLimiter::for('api-global', function (Request $request) {
+                return Limit::perMinute((int) config('rate_limits.api_global_per_minute'))
+                    ->by(self::rateKey($request));
+            });
+
+            // Ruta de cierre: quien pide rutas que no existen está escaneando.
+            // Por IP, que es lo único fiable ahí: un barrido no manda token.
+            RateLimiter::for('api-fallback', function (Request $request) {
+                return Limit::perMinute((int) config('rate_limits.api_fallback_per_minute'))
+                    ->by('ip:'.$request->ip());
+            });
 
             RateLimiter::for('api', function (Request $request) {
                 return Limit::perMinute((int) config('rate_limits.api_per_minute'))

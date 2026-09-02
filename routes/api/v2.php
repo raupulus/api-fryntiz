@@ -57,7 +57,7 @@ Route::prefix('auth')->group(function () {
 //
 // Sólo los datos propios. El antiguo `GET /user/{user}` dejaba enumerar
 // usuarios con cualquier token (auditoría A4).
-Route::prefix('users')->middleware(['auth:sanctum', 'ability:'.TokenAbilities::SESSION])->group(function () {
+Route::prefix('users')->middleware(['auth:sanctum', 'ability:'.TokenAbilities::SESSION, 'throttle:api'])->group(function () {
     Route::get('/me', [UserController::class, 'me'])->name('api.v2.users.me');
 });
 
@@ -155,4 +155,10 @@ Route::any('{any}', function () {
     // usan los controladores con `ApiResponseTrait`. Ver la nota de cabecera de
     // cualquiera de los dos.
     return JsonHelper::notFound(__('api.endpoint_not_found'));
-})->where('any', '.*')->name('api.v2.fallback');
+})
+    // Limitador propio y más bajo que el techo del grupo (AR-S01): quien llega
+    // aquí está pidiendo rutas que no existen, y eso es lo que hace el escaneo
+    // automático que se come la mayor parte del tráfico basura de un VPS. Un
+    // cliente legítimo no necesita 30 respuestas 404 por minuto.
+    ->middleware('throttle:api-fallback')
+    ->where('any', '.*')->name('api.v2.fallback');

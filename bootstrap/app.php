@@ -106,6 +106,24 @@ return Application::configure(basePath: dirname(__DIR__))
         // español.
         $middleware->api(prepend: [SetLocale::class]);
 
+        // Techo de peticiones para TODO el grupo `api` (AR-S01).
+        //
+        // Desde Laravel 11 el grupo `api` **no trae throttle de fábrica**: hay
+        // que pedirlo con esto. Nadie lo pedía, así que catorce rutas públicas
+        // de lectura —plataformas, contenidos, currículums, estaciones y
+        // aviones— y la ruta de cierre no tenían ningún límite. Sobre las
+        // tablas de serie temporal, que van sin índice, eso es tumbar el
+        // servidor a coste cero para quien lo pida.
+        //
+        // No sustituye a los `throttle:` de cada ruta: el middleware de ruta
+        // corre DESPUÉS del de grupo, así que sobre una escritura IoT siguen
+        // aplicando los dos y manda el más estricto. Este es sólo el techo de
+        // lo que nadie acotó.
+        //
+        // El segundo argumento de `throttleApi()` es «usar Redis», y se queda
+        // en `false`: no hay servidor de Redis.
+        $middleware->throttleApi('api-global');
+
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
