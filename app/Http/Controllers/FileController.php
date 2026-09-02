@@ -48,7 +48,7 @@ class FileController extends Controller
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
-        return response()->file($file->storagePathFile);
+        return $this->serve($file);
     }
 
     /**
@@ -107,6 +107,10 @@ class FileController extends Controller
 
         if ($cachedPath && is_file($cachedPath)) {
             return response()->file($cachedPath);
+        }
+
+        if (! $this->existsOnDisk($file)) {
+            return $this->missing();
         }
 
         $image = Image::decodePath($file->storagePathFile);
@@ -198,8 +202,8 @@ class FileController extends Controller
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
-        if (! file_exists($file->storagePathFile)) {
-            return response()->file(File::genericImagePath('not_found'));
+        if (! $this->existsOnDisk($file)) {
+            return $this->missing();
         }
 
         // Se descarga con el nombre con el que se subió, no con el interno.
@@ -207,6 +211,54 @@ class FileController extends Controller
             $file->storagePathFile,
             $file->original_name ?: $file->name
         );
+    }
+
+    /**
+     * ¿Está el fichero de verdad en el disco?
+     *
+     * La fila y el fichero se pueden separar: alguien borra a mano en
+     * `storage/`, una restauración de base de datos trae filas cuyos ficheros
+     * no viajaron, o `storage_path` quedó a null y
+     * `getStoragePathFileAttribute()` devuelve **cadena vacía**.
+     *
+     * `download()` ya lo comprobaba; `get()` y `resizeAndGet()` no, así que
+     * iban directas a `response()->file()`, que lanza `FileNotFoundException` →
+     * **500 en una ruta pública** que además sirve las imágenes de las webs
+     * (auditoría AR-E04).
+     */
+    private function existsOnDisk(File $file): bool
+    {
+        $ruta = $file->storagePathFile;
+
+        return $ruta !== '' && is_file($ruta);
+    }
+
+    /**
+     * Sirve el fichero, o el marcador de «no encontrado» si no está en el disco.
+     */
+    private function serve(File $file): BinaryFileResponse
+    {
+        if (! $this->existsOnDisk($file)) {
+            return $this->missing();
+        }
+
+        return response()->file($file->storagePathFile);
+    }
+
+    /**
+     * Imagen genérica de «no encontrado», con un 404 de verdad.
+     *
+     * Se devuelve la imagen y no un error a secas porque estas rutas sirven las
+     * ilustraciones de las webs: un marcador mantiene la maqueta en pie. Pero el
+     * código HTTP sí dice la verdad, para que un cliente o una caché no se
+     * queden con un 200 sobre algo que no existe.
+     *
+     * `response()->file()` no admite código de estado —su firma es
+     * `file($file, array $headers = [])`—, así que se ajusta después.
+     */
+    private function missing(): BinaryFileResponse
+    {
+        return response()->file(File::genericImagePath('not_found'))->setStatusCode(404);
     }
 
     /**
