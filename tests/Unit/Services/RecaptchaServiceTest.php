@@ -140,4 +140,75 @@ class RecaptchaServiceTest extends TestCase
         config()->set('google.recaptcha.secret_key', 'una-clave');
         $this->assertTrue($this->service->isConfigured());
     }
+
+    #[Test]
+    public function una_puntuacion_baja_se_rechaza_aunque_success_sea_true(): void
+    {
+        // El fallo que motivó AR-S04: `success` es cierto para cualquier token
+        // bien formado y sin caducar, también el que se saca un bot. Lo que
+        // separa persona de bot en v3 es la puntuación, y no se miraba.
+        config(['google.recaptcha.secret_key' => 'clave-de-prueba']);
+        config(['google.recaptcha.min_score' => 0.5]);
+
+        Http::fake([
+            'www.google.com/*' => Http::response(['success' => true, 'score' => 0.1]),
+        ]);
+
+        $resultado = (new RecaptchaService)->verify('token-de-un-bot');
+
+        $this->assertTrue($resultado->configured);
+        $this->assertSame(0.1, $resultado->score);
+        $this->assertFalse($resultado->valid, 'Una puntuación de 0.1 no puede darse por válida.');
+    }
+
+    #[Test]
+    public function una_puntuacion_alta_se_acepta(): void
+    {
+        config(['google.recaptcha.secret_key' => 'clave-de-prueba']);
+        config(['google.recaptcha.min_score' => 0.5]);
+
+        Http::fake([
+            'www.google.com/*' => Http::response(['success' => true, 'score' => 0.9]),
+        ]);
+
+        $this->assertTrue((new RecaptchaService)->verify('token-de-una-persona')->valid);
+    }
+
+    #[Test]
+    public function el_login_usa_un_umbral_propio_mas_permisivo(): void
+    {
+        // 0.4 pasa en el login (umbral 0.3) y no pasa en un formulario público
+        // (umbral 0.5). Lo peor que puede pasar cortando en el login es dejar
+        // fuera al dueño del panel.
+        config(['google.recaptcha.secret_key' => 'clave-de-prueba']);
+        config(['google.recaptcha.min_score' => 0.5]);
+        config(['google.recaptcha.min_score_login' => 0.3]);
+
+        Http::fake([
+            'www.google.com/*' => Http::response(['success' => true, 'score' => 0.4]),
+        ]);
+
+        $servicio = new RecaptchaService;
+
+        $this->assertFalse($servicio->verify('token')->valid, 'En un formulario público 0.4 debe cortarse.');
+        $this->assertTrue($servicio->verify('token', null, 0.3)->valid, 'En el login 0.4 debe pasar.');
+    }
+
+    #[Test]
+    public function sin_puntuacion_se_deja_pasar(): void
+    {
+        // No debería ocurrir en v3, pero si Google responde sin `score` no se
+        // puede afirmar que sea un bot: mismo criterio de fallo en abierto que
+        // D10.
+        config(['google.recaptcha.secret_key' => 'clave-de-prueba']);
+
+        Http::fake([
+            'www.google.com/*' => Http::response(['success' => true]),
+        ]);
+
+        $resultado = (new RecaptchaService)->verify('token');
+
+        $this->assertTrue($resultado->valid);
+        $this->assertNull($resultado->score);
+    }
 }

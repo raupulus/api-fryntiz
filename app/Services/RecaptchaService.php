@@ -32,8 +32,12 @@ class RecaptchaService
      * Sin claves configuradas (desarrollo) se da por válido, pero **sin
      * puntuación**: así el que llama sabe que no hay señal de captcha y no
      * confunde «no configurado» con «puntuación perfecta».
+     *
+     * @param  float|null  $minScore  Umbral propio. Sin él manda
+     *                                `google.recaptcha.min_score`. El login de
+     *                                los paneles pasa el suyo, más permisivo.
      */
-    public function verify(?string $token, ?string $ip = null): CaptchaResult
+    public function verify(?string $token, ?string $ip = null, ?float $minScore = null): CaptchaResult
     {
         $secret = config('google.recaptcha.secret_key');
 
@@ -80,10 +84,22 @@ class RecaptchaService
 
         $valid = $response->json('success') === true;
         $score = $response->json('score');
+        $score = is_numeric($score) ? (float) $score : null;
+
+        // El umbral es lo que de verdad separa persona de bot en v3 (AR-S04).
+        // `success` sólo dice que el token está bien formado y no ha caducado,
+        // y eso es cierto también para el token que se saca un bot.
+        //
+        // Si Google no manda puntuación —no debería pasar en v3— se deja pasar
+        // con `success`, que es el mismo criterio de fallo en abierto de D10:
+        // no se cierra la puerta por algo que no podemos afirmar.
+        if ($valid && $score !== null) {
+            $valid = $score >= ($minScore ?? (float) config('google.recaptcha.min_score', 0.5));
+        }
 
         return new CaptchaResult(
             valid: $valid,
-            score: is_numeric($score) ? (float) $score : null,
+            score: $score,
             configured: true,
         );
     }

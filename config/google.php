@@ -35,6 +35,30 @@ return [
     'recaptcha' => [
         'site_key' => env('RECAPTCHA_SITE_KEY', ''),
         'secret_key' => env('RECAPTCHA_SECRET_KEY', ''),
+
+        /*
+        | Puntuación mínima para dar por buena una petición.
+        |
+        | reCAPTCHA **v3 no dice «humano» o «bot»**: devuelve un número de 0.0 a
+        | 1.0 y quien decide el corte es quien lo usa. Hasta el 2026-09-02 sólo
+        | se miraba `success`, que es cierto para cualquier token bien formado y
+        | sin caducar **aunque venga de un bot con 0.1** (auditoría AR-S04). O
+        | sea: el captcha estaba puesto y no filtraba nada.
+        |
+        | Dos umbrales porque son dos riesgos distintos:
+        |
+        |  · Formularios públicos (contacto, newsletter): 0.5. Lo peor que pasa
+        |    al cortar de más es que un mensaje no llegue, y queda registrado en
+        |    el panel con su puntuación.
+        |  · Login de los paneles: 0.3, más permisivo. Lo peor que pasa aquí es
+        |    dejarte fuera de tu propio panel un mal día de red o con un
+        |    navegador lleno de extensiones, y contra la fuerza bruta ya está el
+        |    rate limit de Filament (5 intentos) y el de `api-auth`.
+        |
+        | Sin `secret_key` no se comprueba nada y estos números dan igual.
+        */
+        'min_score' => (float) env('RECAPTCHA_MIN_SCORE', 0.5),
+        'min_score_login' => (float) env('RECAPTCHA_MIN_SCORE_LOGIN', 0.3),
     ],
 
     /*
