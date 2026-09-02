@@ -113,6 +113,51 @@ sobre. **Si tocas un método de una, toca su gemelo en la otra.**
 
 ---
 
+## Filtros, orden y paginación
+
+Todas las colecciones aceptan el mismo juego de parámetros, resuelto en
+`App\Http\Api\CollectionQuery`:
+
+```
+?page=1&per_page=25            paginación (máximo 100 por página)
+?campo=valor                   igualdad
+?campo=a,b,c                   WHERE campo IN (a, b, c)
+?campo[gte]=x&campo[lte]=y     rango (gte, gt, lte, lt, ne)
+?from=&to=                     alias de created_at[gte] / created_at[lte]
+?sort=-created_at              orden; el guion es descendente
+```
+
+**Sólo se aceptan los campos que declara cada endpoint.** Un campo, un operador
+o un orden que no esté en su lista blanca **se ignora**: ni filtra ni da error.
+Es deliberado, para no romper clientes antiguos.
+
+**El valor sí se comprueba**, y un valor que no case con el tipo de su columna
+responde **422** con el envelope y el detalle en `errors`:
+
+```jsonc
+GET /api/v2/platforms?created_at=abc
+
+{ "success": false, "message": "Los datos proporcionados no son válidos.",
+  "errors": { "created_at": ["El campo created at no es una fecha válida."] } }
+```
+
+El tipo se deduce del nombre de la columna, que en este esquema es fiable:
+
+| Nombre | Tipo | Ejemplos |
+|---|---|---|
+| `*_at` | fecha | `created_at`, `published_at`, `last_seen_at` |
+| `id`, `*_id` | entero | `type_id`, `hardware_device_id` |
+| `is_*`, `has_*` | booleano | `is_featured` |
+| el resto | texto | `name`, `slug`, `domain`, `icao` |
+
+Hasta la revisión de 2026-09-02 el valor llegaba tal cual a `where()`, y como
+PostgreSQL es estricto con los tipos, `?created_at=abc` no devolvía cero filas:
+lanzaba `SQLSTATE 22007`, o sea **un 500 que provocaba cualquiera sin
+autenticar** en todas las colecciones públicas (AR-E01). `?campo[gte][]=1` era
+aún más directo: metía un array como tercer argumento de `where()`.
+
+---
+
 ## Límites de peticiones
 
 **Toda** ruta de `api/*` tiene límite. El grupo `api` lleva un techo aplicado
