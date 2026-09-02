@@ -32,9 +32,10 @@ class StoreBatchAirFlightRequest extends BaseFormRequest
             'data.*.squawk' => ['nullable', 'string', 'max:10'],
             'data.*.lat' => ['nullable', 'numeric', 'between:-90,90'],
             'data.*.lon' => ['nullable', 'numeric', 'between:-180,180'],
-            'data.*.altitude' => ['nullable', 'numeric', 'min:0'],
-            'data.*.speed' => ['nullable', 'numeric', 'min:0'],
-            'data.*.track' => ['nullable', 'numeric', 'between:0,360'],
+            // AD-T01: mismos límites que StoreAirFlightRequest, ver ese fichero.
+            'data.*.altitude' => ['nullable', 'numeric', 'min:0', 'max:60000'],
+            'data.*.speed' => ['nullable', 'numeric', 'min:0', 'max:1000'],
+            'data.*.track' => ['nullable', 'integer', 'between:0,360'],
             'data.*.seen' => ['nullable', 'numeric'],
             'data.*.seen_pos' => ['nullable', 'numeric'],
             'data.*.messages' => ['nullable', 'integer', 'min:0'],

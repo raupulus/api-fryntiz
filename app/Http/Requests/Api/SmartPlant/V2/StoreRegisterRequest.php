@@ -42,7 +42,7 @@ class StoreRegisterRequest extends BaseFormRequest
             $mergeData['hardware_device_id'] = (int) $this->hardware_device_id;
         }
         if ($this->has('soil_humidity')) {
-            $mergeData['soil_humidity'] = (float) $this->soil_humidity;
+            $mergeData['soil_humidity'] = (int) $this->soil_humidity;
         }
 
         $this->merge($mergeData);
@@ -57,12 +57,16 @@ class StoreRegisterRequest extends BaseFormRequest
             'hardware_device_info' => ['nullable', new DeviceStatusPayload],
             'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id', new OwnedSmartPlant],
             'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id', new OwnedHardwareDevice],
-            'uv' => ['nullable', 'numeric'],
+            // AD-T01: `uv`, `soil_humidity` y `soil_humidity_raw` son `integer`
+            // en BD; `numeric` admitía decimales que revientan el INSERT con un
+            // 500. `soil_humidity` además lleva rango 0-100 (comentario de
+            // columna: "rango 1-100", pero 0 es un valor de sensor legítimo).
+            'uv' => ['nullable', 'integer'],
             'pressure' => ['nullable', 'numeric'],
             'temperature' => ['nullable', 'numeric'],
             'humidity' => ['nullable', 'numeric'],
-            'soil_humidity' => ['required', 'numeric'],
-            'soil_humidity_raw' => ['nullable', 'numeric'],
+            'soil_humidity' => ['required', 'integer', 'min:0', 'max:100'],
+            'soil_humidity_raw' => ['nullable', 'integer'],
             'full_water_tank' => ['nullable', 'boolean'],
             'waterpump_enabled' => ['nullable', 'boolean'],
             'vaporizer_enabled' => ['nullable', 'boolean'],

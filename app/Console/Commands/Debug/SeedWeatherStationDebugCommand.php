@@ -15,9 +15,6 @@ use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\MeteorologyResumeHistorical;
 use App\Models\WeatherStation\MeteorologyResumeToday;
-use App\Models\WeatherStation\MeteorologyUva;
-use App\Models\WeatherStation\MeteorologyUvb;
-use App\Models\WeatherStation\MeteorologyUvIndex;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
@@ -279,27 +276,6 @@ class SeedWeatherStationDebugCommand extends Command
                     'created_at' => $timestamp,
                 ]);
             }
-
-            MeteorologyUvIndex::create([
-                'user_id' => $userId,
-                'hardware_device_id' => $deviceId,
-                'value' => fake()->randomFloat(4, 0, $profile['uv_index_max']),
-                'created_at' => $timestamp,
-            ]);
-
-            MeteorologyUva::create([
-                'user_id' => $userId,
-                'hardware_device_id' => $deviceId,
-                'value' => fake()->randomFloat(4, 0, $profile['uva_max']),
-                'created_at' => $timestamp,
-            ]);
-
-            MeteorologyUvb::create([
-                'user_id' => $userId,
-                'hardware_device_id' => $deviceId,
-                'value' => fake()->randomFloat(4, 0, $profile['uvb_max']),
-                'created_at' => $timestamp,
-            ]);
 
             $bar->advance();
         }

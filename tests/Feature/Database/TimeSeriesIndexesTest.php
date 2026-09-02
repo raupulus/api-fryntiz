@@ -38,8 +38,7 @@ class TimeSeriesIndexesTest extends TestCase
         $sensores = [
             'meteorology_temperature', 'meteorology_humidity', 'meteorology_pressure',
             'meteorology_light', 'meteorology_rain', 'meteorology_wind_direction',
-            'meteorology_lightning', 'meteorology_uv_index', 'meteorology_uva',
-            'meteorology_uvb', 'meteorology_eco2', 'meteorology_tvoc',
+            'meteorology_lightning', 'meteorology_eco2', 'meteorology_tvoc',
             'meteorology_air_quality', 'meteorology_winter',
             'meteorology_resume_today', 'meteorology_resume_historical',
         ];

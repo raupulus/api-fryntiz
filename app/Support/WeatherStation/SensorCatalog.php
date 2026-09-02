@@ -59,7 +59,10 @@ final class SensorCatalog
     private const SENSOR_DEFINITIONS = [
         'temperatures' => [
             'modelo' => Temperature::class,
-            'reglas' => ['value' => ['required', 'numeric']],
+            // AD-Q01: rango físico plausible en superficie (récords históricos
+            // rondan -90/57 °C). Auditoría de datos 2026-09-02: un único sensor
+            // de pruebas coló -170/208 °C sin que nada lo impidiera.
+            'reglas' => ['value' => ['required', 'numeric', 'between:-90,60']],
             'resource' => TemperatureResource::class,
             'clave' => 'temperature',
         ],
@@ -71,7 +74,9 @@ final class SensorCatalog
         ],
         'pressures' => [
             'modelo' => Pressure::class,
-            'reglas' => ['value' => ['required', 'numeric']],
+            // AD-Q01: la presión a nivel del mar nunca es 0; rango generoso
+            // sobre los extremos históricos reales (870/1085 hPa aprox).
+            'reglas' => ['value' => ['required', 'numeric', 'between:800,1100']],
             'resource' => PressureResource::class,
             'clave' => 'pressure',
         ],
@@ -104,7 +109,8 @@ final class SensorCatalog
             'modelo' => WindDirection::class,
             'reglas' => [
                 'direction' => ['required', 'string', 'max:10'],
-                'grades' => ['required', 'numeric', 'min:0', 'max:360'],
+                // AD-T01: `grades` es `integer` en BD.
+                'grades' => ['required', 'integer', 'min:0', 'max:360'],
                 'resistance' => ['nullable', 'numeric'],
             ],
             'resource' => WindDirectionResource::class,
@@ -144,10 +150,11 @@ final class SensorCatalog
         ],
         'lightnings' => [
             'modelo' => Lightning::class,
+            // AD-T01: `distance`, `energy` y `noise_floor` son `integer` en BD.
             'reglas' => [
-                'distance' => ['required', 'numeric', 'min:0'],
-                'energy' => ['required', 'numeric'],
-                'noise_floor' => ['nullable', 'numeric'],
+                'distance' => ['required', 'integer', 'min:0'],
+                'energy' => ['required', 'integer'],
+                'noise_floor' => ['nullable', 'integer'],
             ],
             'resource' => LightningResource::class,
             'clave' => 'lightning',

@@ -33,9 +33,15 @@ class StoreAirFlightRequest extends BaseFormRequest
             'squawk' => ['nullable', 'string', 'max:10'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
             'lon' => ['nullable', 'numeric', 'between:-180,180'],
-            'altitude' => ['nullable', 'numeric', 'min:0'],
-            'speed' => ['nullable', 'numeric', 'min:0'],
-            'track' => ['nullable', 'numeric', 'between:0,360'],
+            // AD-T01: `altitude`/`speed` acotados por arriba con un margen amplio
+            // sobre lo que reporta ADS-B real, para descartar decodificaciones
+            // corruptas del receptor (auditoría de datos 2026-09-02: un único
+            // receptor de pruebas coló 1347 kn y -1000 ft de altitud).
+            'altitude' => ['nullable', 'numeric', 'min:0', 'max:60000'],
+            'speed' => ['nullable', 'numeric', 'min:0', 'max:1000'],
+            // AD-T01: `track` es `integer` en BD; `numeric` admitía decimales
+            // que revientan el INSERT con un 500.
+            'track' => ['nullable', 'integer', 'between:0,360'],
             'seen' => ['nullable', 'numeric'],
             'seen_pos' => ['nullable', 'numeric'],
             'messages' => ['nullable', 'integer', 'min:0'],

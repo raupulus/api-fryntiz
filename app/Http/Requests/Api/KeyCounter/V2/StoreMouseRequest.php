@@ -60,7 +60,9 @@ class StoreMouseRequest extends BaseFormRequest
             'clicks_right' => ['required', 'integer', 'min:0'],
             'clicks_middle' => ['required', 'integer', 'min:0'],
             'total_clicks' => ['required', 'integer', 'min:0'],
-            'clicks_average' => ['nullable', 'integer', 'min:0'],
+            // AD-T02: la columna es NOT NULL sin default; `nullable` dejaba
+            // pasar una petición que luego revienta el INSERT con un 500.
+            'clicks_average' => ['required', 'integer', 'min:0'],
             'weekday' => ['required', 'integer', 'min:0', 'max:6'],
         ];
     }
