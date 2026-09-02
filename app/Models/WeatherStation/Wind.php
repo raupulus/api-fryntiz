@@ -89,19 +89,6 @@ class Wind extends BaseWeatherStation
     }
 
     /**
-     * Devuelve todos los elementos del modelo.
-     */
-    public static function all($columns = ['*'])
-    {
-        $query = parent::all();
-        $query::whereNotNull('average')
-            ->orderBy('created_at', 'DESC')
-            ->get();
-
-        return $query;
-    }
-
-    /**
      * Convierte una velocidad almacenada en m/s (unidad nativa del sensor) a km/h.
      * Centraliza la conversión para reutilizarla en cualquier vista o respuesta
      * que deba mostrar la velocidad del viento en km/h.

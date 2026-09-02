@@ -6,8 +6,6 @@ namespace App\Models\WeatherStation;
 
 use App\Models\BaseModels\BaseModel;
 use App\Traits\HasTimestampScopes;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 use function array_key_exists;
@@ -37,14 +35,32 @@ class BaseWeatherStation extends BaseModel
     ];
 
     /**
-     * Sobreescribo la actualización del updated_at para no hacerle nada.
+     * Estas tablas NO tienen columna `updated_at`.
      *
-     * @param  mixed  $value
+     * Son series temporales: una lectura no se corrige, se añade otra. Las
+     * migraciones de `meteorology_*` sólo crean `created_at`.
+     *
+     * Declararlo así es lo que entiende Eloquent. Antes se resolvía
+     * sobrescribiendo `setUpdatedAt()` con un cuerpo vacío, y eso **no
+     * bastaba**: `Builder::addUpdatedAtColumn()` no llama a ese método, mira
+     * `getUpdatedAtColumn()`. Como seguía devolviendo `'updated_at'`, cualquier
+     * `update()` de Eloquent sobre estas tablas montaba la columna en el SQL y
+     * reventaba:
+     *
+     *     SQLSTATE[42703]: Undefined column: column "updated_at" of relation
+     *     "meteorology_temperature" does not exist
+     *
+     * No había dado la cara porque la ingesta escribe con `insert()` del query
+     * builder y nadie llamaba a `update()`. Con `UPDATED_AT = null`, Eloquent
+     * deja de añadir la columna en `update()`, en `touch()` y al guardar el
+     * modelo, que era la intención desde el principio.
+     *
+     * Salió al retirar del baseline de PHPStan las entradas de este fichero:
+     * el aviso «`setUpdatedAt()` should return $this but return statement is
+     * missing» llevaba silenciado todo este tiempo describiendo el síntoma.
+     * Es el criterio de D14 aplicado.
      */
-    public function setUpdatedAt($value)
-    {
-        // Do-nothing
-    }
+    const UPDATED_AT = null;
 
     /**
      * Devuelve los resultados para una página.
@@ -87,195 +103,36 @@ class BaseWeatherStation extends BaseModel
         return $attributes;
     }
 
-    /**
-     * Devuelve todos los elementos del modelo.
-     */
-    public static function all($columns = ['*'])
-    {
-        $query = parent::all();
-        $query::whereNotNull('value')
-            ->orderBy('created_at', 'DESC')
-            ->get();
-
-        return $query;
-    }
-
-    /**
-     * Obtiene el valor medio en las horas recibidas, esta consulta se hace en caché.
-     *
-     * El caché es de unos minutos, tiene sentido al ser una consulta
-     * recurrente entre periodos con valores inmutables.
-     *
-     *
-     * @return mixed
-     */
-    public function averageLast(int $hours)
-    {
-        $slug = $this->slug;
-        $fields = $this->apiFields;
-
-        $now = Carbon::now()
-            ->setMinute(0)
-            ->setSecond(0)
-            ->setMicrosecond(0);
-
-        $lastHours = (clone $now)->subHours($hours);
-        $initialHours = (clone $now)->subHours($hours - 1);
-
-        $nowString = $initialHours->format('Y-m-d-H-i-s');
-        $keyName = 'ws-'.$slug.'-hours-'.$hours.'_'.$nowString;
-
-        $rest = Cache::remember($keyName, 600, function () use ($fields, $lastHours, $initialHours) {
-            $query = self::where('created_at', '>=', $lastHours)
-                ->where('created_at', '<=', $initialHours);
-
-            foreach ($fields as $field) {
-                $query->addSelect($query->raw('ROUND( AVG('.$field.')::numeric, 1 ) as '.$field));
-            }
-
-            return $query->first();
-        });
-
-        return $rest->toArray();
-    }
-
-    /**
-     * Preparamos y devolvemos los datos para la respuesta de la api.
-     * Estos datos constan del valor actual para la lectura del registro en
-     * el que estamos y además un histórico de las últimas 4 horas hacia atrás.
-     *
-     * @return Collection
-     */
-    public function prepareApiResponse()
-    {
-        $generic = [
-            'name' => $this->name,
-            'slug' => $this->slug,
-        ];
-
-        $now = Carbon::now()->setMinute(0)->setSecond(0)->setMicrosecond(0);
-
-        $historical = collect([
-            collect(array_merge($generic,
-                $this->averageLast(1),
-                [
-                    'last_hours' => 1, // 1 - Resumen de la última hora
-                    'created_at' => (clone $now)->subHours(1)->format('Y-m-d H:i:s'),
-                ])),
-            collect(array_merge($generic,
-                $this->averageLast(2),
-
-                [
-                    'last_hours' => 2, // 2 - Resumen de las 2 últimas horas
-                    'created_at' => (clone $now)->subHours(2)->format('Y-m-d H:i:s'),
-                ])),
-            collect(array_merge($generic,
-                $this->averageLast(3),
-                [
-                    'last_hours' => 3, // 3 - Resumen de las 3 últimas horas
-                    'created_at' => (clone $now)->subHours(3)->format('Y-m-d H:i:s'),
-                ])),
-            collect(array_merge($generic,
-                $this->averageLast(4),
-                [
-                    'last_hours' => 4, // 4 - Resumen de las 4 últimas horas
-                    'created_at' => (clone $now)->subHours(4)->format('Y-m-d H:i:s'),
-                ])),
-        ]);
-
-        $datas = [];
-
-        foreach ($this->apiFields as $field) {
-            $datas[$field] = round((float) $this->{$field}, 1);
-        }
-
-        $result = collect(array_merge($generic, $datas, [
-            'created_at' => $this->created_at,
-            'historical' => $historical,
-        ]));
-
-        // TODO: Esto es temporal, para mezclar dirección del viento con su
-        // histórico dentro de la llamada para velocidad del viento.
-        if ($result && $result['slug'] && $result['slug'] === 'wind') {
-            $windDirection = WindDirection::whereNotNull('direction')
-                ->orderBy('created_at', 'DESC')
-                ->first();
-
-            if ($windDirection) {
-                $result['direction'] = $windDirection->direction;
-                $result['direction_grades'] = $windDirection->grades;
-
-                $windDirectionDatas = $windDirection->prepareApiResponse();
-
-                if ($windDirectionDatas && $windDirectionDatas['historical'] &&
-                    count($windDirectionDatas['historical'])) {
-
-                    foreach ($windDirectionDatas['historical'] as $key => $historical) {
-
-                        if (isset($result['historical'][$key])) {
-
-                            $result['historical'][$key]['direction'] = WindDirection::getDirection($historical['grades']);
-                            $result['historical'][$key]['direction_grades'] = $historical['grades'];
-                        }
-                    }
-
-                }
-            }
-        }
-
-        if ($result && $result['slug'] && $result['slug'] === 'air_quality') {
-
-            $airQualityEco2 = Eco2::whereNotNull('value')
-                ->orderByDesc('created_at')
-                ->first();
-
-            $airQualityTvoc = Tvoc::whereNotNull('value')
-                ->orderByDesc('created_at')
-                ->first();
-
-            if ($airQualityEco2) {
-                $result['eco2'] = $airQualityEco2->value;
-            }
-
-            if ($airQualityTvoc) {
-                $result['tvoc'] = $airQualityTvoc->value;
-            }
-
-            // N294: dos líneas más arriba se comprueba el null y aquí NO se
-            // comprobaba. Con `meteorology_eco2` o `meteorology_tvoc` vacías
-            // —base recién montada, o histórico purgado— esto reventaba con
-            // "Call to a member function prepareApiResponse() on null", y lo
-            // hacía DESPUÉS del INSERT, porque cuelga del evento `created`:
-            // la fila quedaba guardada y el dispositivo recibía un 500.
-            // El bloque de `wind`, justo encima, sí tiene la guarda dentro del
-            // `if`; este es una copia a la que se le perdió.
-            $airQualityEco2Datas = $airQualityEco2?->prepareApiResponse();
-            $airQualityTvocDatas = $airQualityTvoc?->prepareApiResponse();
-
-            if ($airQualityEco2Datas && $airQualityEco2Datas['historical'] &&
-                count($airQualityEco2Datas['historical'])) {
-
-                foreach ($airQualityEco2Datas['historical'] as $key => $historical) {
-                    if (isset($result['historical'][$key])) {
-                        $result['historical'][$key]['eco2'] = $historical['value'];
-                    }
-                }
-
-            }
-
-            if ($airQualityTvocDatas && $airQualityTvocDatas['historical'] &&
-                count($airQualityTvocDatas['historical'])) {
-
-                foreach ($airQualityTvocDatas['historical'] as $key => $historical) {
-                    if (isset($result['historical'][$key])) {
-                        $result['historical'][$key]['tvoc'] = $historical['value'];
-                    }
-                }
-
-            }
-        }
-
-        return $result;
-
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | `averageLast()` y `prepareApiResponse()` — retirados el 2026-09-02
+    |--------------------------------------------------------------------------
+    |
+    | Devolvían el valor actual del sensor más un histórico de medias por hora,
+    | y **no los llamaba nadie**: ni la API V2, ni las vistas Blade, ni un
+    | comando, ni un test. Se comprobó sobre `app/`, `routes/`, `resources/`,
+    | `database/` y `tests/`.
+    |
+    | Se retiran en vez de dejarlos porque no eran código inerte, eran código
+    | con dos fallos dentro esperando a que alguien los llamara (auditoría
+    | AR-E05):
+    |
+    |  1. `averageLast()` terminaba en `return $rest->toArray();` sobre el
+    |     resultado de un `first()` metido en `Cache::remember()`. Una estación
+    |     sin lecturas en el rango —un corte de luz, un cacharro
+    |     reiniciándose— devolvía `null` y eso era un 500. No es el caso raro,
+    |     es el normal.
+    |
+    |  2. Construía el SELECT interpolando el nombre de columna en SQL crudo:
+    |     `$query->raw('ROUND( AVG('.$field.')::numeric, 1 ) as '.$field)`.
+    |     `$field` salía de `$this->apiFields`, una propiedad del modelo, así
+    |     que **no era explotable desde la petición**; pero es el patrón que no
+    |     conviene dejar escrito, porque el día que alguien lo reutilice con un
+    |     campo que venga de la request, la inyección está servida.
+    |
+    | Si vuelve a hacer falta el histórico por horas, se escribe de nuevo con el
+    | `null` contemplado y sin `raw()` interpolado. Lo que hoy sirve datos
+    | formateados de una estación es `WeatherStationService::getStationReadings()`,
+    | que es lo que usa la API.
+    */
 }
