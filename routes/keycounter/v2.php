@@ -20,16 +20,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('keycounter')->group(function () {
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::KEYCOUNTER_WRITE])->group(function () {
-        // AR-A01: las lecturas iban sin throttle.
-        Route::middleware('throttle:api')->group(function () {
-            Route::get('/keyboard-sessions', [KeyboardController::class, 'index'])->name('api.v2.keycounter.keyboard_sessions.index');
-            Route::get('/mouse-sessions', [MouseController::class, 'index'])->name('api.v2.keycounter.mouse_sessions.index');
-        });
+    // Leer exige `keycounter:read`; escribir, `keycounter:write` (AR-S02).
+    // Antes las dos cosas iban con `:write`, así que el token de un teclado
+    // —que sólo tiene que subir pulsaciones— podía listar todas las sesiones de
+    // su dueño.
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::KEYCOUNTER_READ, 'throttle:api'])->group(function () {
+        Route::get('/keyboard-sessions', [KeyboardController::class, 'index'])->name('api.v2.keycounter.keyboard_sessions.index');
+        Route::get('/mouse-sessions', [MouseController::class, 'index'])->name('api.v2.keycounter.mouse_sessions.index');
+    });
 
-        Route::middleware('throttle:api-store')->group(function () {
-            Route::post('/keyboard-sessions', [KeyboardController::class, 'store'])->name('api.v2.keycounter.keyboard_sessions.store');
-            Route::post('/mouse-sessions', [MouseController::class, 'store'])->name('api.v2.keycounter.mouse_sessions.store');
-        });
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::KEYCOUNTER_WRITE, 'throttle:api-store'])->group(function () {
+        Route::post('/keyboard-sessions', [KeyboardController::class, 'store'])->name('api.v2.keycounter.keyboard_sessions.store');
+        Route::post('/mouse-sessions', [MouseController::class, 'store'])->name('api.v2.keycounter.mouse_sessions.store');
     });
 });

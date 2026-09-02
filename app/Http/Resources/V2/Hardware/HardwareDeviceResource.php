@@ -15,6 +15,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class HardwareDeviceResource extends JsonResource
 {
+    /**
+     * ¿Se incluye el número de serie? Sólo lo pone `detailed()`.
+     */
+    private bool $withSerialNumber = false;
+
+    /**
+     * Variante de detalle: la única que enseña el número de serie.
+     */
+    public function detailed(): self
+    {
+        $this->withSerialNumber = true;
+
+        return $this;
+    }
+
     /*
      * Estas relaciones se leen directamente y NO con `whenLoaded()`: quien use
      * este resource tiene que cargarlas con su `with()`.
@@ -38,7 +53,13 @@ class HardwareDeviceResource extends JsonResource
             'description' => $this->description,
             'hardware_version' => $this->hardware_version,
             'software_version' => $this->software_version,
-            'serial_number' => $this->serial_number,
+            // AR-S03: el número de serie sale sólo en el detalle
+            // (`GET /hardware/devices/{id}`), que además comprueba el ligado
+            // `device:{id}` de la policy. En el listado, un token de cacharro
+            // podía barrer los números de serie de todo el parque de su dueño
+            // iterando páginas. Es el mismo dato que motivó cerrar el endpoint
+            // en la auditoría A3.
+            'serial_number' => $this->when($this->withSerialNumber, fn () => $this->serial_number),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

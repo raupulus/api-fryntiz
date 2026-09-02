@@ -20,19 +20,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('smartplant')->group(function () {
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SMARTPLANT_WRITE])->group(function () {
-        // AR-A01: las lecturas iban sin throttle, y `plants/{plant}/readings`
-        // pagina una tabla de serie temporal.
-        Route::middleware('throttle:api')->group(function () {
-            Route::get('/plants', [SmartPlantRegisterController::class, 'plants'])->name('api.v2.smartplant.plants.index');
-            Route::get('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'index'])
-                ->whereNumber('plant')
-                ->name('api.v2.smartplant.plants.readings.index');
-        });
+    // Leer exige `smartplant:read`; escribir, `smartplant:write` (AR-S02).
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SMARTPLANT_READ, 'throttle:api'])->group(function () {
+        Route::get('/plants', [SmartPlantRegisterController::class, 'plants'])->name('api.v2.smartplant.plants.index');
+        Route::get('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'index'])
+            ->whereNumber('plant')
+            ->name('api.v2.smartplant.plants.readings.index');
+    });
 
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SMARTPLANT_WRITE, 'throttle:api-store'])->group(function () {
         Route::post('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'store'])
             ->whereNumber('plant')
-            ->middleware('throttle:api-store')
             ->name('api.v2.smartplant.plants.readings.store');
     });
 });

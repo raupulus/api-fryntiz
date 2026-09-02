@@ -60,7 +60,7 @@ class KeyCounterTest extends ApiTestCase
         // `keycounter_mouse` no tiene columna `pulsations` (esa sólo existe en
         // teclado). Un `?sort=pulsations` no declarado como sortable debe
         // ignorarse en silencio (CollectionQuery), nunca reventar contra la BD.
-        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::KEYCOUNTER_WRITE);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::KEYCOUNTER_READ);
         $response = $this->getJson($this->apiUrl('keycounter/mouse-sessions?sort=pulsations'), $headers);
         $this->assertPaginatedResponse($response);
     }
@@ -71,7 +71,7 @@ class KeyCounterTest extends ApiTestCase
     public function can_list_own_keyboard_sessions(): void
     {
         $user = $this->createAuthenticatedUser();
-        $headers = $this->moduleHeaders($user, TokenAbilities::KEYCOUNTER_WRITE);
+        $headers = $this->moduleHeaders($user, TokenAbilities::KEYCOUNTER_READ);
 
         $response = $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $headers);
 
@@ -100,7 +100,7 @@ class KeyCounterTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl('keycounter/keyboard-sessions'),
-            $this->moduleHeaders($user, TokenAbilities::KEYCOUNTER_WRITE)
+            $this->moduleHeaders($user, TokenAbilities::KEYCOUNTER_READ)
         );
 
         $response->assertStatus(200);
@@ -114,5 +114,25 @@ class KeyCounterTest extends ApiTestCase
             $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $this->guestHeaders()),
             401
         );
+    }
+
+    #[Test]
+    public function un_token_de_escritura_no_puede_leer(): void
+    {
+        // AR-S02. Antes las GET se protegían con la ability de ESCRITURA, así
+        // que el token que se graba en un teclado —cuyo único trabajo es subir
+        // pulsaciones— también podía listar todas las sesiones de su dueño.
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::KEYCOUNTER_WRITE);
+
+        $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $headers)->assertForbidden();
+        $this->getJson($this->apiUrl('keycounter/mouse-sessions'), $headers)->assertForbidden();
+    }
+
+    #[Test]
+    public function un_token_de_lectura_no_puede_escribir(): void
+    {
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::KEYCOUNTER_READ);
+
+        $this->postJson($this->apiUrl('keycounter/keyboard-sessions'), [], $headers)->assertForbidden();
     }
 }

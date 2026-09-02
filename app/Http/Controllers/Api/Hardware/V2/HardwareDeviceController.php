@@ -11,6 +11,7 @@ use App\Http\Resources\V2\Hardware\DeviceStatusResource;
 use App\Http\Resources\V2\Hardware\HardwareDeviceResource;
 use App\Models\Hardware\HardwareDevice;
 use App\Services\Hardware\HardwareService;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -51,6 +52,18 @@ class HardwareDeviceController extends BaseApiController
             ->where('user_id', $request->user()->id)
             ->with('type');
 
+        // AR-S03: si el token declara dispositivos concretos (`device:{id}`),
+        // el listado se acota a ésos. `show()` ya lo comprobaba por la policy y
+        // el listado no, así que un token de cacharro veía el parque entero de
+        // su dueño. `HardwarePolicy` lo dice literalmente: «es la diferencia
+        // entre robar un cacharro y robar la cuenta entera».
+        $token = TokenAbilities::currentToken($request->user());
+        $declarados = $token === null ? [] : TokenAbilities::devicesOf((array) $token->abilities);
+
+        if ($declarados !== []) {
+            $query->whereIn('id', $declarados);
+        }
+
         // El tipo vive en otra tabla, así que no puede ser un filtro genérico.
         if ($request->filled('type')) {
             $tipos = array_filter(array_map('trim', explode(',', (string) $request->query('type'))));
@@ -76,7 +89,7 @@ class HardwareDeviceController extends BaseApiController
             return $this->notFoundResponse('Dispositivo no encontrado');
         }
 
-        return $this->successResponse(new HardwareDeviceResource($model));
+        return $this->successResponse((new HardwareDeviceResource($model))->detailed());
     }
 
     /**

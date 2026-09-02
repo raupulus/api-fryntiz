@@ -42,11 +42,19 @@ final class TokenAbilities
 
     public const HARDWARE_WRITE = 'hardware:write';
 
+    public const WEATHERSTATION_READ = 'weatherstation:read';
+
     public const WEATHERSTATION_WRITE = 'weatherstation:write';
+
+    public const KEYCOUNTER_READ = 'keycounter:read';
 
     public const KEYCOUNTER_WRITE = 'keycounter:write';
 
+    public const SMARTPLANT_READ = 'smartplant:read';
+
     public const SMARTPLANT_WRITE = 'smartplant:write';
+
+    public const AIRFLIGHT_READ = 'airflight:read';
 
     public const AIRFLIGHT_WRITE = 'airflight:write';
 
@@ -54,14 +62,31 @@ final class TokenAbilities
      * Abilities de módulo que puede llevar un token de dispositivo, con su
      * etiqueta para el panel. No incluye `device:{id}`, que se añade sola.
      *
+     * ⚠️ **Lectura y escritura son abilities distintas, y no se mezclan.**
+     *
+     * Hasta el 2026-09-02 sólo Hardware tenía `:read`, así que las rutas GET de
+     * KeyCounter y SmartPlant se protegían con la ability de **escritura**: el
+     * token que se graba en un teclado —cuyo único trabajo es hacer POST—
+     * también podía listar todas las sesiones y todas las plantas de su dueño
+     * (auditoría AR-S02). Eso es justo lo contrario de lo que el catálogo
+     * pretende: «un token robado sólo puede hacer aquello para lo que se
+     * emitió».
+     *
+     * A un dispositivo se le emite **sólo** la de escritura de su módulo. La de
+     * lectura es para un panel o un cliente que consulte datos.
+     *
      * @var array<string, string>
      */
     public const MODULE_ABILITIES = [
         self::HARDWARE_READ => 'Hardware lectura',
         self::HARDWARE_WRITE => 'Hardware escritura',
+        self::WEATHERSTATION_READ => 'WeatherStation lectura',
         self::WEATHERSTATION_WRITE => 'WeatherStation escritura',
+        self::KEYCOUNTER_READ => 'KeyCounter lectura',
         self::KEYCOUNTER_WRITE => 'KeyCounter escritura',
+        self::SMARTPLANT_READ => 'SmartPlant lectura',
         self::SMARTPLANT_WRITE => 'SmartPlant escritura',
+        self::AIRFLIGHT_READ => 'AirFlight lectura',
         self::AIRFLIGHT_WRITE => 'AirFlight escritura',
     ];
 

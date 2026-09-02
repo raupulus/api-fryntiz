@@ -53,7 +53,7 @@ class SmartPlantTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl('smartplant/plants'),
-            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_WRITE)
+            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_READ)
         );
 
         $this->assertPaginatedResponse($response);
@@ -69,7 +69,7 @@ class SmartPlantTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl('smartplant/plants'),
-            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_WRITE)
+            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_READ)
         );
 
         $this->assertSame(0, $response->json('meta.total'));
@@ -95,7 +95,7 @@ class SmartPlantTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl('smartplant/plants/'.$plant->id.'/readings'),
-            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_WRITE)
+            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_READ)
         );
 
         $this->assertPaginatedResponse($response);
@@ -112,7 +112,7 @@ class SmartPlantTest extends ApiTestCase
 
         $this->getJson(
             $this->apiUrl('smartplant/plants/'.$ajena->id.'/readings'),
-            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_WRITE)
+            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_READ)
         )->assertStatus(404);
     }
 
@@ -123,7 +123,7 @@ class SmartPlantTest extends ApiTestCase
 
         $this->getJson(
             $this->apiUrl('smartplant/plants/999999/readings'),
-            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_WRITE)
+            $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_READ)
         )->assertStatus(404);
     }
 
@@ -148,5 +148,23 @@ class SmartPlantTest extends ApiTestCase
             'details' => 'Sin detalles',
             'start_at' => now()->subMonth(),
         ]);
+    }
+
+    #[Test]
+    public function un_token_de_escritura_no_puede_leer(): void
+    {
+        // AR-S02: mismo caso que KeyCounter. El token de la planta sólo tiene
+        // que subir lecturas, no listar el jardín entero.
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::SMARTPLANT_WRITE);
+
+        $this->getJson($this->apiUrl('smartplant/plants'), $headers)->assertForbidden();
+    }
+
+    #[Test]
+    public function un_token_de_lectura_no_puede_escribir(): void
+    {
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::SMARTPLANT_READ);
+
+        $this->postJson($this->apiUrl('smartplant/plants/1/readings'), [], $headers)->assertForbidden();
     }
 }
