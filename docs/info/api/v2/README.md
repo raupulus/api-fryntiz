@@ -223,7 +223,7 @@ Contrato completo: [`newsletter.md`](newsletter.md).
 
 Contrato completo: [`content.md`](content.md).
 
-- `GET /api/v2/platforms`: catálogo de plataformas activas.
+- `GET /api/v2/platforms`: catálogo de plataformas. **No filtra por estado**: devuelve todas las que hay.
 - `GET /api/v2/platforms/{platform:slug}`: detalle de plataforma.
 - `GET /api/v2/platforms/{platform:slug}/categories`: categorías de la plataforma.
 - `GET /api/v2/platforms/{platform:slug}/contents`: listado de contenidos.
@@ -247,13 +247,20 @@ Protegidas con tokens de dispositivo Sanctum + `ability:<scope>` +
 `throttle:api-store`. Catálogo de abilities en
 [`auth.md`](auth.md) y `App\Support\Auth\TokenAbilities`.
 
+⚠️ **Leer y escribir son abilities distintas.** A un dispositivo se le emite
+sólo la de escritura de su módulo (`weatherstation:write`, `keycounter:write`…);
+la de lectura (`:read`) es para un panel o un cliente que consulte datos. Hasta
+el 2026-09-02 sólo Hardware tenía `:read` y las GET de KeyCounter y SmartPlant
+se protegían con la ability de **escritura**, así que el token de un teclado
+podía listar todas las sesiones y plantas de su dueño (AR-S02).
+
 | Módulo | Contrato | Rutas |
 |---|---|---|
-| Estación meteorológica | [`weather-station.md`](weather-station.md) | `GET\|POST /api/v2/weather-stations`, `GET /api/v2/weather-stations/{station}`, `POST /api/v2/weather-stations/{station}/readings` (`weatherstation:write`), `GET\|POST /api/v2/weather-stations/{station}/{sensor}` |
-| Hardware / energía | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices`, `GET /api/v2/hardware/devices/{device}` (`hardware:read`), `PUT /api/v2/hardware/devices/{device}/status` (`hardware:write`), `POST /api/v2/hardware/energy-readings`, `POST /api/v2/hardware/solar-readings` (`hardware:write`) |
-| Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET\|POST /api/v2/keycounter/keyboard-sessions`, `GET\|POST /api/v2/keycounter/mouse-sessions` (`keycounter:write`) |
-| Plantas inteligentes | [`smart-plant.md`](smart-plant.md) | `GET /api/v2/smartplant/plants`, `GET\|POST /api/v2/smartplant/plants/{plant}/readings` (`smartplant:write`) |
-| Registro de vuelos | [`airflight.md`](airflight.md) | `GET\|POST /api/v2/airflight/aircrafts` (`?minutes=`, `?from=&to=` para el histórico), `POST /api/v2/airflight/aircrafts/batch`, `GET /api/v2/airflight/receiver` (`airflight:write`) |
+| Estación meteorológica | [`weather-station.md`](weather-station.md) | `GET /api/v2/weather-stations` (público), `GET /api/v2/weather-stations/{station}` (público), `POST /api/v2/weather-stations/{station}/readings` (`weatherstation:write`), `GET /api/v2/weather-stations/{station}/{sensor}` (público) y `POST` del mismo (`weatherstation:write`) |
+| Hardware / energía | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices` y `GET .../{device}` (`hardware:read`; el `serial_number` sale **sólo en el detalle**), `PUT .../{device}/status`, `POST /api/v2/hardware/energy-readings` y `POST .../solar-readings` (`hardware:write`) |
+| Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET /api/v2/keycounter/{keyboard,mouse}-sessions` (`keycounter:read`), `POST` de las mismas (`keycounter:write`) |
+| Plantas inteligentes | [`smart-plant.md`](smart-plant.md) | `GET /api/v2/smartplant/plants` y `GET .../{plant}/readings` (`smartplant:read`), `POST .../{plant}/readings` (`smartplant:write`) |
+| Registro de vuelos | [`airflight.md`](airflight.md) | `GET /api/v2/airflight/aircrafts` y `GET /api/v2/airflight/receiver` (**públicos**), `POST /api/v2/airflight/aircrafts` y `.../batch` (`airflight:write`) |
 
 ## Model Context Protocol (MCP)
 

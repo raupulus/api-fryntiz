@@ -172,3 +172,16 @@ Schedule::command('cv:regenerate-pdfs')
 Schedule::command('queue:prune-failed', ['--hours=336'])
     ->daily()
     ->onFailure($warnOnFailure('queue:prune-failed'));
+
+// ── Tokens ───────────────────────────────────────────────────────────────────
+
+// Tokens de sesión caducados.
+//
+// Los de dispositivo NO caducan a propósito —los cacharros están en sitios a
+// los que no se sube a reflashear un token—, así que este comando sólo se lleva
+// los que tienen `expires_at` pasado: las sesiones humanas, que viven 30 días
+// (`API_SESSION_DAYS`). Sin esto sus filas se quedaban para siempre en
+// `personal_access_tokens` y `GET /auth/tokens` las paginaba (auditoría AR-R02).
+Schedule::command('sanctum:prune-expired', ['--hours=720'])
+    ->daily()
+    ->onFailure($warnOnFailure('sanctum:prune-expired'));

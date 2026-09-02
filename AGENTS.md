@@ -74,12 +74,20 @@ Varias pueden aplicar a la vez: un endpoint nuevo con su migración usa `api-res
 
 ```bash
 ./vendor/bin/pint                    # 1. Formato (PSR-12)
-./vendor/bin/phpstan analyse         # 2. Análisis estático (nivel 5)
+composer phpstan                     # 2. Análisis estático (nivel 5)
 php artisan test                     # 3. Tests (PostgreSQL: api_raupulus_testing)
 php artisan scribe:generate          # 4. Solo si has tocado la API V2
 ```
 
-Atajo obligatorio: `composer check` (ejecuta `./vendor/bin/pint --format agent` y `@php artisan test --compact`).
+Atajo obligatorio: `composer check` (formato + análisis estático + tests).
+
+> ⚠️ **El paso 2 va por `composer phpstan`, no por `./vendor/bin/phpstan analyse`.**
+> A pelo revienta con `Allowed memory size of 134217728 bytes exhausted` en una
+> instalación limpia: PHPStan necesita más de los 128 MB que trae PHP por
+> defecto, y el script le pasa `--memory-limit=1G`. `phpunit.xml` ya resuelve lo
+> mismo para los tests con su `<ini name="memory_limit" value="512M"/>`.
+> Quien lo ejecute a pelo verá un fatal error de memoria en vez de un informe, y
+> es fácil confundirlo con «PHPStan está roto» y saltárselo (auditoría AR-C01).
 
 ### Además, en cada tarea
 

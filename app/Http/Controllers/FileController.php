@@ -37,10 +37,10 @@ class FileController extends Controller
      */
     public function get(string $module, int $id, ?string $slug = null)
     {
-        $file = File::find($id);
+        $file = $this->findInModule($module, $id);
 
         if (! $file) {
-            return response()->file(File::genericImagePath('not_found'));
+            return $this->missing();
         }
 
         // # Compruebo si es un archivo privado.
@@ -73,11 +73,10 @@ class FileController extends Controller
      */
     public function resizeAndGet(string $module, int $id, int $width, ?string $slug = null)
     {
-
-        $file = File::find($id);
+        $file = $this->findInModule($module, $id);
 
         if (! $file) {
-            return response()->file(File::genericImagePath('not_found'));
+            return $this->missing();
         }
 
         // El tipo vive en `file_types`, no en `files`: `$file->type` no existe
@@ -192,10 +191,10 @@ class FileController extends Controller
      */
     public function download(string $module, int $id, ?string $slug = null): BinaryFileResponse
     {
-        $file = File::find($id);
+        $file = $this->findInModule($module, $id);
 
         if (! $file) {
-            return response()->file(File::genericImagePath('not_found'));
+            return $this->missing();
         }
 
         if ($file->is_private && ($file->user_id !== auth()->id())) {
@@ -211,6 +210,25 @@ class FileController extends Controller
             $file->storagePathFile,
             $file->original_name ?: $file->name
         );
+    }
+
+    /**
+     * Busca el fichero comprobando también su módulo.
+     *
+     * `{module}` viaja en las tres rutas de fichero desde siempre y **no se
+     * usaba para nada**: el fichero se resolvía sólo por su id, así que
+     * `/file/get/hardware/123` servía tan ricamente un fichero de `content`
+     * (auditoría AR-A03). No era un agujero —la privacidad la deciden
+     * `is_private` y `user_id`— pero desinforma a quien lee los logs y a quien
+     * escribe un cliente.
+     *
+     * Se usa en lugar de quitarlo de la ruta: quitarlo rompería las URL que ya
+     * están escritas en los contenidos publicados, y usarlo sale gratis y de
+     * paso añade una comprobación.
+     */
+    private function findInModule(string $module, int $id): ?File
+    {
+        return File::query()->where('module', $module)->find($id);
     }
 
     /**

@@ -67,6 +67,7 @@
         "pint:test": "vendor/bin/pint --test --format agent",
         "check": [
             "vendor/bin/pint --format agent",
+            "@phpstan",
             "@php artisan test --compact"
         ]
     },

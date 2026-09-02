@@ -138,6 +138,114 @@ con firma HMAC, no reactivando aquello.
 
 ## API
 
+### D23 · Lectura y escritura son abilities distintas
+
+Cada módulo IoT tiene `:read` y `:write`. A un dispositivo se le emite **sólo**
+la de escritura de su módulo.
+
+**Por qué.** Sólo Hardware tenía `:read`, así que las GET de KeyCounter y
+SmartPlant se protegían con la ability de escritura: el token que se graba en un
+teclado —cuyo único trabajo es hacer POST— también listaba todas las sesiones y
+todas las plantas de su dueño. Eso es lo contrario de lo que el catálogo dice de
+sí mismo: «un token robado sólo puede hacer aquello para lo que se emitió».
+
+**Se aplicó en seco, sin ventana de compatibilidad**, y los tokens existentes se
+borraron. La API no está desplegada y no hay ningún dispositivo real
+consumiéndola: montar una doble aceptación temporal habría sido trabajo para
+proteger a clientes que no existen.
+
+*Origen: AR-S02 de la auditoría 2026-09-02.*
+
+### D24 · El número de serie sale sólo en el detalle
+
+`HardwareDeviceResource` no incluye `serial_number` salvo que se pida con
+`->detailed()`, cosa que sólo hace `GET /hardware/devices/{id}`.
+
+**Por qué.** El listado devolvía el número de serie de todo el parque a
+cualquier token con `hardware:read`, incluido el de un cacharro, y además no
+aplicaba el ligado `device:{id}` que `show()` sí comprobaba por policy. O sea que
+un token de dispositivo podía barrer los números de serie iterando páginas —el
+mismo dato que motivó cerrar el endpoint en la auditoría A3—. El listado aplica
+ahora el ligado igual que el detalle.
+
+*Origen: AR-S03 de la auditoría 2026-09-02.*
+
+### D25 · Las cabeceras de seguridad las pone la aplicación, no el virtualhost
+
+`App\Http\Middleware\SecurityHeaders` añade `X-Content-Type-Options`,
+`X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` y —sólo sobre
+HTTPS— `Strict-Transport-Security`.
+
+**Por qué en la aplicación.** Había **cuatro** configuraciones de servidor con
+contenidos distintos y ninguna declarada como la buena; las dos que estaban en
+la raíz del repositorio —las más fáciles de copiar, justo por estar ahí— eran
+las que **no tenían ninguna cabecera**. Desplegar con ellas dejaba el panel de
+Filament clickjackeable. En la aplicación viajan con el código, se despliegan
+solas y valen igual con Apache, con nginx o con Docker.
+
+Los virtualhosts de `docs/deploys/vhosts/` las repiten. No sobra: así las manda
+el servidor aunque PHP no llegue a ejecutarse (un 502, el modo mantenimiento, un
+fichero estático).
+
+**HSTS sólo con `$request->secure()`.** Mandarla por HTTP no sirve —el navegador
+la ignora— y en desarrollo es peor que inútil: deja `localhost` marcado como
+«sólo HTTPS» durante un año. Sin `preload` ni `includeSubDomains`: de la lista de
+preload se sale con meses de trámite, y los subdominios no son cosa de esta
+aplicación.
+
+**Y los cuatro ficheros pasan a uno por servidor, todos en `docs/deploys/vhosts/`
+y ninguno en la raíz.** Se mantienen los tres —Apache, nginx y Docker— a
+propósito: hoy el VPS va con Apache, y tener los otros escritos y al día es lo
+que permite cambiar sin improvisar. De paso se arregló un `Redirect permanent`
+que el `apache.conf` tenía **dentro de su propio vhost `:443`**, o sea un bucle
+de redirección: por HTTPS no habría respondido nada.
+
+*Origen: AR-D01 de la auditoría 2026-09-02.*
+
+### D26 · reCAPTCHA v3 aplica umbral, y el del login es más permisivo
+
+`RECAPTCHA_MIN_SCORE` (0.5) para los formularios públicos y
+`RECAPTCHA_MIN_SCORE_LOGIN` (0.3) para el login de los paneles.
+
+**Por qué.** v3 **no dice «humano» o «bot»**: devuelve una puntuación de 0.0 a
+1.0. Sólo se miraba `success`, que es cierto para cualquier token bien formado y
+sin caducar, también el que se saca un bot con 0.1. El captcha estaba puesto y no
+filtraba nada.
+
+**Por qué dos umbrales.** Son dos riesgos distintos. Cortar de más en un
+formulario público hace que un mensaje no llegue, y queda registrado en el panel
+con su puntuación. Cortar de más en el login te deja fuera de tu propio panel un
+mal día de red o con un navegador lleno de extensiones, y contra la fuerza bruta
+ya está el límite de Filament (5 intentos) y el de `api-auth`.
+
+**Esto NO toca D10.** Aquel es el fallo en abierto cuando Google **no responde**,
+y sigue igual. Esto es el caso en que Google responde correctamente y se estaba
+ignorando lo que dice. Si Google contesta sin puntuación —no debería en v3— se
+deja pasar, con el mismo criterio de D10.
+
+*Origen: AR-S04 de la auditoría 2026-09-02.*
+
+### D27 · `project:check-config` avisa de lo que no da error por sí solo
+
+Comando que se ejecuta después de desplegar y comprueba los ajustes que, mal
+puestos, **no producen ningún error**: `FRONTEND_URLS` vacío, `APP_DEBUG` en
+producción, `APP_KEY` sin poner, captcha sin claves, `TRUSTED_PROXIES` en `*`,
+la cookie de sesión sin `Secure`, la cola en `sync`.
+
+**Por qué.** El peor de todos es `FRONTEND_URLS`: la API responde 200 con todo
+correcto, no escribe nada en el log, y el navegador bloquea todas las respuestas.
+Desde el servidor parece que funciona y desde las ocho webs no funciona nada.
+
+Devuelve código 1 si hay fallos, para poder encadenarlo en el script de
+despliegue con `&&`. Con `--strict` los avisos también cortan.
+
+⚠️ **Lee de `config`, nunca de `env()`.** En el servidor el despliegue hace
+`config:cache` y a partir de ahí Laravel no carga el `.env`: un `env()` aquí
+devolvería null y el comando avisaría de problemas inventados. Es el mismo
+despiste que tuvo `TRUSTED_PROXIES` en su día, y PHPStan lo cazó al escribirlo.
+
+*Origen: AR-D03 de la auditoría 2026-09-02.*
+
 ### D22 · Los índices de las series temporales van con `CONCURRENTLY`
 
 La migración `2026_09_02_000001_add_indexes_to_time_series_tables` declara
