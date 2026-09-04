@@ -96,7 +96,7 @@ camino, sea cual sea su visibilidad.
       "presentation": "Más de 8 años desarrollando APIs REST y paneles de administración con Laravel.",
       "is_default": true,
       "is_downloadable": true,
-      "image": "https://api.fryntiz.es/storage/cv/backend-laravel-senior/foto-large.jpg",
+      "image": "https://api.raupulus.dev/storage/cv/backend-laravel-senior/foto-large.jpg",
       "created_at": "2025-03-10T09:00:00.000000Z",
       "updated_at": "2026-07-01T18:22:00.000000Z"
     }
@@ -139,7 +139,7 @@ camino, sea cual sea su visibilidad.
     "presentation": "Más de 8 años desarrollando APIs REST y paneles de administración con Laravel.",
     "is_default": true,
     "is_downloadable": true,
-    "image": "https://api.fryntiz.es/storage/cv/backend-laravel-senior/foto-large.jpg",
+    "image": "https://api.raupulus.dev/storage/cv/backend-laravel-senior/foto-large.jpg",
     "experiences": {
       "accredited": [
         {

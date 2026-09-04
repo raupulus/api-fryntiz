@@ -132,7 +132,7 @@ class ResourceValuesTest extends ApiTestCase
                 [
                     'title' => 'Fryntiz',
                     'slug' => 'fryntiz',
-                    'domain' => 'fryntiz.es',
+                    'domain' => 'raupulus.dev',
                     'description' => 'Plataforma de pruebas',
                 ],
                 ['name' => '`platforms` guarda el nombre en `title`, no en `name`'],
