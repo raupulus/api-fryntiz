@@ -29,7 +29,7 @@ class EnergyController extends Controller
     {
         $dateToday = date('Y-m-d');
 
-        $hardwareItems = HardwareDevice::with('image', 'powerLoadsHistorical', 'powerGeneratorsHistorical')
+        $hardwareItems = HardwareDevice::with('image.fileType', 'powerLoadsHistorical', 'powerGeneratorsHistorical')
             ->where(function ($query) {
                 $query->whereHas('powerLoadsHistorical', function ($q) {
                     $q->whereNotNull('energy_wh');

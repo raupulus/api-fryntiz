@@ -168,6 +168,25 @@ class File extends BaseModel
      * columna nueva queda abierta a mass assignment el día que se añada, sin
      * que nadie tenga que decidirlo (SEC-08).
      */
+    /**
+     * `fileType` va siempre con el fichero.
+     *
+     * No es comodidad: `thumbnailModel()` —que es por donde pasa CUALQUIER
+     * miniatura de la aplicación— lo primero que hace es mirar
+     * `$this->fileType->type` para saber si el fichero es una imagen. Si la
+     * relación no viene cargada, eso es una consulta por fila, y fuera de
+     * producción `Model::preventLazyLoading()` lo convierte en excepción: la
+     * página entera se cae con «Attempted to lazy load [fileType]».
+     *
+     * Ha pasado en `/hardware/energy`, cuyo controlador cargaba `image` pero no
+     * `image.fileType`. Cargarlo aquí lo arregla para todas las vistas a la vez,
+     * presentes y futuras, y cuesta una consulta por lote —no por fila—, contra
+     * una tabla de seis filas.
+     *
+     * @var list<string>
+     */
+    protected $with = ['fileType'];
+
     protected $fillable = [
         'user_id',
         'file_type_id',
