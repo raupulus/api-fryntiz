@@ -1,13 +1,19 @@
 # Migración de datos de V1 a V2
 
-Los tres scripts se ejecutan **en este orden**, una vez, sobre una base ya
-migrada (`php artisan migrate`) y vacía.
+> **Estos scripts YA se ejecutaron sobre `raupulus_api` en local, el 2026-09-05.**
+> Quedan aquí como registro de cómo se construyó esa base, no como un paso del
+> despliegue: al servidor va el volcado ya hecho, no los scripts.
+
+Sólo hay que volver a lanzarlos si se rehace la base desde cero a partir de un
+volcado de V1. En ese caso, en este orden y sobre una base recién migrada:
 
 ```bash
 ./scripts/migrar_datos_v1_a_v2.sh
 psql -d raupulus_api -f scripts/energia_estructura.sql
 psql -d raupulus_api -f scripts/energia_enlaces.sql
 ```
+
+Los tres son idempotentes.
 
 ## 1. `migrar_datos_v1_a_v2.sh`
 
@@ -44,8 +50,6 @@ Esa capa no se puede copiar porque en origen no existe, así que se **deriva**:
 Ata las lecturas ya cargadas a su elemento por `hardware_energy_id`. Sin esto
 las lecturas siguen colgando sólo del aparato —como en V1— y las instalaciones
 aparecen vacías en el panel.
-
-Los tres son **idempotentes**: se pueden volver a lanzar sin duplicar nada.
 
 ---
 
