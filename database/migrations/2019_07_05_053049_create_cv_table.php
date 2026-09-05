@@ -39,6 +39,25 @@ class CreateCvTable extends Migration
                 ->onDelete('SET NULL')->comment('Clave foránea que relaciona este registro con el image al que pertenece.');
             $table->string('title', 511)
                 ->comment('Título para el curriculum');
+            $table->string('slug', 255)
+                ->unique('cv_slug_unique')
+                ->comment('Slug para la URL pública del currículum.');
+            $table->string('visibility', 16)
+                ->default('private')
+                ->comment('private | shared | public. Shared se sirve con noindex.');
+            $table->string('share_token', 64)
+                ->nullable()
+                ->unique('cv_share_token_unique')
+                ->comment('Token del enlace privado para compartir el CV.');
+            $table->string('pdf_path', 512)
+                ->nullable()
+                ->comment('Ruta del PDF generado.');
+            $table->boolean('pdf_needs_regeneration')
+                ->default(true)
+                ->comment('Se marca al editar cualquier tabla del CV.');
+            $table->timestamp('pdf_generated_at')
+                ->nullable()
+                ->comment('Cuándo se generó el PDF actual.');
             $table->text('presentation')
                 ->nullable()
                 ->comment('Contenido para la presentación del curriculum');
@@ -60,6 +79,9 @@ class CreateCvTable extends Migration
                 ->comment('Indica si su visibilidad es pública');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
             $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
+
+            $table->index('visibility', 'cv_visibility_index');
+            $table->index('pdf_needs_regeneration', 'cv_pdf_needs_regeneration_index');
         });
     }
 

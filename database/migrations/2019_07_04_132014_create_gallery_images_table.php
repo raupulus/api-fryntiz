@@ -39,7 +39,6 @@ class CreateGalleryImagesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el image al que pertenece.');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
-            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
 
             $table->unique(['gallery_id', 'image_id']);
             $table->index(['gallery_id', 'image_id']);

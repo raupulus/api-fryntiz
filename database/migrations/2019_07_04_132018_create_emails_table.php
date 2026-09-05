@@ -31,6 +31,11 @@ class CreateEmailsTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el user al que pertenece.');
+            $table->foreignId('platform_id')
+                ->nullable()
+                ->constrained('platforms')
+                ->nullOnDelete()
+                ->comment('Plataforma desde la que se envió el mensaje.');
             $table->unsignedBigInteger('language_id')
                 ->default(1)
                 ->nullable()
@@ -48,9 +53,9 @@ class CreateEmailsTable extends Migration
             $table->boolean('contactme')
                 ->default(0)
                 ->comment('Indica si permite ser contactado.');
-            $table->decimal('captcha_score', 3, 1)
+            $table->decimal('captcha_score', 4, 2)
                 ->nullable()
-                ->comment('Puntuación asignada por un validador de captcha (del 1.0 al 10.0)');
+                ->comment('Puntuación de reCAPTCHA v3 (0.00 a 1.00).');
             $table->string('server_ip', 255)
                 ->nullable()
                 ->comment('Ip del servidor desde el que se ha enviado.');
@@ -96,6 +101,12 @@ class CreateEmailsTable extends Migration
             $table->text('error_message')
                 ->nullable()
                 ->comment('Mensaje de error en caso de que el mensaje no se haya enviado correctamente.');
+
+            // El anti-duplicado consulta por email y por (ip, created_at) en
+            // cada envío: sin índice son dos escaneos completos por mensaje.
+            $table->index(['email', 'created_at'], 'emails_email_created_at_index');
+            $table->index(['client_ip', 'created_at'], 'emails_client_ip_created_at_index');
+            $table->index(['send', 'sent_at'], 'emails_send_sent_at_index');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');

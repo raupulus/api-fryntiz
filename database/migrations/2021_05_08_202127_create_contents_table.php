@@ -71,9 +71,9 @@ class CreateContentsTable extends Migration
             $table->string('title', 511)
                 ->index()
                 ->comment('Título de la página');
+            // El slug es único DENTRO de su plataforma, no en toda la base: dos
+            // webs distintas pueden tener cada una su "/sobre-mi".
             $table->string('slug', 255)
-                ->index()
-                ->unique()
                 ->comment('Slug para el URL');
             $table->string('excerpt', 1023)
                 ->nullable()
@@ -133,6 +133,8 @@ class CreateContentsTable extends Migration
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+
+            $table->unique(['platform_id', 'slug'], 'contents_platform_id_slug_unique');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

@@ -27,10 +27,17 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('role_id')
                 ->default(3)
                 ->comment('Role principal del usuario, aunque pueda tener otros roles extras');
+            // RESTRICT y no SET NULL: la columna es NOT NULL con default 3, así
+            // que un SET NULL sobre ella fallaba en tiempo de ejecución. Borrar
+            // un rol que aún tiene usuarios tiene que dar error, no dejar filas
+            // inconsistentes.
             $table->foreign('role_id')
                 ->references('id')->on('user_roles')
                 ->onUpdate('CASCADE')
-                ->onDelete('SET NULL')->comment('Clave foránea que relaciona este registro con el role al que pertenece.');
+                ->onDelete('RESTRICT');
+            $table->boolean('is_active')
+                ->default(true)
+                ->comment('Indica si la cuenta está activa. Distinto de deleted_at, que es borrado lógico.');
             $table->foreignId('current_team_id')
                 ->nullable()
                 ->comment('Identificador del equipo al que pertenece.');

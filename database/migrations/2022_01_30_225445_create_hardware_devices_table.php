@@ -69,6 +69,12 @@ class CreateHardwareDevicesTable extends Migration
             $table->string('name_friendly', 255)
                 ->nullable()
                 ->comment('Nombre amistoso para reconocerlo EJ: Raspberry en azotea');
+            $table->string('location_type', 20)
+                ->default('indoor')
+                ->comment('Ubicación física del hardware: indoor (interior) u outdoor (exterior). Por defecto interior.');
+            $table->string('zone', 100)
+                ->nullable()
+                ->comment('Zona/ubicación concreta del hardware, EJ: Azotea, Salón, Jardín.');
             $table->string('ref', 255)
                 ->nullable()
                 ->comment('Referencia del dispositivo');
@@ -111,6 +117,44 @@ class CreateHardwareDevicesTable extends Migration
             $table->string('ip_public', 255)
                 ->nullable()
                 ->comment('Ip pública del dispositivo');
+
+            // Último estado conocido que reporta el propio cacharro.
+            $table->decimal('temp', 6, 2)
+                ->nullable()
+                ->comment('Última temperatura conocida del dispositivo en grados Celsius.');
+            $table->decimal('voltage', 8, 3)
+                ->nullable()
+                ->comment('Última tensión conocida del dispositivo en voltios (EJ: batería por divisor de tensión).');
+            $table->unsignedSmallInteger('battery_level')
+                ->nullable()
+                ->comment('Último nivel de batería conocido en porcentaje (0-100).');
+            $table->decimal('cpu', 5, 2)
+                ->nullable()
+                ->comment('Último uso de CPU conocido en porcentaje (0-100).');
+            $table->decimal('disk', 5, 2)
+                ->nullable()
+                ->comment('Último uso de disco conocido en porcentaje (0-100).');
+            $table->unsignedBigInteger('uptime')
+                ->nullable()
+                ->comment('Último tiempo de actividad conocido del dispositivo en segundos.');
+            $table->json('extra')
+                ->nullable()
+                ->comment('Métricas de estado adicionales del dispositivo en formato JSON (RAM, procesos, etc.).');
+
+            // Batería del propio dispositivo, con la marca de cuándo se midió:
+            // sin ella no se distingue un dato de ahora de uno de hace semanas.
+            $table->decimal('battery_voltage', 8, 3)
+                ->nullable()
+                ->comment('Tensión de la batería del propio dispositivo (V).');
+            $table->unsignedTinyInteger('battery_percentage')
+                ->nullable()
+                ->comment('Carga de la batería del propio dispositivo (%).');
+            $table->timestamp('battery_read_at')
+                ->nullable()
+                ->comment('Cuándo se midió. Sin esto no se distingue un dato de ahora de uno de hace semanas.');
+
+            // Patrón de consulta: filtrar/agrupar por tipo de ubicación.
+            $table->index('location_type');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');

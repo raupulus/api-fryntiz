@@ -43,7 +43,6 @@ class CreateFileTypesTable extends Migration
             $table->text('icon64')->nullable()->comment('Campo que almacena el icon64 específico para este registro según la lógica de negocio.');
             $table->text('icon128')->nullable()->comment('Campo que almacena el icon128 específico para este registro según la lógica de negocio.');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
-            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

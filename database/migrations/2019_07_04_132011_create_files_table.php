@@ -73,7 +73,6 @@ class CreateFilesTable extends Migration
                 ->default(0)
                 ->comment('Indica si es privado el archivo o pertenece al espacio público de la aplicación');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
-            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

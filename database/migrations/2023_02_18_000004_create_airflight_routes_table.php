@@ -96,6 +96,10 @@ class CreateAirFlightRoutesTable extends Migration
                 ->comment('Indica si hay señal de emergencia');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+
+            // Serie temporal: la API filtra por dispositivo y ordena por
+            // fecha. Sin este índice cada consulta escanea la tabla entera.
+            $table->index(['airplane_id', 'created_at']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

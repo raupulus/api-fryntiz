@@ -39,9 +39,10 @@ class CreateGalleriesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('set null')->comment('Clave foránea que relaciona este registro con el image al que pertenece.');
             $table->string('name', 511)->comment('Nombre de la galería');
-            $table->string('description', 1024)->comment('Descripción del contenido de la galería');
+            $table->string('description', 1024)
+                ->nullable()
+                ->comment('Descripción del contenido de la galería');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
-            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

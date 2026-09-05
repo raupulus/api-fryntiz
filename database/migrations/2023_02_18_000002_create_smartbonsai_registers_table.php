@@ -68,6 +68,10 @@ class CreateSmartbonsaiRegistersTable extends Migration
                 ->default(false)
                 ->comment('Indica si se ha activado el vaporizador');
             $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+
+            // Serie temporal: la API filtra por dispositivo y ordena por
+            // fecha. Sin este índice cada consulta escanea la tabla entera.
+            $table->index(['plant_id', 'created_at']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

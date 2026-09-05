@@ -44,7 +44,6 @@ class CreatePlatformCategoriesTable extends Migration
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
             $table->unique(['platform_id', 'category_id'], 'platform_category_unique');
             $table->index(['platform_id', 'category_id'], 'platform_category_index');

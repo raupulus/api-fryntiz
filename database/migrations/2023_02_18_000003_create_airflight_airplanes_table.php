@@ -71,6 +71,11 @@ class CreateAirFlightAirplanesTable extends Migration
                 ->nullable()
                 ->comment('Imagen de la bandera');
 
+            // El endpoint de vuelos filtra siempre por icao y por ventana de
+            // actividad: sin estos índices son dos escaneos completos.
+            $table->index('icao', 'airflight_airplanes_icao_idx');
+            $table->index('seen_last_at', 'airflight_airplanes_seen_last_at_idx');
+
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 

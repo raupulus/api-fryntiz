@@ -57,6 +57,49 @@ class CreateHardwareEnergyTable extends Migration
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+            // ── Instalación energética (fase de energía) ─────────────────────
+            $table->foreignId('energy_system_id')
+                ->nullable()
+                ->constrained('energy_systems')->nullOnDelete()
+                ->comment('Instalación a la que pertenece el elemento.');
+            $table->foreignId('energy_source_type_id')
+                ->nullable()
+                ->constrained('energy_source_types')->nullOnDelete()
+                ->comment('Tipo de fuente: solar, eólica, red…');
+            $table->string('name', 255)
+                ->nullable()
+                ->comment('«Panel sur», «Router principal».');
+            $table->string('role', 16)
+                ->default('load')
+                ->comment('generator | load | storage.');
+
+            // La tensión nominal es lo que arregla el cálculo de los vatios
+            // cuando la medida no es plausible.
+            $table->decimal('nominal_voltage', 8, 2)
+                ->nullable()
+                ->comment('Tensión nominal del elemento (V). Se usa si la medida no es plausible.');
+            $table->decimal('voltage_min', 8, 2)
+                ->nullable()
+                ->comment('Por debajo de esto, la tensión medida se considera errónea.');
+            $table->decimal('voltage_max', 8, 2)
+                ->nullable()
+                ->comment('Por encima de esto, la tensión medida se considera errónea.');
+            $table->decimal('rated_power_w', 10, 2)
+                ->nullable()
+                ->comment('Potencia nominal (W).');
+            $table->decimal('capacity_mah', 12, 2)
+                ->nullable()
+                ->comment('Capacidad de la batería del elemento (mAh).');
+            $table->decimal('capacity_wh', 12, 2)
+                ->nullable()
+                ->comment('Capacidad de la batería del elemento (Wh).');
+            $table->boolean('is_active')
+                ->default(true)
+                ->comment('Un elemento retirado deja de aceptar lecturas nuevas.');
+
+            $table->index(['energy_system_id', 'role']);
+            $table->index(['hardware_device_id', 'sensor_position']);
+
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

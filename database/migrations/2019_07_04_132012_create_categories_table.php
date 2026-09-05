@@ -51,9 +51,10 @@ class CreateCategoriesTable extends Migration
             $table->bigInteger('image_id')
                 ->nullable()
                 ->comment('FK a la imagen en la tabla files');
-            // La FK a "files" se añade en una migración posterior
-            // (2019_07_04_132012_add_image_foreign_to_categories_table)
-            // porque la tabla "files" se crea después de "categories".
+            $table->foreign('image_id')
+                ->references('id')->on('files')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
 
             $table->integer('priority')
                 ->nullable()
@@ -75,7 +76,6 @@ class CreateCategoriesTable extends Migration
                 ->default('#000000')
                 ->comment('Código Hexadecimal del color');
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

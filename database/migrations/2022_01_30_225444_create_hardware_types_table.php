@@ -34,12 +34,15 @@ class CreateHardwareTypesTable extends Migration
             $table->string('name', '255')
                 ->unique()
                 ->comment('Nombre del tipo de hardware (EJ: Portátil).');
+            $table->string('slug', 80)
+                ->nullable()
+                ->unique()
+                ->comment('Identificador estable para la API, sin acentos ni espacios');
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción del tipo de hardware.');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

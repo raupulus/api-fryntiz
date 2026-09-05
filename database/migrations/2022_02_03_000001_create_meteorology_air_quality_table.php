@@ -48,6 +48,10 @@ class CreateMeteorologyAirQualityTable extends Migration
             $table->decimal('air_quality', 14, 4)
                 ->comment('Resultado del algoritmo para calcular porcentaje de calidad del aire según resistencia, medida en frio y compensación por humedad');
             $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+
+            // Serie temporal: la API filtra por dispositivo y ordena por
+            // fecha. Sin este índice cada consulta escanea la tabla entera.
+            $table->index(['hardware_device_id', 'created_at']);
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

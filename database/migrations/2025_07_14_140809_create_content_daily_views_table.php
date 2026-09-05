@@ -23,7 +23,12 @@ class CreateContentDailyViewsTable extends Migration
             $table->index(['date', 'views']); // Para consultas de "más vistos por período"
             $table->index('content_id');
 
-            $table->foreign('content_id')->references('id')->on('contents')->comment('Clave foránea que relaciona este registro con el content al que pertenece.');
+            // onDelete cascade: las visitas no sobreviven al contenido que
+            // contaban. Sin esto, borrar un contenido fallaba por la FK.
+            $table->foreign('content_id')
+                ->references('id')->on('contents')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 

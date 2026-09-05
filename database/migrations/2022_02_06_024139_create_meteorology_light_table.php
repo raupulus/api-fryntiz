@@ -46,6 +46,7 @@ class CreateMeteorologyLightTable extends Migration
             $table->decimal('lumens', 10, 2)
                 ->comment('Lumens');
             $table->decimal('lux', 10, 2)
+                ->nullable()
                 ->comment('lux');
             $table->decimal('index', 10, 2)
                 ->nullable()
@@ -57,6 +58,10 @@ class CreateMeteorologyLightTable extends Migration
                 ->nullable()
                 ->comment('Rayos UVB');
             $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+
+            // Serie temporal: la API filtra por dispositivo y ordena por
+            // fecha. Sin este índice cada consulta escanea la tabla entera.
+            $table->index(['hardware_device_id', 'created_at']);
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

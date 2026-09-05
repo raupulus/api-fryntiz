@@ -50,7 +50,6 @@ class CreateTechnologiesTable extends Migration
                 ->comment('Código Hexadecimal del color.');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         $comment = 'Tecnologías disponibles para toda la plataforma.';

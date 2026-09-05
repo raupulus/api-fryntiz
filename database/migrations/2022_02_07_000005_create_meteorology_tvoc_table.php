@@ -46,6 +46,10 @@ class CreateMeteorologyTvocTable extends Migration
             $table->decimal('value', 14, 4)
                 ->comment('Valor entre  0ppb y 1187ppb');
             $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+
+            // Serie temporal: la API filtra por dispositivo y ordena por
+            // fecha. Sin este índice cada consulta escanea la tabla entera.
+            $table->index(['hardware_device_id', 'created_at']);
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

@@ -37,7 +37,6 @@ class CreateUserRolesTable extends Migration
                 ->nullable()
                 ->comment('Descripción del funcionamiento del role.');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
-            $table->softDeletes()->comment('Marca de tiempo empleada por Eloquent para habilitar el borrado lógico (soft deletes).');
         });
     }
 

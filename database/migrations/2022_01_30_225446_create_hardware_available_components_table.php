@@ -45,7 +45,6 @@ class CreateHardwareAvailableComponentsTable extends Migration
                 ->nullable()
                 ->comment('Descripción del componente');
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

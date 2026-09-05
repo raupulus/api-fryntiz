@@ -50,18 +50,29 @@ class CreateHardwarePowerGeneratorsHistoricalTable extends Migration
                 ->nullable()
                 ->default(0)
                 ->comment('Número de veces que se ha cargado la batería por completo');
-            $table->double('amperage')
-                ->nullable()
-                ->default(0)
-                ->comment('Carga total en Ah que ha sido almacenado en la batería');
-            $table->decimal('power', 10, 2)
-                ->nullable()
-                ->default(0)
-                ->comment('Potencia (W) generada acumulada en el tiempo');
             $table->timestamp('read_at')
                 ->nullable()
                 ->comment('Fecha y hora de lectura');
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+
+            // ── Agregado por elemento, no por dispositivo ────────────────────
+            // Sin `hardware_energy_id` se sumaban en la misma fila el panel y el
+            // router, que es sumar peras con manzanas.
+            $table->foreignId('hardware_energy_id')
+                ->nullable()
+                ->constrained('hardware_energy')->nullOnDelete()
+                ->comment('Elemento al que corresponde el resumen. Sin esto se suman el panel y el router.');
+            $table->decimal('energy_wh', 16, 4)
+                ->nullable()
+                ->comment('Vatios-hora del periodo. Esto SÍ se suma.');
+            $table->decimal('energy_ah', 14, 4)
+                ->nullable()
+                ->comment('Amperios-hora del periodo. Esto SÍ se suma.');
+            $table->unsignedInteger('readings_count')
+                ->default(0)
+                ->comment('Lecturas no sospechosas que entran en el resumen.');
+            $table->index('hardware_energy_id', 'hardware_power_generators_historical_energy_idx');
+
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

@@ -58,18 +58,17 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->nullable()
                 ->default('deactivated')
                 ->comment('El modo de cargar batería en el momento. (deactivated, activated, mppt, equalizing, boost, floating, current limiting)');
-            $table->decimal('amperage', 10, 2)
+            // Sin `default(0)`: «no tengo dato» no es cero, y un cero por
+            // defecto se cuela en las medias como si fuera una medición real.
+            $table->decimal('amperage', 10, 3)
                 ->nullable()
-                ->default(0)
-                ->comment('La intensidad de carga que está generando el generador.');
-            $table->decimal('voltage', 10, 2)
+                ->comment('Corriente MEDIA del periodo (A). Crudo: no se recalcula ni se tira.');
+            $table->decimal('voltage', 10, 3)
                 ->nullable()
-                ->default(0)
-                ->comment('El voltaje de carga que está generando el generador.');
-            $table->decimal('power', 10, 2)
+                ->comment('Tensión del periodo (V). Crudo.');
+            $table->decimal('power', 12, 3)
                 ->nullable()
-                ->default(0)
-                ->comment('La potencia de carga que está generando el generador.');
+                ->comment('V*A. Potencia MEDIA del periodo, no instantánea.');
             $table->boolean('light_status')
                 ->nullable()
                 ->default(false)
@@ -83,8 +82,40 @@ class CreateHardwarePowerGeneratorsTable extends Migration
                 ->nullable()
                 ->comment('Fecha y hora de lectura');
 
+            $table->decimal('temperature', 6, 3)
+                ->nullable()
+                ->comment('Temperatura del aparato (°C). La de la batería es `battery_temperature`.');
+
+            // ── Crudos y derivados de la lectura (fase de energía) ───────────
+            $table->foreignId('hardware_energy_id')
+                ->nullable()
+                ->constrained('hardware_energy')->nullOnDelete()
+                ->comment('Elemento concreto al que corresponde la lectura.');
+            $table->unsignedInteger('delta_seconds')
+                ->nullable()
+                ->comment('Segundos que cubre la media. Sin esto, A y V no dan energía.');
+            $table->decimal('energy_wh', 14, 4)
+                ->nullable()
+                ->comment('V*A*s/3600. Esto SÍ se suma entre lecturas.');
+            $table->decimal('energy_ah', 14, 4)
+                ->nullable()
+                ->comment('A*s/3600. Esto SÍ se suma entre lecturas.');
+            $table->string('energy_source', 16)
+                ->default('derived')
+                ->comment('device = lo dio el aparato | derived = lo calculamos.');
+            $table->string('voltage_source', 16)
+                ->default('measured')
+                ->comment('measured = tensión medida | nominal = la del elemento.');
+            $table->boolean('is_suspicious')
+                ->default(false)
+                ->comment('Queda fuera de los agregados del día, pero se conserva.');
+            $table->string('suspicious_reason', 255)->nullable();
+
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+
+            $table->index(['hardware_energy_id', 'read_at']);
+            $table->index(['hardware_device_id', 'read_at']);
+            $table->index(['is_suspicious', 'read_at']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

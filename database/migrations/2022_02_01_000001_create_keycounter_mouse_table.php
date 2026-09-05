@@ -62,6 +62,10 @@ class CreateKeycounterMouseTable extends Migration
             $table->bigInteger('weekday')
                 ->comment('Día de la semana (0 es domingo)');
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+
+            // Serie temporal: la API filtra por dispositivo y ordena por
+            // fecha. Sin este índice cada consulta escanea la tabla entera.
+            $table->index(['user_id', 'start_at']);
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
