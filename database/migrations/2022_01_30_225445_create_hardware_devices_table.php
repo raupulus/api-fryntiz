@@ -33,7 +33,7 @@ class CreateHardwareDevicesTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
-                ->comment('Usuario asociado');
+                ->comment('Usuario dueño del registro.');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
@@ -92,7 +92,7 @@ class CreateHardwareDevicesTable extends Migration
                 ->comment('Versión del hardware del dispositivo');
             $table->string('serial_number', 255)
                 ->nullable()
-                ->comment('Número de serie del dispositivo');
+                ->comment('Número de serie que declara el controlador.');
             $table->string('battery_type', 255)
                 ->nullable()
                 ->comment('Tipo de batería, EJ: Gel, li ion');

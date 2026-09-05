@@ -44,7 +44,6 @@ class CreateMeteorologyAemetAdverseEventsTable extends Migration
                 ->comment('Estos son campos que no están definidos en la api pero pueden llegar, hasta ahora no hay forma de identificar un fenómeno con valores númericos para interpretarlos');
 
             $table->timestamp('read_at')->comment('Columna read at');
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
 
             // ── Identificación ────────────────────────────────────────────────
             $table->string('identifier', 255)->nullable()
@@ -103,7 +102,7 @@ class CreateMeteorologyAemetAdverseEventsTable extends Migration
             $table->unique(['identifier', 'geocode'], 'aemet_avisos_identifier_zona_uk');
             $table->index(['geocode', 'expires_at'], 'aemet_avisos_zona_expira_idx');
             $table->index('expires_at', 'aemet_avisos_expira_idx');
-
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

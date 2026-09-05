@@ -37,7 +37,7 @@ class CreateSmartbonsaiRegistersTable extends Migration
                 ->onDelete('cascade');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo asociado');
+                ->comment('Dispositivo del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
@@ -68,7 +68,7 @@ class CreateSmartbonsaiRegistersTable extends Migration
             $table->boolean('vaporizer_enabled')
                 ->default(false)
                 ->comment('Indica si se ha activado el vaporizador');
-            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+            $table->timestamp('created_at')->nullable()->comment('Momento en que se registró la lectura.');
 
             // Serie temporal: la API filtra por dispositivo y ordena por
             // fecha. Sin este índice cada consulta escanea la tabla entera.

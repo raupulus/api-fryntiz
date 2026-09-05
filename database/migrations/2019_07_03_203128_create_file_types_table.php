@@ -26,7 +26,7 @@ class CreateFileTypesTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
-                ->comment('Usuario asociado');
+                ->comment('Usuario dueño del registro.');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')

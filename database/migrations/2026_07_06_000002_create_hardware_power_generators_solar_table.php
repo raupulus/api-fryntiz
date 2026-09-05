@@ -19,44 +19,42 @@ return new class extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
 
             $table->unsignedBigInteger('hardware_device_id')
-                ->comment('Dispositivo hardware asociado al cargador solar');
+                ->comment('Controlador solar del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->foreignId('hardware_energy_id')
+                ->nullable()
+                ->comment('Elemento generador al que corresponde la lectura.')
+                ->constrained('hardware_energy')->nullOnDelete();
 
-            $table->date('date')->nullable()->comment('Fecha de la lectura');
-            $table->timestamp('read_at')->nullable()->comment('Timestamp exacto de la lectura');
+            $table->date('date')->nullable()->comment('Día al que corresponde la lectura.');
+            $table->timestamp('read_at')->nullable()->comment('Momento exacto de la lectura.');
 
-            $table->string('hardware', 255)->nullable()->comment('Nombre o modelo del hardware del cargador');
-            $table->string('version', 255)->nullable()->comment('Versión del firmware o software');
-            $table->string('serial_number', 255)->nullable()->comment('Número de serie del dispositivo');
-            $table->string('battery_type', 255)->nullable()->comment('Tipo de batería (LiFePO4, AGM, etc.)');
+            $table->string('hardware', 255)->nullable()->comment('Modelo del controlador que declara el propio aparato.');
+            $table->string('version', 255)->nullable()->comment('Versión de firmware del controlador.');
+            $table->string('serial_number', 255)->nullable()->comment('Número de serie que declara el controlador.');
+            $table->string('battery_type', 255)->nullable()->comment('Química de la batería configurada: LiFePO4, AGM, gel…');
 
-            $table->decimal('battery_voltage', 8, 2)->nullable()->comment('Voltaje de la batería en voltios');
-            $table->decimal('battery_current', 8, 2)->nullable()->comment('Corriente de la batería en amperios');
-            $table->decimal('battery_power', 8, 2)->nullable()->comment('Potencia de la batería en vatios');
-            $table->smallInteger('battery_percentage')->nullable()->comment('Porcentaje de batería (0-100)');
+            $table->decimal('battery_voltage', 8, 2)->nullable()->comment('Tensión de la batería (V).');
+            $table->decimal('battery_current', 8, 2)->nullable()->comment('Corriente de carga o descarga de la batería (A).');
+            $table->decimal('battery_power', 8, 2)->nullable()->comment('Potencia de carga o descarga de la batería (W).');
+            $table->smallInteger('battery_percentage')->nullable()->comment('Estado de carga de la batería (0-100 %).');
 
             $table->decimal('voltage', 10, 3)->nullable()->comment('Tensión que entrega el panel (V). Crudo.');
             $table->decimal('amperage', 10, 3)->nullable()->comment('Corriente MEDIA del periodo que entrega el panel (A). Crudo.');
             $table->decimal('power', 12, 3)->nullable()->comment('V*A. Potencia MEDIA del periodo, no instantánea.');
 
-            $table->decimal('load_voltage', 8, 2)->nullable()->comment('Voltaje de la carga en voltios');
-            $table->decimal('load_current', 8, 2)->nullable()->comment('Corriente de la carga en amperios (load_amperage)');
-            $table->decimal('load_power', 8, 2)->nullable()->comment('Potencia de la carga en vatios');
+            $table->decimal('load_voltage', 8, 2)->nullable()->comment('Tensión de la salida de consumo del controlador (V).');
+            $table->decimal('load_current', 8, 2)->nullable()->comment('Corriente que sale hacia el consumo conectado al controlador (A).');
+            $table->decimal('load_power', 8, 2)->nullable()->comment('Potencia que entrega la salida de consumo (W).');
 
-            $table->decimal('temperature', 5, 2)->nullable()->comment('Temperatura del controlador en grados Celsius');
-
-            $table->timestamps();
+            $table->decimal('temperature', 5, 2)->nullable()->comment('Temperatura del propio controlador (°C). La de la batería es `battery_temperature`.');
 
             $table->index(['hardware_device_id', 'created_at'], 'hardware_power_generators_solar_device_created_idx');
 
             // ── Lo común a toda lectura de energía ────────────────────────────
-            $table->foreignId('hardware_energy_id')
-                ->nullable()
-                ->comment('Elemento generador al que corresponde la lectura.')
-                ->constrained('hardware_energy')->nullOnDelete();
 
             $table->unsignedInteger('delta_seconds')->nullable()
                 ->comment('Segundos que cubre la media. Sin esto, A y V no dan energía.');
@@ -82,9 +80,9 @@ return new class extends Migration
             $table->decimal('battery_temperature', 6, 2)->nullable()
                 ->comment('Temperatura de la batería (°C). La del controlador es `temperature`.');
             $table->boolean('light_status')->nullable()
-                ->comment('Farola encendida (0|1).');
+                ->comment('Si el controlador detecta luz solar (usa el panel como sensor).');
             $table->integer('light_brightness')->nullable()
-                ->comment('Brillo de la farola (0-100 %).');
+                ->comment('Intensidad de la luz solar detectada (0-100 %).');
 
             // ── Estadísticas del día que da el Rover ──────────────────────────
             $table->decimal('day_battery_voltage_min', 8, 2)->nullable()
@@ -136,7 +134,7 @@ return new class extends Migration
 
             $table->index(['hardware_energy_id', 'read_at'], 'hpg_solar_energy_read_idx');
             $table->index('total_operating_days', 'hpg_solar_operating_days_idx');
-
+            $table->timestamps();
         });
     }
 

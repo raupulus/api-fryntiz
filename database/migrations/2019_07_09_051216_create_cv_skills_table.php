@@ -45,12 +45,12 @@ class CreateCvSkillsTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Descripción del skill');
-            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
 
             $table->unsignedInteger('position')
                 ->default(0)
                 ->comment('Orden manual dentro de su sección del currículum.');
             $table->index(['curriculum_id', 'position'], 'cv_skills_curriculum_position_index');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
         });
     }
 

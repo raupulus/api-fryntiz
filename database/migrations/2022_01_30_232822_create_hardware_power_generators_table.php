@@ -33,31 +33,35 @@ class CreateHardwarePowerGeneratorsTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo asociado');
+                ->comment('Dispositivo del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->foreignId('hardware_energy_id')
+                ->nullable()
+                ->comment('Elemento concreto al que corresponde la lectura.')
+                ->constrained('hardware_energy')->nullOnDelete();
             $table->decimal('battery_voltage', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Voltaje de la batería');
+                ->comment('Tensión de la batería (V).');
             $table->decimal('battery_temperature', 10, 2)
                 ->nullable()
                 ->default(0)
-                ->comment('Temperatura de la batería en su exterior (sensor externo a la batería)');
+                ->comment('Temperatura de la batería, medida por un sensor externo a ella (°C).');
             $table->integer('battery_percentage')
                 ->nullable()
                 ->default(0)
-                ->comment('Porcentaje de carga en la batería (0-100)');
+                ->comment('Estado de carga de la batería (0-100 %).');
             $table->integer('charging_status')
                 ->nullable()
                 ->default(0)
-                ->comment('El modo de cargar batería en el momento, código interno del fabricante (1,2,3...).');
+                ->comment('Modo de carga en curso, con el código del fabricante (1, 2, 3…).');
             $table->string('charging_status_label', 255)
                 ->nullable()
                 ->default('deactivated')
-                ->comment('El modo de cargar batería en el momento. (deactivated, activated, mppt, equalizing, boost, floating, current limiting)');
+                ->comment('Modo de carga en curso: deactivated, activated, mppt, equalizing, boost, floating o current limiting.');
             // Sin `default(0)`: «no tengo dato» no es cero, y un cero por
             // defecto se cuela en las medias como si fuera una medición real.
             $table->decimal('amperage', 10, 3)
@@ -72,25 +76,21 @@ class CreateHardwarePowerGeneratorsTable extends Migration
             $table->boolean('light_status')
                 ->nullable()
                 ->default(false)
-                ->comment('Indica si hay luz de calle mediante booleano 0|1.');
+                ->comment('Si el controlador detecta luz solar (usa el panel como sensor).');
             $table->integer('light_brightness')
                 ->nullable()
                 ->default(0)
-                ->comment('Devuelve el porcentaje brillo de la luz de calle (0-100%).');
+                ->comment('Intensidad de la luz solar detectada (0-100 %).');
 
             $table->timestamp('read_at')
                 ->nullable()
-                ->comment('Fecha y hora de lectura');
+                ->comment('Momento en que se tomó la lectura.');
 
             $table->decimal('temperature', 6, 3)
                 ->nullable()
                 ->comment('Temperatura del aparato (°C). La de la batería es `battery_temperature`.');
 
             // ── Crudos y derivados de la lectura (fase de energía) ───────────
-            $table->foreignId('hardware_energy_id')
-                ->nullable()
-                ->comment('Elemento concreto al que corresponde la lectura.')
-                ->constrained('hardware_energy')->nullOnDelete();
             $table->unsignedInteger('delta_seconds')
                 ->nullable()
                 ->comment('Segundos que cubre la media. Sin esto, A y V no dan energía.');

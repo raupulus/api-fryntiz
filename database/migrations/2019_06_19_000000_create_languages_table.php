@@ -47,7 +47,7 @@ class CreateLanguagesTable extends Migration
             $table->string('icon64', 511)
                 ->nullable()
                 ->comment('Icono a 64x64 píxeles');
-            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+            $table->timestamp('created_at')->nullable()->comment('Momento en que se registró la lectura.');
         });
     }
 

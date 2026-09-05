@@ -33,39 +33,37 @@ class CreateHardwareEnergyTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo que se usa como monitor');
+                ->comment('Dispositivo que hace de medidor.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->unsignedBigInteger('hardware_device_monitorized_id')
                 ->nullable()
-                ->comment('Dispositivo que está siendo monitorizado');
+                ->comment('Dispositivo cuyo consumo o generación se está midiendo.');
             $table->foreign('hardware_device_monitorized_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-
-            $table->boolean('is_generator')
-                ->default(false)
-                ->nullable()
-                ->comment('Indica si el dispositivo monitorizado es un generador de energía o un consumidor');
-
-            $table->smallInteger('sensor_position')
-                ->nullable()
-                ->comment('Posición del sensor en el dispositivo monitorizado');
-
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
-            // ── Instalación energética (fase de energía) ─────────────────────
-            $table->foreignId('energy_system_id')
-                ->nullable()
-                ->comment('Instalación a la que pertenece el elemento.')
-                ->constrained('energy_systems')->nullOnDelete();
             $table->foreignId('energy_source_type_id')
                 ->nullable()
                 ->comment('Tipo de fuente: solar, eólica, red…')
                 ->constrained('energy_source_types')->nullOnDelete();
+            $table->foreignId('energy_system_id')
+                ->nullable()
+                ->comment('Instalación a la que pertenece el elemento.')
+                ->constrained('energy_systems')->nullOnDelete();
+
+            $table->boolean('is_generator')
+                ->default(false)
+                ->nullable()
+                ->comment('true = genera energía; false = la consume. Lo detalla `role`.');
+
+            $table->smallInteger('sensor_position')
+                ->nullable()
+                ->comment('Qué sensor del medidor corresponde a este elemento, cuando tiene varios.');
+
+            // ── Instalación energética (fase de energía) ─────────────────────
             $table->string('name', 255)
                 ->nullable()
                 ->comment('«Panel sur», «Router principal».');
@@ -99,7 +97,8 @@ class CreateHardwareEnergyTable extends Migration
 
             $table->index(['energy_system_id', 'role']);
             $table->index(['hardware_device_id', 'sensor_position']);
-
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

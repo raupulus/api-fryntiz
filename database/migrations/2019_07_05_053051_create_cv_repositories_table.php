@@ -50,12 +50,12 @@ class CreateCvRepositoriesTable extends Migration
                 ->comment('Descripción del repositorio');
             $table->string('name', 255)
                 ->comment('Nombre del repositorio');
-            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
 
             $table->unsignedInteger('position')
                 ->default(0)
                 ->comment('Orden manual dentro de su sección del currículum.');
             $table->index(['curriculum_id', 'position'], 'cv_repositories_curriculum_position_index');
+            $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
         });
     }
 

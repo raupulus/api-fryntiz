@@ -81,7 +81,7 @@ class CreateMeteorologyAemetContaminationTable extends Migration
                 ->comment('Valor de la lectura');
 
             $table->date('date')
-                ->comment('Fecha de la lectura');
+                ->comment('Día al que corresponde la lectura.');
 
             $table->time('time')
                 ->comment('Hora de la lectura');

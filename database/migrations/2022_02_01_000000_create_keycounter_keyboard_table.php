@@ -31,14 +31,14 @@ class CreateKeycounterKeyboardTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
-                ->comment('Usuario asociado');
+                ->comment('Usuario dueño del registro.');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo asociado');
+                ->comment('Dispositivo del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')

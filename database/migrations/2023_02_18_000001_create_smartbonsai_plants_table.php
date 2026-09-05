@@ -31,7 +31,7 @@ class CreateSmartbonsaiPlantsTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
-                ->comment('Usuario asociado');
+                ->comment('Usuario dueño del registro.');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')

@@ -34,17 +34,21 @@ class CreateHardwarePowerLoadsTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo asociado');
+                ->comment('Dispositivo del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->foreignId('hardware_energy_id')
+                ->nullable()
+                ->comment('Elemento concreto al que corresponde la lectura.')
+                ->constrained('hardware_energy')->nullOnDelete();
             $table->integer('fan')
                 ->nullable()
-                ->comment('Velocidad del ventilador en RPM, EJ:3812. Será null si no hay ventilador');
+                ->comment('Velocidad del ventilador (RPM). Null si el dispositivo no lleva.');
             $table->decimal('temperature', 6, 3)
                 ->nullable()
-                ->comment('Temperatura del dispositivo en grados centígrados, EJ:38.31.');
+                ->comment('Temperatura del dispositivo (°C).');
             // decimal y no double: en una tabla de la que se suman millones de
             // filas, el error del binario flotante se acumula.
             $table->decimal('voltage', 10, 3)
@@ -58,19 +62,15 @@ class CreateHardwarePowerLoadsTable extends Migration
                 ->comment('V*A. Potencia MEDIA del periodo, no instantánea.');
             $table->decimal('battery_voltage', 8, 3)
                 ->nullable()
-                ->comment('Voltaje de la batería. Será 0 por defecto');
+                ->comment('Tensión de la batería del dispositivo (V).');
             $table->integer('battery_percentage')
                 ->nullable()
-                ->comment('Porcentaje de carga en la batería (0-100)');
+                ->comment('Estado de carga de la batería (0-100 %).');
             $table->timestamp('read_at')
                 ->nullable()
-                ->comment('Fecha y hora de lectura');
+                ->comment('Momento en que se tomó la lectura.');
 
             // ── Crudos y derivados de la lectura (fase de energía) ───────────
-            $table->foreignId('hardware_energy_id')
-                ->nullable()
-                ->comment('Elemento concreto al que corresponde la lectura.')
-                ->constrained('hardware_energy')->nullOnDelete();
             $table->unsignedInteger('delta_seconds')
                 ->nullable()
                 ->comment('Segundos que cubre la media. Sin esto, A y V no dan energía.');

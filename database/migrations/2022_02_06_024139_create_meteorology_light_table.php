@@ -31,14 +31,14 @@ class CreateMeteorologyLightTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('user_id')
                 ->nullable()
-                ->comment('Usuario asociado');
+                ->comment('Usuario dueño del registro.');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo asociado');
+                ->comment('Dispositivo del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
@@ -57,7 +57,7 @@ class CreateMeteorologyLightTable extends Migration
             $table->decimal('uvb', 10, 2)
                 ->nullable()
                 ->comment('Rayos UVB');
-            $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
+            $table->timestamp('created_at')->nullable()->comment('Momento en que se registró la lectura.');
 
             // Serie temporal: la API filtra por dispositivo y ordena por
             // fecha. Sin este índice cada consulta escanea la tabla entera.

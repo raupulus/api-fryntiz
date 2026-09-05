@@ -33,11 +33,15 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
             $table->bigIncrements('id')->comment('Identificador único');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
-                ->comment('Dispositivo asociado');
+                ->comment('Dispositivo del que procede la lectura.');
             $table->foreign('hardware_device_id')
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+            $table->foreignId('hardware_energy_id')
+                ->nullable()
+                ->comment('Elemento al que corresponde el resumen. Sin esto se suman el panel y el router.')
+                ->constrained('hardware_energy')->nullOnDelete();
             $table->integer('fan_min')
                 ->nullable()
                 ->comment('Velocidad mínima de ventilador (rpm)');
@@ -97,15 +101,9 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->nullable()
                 ->comment('Fecha y hora de la última lectura');
 
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-
             // ── Agregado por elemento, no por dispositivo ────────────────────
             // Sin `hardware_energy_id` se sumaban en la misma fila el panel y el
             // router, que es sumar peras con manzanas.
-            $table->foreignId('hardware_energy_id')
-                ->nullable()
-                ->comment('Elemento al que corresponde el resumen. Sin esto se suman el panel y el router.')
-                ->constrained('hardware_energy')->nullOnDelete();
             $table->decimal('energy_wh', 16, 4)
                 ->nullable()
                 ->comment('Vatios-hora del periodo. Esto SÍ se suma.');
@@ -116,7 +114,7 @@ class CreateHardwarePowerLoadsTodayTable extends Migration
                 ->default(0)
                 ->comment('Lecturas no sospechosas que entran en el resumen.');
             $table->index(['hardware_energy_id', 'date'], 'hardware_power_loads_today_energy_date_idx');
-
+            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
