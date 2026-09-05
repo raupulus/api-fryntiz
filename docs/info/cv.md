@@ -86,6 +86,7 @@ romper consultas antiguas que aún lo miren.
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Policies/CurriculumPolicy.php` | `view`/`update`/`delete`: admin o el propio dueño. `create`: cualquier usuario que no sea un token de dispositivo IoT |
+| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `CurriculumResource`. `viewAny()` devuelve `true` —cada quien tiene que ver su propio índice— y eso, sin scoping, hacía que un `Editor` viese en `/admin/c-v/curriculums` **el listado completo de los CV de todos los usuarios**, publicados o no (AR-SEC-02). La tabla se filtra por `user_id`; el administrador la ve entera |
 | `app/Console/Commands/CV/RegenerateCurriculumPdfsCommand.php` | `cv:regenerate-pdfs`, programado (ver `routes/console.php`) — regenera los PDF marcados con `pdf_needs_regeneration` |
 
 ## Relaciones del modelo Curriculum (las 15 secciones, cargadas juntas por `CurriculumService::SECTIONS`)
@@ -166,4 +167,4 @@ php artisan debug:seed-cv
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-05

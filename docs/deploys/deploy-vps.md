@@ -70,11 +70,36 @@ Variables imprescindibles a revisar:
 | `APP_DEBUG` | `false` |
 | `APP_URL` | URL pública con HTTPS (`https://api.dominio.tld`) |
 | `APP_KEY` | Generar con `php artisan key:generate` (o en el contenedor). |
+| `API_URL` | **Con `https://`** y terminada en `/api`. Ver el aviso de abajo. |
+| `SESSION_SECURE_COOKIE` | **`true`.** Sin esto la cookie del panel y el `XSRF-TOKEN` salen sin el flag `Secure`. |
+| `FRONTEND_URLS` | Los dominios que consumen la API, **con esquema y separados por comas**. Ver el aviso de abajo. |
+| `TRUSTED_PROXIES` | Los rangos del proxy. **Con Cloudflare no basta el valor por defecto** — ver abajo. |
+| `RECAPTCHA_SECRET_KEY` | Obligatoria: si está vacía la verificación se desactiva sola y los formularios públicos quedan sin protección. |
 | `DB_*` | Credenciales coherentes con `docker-compose.prod.yml` |
 | `REDIS_*` | id. |
 | `MAIL_*` | SMTP del proveedor (Mailgun/SES/…). |
 | `AEMET_API_KEY` | Clave AEMET. Ver [docs/info/apis/aemet.md](../info/apis/aemet.md). |
 | `BROADCAST_DRIVER` | `reverb` si se usa WebSockets (ver [websockets.md](../info/websockets.md)). |
+
+#### Las cuatro que fallan en silencio
+
+Estas no dan error ni escriben en el log. La aplicación arranca, responde 200, y
+algo no funciona:
+
+| Variable | Qué pasa si está mal |
+|---|---|
+| `FRONTEND_URLS` vacía | CORS no permite ningún origen. La API responde perfectamente y **el navegador bloquea todas las respuestas**: desde el servidor parece que funciona, desde las webs no funciona nada. El más caro de diagnosticar. |
+| `API_URL` con `http://` | Las vistas la meten en el JavaScript del cliente. Sobre una página HTTPS el navegador bloquea esas llamadas por **contenido mixto** y el mapa de vuelos se queda vacío, sin que la petición llegue a salir del navegador. |
+| `SESSION_SECURE_COOKIE` sin poner | La cookie de sesión viaja sin `Secure`: basta una petición en claro antes de la redirección para que se vea por la red. |
+| `TRUSTED_PROXIES` sin los rangos del proxy real | `request()->ip()` devuelve la IP del proxy **para todo el mundo**, así que los límites por IP (login, contacto, newsletter) pasan a ser un cupo único que se agota en segundos y bloquea a usuarios legítimos. |
+
+> ⚠️ **Con Cloudflare por delante, el valor por defecto de `TRUSTED_PROXIES` no
+> vale.** Quien conecta con el servidor es un nodo de Cloudflare, con IP pública,
+> así que queda fuera de los rangos privados y deja de ser de confianza. Añade
+> los rangos publicados en <https://www.cloudflare.com/ips/> (IPv4 **e** IPv6) y
+> revísalos de vez en cuando, porque cambian.
+
+Las cuatro las detecta `php artisan project:check-config` — ver §4.
 
 ### 2.4 Levantar los contenedores
 
@@ -274,6 +299,40 @@ sudo crontab -e -u www-data
 
 ## 4. Verificación post-deploy
 
+### 4.0 Lo primero: `project:check-config`
+
+```bash
+php artisan project:check-config --strict
+```
+
+**Ejecútalo DESPUÉS de `config:cache`, no antes.** Es precisamente la caché lo
+que hace silenciosos estos fallos: con la configuración cacheada Laravel deja de
+cargar el `.env`, así que `env()` devuelve `null` y las variables mal puestas se
+ignoran sin un solo aviso.
+
+Devuelve código 1 si algo falla, así que encadénalo con `&&` en el script de
+despliegue y no abras al público hasta que pase.
+
+Comprueba:
+
+| Qué | Por qué importa |
+|---|---|
+| `APP_KEY`, `APP_DEBUG` | Lo evidente. |
+| `FRONTEND_URLS` | Vacía o con comodín + credenciales. |
+| `TRUSTED_PROXIES` | Vacía o en `*`. |
+| `RECAPTCHA_SECRET_KEY` y su umbral | Vacía en producción, o umbral a 0 (que deja pasar a los bots). |
+| `SESSION_SECURE_COOKIE`, `APP_URL`, `API_URL` | Cookies y URL sin HTTPS. |
+| Colas y broadcast | `QUEUE_CONNECTION=sync`, Reverb mal configurado. |
+| **Cobertura de policies del panel** | Que ningún recurso de Filament administre un modelo sin policy. |
+
+La última merece una explicación: **en Filament, un modelo sin policy no queda
+cerrado, queda abierto.** `Gate::getPolicyFor()` devuelve `null`, y entonces el
+recurso autoriza ver, crear, editar y borrar a cualquiera que llegue al panel —
+y a `/admin` llega también el rol `Editor`. Un recurso nuevo mal registrado no da
+error: da acceso. Ver [filament-panels.md](../info/filament-panels.md#autorización).
+
+### 4.1 Comprobaciones HTTP
+
 ```bash
 # 1. Página principal
 curl -I https://api.dominio.tld          # debe ser 200
@@ -281,7 +340,11 @@ curl -I https://api.dominio.tld          # debe ser 200
 # 2. Login admin
 curl -I https://api.dominio.tld/admin/login   # 200
 
-# 3. Tests
+# 3. CORS de verdad, desde uno de los orígenes declarados
+curl -I -H "Origin: https://raupulus.dev" https://api.dominio.tld/api/v2/airflight/aircrafts
+# debe devolver Access-Control-Allow-Origin con ese mismo valor
+
+# 4. Tests
 docker compose exec app php artisan test --testsuite=Feature   # opción Docker
 # o:
 sudo -u www-data php artisan test --testsuite=Feature           # opción bare-metal
@@ -295,6 +358,10 @@ sudo -u www-data php artisan test --testsuite=Feature           # opción bare-m
 | HTTP 500 con "key not set" | falta `APP_KEY` | `php artisan key:generate --force` |
 | HTTP 502 Bad Gateway | PHP-FPM caído | `systemctl status php8.4-fpm` |
 | Login OK pero panel vacío | `php artisan config:cache` antes de editar `.env` | `php artisan config:clear` |
+| La API responde 200 pero las webs no ven nada | `FRONTEND_URLS` vacía: lo bloquea el navegador, no el servidor | Rellenarla y `config:cache`. Se ve en la consola del navegador, no en el log |
+| El mapa de vuelos sale vacío y sin errores de servidor | `API_URL` con `http://` sobre una página HTTPS (contenido mixto) | Ponerla con `https://` y `config:cache` |
+| Rate limit que salta con poquísimo tráfico | `TRUSTED_PROXIES` sin los rangos del proxy: todos comparten la IP | Añadir los rangos reales (Cloudflare incluidos) |
+| No se puede iniciar sesión en el panel | `SESSION_SECURE_COOKIE=true` sobre HTTP | Terminar el TLS antes, o dejarla vacía **sólo** en local |
 
 ---
 
@@ -375,4 +442,4 @@ Estrategia mínima:
 - [WebSockets en VPS](../info/websockets.md)
 - [Configuración de autenticación](../info/auth.md)
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-01
+> Creado: 2026-05-26 · Última revisión: 2026-09-05

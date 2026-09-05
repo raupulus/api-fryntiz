@@ -17,6 +17,7 @@ Listado completo de los comandos Artisan personalizados del proyecto, agrupados 
 
 | Comando | Alias | Descripción | Archivo |
 |---------|-------|-------------|---------|
+| `project:check-config` | — | **Preflight de despliegue.** Comprueba los ajustes que, mal puestos, no producen ningún error. Ver abajo. | `app/Console/Commands/ProjectCheckConfigCommand.php` |
 | `project:install` | `xerintel:install` | Instalación inicial: migra, semilla básica y enlaces de storage. | `app/Console/Commands/ProjectInstallCommand.php` |
 | `project:clear` | `xerintel:clear` | Limpia todas las cachés, colas, regenera clave segura y recompone autoload. | `app/Console/Commands/ProjectClearCommand.php` |
 | `project:dummy` | `xerintel:dummy` | Genera contenido y telemetría corporativa de ejemplo para todos los módulos. | `app/Console/Commands/ProjectDummyCommand.php` |
@@ -24,6 +25,43 @@ Listado completo de los comandos Artisan personalizados del proyecto, agrupados 
 | `sitemap:generate` | — | Genera el sitemap XML público navegable del sitio. | `app/Console/Commands/SitemapGeneratorCommand.php` |
 | `mcp:inspector` | — | Lanza el inspector de MCP contra el servidor del proyecto. | `app/Console/Commands/Mcp/InspectorCommand.php` |
 | `serve` | — | Sobrescribe el `serve` nativo de Laravel: si `BROADCAST_CONNECTION=reverb`, arranca también `reverb:start` en segundo plano (mismo ciclo de vida, se detiene al cerrar `serve`). | `app/Console/Commands/ServeCommand.php` |
+
+### `project:check-config` — antes de abrir al público
+
+```bash
+php artisan project:check-config            # informa
+php artisan project:check-config --strict   # trata también los avisos como error
+```
+
+Existe porque hay ajustes que, mal puestos, **no producen ningún error**: la
+aplicación arranca, responde 200, no escribe nada en el log, y algo no funciona.
+Son los más caros de diagnosticar precisamente porque desde el servidor todo
+parece correcto.
+
+| Comprueba | El fallo silencioso que evita |
+|---|---|
+| `APP_KEY` | Sin ella no se descifran sesiones ni cookies. |
+| `APP_DEBUG` en producción | Cada error enseña el stack trace con las rutas del servidor. |
+| `FRONTEND_URLS` | Vacía → CORS no permite ningún origen. La API responde perfectamente y **el navegador** bloquea todas las respuestas. Ni una línea en el log. |
+| `TRUSTED_PROXIES` | Mal puesta → `request()->ip()` devuelve la IP del proxy para todo el mundo y los límites por IP pasan a ser un cupo global compartido. |
+| `RECAPTCHA_SECRET_KEY` y umbral | Vacía → la verificación se desactiva sola y los formularios públicos quedan sin protección. Umbral a 0 → pasa cualquier bot. |
+| `SESSION_SECURE_COOKIE`, `APP_URL`, `API_URL` | Cookies sin `Secure`; y `API_URL` en `http://` sobre una página HTTPS bloquea las llamadas del cliente por contenido mixto. |
+| Colas y broadcast | `QUEUE_CONNECTION=sync` en producción; Reverb declarado y mal configurado. |
+| **Cobertura de policies del panel** | Que ningún Resource de Filament administre un modelo sin policy. |
+
+Sobre la última: **en Filament, un modelo sin policy no queda cerrado, queda
+abierto.** `Gate::getPolicyFor()` devuelve `null` y el recurso autoriza ver,
+crear, editar y borrar a cualquiera que llegue al panel — incluido el rol
+`Editor`. Un recurso nuevo mal registrado no da error, da acceso. Está explicado
+en [filament-panels.md](filament-panels.md#autorización).
+
+> ⚠️ **Ejecútalo DESPUÉS de `config:cache`, no antes.** Es la caché lo que hace
+> silenciosos estos fallos: con la configuración cacheada Laravel deja de leer el
+> `.env`, así que `env()` devuelve `null` y una variable mal puesta se ignora sin
+> aviso. Comprobar antes de cachear no comprueba lo que va a correr.
+
+Devuelve **código 1** si hay algún fallo, para encadenarlo con `&&` en el script
+de despliegue. Ver [deploy-vps.md §4](../deploys/deploy-vps.md).
 
 ---
 
@@ -296,4 +334,4 @@ Comandos del framework que se usan habitualmente en este proyecto:
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-01
+> Creado: 2026-05-26 · Última revisión: 2026-09-05

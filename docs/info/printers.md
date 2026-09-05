@@ -50,7 +50,7 @@ Gestión de impresoras y su cola de impresión desde el panel de administración
 
 ---
 
-## Estado del módulo (2026-08-19)
+## Estado del módulo (2026-09-05)
 
 | Capa | Estado |
 |------|--------|
@@ -58,7 +58,8 @@ Gestión de impresoras y su cola de impresión desde el panel de administración
 | Migraciones | ✅ (`2022_02_17_*`) |
 | Panel Filament (`PrinterResource` + `PrinterStackRelationManager`) | ✅ |
 | **API V2** | ❌ **No existe ningún endpoint** |
-| Policy | ❌ No existe `PrinterPolicy` |
+| Policy | ✅ `PrinterPolicy`, sobre `OwnedResourcePolicy`. Cubre `Printer` y `PrinterStack` (el trabajo en cola hereda el dueño de la impresora) |
+| Alcance del panel | ✅ `PrinterResource` usa `ScopesToOwner`: cada quien ve sus impresoras, el administrador todas |
 | Rutas web | ❌ |
 | Tests | ❌ |
 
@@ -67,4 +68,4 @@ Se aborda en la fase 07 del roadmap (tarea T4).
 
 ---
 
-> Creado: 2026-06-17 · Última revisión: 2026-08-30
+> Creado: 2026-06-17 · Última revisión: 2026-09-05

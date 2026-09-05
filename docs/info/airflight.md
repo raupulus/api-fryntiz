@@ -35,7 +35,8 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 ### Otros
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Policies/AirFlightPolicy.php` | Política de autorización |
+| `app/Policies/AirFlightPolicy.php` | Aeronaves: catálogo de lectura pública, escritura sólo administrador |
+| `app/Policies/AirFlightRoutePolicy.php` | Rutas guardadas: lectura pública, escritura del dueño o administrador |
 | `app/Console/Commands/AirflightFixCommand.php` | Comando corrección datos |
 
 ## Campos del modelo AirFlightAirPlane
@@ -130,4 +131,4 @@ php artisan debug:seed-airflight --planes=1 --routes=25
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-19
+> Creado: 2026-05-25 · Última revisión: 2026-09-05

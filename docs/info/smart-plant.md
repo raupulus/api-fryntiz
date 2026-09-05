@@ -36,6 +36,7 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 |---------|-------------|
 | `app/Policies/SmartPlantPolicy.php` | Política de autorización planta |
 | `app/Policies/SmartPlantRegisterPolicy.php` | Política de autorización registro |
+| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `SmartPlantPlantResource`: la tabla sólo muestra las plantas propias; el administrador las ve todas |
 
 ## Campos del modelo SmartPlantPlant
 
@@ -120,4 +121,4 @@ php artisan debug:seed-smartplant --plants=5 --registers=50
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-05

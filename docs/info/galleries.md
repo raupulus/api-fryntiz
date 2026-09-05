@@ -16,6 +16,8 @@ revisión.
 | `app/Filament/Admin/Resources/Content/Contents/RelationManagers/GalleriesRelationManager.php` | Asociación de galerías a un contenido |
 | `app/Filament/Components/ImageCropperUpload.php` | Campo de subida con recorte |
 | `app/Filament/Concerns/HasImageFileUpload.php` | Trait de subida de imágenes |
+| `app/Policies/GalleryPolicy.php` | Autorización sobre `Gallery` y `GalleryImage`, sobre `OwnedResourcePolicy`. La imagen no tiene dueño propio: lo hereda de su galería |
+| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `GalleryResource`: la tabla del panel sólo muestra las galerías propias; el administrador las ve todas |
 
 ## Migraciones
 
@@ -104,4 +106,4 @@ contenido.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-09-05

@@ -40,6 +40,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 |---------|-------------|
 | `app/Policies/KeyCounterKeyboardPolicy.php` | Política de autorización teclado |
 | `app/Policies/KeyCounterMousePolicy.php` | Política de autorización ratón |
+| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `KeyboardResource` y `MouseResource`: la tabla del panel sólo muestra las sesiones propias. Sin él, un `Editor` veía las pulsaciones y los horarios de actividad de todos (AR-SEC-02) |
 | `app/Console/Commands/KeyCounterGenerateDuration.php` | Comando para recalcular duraciones |
 | `app/Console/Commands/KeyCounterRemoveDuplicate.php` | Comando para eliminar duplicados |
 
@@ -150,4 +151,4 @@ php artisan debug:seed-keycounter --count=50
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-05

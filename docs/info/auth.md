@@ -161,9 +161,9 @@ php artisan filament:upgrade
 | role_id | Nombre | Descripción |
 |---------|--------|-------------|
 | 1 | SuperAdmin | Acceso total (bypass de `Gate::before`), panel Admin |
-| 2 | Admin | Administración operativa, panel Admin |
-| 3 | User | Usuario normal, panel Tenant |
-| 4 | Editor | Panel Admin sin el bypass de SuperAdmin; sus permisos los deciden las Policies |
+| 2 | Admin | Administración operativa, panel Admin. Alcanza los recursos de todos los usuarios **menos los de un SuperAdmin**, y sin bypass: cada policy lo contempla |
+| 3 | User | Usuario normal, panel Tenant. Sólo lo suyo |
+| 4 | Editor | Panel Admin sin el bypass de SuperAdmin; sus permisos los deciden las Policies. Sólo lo suyo, salvo el contenido de sus plataformas |
 
 ### Métodos de rol en User
 
@@ -173,13 +173,43 @@ php artisan filament:upgrade
 | `isAdmin()` | ¿Es SuperAdmin o Admin? (role_id ∈ {1, 2}) |
 | `isEditor()` | ¿Es Editor? (role_id = 4) |
 
+### La jerarquía, en una línea
+
+`SuperAdmin` → todo · `Admin` → todo menos lo de un `SuperAdmin` · el resto →
+sólo lo suyo.
+
 ### Gate global
 
 ```php
 Gate::before(function ($user, $ability) {
-    if ($user->isSuperAdmin()) return true;
+    // Si la petición viene de un token de dispositivo IoT, el atajo NO se
+    // aplica: devolver null deja que decida la policy correspondiente.
+    if (TokenAbilities::deviceRequest($user)) {
+        return null;
+    }
+
+    if ($user->isSuperAdmin()) {
+        return true;
+    }
+
+    return null;
 });
 ```
+
+⚠️ **La excepción de los tokens de dispositivo no es un detalle.** El dueño de
+los cacharros es `SuperAdmin`, así que sin ella el token de una estación
+heredaría «acceso a todo» y las policies quedarían anuladas justo para el
+principal del que hay que defenderse.
+
+De ahí se siguen dos reglas al escribir cualquier policy:
+
+1. **`Gate::before` sólo cubre a `SuperAdmin`.** Un `Admin` no recibe nada de ese
+   atajo, así que si la policy no lo contempla explícitamente se queda fuera:
+   ve el listado del panel y se lleva un 403 al abrir cualquier ficha ajena.
+2. **El bypass de administrador es para administradores con sesión.** Un
+   `|| $user->isAdmin()` sin comprobar el token reintroduce por otra puerta el
+   agujero que `Gate::before` evita. El patrón correcto está en
+   `app/Policies/OwnedResourcePolicy.php`.
 
 ## Paneles Filament
 
@@ -246,6 +276,24 @@ una decisión.
 | `view` / `update` | Admin, o el propio usuario. Y a un superadmin sólo lo toca otro superadmin |
 | `delete` / `forceDelete` | **Sólo superadmin**, y nunca a sí mismo |
 | `restore` | Admin |
+
+### `ApiTokenPolicy`, el mismo criterio aplicado a los tokens
+
+Emitir un token es repartir una identidad, así que aquí la regla de «Admin llega
+a todo menos a lo de un SuperAdmin» no es cortesía: es la diferencia entre
+administrar y escalar.
+
+| Método | Quién puede |
+|---|---|
+| `viewAny` / `create` | Admin, con la lista de usuarios acotada a los que puede administrar |
+| `view` / `update` / `delete` | Admin, **salvo si el token es de un SuperAdmin** |
+| Cualquiera, desde un token de dispositivo | Nadie. Un cacharro no administra tokens, ni el suyo |
+
+`ApiTokenResource` acompaña a la policy en tres sitios, porque la policy sola no
+llega: `getEloquentQuery()` oculta los tokens de `SuperAdmin` de la tabla, el
+`Select` de usuario los excluye del formulario, y la acción en lote
+`revoke_user` se acota a los usuarios alcanzables. Sin lo último bastaba
+seleccionar un token cualquiera para dejar sin tokens a su dueño entero.
 
 ## Autenticación Web
 
@@ -343,4 +391,4 @@ Si se pierde la contraseña del administrador, se restablece por consola en el s
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-31
+> Creado: 2026-05-25 · Última revisión: 2026-09-05

@@ -173,10 +173,146 @@ Se abordan en la fase 05 del roadmap.
 
 ## Autorización
 
-- `Gate::before()` en `AppServiceProvider` concede acceso total al SuperAdmin (`role_id = 1`).
+### La regla que hay que interiorizar
+
+> **En Filament, un modelo sin policy no queda cerrado: queda ABIERTO.**
+
+Si `Gate::getPolicyFor($modelo)` devuelve `null`, Filament entiende que no hay
+restricciones a nivel de modelo y autoriza **todas** las acciones —`viewAny`,
+`create`, `edit`, `delete`, `deleteAny`— a cualquiera que llegue al panel. Y a
+`/admin` llega también el rol `Editor` (`User::canAccessPanel()`).
+
+O sea: olvidarse de registrar una policy al añadir un recurso **no da un error,
+da acceso**. Diez modelos estaban así hasta el 2026-09-05, `ApiToken` incluido:
+un `Editor` podía listar los tokens de todos, emitirse uno a nombre de un
+`SuperAdmin` y revocar en lote los del resto de administradores (AR-SEC-01).
+
+Por eso hay **dos comprobaciones automáticas** que fallan si algún recurso del
+panel administra un modelo sin policy:
+
+- `php artisan project:check-config` — se ejecuta en el despliegue.
+- `tests/Feature/Filament/PanelAuthorizationTest.php` — rompe la suite.
+
+Añade la policy **a la vez** que el Resource, no después.
+
+### Cómo se registran
+
+Explícitamente, en `app/Providers/AuthServiceProvider.php`, y **no por
+descubrimiento**. El descubrimiento por convención no funciona en este proyecto:
+para `App\Models\Hardware\HardwareDevice`, Laravel busca
+`App\Policies\Hardware\HardwareDevicePolicy`, mientras que aquí las policies
+viven planas en `App\Policies\` con nombre de módulo (`HardwarePolicy`). Las
+policies de todos los modelos que viven en subcarpetas no existían para el
+framework.
+
+El provider tiene tres mapas:
+
+| Mapa | Para qué |
+|---|---|
+| `POLICIES` | Modelo → policy, uno a uno. |
+| `WEATHER_STATION_MODELS` | Los 11 sensores comparten `WeatherStationPolicy`. |
+| `CATALOG_MODELS` | Los 5 catálogos globales comparten `AdminCatalogPolicy`. |
+
+### La jerarquía
+
+| Rol | Alcance |
+|---|---|
+| `SuperAdmin` | Todo. Vía `Gate::before`, sin llegar a las policies. |
+| `Admin` | Todo de todo el mundo, **menos lo de un `SuperAdmin`**. Ve y edita. |
+| `User` · `Editor` | Sólo lo suyo. |
+
+⚠️ **`Gate::before` sólo implementa el primer escalón.** Un `Admin` no recibe
+nada de ese atajo, así que **cada policy tiene que contemplarlo explícitamente**
+o el administrador se queda fuera de su propio panel: ve el listado y se lleva un
+403 al abrir cualquier ficha ajena (AR-SEC-03).
+
+⚠️ **Y el bypass de administrador es para administradores con sesión, nunca para
+tokens de dispositivo.** El dueño de los cacharros es `SuperAdmin`, de modo que
+un `|| $user->isAdmin()` sin condiciones convierte el token grabado en una placa
+en una llave para los recursos de todo el mundo — justo el agujero que
+`Gate::before` evita al devolver `null` en peticiones de dispositivo. El patrón
+correcto está en `OwnedResourcePolicy::alcanza()`:
+
+```php
+if (TokenAbilities::deviceRequest($user)) {
+    return false;              // o la regla estricta de dueño + device:{id}
+}
+
+return $esSuyo || $user->isAdmin();
+```
+
+Fijado por `PanelAuthorizationTest::el_token_de_un_cacharro_no_hereda_los_permisos_de_administrador`.
+
+### Policies base reutilizables
+
+En vez de una clase por tabla repitiendo el mismo criterio:
+
+| Clase | Cubre | Criterio |
+|---|---|---|
+| `AdminCatalogPolicy` | `FileType`, `HardwareType`, `HardwareAvailableComponent`, `CurriculumAvailableRepositoryType`, `PrinterAvailableType` | Catálogos globales sin dueño: sólo administrador. |
+| `OwnedResourcePolicy` (abstracta) | Base de `PrinterPolicy`, `GalleryPolicy`, `EnergySystemPolicy`, `HardwareEnergyPolicy`, `AirFlightRoutePolicy` | Es tuyo o eres administrador. Cada hija sólo declara `ownerId()`. |
+| `ApiTokenPolicy` | `ApiToken` | Admin gestiona tokens salvo los de un `SuperAdmin`. |
+
+Si el recurso nuevo es un catálogo o tiene `user_id`, **no escribas una policy
+desde cero**: registra `AdminCatalogPolicy` o extiende `OwnedResourcePolicy`.
+
+### Alcance de las tablas: `viewAny()` no basta
+
+`viewAny()` decide si el recurso **existe** para ti. `view()` decide si puedes
+abrir **una** fila. Pero **Filament no ejecuta `view()` fila a fila al pintar un
+listado**: la tabla enseña, literalmente, lo que devuelva `getEloquentQuery()`.
+
+Un recurso con `viewAny() === true` y sin scoping filtra cero. Un `Editor` veía
+listados los currículums, teclados, ratones, plantas, dispositivos e impresoras
+de **todos** los usuarios; podía no abrir la ficha, pero la columna ya contaba el
+nombre del cacharro, las horas de actividad y de quién era cada cosa (AR-SEC-02).
+
+Para eso está el trait `app/Filament/Concerns/ScopesToOwner.php`:
+
+```php
+class PrinterResource extends Resource
+{
+    use ScopesToOwner;   // filtra por `user_id`; el administrador ve todo
+}
+```
+
+Si la propiedad cuelga de una relación en vez de una columna propia, sobrescribe
+`scopeOwnerQuery()` — ver `HardwareEnergyResource`, cuyo dueño está en el sistema
+energético.
+
+Aplicado en: `CurriculumResource`, `KeyboardResource`, `MouseResource`,
+`HardwareDeviceResource`, `SmartPlantPlantResource`, `PrinterResource`,
+`GalleryResource`, `EnergySystemResource`, `HardwareEnergyResource`,
+`AirFlightRouteResource` y —con su propia consulta— `ApiTokenResource`.
+
+### Widgets, páginas y clusters
+
+Se descubren solos y se **muestran** salvo que digan lo contrario. No hay policy
+que los cubra: la restricción es un método en la propia clase.
+
+| Componente | Método |
+|---|---|
+| Widget | `public static function canView(): bool` |
+| Page · Cluster | `public static function canAccess(): bool` |
+
+Sin ellos, un `Editor` veía en su escritorio la telemetría de los servidores
+—nombres de nodos, CPU, disco, tensión, uptime—, los consumos eléctricos y los
+enlaces de navegación a los clusters de infraestructura (AR-SEC-04). Los 7
+widgets, los 4 clusters y `EnergyDashboard` exigen ahora administrador.
+
+### Otros gates
+
+`manage-settings` y `view-statistics`, definidos en `AppServiceProvider`.
+
+`access-admin-panel` **ya no existe**: decía que sólo `SuperAdmin` entra al
+panel, no lo consultaba nadie y contradecía a la implementación real. Filament
+usa el contrato `FilamentUser::canAccessPanel()` de `App\Models\User`, que abre
+`/admin` también a `Admin` y a `Editor`. Un gate huérfano que contradice al
+código es peor que ninguno, porque quien audita los providers da por cerrado lo
+que está abierto (AR-CODE-02). **El criterio de acceso al panel está, y sólo
+está, en `User::canAccessPanel()`.**
+
 - `UserPolicy` protege a los SuperAdmins de ser editados por Admins (commit `66c41b1`).
-- Las 16 Policies de `app/Policies/` se aplican por descubrimiento automático.
-- Gates auxiliares: `access-admin-panel`, `manage-settings`, `view-statistics`.
 
 ### Reparto de roles: nadie sube por encima del suyo
 
@@ -227,6 +363,10 @@ php artisan make:filament-widget      # nuevo Widget
 
 ## Tests
 
+- `tests/Feature/Filament/PanelAuthorizationTest.php` — **cobertura de policies,
+  alcance de las tablas y visibilidad de widgets y clusters.** Es el que rompe si
+  se añade un recurso sin policy.
+- `tests/Feature/Filament/RoleEscalationTest.php` — nadie se sube de rol.
 - `tests/Feature/Filament/HardwareDeviceSelectOptionsTest.php`
 - `tests/Feature/Filament/RecaptchaLoginTest.php` — reCAPTCHA v3 en los dos logins
 
@@ -234,4 +374,4 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-02
+> Creado: 2026-08-30 · Última revisión: 2026-09-05

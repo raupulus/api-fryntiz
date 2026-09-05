@@ -259,7 +259,7 @@ api-fryntiz/
 │   │   ├── Hardware/         # Dispositivos físicos, monitorización de energía solar y generadores
 │   │   └── (raíz)            # User, Platform, File, FileThumbnail, Gallery, Printer, Newsletter...
 │   ├── Notifications/        # Notificaciones del sistema
-│   ├── Policies/             # 16 Policies para autorización de modelos
+│   ├── Policies/             # 23 Policies. Registro EXPLÍCITO en AuthServiceProvider
 │   ├── Providers/            # Service Providers de Laravel y paneles Filament (AdminPanelProvider, TenantPanelProvider)
 │   ├── Rules/                # Reglas de validación personalizadas (OwnedHardwareDevice, OwnedSmartPlant, KnownSensor)
 │   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (15 servicios + el DTO `CaptchaResult`)
@@ -349,6 +349,9 @@ y mantenlo actualizado en el mismo commit siempre que trabajes con un endpoint d
 
 ### Descripción de Roles de la Plataforma
 
+La jerarquía, en una línea: **`SuperAdmin` → todo · `Admin` → todo menos lo de un
+`SuperAdmin` · `User` y `Editor` → sólo lo suyo.**
+
 El sistema implementa un esquema de roles respaldado por `app/Enums/UserRoleEnum.php`:
 
 1. **`SuperAdmin` (Valor: `1`):**
@@ -358,7 +361,17 @@ El sistema implementa un esquema de roles respaldado por `app/Enums/UserRoleEnum
 2. **`Admin` (Valor: `2`):**
    - Administrador operativo.
    - Acceso al panel de administración `/admin` mediante la comprobación `User::canAccessPanel()`.
-   - Permisos para gestionar usuarios, plataformas, contenidos CMS, dispositivos hardware, supervisión de colas y lectura de estadísticas globales (`view-statistics`).
+   - **Ve y edita los recursos de todos los usuarios, menos los de un `SuperAdmin`.**
+     Eso incluye usuarios, plataformas, contenidos CMS, dispositivos hardware,
+     plantas, impresoras, galerías e instalaciones energéticas, además de la
+     supervisión de colas y las estadísticas globales (`view-statistics`).
+   - ⚠️ **No recibe el bypass de `Gate::before()`**, que sólo cubre a `SuperAdmin`.
+     Cada policy tiene que contemplar al `Admin` explícitamente; si no, ve el
+     listado del panel y se lleva un 403 al abrir cualquier ficha ajena.
+   - La excepción es **repartir identidades**: no puede asignar el rol
+     `SuperAdmin` (`UserRoleEnum::assignableRoles()`) ni gestionar los tokens de
+     un `SuperAdmin` (`ApiTokenPolicy`). Ahí no estaría administrando, estaría
+     escalando.
 3. **`User` (Valor: `3`):**
    - Usuario final registrado o cliente corporativo.
    - No tiene acceso al panel `/admin` (su intento de acceso es rechazado con error 403).
@@ -512,7 +525,12 @@ Cosas que sorprenden y hacen perder tiempo. Léelas antes de depurar.
 | Trampa | Detalle |
 |--------|---------|
 | **Lazy loading prohibido** | `Model::preventLazyLoading(! app()->isProduction())`. Lo que funciona en producción puede reventar en local. Es intencional. |
-| **`Gate::before` para SuperAdmin** | Un SuperAdmin nunca llega al método de la Policy. Testea con usuarios de rol 2 y 3. |
+| **En Filament, un modelo SIN policy queda ABIERTO** | No cerrado: **abierto**. Si `Gate::getPolicyFor()` devuelve `null`, el Resource autoriza `viewAny`, `create`, `edit` y `delete` a cualquiera que llegue al panel — y a `/admin` llega también el rol `Editor`. Olvidarse de registrar una policy **no da error, da acceso**. Registra la policy en `AuthServiceProvider` **a la vez** que el Resource; `project:check-config` y `PanelAuthorizationTest` fallan si falta alguna. |
+| **Las policies NO se descubren solas aquí** | La convención busca `App\Policies\Hardware\HardwareDevicePolicy` para `App\Models\Hardware\HardwareDevice`, y aquí las policies viven planas en `App\Policies\` con nombre de módulo. Todo modelo en subcarpeta necesita registro **explícito** en `AuthServiceProvider`. |
+| **`viewAny()` no filtra la tabla** | Filament **no ejecuta `view()` fila a fila** al pintar un listado: la tabla enseña lo que devuelva `getEloquentQuery()`. Un recurso con `viewAny() === true` y sin scoping muestra los registros de todos los usuarios aunque la ficha no abra. Usa el trait `app/Filament/Concerns/ScopesToOwner.php`. |
+| **`Gate::before` para SuperAdmin** | Un SuperAdmin nunca llega al método de la Policy. Testea con usuarios de rol 2 y 3. **Y sólo cubre a SuperAdmin**: un `Admin` no recibe nada de ese atajo, así que cada policy tiene que contemplarlo explícitamente o el administrador se queda fuera de su propio panel (ve el listado, 403 al abrir la ficha). |
+| **El bypass de admin NO vale para tokens de dispositivo** | `Gate::before` devuelve `null` en peticiones de cacharro a propósito: el dueño de los cacharros es `SuperAdmin`, así que sin esa excepción el token de una estación heredaría «acceso a todo». Un `\|\| $user->isAdmin()` sin comprobar el token reintroduce el agujero por otra puerta. Patrón correcto en `app/Policies/OwnedResourcePolicy.php`. |
+| **Widgets, Pages y Clusters se muestran salvo que digan que no** | No hay policy que los cubra. La restricción es `canView()` en widgets y `canAccess()` en pages y clusters, escrita en la propia clase. Sin ella, un `Editor` ve la telemetría de los servidores en su escritorio. |
 | **Helpers globales sin namespace** | `JsonHelper` y `AEMETHelper` viven en `support/helpers/` y se usan con `\JsonHelper::…`. No están en `app/`. `RoleHelper` y `MenuHelper` se retiraron (fases 3 y 8). |
 | **Traducciones** | Viven en `lang/` (raíz), no en `resources/lang/` (retirado). Laravel 13 las carga desde ahí sin configuración extra. |
 | **Scheduler** | Arreglado; `SchedulerTest` impide que vuelva a programar comandos inexistentes. Ver §8. |
@@ -689,4 +707,4 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 
 ---
 
-> Última revisión: 2026-08-30
+> Última revisión: 2026-09-05

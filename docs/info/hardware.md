@@ -54,7 +54,10 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 ### Otros
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Policies/HardwarePolicy.php` | Política de autorización |
+| `app/Policies/HardwarePolicy.php` | Política de autorización de dispositivos. El administrador **con sesión** alcanza los ajenos; un token de cacharro sigue atado a su `device:{id}` |
+| `app/Policies/EnergySystemPolicy.php` | Instalaciones energéticas, sobre `OwnedResourcePolicy` |
+| `app/Policies/HardwareEnergyPolicy.php` | Módulos de energía; el dueño se resuelve por el sistema del que cuelgan |
+| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `HardwareDeviceResource`, `EnergySystemResource` y `HardwareEnergyResource` |
 | `app/Enums/HardwareTypeEnum.php` | Enum tipos de hardware |
 | `app/Traits/BelongsToHardwareDevice.php` | Trait relación con dispositivo hardware |
 | `app/Traits/IsEnergyReading.php` | Lo común a las tablas de lecturas: elemento, scopes y marca de sospecha |
@@ -475,4 +478,4 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-31
+> Creado: 2026-05-25 · Última revisión: 2026-09-05

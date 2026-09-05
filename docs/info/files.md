@@ -135,7 +135,7 @@ Se definen en `File::$genericImages`:
 | GET | `/file/download/{module}/{id}/{slug?}` | — | Ídem | Descarga con el nombre original |
 | GET | `/file/resize/{module}/{id}/{width}/{slug?}` | — | Ídem | Redimensiona y sirve |
 | GET | `/file/thumbnail/get/{module}/{id}/{slug?}` | — | Ídem | Sirve la miniatura |
-| POST | `/file/delete/{id}` | `auth` | En el controlador (N27) | Borra el archivo, sus miniaturas y la fila |
+| POST | `/file/delete/{id}` | `auth` | En el controlador: el dueño **o un administrador** (N27, AR-SEC-05) | Borra el archivo, sus miniaturas y la fila |
 
 > **Esta tabla no tenía columna de permisos** (**N260**), justo en el módulo cuyo
 > problema era la falta de permisos. Sin esa columna no se ve lo único que
@@ -147,6 +147,51 @@ Se definen en `File::$genericImages`:
 
 Cuando un archivo no se puede servir se devuelve una imagen genérica en su
 lugar, nunca un error: `not_found`, `not_authorized` o `not_image` según el caso.
+
+### La imagen genérica no exime de comprobar el disco
+
+Estas rutas sirven las ilustraciones de las webs, así que devolver un marcador
+mantiene la maqueta en pie — pero **el código HTTP tiene que decir la verdad**,
+para que ni el cliente ni una caché se queden un 200 sobre algo que no existe.
+
+Y hay una trampa concreta: `response()->file()` sobre una ruta que no existe
+lanza `FileNotFoundException`, que sin capturar es un **500 público**. La fila y
+el fichero se separan con facilidad —storage sin migrar al servidor,
+sincronización a medias, una caché borrada a mano, o `storage_path` a null y el
+accessor devolviendo cadena vacía—, así que **toda ruta que sirva un fichero
+comprueba antes `is_file()`**:
+
+```php
+$path = (string) $modelo->storagePathFile;
+
+if ($path === '' || ! is_file($path)) {
+    return $this->missing();          // imagen genérica CON 404
+}
+
+return response()->file($path);
+```
+
+`response()->file()` no admite código de estado —su firma es
+`file($file, array $headers = [])`—, de ahí el `setStatusCode(404)` posterior.
+
+Le faltaba a `FileController::get()` y `resizeAndGet()` (AR-E04) y, después, a
+`FileThumbnailController::get()` (AR-ERR-01). Fijado en
+`tests/Feature/Files/FileServingTest.php`.
+
+### Quién borra un fichero
+
+El dueño, **o un administrador**. La comprobación de propiedad estaba bien
+—antes de N27 no había ninguna y cualquiera barría los ficheros de otro
+recorriendo ids— pero dejaba fuera la moderación: si alguien subía algo que
+infringe las normas, o el fichero quedaba huérfano, no había manera de retirarlo
+desde la web (AR-SEC-05).
+
+Los identificadores se comparan **con cast a entero**. `user_id` no está en
+`$casts`, así que basta que el driver devuelva el `bigint` como cadena para que
+`'7' !== 7` y el dueño de su propio fichero privado se lleve un «no autorizado»
+que nadie sabría explicar. El helper es `FileController::alcanza()`.
+
+Fijado en `tests/Feature/Files/FileDeletionTest.php`.
 
 ## Uso en la aplicación
 
@@ -180,7 +225,7 @@ El módulo File es referenciado por:
 |------|--------|
 | `GET /file/get/...`, `/thumbnail/get/...`, `/resize/...` | ✅ Públicas por diseño. Las privadas devuelven la imagen de «no autorizado» |
 | `GET /file/download/{module}/{id}/{slug?}` | ✅ Implementada en la fase 8. Misma comprobación de privacidad que `get()`, y descarga con el nombre original |
-| `POST /file/delete/{id}` | ✅ Con `auth` y comprobación de propiedad dentro del controlador (N27, fase 3) |
+| `POST /file/delete/{id}` | ✅ Con `auth` y comprobación de propiedad dentro del controlador: el dueño o un administrador (N27, AR-SEC-05) |
 | `POST /file/upload` | 🗑️ **Retirada** en la fase 8 |
 
 ### Por qué se retira la subida por HTTP
@@ -208,4 +253,4 @@ privada puede llevar dentro la geolocalización.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-05
