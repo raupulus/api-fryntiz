@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\Energy;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\CreateHardwareEnergy;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\EditHardwareEnergy;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\ListHardwareEnergies;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareEnergy;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -25,6 +26,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * El **elemento energético**: un panel, un router, una batería (D81).
@@ -37,6 +39,20 @@ use Filament\Tables\Table;
  */
 class HardwareEnergyResource extends Resource
 {
+    use ScopesToOwner;
+
+    /**
+     * `hardware_energy` no tiene `user_id`: el dueño es el de la instalación
+     * de la que cuelga el módulo, igual que hace {@see HardwareEnergy::scopeForUser()}.
+     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
+     */
+    protected static function scopeOwnerQuery(Builder $query, int $userId): Builder
+    {
+        return $query->whereHas('system', static fn (Builder $q) => $q->where('user_id', $userId));
+    }
+
     protected static ?string $model = HardwareEnergy::class;
 
     protected static ?string $cluster = Energy::class;

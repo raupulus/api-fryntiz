@@ -63,7 +63,7 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function nadie_ve_el_dispositivo_de_otro(): void
+    public function un_usuario_normal_no_ve_el_dispositivo_de_otro(): void
     {
         $ajeno = $this->makeDevice($this->makeUser());
 
@@ -71,13 +71,23 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function ni_siquiera_el_admin_ve_el_dispositivo_de_otro(): void
+    public function el_admin_si_ve_y_edita_el_dispositivo_de_otro(): void
     {
-        // Los cacharros son de su dueño y punto: aquí no hay excepción de
-        // administración como en los contenidos.
+        // Este test afirmaba lo contrario —«los cacharros son de su dueño y
+        // punto»— y con ello dejaba fuera de su propio panel a un rol que
+        // `AGENTS.md` describe como capaz de «gestionar dispositivos hardware».
+        //
+        // La jerarquía del proyecto es: SuperAdmin llega a todo, Admin a todo
+        // menos a lo de un SuperAdmin, y el resto sólo a lo suyo. `Gate::before`
+        // sólo implementa el primer escalón, así que si la policy no contempla
+        // al Admin, éste ve el listado y se lleva un 403 al abrir cualquier
+        // ficha ajena (AR-SEC-03).
         $ajeno = $this->makeDevice($this->makeUser());
+        $admin = $this->makeUser(UserRoleEnum::Admin);
 
-        $this->assertFalse($this->policy->view($this->makeUser(UserRoleEnum::Admin), $ajeno));
+        $this->assertTrue($this->policy->view($admin, $ajeno));
+        $this->assertTrue($this->policy->update($admin, $ajeno));
+        $this->assertTrue($this->policy->delete($admin, $ajeno));
     }
 
     #[Test]
@@ -89,7 +99,7 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function nadie_borra_el_dispositivo_de_otro(): void
+    public function un_usuario_normal_no_borra_el_dispositivo_de_otro(): void
     {
         $ajeno = $this->makeDevice($this->makeUser());
 

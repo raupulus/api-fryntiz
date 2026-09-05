@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\Energy;
 use App\Filament\Admin\Resources\Hardware\EnergySystems\Pages\CreateEnergySystem;
 use App\Filament\Admin\Resources\Hardware\EnergySystems\Pages\EditEnergySystem;
 use App\Filament\Admin\Resources\Hardware\EnergySystems\Pages\ListEnergySystems;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\EnergySystem;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -33,6 +34,8 @@ use Illuminate\Support\Str;
  */
 class EnergySystemResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = EnergySystem::class;
 
     protected static ?string $cluster = Energy::class;

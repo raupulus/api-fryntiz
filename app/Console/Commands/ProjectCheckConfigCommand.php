@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use Filament\Facades\Filament;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Comprueba que la configuración desplegada no tiene fallos silenciosos.
@@ -47,6 +49,7 @@ class ProjectCheckConfigCommand extends Command
         $this->comprobarProxies();
         $this->comprobarCaptcha();
         $this->comprobarSesion();
+        $this->comprobarPolicies();
         $this->comprobarColasYBroadcast();
 
         return $this->informar();
@@ -182,6 +185,59 @@ class ProjectCheckConfigCommand extends Command
                 'De ahí salen los enlaces de los correos y las URL absolutas de la API.'
             );
         }
+
+        // AR-FE-01. `API_URL` acaba dentro del JavaScript de las vistas —el mapa
+        // de vuelos de `/airflight` compone sus endpoints con ella—. Si la
+        // página va por HTTPS y la base es `http://`, el navegador bloquea esas
+        // peticiones por contenido mixto: el mapa se queda vacío y en el
+        // servidor no aparece ni una línea, porque la petición nunca llega a
+        // salir. Es un fallo que sólo se ve abriendo la web.
+        if (str_starts_with((string) config('app.api_url'), 'http://')) {
+            $this->fallo(
+                'API_URL no es https',
+                'Las vistas la meten en el JavaScript del cliente. Sobre una página HTTPS el '.
+                'navegador bloquea esas llamadas por contenido mixto y el mapa de vuelos se queda '.
+                'vacío, sin ningún error en el servidor.'
+            );
+        }
+    }
+
+    /**
+     * Todo modelo que el panel administra tiene que tener policy.
+     *
+     * Es la comprobación que habría evitado AR-SEC-01. En Filament, un recurso
+     * cuyo modelo no tiene policy registrada no queda cerrado: queda **abierto**
+     * —`Gate::getPolicyFor()` devuelve `null` y el recurso autoriza todas las
+     * acciones—, así que un descuido al añadir un recurso nuevo no da error, da
+     * acceso. Diez modelos estaban así, incluido el de los tokens de la API.
+     *
+     * No hace falta base de datos ni usuario: se pregunta al Gate por el mapa de
+     * policies, que es información estática del arranque.
+     */
+    private function comprobarPolicies(): void
+    {
+        $sinPolicy = [];
+
+        foreach (Filament::getPanels() as $panel) {
+            foreach ($panel->getResources() as $recurso) {
+                $modelo = $recurso::getModel();
+
+                if (Gate::getPolicyFor($modelo) === null) {
+                    $sinPolicy[$modelo] = true;
+                }
+            }
+        }
+
+        if ($sinPolicy === []) {
+            return;
+        }
+
+        $this->fallo(
+            'Recursos del panel sin policy: '.count($sinPolicy),
+            'Un modelo sin policy no está restringido, está abierto: Filament autoriza ver, crear, '.
+            'editar y borrar a cualquiera que entre al panel, y al panel entra también el rol Editor. '.
+            'Sin policy: '.implode(', ', array_keys($sinPolicy))
+        );
     }
 
     private function comprobarColasYBroadcast(): void

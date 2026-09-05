@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\SmartPlant;
 use App\Filament\Admin\Resources\SmartPlant\SmartPlantPlants\Pages\CreateSmartPlantPlant;
 use App\Filament\Admin\Resources\SmartPlant\SmartPlantPlants\Pages\EditSmartPlantPlant;
 use App\Filament\Admin\Resources\SmartPlant\SmartPlantPlants\Pages\ListSmartPlantPlants;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\SmartPlant\SmartPlantPlant;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -27,6 +28,8 @@ use Filament\Tables\Table;
 
 class SmartPlantPlantResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = SmartPlantPlant::class;
 
     protected static ?string $cluster = SmartPlant::class;

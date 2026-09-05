@@ -451,12 +451,6 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Method App\\Models\\User\:\:getAllInactive\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Foundation\\Auth\\User\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/User.php
-
-		-
 			message: '#^Method App\\Models\\User\:\:getFacebookAttribute\(\) should return App\\Models\\UserSocial\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: return.type
 			count: 1

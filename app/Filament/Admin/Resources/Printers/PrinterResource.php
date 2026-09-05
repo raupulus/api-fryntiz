@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Printers\Pages\CreatePrinter;
 use App\Filament\Admin\Resources\Printers\Pages\EditPrinter;
 use App\Filament\Admin\Resources\Printers\Pages\ListPrinters;
 use App\Filament\Admin\Resources\Printers\RelationManagers\PrinterStackRelationManager;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Printer;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -26,6 +27,8 @@ use Filament\Tables\Table;
 
 class PrinterResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = Printer::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPrinter;

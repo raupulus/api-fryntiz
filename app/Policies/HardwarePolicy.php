@@ -49,7 +49,7 @@ class HardwarePolicy
     {
         // Borrar un dispositivo no es tarea de un dispositivo.
         return ! TokenAbilities::deviceRequest($user)
-            && (int) $device->user_id === (int) $user->id;
+            && ((int) $device->user_id === (int) $user->id || $user->isAdmin());
     }
 
     public function restore(User $user, HardwareDevice $device): bool
@@ -72,10 +72,26 @@ class HardwarePolicy
 
     /**
      * Pertenencia + ligado del token al dispositivo concreto.
+     *
+     * ## El administrador también llega (AR-SEC-03)
+     *
+     * `Gate::before` sólo regala el paso a `SuperAdmin`. Un `Admin` legítimo se
+     * llevaba un 403 al abrir en `/admin` un dispositivo de otro usuario: la
+     * tabla lo listaba y la ficha no abría.
+     *
+     * El bypass es para administradores **con sesión**. Para un token de
+     * dispositivo se mantiene la regla estricta —dueño y token ligado a ese
+     * cacharro—, porque el dueño de los cacharros es precisamente `SuperAdmin`
+     * y un `|| $user->isAdmin()` sin condiciones convertiría el token de una
+     * estación meteorológica en una llave para todo el parque de hardware.
      */
     private function isOwnedAndReachable(User $user, HardwareDevice $device): bool
     {
-        return (int) $device->user_id === (int) $user->id
-            && TokenAbilities::tokenReachesDevice($user, (int) $device->id);
+        if (TokenAbilities::deviceRequest($user)) {
+            return (int) $device->user_id === (int) $user->id
+                && TokenAbilities::tokenReachesDevice($user, (int) $device->id);
+        }
+
+        return (int) $device->user_id === (int) $user->id || $user->isAdmin();
     }
 }

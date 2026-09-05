@@ -7,7 +7,18 @@ return [
     'env' => env('APP_ENV', 'production'),
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http://localhost:8000'),
-    'api_url' => env('API_URL', env('APP_URL', 'http://localhost:8000').'/api'),
+    /*
+     * Base pública de la API, la que acaba dentro del JavaScript de las vistas.
+     *
+     * `env('API_URL', $default)` no basta: una variable presente pero vacía en
+     * el `.env` —que es como queda al copiar `.env.example` sin rellenarla—
+     * devuelve cadena vacía, no el valor por defecto, y entonces la URL que se
+     * compone en las vistas queda coja. Con `filled()` una variable vacía
+     * equivale a no ponerla, y se deriva de `APP_URL`.
+     */
+    'api_url' => filled(env('API_URL'))
+        ? rtrim((string) env('API_URL'), '/')
+        : rtrim((string) env('APP_URL', 'http://localhost:8000'), '/').'/api',
     'asset_url' => env('ASSET_URL'),
     /*
     |--------------------------------------------------------------------------

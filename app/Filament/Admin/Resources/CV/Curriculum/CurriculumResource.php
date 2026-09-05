@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\CV\Curriculum\Pages\CreateCurriculum;
 use App\Filament\Admin\Resources\CV\Curriculum\Pages\EditCurriculum;
 use App\Filament\Admin\Resources\CV\Curriculum\Pages\ListCurriculums;
 use App\Filament\Components\ImageCropperUpload;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\CV\Curriculum;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -30,6 +31,8 @@ use Illuminate\Support\Str;
 
 class CurriculumResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = Curriculum::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

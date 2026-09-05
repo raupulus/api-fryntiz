@@ -19,6 +19,14 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
  */
 class EnergyStatsWidget extends BaseWidget
 {
+    /**
+     * Consumos e instalaciones eléctricas de todos los usuarios (AR-SEC-04).
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected ?string $pollingInterval = '60s';
 
     protected static ?int $sort = 1;

@@ -28,6 +28,14 @@ use Illuminate\Support\Facades\DB;
  */
 class EnergyHistoricalChart extends ChartWidget
 {
+    /**
+     * Histórico de producción y consumo de todas las instalaciones (AR-SEC-04).
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';

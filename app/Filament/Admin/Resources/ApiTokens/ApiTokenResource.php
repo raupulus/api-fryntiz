@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ApiTokens;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Resources\ApiTokens\Pages\CreateApiToken;
 use App\Filament\Admin\Resources\ApiTokens\Pages\ListApiTokens;
 use App\Models\ApiToken;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Policies\ApiTokenPolicy;
 use App\Support\Auth\TokenAbilities;
 use BackedEnum;
 use Filament\Actions\BulkAction;
@@ -29,6 +31,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class ApiTokenResource extends Resource
 {
@@ -52,7 +56,10 @@ class ApiTokenResource extends Resource
             Section::make('Nuevo token')->columns(1)->visibleOn('create')->schema([
                 Select::make('tokenable_id')
                     ->label('Usuario')
-                    ->options(fn () => User::query()->orderBy('name')->pluck('name', 'id'))
+                    // Un Admin no emite tokens a nombre de un SuperAdmin: sería
+                    // fabricarse su identidad, que es la escalada que
+                    // `UserRoleEnum::assignableRoles()` impide en los roles.
+                    ->options(fn () => static::usuariosAdministrables()->pluck('name', 'id'))
                     ->searchable()->required()->columnSpanFull(),
                 Hidden::make('tokenable_type')->default(User::class),
                 TextInput::make('name')->required()->maxLength(255)
@@ -110,7 +117,7 @@ class ApiTokenResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('tokenable_id')
-                    ->options(fn () => User::query()->pluck('name', 'id'))
+                    ->options(fn () => static::usuariosAdministrables()->pluck('name', 'id'))
                     ->label('Usuario'),
                 Filter::make('expired')
                     ->query(fn ($q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now()))
@@ -128,7 +135,23 @@ class ApiTokenResource extends Resource
                         ->icon('heroicon-o-shield-exclamation')->color('danger')
                         ->requiresConfirmation()
                         ->action(function ($records) {
-                            $users = $records->pluck('tokenable_id')->unique();
+                            // La acción barría por `tokenable_id` sin mirar a
+                            // quién pertenece cada uno: bastaba seleccionar un
+                            // token cualquiera para dejar sin tokens al dueño
+                            // entero, `SuperAdmin` incluido. Se acota a los
+                            // usuarios que quien ejecuta puede administrar.
+                            $alcanzables = static::usuariosAdministrables()->pluck('id');
+
+                            $users = $records->pluck('tokenable_id')->unique()->intersect($alcanzables);
+
+                            if ($users->isEmpty()) {
+                                Notification::make()
+                                    ->title('Ningún token alcanzable en la selección')
+                                    ->warning()->send();
+
+                                return;
+                            }
+
                             ApiToken::whereIn('tokenable_id', $users)
                                 ->where('tokenable_type', User::class)->delete();
                             Notification::make()->title('Tokens del usuario revocados')->success()->send();
@@ -136,6 +159,52 @@ class ApiTokenResource extends Resource
                 ]),
             ])
             ->defaultSort('id', 'desc');
+    }
+
+    /**
+     * Usuarios cuyos tokens puede gestionar quien está navegando.
+     *
+     * Mismo criterio que {@see ApiTokenPolicy}: un `Admin` llega
+     * a todo menos a lo de un `SuperAdmin`.
+     *
+     * @return Collection<int, User>
+     */
+    protected static function usuariosAdministrables(): Collection
+    {
+        $query = User::query()->orderBy('name');
+
+        if (auth()->user()?->isSuperAdmin() !== true) {
+            $query->where('role_id', '!=', UserRoleEnum::SuperAdmin->value);
+        }
+
+        return $query->get(['id', 'name']);
+    }
+
+    /**
+     * La tabla no enseña lo que la policy no deja tocar.
+     *
+     * `viewAny()` decide si el recurso existe para ti; la tabla enseña lo que
+     * devuelva esta consulta, fila a fila, sin pasar por `view()`. Sin este
+     * filtro un `Admin` seguiría viendo listados los tokens de los `SuperAdmin`
+     * —nombre, scopes y último uso— aunque no pudiera abrirlos.
+     *
+     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()?->isSuperAdmin() === true) {
+            return $query;
+        }
+
+        return $query->where(
+            fn (Builder $q) => $q->where('tokenable_type', '!=', User::class)
+                ->orWhereNotIn(
+                    'tokenable_id',
+                    User::query()->where('role_id', UserRoleEnum::SuperAdmin->value)->select('id')
+                )
+        );
     }
 
     public static function getPages(): array

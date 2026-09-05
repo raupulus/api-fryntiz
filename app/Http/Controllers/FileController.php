@@ -44,7 +44,7 @@ class FileController extends Controller
         }
 
         // # Compruebo si es un archivo privado.
-        if ($file->is_private && ($file->user_id !== auth()->id())) {
+        if ($file->is_private && ! $this->alcanza($file)) {
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
@@ -89,7 +89,7 @@ class FileController extends Controller
         }
 
         // # Compruebo si es un archivo privado.
-        if ($file->is_private && ($file->user_id !== auth()->id())) {
+        if ($file->is_private && ! $this->alcanza($file)) {
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
@@ -133,6 +133,30 @@ class FileController extends Controller
 
         return response($encoded->toString())
             ->header('Content-Type', $encoded->mediaType());
+    }
+
+    /**
+     * ¿Quien pide alcanza este fichero?
+     *
+     * Es suyo, o es un administrador. Lo segundo hace falta para moderar:
+     * ficheros huérfanos o subidos por otro usuario que hay que retirar.
+     *
+     * Los identificadores se comparan con cast a entero a propósito. La
+     * comparación era estricta contra el valor crudo del modelo, y `user_id` no
+     * está en `$casts`: basta que el driver devuelva el `bigint` como cadena
+     * para que `'7' !== 7` y el dueño de su propio fichero privado se lleve un
+     * «no autorizado» que nadie sabría explicar.
+     */
+    private function alcanza(File $file): bool
+    {
+        $userId = auth()->id();
+
+        if ($userId === null) {
+            return false;
+        }
+
+        return (int) $file->user_id === (int) $userId
+            || (bool) auth()->user()?->isAdmin();
     }
 
     /**
@@ -197,7 +221,7 @@ class FileController extends Controller
             return $this->missing();
         }
 
-        if ($file->is_private && ($file->user_id !== auth()->id())) {
+        if ($file->is_private && ! $this->alcanza($file)) {
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
@@ -296,7 +320,10 @@ class FileController extends Controller
             return redirect()->back()->with('message', 'El archivo no existe.');
         }
 
-        if ((int) $file->user_id !== (int) auth()->id()) {
+        // Un administrador también borra: si un usuario sube algo que infringe
+        // las normas, o el fichero queda huérfano, la única salida era artisan
+        // o tocar la base de datos a mano (AR-SEC-05).
+        if (! $this->alcanza($file)) {
             abort(403, 'Ese archivo no es tuyo.');
         }
 

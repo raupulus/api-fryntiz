@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\AirFlight;
 use App\Filament\Admin\Resources\AirFlight\AirFlightRoutes\Pages\CreateAirFlightRoute;
 use App\Filament\Admin\Resources\AirFlight\AirFlightRoutes\Pages\EditAirFlightRoute;
 use App\Filament\Admin\Resources\AirFlight\AirFlightRoutes\Pages\ListAirFlightRoutes;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\AirFlight\AirFlightRoute;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -24,6 +25,8 @@ use Filament\Tables\Table;
 
 class AirFlightRouteResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = AirFlightRoute::class;
 
     protected static ?string $cluster = AirFlight::class;

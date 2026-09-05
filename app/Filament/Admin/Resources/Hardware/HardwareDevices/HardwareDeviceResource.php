@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\CreateHardwareDe
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\EditHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\ListHardwareDevices;
 use App\Filament\Components\ImageCropperUpload;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -29,6 +30,8 @@ use Filament\Tables\Table;
 
 class HardwareDeviceResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = HardwareDevice::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Hardware';

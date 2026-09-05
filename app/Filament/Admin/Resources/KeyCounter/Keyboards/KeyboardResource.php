@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\KeyCounter;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\CreateKeyboard;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\EditKeyboard;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\ListKeyboards;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\KeyCounter\Keyboard;
 use BackedEnum;
@@ -29,6 +30,8 @@ use Filament\Tables\Table;
 
 class KeyboardResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = Keyboard::class;
 
     protected static ?string $cluster = KeyCounter::class;

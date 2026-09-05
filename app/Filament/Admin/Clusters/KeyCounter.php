@@ -14,6 +14,16 @@ use Filament\Support\Icons\Heroicon;
  */
 class KeyCounter extends Cluster
 {
+    /**
+     * El cluster agrupa infraestructura, no contenido. Sin esto, quien entra al
+     * panel a escribir veía en la navegación los módulos de energía, vuelos,
+     * KeyCounter y SmartPlant enteros (AR-SEC-04).
+     */
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected static ?string $clusterBreadcrumb = 'Keycounter';
 
     protected static ?string $title = 'Keycounter';

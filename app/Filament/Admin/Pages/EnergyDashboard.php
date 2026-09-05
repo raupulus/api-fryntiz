@@ -16,6 +16,16 @@ use Filament\Support\Icons\Heroicon;
  */
 class EnergyDashboard extends Page
 {
+    /**
+     * Métricas eléctricas de todas las instalaciones. Es la versión a pantalla
+     * completa de {@see EnergyStatsWidget}, así
+     * que comparte criterio (AR-SEC-04).
+     */
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected static ?string $cluster = Energy::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;

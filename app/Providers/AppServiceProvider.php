@@ -168,10 +168,14 @@ class AppServiceProvider extends ServiceProvider
             return null;
         });
 
-        // Gate: acceso al panel de administración
-        Gate::define('access-admin-panel', function ($user) {
-            return $user->isSuperAdmin();
-        });
+        // El gate `access-admin-panel` vivía aquí y decía que sólo `SuperAdmin`
+        // entra al panel. No era verdad y no lo consultaba nadie: Filament usa
+        // el contrato `FilamentUser::canAccessPanel()` de `App\Models\User`,
+        // que abre `/admin` también a `Admin` y a `Editor`. Un gate huérfano que
+        // contradice a la implementación real es peor que no tener ninguno,
+        // porque quien audita los providers da por cerrado lo que está abierto
+        // (AR-CODE-02). El criterio de acceso al panel está, y sólo está, en
+        // `User::canAccessPanel()`.
 
         // Gate: gestionar configuración global
         Gate::define('manage-settings', function ($user) {

@@ -484,31 +484,40 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Devuelve la cantidad de usuarios activos de la plataforma.
      *
-     * @return int
+     * Contaba `deleted_at IS NULL`, o sea «no borrados», que no es lo mismo que
+     * activos: un usuario desactivado con `is_active = false` seguía contando
+     * (AR-CODE-01). Contradecía además a `getAllActive()`, su pareja, que sí
+     * filtra por `is_active`.
      */
-    public static function countActive()
+    public static function countActive(): int
     {
-        return self::whereNull('deleted_at')->count() ?? 0;
+        return self::query()->where('is_active', true)->count();
     }
 
     /**
      * Devuelve todos los usuarios inactivos de la plataforma.
      *
-     * @return Collection|Authenticatable[]
+     * Hacía `self::where('deleted_at')`. Con un solo argumento, Eloquent lo
+     * traduce a `whereNull('deleted_at')`; y como el modelo usa `SoftDeletes`,
+     * el global scope ya añade esa misma condición. Resultado: la consulta
+     * devolvía **los usuarios vivos**, justo lo contrario de lo que promete el
+     * nombre, y nunca filtraba por `is_active` (AR-CODE-01).
+     *
+     * @return Collection<int, User>
      */
     public static function getAllInactive()
     {
-        return self::where('deleted_at')->get();
+        return self::query()->where('is_active', false)->get();
     }
 
     /**
-     * Devuelve la cantidad de usuarios activos de la plataforma.
+     * Devuelve la cantidad de usuarios inactivos de la plataforma.
      *
-     * @return int
+     * Mismo fallo que {@see self::getAllInactive()}: contaba usuarios vivos.
      */
-    public static function countInactive()
+    public static function countInactive(): int
     {
-        return self::where('deleted_at')->count() ?? 0;
+        return self::query()->where('is_active', false)->count();
     }
 
     /**

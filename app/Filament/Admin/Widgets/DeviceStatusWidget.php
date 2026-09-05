@@ -15,6 +15,16 @@ use Illuminate\Support\Collection;
  */
 class DeviceStatusWidget extends Widget
 {
+    /**
+     * Telemetría de servidores: nombres de nodos, CPU, disco, tensión y uptime
+     * de todo el parque, sin filtrar por dueño. No es información para quien
+     * entra al panel a escribir artículos (AR-SEC-04).
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected string $view = 'filament.admin.widgets.device-status-widget';
 
     protected int|string|array $columnSpan = 'full';

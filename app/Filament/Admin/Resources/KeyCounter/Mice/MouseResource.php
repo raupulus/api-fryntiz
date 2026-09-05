@@ -8,6 +8,7 @@ use App\Filament\Admin\Clusters\KeyCounter;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\CreateMouse;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\EditMouse;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\ListMice;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\KeyCounter\Mouse;
 use BackedEnum;
@@ -29,6 +30,8 @@ use Filament\Tables\Table;
 
 class MouseResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = Mouse::class;
 
     protected static ?string $cluster = KeyCounter::class;

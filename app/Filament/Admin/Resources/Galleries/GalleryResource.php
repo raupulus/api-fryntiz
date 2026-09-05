@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Galleries\Pages\CreateGallery;
 use App\Filament\Admin\Resources\Galleries\Pages\EditGallery;
 use App\Filament\Admin\Resources\Galleries\Pages\ListGalleries;
 use App\Filament\Components\ImageCropperUpload;
+use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Gallery;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class GalleryResource extends Resource
 {
+    use ScopesToOwner;
+
     protected static ?string $model = Gallery::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;

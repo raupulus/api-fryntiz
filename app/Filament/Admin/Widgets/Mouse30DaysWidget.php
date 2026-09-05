@@ -10,6 +10,15 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class Mouse30DaysWidget extends BaseWidget
 {
+    /**
+     * Actividad de ratón agregada de todos los usuarios, sin filtrar por dueño
+     * (AR-SEC-04).
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected int|string|array $columnSpan = 1;
 
     protected static ?int $sort = 5;

@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Filament\Admin\Pages\AemetDashboard;
 use App\Models\WeatherStation\AEMET\AEMETContamination;
 use App\Models\WeatherStation\AEMET\AEMETPrediction;
 use Filament\Widgets\Widget;
 
 class AemetMetricsWidget extends Widget
 {
+    /**
+     * Coherencia con {@see AemetDashboard}, que ya
+     * exige administrador: el widget mostraba en el escritorio lo mismo que la
+     * página tenía cerrado (AR-SEC-04).
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected string $view = 'filament.admin.widgets.aemet-metrics-widget';
 
     protected int|string|array $columnSpan = 1;

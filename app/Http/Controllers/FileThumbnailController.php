@@ -8,6 +8,7 @@ use App\Models\FileThumbnail;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 use function auth;
+use function is_file;
 use function response;
 
 /**
@@ -28,7 +29,7 @@ class FileThumbnailController extends Controller
         $thumbnail = FileThumbnail::with('file')->find($id);
 
         if (! $thumbnail) {
-            return response()->file(FileThumbnail::genericImagePath('not_found'));
+            return $this->missing();
         }
 
         // N175: `file_thumbnails` no tiene `is_private` ni `user_id`. Se
@@ -42,13 +43,50 @@ class FileThumbnailController extends Controller
         $file = $thumbnail->file;
 
         if (! $file) {
-            return response()->file(FileThumbnail::genericImagePath('not_found'));
+            return $this->missing();
         }
 
         if ($file->is_private && (int) $file->user_id !== (int) auth()->id()) {
             return response()->file(FileThumbnail::genericImagePath('not_authorized'));
         }
 
-        return response()->file($thumbnail->storagePathFile);
+        return $this->serve($thumbnail);
+    }
+
+    /**
+     * Sirve la miniatura comprobando antes que el fichero existe en disco.
+     *
+     * `response()->file()` sobre una ruta que no existe lanza
+     * `FileNotFoundException`, y aquí nadie la capturaba: una miniatura
+     * registrada en base de datos cuyo fichero no esté en el disco del servidor
+     * —storage sin migrar, sincronización a medias, una caché borrada a mano—
+     * devolvía un **500 público** en una ruta que sirve las ilustraciones de
+     * ocho webs (AR-ERR-01).
+     *
+     * Es el mismo fallo que ya se corrigió en `FileController::serve()`, y se
+     * resuelve igual: marcador de «no encontrado» con un 404 de verdad, para que
+     * la maqueta aguante y ni el cliente ni la caché se queden un 200 sobre algo
+     * que no existe.
+     */
+    private function serve(FileThumbnail $thumbnail): BinaryFileResponse
+    {
+        $path = (string) $thumbnail->storagePathFile;
+
+        if ($path === '' || ! is_file($path)) {
+            return $this->missing();
+        }
+
+        return response()->file($path);
+    }
+
+    /**
+     * Imagen genérica de «no encontrado», con el código HTTP correcto.
+     *
+     * `response()->file()` no admite código de estado —su firma es
+     * `file($file, array $headers = [])`—, así que se ajusta después.
+     */
+    private function missing(): BinaryFileResponse
+    {
+        return response()->file(FileThumbnail::genericImagePath('not_found'))->setStatusCode(404);
     }
 }

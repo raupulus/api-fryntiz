@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Files;
 
 use App\Models\File;
+use App\Models\FileThumbnail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -94,5 +95,69 @@ class FileServingTest extends TestCase
         $file = $this->ficheroFantasma(['module' => 'content']);
 
         $this->get("/file/get/hardware/{$file->id}")->assertStatus(404);
+    }
+
+    // ───────────────────────── Miniaturas (AR-ERR-01) ────────────────────────
+
+    /**
+     * `FileThumbnailController::get()` tenía exactamente el mismo agujero que
+     * `FileController` había cerrado ya: resolvía la fila y llamaba a
+     * `response()->file()` sin comprobar el disco. Una miniatura registrada cuyo
+     * fichero no esté en el servidor —storage sin migrar, sincronización a
+     * medias— devolvía un 500 público.
+     */
+    private function miniaturaFantasma(File $file, array $extra = []): FileThumbnail
+    {
+        $thumbnail = new FileThumbnail;
+
+        $thumbnail->forceFill(array_merge([
+            'file_id' => $file->id,
+            'module' => $file->module,
+            'path' => 'content/medium',
+            'storage_path' => 'public/content/medium',
+            'name' => 'esta-miniatura-no-existe.jpg',
+            'key' => 'medium',
+            'width' => 640,
+            'height' => 480,
+            'size' => 1024,
+        ], $extra))->save();
+
+        return $thumbnail;
+    }
+
+    #[Test]
+    public function una_miniatura_que_no_esta_en_disco_responde_404_y_no_500(): void
+    {
+        $thumbnail = $this->miniaturaFantasma($this->ficheroFantasma());
+
+        $this->get("/file/thumbnail/get/content/{$thumbnail->id}")->assertStatus(404);
+    }
+
+    #[Test]
+    public function una_miniatura_con_storage_path_vacio_responde_404_y_no_500(): void
+    {
+        // El accessor devuelve '' cuando no hay `storage_path`, y
+        // `response()->file('')` también es un 500.
+        $thumbnail = $this->miniaturaFantasma($this->ficheroFantasma(), ['storage_path' => null]);
+
+        $this->get("/file/thumbnail/get/content/{$thumbnail->id}")->assertStatus(404);
+    }
+
+    #[Test]
+    public function una_miniatura_que_no_existe_responde_404(): void
+    {
+        $this->get('/file/thumbnail/get/content/999999')->assertStatus(404);
+    }
+
+    #[Test]
+    public function una_miniatura_huerfana_responde_404(): void
+    {
+        // Sin fichero padre no se sabe de quién es, así que no se sirve: la
+        // privacidad vive en el padre (N175).
+        $file = $this->ficheroFantasma();
+        $thumbnail = $this->miniaturaFantasma($file);
+        $file->forceDelete();
+
+        $this->get("/file/thumbnail/get/content/{$thumbnail->id}")->assertStatus(404);
     }
 }

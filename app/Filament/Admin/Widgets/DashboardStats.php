@@ -17,6 +17,15 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class DashboardStats extends BaseWidget
 {
+    /**
+     * Recuentos globales de la plataforma: usuarios, dispositivos y contenido de
+     * todo el sistema (AR-SEC-04).
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     protected ?string $pollingInterval = '60s';
 
     protected static ?int $sort = 1;

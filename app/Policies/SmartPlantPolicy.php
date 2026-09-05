@@ -44,7 +44,7 @@ class SmartPlantPolicy
     public function delete(User $user, SmartPlantPlant $plant): bool
     {
         return ! TokenAbilities::deviceRequest($user)
-            && (int) $plant->user_id === (int) $user->id;
+            && ((int) $plant->user_id === (int) $user->id || $user->isAdmin());
     }
 
     public function restore(User $user, SmartPlantPlant $plant): bool
@@ -87,9 +87,27 @@ class SmartPlantPolicy
      *
      * La propiedad de una planta es su `user_id` y nada más. El alcance por
      * dispositivo se comprueba donde sí hay dispositivo: en las lecturas.
+     *
+     * ## El administrador también llega (AR-SEC-03)
+     *
+     * El atajo `Gate::before` de `AppServiceProvider` sólo cubre a `SuperAdmin`.
+     * Un `Admin` legítimo no recibe nada de ahí, así que sin este añadido se
+     * llevaba un 403 al abrir en `/admin` cualquier planta que no fuese suya:
+     * veía el listado y no podía entrar en ninguna fila.
+     *
+     * El bypass es para administradores **con sesión**, nunca para tokens de
+     * dispositivo. El dueño de los cacharros es `SuperAdmin`, de modo que un
+     * `|| $user->isAdmin()` a secas —que es lo que pedía la auditoría— haría
+     * que el token grabado en una placa alcanzara las plantas de todos los
+     * demás usuarios: justo el agujero que `Gate::before` evita al devolver
+     * `null` en peticiones de dispositivo.
      */
     private function isOwnedBy(User $user, SmartPlantPlant $plant): bool
     {
-        return (int) $plant->user_id === (int) $user->id;
+        if (TokenAbilities::deviceRequest($user)) {
+            return (int) $plant->user_id === (int) $user->id;
+        }
+
+        return (int) $plant->user_id === (int) $user->id || $user->isAdmin();
     }
 }
