@@ -28,7 +28,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Páginas',
                 'slug' => 'page',
                 'description' => 'Páginas de la plataforma',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-document',
                 'color' => '#3788d8',
             ],
             [
@@ -36,7 +36,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Noticias',
                 'slug' => 'new',
                 'description' => 'Páginas de la plataforma',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-newspaper',
                 'color' => '#39617b',
             ],
             [
@@ -44,7 +44,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Blogs',
                 'slug' => 'blog',
                 'description' => 'Blog',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-pencil-square',
                 'color' => '#fbbf24',
             ],
             [
@@ -52,7 +52,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Secciones',
                 'slug' => 'section',
                 'description' => 'Secciones de la plataforma (about, contact...)',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-rectangle-group',
                 'color' => '#bd0833',
             ],
             [
@@ -60,7 +60,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Proyectos',
                 'slug' => 'project',
                 'description' => 'Páginas de la plataforma',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-briefcase',
                 'color' => '#aad3df',
             ],
             [
@@ -68,7 +68,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Dispositivos',
                 'slug' => 'device',
                 'description' => 'Ficha con información del dispositivo',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-cpu-chip',
                 'color' => '#1ab9a7',
             ],
             [
@@ -76,7 +76,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Productos',
                 'slug' => 'product',
                 'description' => 'Ficha con información de un producto',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-cube',
                 'color' => '#8c76f6',
             ],
             [
@@ -84,7 +84,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Publicidades',
                 'slug' => 'advertising',
                 'description' => 'Publicidad',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-megaphone',
                 'color' => '#e72a59',
             ],
             [
@@ -92,7 +92,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Patrocinados',
                 'slug' => 'sponsored',
                 'description' => 'Publicidad patrocinada',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-star',
                 'color' => '#fbbf24',
             ],
             [
@@ -100,7 +100,7 @@ class ContentAvailableTypesSeeder extends Seeder
                 'plural_name' => 'Documentaciones',
                 'slug' => 'documentation',
                 'description' => 'Documentos y/o manuales, documentación',
-                'icon' => 'fa fa-page',
+                'icon' => 'heroicon-o-book-open',
                 'color' => '#2d5054',
             ],
 

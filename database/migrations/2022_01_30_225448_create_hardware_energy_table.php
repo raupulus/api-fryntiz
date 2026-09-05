@@ -101,6 +101,14 @@ class CreateHardwareEnergyTable extends Migration
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
+        // `role` derivado de is_generator, para cuando la tabla se monta sobre
+        // datos que ya existían. La columna `role` llegó después que
+        // `is_generator` y su migración derivaba una de la otra; al plegarla
+        // aquí quedaba sólo el `default('load')`, así que un generador
+        // heredado se habría quedado marcado como consumo.
+        DB::table($this->tableName)->where('is_generator', true)->update(['role' => 'generator']);
+        DB::table($this->tableName)->where('is_generator', false)->update(['role' => 'load']);
+
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
