@@ -11,7 +11,6 @@ no versionada) y de `docs/info/` (documentación técnica de lo que existe).
 | [`printers-api.md`](printers-api.md) | API del módulo de impresoras térmicas y cola de impresión | Cuando la v2 esté estable en producción |
 | [`retencion-datos-iot.md`](retencion-datos-iot.md) | Estrategia de crecimiento y particionado de las tablas de sensores | Cuando el volumen lo justifique |
 | [`revisar-aemet.md`](revisar-aemet.md) | Decidir qué endpoints de AEMET sin implementar interesan (el endurecimiento del parseo y de errores/cuota ya se hizo) | Sin fecha; no bloquea el despliegue |
+| [`content-conteo-palabras-y-tiempo-lectura.md`](content-conteo-palabras-y-tiempo-lectura.md) | Guardar conteo de caracteres y/o palabras por página y exponer tiempo estimado de lectura en la API de Content | Sin fecha; no bloquea el despliegue |
 
-> Última revisión: 2026-08-30
-
-> Creado: 2026-08-30 · Última revisión: 2026-09-01
+> Creado: 2026-08-30 · Última revisión: 2026-09-05
