@@ -25,7 +25,7 @@ class KeyCounterController extends Controller
     /**
      * Primer año con el que se muestran tarjetas de totales anuales.
      */
-    private const FIRST_STATS_YEAR = 2020;
+    private const FIRST_STATS_YEAR = 2013;
 
     /**
      * Vista con las estadísticas generales para el contador de pulsaciones

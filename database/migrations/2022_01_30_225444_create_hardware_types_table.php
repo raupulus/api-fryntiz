@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 /**
  * Class CreateReferredThingsTable
@@ -44,6 +45,19 @@ class CreateHardwareTypesTable extends Migration
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
+
+        // Relleno para cuando la tabla se monta sobre datos que ya existían: la
+        // columna `slug` se añadió después que la tabla, y su migración
+        // rellenaba lo que hubiera. Al plegarla aquí, ese paso se perdió y los
+        // once tipos se quedaron con `slug` a null — que es el identificador
+        // con el que la API los busca.
+        $sinSlug = DB::table($this->tableName)->whereNull('slug')->get(['id', 'name']);
+
+        foreach ($sinSlug as $tipo) {
+            DB::table($this->tableName)
+                ->where('id', $tipo->id)
+                ->update(['slug' => Str::slug((string) $tipo->name)]);
+        }
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }

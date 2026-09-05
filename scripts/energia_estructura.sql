@@ -80,20 +80,33 @@ FROM energy_systems s
 WHERE he.role = 'load'
   AND s.slug = 'controlador-'||he.hardware_device_monitorized_id;
 
--- Dispositivos que generan sin ser controlador solar (un portátil con su placa,
--- una Pi con panel propio): también son generadores.
-INSERT INTO hardware_energy (
-    hardware_device_id, hardware_device_monitorized_id, energy_system_id,
-    energy_source_type_id, name, role, is_generator, is_active, created_at, updated_at)
-SELECT DISTINCT g.hardware_device_id, g.hardware_device_id,
-       (SELECT id FROM energy_systems WHERE slug='controlador-6'),
-       (SELECT id FROM energy_source_types WHERE slug='solar'),
-       d.name, 'generator', true, true, now(), now()
-FROM hardware_power_generators g
-JOIN hardware_devices d ON d.id = g.hardware_device_id
-WHERE g.hardware_energy_id IS NULL
-  AND NOT EXISTS (SELECT 1 FROM hardware_energy he
-                  WHERE he.hardware_device_monitorized_id = g.hardware_device_id
-                    AND he.role = 'generator');
+-- Sólo los Controladores Solares (hardware_type_id = 2) son generadores.
+-- Hubo una versión de esto que además daba de alta como generadores a los
+-- dispositivos con filas en `hardware_power_generators`, y eso metía dentro al
+-- portátil y a una Raspberry por 1 y 4 lecturas de prueba. La categoría del
+-- aparato manda sobre los residuos de datos.
+
+COMMIT;
+
+-- ── Rellenos que se perdieron al plegar las migraciones ─────────────────────
+BEGIN;
+
+-- `hardware_types.slug`: la migración que añadía la columna rellenaba las filas
+-- existentes, y al plegarla ese paso se quedó fuera. En una base nueva no
+-- importa; sobre datos de V1, los once tipos se quedan sin el identificador con
+-- el que la API los busca. (La migración ya lo hace también; esto es la red.)
+UPDATE hardware_types SET slug = regexp_replace(
+    lower(translate(name, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')), '[^a-z0-9]+', '-', 'g')
+WHERE slug IS NULL;
+
+-- `polygon` (texto) de V1 pasa a `polygons` (json) en V2. Misma historia: la
+-- conversión vivía en la migración de extensión y se perdió al plegarla.
+CREATE EXTENSION IF NOT EXISTS dblink;
+UPDATE meteorology_aemet_adverse_events a
+SET polygons = to_jsonb(ARRAY[v.polygon])
+FROM dblink('dbname=raupulus_api_production',
+            'SELECT id, polygon FROM meteorology_aemet_adverse_events WHERE polygon IS NOT NULL')
+     AS v(id bigint, polygon text)
+WHERE a.id = v.id AND a.polygons IS NULL;
 
 COMMIT;

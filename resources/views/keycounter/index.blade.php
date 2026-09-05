@@ -48,7 +48,7 @@
                 <form id="form-filter" action="{{ route('keycounter.index') }}" method="GET" class="flex flex-wrap justify-center gap-4">
                     <select name="year"
                             class="keycounter-date-select border border-outline-variant rounded-lg text-on-surface h-10 pl-5 pr-10 bg-surface-container-lowest appearance-none">
-                        @foreach(range(date('Y'), 2019) as $y)
+                        @foreach(range(date('Y'), 2013) as $y)
                             <option value="{{ $y }}" {{ ($year && ($year == $y)) ? 'selected' : '' }}>
                                 Año {{ $y }}
                             </option>
