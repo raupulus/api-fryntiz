@@ -23,12 +23,13 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')
+                ->comment('Propietario de la instalación.')
                 ->constrained()
-                ->cascadeOnDelete()
-                ->comment('Propietario de la instalación.');
+                ->cascadeOnDelete();
 
             $table->string('name', 255)->comment('«Casa 24V», «Nodo UV», «Banco de routers».');
-            $table->string('slug', 255)->unique();
+            $table->string('slug', 255)->unique()
+                ->comment('Identificador estable para la API, sin acentos ni espacios.');
 
             $table->boolean('is_standalone')
                 ->default(false)
@@ -42,7 +43,8 @@ return new class extends Migration
                 ->nullable()
                 ->comment('Capacidad del banco de baterías (Ah).');
 
-            $table->text('notes')->nullable();
+            $table->text('notes')->nullable()
+                ->comment('Anotaciones libres sobre la instalación.');
 
             $table->timestamps();
             $table->softDeletes();

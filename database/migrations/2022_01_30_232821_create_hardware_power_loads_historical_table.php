@@ -97,8 +97,8 @@ class CreateHardwarePowerLoadsHistoricalTable extends Migration
             // router, que es sumar peras con manzanas.
             $table->foreignId('hardware_energy_id')
                 ->nullable()
-                ->constrained('hardware_energy')->nullOnDelete()
-                ->comment('Elemento al que corresponde el resumen. Sin esto se suman el panel y el router.');
+                ->comment('Elemento al que corresponde el resumen. Sin esto se suman el panel y el router.')
+                ->constrained('hardware_energy')->nullOnDelete();
             $table->decimal('energy_wh', 16, 4)
                 ->nullable()
                 ->comment('Vatios-hora del periodo. Esto SÍ se suma.');

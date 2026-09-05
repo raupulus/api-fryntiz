@@ -89,8 +89,8 @@ class CreateHardwarePowerGeneratorsTable extends Migration
             // ── Crudos y derivados de la lectura (fase de energía) ───────────
             $table->foreignId('hardware_energy_id')
                 ->nullable()
-                ->constrained('hardware_energy')->nullOnDelete()
-                ->comment('Elemento concreto al que corresponde la lectura.');
+                ->comment('Elemento concreto al que corresponde la lectura.')
+                ->constrained('hardware_energy')->nullOnDelete();
             $table->unsignedInteger('delta_seconds')
                 ->nullable()
                 ->comment('Segundos que cubre la media. Sin esto, A y V no dan energía.');
@@ -109,7 +109,8 @@ class CreateHardwarePowerGeneratorsTable extends Migration
             $table->boolean('is_suspicious')
                 ->default(false)
                 ->comment('Queda fuera de los agregados del día, pero se conserva.');
-            $table->string('suspicious_reason', 255)->nullable();
+            $table->string('suspicious_reason', 255)->nullable()
+                ->comment('Por qué se marcó como sospechosa. Null si no lo es.');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
 

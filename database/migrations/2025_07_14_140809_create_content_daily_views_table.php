@@ -15,7 +15,7 @@ class CreateContentDailyViewsTable extends Migration
             $table->id()->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('content_id')->comment('Clave foránea que relaciona este registro con el content al que pertenece.');
             $table->date('date')->comment('Fecha');
-            $table->unsignedInteger('views')->default(0)->comment('Campo que almacena el views específico para este registro según la lógica de negocio.');
+            $table->unsignedInteger('views')->default(0)->comment('Visitas contadas ese día.');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
 
             // Índices optimizados

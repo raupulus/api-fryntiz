@@ -33,9 +33,9 @@ class CreateEmailsTable extends Migration
                 ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el user al que pertenece.');
             $table->foreignId('platform_id')
                 ->nullable()
+                ->comment('Plataforma desde la que se envió el mensaje.')
                 ->constrained('platforms')
-                ->nullOnDelete()
-                ->comment('Plataforma desde la que se envió el mensaje.');
+                ->nullOnDelete();
             $table->unsignedBigInteger('language_id')
                 ->default(1)
                 ->nullable()
@@ -46,7 +46,7 @@ class CreateEmailsTable extends Migration
                 ->onDelete('cascade')->comment('Clave foránea que relaciona este registro con el language al que pertenece.');
             $table->string('email', 511)->comment('Correo electrónico');
             $table->string('subject', 511)->comment('Asunto del mensaje o correo electrónico');
-            $table->text('message')->comment('Campo que almacena el message específico para este registro según la lógica de negocio.');
+            $table->text('message')->comment('Cuerpo del mensaje que escribió el visitante.');
             $table->boolean('privacity')
                 ->default(0)
                 ->comment('Indica si acepta políticas de privacidad desde el apartado que envía el mensaje de contacto.');

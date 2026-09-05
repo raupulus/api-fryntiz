@@ -29,7 +29,8 @@ class CreateSmartbonsaiRegistersTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id')->comment('Identificador único');
-            $table->unsignedBigInteger('plant_id');
+            $table->unsignedBigInteger('plant_id')
+                ->comment('Planta de la que procede esta lectura.');
             $table->foreign('plant_id')
                 ->references('id')->on('smartplant_plants')
                 ->onUpdate('cascade')

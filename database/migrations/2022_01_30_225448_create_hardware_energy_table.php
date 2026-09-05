@@ -60,12 +60,12 @@ class CreateHardwareEnergyTable extends Migration
             // ── Instalación energética (fase de energía) ─────────────────────
             $table->foreignId('energy_system_id')
                 ->nullable()
-                ->constrained('energy_systems')->nullOnDelete()
-                ->comment('Instalación a la que pertenece el elemento.');
+                ->comment('Instalación a la que pertenece el elemento.')
+                ->constrained('energy_systems')->nullOnDelete();
             $table->foreignId('energy_source_type_id')
                 ->nullable()
-                ->constrained('energy_source_types')->nullOnDelete()
-                ->comment('Tipo de fuente: solar, eólica, red…');
+                ->comment('Tipo de fuente: solar, eólica, red…')
+                ->constrained('energy_source_types')->nullOnDelete();
             $table->string('name', 255)
                 ->nullable()
                 ->comment('«Panel sur», «Router principal».');

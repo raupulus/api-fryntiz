@@ -36,7 +36,8 @@ class CreateAirFlightRoutesTable extends Migration
                 ->references('id')->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
-            $table->unsignedBigInteger('airplane_id');
+            $table->unsignedBigInteger('airplane_id')
+                ->comment('Aeronave a la que pertenece esta posición.');
             $table->foreign('airplane_id')
                 ->references('id')->on('airflight_airplanes')
                 ->onUpdate('cascade')

@@ -44,10 +44,10 @@ class CreateMeteorologyLightTable extends Migration
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
             $table->decimal('lumens', 10, 2)
-                ->comment('Lumens');
+                ->comment('Flujo luminoso medido, en lúmenes.');
             $table->decimal('lux', 10, 2)
                 ->nullable()
-                ->comment('lux');
+                ->comment('Iluminancia medida, en lux.');
             $table->decimal('index', 10, 2)
                 ->nullable()
                 ->comment('Índice');

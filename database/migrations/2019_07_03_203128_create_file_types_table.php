@@ -38,10 +38,10 @@ class CreateFileTypesTable extends Migration
                 ->comment('Tipo mime que representa el tipo de archivo');
             $table->string('extension', 12)
                 ->comment('Extensión con la que se representa de forma mayoritaria.');
-            $table->text('icon16')->nullable()->comment('Campo que almacena el icon16 específico para este registro según la lógica de negocio.');
-            $table->text('icon32')->nullable()->comment('Campo que almacena el icon32 específico para este registro según la lógica de negocio.');
-            $table->text('icon64')->nullable()->comment('Campo que almacena el icon64 específico para este registro según la lógica de negocio.');
-            $table->text('icon128')->nullable()->comment('Campo que almacena el icon128 específico para este registro según la lógica de negocio.');
+            $table->text('icon16')->nullable()->comment('Icono de 16x16 px para este tipo de fichero.');
+            $table->text('icon32')->nullable()->comment('Icono de 32x32 px para este tipo de fichero.');
+            $table->text('icon64')->nullable()->comment('Icono de 64x64 px para este tipo de fichero.');
+            $table->text('icon128')->nullable()->comment('Icono de 128x128 px para este tipo de fichero.');
             $table->timestamps()->comment('Marcas de tiempo utilizadas por Eloquent para llevar el registro de creación y última actualización.');
         });
     }

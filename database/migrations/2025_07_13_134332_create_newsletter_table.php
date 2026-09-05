@@ -35,24 +35,24 @@ class CreateNewsletterTable extends Migration
             // Verificación de email
             $table->boolean('is_verified')->default(false)->comment('Indicador de tipo booleano para is verified');
             $table->string('verification_token', 60)->nullable()->unique()->comment('Token criptográfico único generado para la verificación de identidad o correo');
-            $table->timestamp('verified_at')->nullable()->comment('Campo que almacena el verified at específico para este registro según la lógica de negocio.');
+            $table->timestamp('verified_at')->nullable()->comment('Cuándo confirmó la suscripción por correo. Null = sin confirmar.');
 
             // Token para desuscripción
             $table->string('unsubscribe_token', 60)->unique()->comment('Columna unsubscribe token');
 
             // Estado de suscripción
             $table->enum('status', ['active', 'inactive', 'unsubscribed', 'bounced'])->default('active')->comment('Estado actual');
-            $table->timestamp('unsubscribed_at')->nullable()->comment('Campo que almacena el unsubscribed at específico para este registro según la lógica de negocio.');
+            $table->timestamp('unsubscribed_at')->nullable()->comment('Cuándo se dio de baja. Null = sigue suscrito.');
 
             // Información adicional
             $table->string('subscription_source', 50)->nullable()->comment('Columna subscription source'); // web, api, import, etc.
             $table->string('language', 5)->default('es')->comment('Columna language'); // Idioma preferido
-            $table->json('preferences')->nullable()->comment('Campo que almacena el preferences específico para este registro según la lógica de negocio.'); // Preferencias de contenido
+            $table->json('preferences')->nullable()->comment('Qué contenidos quiere recibir.');
 
             // Metadatos
-            $table->ipAddress('ip_address')->nullable()->comment('Campo que almacena el ip address específico para este registro según la lógica de negocio.'); // IP de suscripción
+            $table->ipAddress('ip_address')->nullable()->comment('IP desde la que se suscribió.');
             $table->string('user_agent', 500)->nullable()->comment('Navegador o agente de usuario'); // User agent
-            $table->json('metadata')->nullable()->comment('Campo que almacena el metadata específico para este registro según la lógica de negocio.'); // Datos adicionales flexibles
+            $table->json('metadata')->nullable()->comment('Datos adicionales de la suscripción (origen, campaña…).');
 
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
 

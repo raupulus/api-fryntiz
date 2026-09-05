@@ -22,9 +22,11 @@ return new class extends Migration
             $table->id();
             $table->string('slug', 64)->unique()->comment('Identificador estable para la API.');
             $table->string('name', 128)->comment('Nombre para mostrar.');
-            $table->string('description', 512)->nullable();
+            $table->string('description', 512)->nullable()
+                ->comment('Descripción del tipo de fuente.');
             $table->string('icon', 64)->nullable()->comment('Icono para el panel y la web.');
-            $table->unsignedInteger('position')->default(0);
+            $table->unsignedInteger('position')->default(0)
+                ->comment('Orden en que se listan los tipos en el panel.');
             $table->timestamps();
         });
 

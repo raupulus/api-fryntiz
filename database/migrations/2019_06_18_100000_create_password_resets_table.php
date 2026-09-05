@@ -24,7 +24,7 @@ class CreatePasswordResetsTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->string('email')->index()->comment('Correo electrónico');
-            $table->string('token')->comment('Campo que almacena el token específico para este registro según la lógica de negocio.');
+            $table->string('token')->comment('Token de un solo uso para restablecer la contraseña.');
             $table->timestamp('created_at')->nullable()->comment('Fecha de creación');
         });
     }

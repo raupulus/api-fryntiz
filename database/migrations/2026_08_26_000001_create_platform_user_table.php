@@ -27,14 +27,14 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')
+                ->comment('Usuario con permiso de edición sobre la plataforma.')
                 ->constrained('users')
-                ->onDelete('CASCADE')
-                ->comment('Usuario con permiso de edición sobre la plataforma.');
+                ->onDelete('CASCADE');
 
             $table->foreignId('platform_id')
+                ->comment('Plataforma sobre la que puede trabajar el usuario.')
                 ->constrained('platforms')
-                ->onDelete('CASCADE')
-                ->comment('Plataforma sobre la que puede trabajar el usuario.');
+                ->onDelete('CASCADE');
 
             $table->timestamps();
 

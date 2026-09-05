@@ -19,11 +19,11 @@ class CreateFailedJobsTable extends Migration
             $table->comment('Trabajos en cola que agotaron los reintentos.');
             $table->id()->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->string('uuid')->unique()->comment('Identificador universalmente único');
-            $table->text('connection')->comment('Campo que almacena el connection específico para este registro según la lógica de negocio.');
-            $table->text('queue')->comment('Campo que almacena el queue específico para este registro según la lógica de negocio.');
+            $table->text('connection')->comment('Conexión de cola en la que corría el trabajo.');
+            $table->text('queue')->comment('Nombre de la cola en la que estaba encolado.');
             $table->longText('payload')->comment('Datos o carga útil');
             $table->longText('exception')->comment('Detalle de la excepción');
-            $table->timestamp('failed_at')->useCurrent()->comment('Campo que almacena el failed at específico para este registro según la lógica de negocio.');
+            $table->timestamp('failed_at')->useCurrent()->comment('Cuándo agotó los reintentos.');
         });
     }
 

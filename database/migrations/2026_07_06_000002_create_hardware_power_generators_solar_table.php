@@ -55,8 +55,8 @@ return new class extends Migration
             // ── Lo común a toda lectura de energía ────────────────────────────
             $table->foreignId('hardware_energy_id')
                 ->nullable()
-                ->constrained('hardware_energy')->nullOnDelete()
-                ->comment('Elemento generador al que corresponde la lectura.');
+                ->comment('Elemento generador al que corresponde la lectura.')
+                ->constrained('hardware_energy')->nullOnDelete();
 
             $table->unsignedInteger('delta_seconds')->nullable()
                 ->comment('Segundos que cubre la media. Sin esto, A y V no dan energía.');
@@ -70,7 +70,8 @@ return new class extends Migration
                 ->comment('measured = tensión medida | nominal = la del elemento.');
             $table->boolean('is_suspicious')->default(false)
                 ->comment('Queda fuera de los agregados del día, pero se conserva.');
-            $table->string('suspicious_reason', 255)->nullable();
+            $table->string('suspicious_reason', 255)->nullable()
+                ->comment('Por qué se marcó como sospechosa. Null si no lo es.');
 
             // ── Lo que informa el controlador y no se deduce del signo (D110) ─
             $table->integer('charging_status')->nullable()
@@ -86,26 +87,42 @@ return new class extends Migration
                 ->comment('Brillo de la farola (0-100 %).');
 
             // ── Estadísticas del día que da el Rover ──────────────────────────
-            $table->decimal('day_battery_voltage_min', 8, 2)->nullable();
-            $table->decimal('day_battery_voltage_max', 8, 2)->nullable();
-            $table->decimal('day_charging_current_max', 8, 2)->nullable();
-            $table->decimal('day_discharging_current_max', 8, 2)->nullable();
-            $table->decimal('day_charging_power_max', 10, 2)->nullable();
-            $table->decimal('day_discharging_power_max', 10, 2)->nullable();
-            $table->decimal('day_charging_amp_hours', 10, 2)->nullable();
-            $table->decimal('day_discharging_amp_hours', 10, 2)->nullable();
-            $table->decimal('day_power_generation_wh', 12, 2)->nullable();
-            $table->decimal('day_power_consumption_wh', 12, 2)->nullable();
+            $table->decimal('day_battery_voltage_min', 8, 2)->nullable()
+                ->comment('Tensión mínima de la batería en el día (V).');
+            $table->decimal('day_battery_voltage_max', 8, 2)->nullable()
+                ->comment('Tensión máxima de la batería en el día (V).');
+            $table->decimal('day_charging_current_max', 8, 2)->nullable()
+                ->comment('Corriente máxima de carga en el día (A).');
+            $table->decimal('day_discharging_current_max', 8, 2)->nullable()
+                ->comment('Corriente máxima de descarga en el día (A).');
+            $table->decimal('day_charging_power_max', 10, 2)->nullable()
+                ->comment('Potencia máxima de carga en el día (W).');
+            $table->decimal('day_discharging_power_max', 10, 2)->nullable()
+                ->comment('Potencia máxima de descarga en el día (W).');
+            $table->decimal('day_charging_amp_hours', 10, 2)->nullable()
+                ->comment('Amperios-hora cargados en el día (Ah).');
+            $table->decimal('day_discharging_amp_hours', 10, 2)->nullable()
+                ->comment('Amperios-hora descargados en el día (Ah).');
+            $table->decimal('day_power_generation_wh', 12, 2)->nullable()
+                ->comment('Energía generada en el día (Wh).');
+            $table->decimal('day_power_consumption_wh', 12, 2)->nullable()
+                ->comment('Energía consumida en el día (Wh).');
 
             // ── Acumulado desde el último reinicio del controlador ────────────
             $table->unsignedInteger('total_operating_days')->nullable()
                 ->comment('Días de funcionamiento. Si BAJA, el controlador se ha reseteado.');
-            $table->unsignedInteger('total_battery_over_discharges')->nullable();
-            $table->unsignedInteger('total_battery_full_charges')->nullable();
-            $table->decimal('total_charging_amp_hours', 14, 2)->nullable();
-            $table->decimal('total_discharging_amp_hours', 14, 2)->nullable();
-            $table->decimal('total_power_generation_wh', 16, 2)->nullable();
-            $table->decimal('total_power_consumption_wh', 16, 2)->nullable();
+            $table->unsignedInteger('total_battery_over_discharges')->nullable()
+                ->comment('Veces que la batería se ha sobredescargado desde el último reinicio.');
+            $table->unsignedInteger('total_battery_full_charges')->nullable()
+                ->comment('Veces que la batería ha llegado a carga completa desde el último reinicio.');
+            $table->decimal('total_charging_amp_hours', 14, 2)->nullable()
+                ->comment('Amperios-hora cargados en total (Ah).');
+            $table->decimal('total_discharging_amp_hours', 14, 2)->nullable()
+                ->comment('Amperios-hora descargados en total (Ah).');
+            $table->decimal('total_power_generation_wh', 16, 2)->nullable()
+                ->comment('Energía generada en total (Wh).');
+            $table->decimal('total_power_consumption_wh', 16, 2)->nullable()
+                ->comment('Energía consumida en total (Wh).');
 
             // ── Configuración que declara el controlador ──────────────────────
             $table->decimal('system_voltage', 8, 2)->nullable()

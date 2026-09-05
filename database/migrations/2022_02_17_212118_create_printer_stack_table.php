@@ -48,7 +48,7 @@ class CreatePrinterStackTable extends Migration
                 ->comment('Notas sobre la impresión');
             $table->text('content')
                 ->nullable()
-                ->comment('content');
+                ->comment('Contenido a imprimir.');
             $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
         });
 
