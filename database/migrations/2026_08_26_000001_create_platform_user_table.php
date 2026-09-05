@@ -23,6 +23,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('platform_user', function (Blueprint $table) {
+            $table->comment('Editores asignados a cada plataforma: un Editor sólo trabaja sobre las suyas.');
             $table->id();
 
             $table->foreignId('user_id')

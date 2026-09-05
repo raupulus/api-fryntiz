@@ -19,7 +19,7 @@ class CreateSessionsTable extends Migration
     public function up()
     {
         Schema::create('sessions', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a sessions para su integración y uso general en el sistema.');
+            $table->comment('Sesiones abiertas de los usuarios.');
             $table->string('id')->primary()->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->foreignId('user_id')->nullable()->index()->comment('Identificador del usuario asociado');
             $table->string('ip_address', 45)->nullable()->comment('Dirección IP desde la que se originó la petición o sesión');

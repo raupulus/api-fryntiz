@@ -19,7 +19,7 @@ class CreateSocialNetworksTable extends Migration
     public function up()
     {
         Schema::create('social_networks', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a social networks para su integración y uso general en el sistema.');
+            $table->comment('Redes sociales que un usuario puede asociar a su perfil.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

@@ -14,7 +14,7 @@ class CreateContentsTable extends Migration
 {
     private $tableName = 'contents';
 
-    private $tableComment = 'Contenido';
+    private $tableComment = 'Contenidos del CMS: entradas, páginas y bloques de cada plataforma.';
 
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ class CreateContentsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Contenidos del CMS: entradas, páginas y bloques de cada plataforma.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

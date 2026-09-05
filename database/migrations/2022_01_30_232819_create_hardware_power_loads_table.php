@@ -17,7 +17,7 @@ class CreateHardwarePowerLoadsTable extends Migration
 {
     private $tableName = 'hardware_power_loads';
 
-    private $tableComment = 'Almacena el consumo de energía de un dispositivo';
+    private $tableComment = 'Lecturas de consumo eléctrico de un dispositivo.';
 
     /**
      * Run the migrations.
@@ -27,7 +27,7 @@ class CreateHardwarePowerLoadsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Lecturas de consumo eléctrico de un dispositivo.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

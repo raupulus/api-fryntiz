@@ -10,7 +10,7 @@ class CreateTagsTable extends Migration
 {
     private $tableName = 'tags';
 
-    private $tableComment = 'tags disponibles para toda la plataforma.';
+    private $tableComment = 'Etiquetas disponibles para toda la plataforma.';
 
     /**
      * Run the migrations.
@@ -20,7 +20,7 @@ class CreateTagsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Etiquetas disponibles para toda la plataforma.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

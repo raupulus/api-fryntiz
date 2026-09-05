@@ -19,7 +19,7 @@ class CreateCvAcademicComplementaryOnlineTable extends Migration
     public function up()
     {
         Schema::create('cv_academic_complementary_online', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de academic complementary online para la generación del currículum vitae de los usuarios.');
+            $table->comment('Formación complementaria online del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

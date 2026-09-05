@@ -19,7 +19,7 @@ class CreateUserDataTable extends Migration
     public function up()
     {
         Schema::create('user_data', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a user data para su integración y uso general en el sistema.');
+            $table->comment('Datos extendidos del usuario.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

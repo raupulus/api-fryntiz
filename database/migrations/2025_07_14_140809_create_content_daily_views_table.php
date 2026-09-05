@@ -11,7 +11,7 @@ class CreateContentDailyViewsTable extends Migration
     public function up()
     {
         Schema::create('content_daily_views', function (Blueprint $table) {
-            $table->comment('Almacena la información de daily views requerida por el sistema multiplataforma de gestión de contenidos (CMS).');
+            $table->comment('Visitas por día de cada contenido.');
             $table->id()->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->unsignedBigInteger('content_id')->comment('Clave foránea que relaciona este registro con el content al que pertenece.');
             $table->date('date')->comment('Fecha');

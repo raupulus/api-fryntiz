@@ -16,7 +16,7 @@ class CreateCvRepositoriesTable extends Migration
     public function up()
     {
         Schema::create('cv_repositories', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de repositories para la generación del currículum vitae de los usuarios.');
+            $table->comment('Repositorios de código del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

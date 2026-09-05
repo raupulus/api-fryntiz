@@ -19,7 +19,7 @@ class CreateEmailsTable extends Migration
     public function up()
     {
         Schema::create('emails', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a emails para su integración y uso general en el sistema.');
+            $table->comment('Mensajes del formulario de contacto, con su puntuación de captcha y su estado de envío.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

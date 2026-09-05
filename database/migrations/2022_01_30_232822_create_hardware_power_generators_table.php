@@ -26,7 +26,7 @@ class CreateHardwarePowerGeneratorsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Carga de energía generada por dispositivo de hardware en el momento.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

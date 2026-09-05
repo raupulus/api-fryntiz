@@ -14,7 +14,7 @@ class CreateContentAvailablePageRawTable extends Migration
 {
     private $tableName = 'content_available_page_raw';
 
-    private $tableComment = 'Formatos de edición para el contenido sin procesar (con el que se generará el html de cada página para el contenido.';
+    private $tableComment = 'Formatos de edición admitidos para el contenido sin procesar del que se genera el HTML.';
 
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ class CreateContentAvailablePageRawTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Formatos de edición admitidos para el contenido sin procesar del que se genera el HTML.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

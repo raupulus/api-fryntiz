@@ -19,7 +19,7 @@ class CreateFileThumbnailsTable extends Migration
     public function up()
     {
         Schema::create('file_thumbnails', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a file thumbnails para su integración y uso general en el sistema.');
+            $table->comment('Miniaturas de cada fichero, una fila por tamaño generado.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

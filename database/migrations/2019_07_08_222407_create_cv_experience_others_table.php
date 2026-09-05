@@ -19,7 +19,7 @@ class CreateCvExperienceOthersTable extends Migration
     public function up()
     {
         Schema::create('cv_experience_others', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de experience others para la generación del currículum vitae de los usuarios.');
+            $table->comment('Otra experiencia del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

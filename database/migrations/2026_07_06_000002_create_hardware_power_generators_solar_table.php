@@ -15,6 +15,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('hardware_power_generators_solar', function (Blueprint $table) {
+            $table->comment('Lecturas del regulador de carga solar: generación, batería y consumo, con los acumulados que declara el propio controlador.');
             $table->bigIncrements('id')->comment('Identificador único');
 
             $table->unsignedBigInteger('hardware_device_id')

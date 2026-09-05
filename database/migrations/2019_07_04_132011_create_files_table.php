@@ -19,7 +19,7 @@ class CreateFilesTable extends Migration
     public function up()
     {
         Schema::create('files', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a files para su integración y uso general en el sistema.');
+            $table->comment('Ficheros subidos: ruta en disco, dimensiones y si son privados.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

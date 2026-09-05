@@ -19,7 +19,7 @@ class CreateLanguagesTable extends Migration
     public function up()
     {
         Schema::create('languages', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a languages para su integración y uso general en el sistema.');
+            $table->comment('Idiomas en los que se sirve la plataforma.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

@@ -28,7 +28,7 @@ class CreateContentPageRawTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Contenido original o en otros formatos desde los que se ha compuesto el html almacenado en la tabla de contenidos. Por ejemplo, páginas de inicio, páginas de error, etc.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

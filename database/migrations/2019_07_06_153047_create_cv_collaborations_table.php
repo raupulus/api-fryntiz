@@ -19,7 +19,7 @@ class CreateCvCollaborationsTable extends Migration
     public function up()
     {
         Schema::create('cv_collaborations', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de collaborations para la generación del currículum vitae de los usuarios.');
+            $table->comment('Colaboraciones del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

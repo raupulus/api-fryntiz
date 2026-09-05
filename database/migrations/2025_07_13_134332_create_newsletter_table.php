@@ -15,7 +15,7 @@ class CreateNewsletterTable extends Migration
     public function up()
     {
         Schema::create('newsletter', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a newsletter para su integración y uso general en el sistema.');
+            $table->comment('Suscripciones al boletín y su estado de confirmación.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

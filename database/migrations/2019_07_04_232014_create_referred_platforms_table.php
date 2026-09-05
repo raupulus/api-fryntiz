@@ -24,7 +24,7 @@ class CreateReferredPlatformsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Plataformas de programas de afiliación.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -58,7 +58,7 @@ class CreateReferredPlatformsTable extends Migration
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
-        $comment = 'Tabla para almacenar las plataformas de referidos.';
+        $comment = 'Plataformas de programas de afiliación.';
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$comment}'");
     }

@@ -26,7 +26,7 @@ class CreateMeteorologyAemetPredictionsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Predicción por horas de información de hora en hora hasta 48 horas. Se generan de forma automática mediante el tratamiento estadístico de los resultados de modelos numéricos de predicción');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

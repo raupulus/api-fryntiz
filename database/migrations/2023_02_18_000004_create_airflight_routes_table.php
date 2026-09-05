@@ -14,7 +14,7 @@ class CreateAirFlightRoutesTable extends Migration
 {
     private $tableName = 'airflight_routes';
 
-    private $tableComment = 'Registros de posiciones de aeronaves';
+    private $tableComment = 'Posiciones sucesivas de cada aeronave: la traza del vuelo.';
 
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ class CreateAirFlightRoutesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Posiciones sucesivas de cada aeronave: la traza del vuelo.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

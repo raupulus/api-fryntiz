@@ -19,7 +19,7 @@ class CreateUserSocialTable extends Migration
     public function up()
     {
         Schema::create('user_social', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a user social para su integración y uso general en el sistema.');
+            $table->comment('Perfiles del usuario en cada red social.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

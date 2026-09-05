@@ -19,7 +19,7 @@ class CreateCvExperienceAccreditedTable extends Migration
     public function up()
     {
         Schema::create('cv_experience_accredited', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de experience accredited para la generación del currículum vitae de los usuarios.');
+            $table->comment('Experiencia laboral acreditable del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

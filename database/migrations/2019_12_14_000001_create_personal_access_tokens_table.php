@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a personal access tokens para su integración y uso general en el sistema.');
+            $table->comment('Tokens de la API: sesiones humanas y dispositivos IoT, acotados por abilities.');
             $table->id()->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->morphs('tokenable');
             $table->text('name')->comment('Nombre');

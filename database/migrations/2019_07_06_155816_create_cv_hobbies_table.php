@@ -19,7 +19,7 @@ class CreateCvHobbiesTable extends Migration
     public function up()
     {
         Schema::create('cv_hobbies', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de hobbies para la generación del currículum vitae de los usuarios.');
+            $table->comment('Aficiones del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

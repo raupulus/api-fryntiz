@@ -16,7 +16,7 @@ class CreateHardwareTypesTable extends Migration
 {
     private $tableName = 'hardware_types';
 
-    private $tableComment = 'Tabla para almacenar los tipos de hardware, EJ: ordenador, portatil, microcontrolador, cargador solar....';
+    private $tableComment = 'Tipos de hardware: ordenador, portátil, microcontrolador, cargador solar…';
 
     /**
      * Run the migrations.
@@ -26,7 +26,7 @@ class CreateHardwareTypesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Tipos de hardware: ordenador, portátil, microcontrolador, cargador solar…');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

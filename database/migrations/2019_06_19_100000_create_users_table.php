@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->comment('Almacena los usuarios registrados en el sistema, habilitando la autenticación, gestión de roles y relación con entidades.');
+            $table->comment('Cuentas del sistema: autenticación, rol y datos de perfil.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

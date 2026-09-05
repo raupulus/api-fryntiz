@@ -14,7 +14,7 @@ class CreateAirFlightAirplanesTable extends Migration
 {
     private $tableName = 'airflight_airplanes';
 
-    private $tableComment = 'Almacena los aviones.';
+    private $tableComment = 'Aeronaves detectadas por ADS-B, con la primera y última vez que se vieron.';
 
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ class CreateAirFlightAirplanesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Aeronaves detectadas por ADS-B, con la primera y última vez que se vieron.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

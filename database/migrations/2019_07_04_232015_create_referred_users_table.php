@@ -24,7 +24,7 @@ class CreateReferredUsersTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Usuarios asociados a cada plataforma de afiliación.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
@@ -54,7 +54,7 @@ class CreateReferredUsersTable extends Migration
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
 
-        $comment = 'Tabla para almacenar los usuarios asociados a plataformas de referidos.';
+        $comment = 'Usuarios asociados a cada plataforma de afiliación.';
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$comment}'");
     }

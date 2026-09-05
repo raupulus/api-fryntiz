@@ -19,7 +19,7 @@ class CreateUserSettingsTable extends Migration
     public function up()
     {
         Schema::create('user_settings', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a user settings para su integración y uso general en el sistema.');
+            $table->comment('Preferencias de cada usuario.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

@@ -19,7 +19,7 @@ class CreateCvAcademicTrainingTable extends Migration
     public function up()
     {
         Schema::create('cv_academic_training', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de academic training para la generación del currículum vitae de los usuarios.');
+            $table->comment('Formación reglada del currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

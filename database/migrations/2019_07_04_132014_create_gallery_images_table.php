@@ -19,7 +19,7 @@ class CreateGalleryImagesTable extends Migration
     public function up()
     {
         Schema::create('gallery_images', function (Blueprint $table) {
-            $table->comment('Almacena agrupaciones de imágenes y multimedia compartidas a través de la plataforma.');
+            $table->comment('Imágenes que componen cada galería, con su orden.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

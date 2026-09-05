@@ -19,7 +19,7 @@ class CreateUserRolesTable extends Migration
     public function up()
     {
         Schema::create('user_roles', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a user roles para su integración y uso general en el sistema.');
+            $table->comment('Roles del sistema: SuperAdmin, Admin, User y Editor.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

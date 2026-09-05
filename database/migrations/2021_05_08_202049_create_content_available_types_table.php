@@ -14,7 +14,7 @@ class CreateContentAvailableTypesTable extends Migration
 {
     private $tableName = 'content_available_types';
 
-    private $tableComment = 'Tipo de contenido (página, noticia, bloque..';
+    private $tableComment = 'Tipos de contenido: página, entrada, bloque…';
 
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ class CreateContentAvailableTypesTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Tipos de contenido: página, entrada, bloque…');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

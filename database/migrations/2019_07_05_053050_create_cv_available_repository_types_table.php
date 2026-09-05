@@ -19,7 +19,7 @@ class CreateCvAvailableRepositoryTypesTable extends Migration
     public function up()
     {
         Schema::create('cv_available_repository_types', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de available repository types para la generación del currículum vitae de los usuarios.');
+            $table->comment('Tipos de repositorio de código: GitHub, GitLab, Gitea…');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

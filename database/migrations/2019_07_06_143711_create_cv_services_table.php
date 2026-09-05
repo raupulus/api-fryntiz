@@ -19,7 +19,7 @@ class CreateCvServicesTable extends Migration
     public function up()
     {
         Schema::create('cv_services', function (Blueprint $table) {
-            $table->comment('Almacena los datos del apartado de services para la generación del currículum vitae de los usuarios.');
+            $table->comment('Servicios ofrecidos en el currículum.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';

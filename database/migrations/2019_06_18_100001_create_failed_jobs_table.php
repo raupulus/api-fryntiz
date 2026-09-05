@@ -16,7 +16,7 @@ class CreateFailedJobsTable extends Migration
     public function up()
     {
         Schema::create('failed_jobs', function (Blueprint $table) {
-            $table->comment('Almacena los registros correspondientes a failed jobs para su integración y uso general en el sistema.');
+            $table->comment('Trabajos en cola que agotaron los reintentos.');
             $table->id()->comment('Identificador único autoincremental de este registro en la base de datos.');
             $table->string('uuid')->unique()->comment('Identificador universalmente único');
             $table->text('connection')->comment('Campo que almacena el connection específico para este registro según la lógica de negocio.');

@@ -18,7 +18,7 @@ class CreatePlatformsTable extends Migration
 {
     private $tableName = 'platforms';
 
-    private $tableComment = 'Almacena las distintas plataformas en las que se agruparán los contenidos';
+    private $tableComment = 'Sitios web servidos por la API. Cada contenido pertenece a una.';
 
     /**
      * Run the migrations.
@@ -28,7 +28,7 @@ class CreatePlatformsTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->comment('Tabla para almacenar información de $la tabla');
+            $table->comment('Sitios web servidos por la API. Cada contenido pertenece a una.');
             $table->engine = 'InnoDB';
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
