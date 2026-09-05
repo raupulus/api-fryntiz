@@ -249,6 +249,25 @@
                 </div>
                 @endif
 
+                {{-- Día top --}}
+                @if($widgets['top_day'])
+                <div class="bg-lime-50 dark:bg-lime-950/30 border border-lime-200 dark:border-lime-800 rounded-lg p-4 text-center shadow">
+                    <span class="material-symbols-outlined text-lime-600 dark:text-lime-400 text-3xl">calendar_month</span>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_day']->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_day') }}: {{ \Carbon\Carbon::parse($widgets['top_day']->day)->format('d/m/Y') }}</p>
+                </div>
+                @endif
+
+                {{-- Hora top (convertida a la hora local del navegador) --}}
+                @if($widgets['top_hour'])
+                <div class="bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-800 rounded-lg p-4 text-center shadow"
+                     data-top-hour-utc="{{ (int) $widgets['top_hour']->hour }}">
+                    <span class="material-symbols-outlined text-cyan-600 dark:text-cyan-400 text-3xl">schedule</span>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_hour']->total) }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_hour') }}: <span id="top-hour-local">--:00</span></p>
+                </div>
+                @endif
+
                 {{-- Totales por año --}}
                 @foreach($widgets['totals_by_year'] as $yearData)
                 <div class="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center shadow">
@@ -345,8 +364,25 @@
             }
         });
 
+        // Los datos se almacenan en UTC+0; la tarjeta "Mejor hora" se
+        // recalcula aquí a la zona horaria del propio navegador.
+        function localizeTopHour() {
+            var el = document.querySelector('[data-top-hour-utc]');
+            var target = document.getElementById('top-hour-local');
+            if (!el || !target) {
+                return;
+            }
+
+            var utcHour = parseInt(el.getAttribute('data-top-hour-utc'), 10);
+            var localDate = new Date(Date.UTC(2000, 0, 1, utcHour, 0, 0));
+            var localHour = String(localDate.getHours()).padStart(2, '0');
+
+            target.textContent = localHour + ':00';
+        }
+
         window.document.addEventListener('DOMContentLoaded', () => {
             createFilterEvents();
+            localizeTopHour();
         });
     </script>
 @endpush

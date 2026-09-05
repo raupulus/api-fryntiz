@@ -102,6 +102,20 @@ class KeyCounterController extends Controller
                 ->orderByDesc('total')
                 ->first();
 
+            // Día concreto (calendario) con más pulsaciones acumuladas.
+            $topDay = Keyboard::selectRaw('DATE(created_at) as day, SUM(pulsations) as total')
+                ->groupByRaw('DATE(created_at)')
+                ->orderByDesc('total')
+                ->first();
+
+            // Hora del día (0-23) con más pulsaciones acumuladas. Se agrega
+            // en la hora tal cual se guarda (UTC); la vista la convierte a
+            // la hora local del navegador con JS antes de mostrarla.
+            $topHour = Keyboard::selectRaw('EXTRACT(HOUR FROM created_at) as hour, SUM(pulsations) as total')
+                ->groupByRaw('EXTRACT(HOUR FROM created_at)')
+                ->orderByDesc('total')
+                ->first();
+
             // Dispositivo con más pulsaciones (top_device)
             $topDevice = Keyboard::selectRaw('hardware_device_id, SUM(pulsations) as total')
                 ->whereNotNull('hardware_device_id')
@@ -136,6 +150,8 @@ class KeyCounterController extends Controller
             return [
                 'total_global' => $totalGlobal,
                 'top_month' => $topMonth,
+                'top_day' => $topDay,
+                'top_hour' => $topHour,
                 'top_device' => $topDevice ? (object) [
                     'hardware_device_id' => $topDevice->hardware_device_id,
                     'name' => $deviceName((int) $topDevice->hardware_device_id),

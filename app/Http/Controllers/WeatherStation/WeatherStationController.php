@@ -50,8 +50,13 @@ class WeatherStationController extends Controller
             'primary' => ['field' => 'value', 'unit' => 'hPa'],
         ],
         'light' => [
+            // `lumens` es el único campo obligatorio del sensor de luz (ver
+            // Light::getFieldsValidation()); `lux` es opcional y hay
+            // estaciones (ej. RPI WS Luz) que nunca lo calculan, así que no
+            // puede ser el campo "primary" o esas estaciones se quedan sin
+            // tarjeta ni datos en el listado.
             'title' => 'Luz', 'model' => Light::class, 'icon' => 'light_mode',
-            'primary' => ['field' => 'lux', 'unit' => 'lux'],
+            'primary' => ['field' => 'lumens', 'unit' => 'lm'],
             'secondary' => ['field' => 'index', 'unit' => 'índice'],
         ],
         'wind' => [
