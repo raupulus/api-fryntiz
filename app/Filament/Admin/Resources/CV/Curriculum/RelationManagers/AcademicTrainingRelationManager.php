@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula\RelationManagers;
+namespace App\Filament\Admin\Resources\CV\Curriculum\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -15,11 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class AcademicComplementaryOnlineRelationManager extends RelationManager
+class AcademicTrainingRelationManager extends RelationManager
 {
-    protected static string $relationship = 'academicComplementaryOnline';
+    protected static string $relationship = 'academicTraining';
 
-    protected static ?string $title = 'Formación online';
+    protected static ?string $title = 'Formación reglada';
 
     public function form(Schema $schema): Schema
     {
@@ -33,6 +33,7 @@ class AcademicComplementaryOnlineRelationManager extends RelationManager
             DateTimePicker::make('expedition_at')->label('Expedición'),
             TextInput::make('credential_id')->maxLength(511)->label('ID credencial'),
             TextInput::make('credential_url')->url()->maxLength(511)->label('URL credencial'),
+            TextInput::make('learned')->maxLength(511)->label('Aprendido'),
             Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
         ]);
     }
@@ -43,7 +44,8 @@ class AcademicComplementaryOnlineRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('title')->label('Título'),
                 TextColumn::make('entity')->label('Entidad'),
-                TextColumn::make('credential_url')->limit(40)->label('URL credencial'),
+                TextColumn::make('start_at')->dateTime('d/m/Y')->label('Inicio'),
+                TextColumn::make('end_at')->dateTime('d/m/Y')->label('Fin'),
             ])
             ->headerActions([CreateAction::make()])
             ->recordActions([EditAction::make(), DeleteAction::make()]);

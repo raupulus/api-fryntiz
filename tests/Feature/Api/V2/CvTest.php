@@ -13,7 +13,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
 /**
- * `/api/v2/curricula`.
+ * `/api/v2/curriculum`.
  *
  * Antes eran diez rutas planas (`/cv/experience`, `/cv/skills`…) que daban por
  * hecho que existe un único currículum y devolvían el del superadmin. Los tests
@@ -40,7 +40,7 @@ class CvTest extends ApiTestCase
         $this->createCurriculum('Perfil privado', CurriculumVisibilityEnum::Private);
         $this->createCurriculum('Perfil compartido', CurriculumVisibilityEnum::Shared);
 
-        $response = $this->getJson($this->apiUrl('curricula'));
+        $response = $this->getJson($this->apiUrl('curriculum'));
 
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
@@ -52,7 +52,7 @@ class CvTest extends ApiTestCase
     {
         $cv = $this->createCurriculum('Backend senior', CurriculumVisibilityEnum::Public);
 
-        $response = $this->getJson($this->apiUrl("curricula/{$cv->slug}"));
+        $response = $this->getJson($this->apiUrl("curriculum/{$cv->slug}"));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonPath('data.slug', $cv->slug);
@@ -63,7 +63,7 @@ class CvTest extends ApiTestCase
     {
         $cv = $this->createCurriculum('Sólo para mí', CurriculumVisibilityEnum::Private);
 
-        $this->getJson($this->apiUrl("curricula/{$cv->slug}"))->assertStatus(404);
+        $this->getJson($this->apiUrl("curriculum/{$cv->slug}"))->assertStatus(404);
     }
 
     #[Test]
@@ -73,9 +73,9 @@ class CvTest extends ApiTestCase
         // hecho a medida sin que salga en internet.
         $cv = $this->createCurriculum('Para la oferta X', CurriculumVisibilityEnum::Shared);
 
-        $this->getJson($this->apiUrl("curricula/{$cv->slug}"))->assertStatus(404);
+        $this->getJson($this->apiUrl("curriculum/{$cv->slug}"))->assertStatus(404);
 
-        $response = $this->getJson($this->apiUrl("curricula/shared/{$cv->share_token}"));
+        $response = $this->getJson($this->apiUrl("curriculum/shared/{$cv->share_token}"));
 
         $this->assertSuccessResponse($response);
         $response->assertJsonPath('data.slug', $cv->slug);
@@ -94,7 +94,7 @@ class CvTest extends ApiTestCase
     #[Test]
     public function a_token_that_belongs_to_nobody_returns_404(): void
     {
-        $this->getJson($this->apiUrl('curricula/shared/'.str_repeat('a', 64)))->assertStatus(404);
+        $this->getJson($this->apiUrl('curriculum/shared/'.str_repeat('a', 64)))->assertStatus(404);
     }
 
     #[Test]
@@ -103,7 +103,7 @@ class CvTest extends ApiTestCase
     {
         $cv = $this->createCurriculum('Con secciones', CurriculumVisibilityEnum::Public);
 
-        $this->getJson($this->apiUrl("curricula/{$cv->slug}/{$section}"))->assertStatus(200);
+        $this->getJson($this->apiUrl("curriculum/{$cv->slug}/{$section}"))->assertStatus(200);
     }
 
     /**
@@ -129,7 +129,7 @@ class CvTest extends ApiTestCase
     {
         $cv = $this->createCurriculum('Con secciones', CurriculumVisibilityEnum::Public);
 
-        $this->getJson($this->apiUrl("curricula/{$cv->slug}/inventada"))->assertStatus(404);
+        $this->getJson($this->apiUrl("curriculum/{$cv->slug}/inventada"))->assertStatus(404);
     }
 
     private function createCurriculum(string $title, CurriculumVisibilityEnum $visibilidad): Curriculum

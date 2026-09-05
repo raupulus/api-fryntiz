@@ -236,10 +236,10 @@ Contrato completo: [`content.md`](content.md).
 
 Contrato completo: [`cv.md`](cv.md).
 
-- `GET /api/v2/curricula`: listado público de CVs.
-- `GET /api/v2/curricula/shared/{shareToken}`: CV por enlace privado (`X-Robots-Tag: noindex`).
-- `GET /api/v2/curricula/{slug}`: CV completo por slug.
-- `GET /api/v2/curricula/{slug}/{section}`: una sección suelta del CV.
+- `GET /api/v2/curriculum`: listado público de CVs.
+- `GET /api/v2/curriculum/shared/{shareToken}`: CV por enlace privado (`X-Robots-Tag: noindex`).
+- `GET /api/v2/curriculum/{slug}`: CV completo por slug.
+- `GET /api/v2/curriculum/{slug}/{section}`: una sección suelta del CV.
 
 ## Ingesta y consulta IoT
 

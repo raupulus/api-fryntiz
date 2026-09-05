@@ -24,10 +24,10 @@
 
 - **Autenticación**: **todas las rutas de este módulo son públicas**. No llevan
   `auth:sanctum` ni ninguna ability — se ha verificado tanto en
-  `routes/cv/v2.php` (el grupo `curricula` no tiene middleware de auth, a
+  `routes/cv/v2.php` (el grupo `curriculum` no tiene middleware de auth, a
   diferencia de `auth/tokens` o `users/me` en `routes/api/v2.php`, que sí lo
   llevan explícitamente) como en `.scribe/endpoints/00.yaml`, donde las cuatro
-  rutas de `curricula` están marcadas `authenticated: false`.
+  rutas de `curriculum` están marcadas `authenticated: false`.
 - **Ruta inexistente o sección no válida**: `404` con
   `{ "success": false, "message": "API V2 - Endpoint no encontrado" }` (la
   ruta de sección restringe `{section}` con un `where()` literal a las 9
@@ -46,7 +46,7 @@ cada sección cuelga ahora del `slug` de un currículum concreto.
 
 Un currículum tiene tres visibilidades (`App\Enums\CurriculumVisibilityEnum`):
 
-| Visibilidad | ¿Sale en `GET /curricula`? | ¿Accesible por `{slug}`? | ¿Accesible por `{shareToken}`? |
+| Visibilidad | ¿Sale en `GET /curriculum`? | ¿Accesible por `{slug}`? | ¿Accesible por `{shareToken}`? |
 |---|---|---|---|
 | `public` | Sí | Sí | Sí (aunque no hace falta) |
 | `shared` | No | No (404) | Sí, con el token correcto |
@@ -57,9 +57,9 @@ camino, sea cual sea su visibilidad.
 
 ---
 
-## Currículums (`/curricula`)
+## Currículums (`/curriculum`)
 
-### `GET /curricula` — Listado público de currículums
+### `GET /curriculum` — Listado público de currículums
 
 - **Auth**: pública.
 - **Filtro implícito**: solo devuelve currículums con `is_active = true` y
@@ -115,14 +115,14 @@ camino, sea cual sea su visibilidad.
   `image` nunca es `null`: si el currículum no tiene imagen propia, sale la
   imagen por defecto de la plataforma (`File::urlDefaultImage('large')`).
 
-### `GET /curricula/{slug}` — Un currículum completo
+### `GET /curriculum/{slug}` — Un currículum completo
 
 - **Auth**: pública.
 - **Parámetros de ruta**: `slug` (string).
 - **Visibilidad**: solo si `isVisibleTo()` es verdadero sin token, es decir
   solo si `visibility = public` y `is_active = true`. Un currículum `shared`
   **no** es accesible por aquí, solo por su enlace (`GET
-  /curricula/shared/{shareToken}`).
+  /curriculum/shared/{shareToken}`).
 - **Respuesta 200** (`CurriculumResource`, con las 15 secciones cargadas.
   Cada bloque de sección usa `whenLoaded`, así que si en algún momento se
   sirviera sin cargar una relación, esa clave desaparecería en vez de salir
@@ -218,7 +218,7 @@ camino, sea cual sea su visibilidad.
   mismo mensaje a propósito, para que la URL no confirme la existencia de un
   slug privado.
 
-### `GET /curricula/shared/{shareToken}` — Un currículum por enlace privado
+### `GET /curriculum/shared/{shareToken}` — Un currículum por enlace privado
 
 - **Auth**: pública (el propio token hace de credencial).
 - **Parámetros de ruta**: `shareToken` — string hexadecimal de **exactamente
@@ -229,7 +229,7 @@ camino, sea cual sea su visibilidad.
   `visibility = shared` y el token coincide (comparación con `hash_equals`).
   Si el currículum ha vuelto a `private` o a `public`, el token deja de
   valer aunque siga siendo el que se guardó en su día.
-- **Respuesta 200**: mismo `CurriculumResource` que `GET /curricula/{slug}`
+- **Respuesta 200**: mismo `CurriculumResource` que `GET /curriculum/{slug}`
   (mismas 15 secciones, mismos campos).
 - **Cabecera propia**: `X-Robots-Tag: noindex, nofollow` — para que el
   currículum no acabe indexado si alguien pega el enlace en cualquier sitio
@@ -239,17 +239,17 @@ camino, sea cual sea su visibilidad.
   pero ya no es `shared`/está inactivo o el formato del token no matchea la
   regex de la ruta (en ese último caso ni siquiera entra al controlador).
 
-### `GET /curricula/{slug}/{section}` — Una sección suelta de un currículum
+### `GET /curriculum/{slug}/{section}` — Una sección suelta de un currículum
 
 - **Auth**: pública.
 - **Parámetros de ruta**:
-  - `slug` — igual que en `GET /curricula/{slug}`.
+  - `slug` — igual que en `GET /curriculum/{slug}`.
   - `section` — uno exactamente de estos 9 valores (restringido por
     `where()` en la ruta; cualquier otro valor no hace match y responde el
     404 genérico de "endpoint no encontrado", no llega al controlador):
     `experiences`, `educations`, `skills`, `projects`, `repositories`,
     `services`, `collaborations`, `hobbies`, `jobs`.
-- **Visibilidad**: misma regla que `GET /curricula/{slug}` (solo currículums
+- **Visibilidad**: misma regla que `GET /curriculum/{slug}` (solo currículums
   públicos y activos; no admite `shareToken` — para una sección de un CV
   compartido hay que pedir el currículum completo por su enlace).
 - **Importante — no hay Resource dedicado por sección**: el controlador
@@ -269,7 +269,7 @@ camino, sea cual sea su visibilidad.
   - `experiences` (agrupa 5 tablas) y `educations` (agrupa 3 tablas) → `data`
     es un **objeto** con una clave por sub-tipo.
 
-#### `GET /curricula/{slug}/skills`
+#### `GET /curriculum/{slug}/skills`
 
 ```json
 {
@@ -304,7 +304,7 @@ Campos de cada fila (`cv_skills` / `CurriculumSkill`): `id`, `curriculum_id`,
 `image_id`, `name` (string), `level` (int|null, 1–10), `description`
 (string|null), `created_at`, `updated_at`.
 
-#### `GET /curricula/{slug}/projects`, `/repositories`, `/services`, `/collaborations`, `/jobs`
+#### `GET /curriculum/{slug}/projects`, `/repositories`, `/services`, `/collaborations`, `/jobs`
 
 Misma forma que `skills`: un array plano. Campos por tabla:
 
@@ -344,7 +344,7 @@ Ejemplo (`repositories`):
 }
 ```
 
-#### `GET /curricula/{slug}/hobbies`
+#### `GET /curriculum/{slug}/hobbies`
 
 ```json
 {
@@ -369,7 +369,7 @@ Campos (`cv_hobbies` / `CurriculumHobby`): `id`, `curriculum_id`, `image_id`,
 `title` (string|null), `description` (string|null), `url` (string|null),
 `created_at`, `updated_at`.
 
-#### `GET /curricula/{slug}/experiences`
+#### `GET /curriculum/{slug}/experiences`
 
 Agrupa 5 tablas. Claves fijas, siempre las 5 presentes (vacías como `[]` si
 no hay filas):
@@ -416,7 +416,7 @@ Las 5 tablas comparten el mismo esquema de columnas: `id`, `curriculum_id`,
 `description` (string|null), `note` (string|null), `start_at` (string|null),
 `end_at` (string|null), `created_at`, `updated_at`.
 
-#### `GET /curricula/{slug}/educations`
+#### `GET /curriculum/{slug}/educations`
 
 Agrupa 3 tablas, mismo patrón (siempre las 3 claves presentes):
 
@@ -467,7 +467,7 @@ Las 3 tablas comparten esquema: `id`, `curriculum_id`, `image_id`, `title`,
 (bool), `expires_at` (string|null), `expedition_at` (string|null), `start_at`
 (string|null), `end_at` (string|null), `created_at`, `updated_at`.
 
-- **Errores de `GET /curricula/{slug}/{section}`**:
+- **Errores de `GET /curriculum/{slug}/{section}`**:
   - `404` `{"success": false, "message": "Currículum no encontrado"}` si el
     `slug` no existe o el currículum no es público/activo.
   - `404` `{"success": false, "message": "API V2 - Endpoint no encontrado"}`
@@ -482,10 +482,10 @@ Las 3 tablas comparten esquema: `id`, `curriculum_id`, `image_id`, `title`,
 
 | Ruta antigua | Qué pasó |
 |---|---|
-| `GET /cv` | Es `GET /curricula/{slug}` — antes no existía slug, se devolvía siempre el CV del superadmin |
-| `GET /cv/experience` | Es `GET /curricula/{slug}/experiences` |
-| `GET /cv/education` | Es `GET /curricula/{slug}/educations` |
-| `GET /cv/skills`, `/cv/projects`, `/cv/repositories`, `/cv/services`, `/cv/collaborations`, `/cv/hobbies`, `/cv/jobs` | Son `GET /curricula/{slug}/{section}` con la sección correspondiente |
+| `GET /cv` | Es `GET /curriculum/{slug}` — antes no existía slug, se devolvía siempre el CV del superadmin |
+| `GET /cv/experience` | Es `GET /curriculum/{slug}/experiences` |
+| `GET /cv/education` | Es `GET /curriculum/{slug}/educations` |
+| `GET /cv/skills`, `/cv/projects`, `/cv/repositories`, `/cv/services`, `/cv/collaborations`, `/cv/hobbies`, `/cv/jobs` | Son `GET /curriculum/{slug}/{section}` con la sección correspondiente |
 
 ---
 

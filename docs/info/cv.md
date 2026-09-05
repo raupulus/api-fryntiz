@@ -115,16 +115,16 @@ completo en el [contrato de API](api/v2/cv.md).
 
 ## Rutas API V2
 
-Base `/api/v2/curricula`, todas públicas y de solo lectura. Ver
+Base `/api/v2/curriculum`, todas públicas y de solo lectura. Ver
 [`docs/info/api/v2/cv.md`](api/v2/cv.md) para el contrato exacto (parámetros,
 JSON de respuesta, errores).
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/curricula` | Listado paginado, solo currículums públicos y activos |
-| GET | `/curricula/shared/{shareToken}` | Un currículum por enlace privado |
-| GET | `/curricula/{slug}` | Un currículum completo, con sus 15 secciones |
-| GET | `/curricula/{slug}/{section}` | Una sección suelta (9 valores válidos de `{section}`) |
+| GET | `/curriculum` | Listado paginado, solo currículums públicos y activos |
+| GET | `/curriculum/shared/{shareToken}` | Un currículum por enlace privado |
+| GET | `/curriculum/{slug}` | Un currículum completo, con sus 15 secciones |
+| GET | `/curriculum/{slug}/{section}` | Una sección suelta (9 valores válidos de `{section}`) |
 
 ## Rutas Web (`routes/cv/web.php`)
 

@@ -197,17 +197,17 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-weather-stations--station---sensor-">
                                 <a href="#endpoints-POSTapi-v2-weather-stations--station---sensor-">Guarda una lectura o un lote de lecturas de un sensor.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curricula">
-                                <a href="#endpoints-GETapi-v2-curricula">Listado público. Sólo los marcados como públicos (B3).</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curriculum">
+                                <a href="#endpoints-GETapi-v2-curriculum">Listado público. Sólo los marcados como públicos (B3).</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curricula-shared--shareToken-">
-                                <a href="#endpoints-GETapi-v2-curricula-shared--shareToken-">Un CV por su enlace privado.</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curriculum-shared--shareToken-">
+                                <a href="#endpoints-GETapi-v2-curriculum-shared--shareToken-">Un CV por su enlace privado.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curricula--slug-">
-                                <a href="#endpoints-GETapi-v2-curricula--slug-">Un CV completo por su slug. Sólo si es público.</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curriculum--slug-">
+                                <a href="#endpoints-GETapi-v2-curriculum--slug-">Un CV completo por su slug. Sólo si es público.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curricula--slug---section-">
-                                <a href="#endpoints-GETapi-v2-curricula--slug---section-">Una sección concreta de un CV.</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curriculum--slug---section-">
+                                <a href="#endpoints-GETapi-v2-curriculum--slug---section-">Una sección concreta de un CV.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2--any-">
                                 <a href="#endpoints-GETapi-v2--any-">GET api/v2/{any}</a>
@@ -223,7 +223,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: September 1, 2026</li>
+        <li>Last updated: September 5, 2026</li>
     </ul>
 </div>
 
@@ -443,11 +443,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -545,10 +549,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"smartplant:write\"
+        \"weatherstation:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-09-25\"
+    \"expires_at\": \"2052-09-28\"
 }"
 </code></pre></div>
 
@@ -566,10 +570,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "smartplant:write"
+        "weatherstation:write"
     ],
     "name": "n",
-    "expires_at": "2052-09-25"
+    "expires_at": "2052-09-28"
 };
 
 fetch(url, {
@@ -680,7 +684,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 
 Must be one of:
-<ul style="list-style-type: square;"><li><code>hardware:read</code></li> <li><code>hardware:write</code></li> <li><code>weatherstation:write</code></li> <li><code>keycounter:write</code></li> <li><code>smartplant:write</code></li> <li><code>airflight:write</code></li></ul>
+<ul style="list-style-type: square;"><li><code>hardware:read</code></li> <li><code>hardware:write</code></li> <li><code>weatherstation:read</code></li> <li><code>weatherstation:write</code></li> <li><code>keycounter:read</code></li> <li><code>keycounter:write</code></li> <li><code>smartplant:read</code></li> <li><code>smartplant:write</code></li> <li><code>airflight:read</code></li> <li><code>airflight:write</code></li></ul>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
@@ -701,10 +705,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-09-25"
+               value="2052-09-28"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-25</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-28</code></p>
         </div>
         </form>
 
@@ -991,11 +995,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -1536,11 +1544,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -2186,62 +2198,27 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 299
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: 1,
-            &quot;name&quot;: &quot;Borer, Kirlin and Collins&quot;,
-            &quot;title&quot;: &quot;Borer, Kirlin and Collins&quot;,
-            &quot;slug&quot;: &quot;borer-kirlin-and-collins-Kilhs&quot;,
-            &quot;domain&quot;: &quot;lind.com&quot;,
-            &quot;description&quot;: &quot;Repellendus voluptas in enim et.&quot;,
-            &quot;image&quot;: null,
-            &quot;created_at&quot;: &quot;2026-08-30T15:45:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: 4,
-            &quot;name&quot;: &quot;GreenEnergy Smart Monitor&quot;,
-            &quot;title&quot;: &quot;GreenEnergy Smart Monitor&quot;,
-            &quot;slug&quot;: &quot;greenenergy-smart-monitor&quot;,
-            &quot;domain&quot;: &quot;energy.raupulus.dev&quot;,
-            &quot;description&quot;: &quot;Monitorizaci&oacute;n avanzada de generaci&oacute;n fotovoltaica, bater&iacute;as y consumos industriales.&quot;,
-            &quot;image&quot;: null,
-            &quot;created_at&quot;: &quot;2026-08-30T15:45:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: 3,
-            &quot;name&quot;: &quot;Portal de Telemetr&iacute;a IoT&quot;,
-            &quot;title&quot;: &quot;Portal de Telemetr&iacute;a IoT&quot;,
-            &quot;slug&quot;: &quot;portal-de-telemetria-iot&quot;,
-            &quot;domain&quot;: &quot;iot.raupulus.dev&quot;,
-            &quot;description&quot;: &quot;Plataforma cloud para supervisi&oacute;n en tiempo real de estaciones meteorol&oacute;gicas y energ&iacute;a solar.&quot;,
-            &quot;image&quot;: null,
-            &quot;created_at&quot;: &quot;2026-08-30T15:45:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: 2,
-            &quot;name&quot;: &quot;Raupulus Tech &amp; Consulting&quot;,
-            &quot;title&quot;: &quot;Raupulus Tech &amp; Consulting&quot;,
-            &quot;slug&quot;: &quot;raupulus-tech-consulting&quot;,
-            &quot;domain&quot;: &quot;tech.raupulus.dev&quot;,
-            &quot;description&quot;: &quot;Soluciones integrales de hardware IoT, telemetr&iacute;a y software distribuido para empresas.&quot;,
-            &quot;image&quot;: null,
-            &quot;created_at&quot;: &quot;2026-08-30T15:45:11.000000Z&quot;
-        }
-    ],
+    &quot;data&quot;: [],
     &quot;meta&quot;: {
-        &quot;total&quot;: 4,
+        &quot;total&quot;: 0,
         &quot;per_page&quot;: 25,
         &quot;current_page&quot;: 1,
         &quot;last_page&quot;: 1,
-        &quot;from&quot;: 1,
-        &quot;to&quot;: 4
+        &quot;from&quot;: null,
+        &quot;to&quot;: null
     }
 }</code>
  </pre>
@@ -2332,14 +2309,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1"
+    "https://api.raupulus.dev/api/v2/platforms/16"
 );
 
 const headers = {
@@ -2365,8 +2342,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 298
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2454,10 +2437,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="slug"                data-endpoint="GETapi-v2-platforms--slug-"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     </form>
 
@@ -2474,14 +2457,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1/categories" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16/categories" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1/categories"
+    "https://api.raupulus.dev/api/v2/platforms/16/categories"
 );
 
 const headers = {
@@ -2507,8 +2490,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 297
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2596,10 +2585,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--categories"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     </form>
 
@@ -2620,14 +2609,14 @@ eran dos rutas para dos filtros de la misma colección.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1/contents" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16/contents" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1/contents"
+    "https://api.raupulus.dev/api/v2/platforms/16/contents"
 );
 
 const headers = {
@@ -2653,8 +2642,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 296
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2742,10 +2737,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     </form>
 
@@ -2762,14 +2757,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto"
+    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto"
 );
 
 const headers = {
@@ -2795,8 +2790,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 295
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2884,10 +2885,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--slug-"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
@@ -2916,14 +2917,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages"
+    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages"
 );
 
 const headers = {
@@ -2949,8 +2950,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 294
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3038,10 +3045,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3070,14 +3077,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages/564" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages/564" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/pages/564"
+    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages/564"
 );
 
 const headers = {
@@ -3103,8 +3110,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 293
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3192,10 +3205,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3236,14 +3249,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/related" \
+    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/related" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/1/contents/architecto/related"
+    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/related"
 );
 
 const headers = {
@@ -3269,8 +3282,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 292
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3358,10 +3377,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--related"
-               value="1"
+               value="16"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>1</code></p>
+<p>The slug of the platform. Example: <code>16</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3427,8 +3446,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 291
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3557,8 +3582,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 290
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3670,8 +3701,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"squawk\": \"wpwlvq\",
     \"lat\": -90,
     \"lon\": -179,
-    \"altitude\": 57,
-    \"speed\": 86,
+    \"altitude\": 10,
+    \"speed\": 20,
     \"track\": 1,
     \"seen\": 4326.41688,
     \"seen_pos\": 4326.41688,
@@ -3697,8 +3728,8 @@ let body = {
     "squawk": "wpwlvq",
     "lat": -90,
     "lon": -179,
-    "altitude": 57,
-    "speed": 86,
+    "altitude": 10,
+    "speed": 20,
     "track": 1,
     "seen": 4326.41688,
     "seen_pos": 4326.41688,
@@ -3788,6 +3819,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -3866,10 +3909,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="altitude"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="57"
+               value="10"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>57</code></p>
+<p>Must be at least 0. Must not be greater than 60000. Example: <code>10</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>speed</code></b>&nbsp;&nbsp;
@@ -3878,14 +3921,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="speed"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="86"
+               value="20"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>86</code></p>
+<p>Must be at least 0. Must not be greater than 1000. Example: <code>20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>track</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
@@ -3958,8 +4001,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
             \"squawk\": \"uwpwlv\",
             \"lat\": -90,
             \"lon\": -180,
-            \"altitude\": 4,
-            \"speed\": 57,
+            \"altitude\": 5,
+            \"speed\": 10,
             \"track\": 0,
             \"seen\": 4326.41688,
             \"seen_pos\": 4326.41688,
@@ -3989,8 +4032,8 @@ let body = {
             "squawk": "uwpwlv",
             "lat": -90,
             "lon": -180,
-            "altitude": 4,
-            "speed": 57,
+            "altitude": 5,
+            "speed": 10,
             "track": 0,
             "seen": 4326.41688,
             "seen_pos": 4326.41688,
@@ -4082,6 +4125,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -4170,10 +4225,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.altitude"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="4"
+               value="5"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>4</code></p>
+<p>Must be at least 0. Must not be greater than 60000. Example: <code>5</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>speed</code></b>&nbsp;&nbsp;
@@ -4182,14 +4237,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.speed"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="57"
+               value="10"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>57</code></p>
+<p>Must be at least 0. Must not be greater than 1000. Example: <code>10</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>track</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
@@ -4287,11 +4342,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -4414,13 +4473,19 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 30
+x-ratelimit-remaining: 29
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;API V2 - Endpoint no encontrado&quot;
+    &quot;message&quot;: &quot;API V2 - Endpoint not found&quot;
 }</code>
  </pre>
     </span>
@@ -4803,7 +4868,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2026-09-01T15:17:49\",
+    \"read_at\": \"2026-09-05T10:24:11\",
     \"temperature\": 4326.41688,
     \"battery_voltage\": 77,
     \"battery_percentage\": 15,
@@ -4816,7 +4881,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
             \"energy_wh\": 4326.41688,
             \"temperature\": 4326.41688,
             \"fan\": 77,
-            \"read_at\": \"2026-09-01T15:17:49\",
+            \"read_at\": \"2026-09-05T10:24:11\",
             \"battery_voltage\": 8,
             \"battery_percentage\": 8
         }
@@ -4838,7 +4903,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2026-09-01T15:17:49",
+    "read_at": "2026-09-05T10:24:11",
     "temperature": 4326.41688,
     "battery_voltage": 77,
     "battery_percentage": 15,
@@ -4851,7 +4916,7 @@ let body = {
             "energy_wh": 4326.41688,
             "temperature": 4326.41688,
             "fan": 77,
-            "read_at": "2026-09-01T15:17:49",
+            "read_at": "2026-09-05T10:24:11",
             "battery_voltage": 8,
             "battery_percentage": 8
         }
@@ -4941,6 +5006,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-hardware-energy-readings"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
@@ -4971,10 +5048,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-energy-readings"
-               value="2026-09-01T15:17:49"
+               value="2026-09-05T10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-01T15:17:49</code></p>
+<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
@@ -5113,10 +5190,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="readings.0.read_at"                data-endpoint="POSTapi-v2-hardware-energy-readings"
-               value="2026-09-01T15:17:49"
+               value="2026-09-05T10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-01T15:17:49</code></p>
+<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
@@ -5164,8 +5241,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
-    \"date\": \"2026-09-01T15:17:49\",
-    \"read_at\": \"2026-09-01T15:17:49\",
+    \"date\": \"2026-09-05T10:24:11\",
+    \"read_at\": \"2026-09-05T10:24:11\",
     \"hardware\": \"n\",
     \"version\": \"g\",
     \"serial_number\": \"z\",
@@ -5224,8 +5301,8 @@ const headers = {
 
 let body = {
     "hardware_device_id": 16,
-    "date": "2026-09-01T15:17:49",
-    "read_at": "2026-09-01T15:17:49",
+    "date": "2026-09-05T10:24:11",
+    "read_at": "2026-09-05T10:24:11",
     "hardware": "n",
     "version": "g",
     "serial_number": "z",
@@ -5353,6 +5430,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-hardware-solar-readings"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
@@ -5371,10 +5460,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v2-hardware-solar-readings"
-               value="2026-09-01T15:17:49"
+               value="2026-09-05T10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-01T15:17:49</code></p>
+<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
@@ -5383,10 +5472,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-solar-readings"
-               value="2026-09-01T15:17:49"
+               value="2026-09-05T10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-01T15:17:49</code></p>
+<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware</code></b>&nbsp;&nbsp;
@@ -5954,11 +6043,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -6085,11 +6178,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -6185,8 +6282,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-01 15:17:49\",
-    \"end_at\": \"2026-09-01 15:17:49\",
+    \"start_at\": \"2026-09-05 10:24:11\",
+    \"end_at\": \"2026-09-05 10:24:11\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6210,8 +6307,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-01 15:17:49",
-    "end_at": "2026-09-01 15:17:49",
+    "start_at": "2026-09-05 10:24:11",
+    "end_at": "2026-09-05 10:24:11",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6303,6 +6400,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
@@ -6333,10 +6442,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-01 15:17:49"
+               value="2026-09-05 10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 15:17:49</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6345,10 +6454,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-01 15:17:49"
+               value="2026-09-05 10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 15:17:49</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6443,8 +6552,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-01 15:17:49\",
-    \"end_at\": \"2026-09-01 15:17:49\",
+    \"start_at\": \"2026-09-05 10:24:11\",
+    \"end_at\": \"2026-09-05 10:24:11\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -6469,8 +6578,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-01 15:17:49",
-    "end_at": "2026-09-01 15:17:49",
+    "start_at": "2026-09-05 10:24:11",
+    "end_at": "2026-09-05 10:24:11",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -6563,6 +6672,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
@@ -6593,10 +6714,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-01 15:17:49"
+               value="2026-09-05 10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 15:17:49</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6605,10 +6726,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-01 15:17:49"
+               value="2026-09-05 10:24:11"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-01 15:17:49</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6673,7 +6794,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>clicks_average</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
+ &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="clicks_average"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
@@ -6744,11 +6865,15 @@ fetch(url, {
 content-type: application/json
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;No autenticado&quot;
+    &quot;message&quot;: &quot;Unauthenticated&quot;
 }</code>
  </pre>
     </span>
@@ -6871,13 +6996,19 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 30
+x-ratelimit-remaining: 28
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;API V2 - Endpoint no encontrado&quot;
+    &quot;message&quot;: &quot;API V2 - Endpoint not found&quot;
 }</code>
  </pre>
     </span>
@@ -6986,15 +7117,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"plant_id\": 4326.41688,
     \"hardware_device_id\": 4326.41688,
-    \"uv\": 4326.41688,
+    \"uv\": 16,
     \"pressure\": 4326.41688,
     \"temperature\": 4326.41688,
     \"humidity\": 4326.41688,
-    \"soil_humidity\": 4326.41688,
-    \"soil_humidity_raw\": 4326.41688,
-    \"full_water_tank\": true,
-    \"waterpump_enabled\": true,
-    \"vaporizer_enabled\": true
+    \"soil_humidity\": 17,
+    \"soil_humidity_raw\": 16,
+    \"full_water_tank\": false,
+    \"waterpump_enabled\": false,
+    \"vaporizer_enabled\": false
 }"
 </code></pre></div>
 
@@ -7012,15 +7143,15 @@ const headers = {
 let body = {
     "plant_id": 4326.41688,
     "hardware_device_id": 4326.41688,
-    "uv": 4326.41688,
+    "uv": 16,
     "pressure": 4326.41688,
     "temperature": 4326.41688,
     "humidity": 4326.41688,
-    "soil_humidity": 4326.41688,
-    "soil_humidity_raw": 4326.41688,
-    "full_water_tank": true,
-    "waterpump_enabled": true,
-    "vaporizer_enabled": true
+    "soil_humidity": 17,
+    "soil_humidity_raw": 16,
+    "full_water_tank": false,
+    "waterpump_enabled": false,
+    "vaporizer_enabled": false
 };
 
 fetch(url, {
@@ -7119,6 +7250,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>plant_id</code></b>&nbsp;&nbsp;
 <small>number</small>&nbsp;
  &nbsp;
@@ -7144,15 +7287,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>uv</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="uv"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="16"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>pressure</code></b>&nbsp;&nbsp;
@@ -7192,27 +7335,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>soil_humidity</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="soil_humidity"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="17"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be at least 0. Must not be greater than 100. Example: <code>17</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>soil_humidity_raw</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="soil_humidity_raw"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="16"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>full_water_tank</code></b>&nbsp;&nbsp;
@@ -7234,7 +7377,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -7256,7 +7399,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>vaporizer_enabled</code></b>&nbsp;&nbsp;
@@ -7278,7 +7421,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -7301,7 +7444,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"wind\"
+        \"pressure\"
     ],
     \"location_type\": \"indoor\"
 }"
@@ -7320,7 +7463,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "wind"
+        "pressure"
     ],
     "location_type": "indoor"
 };
@@ -7343,60 +7486,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 287
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: 2,
-            &quot;name&quot;: &quot;Estaci&oacute;n Azotea (Azotea)&quot;,
-            &quot;zone&quot;: &quot;Azotea&quot;,
-            &quot;location_type&quot;: &quot;outdoor&quot;,
-            &quot;location_label&quot;: &quot;Exterior&quot;,
-            &quot;instant&quot;: {
-                &quot;day_name&quot;: &quot;martes&quot;,
-                &quot;date_human_format&quot;: &quot;1 de septiembre de 2026&quot;,
-                &quot;time&quot;: &quot;15:17&quot;,
-                &quot;day_status&quot;: &quot;D&iacute;a&quot;
-            },
-            &quot;temperature&quot;: 36.95,
-            &quot;humidity&quot;: 93.22,
-            &quot;pressure&quot;: 1039.28,
-            &quot;wind&quot;: {
-                &quot;average&quot;: 13.1,
-                &quot;min&quot;: 6.55,
-                &quot;max&quot;: 24.57,
-                &quot;direction&quot;: &quot;NW&quot;,
-                &quot;direction_grades&quot;: 304
-            },
-            &quot;light&quot;: {
-                &quot;lux&quot;: 209.34,
-                &quot;uv_index&quot;: 10.04,
-                &quot;uva&quot;: 486.96,
-                &quot;uvb&quot;: 287.4
-            },
-            &quot;air_quality&quot;: {
-                &quot;quality&quot;: 56.41,
-                &quot;eco2&quot;: 1111,
-                &quot;tvoc&quot;: 322
-            },
-            &quot;rain&quot;: {
-                &quot;value&quot;: 2.5,
-                &quot;intensity&quot;: 14.11
-            },
-            &quot;lightning&quot;: {
-                &quot;last_at&quot;: &quot;2026-08-30T15:44:10.000000Z&quot;,
-                &quot;window_minutes&quot;: 60,
-                &quot;count_in_window&quot;: 0,
-                &quot;distance&quot;: 15,
-                &quot;energy&quot;: 593
-            }
-        }
-    ]
+    &quot;data&quot;: []
 }</code>
  </pre>
     </span>
@@ -7522,7 +7625,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"humidity\"
+        \"wind\"
     ]
 }"
 </code></pre></div>
@@ -7540,7 +7643,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "humidity"
+        "wind"
     ]
 };
 
@@ -7562,8 +7665,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 286
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7724,13 +7833,19 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 30
+x-ratelimit-remaining: 27
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;API V2 - Endpoint no encontrado&quot;
+    &quot;message&quot;: &quot;API V2 - Endpoint not found&quot;
 }</code>
  </pre>
     </span>
@@ -7972,6 +8087,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-weather-stations--station--readings"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
@@ -8161,6 +8288,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must match an existing stored value. Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-weather-stations--station---sensor-"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>readings</code></b>&nbsp;&nbsp;
 <small>object[]</small>&nbsp;
  &nbsp;
@@ -8176,27 +8315,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-GETapi-v2-curricula">Listado público. Sólo los marcados como públicos (B3).</h2>
+                    <h2 id="endpoints-GETapi-v2-curriculum">Listado público. Sólo los marcados como públicos (B3).</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-v2-curricula">
+<span id="example-requests-GETapi-v2-curriculum">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/curricula" \
+    --get "https://api.raupulus.dev/api/v2/curriculum" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/curricula"
+    "https://api.raupulus.dev/api/v2/curriculum"
 );
 
 const headers = {
@@ -8212,7 +8351,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-v2-curricula">
+<span id="example-responses-GETapi-v2-curriculum">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -8222,8 +8361,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 284
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8241,43 +8386,43 @@ vary: Accept-Language, Origin
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-v2-curricula" hidden>
+<span id="execution-results-GETapi-v2-curriculum" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-v2-curricula"></span>:
+                id="execution-response-status-GETapi-v2-curriculum"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v2-curricula"
+    <pre class="json"><code id="execution-response-content-GETapi-v2-curriculum"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-v2-curricula" hidden>
+<span id="execution-error-GETapi-v2-curriculum" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v2-curricula">
+    <pre><code id="execution-error-message-GETapi-v2-curriculum">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-v2-curricula" data-method="GET"
-      data-path="api/v2/curricula"
+<form id="form-GETapi-v2-curriculum" data-method="GET"
+      data-path="api/v2/curriculum"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curricula', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curriculum', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v2-curricula"
-                    onclick="tryItOut('GETapi-v2-curricula');">Try it out ⚡
+                    id="btn-tryout-GETapi-v2-curriculum"
+                    onclick="tryItOut('GETapi-v2-curriculum');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v2-curricula"
-                    onclick="cancelTryOut('GETapi-v2-curricula');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-v2-curriculum"
+                    onclick="cancelTryOut('GETapi-v2-curriculum');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v2-curricula"
+                    id="btn-executetryout-GETapi-v2-curriculum"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -8285,7 +8430,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/v2/curricula</code></b>
+            <b><code>api/v2/curriculum</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -8294,7 +8439,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v2-curricula"
+                              name="Content-Type"                data-endpoint="GETapi-v2-curriculum"
                value="application/json"
                data-component="header">
     <br>
@@ -8306,7 +8451,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v2-curricula"
+                              name="Accept"                data-endpoint="GETapi-v2-curriculum"
                value="application/json"
                data-component="header">
     <br>
@@ -8314,7 +8459,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="endpoints-GETapi-v2-curricula-shared--shareToken-">Un CV por su enlace privado.</h2>
+                    <h2 id="endpoints-GETapi-v2-curriculum-shared--shareToken-">Un CV por su enlace privado.</h2>
 
 <p>
 </p>
@@ -8322,20 +8467,20 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>La respuesta lleva <code>X-Robots-Tag: noindex</code> para que no acabe en Google si
 alguien pega el enlace en cualquier sitio.</p>
 
-<span id="example-requests-GETapi-v2-curricula-shared--shareToken-">
+<span id="example-requests-GETapi-v2-curriculum-shared--shareToken-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/curricula/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D" \
+    --get "https://api.raupulus.dev/api/v2/curriculum/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/curricula/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D"
+    "https://api.raupulus.dev/api/v2/curriculum/shared/922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D"
 );
 
 const headers = {
@@ -8351,7 +8496,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-v2-curricula-shared--shareToken-">
+<span id="example-responses-GETapi-v2-curriculum-shared--shareToken-">
             <blockquote>
             <p>Example response (404):</p>
         </blockquote>
@@ -8361,8 +8506,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 283
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8371,43 +8522,43 @@ vary: Accept-Language, Origin
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-v2-curricula-shared--shareToken-" hidden>
+<span id="execution-results-GETapi-v2-curriculum-shared--shareToken-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-v2-curricula-shared--shareToken-"></span>:
+                id="execution-response-status-GETapi-v2-curriculum-shared--shareToken-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v2-curricula-shared--shareToken-"
+    <pre class="json"><code id="execution-response-content-GETapi-v2-curriculum-shared--shareToken-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-v2-curricula-shared--shareToken-" hidden>
+<span id="execution-error-GETapi-v2-curriculum-shared--shareToken-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v2-curricula-shared--shareToken-">
+    <pre><code id="execution-error-message-GETapi-v2-curriculum-shared--shareToken-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-v2-curricula-shared--shareToken-" data-method="GET"
-      data-path="api/v2/curricula/shared/{shareToken}"
+<form id="form-GETapi-v2-curriculum-shared--shareToken-" data-method="GET"
+      data-path="api/v2/curriculum/shared/{shareToken}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curricula-shared--shareToken-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curriculum-shared--shareToken-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v2-curricula-shared--shareToken-"
-                    onclick="tryItOut('GETapi-v2-curricula-shared--shareToken-');">Try it out ⚡
+                    id="btn-tryout-GETapi-v2-curriculum-shared--shareToken-"
+                    onclick="tryItOut('GETapi-v2-curriculum-shared--shareToken-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v2-curricula-shared--shareToken-"
-                    onclick="cancelTryOut('GETapi-v2-curricula-shared--shareToken-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-v2-curriculum-shared--shareToken-"
+                    onclick="cancelTryOut('GETapi-v2-curriculum-shared--shareToken-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v2-curricula-shared--shareToken-"
+                    id="btn-executetryout-GETapi-v2-curriculum-shared--shareToken-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -8415,7 +8566,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/v2/curricula/shared/{shareToken}</code></b>
+            <b><code>api/v2/curriculum/shared/{shareToken}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -8424,7 +8575,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v2-curricula-shared--shareToken-"
+                              name="Content-Type"                data-endpoint="GETapi-v2-curriculum-shared--shareToken-"
                value="application/json"
                data-component="header">
     <br>
@@ -8436,7 +8587,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v2-curricula-shared--shareToken-"
+                              name="Accept"                data-endpoint="GETapi-v2-curriculum-shared--shareToken-"
                value="application/json"
                data-component="header">
     <br>
@@ -8449,7 +8600,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="shareToken"                data-endpoint="GETapi-v2-curricula-shared--shareToken-"
+                              name="shareToken"                data-endpoint="GETapi-v2-curriculum-shared--shareToken-"
                value="922815DfBeA128EaEAaaA185508FE078BecEfbbe9F0f6b8f711a7Ab5a0b6c57D"
                data-component="url">
     <br>
@@ -8457,27 +8608,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v2-curricula--slug-">Un CV completo por su slug. Sólo si es público.</h2>
+                    <h2 id="endpoints-GETapi-v2-curriculum--slug-">Un CV completo por su slug. Sólo si es público.</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-v2-curricula--slug-">
+<span id="example-requests-GETapi-v2-curriculum--slug-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/curricula/architecto" \
+    --get "https://api.raupulus.dev/api/v2/curriculum/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/curricula/architecto"
+    "https://api.raupulus.dev/api/v2/curriculum/architecto"
 );
 
 const headers = {
@@ -8493,7 +8644,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-v2-curricula--slug-">
+<span id="example-responses-GETapi-v2-curriculum--slug-">
             <blockquote>
             <p>Example response (404):</p>
         </blockquote>
@@ -8503,8 +8654,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 282
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8513,43 +8670,43 @@ vary: Accept-Language, Origin
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-v2-curricula--slug-" hidden>
+<span id="execution-results-GETapi-v2-curriculum--slug-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-v2-curricula--slug-"></span>:
+                id="execution-response-status-GETapi-v2-curriculum--slug-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v2-curricula--slug-"
+    <pre class="json"><code id="execution-response-content-GETapi-v2-curriculum--slug-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-v2-curricula--slug-" hidden>
+<span id="execution-error-GETapi-v2-curriculum--slug-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v2-curricula--slug-">
+    <pre><code id="execution-error-message-GETapi-v2-curriculum--slug-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-v2-curricula--slug-" data-method="GET"
-      data-path="api/v2/curricula/{slug}"
+<form id="form-GETapi-v2-curriculum--slug-" data-method="GET"
+      data-path="api/v2/curriculum/{slug}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curricula--slug-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curriculum--slug-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v2-curricula--slug-"
-                    onclick="tryItOut('GETapi-v2-curricula--slug-');">Try it out ⚡
+                    id="btn-tryout-GETapi-v2-curriculum--slug-"
+                    onclick="tryItOut('GETapi-v2-curriculum--slug-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v2-curricula--slug-"
-                    onclick="cancelTryOut('GETapi-v2-curricula--slug-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-v2-curriculum--slug-"
+                    onclick="cancelTryOut('GETapi-v2-curriculum--slug-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v2-curricula--slug-"
+                    id="btn-executetryout-GETapi-v2-curriculum--slug-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -8557,7 +8714,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/v2/curricula/{slug}</code></b>
+            <b><code>api/v2/curriculum/{slug}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -8566,7 +8723,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v2-curricula--slug-"
+                              name="Content-Type"                data-endpoint="GETapi-v2-curriculum--slug-"
                value="application/json"
                data-component="header">
     <br>
@@ -8578,7 +8735,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v2-curricula--slug-"
+                              name="Accept"                data-endpoint="GETapi-v2-curriculum--slug-"
                value="application/json"
                data-component="header">
     <br>
@@ -8591,7 +8748,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="slug"                data-endpoint="GETapi-v2-curricula--slug-"
+                              name="slug"                data-endpoint="GETapi-v2-curriculum--slug-"
                value="architecto"
                data-component="url">
     <br>
@@ -8599,27 +8756,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v2-curricula--slug---section-">Una sección concreta de un CV.</h2>
+                    <h2 id="endpoints-GETapi-v2-curriculum--slug---section-">Una sección concreta de un CV.</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-v2-curricula--slug---section-">
+<span id="example-requests-GETapi-v2-curriculum--slug---section-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/curricula/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs" \
+    --get "https://api.raupulus.dev/api/v2/curriculum/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/curricula/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs"
+    "https://api.raupulus.dev/api/v2/curriculum/architecto/experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs"
 );
 
 const headers = {
@@ -8635,7 +8792,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-v2-curricula--slug---section-">
+<span id="example-responses-GETapi-v2-curriculum--slug---section-">
             <blockquote>
             <p>Example response (404):</p>
         </blockquote>
@@ -8645,53 +8802,59 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 30
+x-ratelimit-remaining: 26
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;API V2 - Endpoint no encontrado&quot;
+    &quot;message&quot;: &quot;API V2 - Endpoint not found&quot;
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-v2-curricula--slug---section-" hidden>
+<span id="execution-results-GETapi-v2-curriculum--slug---section-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-v2-curricula--slug---section-"></span>:
+                id="execution-response-status-GETapi-v2-curriculum--slug---section-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v2-curricula--slug---section-"
+    <pre class="json"><code id="execution-response-content-GETapi-v2-curriculum--slug---section-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-v2-curricula--slug---section-" hidden>
+<span id="execution-error-GETapi-v2-curriculum--slug---section-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v2-curricula--slug---section-">
+    <pre><code id="execution-error-message-GETapi-v2-curriculum--slug---section-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-v2-curricula--slug---section-" data-method="GET"
-      data-path="api/v2/curricula/{slug}/{section}"
+<form id="form-GETapi-v2-curriculum--slug---section-" data-method="GET"
+      data-path="api/v2/curriculum/{slug}/{section}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curricula--slug---section-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-curriculum--slug---section-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v2-curricula--slug---section-"
-                    onclick="tryItOut('GETapi-v2-curricula--slug---section-');">Try it out ⚡
+                    id="btn-tryout-GETapi-v2-curriculum--slug---section-"
+                    onclick="tryItOut('GETapi-v2-curriculum--slug---section-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v2-curricula--slug---section-"
-                    onclick="cancelTryOut('GETapi-v2-curricula--slug---section-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-v2-curriculum--slug---section-"
+                    onclick="cancelTryOut('GETapi-v2-curriculum--slug---section-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v2-curricula--slug---section-"
+                    id="btn-executetryout-GETapi-v2-curriculum--slug---section-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -8699,7 +8862,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/v2/curricula/{slug}/{section}</code></b>
+            <b><code>api/v2/curriculum/{slug}/{section}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -8708,7 +8871,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v2-curricula--slug---section-"
+                              name="Content-Type"                data-endpoint="GETapi-v2-curriculum--slug---section-"
                value="application/json"
                data-component="header">
     <br>
@@ -8720,7 +8883,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v2-curricula--slug---section-"
+                              name="Accept"                data-endpoint="GETapi-v2-curriculum--slug---section-"
                value="application/json"
                data-component="header">
     <br>
@@ -8733,7 +8896,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="slug"                data-endpoint="GETapi-v2-curricula--slug---section-"
+                              name="slug"                data-endpoint="GETapi-v2-curriculum--slug---section-"
                value="architecto"
                data-component="url">
     <br>
@@ -8745,7 +8908,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="section"                data-endpoint="GETapi-v2-curricula--slug---section-"
+                              name="section"                data-endpoint="GETapi-v2-curriculum--slug---section-"
                value="experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs"
                data-component="url">
     <br>
@@ -8799,13 +8962,19 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
+x-ratelimit-limit: 30
+x-ratelimit-remaining: 25
 content-language: en
 vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;API V2 - Endpoint no encontrado&quot;
+    &quot;message&quot;: &quot;API V2 - Endpoint not found&quot;
 }</code>
  </pre>
     </span>

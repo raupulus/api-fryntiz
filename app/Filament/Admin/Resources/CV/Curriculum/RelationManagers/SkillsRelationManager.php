@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula\RelationManagers;
+namespace App\Filament\Admin\Resources\CV\Curriculum\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -14,17 +14,16 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class HobbiesRelationManager extends RelationManager
+class SkillsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'hobbies';
+    protected static string $relationship = 'skills';
 
-    protected static ?string $title = 'Hobbies';
+    protected static ?string $title = 'Habilidades';
 
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')->maxLength(511)->required()->label('Título'),
-            TextInput::make('url')->url()->maxLength(511)->label('URL'),
+            TextInput::make('name')->maxLength(255)->required()->label('Nombre'),
             Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
         ]);
     }
@@ -33,8 +32,7 @@ class HobbiesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('title')->label('Título'),
-                TextColumn::make('url')->limit(40)->label('URL'),
+                TextColumn::make('name')->label('Nombre'),
             ])
             // El orden de un CV es información, no un detalle: se arrastra a
             // mano y se guarda en `position` (B4).

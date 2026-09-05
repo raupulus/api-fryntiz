@@ -17,20 +17,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('curricula')->group(function () {
+Route::prefix('curriculum')->group(function () {
     // Listado: sólo los públicos (B3).
-    Route::get('/', [CurriculumController::class, 'index'])->name('api.v2.curricula.index');
+    Route::get('/', [CurriculumController::class, 'index'])->name('api.v2.curriculum.index');
 
     // Enlace privado. Va antes de /{slug} para que no se lo coma el parámetro.
     Route::get('/shared/{shareToken}', [CurriculumController::class, 'shared'])
         ->where('shareToken', '[A-Fa-f0-9]{64}')
-        ->name('api.v2.curricula.shared');
+        ->name('api.v2.curriculum.shared');
 
-    Route::get('/{slug}', [CurriculumController::class, 'show'])->name('api.v2.curricula.show');
+    Route::get('/{slug}', [CurriculumController::class, 'show'])->name('api.v2.curriculum.show');
 
     // Una sección suelta: experiences, educations, skills, projects,
     // repositories, services, collaborations, hobbies, jobs.
     Route::get('/{slug}/{section}', [CurriculumController::class, 'section'])
         ->where('section', 'experiences|educations|skills|projects|repositories|services|collaborations|hobbies|jobs')
-        ->name('api.v2.curricula.section');
+        ->name('api.v2.curriculum.section');
 });

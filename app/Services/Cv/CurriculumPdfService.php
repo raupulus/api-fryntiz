@@ -24,7 +24,7 @@ class CurriculumPdfService
 {
     private const DISK = 'public';
 
-    private const FOLDER = 'curricula/pdf';
+    private const FOLDER = 'curriculum/pdf';
 
     /**
      * Genera el PDF y lo deja guardado. Devuelve la ruta relativa en el disco.

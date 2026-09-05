@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula\RelationManagers;
+namespace App\Filament\Admin\Resources\CV\Curriculum\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -14,18 +14,18 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CollaborationsRelationManager extends RelationManager
+class ServicesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'collaborations';
+    protected static string $relationship = 'services';
 
-    protected static ?string $title = 'Colaboraciones';
+    protected static ?string $title = 'Servicios';
 
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')->maxLength(255)->label('Title'),
-            Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripcion'),
+            TextInput::make('name')->maxLength(511)->required()->label('Nombre'),
             TextInput::make('url')->url()->maxLength(511)->label('URL'),
+            Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
         ]);
     }
 
@@ -33,8 +33,8 @@ class CollaborationsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('title')->label('Title'),
-                TextColumn::make('url')->label('Url'),
+                TextColumn::make('name')->label('Nombre'),
+                TextColumn::make('url')->limit(40)->label('URL'),
             ])
             // El orden de un CV es información, no un detalle: se arrastra a
             // mano y se guarda en `position` (B4).

@@ -62,14 +62,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -97,15 +97,19 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'smartplant:write'
+                    - 'weatherstation:write'
                   items:
                     type: string
                     enum:
                       - 'hardware:read'
                       - 'hardware:write'
+                      - 'weatherstation:read'
                       - 'weatherstation:write'
+                      - 'keycounter:read'
                       - 'keycounter:write'
+                      - 'smartplant:read'
                       - 'smartplant:write'
+                      - 'airflight:read'
                       - 'airflight:write'
                 name:
                   type: string
@@ -115,7 +119,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-09-25'
+                  example: '2052-09-28'
                   nullable: true
               required:
                 - device_id
@@ -164,14 +168,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -282,14 +286,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -394,50 +398,14 @@ paths:
                 example:
                   success: true
                   message: 'Operación exitosa'
-                  data:
-                    -
-                      id: 1
-                      name: 'Borer, Kirlin and Collins'
-                      title: 'Borer, Kirlin and Collins'
-                      slug: borer-kirlin-and-collins-Kilhs
-                      domain: lind.com
-                      description: 'Repellendus voluptas in enim et.'
-                      image: null
-                      created_at: '2026-08-30T15:45:09.000000Z'
-                    -
-                      id: 4
-                      name: 'GreenEnergy Smart Monitor'
-                      title: 'GreenEnergy Smart Monitor'
-                      slug: greenenergy-smart-monitor
-                      domain: energy.raupulus.dev
-                      description: 'Monitorización avanzada de generación fotovoltaica, baterías y consumos industriales.'
-                      image: null
-                      created_at: '2026-08-30T15:45:11.000000Z'
-                    -
-                      id: 3
-                      name: 'Portal de Telemetría IoT'
-                      title: 'Portal de Telemetría IoT'
-                      slug: portal-de-telemetria-iot
-                      domain: iot.raupulus.dev
-                      description: 'Plataforma cloud para supervisión en tiempo real de estaciones meteorológicas y energía solar.'
-                      image: null
-                      created_at: '2026-08-30T15:45:11.000000Z'
-                    -
-                      id: 2
-                      name: 'Raupulus Tech & Consulting'
-                      title: 'Raupulus Tech & Consulting'
-                      slug: raupulus-tech-consulting
-                      domain: tech.raupulus.dev
-                      description: 'Soluciones integrales de hardware IoT, telemetría y software distribuido para empresas.'
-                      image: null
-                      created_at: '2026-08-30T15:45:11.000000Z'
+                  data: []
                   meta:
-                    total: 4
+                    total: 0
                     per_page: 25
                     current_page: 1
                     last_page: 1
-                    from: 1
-                    to: 4
+                    from: null
+                    to: null
                 properties:
                   success:
                     type: boolean
@@ -447,77 +415,13 @@ paths:
                     example: 'Operación exitosa'
                   data:
                     type: array
-                    example:
-                      -
-                        id: 1
-                        name: 'Borer, Kirlin and Collins'
-                        title: 'Borer, Kirlin and Collins'
-                        slug: borer-kirlin-and-collins-Kilhs
-                        domain: lind.com
-                        description: 'Repellendus voluptas in enim et.'
-                        image: null
-                        created_at: '2026-08-30T15:45:09.000000Z'
-                      -
-                        id: 4
-                        name: 'GreenEnergy Smart Monitor'
-                        title: 'GreenEnergy Smart Monitor'
-                        slug: greenenergy-smart-monitor
-                        domain: energy.raupulus.dev
-                        description: 'Monitorización avanzada de generación fotovoltaica, baterías y consumos industriales.'
-                        image: null
-                        created_at: '2026-08-30T15:45:11.000000Z'
-                      -
-                        id: 3
-                        name: 'Portal de Telemetría IoT'
-                        title: 'Portal de Telemetría IoT'
-                        slug: portal-de-telemetria-iot
-                        domain: iot.raupulus.dev
-                        description: 'Plataforma cloud para supervisión en tiempo real de estaciones meteorológicas y energía solar.'
-                        image: null
-                        created_at: '2026-08-30T15:45:11.000000Z'
-                      -
-                        id: 2
-                        name: 'Raupulus Tech & Consulting'
-                        title: 'Raupulus Tech & Consulting'
-                        slug: raupulus-tech-consulting
-                        domain: tech.raupulus.dev
-                        description: 'Soluciones integrales de hardware IoT, telemetría y software distribuido para empresas.'
-                        image: null
-                        created_at: '2026-08-30T15:45:11.000000Z'
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 1
-                        name:
-                          type: string
-                          example: 'Borer, Kirlin and Collins'
-                        title:
-                          type: string
-                          example: 'Borer, Kirlin and Collins'
-                        slug:
-                          type: string
-                          example: borer-kirlin-and-collins-Kilhs
-                        domain:
-                          type: string
-                          example: lind.com
-                        description:
-                          type: string
-                          example: 'Repellendus voluptas in enim et.'
-                        image:
-                          type: string
-                          example: null
-                          nullable: true
-                        created_at:
-                          type: string
-                          example: '2026-08-30T15:45:09.000000Z'
+                    example: []
                   meta:
                     type: object
                     properties:
                       total:
                         type: integer
-                        example: 4
+                        example: 0
                       per_page:
                         type: integer
                         example: 25
@@ -528,11 +432,13 @@ paths:
                         type: integer
                         example: 1
                       from:
-                        type: integer
-                        example: 1
+                        type: string
+                        example: null
+                        nullable: true
                       to:
-                        type: integer
-                        example: 4
+                        type: string
+                        example: null
+                        nullable: true
       tags:
         - Endpoints
       security: []
@@ -567,7 +473,7 @@ paths:
         in: path
         name: slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -602,7 +508,7 @@ paths:
         in: path
         name: platform_slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -637,7 +543,7 @@ paths:
         in: path
         name: platform_slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -672,7 +578,7 @@ paths:
         in: path
         name: platform_slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -715,7 +621,7 @@ paths:
         in: path
         name: platform_slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -758,7 +664,7 @@ paths:
         in: path
         name: platform_slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -809,7 +715,7 @@ paths:
         in: path
         name: platform_slug
         description: 'The slug of the platform.'
-        example: 1
+        example: 16
         required: true
         schema:
           type: integer
@@ -866,6 +772,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -897,16 +808,16 @@ paths:
                   nullable: true
                 altitude:
                   type: number
-                  description: 'Must be at least 0.'
-                  example: 57
+                  description: 'Must be at least 0. Must not be greater than 60000.'
+                  example: 10
                   nullable: true
                 speed:
                   type: number
-                  description: 'Must be at least 0.'
-                  example: 86
+                  description: 'Must be at least 0. Must not be greater than 1000.'
+                  example: 20
                   nullable: true
                 track:
-                  type: number
+                  type: integer
                   description: 'Must be between 0 and 360.'
                   example: 1
                   nullable: true
@@ -994,6 +905,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -1033,16 +949,16 @@ paths:
                         nullable: true
                       altitude:
                         type: number
-                        description: 'Must be at least 0.'
-                        example: 4
+                        description: 'Must be at least 0. Must not be greater than 60000.'
+                        example: 5
                         nullable: true
                       speed:
                         type: number
-                        description: 'Must be at least 0.'
-                        example: 57
+                        description: 'Must be at least 0. Must not be greater than 1000.'
+                        example: 10
                         nullable: true
                       track:
-                        type: number
+                        type: integer
                         description: 'Must be between 0 and 360.'
                         example: 0
                         nullable: true
@@ -1081,14 +997,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -1107,14 +1023,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'API V2 - Endpoint no encontrado'
+                  message: 'API V2 - Endpoint not found'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'API V2 - Endpoint no encontrado'
+                    example: 'API V2 - Endpoint not found'
       tags:
         - Endpoints
       security: []
@@ -1222,6 +1138,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -1234,7 +1155,7 @@ paths:
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-01T15:17:49'
+                  example: '2026-09-05T10:24:11'
                   nullable: true
                 temperature:
                   type: number
@@ -1296,7 +1217,7 @@ paths:
                       read_at:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2026-09-01T15:17:49'
+                        example: '2026-09-05T10:24:11'
                         nullable: true
                       battery_voltage:
                         type: number
@@ -1330,6 +1251,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -1337,11 +1263,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-01T15:17:49'
+                  example: '2026-09-05T10:24:11'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-01T15:17:49'
+                  example: '2026-09-05T10:24:11'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1572,14 +1498,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -1598,6 +1524,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -1609,11 +1540,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 15:17:49'
+                  example: '2026-09-05 10:24:11'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 15:17:49'
+                  example: '2026-09-05 10:24:11'
                 duration:
                   type: integer
                   description: ''
@@ -1665,14 +1596,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -1691,6 +1622,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -1702,11 +1638,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 15:17:49'
+                  example: '2026-09-05 10:24:11'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-01 15:17:49'
+                  example: '2026-09-05 10:24:11'
                 duration:
                   type: integer
                   description: ''
@@ -1731,7 +1667,6 @@ paths:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 8
-                  nullable: true
                 weekday:
                   type: integer
                   description: 'Must be at least 0. Must not be greater than 6.'
@@ -1746,6 +1681,7 @@ paths:
                 - clicks_right
                 - clicks_middle
                 - total_clicks
+                - clicks_average
                 - weekday
       security: []
   /api/v2/smartplant/plants:
@@ -1763,14 +1699,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'No autenticado'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'No autenticado'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -1789,14 +1725,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'API V2 - Endpoint no encontrado'
+                  message: 'API V2 - Endpoint not found'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'API V2 - Endpoint no encontrado'
+                    example: 'API V2 - Endpoint not found'
       tags:
         - Endpoints
       security: []
@@ -1815,6 +1751,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 plant_id:
                   type: number
                   description: 'Must match an existing stored value.'
@@ -1824,9 +1765,9 @@ paths:
                   description: 'Must match an existing stored value.'
                   example: 4326.41688
                 uv:
-                  type: number
+                  type: integer
                   description: ''
-                  example: 4326.41688
+                  example: 16
                   nullable: true
                 pressure:
                   type: number
@@ -1844,28 +1785,28 @@ paths:
                   example: 4326.41688
                   nullable: true
                 soil_humidity:
-                  type: number
-                  description: ''
-                  example: 4326.41688
+                  type: integer
+                  description: 'Must be at least 0. Must not be greater than 100.'
+                  example: 17
                 soil_humidity_raw:
-                  type: number
+                  type: integer
                   description: ''
-                  example: 4326.41688
+                  example: 16
                   nullable: true
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 waterpump_enabled:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 vaporizer_enabled:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
               required:
                 - plant_id
@@ -1897,45 +1838,7 @@ paths:
                 example:
                   success: true
                   message: 'Operación exitosa'
-                  data:
-                    -
-                      id: 2
-                      name: 'Estación Azotea (Azotea)'
-                      zone: Azotea
-                      location_type: outdoor
-                      location_label: Exterior
-                      instant:
-                        day_name: martes
-                        date_human_format: '1 de septiembre de 2026'
-                        time: '15:17'
-                        day_status: Día
-                      temperature: 36.95
-                      humidity: 93.22
-                      pressure: 1039.28
-                      wind:
-                        average: 13.1
-                        min: 6.55
-                        max: 24.57
-                        direction: NW
-                        direction_grades: 304
-                      light:
-                        lux: 209.34
-                        uv_index: 10.04
-                        uva: 486.96
-                        uvb: 287.4
-                      air_quality:
-                        quality: 56.41
-                        eco2: 1111
-                        tvoc: 322
-                      rain:
-                        value: 2.5
-                        intensity: 14.11
-                      lightning:
-                        last_at: '2026-08-30T15:44:10.000000Z'
-                        window_minutes: 60
-                        count_in_window: 0
-                        distance: 15
-                        energy: 593
+                  data: []
                 properties:
                   success:
                     type: boolean
@@ -1945,159 +1848,7 @@ paths:
                     example: 'Operación exitosa'
                   data:
                     type: array
-                    example:
-                      -
-                        id: 2
-                        name: 'Estación Azotea (Azotea)'
-                        zone: Azotea
-                        location_type: outdoor
-                        location_label: Exterior
-                        instant:
-                          day_name: martes
-                          date_human_format: '1 de septiembre de 2026'
-                          time: '15:17'
-                          day_status: Día
-                        temperature: 36.95
-                        humidity: 93.22
-                        pressure: 1039.28
-                        wind:
-                          average: 13.1
-                          min: 6.55
-                          max: 24.57
-                          direction: NW
-                          direction_grades: 304
-                        light:
-                          lux: 209.34
-                          uv_index: 10.04
-                          uva: 486.96
-                          uvb: 287.4
-                        air_quality:
-                          quality: 56.41
-                          eco2: 1111
-                          tvoc: 322
-                        rain:
-                          value: 2.5
-                          intensity: 14.11
-                        lightning:
-                          last_at: '2026-08-30T15:44:10.000000Z'
-                          window_minutes: 60
-                          count_in_window: 0
-                          distance: 15
-                          energy: 593
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 2
-                        name:
-                          type: string
-                          example: 'Estación Azotea (Azotea)'
-                        zone:
-                          type: string
-                          example: Azotea
-                        location_type:
-                          type: string
-                          example: outdoor
-                        location_label:
-                          type: string
-                          example: Exterior
-                        instant:
-                          type: object
-                          properties:
-                            day_name:
-                              type: string
-                              example: martes
-                            date_human_format:
-                              type: string
-                              example: '1 de septiembre de 2026'
-                            time:
-                              type: string
-                              example: '15:17'
-                            day_status:
-                              type: string
-                              example: Día
-                        temperature:
-                          type: number
-                          example: 36.95
-                        humidity:
-                          type: number
-                          example: 93.22
-                        pressure:
-                          type: number
-                          example: 1039.28
-                        wind:
-                          type: object
-                          properties:
-                            average:
-                              type: number
-                              example: 13.1
-                            min:
-                              type: number
-                              example: 6.55
-                            max:
-                              type: number
-                              example: 24.57
-                            direction:
-                              type: string
-                              example: NW
-                            direction_grades:
-                              type: integer
-                              example: 304
-                        light:
-                          type: object
-                          properties:
-                            lux:
-                              type: number
-                              example: 209.34
-                            uv_index:
-                              type: number
-                              example: 10.04
-                            uva:
-                              type: number
-                              example: 486.96
-                            uvb:
-                              type: number
-                              example: 287.4
-                        air_quality:
-                          type: object
-                          properties:
-                            quality:
-                              type: number
-                              example: 56.41
-                            eco2:
-                              type: integer
-                              example: 1111
-                            tvoc:
-                              type: integer
-                              example: 322
-                        rain:
-                          type: object
-                          properties:
-                            value:
-                              type: number
-                              example: 2.5
-                            intensity:
-                              type: number
-                              example: 14.11
-                        lightning:
-                          type: object
-                          properties:
-                            last_at:
-                              type: string
-                              example: '2026-08-30T15:44:10.000000Z'
-                            window_minutes:
-                              type: integer
-                              example: 60
-                            count_in_window:
-                              type: integer
-                              example: 0
-                            distance:
-                              type: integer
-                              example: 15
-                            energy:
-                              type: integer
-                              example: 593
+                    example: []
       tags:
         - Endpoints
       requestBody:
@@ -2111,7 +1862,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - wind
+                    - pressure
                   items:
                     type: string
                     enum:
@@ -2168,7 +1919,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - humidity
+                    - wind
                   items:
                     type: string
                     enum:
@@ -2205,14 +1956,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'API V2 - Endpoint no encontrado'
+                  message: 'API V2 - Endpoint not found'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'API V2 - Endpoint no encontrado'
+                    example: 'API V2 - Endpoint not found'
       tags:
         - Endpoints
       security: []
@@ -2235,6 +1986,11 @@ paths:
                   type: integer
                   description: 'Must match an existing stored value.'
                   example: 16
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 readings:
                   type: array
                   description: ''
@@ -2279,6 +2035,11 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_id:
                   type: integer
                   description: 'Must match an existing stored value.'
@@ -2303,7 +2064,7 @@ paths:
         required: true
         schema:
           type: string
-  /api/v2/curricula:
+  /api/v2/curriculum:
     get:
       summary: 'Listado público. Sólo los marcados como públicos (B3).'
       operationId: listadoPblicoSloLosMarcadosComoPblicosB3
@@ -2363,7 +2124,7 @@ paths:
       tags:
         - Endpoints
       security: []
-  '/api/v2/curricula/shared/{shareToken}':
+  '/api/v2/curriculum/shared/{shareToken}':
     get:
       summary: 'Un CV por su enlace privado.'
       operationId: unCVPorSuEnlacePrivado
@@ -2398,7 +2159,7 @@ paths:
         required: true
         schema:
           type: string
-  '/api/v2/curricula/{slug}':
+  '/api/v2/curriculum/{slug}':
     get:
       summary: 'Un CV completo por su slug. Sólo si es público.'
       operationId: unCVCompletoPorSuSlugSloSiEsPblico
@@ -2433,7 +2194,7 @@ paths:
         required: true
         schema:
           type: string
-  '/api/v2/curricula/{slug}/{section}':
+  '/api/v2/curriculum/{slug}/{section}':
     get:
       summary: 'Una sección concreta de un CV.'
       operationId: unaSeccinConcretaDeUnCV
@@ -2448,14 +2209,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'API V2 - Endpoint no encontrado'
+                  message: 'API V2 - Endpoint not found'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'API V2 - Endpoint no encontrado'
+                    example: 'API V2 - Endpoint not found'
       tags:
         - Endpoints
       security: []
@@ -2491,14 +2252,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'API V2 - Endpoint no encontrado'
+                  message: 'API V2 - Endpoint not found'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'API V2 - Endpoint no encontrado'
+                    example: 'API V2 - Endpoint not found'
       tags:
         - Endpoints
       security: []

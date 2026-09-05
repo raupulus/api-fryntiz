@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula\Pages;
+namespace App\Filament\Admin\Resources\CV\Curriculum\Pages;
 
-use App\Filament\Admin\Resources\CV\Curricula\CurriculumResource;
+use App\Filament\Admin\Resources\CV\Curriculum\CurriculumResource;
 use App\Filament\Concerns\HasImageFileUpload;
 use App\Models\CV\Curriculum;
 use App\Services\Cv\CurriculumPdfService;
@@ -88,6 +88,6 @@ class EditCurriculum extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        return $this->resolveImageUpload($data, 'image_id', 'curricula');
+        return $this->resolveImageUpload($data, 'image_id', 'curriculum');
     }
 }

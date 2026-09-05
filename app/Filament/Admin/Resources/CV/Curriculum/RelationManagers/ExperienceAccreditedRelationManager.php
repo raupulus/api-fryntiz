@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula\RelationManagers;
+namespace App\Filament\Admin\Resources\CV\Curriculum\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -15,11 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class ExperienceNoAccreditedRelationManager extends RelationManager
+class ExperienceAccreditedRelationManager extends RelationManager
 {
-    protected static string $relationship = 'experienceNoAccredited';
+    protected static string $relationship = 'experienceAccredited';
 
-    protected static ?string $title = 'Experiencia no acreditada';
+    protected static ?string $title = 'Experiencia acreditada';
 
     public function form(Schema $schema): Schema
     {

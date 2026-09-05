@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula;
+namespace App\Filament\Admin\Resources\CV\Curriculum;
 
 use App\Enums\CurriculumVisibilityEnum;
-use App\Filament\Admin\Resources\CV\Curricula\Pages\CreateCurriculum;
-use App\Filament\Admin\Resources\CV\Curricula\Pages\EditCurriculum;
-use App\Filament\Admin\Resources\CV\Curricula\Pages\ListCurricula;
+use App\Filament\Admin\Resources\CV\Curriculum\Pages\CreateCurriculum;
+use App\Filament\Admin\Resources\CV\Curriculum\Pages\EditCurriculum;
+use App\Filament\Admin\Resources\CV\Curriculum\Pages\ListCurriculums;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\CV\Curriculum;
 use BackedEnum;
@@ -37,6 +37,8 @@ class CurriculumResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'Módulos';
 
     protected static ?int $navigationSort = 20;
+
+    protected static ?string $slug = 'c-v/curriculum';
 
     protected static ?string $modelLabel = 'Curriculum';
 
@@ -177,7 +179,7 @@ class CurriculumResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListCurricula::route('/'),
+            'index' => ListCurriculums::route('/'),
             'create' => CreateCurriculum::route('/create'),
             'edit' => EditCurriculum::route('/{record}/edit'),
         ];

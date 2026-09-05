@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\CV\Curricula\RelationManagers;
+namespace App\Filament\Admin\Resources\CV\Curriculum\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -15,11 +15,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class AcademicTrainingRelationManager extends RelationManager
+class AcademicComplementaryRelationManager extends RelationManager
 {
-    protected static string $relationship = 'academicTraining';
+    protected static string $relationship = 'academicComplementary';
 
-    protected static ?string $title = 'Formación reglada';
+    protected static ?string $title = 'Formación complementaria';
 
     public function form(Schema $schema): Schema
     {
@@ -33,7 +33,6 @@ class AcademicTrainingRelationManager extends RelationManager
             DateTimePicker::make('expedition_at')->label('Expedición'),
             TextInput::make('credential_id')->maxLength(511)->label('ID credencial'),
             TextInput::make('credential_url')->url()->maxLength(511)->label('URL credencial'),
-            TextInput::make('learned')->maxLength(511)->label('Aprendido'),
             Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
         ]);
     }

@@ -87,12 +87,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -142,14 +146,18 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'smartplant:write'
+          - 'weatherstation:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
           - 'hardware:write'
+          - 'weatherstation:read'
           - 'weatherstation:write'
+          - 'keycounter:read'
           - 'keycounter:write'
+          - 'smartplant:read'
           - 'smartplant:write'
+          - 'airflight:read'
           - 'airflight:write'
         exampleWasSpecified: false
         nullable: false
@@ -170,7 +178,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-09-25'
+        example: '2052-09-28'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -179,9 +187,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'smartplant:write'
+        - 'weatherstation:write'
       name: 'n'
-      expires_at: '2052-09-25'
+      expires_at: '2052-09-28'
     fileParameters: []
     responses: []
     responseFields: []
@@ -292,12 +300,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -529,12 +541,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -761,12 +777,18 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":1,"name":"Borer, Kirlin and Collins","title":"Borer, Kirlin and Collins","slug":"borer-kirlin-and-collins-Kilhs","domain":"lind.com","description":"Repellendus voluptas in enim et.","image":null,"created_at":"2026-08-30T15:45:09.000000Z"},{"id":4,"name":"GreenEnergy Smart Monitor","title":"GreenEnergy Smart Monitor","slug":"greenenergy-smart-monitor","domain":"energy.raupulus.dev","description":"Monitorizaci\u00f3n avanzada de generaci\u00f3n fotovoltaica, bater\u00edas y consumos industriales.","image":null,"created_at":"2026-08-30T15:45:11.000000Z"},{"id":3,"name":"Portal de Telemetr\u00eda IoT","title":"Portal de Telemetr\u00eda IoT","slug":"portal-de-telemetria-iot","domain":"iot.raupulus.dev","description":"Plataforma cloud para supervisi\u00f3n en tiempo real de estaciones meteorol\u00f3gicas y energ\u00eda solar.","image":null,"created_at":"2026-08-30T15:45:11.000000Z"},{"id":2,"name":"Raupulus Tech & Consulting","title":"Raupulus Tech & Consulting","slug":"raupulus-tech-consulting","domain":"tech.raupulus.dev","description":"Soluciones integrales de hardware IoT, telemetr\u00eda y software distribuido para empresas.","image":null,"created_at":"2026-08-30T15:45:11.000000Z"}],"meta":{"total":4,"per_page":25,"current_page":1,"last_page":1,"from":1,"to":4}}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[],"meta":{"total":0,"per_page":25,"current_page":1,"last_page":1,"from":null,"to":null}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '299'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -797,14 +819,14 @@ endpoints:
         name: slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      slug: 1
+      slug: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -818,8 +840,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '298'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -850,14 +878,14 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 1
+      platform_slug: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -871,8 +899,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '297'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -909,14 +943,14 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 1
+      platform_slug: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -930,8 +964,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '296'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -962,7 +1002,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -980,7 +1020,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 1
+      platform_slug: 16
       slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -995,8 +1035,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '295'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1027,7 +1073,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1045,7 +1091,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 1
+      platform_slug: 16
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1060,8 +1106,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '294'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1092,7 +1144,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1121,7 +1173,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 1
+      platform_slug: 16
       content_slug: architecto
       order: '564'
     queryParameters: []
@@ -1137,8 +1189,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '293'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1169,7 +1227,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1187,7 +1245,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 1
+      platform_slug: 16
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1202,8 +1260,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '292'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1249,8 +1313,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '291'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1290,8 +1360,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '290'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1321,6 +1397,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -1390,9 +1477,9 @@ endpoints:
       altitude:
         custom: []
         name: altitude
-        description: 'Must be at least 0.'
+        description: 'Must be at least 0. Must not be greater than 60000.'
         required: false
-        example: 57
+        example: 10
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1401,9 +1488,9 @@ endpoints:
       speed:
         custom: []
         name: speed
-        description: 'Must be at least 0.'
+        description: 'Must be at least 0. Must not be greater than 1000.'
         required: false
-        example: 86
+        example: 20
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1415,7 +1502,7 @@ endpoints:
         description: 'Must be between 0 and 360.'
         required: false
         example: 1
-        type: number
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
@@ -1460,8 +1547,8 @@ endpoints:
       squawk: wpwlvq
       lat: -90
       lon: -179
-      altitude: 57
-      speed: 86
+      altitude: 10
+      speed: 20
       track: 1
       seen: 4326.41688
       seen_pos: 4326.41688
@@ -1496,6 +1583,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -1577,9 +1675,9 @@ endpoints:
       'data[].altitude':
         custom: []
         name: 'data[].altitude'
-        description: 'Must be at least 0.'
+        description: 'Must be at least 0. Must not be greater than 60000.'
         required: false
-        example: 4
+        example: 5
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1588,9 +1686,9 @@ endpoints:
       'data[].speed':
         custom: []
         name: 'data[].speed'
-        description: 'Must be at least 0.'
+        description: 'Must be at least 0. Must not be greater than 1000.'
         required: false
-        example: 57
+        example: 10
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1602,7 +1700,7 @@ endpoints:
         description: 'Must be between 0 and 360.'
         required: false
         example: 0
-        type: number
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
@@ -1649,8 +1747,8 @@ endpoints:
           squawk: uwpwlv
           lat: -90
           lon: -180
-          altitude: 4
-          speed: 57
+          altitude: 5
+          speed: 10
           track: 0
           seen: 4326.41688
           seen_pos: 4326.41688
@@ -1691,12 +1789,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1744,12 +1846,18 @@ endpoints:
       -
         custom: []
         status: 404
-        content: '{"success":false,"message":"API V2 - Endpoint no encontrado"}'
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '29'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -1946,6 +2054,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -1973,7 +2092,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-01T15:17:49'
+        example: '2026-09-05T10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2106,7 +2225,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-01T15:17:49'
+        example: '2026-09-05T10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2137,7 +2256,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-01T15:17:49'
+      read_at: '2026-09-05T10:24:11'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2150,7 +2269,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-01T15:17:49'
+          read_at: '2026-09-05T10:24:11'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2183,6 +2302,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -2199,7 +2329,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-01T15:17:49'
+        example: '2026-09-05T10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2210,7 +2340,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-01T15:17:49'
+        example: '2026-09-05T10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2680,8 +2810,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-01T15:17:49'
-      read_at: '2026-09-01T15:17:49'
+      date: '2026-09-05T10:24:11'
+      read_at: '2026-09-05T10:24:11'
       hardware: 'n'
       version: g
       serial_number: z
@@ -2763,12 +2893,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -2807,12 +2941,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -2842,6 +2980,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -2869,7 +3018,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-01 15:17:49'
+        example: '2026-09-05 10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2880,7 +3029,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-01 15:17:49'
+        example: '2026-09-05 10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2955,8 +3104,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-01 15:17:49'
-      end_at: '2026-09-01 15:17:49'
+      start_at: '2026-09-05 10:24:11'
+      end_at: '2026-09-05 10:24:11'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -2993,6 +3142,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -3020,7 +3180,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-01 15:17:49'
+        example: '2026-09-05 10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3031,7 +3191,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-01 15:17:49'
+        example: '2026-09-05 10:24:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3096,12 +3256,12 @@ endpoints:
         custom: []
         name: clicks_average
         description: 'Must be at least 0.'
-        required: false
+        required: true
         example: 8
         type: integer
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
       weekday:
         custom: []
@@ -3117,8 +3277,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-01 15:17:49'
-      end_at: '2026-09-01 15:17:49'
+      start_at: '2026-09-05 10:24:11'
+      end_at: '2026-09-05 10:24:11'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3162,12 +3322,16 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"success":false,"message":"No autenticado"}'
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3215,12 +3379,18 @@ endpoints:
       -
         custom: []
         status: 404
-        content: '{"success":false,"message":"API V2 - Endpoint no encontrado"}'
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '28'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3262,6 +3432,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       plant_id:
         custom: []
         name: plant_id
@@ -3289,8 +3470,8 @@ endpoints:
         name: uv
         description: ''
         required: false
-        example: 4326.41688
-        type: number
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
@@ -3331,10 +3512,10 @@ endpoints:
       soil_humidity:
         custom: []
         name: soil_humidity
-        description: ''
+        description: 'Must be at least 0. Must not be greater than 100.'
         required: true
-        example: 4326.41688
-        type: number
+        example: 17
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3344,8 +3525,8 @@ endpoints:
         name: soil_humidity_raw
         description: ''
         required: false
-        example: 4326.41688
-        type: number
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
@@ -3355,7 +3536,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3366,7 +3547,7 @@ endpoints:
         name: waterpump_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3377,7 +3558,7 @@ endpoints:
         name: vaporizer_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3386,15 +3567,15 @@ endpoints:
     cleanBodyParameters:
       plant_id: 4326.41688
       hardware_device_id: 4326.41688
-      uv: 4326.41688
+      uv: 16
       pressure: 4326.41688
       temperature: 4326.41688
       humidity: 4326.41688
-      soil_humidity: 4326.41688
-      soil_humidity_raw: 4326.41688
-      full_water_tank: true
-      waterpump_enabled: true
-      vaporizer_enabled: true
+      soil_humidity: 17
+      soil_humidity_raw: 16
+      full_water_tank: false
+      waterpump_enabled: false
+      vaporizer_enabled: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -3433,7 +3614,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - wind
+          - pressure
         type: 'string[]'
         enumValues:
           - temperature
@@ -3462,19 +3643,25 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - wind
+        - pressure
       location_type: indoor
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":2,"name":"Estaci\u00f3n Azotea (Azotea)","zone":"Azotea","location_type":"outdoor","location_label":"Exterior","instant":{"day_name":"martes","date_human_format":"1 de septiembre de 2026","time":"15:17","day_status":"D\u00eda"},"temperature":36.95,"humidity":93.22,"pressure":1039.28,"wind":{"average":13.1,"min":6.55,"max":24.57,"direction":"NW","direction_grades":304},"light":{"lux":209.34,"uv_index":10.04,"uva":486.96,"uvb":287.4},"air_quality":{"quality":56.41,"eco2":1111,"tvoc":322},"rain":{"value":2.5,"intensity":14.11},"lightning":{"last_at":"2026-08-30T15:44:10.000000Z","window_minutes":60,"count_in_window":0,"distance":15,"energy":593}}]}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '287'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3522,7 +3709,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - humidity
+          - wind
         type: 'string[]'
         enumValues:
           - temperature
@@ -3538,7 +3725,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - humidity
+        - wind
     fileParameters: []
     responses:
       -
@@ -3548,8 +3735,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '286'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3613,12 +3806,18 @@ endpoints:
       -
         custom: []
         status: 404
-        content: '{"success":false,"message":"API V2 - Endpoint no encontrado"}'
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '27'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3663,6 +3862,17 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -3755,6 +3965,17 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      hardware_device_info:
+        custom: []
+        name: hardware_device_info
+        description: ''
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       readings:
         custom: []
         name: readings
@@ -3782,7 +4003,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v2/curricula
+    uri: api/v2/curriculum
     metadata:
       custom: []
       groupName: Endpoints
@@ -3811,8 +4032,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '284'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3823,7 +4050,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v2/curricula/shared/{shareToken}'
+    uri: 'api/v2/curriculum/shared/{shareToken}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3866,8 +4093,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '283'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3878,7 +4111,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v2/curricula/{slug}'
+    uri: 'api/v2/curriculum/{slug}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3919,8 +4152,14 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '282'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -3931,7 +4170,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v2/curricula/{slug}/{section}'
+    uri: 'api/v2/curriculum/{slug}/{section}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3980,12 +4219,18 @@ endpoints:
       -
         custom: []
         status: 404
-        content: '{"success":false,"message":"API V2 - Endpoint no encontrado"}'
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '26'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []
@@ -4038,12 +4283,18 @@ endpoints:
       -
         custom: []
         status: 404
-        content: '{"success":false,"message":"API V2 - Endpoint no encontrado"}'
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '25'
           content-language: en
           vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         description: null
     responseFields: []
     auth: []

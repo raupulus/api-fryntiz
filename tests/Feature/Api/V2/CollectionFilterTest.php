@@ -35,7 +35,7 @@ class CollectionFilterTest extends ApiTestCase
             'rango con fecha inválida' => ['/api/v2/platforms?created_at[gte]=zzz'],
             'rango con una lista dentro' => ['/api/v2/platforms?created_at[gte][]=1'],
             'lista con un elemento inválido' => ['/api/v2/platforms?created_at=2020-01-01,abc'],
-            'otra colección pública' => ['/api/v2/curricula?created_at=basura'],
+            'otra colección pública' => ['/api/v2/curriculum?created_at=basura'],
             'serie temporal de sensores' => ['/api/v2/weather-stations/1/temperatures?created_at=x'],
             'per_page que no es número' => ['/api/v2/platforms?per_page=abc'],
             'página negativa' => ['/api/v2/platforms?page=-1'],

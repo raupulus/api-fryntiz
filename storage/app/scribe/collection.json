@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Api Raupulus API Documentation",
-        "_postman_id": "5964c325-865d-4183-876f-90594cd90292",
+        "_postman_id": "3c5d4d36-58e9-4a5c-8163-4a2dcf49b77d",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -94,10 +94,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -124,7 +140,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"device_id\":16,\"abilities\":[\"smartplant:write\"],\"name\":\"n\",\"expires_at\":\"2052-09-25\"}"
+                            "raw": "{\"device_id\":16,\"abilities\":[\"weatherstation:write\"],\"name\":\"n\",\"expires_at\":\"2052-09-28\"}"
                         },
                         "description": "Va por `DeviceTokenService`, que es la fuente \u00fanica: comprueba que las\nabilities est\u00e1n en el cat\u00e1logo, que el dispositivo es del usuario, y\na\u00f1ade `device:{id}`. No emite nunca el comod\u00edn ni la ability de sesi\u00f3n.",
                         "auth": {
@@ -241,10 +257,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -355,10 +387,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -540,16 +588,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "299"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 200,
-                            "body": "{\"success\":true,\"message\":\"Operaci\\u00f3n exitosa\",\"data\":[{\"id\":1,\"name\":\"Borer, Kirlin and Collins\",\"title\":\"Borer, Kirlin and Collins\",\"slug\":\"borer-kirlin-and-collins-Kilhs\",\"domain\":\"lind.com\",\"description\":\"Repellendus voluptas in enim et.\",\"image\":null,\"created_at\":\"2026-08-30T15:45:09.000000Z\"},{\"id\":4,\"name\":\"GreenEnergy Smart Monitor\",\"title\":\"GreenEnergy Smart Monitor\",\"slug\":\"greenenergy-smart-monitor\",\"domain\":\"energy.raupulus.dev\",\"description\":\"Monitorizaci\\u00f3n avanzada de generaci\\u00f3n fotovoltaica, bater\\u00edas y consumos industriales.\",\"image\":null,\"created_at\":\"2026-08-30T15:45:11.000000Z\"},{\"id\":3,\"name\":\"Portal de Telemetr\\u00eda IoT\",\"title\":\"Portal de Telemetr\\u00eda IoT\",\"slug\":\"portal-de-telemetria-iot\",\"domain\":\"iot.raupulus.dev\",\"description\":\"Plataforma cloud para supervisi\\u00f3n en tiempo real de estaciones meteorol\\u00f3gicas y energ\\u00eda solar.\",\"image\":null,\"created_at\":\"2026-08-30T15:45:11.000000Z\"},{\"id\":2,\"name\":\"Raupulus Tech & Consulting\",\"title\":\"Raupulus Tech & Consulting\",\"slug\":\"raupulus-tech-consulting\",\"domain\":\"tech.raupulus.dev\",\"description\":\"Soluciones integrales de hardware IoT, telemetr\\u00eda y software distribuido para empresas.\",\"image\":null,\"created_at\":\"2026-08-30T15:45:11.000000Z\"}],\"meta\":{\"total\":4,\"per_page\":25,\"current_page\":1,\"last_page\":1,\"from\":1,\"to\":4}}",
+                            "body": "{\"success\":true,\"message\":\"Operaci\\u00f3n exitosa\",\"data\":[],\"meta\":{\"total\":0,\"per_page\":25,\"current_page\":1,\"last_page\":1,\"from\":null,\"to\":null}}",
                             "name": ""
                         }
                     ]
@@ -566,7 +638,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 }
                             ]
@@ -600,12 +672,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "298"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -626,7 +722,7 @@
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 }
                             ]
@@ -660,12 +756,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "297"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -686,7 +806,7 @@
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 }
                             ]
@@ -720,12 +840,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "296"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -746,7 +890,7 @@
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 },
                                 {
@@ -786,12 +930,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "295"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -812,7 +980,7 @@
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 },
                                 {
@@ -852,12 +1020,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "294"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -878,7 +1070,7 @@
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 },
                                 {
@@ -924,12 +1116,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "293"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -950,7 +1166,7 @@
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
-                                    "value": 1,
+                                    "value": 16,
                                     "description": "The slug of the platform."
                                 },
                                 {
@@ -990,12 +1206,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "292"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -1042,12 +1282,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "291"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 200,
@@ -1094,12 +1358,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "290"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 200,
@@ -1130,7 +1418,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"icao\":\"ngzmiy\",\"flight\":\"vdljnikhwaykcmyu\",\"squawk\":\"wpwlvq\",\"lat\":-90,\"lon\":-179,\"altitude\":57,\"speed\":86,\"track\":1,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77}"
+                            "raw": "{\"hardware_device_id\":16,\"icao\":\"ngzmiy\",\"flight\":\"vdljnikhwaykcmyu\",\"squawk\":\"wpwlvq\",\"lat\":-90,\"lon\":-179,\"altitude\":10,\"speed\":20,\"track\":1,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77}"
                         },
                         "description": "",
                         "auth": {
@@ -1161,7 +1449,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"data\":[{\"icao\":\"bngzmi\",\"flight\":\"yvdljnikhwaykcmy\",\"squawk\":\"uwpwlv\",\"lat\":-90,\"lon\":-180,\"altitude\":4,\"speed\":57,\"track\":0,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77}]}"
+                            "raw": "{\"hardware_device_id\":16,\"data\":[{\"icao\":\"bngzmi\",\"flight\":\"yvdljnikhwaykcmy\",\"squawk\":\"uwpwlv\",\"lat\":-90,\"lon\":-180,\"altitude\":5,\"speed\":10,\"track\":0,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77}]}"
                         },
                         "description": "",
                         "auth": {
@@ -1214,10 +1502,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -1268,16 +1572,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "30"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "29"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint not found\"}",
                             "name": ""
                         }
                     ]
@@ -1343,7 +1671,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2026-09-01T15:17:49\",\"temperature\":4326.41688,\"battery_voltage\":77,\"battery_percentage\":15,\"readings\":[{\"pos\":27,\"amperage\":4326.41688,\"voltage\":4326.41688,\"duration\":27,\"energy_wh\":4326.41688,\"temperature\":4326.41688,\"fan\":77,\"read_at\":\"2026-09-01T15:17:49\",\"battery_voltage\":8,\"battery_percentage\":8}]}"
+                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2026-09-05T10:24:11\",\"temperature\":4326.41688,\"battery_voltage\":77,\"battery_percentage\":15,\"readings\":[{\"pos\":27,\"amperage\":4326.41688,\"voltage\":4326.41688,\"duration\":27,\"energy_wh\":4326.41688,\"temperature\":4326.41688,\"fan\":77,\"read_at\":\"2026-09-05T10:24:11\",\"battery_voltage\":8,\"battery_percentage\":8}]}"
                         },
                         "description": "La respuesta lleva `warnings` cuando algo es raro pero se ha guardado:\nuna corriente negativa, un elemento sin tensi\u00f3n, un canal sin dar de\nalta. Sin eso, un montaje mal configurado responde 201 durante meses.",
                         "auth": {
@@ -1374,7 +1702,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"date\":\"2026-09-01T15:17:49\",\"read_at\":\"2026-09-01T15:17:49\",\"hardware\":\"n\",\"version\":\"g\",\"serial_number\":\"z\",\"battery_type\":\"m\",\"battery_voltage\":4326.41688,\"battery_current\":4326.41688,\"battery_power\":4326.41688,\"battery_percentage\":17,\"battery_temperature\":4326.41688,\"temperature\":4326.41688,\"voltage\":4326.41688,\"amperage\":4326.41688,\"power\":4326.41688,\"delta_seconds\":27,\"charging_status\":16,\"charging_status_label\":\"n\",\"light_status\":false,\"light_brightness\":7,\"load_voltage\":4326.41688,\"load_current\":4326.41688,\"load_power\":4326.41688,\"load_fan\":77,\"day_battery_voltage_min\":4326.41688,\"day_battery_voltage_max\":4326.41688,\"day_charging_current_max\":4326.41688,\"day_discharging_current_max\":4326.41688,\"day_charging_power_max\":4326.41688,\"day_discharging_power_max\":4326.41688,\"day_charging_amp_hours\":4326.41688,\"day_discharging_amp_hours\":4326.41688,\"day_power_generation_wh\":4326.41688,\"day_power_consumption_wh\":4326.41688,\"total_operating_days\":77,\"total_battery_over_discharges\":8,\"total_battery_full_charges\":76,\"total_charging_amp_hours\":60,\"total_discharging_amp_hours\":42,\"total_power_generation_wh\":37,\"total_power_consumption_wh\":9,\"system_voltage\":4326.41688,\"system_intensity\":4326.41688,\"nominal_battery_capacity\":77}"
+                            "raw": "{\"hardware_device_id\":16,\"date\":\"2026-09-05T10:24:11\",\"read_at\":\"2026-09-05T10:24:11\",\"hardware\":\"n\",\"version\":\"g\",\"serial_number\":\"z\",\"battery_type\":\"m\",\"battery_voltage\":4326.41688,\"battery_current\":4326.41688,\"battery_power\":4326.41688,\"battery_percentage\":17,\"battery_temperature\":4326.41688,\"temperature\":4326.41688,\"voltage\":4326.41688,\"amperage\":4326.41688,\"power\":4326.41688,\"delta_seconds\":27,\"charging_status\":16,\"charging_status_label\":\"n\",\"light_status\":false,\"light_brightness\":7,\"load_voltage\":4326.41688,\"load_current\":4326.41688,\"load_power\":4326.41688,\"load_fan\":77,\"day_battery_voltage_min\":4326.41688,\"day_battery_voltage_max\":4326.41688,\"day_charging_current_max\":4326.41688,\"day_discharging_current_max\":4326.41688,\"day_charging_power_max\":4326.41688,\"day_discharging_power_max\":4326.41688,\"day_charging_amp_hours\":4326.41688,\"day_discharging_amp_hours\":4326.41688,\"day_power_generation_wh\":4326.41688,\"day_power_consumption_wh\":4326.41688,\"total_operating_days\":77,\"total_battery_over_discharges\":8,\"total_battery_full_charges\":76,\"total_charging_amp_hours\":60,\"total_discharging_amp_hours\":42,\"total_power_generation_wh\":37,\"total_power_consumption_wh\":9,\"system_voltage\":4326.41688,\"system_intensity\":4326.41688,\"nominal_battery_capacity\":77}"
                         },
                         "description": "",
                         "auth": {
@@ -1427,10 +1755,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -1479,10 +1823,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -1509,7 +1869,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-01 15:17:49\",\"end_at\":\"2026-09-01 15:17:49\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-05 10:24:11\",\"end_at\":\"2026-09-05 10:24:11\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
                         },
                         "description": "",
                         "auth": {
@@ -1540,7 +1900,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-01 15:17:49\",\"end_at\":\"2026-09-01 15:17:49\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-05 10:24:11\",\"end_at\":\"2026-09-05 10:24:11\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -1593,10 +1953,26 @@
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 401,
-                            "body": "{\"success\":false,\"message\":\"No autenticado\"}",
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
                             "name": ""
                         }
                     ]
@@ -1647,16 +2023,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "30"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "28"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint not found\"}",
                             "name": ""
                         }
                     ]
@@ -1691,7 +2091,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":4326.41688,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":4326.41688,\"soil_humidity_raw\":4326.41688,\"full_water_tank\":true,\"waterpump_enabled\":true,\"vaporizer_enabled\":true}"
+                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":false,\"waterpump_enabled\":false,\"vaporizer_enabled\":false}"
                         },
                         "description": "",
                         "auth": {
@@ -1722,7 +2122,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"wind\"],\"location_type\":\"indoor\"}"
+                            "raw": "{\"sensors\":[\"pressure\"],\"location_type\":\"indoor\"}"
                         },
                         "description": "?zone=chipiona\n  ?location_type=indoor|outdoor",
                         "auth": {
@@ -1741,16 +2141,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "287"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 200,
-                            "body": "{\"success\":true,\"message\":\"Operaci\\u00f3n exitosa\",\"data\":[{\"id\":2,\"name\":\"Estaci\\u00f3n Azotea (Azotea)\",\"zone\":\"Azotea\",\"location_type\":\"outdoor\",\"location_label\":\"Exterior\",\"instant\":{\"day_name\":\"martes\",\"date_human_format\":\"1 de septiembre de 2026\",\"time\":\"15:17\",\"day_status\":\"D\\u00eda\"},\"temperature\":36.95,\"humidity\":93.22,\"pressure\":1039.28,\"wind\":{\"average\":13.1,\"min\":6.55,\"max\":24.57,\"direction\":\"NW\",\"direction_grades\":304},\"light\":{\"lux\":209.34,\"uv_index\":10.04,\"uva\":486.96,\"uvb\":287.4},\"air_quality\":{\"quality\":56.41,\"eco2\":1111,\"tvoc\":322},\"rain\":{\"value\":2.5,\"intensity\":14.11},\"lightning\":{\"last_at\":\"2026-08-30T15:44:10.000000Z\",\"window_minutes\":60,\"count_in_window\":0,\"distance\":15,\"energy\":593}}]}",
+                            "body": "{\"success\":true,\"message\":\"Operaci\\u00f3n exitosa\",\"data\":[]}",
                             "name": ""
                         }
                     ]
@@ -1785,7 +2209,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"humidity\"]}"
+                            "raw": "{\"sensors\":[\"wind\"]}"
                         },
                         "description": "",
                         "auth": {
@@ -1804,12 +2228,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "286"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -1870,16 +2318,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "30"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "27"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint not found\"}",
                             "name": ""
                         }
                     ]
@@ -1973,9 +2445,9 @@
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/curricula",
+                            "path": "api\/v2\/curriculum",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/curricula"
+                            "raw": "{{baseUrl}}\/api\/v2\/curriculum"
                         },
                         "method": "GET",
                         "header": [
@@ -2006,12 +2478,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "284"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 200,
@@ -2025,9 +2521,9 @@
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/curricula\/shared\/:shareToken",
+                            "path": "api\/v2\/curriculum\/shared\/:shareToken",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/curricula\/shared\/:shareToken",
+                            "raw": "{{baseUrl}}\/api\/v2\/curriculum\/shared\/:shareToken",
                             "variable": [
                                 {
                                     "id": "shareToken",
@@ -2066,12 +2562,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "283"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -2085,9 +2605,9 @@
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/curricula\/:slug",
+                            "path": "api\/v2\/curriculum\/:slug",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/curricula\/:slug",
+                            "raw": "{{baseUrl}}\/api\/v2\/curriculum\/:slug",
                             "variable": [
                                 {
                                     "id": "slug",
@@ -2126,12 +2646,36 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "282"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
@@ -2145,9 +2689,9 @@
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/curricula\/:slug\/:section",
+                            "path": "api\/v2\/curriculum\/:slug\/:section",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/curricula\/:slug\/:section",
+                            "raw": "{{baseUrl}}\/api\/v2\/curriculum\/:slug\/:section",
                             "variable": [
                                 {
                                     "id": "slug",
@@ -2192,16 +2736,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "30"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "26"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint not found\"}",
                             "name": ""
                         }
                     ]
@@ -2252,16 +2820,40 @@
                                     "value": "application\/json"
                                 },
                                 {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "30"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "25"
+                                },
+                                {
                                     "key": "content-language",
                                     "value": "en"
                                 },
                                 {
                                     "key": "vary",
                                     "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"API V2 - Endpoint not found\"}",
                             "name": ""
                         }
                     ]
