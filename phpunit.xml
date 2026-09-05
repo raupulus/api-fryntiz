@@ -26,7 +26,7 @@
         <ini name="memory_limit" value="512M"/>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="pgsql"/>
-        <env name="DB_DATABASE" value="api_raupulus_testing"/>
+        <env name="DB_DATABASE" value="raupulus_api_test"/>
         <env name="CACHE_STORE" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

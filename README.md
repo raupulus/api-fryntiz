@@ -279,11 +279,11 @@ php artisan debug:seed-all               # Poblar datos técnicos de depuración
 
 ## Verificación de Código y Tests
 
-La suite de pruebas corre siempre contra **PostgreSQL real** (no SQLite), en la base de datos `api_raupulus_testing`.
+La suite de pruebas corre siempre contra **PostgreSQL real** (no SQLite), en la base de datos `raupulus_api_test`.
 Créala una vez si aún no existe:
 
 ```bash
-createdb api_raupulus_testing        # o: psql -c "CREATE DATABASE api_raupulus_testing;"
+createdb raupulus_api_test        # o: psql -c "CREATE DATABASE raupulus_api_test;"
 ```
 
 Atajos de calidad en `composer`:

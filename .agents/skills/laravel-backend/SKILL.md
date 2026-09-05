@@ -115,7 +115,7 @@ Las tareas programadas se registran en `routes/console.php`.
 ## Antes de cerrar un cambio
 
 1. `./vendor/bin/pint` para formatear (PSR-12).
-2. `php artisan test` (BD de test: `api_raupulus_testing`, PostgreSQL).
+2. `php artisan test` (BD de test: `raupulus_api_test`, PostgreSQL).
 3. **Actualizar la doc del módulo en `docs/info/<modulo>.md`** — es obligatorio
    en este proyecto al modificar o crear un módulo (ver AGENTS.md, sección de
    documentación). Si creas un módulo nuevo, añade su `.md` y referénciálo en

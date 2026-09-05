@@ -75,7 +75,7 @@ Varias pueden aplicar a la vez: un endpoint nuevo con su migración usa `api-res
 ```bash
 ./vendor/bin/pint                    # 1. Formato (PSR-12)
 composer phpstan                     # 2. Análisis estático (nivel 5)
-php artisan test                     # 3. Tests (PostgreSQL: api_raupulus_testing)
+php artisan test                     # 3. Tests (PostgreSQL: raupulus_api_test)
 php artisan scribe:generate          # 4. Solo si has tocado la API V2
 ```
 
@@ -511,7 +511,7 @@ El CORS real lo aplica `Illuminate\Http\Middleware\HandleCors` (prepend global) 
 - Toda columna lleva `->comment()` en español.
 - Foreign keys con `onDelete`/`onUpdate` explícitos.
 - Índices en las columnas de búsqueda frecuente.
-- **Tests contra PostgreSQL real** (`api_raupulus_testing`), no SQLite: el proyecto usa tipos
+- **Tests contra PostgreSQL real** (`raupulus_api_test`), no SQLite: el proyecto usa tipos
   específicos de Postgres.
 - `Model::preventLazyLoading()` está **activo fuera de producción**. Un N+1 lanza excepción en
   desarrollo. Usa siempre eager loading explícito.

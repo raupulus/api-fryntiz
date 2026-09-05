@@ -11,7 +11,7 @@ services:
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE:-api_raupulus}
+      - DB_DATABASE=${DB_DATABASE:-raupulus_api}
       - DB_USERNAME=${DB_USERNAME:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - CACHE_STORE=${CACHE_STORE:-file}
@@ -48,7 +48,7 @@ services:
     container_name: api-raupulus-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-api_raupulus}
+      POSTGRES_DB: ${DB_DATABASE:-raupulus_api}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
     volumes:

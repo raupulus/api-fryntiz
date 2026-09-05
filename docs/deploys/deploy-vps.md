@@ -203,9 +203,53 @@ sudo npm install -g pnpm
 ### 3.2 Configurar PostgreSQL
 
 ```bash
-sudo -u postgres psql -c "CREATE USER api_fryntiz WITH PASSWORD 'CAMBIA_ESTO';"
-sudo -u postgres psql -c "CREATE DATABASE api_fryntiz OWNER api_fryntiz;"
+DB_NAME=raupulus_api
+DB_USER=raupulus_api
+DB_PASS='CAMBIA_ESTO'
+
+sudo -u postgres psql -v ON_ERROR_STOP=1 <<SQL
+CREATE ROLE ${DB_USER} LOGIN PASSWORD '${DB_PASS}';
+
+CREATE DATABASE ${DB_NAME}
+    OWNER    ${DB_USER}
+    ENCODING 'UTF8'
+    LC_COLLATE 'en_US.UTF-8'
+    LC_CTYPE   'en_US.UTF-8'
+    TEMPLATE template0;
+SQL
+
+# El esquema `public` es del rol `pg_database_owner`, no del dueño de la base.
+# Se conecta a la base recién creada para cederlo.
+sudo -u postgres psql -d ${DB_NAME} -v ON_ERROR_STOP=1 <<SQL
+ALTER SCHEMA public OWNER TO ${DB_USER};
+GRANT ALL ON SCHEMA public TO ${DB_USER};
+SQL
 ```
+
+Tres detalles que no son adorno:
+
+- **`TEMPLATE template0` con `LC_*` explícitos.** Sin esto la base hereda la
+  configuración regional de `template1`, que en un VPS recién instalado suele ser
+  `C`. Con esa collation el orden alfabético ignora los acentos y las
+  comparaciones de texto no ordenan como espera nadie que escriba en español. Es
+  de las cosas que **no se pueden cambiar después** sin volcar y restaurar.
+- **`ALTER SCHEMA public OWNER`.** Desde PostgreSQL 15 el esquema `public` ya no
+  concede `CREATE` a todo el mundo. Ser dueño de la base **no** implica poder
+  crear tablas dentro de su esquema `public`, así que sin esta línea
+  `php artisan migrate` falla con `permission denied for schema public`. Es el
+  error más común al estrenar servidor con PostgreSQL moderno.
+- **`ON_ERROR_STOP=1`.** Sin él `psql` sigue adelante tras un error y termina con
+  código 0: el script parece haber funcionado y la base queda a medias.
+
+Comprobar que quedó bien antes de seguir:
+
+```bash
+sudo -u postgres psql -d ${DB_NAME} -c "\l ${DB_NAME}"    # encoding y collation
+PGPASSWORD="${DB_PASS}" psql -U ${DB_USER} -h 127.0.0.1 -d ${DB_NAME} \
+    -c "CREATE TABLE _prueba (id int); DROP TABLE _prueba;"
+```
+
+Si lo segundo pasa, `migrate` va a funcionar.
 
 ### 3.3 Clonar y configurar
 
@@ -388,10 +432,10 @@ un proceso de PHP de larga vida y un `git pull` no le llega.
 
 ```bash
 # Docker
-docker compose exec postgres pg_dump -U postgres api_fryntiz | gzip > backup-$(date +%F).sql.gz
+docker compose exec postgres pg_dump -U postgres raupulus_api | gzip > backup-$(date +%F).sql.gz
 
 # Bare-metal
-sudo -u postgres pg_dump api_fryntiz | gzip > backup-$(date +%F).sql.gz
+sudo -u postgres pg_dump raupulus_api | gzip > backup-$(date +%F).sql.gz
 ```
 
 Recomendado: cron diario que mande el `.sql.gz` a almacenamiento externo (S3, Backblaze B2, etc).

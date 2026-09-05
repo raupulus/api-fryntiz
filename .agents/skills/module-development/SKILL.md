@@ -75,7 +75,7 @@ Este documento define el protocolo secuencial obligatorio de 10 pasos para crear
 - Integrar la llamada en `DatabaseSeeder.php` y en `ProjectDummyCommand.php`.
 
 ### Paso 8: Test de Feature PHPUnit (`tests/Feature/[Modulo]Test.php`)
-- Crear pruebas automatizadas con PHPUnit sobre la base de datos real PostgreSQL (`api_raupulus_testing`).
+- Crear pruebas automatizadas con PHPUnit sobre la base de datos real PostgreSQL (`raupulus_api_test`).
 - Probar listados, detalle, validación de formularios, permisos de acceso y persistencia.
 
 ### Paso 9: Documentación Técnica Obligatoria

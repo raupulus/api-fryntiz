@@ -14,7 +14,7 @@ description: >-
 
 # Migraciones PostgreSQL — Api Raupulus
 
-Motor: **PostgreSQL** (BD de test: `api_raupulus_testing`). Las migraciones del
+Motor: **PostgreSQL** (BD de test: `raupulus_api_test`). Las migraciones del
 proyecto están **documentadas**: comentario en la tabla y en **todas** las
 columnas, en **español**.
 
@@ -98,4 +98,4 @@ Tras crear/editar una migración:
    y declara `$fillable` y casts (enums incluidos).
 2. Si añades campos/relaciones, **actualiza `docs/info/<modulo>.md`** con los
    nuevos campos, tipos y relaciones (obligatorio en este proyecto).
-3. Ejecuta `php artisan test` (usa `RefreshDatabase` contra `api_raupulus_testing`).
+3. Ejecuta `php artisan test` (usa `RefreshDatabase` contra `raupulus_api_test`).
