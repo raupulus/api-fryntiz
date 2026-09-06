@@ -29,12 +29,11 @@ sigue funcionando igual). Con las claves puestas (producción):
 
 1. `resources/views/filament/components/recaptcha-login-script.blade.php` (vía
    render hook `AUTH_LOGIN_FORM_BEFORE` en ambos `PanelProvider`) carga
-   `recaptcha/api.js` y refresca un token cada 100 s (caduca a los 2 min),
-   escribiéndolo en un input oculto ligado por `wire:model` a la propiedad
-   `recaptchaToken` — no hace falta interceptar el submit del formulario.
+   `recaptcha/api.js` y refresca un token cada 90 s (caduca a los 2 min),
+   sincronizándolo con Livewire 3 mediante el hook `commit`, un input oculto en el `<form>` y eventos con `bubbles: true`.
 2. `App\Filament\Concerns\HasRecaptchaLogin::verifyRecaptcha()` se llama al
    principio de `authenticate()` en ambos Login (`Admin\Pages\Login` y
-   `Tenant\Pages\Login`) y corta el intento con el mismo mensaje genérico de
+   `Tenant\Pages\Login`) y recupera el token de la propiedad Livewire o del request (`recaptchaToken` / `data.recaptchaToken`), cortando el intento con el mismo mensaje genérico de
    credenciales incorrectas si el token no es válido — no se distingue
    «bloqueado por captcha» de «contraseña mala».
 
@@ -391,4 +390,4 @@ Si se pierde la contraseña del administrador, se restablece por consola en el s
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

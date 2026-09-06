@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Concerns;
 
 use App\Services\RecaptchaService;
+use Illuminate\Support\Facades\Log;
 
 /**
  * reCAPTCHA v3 en el login de un panel Filament.
@@ -26,16 +27,26 @@ trait HasRecaptchaLogin
 
     protected function verifyRecaptcha(): void
     {
+        $token = $this->recaptchaToken
+            ?? request()->input('recaptchaToken')
+            ?? request()->input('data.recaptchaToken');
+
         // Umbral propio, más permisivo que el de los formularios públicos: lo
         // peor que puede pasar aquí es dejar fuera al dueño del panel un mal
         // día de red. Contra la fuerza bruta ya está el rate limit de Filament.
         $result = app(RecaptchaService::class)->verify(
-            $this->recaptchaToken,
+            $token,
             request()->ip(),
             (float) config('google.recaptcha.min_score_login', 0.3),
         );
 
         if ($result->configured && ! $result->valid) {
+            Log::warning('[reCAPTCHA Login] Verificación fallida o token ausente', [
+                'token_present' => ! empty($token),
+                'score' => $result->score,
+                'ip' => request()->ip(),
+            ]);
+
             $this->throwFailureValidationException();
         }
     }

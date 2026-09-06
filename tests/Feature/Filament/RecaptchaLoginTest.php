@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Pages\Login as AdminLogin;
+use App\Filament\Concerns\HasRecaptchaLogin;
 use App\Filament\Tenant\Pages\Login as TenantLogin;
 use App\Models\User;
 use App\Services\CaptchaResult;
@@ -13,6 +14,7 @@ use App\Services\RecaptchaService;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -140,5 +142,67 @@ class RecaptchaLoginTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertAuthenticatedAs($user);
+    }
+
+    #[Test]
+    public function recaptcha_verification_falls_back_to_request_input_when_property_is_null(): void
+    {
+        $this->mock(RecaptchaService::class, function ($mock) {
+            $mock->shouldReceive('verify')
+                ->with('request-token', \Mockery::any(), \Mockery::any())
+                ->once()
+                ->andReturn(new CaptchaResult(valid: true, score: 0.9, configured: true));
+        });
+
+        request()->merge(['recaptchaToken' => 'request-token']);
+
+        $target = new class
+        {
+            use HasRecaptchaLogin;
+
+            public function verifyLoginRecaptcha(): void
+            {
+                $this->verifyRecaptcha();
+            }
+
+            protected function throwFailureValidationException(): void
+            {
+                throw ValidationException::withMessages(['email' => 'Failed']);
+            }
+        };
+
+        $target->verifyLoginRecaptcha();
+        $this->addToAssertionCount(1);
+    }
+
+    #[Test]
+    public function recaptcha_verification_falls_back_to_nested_request_data_input_when_property_is_null(): void
+    {
+        $this->mock(RecaptchaService::class, function ($mock) {
+            $mock->shouldReceive('verify')
+                ->with('nested-token', \Mockery::any(), \Mockery::any())
+                ->once()
+                ->andReturn(new CaptchaResult(valid: true, score: 0.9, configured: true));
+        });
+
+        request()->merge(['data' => ['recaptchaToken' => 'nested-token']]);
+
+        $target = new class
+        {
+            use HasRecaptchaLogin;
+
+            public function verifyLoginRecaptcha(): void
+            {
+                $this->verifyRecaptcha();
+            }
+
+            protected function throwFailureValidationException(): void
+            {
+                throw ValidationException::withMessages(['email' => 'Failed']);
+            }
+        };
+
+        $target->verifyLoginRecaptcha();
+        $this->addToAssertionCount(1);
     }
 }
