@@ -205,4 +205,12 @@ class RecaptchaLoginTest extends TestCase
         $target->verifyLoginRecaptcha();
         $this->addToAssertionCount(1);
     }
+
+    #[Test]
+    public function generic_login_route_redirects_to_filament_tenant_login(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertRedirect(route('filament.tenant.auth.login'));
+    }
 }

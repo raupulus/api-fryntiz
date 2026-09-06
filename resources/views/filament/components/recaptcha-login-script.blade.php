@@ -77,7 +77,11 @@
             function bindLivewireHook() {
                 if (window.Livewire && typeof window.Livewire.hook === 'function') {
                     window.Livewire.hook('commit', function ({ component, commit }) {
-                        if (currentToken && commit && commit.updates) {
+                        const isLoginComponent = component && (
+                            ('recaptchaToken' in (component.snapshot?.data || {})) ||
+                            (component.name && component.name.toLowerCase().includes('login'))
+                        );
+                        if (isLoginComponent && currentToken && commit && commit.updates) {
                             commit.updates['recaptchaToken'] = currentToken;
                         }
                     });
