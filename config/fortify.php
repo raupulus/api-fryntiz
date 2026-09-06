@@ -117,9 +117,22 @@ return [
     | you may not need them when building your own application. This may be
     | especially true if you're writing a custom single-page application.
     |
+    | Aquí en `false` a propósito: **esta aplicación no tiene ninguna vista de
+    | Fortify**. El login real pasa por Filament (`/admin/login` y
+    | `/panel/login`) y no hay registro público.
+    |
+    | Con `true`, Fortify registraba `GET /login`, `GET /two-factor-challenge` y
+    | `GET /user/confirm-password` sin nada detrás: respondían **500**
+    | (`Target [Laravel\Fortify\Contracts\LoginViewResponse] is not
+    | instantiable`), como pasó en producción el 2026-09-06 con alguien pidiendo
+    | `/login` a mano.
+    |
+    | No se redirigen al panel: se quitan. Una redirección le confirma a quien
+    | rastrea que el login está en `/panel/login`; un 404 no le dice nada.
+    |
     */
 
-    'views' => true,
+    'views' => false,
 
     /*
     |--------------------------------------------------------------------------

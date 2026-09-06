@@ -5,43 +5,53 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * Las rutas de vista de Fortify no pueden responder 500.
+ * Las rutas de vista de Fortify no existen aquí.
  *
- * `config/fortify.php` tiene `views => true`, así que Fortify registra
- * `GET /login`, `GET /two-factor-challenge` y `GET /user/confirm-password`.
- * Aquí no hay vista propia para ninguna —el login real pasa por Filament—, y
- * sin registrar nada revientan con
- * `Target [Laravel\Fortify\Contracts\LoginViewResponse] is not instantiable`.
+ * Esta aplicación no tiene ninguna vista de Fortify: el login real pasa por
+ * Filament (`/admin/login`, `/panel/login`) y no hay registro público. Con
+ * `views => true`, Fortify las registraba igual y respondían **500**
+ * (`Target [Laravel\Fortify\Contracts\LoginViewResponse] is not instantiable`),
+ * como pasó en producción el 2026-09-06 con alguien pidiendo `/login` a mano.
  *
- * Pasó en producción el 2026-09-06 con alguien entrando a `/login` a mano.
+ * No se redirigen al panel: se quitan. Una redirección le confirma a quien
+ * rastrea dónde está el login de verdad; un 404 no le dice nada.
  */
 class FortifyViewsTest extends TestCase
 {
     use RefreshDatabase;
 
-    #[Test]
-    public function la_ruta_de_login_de_fortify_lleva_al_login_del_panel(): void
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function rutasQueNoExistenProvider(): array
     {
-        $this->get('/login')->assertRedirect(route('filament.tenant.auth.login'));
+        return [
+            'login' => ['/login'],
+            'desafío de doble factor' => ['/two-factor-challenge'],
+            'confirmar contraseña' => ['/user/confirm-password'],
+        ];
     }
 
     #[Test]
-    public function la_ruta_de_confirmar_contrasena_no_revienta(): void
+    #[DataProvider('rutasQueNoExistenProvider')]
+    public function las_vistas_de_fortify_responden_404(string $ruta): void
     {
-        $respuesta = $this->get('/user/confirm-password');
+        $respuesta = $this->get($ruta);
 
-        $this->assertNotSame(500, $respuesta->getStatusCode());
+        $respuesta->assertNotFound();
+        // La 404 de la propia web, no una pantalla de Laravel ni una redirección.
+        $respuesta->assertSee('Esta página no existe', false);
     }
 
     #[Test]
-    public function la_ruta_del_desafio_de_doble_factor_no_revienta(): void
+    public function el_login_de_filament_sigue_en_pie(): void
     {
-        $respuesta = $this->get('/two-factor-challenge');
-
-        $this->assertNotSame(500, $respuesta->getStatusCode());
+        $this->get('/panel/login')->assertOk();
+        $this->get('/admin/login')->assertOk();
     }
 }
