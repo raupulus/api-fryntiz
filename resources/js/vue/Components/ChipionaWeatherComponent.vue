@@ -193,6 +193,16 @@ const light = ref({ light: 0, index: 0, uva: 0, uvb: 0 });
 const lightning = ref({ last: '', inWindow: 0, windowMinutes: 60 });
 
 const loading = ref(true);
+
+/**
+ * ¿Ha llegado alguna vez una respuesta buena?
+ *
+ * Decide si un fallo pinta el error o respeta lo que ya se ve. `loading` no
+ * vale para eso: tras la primera carga se queda en false para siempre, así que
+ * un reintento fallido pasaba de largo por la comprobación y dejaba el widget
+ * enseñando los ceros con los que arranca `info`, como si fueran medidas.
+ */
+const cargadoAlgunaVez = ref(false);
 const error = ref(false);
 
 /** Id real de la estación que se está mostrando, para suscribirse a su channel. */
@@ -254,6 +264,12 @@ const apply = (data) => {
 const fetchData = async () => {
     error.value = false;
 
+    // Sin esto, «Reintentar» sobre un fallo que persiste no vuelve a marcar
+    // error —la comprobación de abajo mira `loading`, que ya está en false— y
+    // el widget se queda enseñando los valores a cero como si fueran datos
+    // buenos. Un cero no es una medida: es que no hay ninguna.
+    const primeraCarga = !cargadoAlgunaVez.value;
+
     try {
         // Con id, el recurso: `data` es un objeto. Sin id, la colección: `data`
         // es una lista y la principal es la primera.
@@ -293,11 +309,12 @@ const fetchData = async () => {
         }
 
         apply(data);
+        cargadoAlgunaVez.value = true;
         subscribe();
     } catch (e) {
         // Sólo se marca error si aún no hay nada que enseñar: si ya había datos
         // en pantalla, un fallo puntual de red no debe borrarlos.
-        if (loading.value) {
+        if (primeraCarga) {
             error.value = true;
         }
 
