@@ -43,14 +43,9 @@
                     const el = document.getElementById('recaptcha-login-token');
                     const rootEl = el ? el.closest('[wire\\:id]') : document.querySelector('[wire\\:id]');
                     if (rootEl) {
-                        const component = window.Livewire.find(rootEl.getAttribute('wire:id'));
-                        if (component) {
-                            if (typeof component.queueUpdate === 'function') {
-                                component.queueUpdate('recaptchaToken', token);
-                            }
-                            if (component.$wire && typeof component.$wire.set === 'function') {
-                                component.$wire.set('recaptchaToken', token, false);
-                            }
+                        const wire = window.Livewire.find(rootEl.getAttribute('wire:id'));
+                        if (wire && typeof wire.set === 'function') {
+                            wire.set('recaptchaToken', token, false);
                         }
                     }
                 }
