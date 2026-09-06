@@ -362,6 +362,11 @@ No se guarda histórico: solo se sobrescribe el último estado y se actualiza
 > delante— se guarda `null`, en vez de meter una privada en una columna que dice
 > «pública».
 >
+> Vale igual cuando el estado viaja agrupado en `hardware_device_info`
+> dentro de una subida de sensores (estación meteorológica, KeyCounter,
+> SmartPlant, AirFlight, energía y carga solar): en las nueve rutas la
+> resuelve el servidor.
+>
 > **Para el cliente:** quitar `ip_public` del cuerpo. No rompe nada dejarlo —se
 > descarta en silencio—, pero el valor que llegue no se guarda.
 

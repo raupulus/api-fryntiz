@@ -371,16 +371,29 @@ class WeatherStationPersistenceTest extends ApiTestCase
             [
                 'hardware_device_id' => $this->device->id,
                 'value' => 21.4,
-                'hardware_device_info' => ['battery_level' => 72, 'cpu' => 33.5],
+                'hardware_device_info' => [
+                    'battery_level' => 72,
+                    'cpu' => 33.5,
+                    'ram' => 41.25,
+                    'ip_public' => '203.0.113.1',
+                ],
             ],
             $this->moduleHeaders($this->user, TokenAbilities::WEATHERSTATION_WRITE)
+                + ['CF-Connecting-IP' => '198.51.100.7']
         )->assertStatus(201);
 
         $this->device->refresh();
 
         $this->assertSame(72, $this->device->battery_level);
         $this->assertEqualsWithDelta(33.5, (float) $this->device->cpu, 0.001);
+        $this->assertEqualsWithDelta(41.25, (float) $this->device->ram, 0.001);
         $this->assertNotNull($this->device->last_seen_at);
+
+        // La IP pública sale de la petición, no de lo que mande el cacharro.
+        // El bloque agrupado se quedaba fuera de esto: sólo la resolvía el
+        // endpoint dedicado de estado, así que las subidas de sensores
+        // guardaban el estado sin IP ninguna.
+        $this->assertSame('198.51.100.7', $this->device->ip_public);
     }
 
     #[Test]
