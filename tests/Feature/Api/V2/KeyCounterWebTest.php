@@ -8,6 +8,7 @@ use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareType;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Tests\Feature\Api\ApiTestCase;
 
 class KeyCounterWebTest extends ApiTestCase
@@ -51,16 +52,64 @@ class KeyCounterWebTest extends ApiTestCase
             'El distintivo «Dispositivo top» debe aparecer una sola vez.'
         );
 
-        $this->assertSame(
-            1,
-            substr_count($html, 'bg-purple-50'),
-            'Sólo una tarjeta puede ir destacada como dispositivo top.'
-        );
-
-        // La tarjeta destacada es la del equipo con más pulsaciones.
-        $tarjeta = substr($html, (int) strpos($html, 'bg-purple-50'), 1500);
+        // La tarjeta destacada es la del equipo con más pulsaciones, y es
+        // única: el ayudante ya comprueba que no hay otra.
+        $tarjeta = $this->tarjetaDestacada();
         $this->assertStringContainsString($top->name_friendly, $tarjeta);
         $this->assertStringContainsString('emoji_events', $tarjeta);
+    }
+
+    /**
+     * El distintivo no está atado a ningún equipo concreto: cuando otro pasa
+     * a acumular más pulsaciones, la tarjeta destacada es la suya.
+     */
+    public function test_top_device_badge_follows_the_new_leader()
+    {
+        [$antiguo, $nuevo] = $this->crearDispositivosConPulsaciones();
+
+        $tarjeta = $this->tarjetaDestacada();
+        $this->assertStringContainsString($antiguo->name_friendly, $tarjeta);
+
+        // El segundo equipo adelanta al primero.
+        Keyboard::create([
+            'user_id' => $nuevo->user_id,
+            'hardware_device_id' => $nuevo->id,
+            'start_at' => now()->subMinutes(10),
+            'end_at' => now(),
+            'duration' => 600,
+            'pulsations' => 5000,
+            'pulsations_special_keys' => 10,
+            'pulsation_average' => 8.3,
+            'score' => 90,
+            'weekday' => 1,
+            'created_at' => now(),
+        ]);
+
+        Cache::forget('keycounter:widgets');
+
+        $tarjeta = $this->tarjetaDestacada();
+        $this->assertStringContainsString($nuevo->name_friendly, $tarjeta);
+        $this->assertStringNotContainsString($antiguo->name_friendly, $tarjeta);
+    }
+
+    /**
+     * Devuelve el HTML de la única tarjeta destacada de la rejilla.
+     */
+    private function tarjetaDestacada(): string
+    {
+        $html = $this->get('/keycounter')->assertStatus(200)->getContent();
+
+        $this->assertSame(1, substr_count($html, 'bg-purple-50'));
+
+        // Se recorta en el arranque de la tarjeta siguiente para no arrastrar
+        // el contenido de los demás dispositivos.
+        $inicio = (int) strpos($html, 'bg-purple-50');
+        $propia = (int) strpos($html, 'rounded-lg p-4 text-center shadow', $inicio);
+        $siguiente = strpos($html, 'rounded-lg p-4 text-center shadow', $propia + 1);
+
+        return $siguiente === false
+            ? substr($html, $inicio)
+            : substr($html, $inicio, $siguiente - $inicio);
     }
 
     /**
