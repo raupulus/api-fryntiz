@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api\Newsletter\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Models\Platform;
+use App\Support\Http\ClientIp;
 
 /**
  * Validación para suscripción a newsletter en API V2.
@@ -79,7 +80,9 @@ class NewsletterSubscribeRequest extends BaseFormRequest
 
         return [
             'language' => $locale ? substr($locale, 0, 2) : 'es',
-            'ip_address' => $this->ip(),
+            // La de origen, no la del proxy: se guarda para poder rastrear
+            // una suscripción y detectar altas masivas.
+            'ip_address' => ClientIp::public($this) ?? $this->ip(),
             'user_agent' => $this->userAgent(),
         ];
     }

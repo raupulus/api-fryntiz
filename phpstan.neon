@@ -1,6 +1,13 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - phpstan-baseline.neon
+    # Deuda de `support/helpers/AEMETHelper.php`, que hasta hoy no se analizaba.
+    # Son 39 avisos heredados; entre ellos hay tres funciones declaradas DENTRO
+    # de métodos (líneas 695, 966 y 1523): PHP las registra en ámbito global al
+    # primer uso, así que una segunda llamada al mismo método en el mismo
+    # proceso lanza «Cannot redeclare function». Con un cron por proceso no se
+    # nota, en un worker de cola sí. Pendiente de reescribir el helper.
+    - phpstan-baseline-support.neon
 
 parameters:
 
@@ -10,6 +17,11 @@ parameters:
         - config/
         - database/
         - routes/
+        # Los helpers globales viven fuera de app/ y estaban sin analizar. Por
+        # eso `AEMETHelper` llamaba a `CapWarnings::desdeTar()` —un método que no
+        # existe, quedó de un renombrado a medias— y el fallo no salió hasta
+        # verlo reventar en producción.
+        - support/
 
     # Level 9 is the highest level
     level: 5

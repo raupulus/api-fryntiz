@@ -7,6 +7,7 @@ namespace App\Http\Requests\Api\Hardware\V2;
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Rules\DeviceStatusPayload;
 use App\Rules\OwnedHardwareDevice;
+use App\Support\Http\ClientIp;
 
 /**
  * Validación para almacenar el último estado conocido de un dispositivo en la
@@ -72,6 +73,25 @@ class StoreDeviceStatusRequest extends BaseFormRequest
         if ($allowed !== []) {
             $this->merge($allowed);
         }
+    }
+
+    /**
+     * La IP pública la pone el servidor, no el cacharro.
+     *
+     * El dispositivo sabe su IP de la intranet y la manda en `ip_local`; la
+     * pública no la conoce de forma fiable —tendría que preguntársela a un
+     * servicio externo cada vez— y, si la manda, no hay forma de comprobar que
+     * dice la verdad. Aquí ya viene en la petición: se saca de la cabecera que
+     * escribe el proxy ({@see ClientIp}).
+     *
+     * Se sobreescribe siempre lo que mande el cliente. Si no se puede
+     * determinar ninguna IP pública —desarrollo, o una NAT sin proxy delante—
+     * se deja a null en vez de guardar una privada, que sería mentir en la
+     * columna.
+     */
+    protected function passedValidation(): void
+    {
+        $this->merge(['ip_public' => ClientIp::public($this)]);
     }
 
     public function rules(): array

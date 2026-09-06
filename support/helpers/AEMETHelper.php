@@ -113,7 +113,7 @@ class AEMETHelper
             return [];
         }
 
-        return CapWarnings::desdeTar($paquete);
+        return CapWarnings::fromTar($paquete);
     }
 
     /**
@@ -1366,15 +1366,19 @@ class AEMETHelper
             $dayEndAt = (clone $dayStartAt)->endOfDay();
 
             // # Salida del sol y ocaso
-            $sunriseArray = explode(':', $day['orto']);
-            $sunsetArray = explode(':', $day['ocaso']);
+            // `explode()` devuelve cadenas, y Carbon 3 dejó de aceptarlas:
+            // `setHour('07')` lanza «Argument #2 ($value) must be of type
+            // Month|int|float|null, string given» y se lleva por delante toda la
+            // predicción horaria. El cast es lo que faltaba.
+            $sunriseArray = explode(':', (string) $day['orto']);
+            $sunsetArray = explode(':', (string) $day['ocaso']);
             $sunrise = (clone $dayStartAt)
-                ->setHour($sunriseArray[0])
-                ->setMinute($sunriseArray[1])
+                ->setHour((int) $sunriseArray[0])
+                ->setMinute((int) ($sunriseArray[1] ?? 0))
                 ->setSecond(0);
             $sunset = (clone $dayStartAt)
-                ->setHour($sunsetArray[0])
-                ->setMinute($sunsetArray[1])
+                ->setHour((int) $sunsetArray[0])
+                ->setMinute((int) ($sunsetArray[1] ?? 0))
                 ->setSecond(0);
 
             // # Aquí almaceno el array final para el día en la iteración actual

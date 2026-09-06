@@ -1,0 +1,145 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Argument of an invalid type bool\|string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Binary operation "\-" between string and 1 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 4
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Binary operation "\-" between string and string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-list\<string\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
+			identifier: class.notFound
+			count: 4
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Function extractDateFromUnknownLine not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Function extractDateFromUnknownLine\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Function getCharsRangeFromString not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Inner named functions are not supported by PHPStan\. Consider refactoring to an anonymous function, class method, or a top\-level\-defined function\. See issue \#165 \(https\://github\.com/phpstan/phpstan/issues/165\) for more details\.$#'
+			identifier: function.inner
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Invalid array key type float\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Method AEMETHelper\:\:getContamination\(\) should return string\|null but empty return statement found\.$#'
+			identifier: return.empty
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Method AEMETHelper\:\:getContamination\(\) should return string\|null but returns array\<int\<0, max\>, array\<string, mixed\>\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Method AEMETHelper\:\:getConventionalObservationData\(\) with return type void returns bool\|string\|null but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Method AEMETHelper\:\:getPredictionBeachById\(\) should return array but returns null\.$#'
+			identifier: return.type
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Method AEMETHelper\:\:getPredictionHourly\(\) should return bool\|string\|null but returns list\<array\<string, mixed\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Offset ''prediccion'' does not exist on non\-empty\-string\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Offset ''situacion'' does not exist on non\-empty\-string\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Offset float does not exist on non\-empty\-list\<string\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, string\|true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Static property AEMETHelper\:\:\$API_KEY is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Static property AEMETHelper\:\:\$CITY is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Used function App\\Models\\WeatherStation\\extractRange not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: support/helpers/AEMETHelper.php
+
+		-
+			message: '#^Variable \$curl2 might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: support/helpers/AEMETHelper.php

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Contact\V2\ContactSendRequest;
 use App\Services\Contact\ContactService;
 use App\Services\RecaptchaService;
+use App\Support\Http\ClientIp;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -29,9 +30,14 @@ class ContactMessageController extends BaseApiController
 
     public function store(ContactSendRequest $request): JsonResponse
     {
+        // La IP que interesa aquí es la del visitante, no la del proxy: es la
+        // que Google usa para valorar el riesgo, y la que se guarda con el
+        // mensaje. Cae a la IP de conexión si no hay proxy delante.
+        $ipOrigen = ClientIp::public($request) ?? $request->ip();
+
         $captcha = $this->recaptchaService->verify(
             $request->validated('g-recaptcha-response'),
-            $request->ip(),
+            $ipOrigen,
         );
 
         // Un captcha inválido con claves configuradas sí se rechaza de plano:
@@ -43,7 +49,7 @@ class ContactMessageController extends BaseApiController
         $this->contactService->register(
             $request->validated(),
             [
-                'ip' => $request->ip(),
+                'ip' => $ipOrigen,
                 'user_agent' => $request->userAgent(),
                 'referer' => $request->header('referer'),
                 'accept_language' => $request->header('accept-language'),
