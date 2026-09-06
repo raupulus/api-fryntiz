@@ -26,7 +26,7 @@
   Hay dos familias de token que nunca se mezclan:
   - **Token de sesión** (ability `session`): lo emite este módulo. Es el que
     usa una persona desde una app/web propia.
-  - **Token de dispositivo IoT** (abilities de módulo: `hardwareenergy:write`,
+  - **Token de dispositivo IoT** (abilities de módulo: `energy:write`,
     `weatherstation:write`, etc. + `device:{id}`, [catálogo completo
     abajo](#catálogo-de-abilities-de-módulo)): se emite desde aquí mismo
     (`POST /auth/tokens/devices`) pero se usa contra los demás módulos, nunca
@@ -177,8 +177,8 @@ de adorno: cada una la exige alguna ruta.**
 |---|---|
 | `hardware:read` | Listar dispositivos y ver su ficha (`GET /hardware/devices*`) |
 | `hardware:write` | Último estado conocido del aparato (`PUT /hardware/devices/{id}/status`) |
-| `hardwareenergy:read` | Consultar lecturas de energía y solares (`GET /hardware/energy-readings`, `GET /hardware/solar-readings`) |
-| `hardwareenergy:write` | Subirlas (`POST` de esas dos rutas). Es la de un controlador solar o un contador de consumo |
+| `energy:read` | Consultar lecturas de energía y solares (`GET /energy/readings`, `GET /energy/solar-readings`) |
+| `energy:write` | Subirlas (`POST` de esas dos rutas). Es la de un controlador solar o un contador de consumo |
 | `weatherstation:read` | Estaciones y el histórico de sus sensores (`GET /weather-stations*`) |
 | `weatherstation:write` | Subir lecturas de sensores (`POST /weather-stations/{id}/*`) |
 | `keycounter:read` | Sesiones de teclado y ratón (`GET /keycounter/*`) |
@@ -190,11 +190,11 @@ de adorno: cada una la exige alguna ruta.**
 
 Cambios del **2026-09-06**:
 
-- **Energía se separa de Hardware.** `hardwareenergy:read/write` son nuevas;
+- **Energía se separa de Hardware.** `energy:read/write` son nuevas;
   antes las lecturas de energía y solares iban con `hardware:*`. A los tokens ya
   emitidos se les añadió la nueva en el mismo despliegue, así que ningún
   cacharro dejó de subir. Los tokens nuevos de un aparato de energía llevan
-  `hardwareenergy:write` y no necesitan `hardware:write`.
+  `energy:write` y no necesitan `hardware:write`.
 - **`weatherstation:read` y `airflight:read` empiezan a mandar.** Las lecturas
   de esos dos módulos eran públicas y esas dos abilities no protegían nada.
   Ahora exigen token; lo que consume la web propia se sirve desde el bloque web

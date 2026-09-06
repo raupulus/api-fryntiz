@@ -90,7 +90,7 @@ planta**, y por eso ahora cuelga de ella (fase 5).
 
 El `POST` admite además una clave opcional `hardware_device_info` con el
 último estado del propio dispositivo (batería, temperatura, uptime...), igual
-que `/hardware/energy-readings` y `/hardware/solar-readings` (mismo trait
+que `/energy/readings` y `/energy/solar-readings` (mismo trait
 `HandlesHardwareDeviceInfo`). Contrato completo en
 [`docs/info/hardware.md`](hardware.md) y en
 [`docs/info/api/v2/smart-plant.md`](api/v2/smart-plant.md).

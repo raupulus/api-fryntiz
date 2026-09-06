@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\Hardware\V2;
+namespace App\Http\Controllers\Api\Energy\V2;
 
 use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
-use App\Http\Requests\Api\Hardware\V2\StoreEnergyRequest;
-use App\Http\Resources\V2\Hardware\EnergyMonitorResource;
+use App\Http\Requests\Api\Energy\V2\StoreEnergyRequest;
+use App\Http\Resources\V2\Energy\EnergyMonitorResource;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerLoad;
 use App\Services\Hardware\HardwareService;
@@ -29,7 +29,7 @@ class EnergyMonitorController extends BaseApiController
     /**
      * Lecturas de energía, paginadas.
      *
-     * Exige `hardwareenergy:read`. Consumo y generación viven en dos tablas
+     * Exige `energy:read`. Consumo y generación viven en dos tablas
      * distintas —comparten columnas por el trait `IsEnergyReading`, no la
      * tabla—, así que se elige con `?type=load|generator`; por defecto,
      * consumo.

@@ -20,7 +20,7 @@ recursos en plural, sub-recursos anidados bajo su padre. El fallback
 `{success, message}`, para cualquier método y ruta no reconocida.
 
 ⚠️ El renombrado a este esquema (recursos en plural, `/auth/tokens` en vez de
-`/auth/login`, `/hardware/energy-readings` en vez de `/hardware/energy/store`,
+`/auth/login`, `/energy/readings` en vez de `/hardware/energy/store`,
 etc.) sustituyó por completo las rutas de escritura IoT anteriores **sin
 alias de compatibilidad**. Antes de desplegar a un entorno con dispositivos
 físicos reales enviando datos, confirma que su firmware ya apunta a las
@@ -254,11 +254,21 @@ el 2026-09-02 sólo Hardware tenía `:read` y las GET de KeyCounter y SmartPlant
 se protegían con la ability de **escritura**, así que el token de un teclado
 podía listar todas las sesiones y plantas de su dueño (AR-S02).
 
+**Un módulo, un contrato.** Cada fichero de esta carpeta se puede copiar entero
+a un cliente o pegar en el contexto de una IA y basta para integrar ese módulo.
+
+**`hardware` es el dispositivo y nada más**: inventario y salud (IP, uptime,
+CPU, RAM, discos, temperatura, batería). Lo que un dispositivo *mide* pertenece
+al módulo de su materia, y todos cuelgan de un `hardware_device_id`: energía,
+estación meteorológica, KeyCounter, SmartPlant, AirFlight. Las lecturas de
+energía estuvieron dentro de `/hardware` hasta el 2026-09-06 y era una excepción
+sin motivo.
+
 | Módulo | Contrato | Rutas |
 |---|---|---|
 | Estación meteorológica | [`weather-station.md`](weather-station.md) | `GET /api/v2/weather-stations`, `GET .../{station}`, `GET .../zone/{zone}` y `GET .../{station}/{sensor}` (`weatherstation:read`), `POST .../{station}/readings` y `POST .../{station}/{sensor}` (`weatherstation:write`) |
-| Hardware | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices` y `GET .../{device}` (`hardware:read`; el `serial_number` sale **sólo en el detalle**), `PUT .../{device}/status` (`hardware:write`) |
-| Hardware Energy | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/energy-readings` y `GET .../solar-readings` (`hardwareenergy:read`), `POST` de las mismas (`hardwareenergy:write`). Módulo aparte desde el 2026-09-06: subir vatios y reescribir el estado del aparato son permisos distintos |
+| Hardware (el dispositivo) | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices` y `GET .../{device}` (`hardware:read`; el `serial_number` sale **sólo en el detalle**), `PUT .../{device}/status` (`hardware:write`) |
+| Energía | [`energy.md`](energy.md) | `GET /api/v2/energy/readings` y `GET .../solar-readings` (`energy:read`), `POST` de las mismas (`energy:write`) |
 | Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET /api/v2/keycounter/{keyboard,mouse}-sessions` (`keycounter:read`), `POST` de las mismas (`keycounter:write`) |
 | Plantas inteligentes | [`smart-plant.md`](smart-plant.md) | `GET /api/v2/smartplant/plants` y `GET .../{plant}/readings` (`smartplant:read`), `POST .../{plant}/readings` (`smartplant:write`) |
 | Registro de vuelos | [`airflight.md`](airflight.md) | `GET /api/v2/airflight/aircrafts` y `GET /api/v2/airflight/receiver` (`airflight:read`), `POST /api/v2/airflight/aircrafts` y `.../batch` (`airflight:write`) |

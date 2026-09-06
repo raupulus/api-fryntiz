@@ -42,9 +42,9 @@ final class TokenAbilities
 
     public const HARDWARE_WRITE = 'hardware:write';
 
-    public const HARDWAREENERGY_READ = 'hardwareenergy:read';
+    public const ENERGY_READ = 'energy:read';
 
-    public const HARDWAREENERGY_WRITE = 'hardwareenergy:write';
+    public const ENERGY_WRITE = 'energy:write';
 
     public const WEATHERSTATION_READ = 'weatherstation:read';
 
@@ -79,13 +79,17 @@ final class TokenAbilities
      * A un dispositivo se le emite **sólo** la de escritura de su módulo. La de
      * lectura es para un panel o un cliente que consulte datos.
      *
-     * **Hardware y Hardware Energy son módulos distintos** desde el 2026-09-06.
-     * `hardware:*` es el aparato en sí —inventario y último estado conocido—, y
-     * `hardwareenergy:*` son sus lecturas de energía, vengan de un controlador
-     * solar o de una pinza de consumo. Hasta esa fecha las lecturas solares y
-     * de energía iban con `hardware:write`, así que el token de un contador de
-     * consumo también podía reescribir el estado del aparato: son cosas que se
-     * conceden por separado.
+     * **Hay una ability por módulo, y `hardware` es sólo el aparato.**
+     * `hardware:*` es el dispositivo en sí: inventario y salud —IP, uptime,
+     * CPU, RAM, discos, temperatura—. Lo que el dispositivo *mide* pertenece al
+     * módulo de su materia, y todos cuelgan de un `hardware_device_id`:
+     * `energy:*`, `weatherstation:*`, `keycounter:*`, `smartplant:*`,
+     * `airflight:*`.
+     *
+     * Las lecturas de energía iban con `hardware:write` hasta el 2026-09-06, lo
+     * que era una excepción sin motivo —ningún otro módulo estaba dentro de
+     * hardware— y además metía dos permisos en la misma casilla: el token de un
+     * contador de consumo también podía reescribir la salud del aparato.
      *
      * Ninguna ability de este catálogo está sin usar: cada una la exige alguna
      * ruta. Las que no protegían nada —las lecturas públicas de la estación
@@ -97,8 +101,8 @@ final class TokenAbilities
     public const MODULE_ABILITIES = [
         self::HARDWARE_READ => 'Hardware lectura',
         self::HARDWARE_WRITE => 'Hardware escritura',
-        self::HARDWAREENERGY_READ => 'Hardware Energy lectura',
-        self::HARDWAREENERGY_WRITE => 'Hardware Energy escritura',
+        self::ENERGY_READ => 'Energía lectura',
+        self::ENERGY_WRITE => 'Energía escritura',
         self::WEATHERSTATION_READ => 'WeatherStation lectura',
         self::WEATHERSTATION_WRITE => 'WeatherStation escritura',
         self::KEYCOUNTER_READ => 'KeyCounter lectura',
@@ -121,9 +125,9 @@ final class TokenAbilities
      */
     public const MODULE_ABILITY_HINTS = [
         self::HARDWARE_READ => 'Listar tus dispositivos y ver su ficha.',
-        self::HARDWARE_WRITE => 'Actualizar el último estado del dispositivo (IP, uptime, RAM, batería…).',
-        self::HARDWAREENERGY_READ => 'Consultar las lecturas de energía y las del controlador solar.',
-        self::HARDWAREENERGY_WRITE => 'Subir lecturas de energía y del controlador solar. Es la de un contador de consumo o unas placas.',
+        self::HARDWARE_WRITE => 'Actualizar la salud del dispositivo (IP, uptime, CPU, RAM, discos, temperatura).',
+        self::ENERGY_READ => 'Consultar las lecturas de energía y las del controlador solar.',
+        self::ENERGY_WRITE => 'Subir lecturas de energía y del controlador solar. Es la de un contador de consumo o unas placas.',
         self::WEATHERSTATION_READ => 'Consultar estaciones y el histórico de sus sensores.',
         self::WEATHERSTATION_WRITE => 'Subir lecturas de sensores de una estación.',
         self::KEYCOUNTER_READ => 'Consultar tus sesiones de teclado y ratón.',

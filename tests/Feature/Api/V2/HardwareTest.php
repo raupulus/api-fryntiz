@@ -56,15 +56,15 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function cannot_store_energy_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('hardware/energy-readings'), [], $this->guestHeaders());
+        $response = $this->postJson($this->apiUrl('energy/readings'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function store_energy_validates_required_fields(): void
     {
-        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWAREENERGY_WRITE);
-        $response = $this->postJson($this->apiUrl('hardware/energy-readings'), [], $headers);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::ENERGY_WRITE);
+        $response = $this->postJson($this->apiUrl('energy/readings'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);
     }
@@ -72,15 +72,15 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function cannot_store_solar_reading_unauthenticated(): void
     {
-        $response = $this->postJson($this->apiUrl('hardware/solar-readings'), [], $this->guestHeaders());
+        $response = $this->postJson($this->apiUrl('energy/solar-readings'), [], $this->guestHeaders());
         $this->assertErrorResponse($response, 401);
     }
 
     #[Test]
     public function store_solar_reading_validates_required_fields(): void
     {
-        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWAREENERGY_WRITE);
-        $response = $this->postJson($this->apiUrl('hardware/solar-readings'), [], $headers);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::ENERGY_WRITE);
+        $response = $this->postJson($this->apiUrl('energy/solar-readings'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);
     }

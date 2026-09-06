@@ -172,14 +172,14 @@ php artisan iot:device-token {device_id} --abilities={scope} [--expires={días}]
 **Abilities disponibles.** Son las de
 `App\Support\Auth\TokenAbilities::MODULE_ABILITIES`, y el comando rechaza
 cualquier otra. `energy:write` figuraba aquí y **nunca ha existido**: la ability
-de energía es `hardwareenergy:write`.
+de energía es `energy:write`.
 
 | Ability | Qué abre |
 |---------|----------|
 | `hardware:read` | Listar dispositivos y ver su ficha |
 | `hardware:write` | Último estado conocido del aparato (`PUT .../status`) |
-| `hardwareenergy:read` | Consultar lecturas de energía y solares |
-| `hardwareenergy:write` | Subirlas. Es la de un controlador solar o un contador de consumo |
+| `energy:read` | Consultar lecturas de energía y solares |
+| `energy:write` | Subirlas. Es la de un controlador solar o un contador de consumo |
 | `weatherstation:read` | Estaciones e histórico de sensores |
 | `weatherstation:write` | Subir lecturas de sensores |
 | `keycounter:read` | Sesiones de teclado y ratón |
@@ -196,10 +196,10 @@ de energía es `hardwareenergy:write`.
 php artisan iot:device-token 10 --abilities=weatherstation:write --expires=365
 
 # Controlador solar: sólo sube lecturas de energía
-php artisan iot:device-token 7 --abilities=hardwareenergy:write
+php artisan iot:device-token 7 --abilities=energy:write
 
 # El mismo, si además manda el estado del aparato (IP, uptime, RAM)
-php artisan iot:device-token 7 --abilities=hardwareenergy:write --abilities=hardware:write
+php artisan iot:device-token 7 --abilities=energy:write --abilities=hardware:write
 
 # Token permanente para dispositivo concreto
 php artisan iot:device-token 3 --abilities=smartplant:write

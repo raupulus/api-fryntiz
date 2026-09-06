@@ -146,13 +146,13 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'keycounter:write'
+          - 'hardware:read'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
           - 'hardware:write'
-          - 'hardwareenergy:read'
-          - 'hardwareenergy:write'
+          - 'energy:read'
+          - 'energy:write'
           - 'weatherstation:read'
           - 'weatherstation:write'
           - 'keycounter:read'
@@ -189,7 +189,7 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'keycounter:write'
+        - 'hardware:read'
       name: 'n'
       expires_at: '2052-09-30'
     fileParameters: []
@@ -401,7 +401,7 @@ endpoints:
         name: contactme
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -436,7 +436,7 @@ endpoints:
       subject: i
       message: 'y'
       privacity: true
-      contactme: true
+      contactme: false
       attributes:
         - v
       g-recaptcha-response: architecto
@@ -1762,287 +1762,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v2/hardware/devices
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Dispositivos del usuario autenticado.'
-      description: '?type=laptop,raspberry'
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"success":false,"message":"Unauthenticated"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          content-language: en
-          vary: 'Accept-Language, Origin'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/v2/hardware/devices/{id}'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Un dispositivo del usuario autenticado.'
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the device.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: architecto
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 404
-        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '29'
-          content-language: en
-          vary: 'Accept-Language, Origin'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: 'api/v2/hardware/devices/{device_id}/status'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Sustituye el último estado conocido del dispositivo.'
-      description: |-
-        PUT y no POST: no se está creando un recurso nuevo cada vez, se está
-        sobrescribiendo el mismo. Repetir la petición deja el sistema igual.
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      device_id:
-        custom: []
-        name: device_id
-        description: 'The ID of the device.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      device_id: architecto
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      hardware_device_id:
-        custom: []
-        name: hardware_device_id
-        description: 'Must match an existing stored value.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      temp:
-        custom: []
-        name: temp
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      voltage:
-        custom: []
-        name: voltage
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_level:
-        custom: []
-        name: battery_level
-        description: 'Must be between 0 and 100.'
-        required: false
-        example: 0
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      cpu:
-        custom: []
-        name: cpu
-        description: 'Must be between 0 and 100.'
-        required: false
-        example: 0
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      disk:
-        custom: []
-        name: disk
-        description: 'Must be between 0 and 100.'
-        required: false
-        example: 0
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      ram:
-        custom: []
-        name: ram
-        description: 'Must be between 0 and 100.'
-        required: false
-        example: 1
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      uptime:
-        custom: []
-        name: uptime
-        description: 'Must be at least 0.'
-        required: false
-        example: 42
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      ip_local:
-        custom: []
-        name: ip_local
-        description: 'Must be a valid IP address.'
-        required: false
-        example: 1.102.226.211
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      ip_public:
-        custom: []
-        name: ip_public
-        description: 'Must be a valid IP address.'
-        required: false
-        example: 1.102.226.211
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      extra:
-        custom: []
-        name: extra
-        description: ''
-        required: false
-        example: null
-        type: 'string[]'
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      hardware_device_id: 16
-      temp: 4326.41688
-      voltage: 4326.41688
-      battery_level: 0
-      cpu: 0
-      disk: 0
-      ram: 1
-      uptime: 42
-      ip_local: 1.102.226.211
-      ip_public: 1.102.226.211
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v2/hardware/energy-readings
+    uri: api/v2/energy/readings
     metadata:
       custom: []
       groupName: Endpoints
@@ -2051,7 +1771,7 @@ endpoints:
       subgroupDescription: ''
       title: 'Lecturas de energía, paginadas.'
       description: |-
-        Exige `hardwareenergy:read`. Consumo y generación viven en dos tablas
+        Exige `energy:read`. Consumo y generación viven en dos tablas
         distintas —comparten columnas por el trait `IsEnergyReading`, no la
         tabla—, así que se elige con `?type=load|generator`; por defecto,
         consumo.
@@ -2094,7 +1814,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v2/hardware/solar-readings
+    uri: api/v2/energy/solar-readings
     metadata:
       custom: []
       groupName: Endpoints
@@ -2103,7 +1823,7 @@ endpoints:
       subgroupDescription: ''
       title: 'Lecturas del controlador solar, paginadas.'
       description: |-
-        Exige `hardwareenergy:read`. Sólo devuelve lecturas de dispositivos del
+        Exige `energy:read`. Sólo devuelve lecturas de dispositivos del
         usuario y, si el token está ligado a dispositivos concretos
         (`device:{id}`), sólo las de ésos: un token de cacharro no lee el resto
         del parque de su dueño.
@@ -2143,7 +1863,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v2/hardware/energy-readings
+    uri: api/v2/energy/readings
     metadata:
       custom: []
       groupName: Endpoints
@@ -2203,7 +1923,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T18:11:50'
+        example: '2026-09-06T18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2336,7 +2056,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T18:11:50'
+        example: '2026-09-06T18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2367,7 +2087,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-06T18:11:50'
+      read_at: '2026-09-06T18:30:15'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2380,7 +2100,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-06T18:11:50'
+          read_at: '2026-09-06T18:30:15'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2394,7 +2114,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v2/hardware/solar-readings
+    uri: api/v2/energy/solar-readings
     metadata:
       custom: []
       groupName: Endpoints
@@ -2440,7 +2160,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T18:11:50'
+        example: '2026-09-06T18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2451,7 +2171,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T18:11:50'
+        example: '2026-09-06T18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2638,7 +2358,7 @@ endpoints:
         name: light_status
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -2921,8 +2641,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-06T18:11:50'
-      read_at: '2026-09-06T18:11:50'
+      date: '2026-09-06T18:30:15'
+      read_at: '2026-09-06T18:30:15'
       hardware: 'n'
       version: g
       serial_number: z
@@ -2939,7 +2659,7 @@ endpoints:
       delta_seconds: 27
       charging_status: 16
       charging_status_label: 'n'
-      light_status: true
+      light_status: false
       light_brightness: 7
       load_voltage: 4326.41688
       load_current: 4326.41688
@@ -2965,6 +2685,286 @@ endpoints:
       system_voltage: 4326.41688
       system_intensity: 4326.41688
       nominal_battery_capacity: 77
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v2/hardware/devices
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Dispositivos del usuario autenticado.'
+      description: '?type=laptop,raspberry'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/hardware/devices/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Un dispositivo del usuario autenticado.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the device.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '29'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/v2/hardware/devices/{device_id}/status'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Sustituye el último estado conocido del dispositivo.'
+      description: |-
+        PUT y no POST: no se está creando un recurso nuevo cada vez, se está
+        sobrescribiendo el mismo. Repetir la petición deja el sistema igual.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      device_id:
+        custom: []
+        name: device_id
+        description: 'The ID of the device.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      device_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      hardware_device_id:
+        custom: []
+        name: hardware_device_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      temp:
+        custom: []
+        name: temp
+        description: ''
+        required: false
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      voltage:
+        custom: []
+        name: voltage
+        description: ''
+        required: false
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      battery_level:
+        custom: []
+        name: battery_level
+        description: 'Must be between 0 and 100.'
+        required: false
+        example: 0
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cpu:
+        custom: []
+        name: cpu
+        description: 'Must be between 0 and 100.'
+        required: false
+        example: 0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      disk:
+        custom: []
+        name: disk
+        description: 'Must be between 0 and 100.'
+        required: false
+        example: 0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      ram:
+        custom: []
+        name: ram
+        description: 'Must be between 0 and 100.'
+        required: false
+        example: 1
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uptime:
+        custom: []
+        name: uptime
+        description: 'Must be at least 0.'
+        required: false
+        example: 42
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      ip_local:
+        custom: []
+        name: ip_local
+        description: 'Must be a valid IP address.'
+        required: false
+        example: 1.102.226.211
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      ip_public:
+        custom: []
+        name: ip_public
+        description: 'Must be a valid IP address.'
+        required: false
+        example: 1.102.226.211
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      extra:
+        custom: []
+        name: extra
+        description: ''
+        required: false
+        example: null
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      hardware_device_id: 16
+      temp: 4326.41688
+      voltage: 4326.41688
+      battery_level: 0
+      cpu: 0
+      disk: 0
+      ram: 1
+      uptime: 42
+      ip_local: 1.102.226.211
+      ip_public: 1.102.226.211
     fileParameters: []
     responses: []
     responseFields: []
@@ -3129,7 +3129,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:11:50'
+        example: '2026-09-06 18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3140,7 +3140,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:11:50'
+        example: '2026-09-06 18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3215,8 +3215,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 18:11:50'
-      end_at: '2026-09-06 18:11:50'
+      start_at: '2026-09-06 18:30:15'
+      end_at: '2026-09-06 18:30:15'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3291,7 +3291,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:11:50'
+        example: '2026-09-06 18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3302,7 +3302,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:11:50'
+        example: '2026-09-06 18:30:15'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3388,8 +3388,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 18:11:50'
-      end_at: '2026-09-06 18:11:50'
+      start_at: '2026-09-06 18:30:15'
+      end_at: '2026-09-06 18:30:15'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3669,7 +3669,7 @@ endpoints:
         name: vaporizer_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3686,7 +3686,7 @@ endpoints:
       soil_humidity_raw: 16
       full_water_tank: true
       waterpump_enabled: true
-      vaporizer_enabled: true
+      vaporizer_enabled: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -3725,7 +3725,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - light
+          - lightning
         type: 'string[]'
         enumValues:
           - temperature
@@ -3754,7 +3754,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - light
+        - lightning
       location_type: indoor
     fileParameters: []
     responses:
@@ -3818,7 +3818,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - humidity
+          - lightning
         type: 'string[]'
         enumValues:
           - temperature
@@ -3834,7 +3834,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - humidity
+        - lightning
     fileParameters: []
     responses:
       -

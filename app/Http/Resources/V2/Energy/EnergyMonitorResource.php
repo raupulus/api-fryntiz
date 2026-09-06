@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\V2\Hardware;
+namespace App\Http\Resources\V2\Energy;
 
 use App\Models\Hardware\HardwarePowerLoad;
 use Illuminate\Http\Request;

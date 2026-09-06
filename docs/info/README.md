@@ -9,7 +9,8 @@
 | Archivo | Módulo | Descripción |
 |---------|--------|-------------|
 | [weather-station.md](weather-station.md) | Estación Meteorológica | Sensores meteorológicos + integración AEMET |
-| [hardware.md](hardware.md) | Hardware y Energía | Elementos energéticos, instalaciones, lecturas, resúmenes y acumulados |
+| [hardware.md](hardware.md) | Hardware | El dispositivo en sí: inventario, componentes y salud (IP, uptime, CPU, RAM, discos, temperatura) |
+| [energy.md](energy.md) | Energía | Controlador solar y monitores de consumo: elementos, instalaciones, lecturas, resúmenes y acumulados |
 | [hardware/renogy-rover.md](hardware/renogy-rover.md) | Renogy Rover | Mapa Modbus del controlador solar y cómo entra cada bloque |
 | [printers.md](printers.md) | Impresoras | Gestión de impresoras y cola de impresión |
 | [keycounter.md](keycounter.md) | Contador de Pulsaciones | Teclado y ratón: pulsaciones, clicks, estadísticas |

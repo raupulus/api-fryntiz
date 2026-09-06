@@ -7,10 +7,10 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Reparte las abilities de energía a los tokens que ya están en la calle.
+ * Da la ability de energía a los tokens que ya están en la calle.
  *
- * Las lecturas solares y de energía se cobraban con `hardware:write` y pasan a
- * exigir `hardwareenergy:write`. Los tokens ya emitidos —los que llevan grabados
+ * Energía pasa a ser su propio módulo (`energy:*`); antes sus lecturas se
+ * cobraban con `hardware:write`. Los tokens ya emitidos —los que llevan grabados
  * los cacharros— no se enteran de ese cambio: al desplegar, un controlador solar
  * que hasta ese momento subía correctamente empezaría a comerse un 403 en cada
  * envío, sin que nadie lo mire hasta que se echen en falta los datos.
@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\DB;
  *
  * Reemitir los tokens a mano habría sido lo «limpio», y también subir a la
  * azotea a reflashear cada cacharro.
+ *
+ * Si no hay ningún token emitido, esta migración no hace nada y no pasa nada.
  */
 return new class extends Migration
 {
@@ -29,8 +31,8 @@ return new class extends Migration
      * Ability de partida y la que se le añade.
      */
     private const REPARTO = [
-        TokenAbilities::HARDWARE_WRITE => TokenAbilities::HARDWAREENERGY_WRITE,
-        TokenAbilities::HARDWARE_READ => TokenAbilities::HARDWAREENERGY_READ,
+        TokenAbilities::HARDWARE_WRITE => TokenAbilities::ENERGY_WRITE,
+        TokenAbilities::HARDWARE_READ => TokenAbilities::ENERGY_READ,
     ];
 
     public function up(): void
@@ -49,7 +51,7 @@ return new class extends Migration
     /**
      * Retira las abilities nuevas y deja los tokens como estaban.
      *
-     * Un token que tuviera `hardwareenergy:*` sin la de hardware correspondiente
+     * Un token que tuviera `energy:*` sin la de hardware correspondiente
      * no lo emitió esta migración, así que se respeta.
      */
     public function down(): void

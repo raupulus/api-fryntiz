@@ -15,7 +15,7 @@ qué significa una unidad.
 ## Cómo llega el dato
 
 ```
-Renogy Rover ──RS232──► Raspberry Pi Pico ──HTTP──► POST /api/v2/hardware/solar-readings
+Renogy Rover ──RS232──► Raspberry Pi Pico ──HTTP──► POST /api/v2/energy/solar-readings
    (Modbus)                (firmware)                  StoreSolarReadingRequest
                                                               │  traduce nombres
                                                               ▼
@@ -141,7 +141,7 @@ es un dato, no una ausencia de dato.
 
 - Cómo se guarda todo esto: [`../hardware.md`](../hardware.md)
 - Firmware que lee el Modbus: repositorio `rpi-pico-monitor-renogy-rover-li-solar-controller`
-- Endpoint: `POST /api/v2/hardware/solar-readings`
+- Endpoint: `POST /api/v2/energy/solar-readings`
 
 ---
 

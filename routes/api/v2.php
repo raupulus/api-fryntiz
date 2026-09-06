@@ -126,6 +126,7 @@ Route::prefix('platforms')->group(function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__.'/../airflight/v2.php';
+require __DIR__.'/../energy/v2.php';
 require __DIR__.'/../hardware/v2.php';
 require __DIR__.'/../keycounter/v2.php';
 require __DIR__.'/../smart_plant/v2.php';

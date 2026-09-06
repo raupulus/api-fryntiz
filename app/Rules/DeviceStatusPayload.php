@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Validator;
  * (`PUT /hardware/devices/{device}/status`, con su `StoreDeviceStatusRequest`).
  * Por los otros cinco entraba sin pasar por nada (auditoría AR-V01):
  *
- *   POST /hardware/energy-readings
- *   POST /hardware/solar-readings
+ *   POST /energy/readings
+ *   POST /energy/solar-readings
  *   POST /weather-stations/{station}/readings
  *   POST /keycounter/{keyboard,mouse}-sessions
  *   POST /smartplant/plants/{plant}/readings

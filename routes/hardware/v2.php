@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\Hardware\V2\EnergyMonitorController;
 use App\Http\Controllers\Api\Hardware\V2\HardwareDeviceController;
-use App\Http\Controllers\Api\Hardware\V2\SolarReadingController;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +17,14 @@ use Illuminate\Support\Facades\Route;
 | Y el estado del dispositivo pasa de `POST /hardware/device-status` a
 | `PUT /hardware/devices/{device}/status`: es «el último estado conocido», se
 | sobrescribe, y repetir la petición tiene que dejar el sistema igual.
+|
+| **Este módulo es el aparato y nada más**: inventario y salud —IP, uptime, CPU,
+| RAM, discos, temperatura, batería—. Lo que el aparato *mide* vive en el módulo
+| de su materia, todos ellos colgados de un `hardware_device_id`: energía en
+| `routes/energy/v2.php`, sensores en `routes/weather_station/v2.php`,
+| pulsaciones en `routes/keycounter/v2.php`, plantas y vuelos en los suyos.
+| Las lecturas de energía estuvieron aquí hasta el 2026-09-06 y no tenía
+| sentido: ningún otro módulo estaba dentro de hardware.
 |
 */
 
@@ -45,23 +51,5 @@ Route::prefix('hardware')->group(function () {
         Route::put('/devices/{device}/status', [HardwareDeviceController::class, 'updateStatus'])
             ->whereNumber('device')
             ->name('api.v2.hardware.devices.status.update');
-    });
-
-    // # Energía: módulo aparte, con sus propias abilities.
-    //
-    // Las lecturas de energía —de un controlador solar o de una pinza de
-    // consumo— iban con `hardware:write` hasta el 2026-09-06. Eso metía dos
-    // permisos distintos en la misma casilla: el token de un contador de
-    // consumo, que sólo tiene que mandar vatios, también podía reescribir el
-    // último estado conocido del aparato. Un cacharro de energía lleva ahora
-    // `hardwareenergy:write` y nada más.
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWAREENERGY_READ, 'throttle:api'])->group(function () {
-        Route::get('/energy-readings', [EnergyMonitorController::class, 'index'])->name('api.v2.hardware.energy_readings.index');
-        Route::get('/solar-readings', [SolarReadingController::class, 'index'])->name('api.v2.hardware.solar_readings.index');
-    });
-
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWAREENERGY_WRITE, 'throttle:api-store'])->group(function () {
-        Route::post('/energy-readings', [EnergyMonitorController::class, 'store'])->name('api.v2.hardware.energy_readings.store');
-        Route::post('/solar-readings', [SolarReadingController::class, 'store'])->name('api.v2.hardware.solar_readings.store');
     });
 });

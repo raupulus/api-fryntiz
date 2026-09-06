@@ -58,7 +58,7 @@ class TokenAislamientoTest extends ApiTestCase
     public function el_token_de_las_placas_sube_sus_propias_lecturas(): void
     {
         $response = $this->postJson(
-            $this->apiUrl('hardware/solar-readings'),
+            $this->apiUrl('energy/solar-readings'),
             $this->lecturaSolar($this->placas),
             $this->tokenDeLasPlacas()
         );
@@ -70,7 +70,7 @@ class TokenAislamientoTest extends ApiTestCase
     public function el_token_de_las_placas_no_escribe_lecturas_de_otro_dispositivo(): void
     {
         $response = $this->postJson(
-            $this->apiUrl('hardware/solar-readings'),
+            $this->apiUrl('energy/solar-readings'),
             $this->lecturaSolar($this->portatil),
             $this->tokenDeLasPlacas()
         );
@@ -100,19 +100,19 @@ class TokenAislamientoTest extends ApiTestCase
     public function el_token_de_las_placas_lee_sus_lecturas_pero_no_las_del_otro(): void
     {
         $this->postJson(
-            $this->apiUrl('hardware/solar-readings'),
+            $this->apiUrl('energy/solar-readings'),
             $this->lecturaSolar($this->placas),
             $this->tokenDeLasPlacas()
         )->assertSuccessful();
 
-        // Con `hardwareenergy:read` sólo alcanza las de los dispositivos que
+        // Con `energy:read` sólo alcanza las de los dispositivos que
         // declara su token.
         $headers = $this->headersWithAbilities($this->usuario, [
-            TokenAbilities::HARDWAREENERGY_READ,
+            TokenAbilities::ENERGY_READ,
             TokenAbilities::forDevice($this->placas),
         ]);
 
-        $response = $this->getJson($this->apiUrl('hardware/solar-readings'), $headers);
+        $response = $this->getJson($this->apiUrl('energy/solar-readings'), $headers);
 
         $response->assertSuccessful();
 
@@ -125,7 +125,7 @@ class TokenAislamientoTest extends ApiTestCase
     public function el_token_de_energia_no_lee_el_inventario(): void
     {
         $headers = $this->headersWithAbilities($this->usuario, [
-            TokenAbilities::HARDWAREENERGY_READ,
+            TokenAbilities::ENERGY_READ,
             TokenAbilities::forDevice($this->placas),
         ]);
 
@@ -194,7 +194,7 @@ class TokenAislamientoTest extends ApiTestCase
         ]);
 
         $response = $this->postJson(
-            $this->apiUrl('hardware/solar-readings'),
+            $this->apiUrl('energy/solar-readings'),
             $this->lecturaSolar($this->portatil),
             $headers
         );
@@ -204,7 +204,7 @@ class TokenAislamientoTest extends ApiTestCase
 
     /**
      * Token tal y como se emite para un controlador solar: escritura del
-     * módulo Hardware Energy y nada más, ligado a ese aparato.
+     * módulo Energía y nada más, ligado a ese aparato.
      *
      * Hasta el 2026-09-06 llevaba `hardware:write`, que además de las lecturas
      * le abría el estado del aparato. Son dos permisos distintos y se conceden
@@ -215,7 +215,7 @@ class TokenAislamientoTest extends ApiTestCase
     private function tokenDeLasPlacas(): array
     {
         return $this->headersWithAbilities($this->usuario, [
-            TokenAbilities::HARDWAREENERGY_WRITE,
+            TokenAbilities::ENERGY_WRITE,
             TokenAbilities::forDevice($this->placas),
         ]);
     }

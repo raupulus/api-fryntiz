@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\Hardware\V2;
+namespace App\Http\Controllers\Api\Energy\V2;
 
 use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
-use App\Http\Requests\Api\Hardware\V2\StoreSolarReadingRequest;
-use App\Http\Resources\V2\Hardware\SolarReadingResource;
+use App\Http\Requests\Api\Energy\V2\StoreSolarReadingRequest;
+use App\Http\Resources\V2\Energy\SolarReadingResource;
 use App\Models\Hardware\HardwarePowerGeneratorSolar;
 use App\Services\Hardware\HardwareService;
 use App\Support\Auth\TokenAbilities;
@@ -27,7 +27,7 @@ class SolarReadingController extends BaseApiController
     /**
      * Lecturas del controlador solar, paginadas.
      *
-     * Exige `hardwareenergy:read`. Sólo devuelve lecturas de dispositivos del
+     * Exige `energy:read`. Sólo devuelve lecturas de dispositivos del
      * usuario y, si el token está ligado a dispositivos concretos
      * (`device:{id}`), sólo las de ésos: un token de cacharro no lee el resto
      * del parque de su dueño.

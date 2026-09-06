@@ -15,7 +15,7 @@ use Tests\Feature\Api\ApiTestCase;
 use Tests\Traits\AssertsPersistence;
 
 /**
- * POST /api/v2/hardware/solar-readings — el endpoint del Renogy Rover.
+ * POST /api/v2/energy/solar-readings — el endpoint del Renogy Rover.
  *
  * Era el que más datos perdía de todo el proyecto y sólo tenía dos tests: uno de
  * 401 y otro de 422. Ninguno podía detectarlo, porque el endpoint respondía 201
@@ -131,9 +131,9 @@ class SolarReadingPersistenceTest extends ApiTestCase
     private function send(array $payload): TestResponse
     {
         return $this->postJson(
-            $this->apiUrl('hardware/solar-readings'),
+            $this->apiUrl('energy/solar-readings'),
             $payload,
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::ENERGY_WRITE)
         );
     }
 

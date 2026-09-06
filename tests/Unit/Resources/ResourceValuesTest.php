@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Resources;
 
 use App\Http\Resources\V2\Content\ContentPageResource;
-use App\Http\Resources\V2\Hardware\EnergyMonitorResource;
-use App\Http\Resources\V2\Hardware\SolarReadingResource;
+use App\Http\Resources\V2\Energy\EnergyMonitorResource;
+use App\Http\Resources\V2\Energy\SolarReadingResource;
 use App\Http\Resources\V2\KeyCounter\MouseResource;
 use App\Http\Resources\V2\PlatformResource;
 use App\Http\Resources\V2\SmartPlant\SmartPlantRegisterResource;

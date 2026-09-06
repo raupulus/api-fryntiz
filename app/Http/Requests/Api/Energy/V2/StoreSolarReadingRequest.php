@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Api\Hardware\V2;
+namespace App\Http\Requests\Api\Energy\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Rules\DeviceStatusPayload;

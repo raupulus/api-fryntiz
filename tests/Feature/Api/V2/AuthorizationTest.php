@@ -115,7 +115,7 @@ class AuthorizationTest extends ApiTestCase
         $this->postJson($this->apiUrl('keycounter/keyboard-sessions'), [], $headers)->assertStatus(403);
         $this->postJson($this->apiUrl('smartplant/plants/1/readings'), [], $headers)->assertStatus(403);
         $this->postJson($this->apiUrl('airflight/aircrafts'), [], $headers)->assertStatus(403);
-        $this->postJson($this->apiUrl('hardware/energy-readings'), [], $headers)->assertStatus(403);
+        $this->postJson($this->apiUrl('energy/readings'), [], $headers)->assertStatus(403);
         $this->getJson($this->apiUrl('hardware/devices'), $headers)->assertStatus(403);
     }
 
