@@ -23,6 +23,18 @@ Módulo de autenticación con soporte dual: Fortify para web y Sanctum para API.
 
   **No se redirigen al panel a propósito:** una redirección le confirma a quien
   rastrea que el login está en `/panel/login`; un 404 no le dice nada.
+- **Fortify no registra ninguna ruta.** `Fortify::ignoreRoutes()` en
+  `App\Providers\FortifyServiceProvider::register()` las quita todas, no sólo
+  las de vista. Es donde hay que ir para reactivarlas, y está anotado también en
+  `config/fortify.php`.
+
+  Además del 500 de `/login`, `POST /login` era una **puerta de atrás**:
+  autenticaba saltándose el formulario de Filament y, con él, el reCAPTCHA que
+  lo protege. Las de doble factor tampoco las usa nadie: el panel no expone esa
+  pantalla.
+
+  De Fortify se siguen usando las **acciones** (`App\Actions\Fortify\*`) y el
+  trait `TwoFactorAuthenticatable` del modelo `User`, que no dependen de rutas.
 
 ### Método `canAccessPanel()`
 

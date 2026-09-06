@@ -136,6 +136,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | ⚠️ Fortify no registra NINGUNA ruta en esta aplicación
+    |--------------------------------------------------------------------------
+    |
+    | `views => false` de aquí arriba sólo quitaba las rutas de vista. Las demás
+    | —`POST /login`, `POST /logout`, las de doble factor— las quita
+    | `Fortify::ignoreRoutes()` en `App\Providers\FortifyServiceProvider`, que
+    | es donde hay que ir para volver a activarlas.
+    |
+    | Decisión técnica, no un olvido:
+    |
+    |  · No las usa nada. El login y el logout reales son los de Filament
+    |    (`/admin/login`, `/panel/login` y sus logout), no hay registro público y
+    |    el panel no expone pantalla de doble factor. De Fortify se usan las
+    |    *acciones* (`App\Actions\Fortify\*`) y el trait
+    |    `TwoFactorAuthenticatable` del modelo `User`, que no dependen de rutas.
+    |
+    |  · `POST /login` era una puerta de atrás: autenticaba saltándose el
+    |    formulario de Filament y, con él, el reCAPTCHA que lo protege.
+    |
+    | Todo lo de abajo (`features`, guardias, limitadores) sigue configurado y
+    | vuelve a tener efecto en cuanto se quite esa línea.
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
     | Features
     |--------------------------------------------------------------------------
     |

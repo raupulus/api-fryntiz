@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * Las rutas de vista de Fortify no existen aquí.
+ * Fortify no registra ninguna ruta en esta aplicación.
  *
- * Esta aplicación no tiene ninguna vista de Fortify: el login real pasa por
- * Filament (`/admin/login`, `/panel/login`) y no hay registro público. Con
- * `views => true`, Fortify las registraba igual y respondían **500**
+ * El login y el logout reales son los de Filament; de Fortify sólo se usan las
+ * acciones y el trait `TwoFactorAuthenticatable`. `Fortify::ignoreRoutes()` en
+ * `FortifyServiceProvider::register()` las quita todas.
+ *
+ * Dos motivos: `GET /login` respondía **500** en producción el 2026-09-06
  * (`Target [Laravel\Fortify\Contracts\LoginViewResponse] is not instantiable`),
- * como pasó en producción el 2026-09-06 con alguien pidiendo `/login` a mano.
+ * y `POST /login` autenticaba saltándose el reCAPTCHA del panel.
  *
  * No se redirigen al panel: se quitan. Una redirección le confirma a quien
  * rastrea dónde está el login de verdad; un 404 no le dice nada.
@@ -53,5 +56,29 @@ class FortifyViewsTest extends TestCase
     {
         $this->get('/panel/login')->assertOk();
         $this->get('/admin/login')->assertOk();
+    }
+
+    /**
+     * `POST /login` autenticaba por Fortify sin pasar por el formulario de
+     * Filament, y por tanto sin su reCAPTCHA.
+     */
+    #[Test]
+    public function fortify_no_registra_ninguna_ruta(): void
+    {
+        foreach ([
+            'login', 'login.store', 'logout',
+            'two-factor.login', 'two-factor.login.store',
+            'password.confirm', 'password.confirm.store',
+            'two-factor.enable', 'two-factor.qr-code',
+        ] as $nombre) {
+            $this->assertFalse(
+                Route::has($nombre),
+                "La ruta «{$nombre}» de Fortify sigue registrada."
+            );
+        }
+
+        // El logout de verdad es el del panel.
+        $this->assertTrue(Route::has('filament.admin.auth.logout'));
+        $this->assertTrue(Route::has('filament.tenant.auth.logout'));
     }
 }
