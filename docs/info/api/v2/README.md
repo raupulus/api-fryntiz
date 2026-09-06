@@ -270,4 +270,4 @@ No es un módulo de `api/v2` ni usa su envelope: vive en `/mcp/api-raupulus`
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-02
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

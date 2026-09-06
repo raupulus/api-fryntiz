@@ -225,6 +225,12 @@ por fechas; no son recursos distintos.
 | `messages` | int\|null | opcional, mín. 0 |
 | `hardware_device_info` | object\|null | opcional. Último estado conocido del receptor (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status`; solo tiene efecto si esta misma petición trae también `hardware_device_id` — sin dispositivo no hay a quién aplicarle el estado, y se ignora sin error. Contrato completo en [`hardware.md`](./hardware.md) |
 
+> ⚠️ **`ip_public` ya no se acepta dentro de `hardware_device_info`**
+> (2026-09-06): la pone el servidor desde la IP de origen de la petición. Y
+> hay campo nuevo, `ram` (0-100 %). Detalle en
+> [`hardware.md`](./hardware.md#-cambio-de-contrato--ip_public-2026-09-06).
+
+
   El avión se busca/crea por `icao` (no se duplica una fila por cada sondeo
   del mismo aparato): si ya existe, se actualiza `seen_last_at` y se añade una
   nueva fila de posición (`airflight_routes`); solo se crea posición si al
@@ -344,4 +350,4 @@ cada petición trae hasta 500 filas).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-31
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

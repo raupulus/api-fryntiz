@@ -194,6 +194,44 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
   array anterior (no array).
 - **Errores**: `404` `{"success": false, "message": "Estacion meteorologica no encontrada"}`.
 
+### `GET /weather-stations/zone/{zona}/{tipo?}` — Lectura AGREGADA de una zona
+
+**Nuevo el 2026-09-06.**
+
+⚠️ **No confundir con `GET /weather-stations?zone=…`**, que devuelve la *lista* de
+estaciones de esa zona. Éste devuelve **una sola lectura**: la de la zona
+entendida como conjunto.
+
+Para cada sensor toma el registro **más reciente de cualquiera de las estaciones
+de la zona**, en vez de atarse a un aparato concreto. Es lo que consume el widget
+de portada.
+
+El porqué: el widget iba fijado a una estación, y en cuanto ésa dejaba de subir
+seguía enseñando su último valor —la humedad al 49 % durante días— mientras la
+estación de al lado, en la misma azotea, subía el 20 % real. El dato bueno
+estaba en la base y no se miraba.
+
+- **Auth**: pública.
+- **Parámetros de ruta**:
+  - `{zona}`: nombre de la zona, insensible a mayúsculas (`Azotea`).
+  - `{tipo}`: opcional, sólo `indoor` o `outdoor`. Acota el resto de sensores.
+- **Respuesta 200**: un único objeto con **la misma forma** que
+  `GET /weather-stations/{station}`. Un cliente que ya consumiera aquél sólo
+  cambia la URL, no el parseo.
+- **Errores**: `404` `{"success": false, "message": "Zona sin estaciones meteorologicas"}`.
+
+Tres reglas del agregado que conviene tener claras:
+
+1. **La presión ignora `{tipo}`**: sale de cualquier estación de la zona,
+   interior incluida. Un barómetro mide lo mismo dentro que fuera y a la
+   interperie se estropea antes, así que suele vivir en un cacharro de interior.
+2. **Los rayos se cuentan en toda la zona**, no en un dispositivo.
+3. La estación que aparece como referencia (`name`, `location_label`) es la que
+   trae el dato más reciente de todas: la que está viva ahora mismo.
+
+Zona por defecto del widget: `weather_station.main_zone` (variable de entorno
+`WEATHER_STATION_MAIN_ZONE`); sin configurar, la primera zona de exterior.
+
 ---
 
 ## Lecturas por sensor (`/weather-stations/{station}/{sensor}`)
@@ -308,7 +346,8 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
   Admite además, en la raíz (junto a la lectura o el lote), una clave opcional
   `hardware_device_info` (object|null) con el último estado del propio
   dispositivo (`temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`,
-  `ip_local`, `ip_public`, `extra`); si viene, se aplica sobre `{station}` en
+  `ram`, `ip_local`, `extra`; **`ip_public` ya no se acepta**, la pone el
+  servidor); si viene, se aplica sobre `{station}` en
   la misma petición. Mismos campos que `PUT /hardware/devices/{device}/status`
   — contrato completo en [`hardware.md`](./hardware.md).
 
@@ -419,4 +458,4 @@ batería, donde cada petición de radio tiene coste.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-31
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

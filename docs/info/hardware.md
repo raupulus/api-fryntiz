@@ -420,7 +420,7 @@ En subidas conjuntas con otros datos, el estado puede agruparse dentro de
 
 ```bash
 # Crear dispositivos hardware sueltos (con último estado de ejemplo:
-# temp, voltage, battery_level, cpu, disk, uptime y extra poblados)
+# temp, voltage, battery_level, cpu, disk, ram, uptime y extra poblados)
 php artisan debug:seed-hardware --count=5
 
 # Crear dispositivos y registros de energía solar (voltaje, corriente, potencia)

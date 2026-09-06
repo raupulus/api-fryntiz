@@ -220,6 +220,12 @@ una lectura. Por eso:
 | `vaporizer_enabled` | boolean\|null | opcional |
 | `hardware_device_info` | object\|null | opcional. Último estado conocido del propio dispositivo (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status`; si viene, se aplica sobre `hardware_device_id` en la misma petición. Contrato completo en [`hardware.md`](./hardware.md) |
 
+> ⚠️ **`ip_public` ya no se acepta dentro de `hardware_device_info`**
+> (2026-09-06): la pone el servidor desde la IP de origen de la petición. Y
+> hay campo nuevo, `ram` (0-100 %). Detalle en
+> [`hardware.md`](./hardware.md#-cambio-de-contrato--ip_public-2026-09-06).
+
+
   `plant_id` **no se envía en el body**: se toma de `{plant}` en la URL y se
   valida igualmente contra `exists:smartplant_plants,id` + `OwnedSmartPlant`
   (ver la nota de diseño arriba sobre por qué un `422`, no un `403`/`404`, en
@@ -273,4 +279,4 @@ cubre lo que un dispositivo necesita: leer sus plantas y escribir lecturas.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-31
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

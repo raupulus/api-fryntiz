@@ -194,10 +194,41 @@ veces deja el sistema igual (idempotente).
 | `battery_level` | int\|null | opcional, entre 0 y 100 |
 | `cpu` | number\|null | opcional, entre 0 y 100 |
 | `disk` | number\|null | opcional, entre 0 y 100 |
+| `ram` | number\|null | opcional, entre 0 y 100. **Nuevo el 2026-09-06** |
 | `uptime` | int\|null | opcional, mín. 0 |
 | `ip_local` | string\|null | opcional, IP válida |
-| `ip_public` | string\|null | opcional, IP válida |
+| ~~`ip_public`~~ | — | **Ya no se acepta (2026-09-06).** Si se manda, se ignora: la pone el servidor. Ver el aviso de abajo |
 | `extra` | object\|null | opcional, máx. 30 claves; cada valor debe ser un dato simple (número, texto o booleano), texto máx. 255 caracteres |
+
+> ### ⚠️ Cambio de contrato — `ip_public` (2026-09-06)
+>
+> **El dispositivo ya no manda su IP pública.** Si va en el cuerpo se descarta
+> en silencio; el servidor la resuelve desde la propia petición y sobreescribe
+> siempre lo que llegue.
+>
+> El cacharro conoce su IP de la intranet y la sigue mandando en `ip_local`. La
+> pública no la sabe de forma fiable —tendría que preguntársela a un servicio
+> externo en cada envío— y, si la manda, no hay manera de comprobar que dice la
+> verdad.
+>
+> La resuelve `App\Support\Http\ClientIp` leyendo la cabecera que escribe el
+> proxy, en este orden: `CF-Connecting-IP`, `True-Client-IP`, `X-Forwarded-For`
+> (la primera de la lista, que es el cliente original) y `X-Real-IP`. Descarta
+> privadas y reservadas. Si no puede determinar ninguna pública —desarrollo, o
+> una NAT sin proxy delante— guarda `null`, en vez de meter una privada en una
+> columna que dice «pública».
+>
+> **Qué tiene que hacer el cliente:** quitar `ip_public` del cuerpo. Dejarlo no
+> rompe la petición —la validación ya no lo contempla y se ignora—, pero el
+> valor que se mande no se guarda. En la **respuesta** el campo sigue existiendo,
+> con la IP que ha resuelto el servidor.
+
+> ### `ram` (2026-09-06)
+>
+> Uso de memoria en porcentaje (0-100), igual que `cpu` y `disk`. Antes sólo
+> cabía dentro de `extra`, que es JSON y no se puede ordenar ni graficar.
+> Columna `hardware_devices.ram`, migración
+> `2026_09_06_000001_add_ram_to_hardware_devices_table`.
 
   `hardware_device_id` **no** se acepta como campo: viene de la URL
   (`{device}`) y ahí es donde se comprueba la pertenencia/ligado al token
@@ -218,9 +249,9 @@ veces deja el sistema igual (idempotente).
     "battery_level": 78,
     "cpu": 12.3,
     "disk": 44.1,
+    "ram": 62.5,
     "uptime": 86400,
     "ip_local": "192.168.1.50",
-    "ip_public": "80.34.12.9",
     "extra": { "wifi_rssi": -61 },
     "last_seen_at": "2026-08-30T10:00:00.000000Z"
   }
@@ -271,7 +302,7 @@ veces deja el sistema igual (idempotente).
 | `readings.*.read_at` | date\|null | opcional |
 | `readings.*.battery_voltage` | number\|null | opcional, mín. 0. Batería del elemento medido, no la del monitor |
 | `readings.*.battery_percentage` | int\|null | opcional, entre 0 y 100 |
-| `hardware_device_info` | object\|null | opcional. Mismos campos que `PUT .../status` (`temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`, `ip_local`, `ip_public`, `extra`); si viene, se aplica como si se hubiera llamado a ese endpoint sobre `hardware_device_id`, en la misma petición |
+| `hardware_device_info` | object\|null | opcional. Mismos campos que `PUT .../status` (`temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `ip_local`, `extra`; **`ip_public` ya no se acepta**, la pone el servidor); si viene, se aplica como si se hubiera llamado a ese endpoint sobre `hardware_device_id`, en la misma petición |
 
   Cada `pos` se resuelve contra los elementos **activos** dados de alta en
   `hardware_energy` para ese dispositivo; si `pos` no casa con ninguno, esa
@@ -501,4 +532,4 @@ nunca se fuerza a `0`.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

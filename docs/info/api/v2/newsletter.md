@@ -202,4 +202,4 @@ el `POST`/`DELETE` real contra estos endpoints.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

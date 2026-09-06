@@ -98,7 +98,7 @@ php artisan debug:seed-energy --devices=10 --records=200
 
 Crea dispositivos hardware de prueba. Cada dispositivo se genera con el
 **último estado conocido** poblado con datos de ejemplo (`temp`, `voltage`,
-`battery_level`, `cpu`, `disk`, `uptime` y `extra`), útil para depurar el widget
+`battery_level`, `cpu`, `disk`, `ram`, `uptime` y `extra`), útil para depurar el widget
 "Estado de dispositivos" del panel y la sección "Stats de hardware":
 
 ```bash
@@ -192,4 +192,4 @@ php artisan debug:seed-all --small
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-08-19
+> Creado: 2026-05-26 · Última revisión: 2026-09-06
