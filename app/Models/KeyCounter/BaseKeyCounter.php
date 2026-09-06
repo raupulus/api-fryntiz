@@ -234,8 +234,36 @@ class BaseKeyCounter extends BaseModel
     {
         $keyboard_statistics = self::statistics($month, $year);
         $stats = $keyboard_statistics['data']->sortBy('day');
-        $colors = ['#3e95cd', '#8e5ea2', '#007bff', '#e8c3b9', '#c45850',
-            '#000000', '#00ff00', '#0000ff', '#3cba9f'];
+        // Paleta de la gráfica.
+        //
+        // La de antes tenía tres problemas a la vez: se elegía con `rand()`, así
+        // que dos dispositivos salían del mismo color y además cambiaban en cada
+        // recarga; incluía `#000000`, que sobre el fondo oscuro no se ve; y
+        // `#e8c3b9`, casi blanco, que sobre el claro tampoco.
+        //
+        // Estos ocho tienen la luminancia en la franja media: contrastan tanto
+        // sobre `surface` claro (#f8f9ff) como sobre el oscuro (#0f131d), que es
+        // lo que hace falta cuando el mismo canvas se pinta en los dos temas.
+        // Los dos primeros son los acentos del sistema —`on-tertiary-container`
+        // y el turquesa de Obsidian Flux—; el resto se separan entre sí en tono.
+        $colors = [
+            '#1d8acd', // azul del sistema
+            '#04b4a2', // turquesa
+            '#8e5ea2', // violeta
+            '#e07a3f', // naranja terroso
+            '#5b8c3a', // verde oliva
+            '#c45850', // terracota
+            '#7b6cd9', // índigo
+            '#d4a017', // ámbar
+        ];
+
+        // Cada dispositivo, su color, siempre el mismo: el índice sale de su
+        // posición en la lista y no de un `rand()`.
+        $deviceColors = [];
+
+        foreach (array_values($keyboard_statistics['devices_ids']) as $i => $deviceId) {
+            $deviceColors[$deviceId] = $colors[$i % count($colors)];
+        }
         $days = array_unique($stats->pluck('day')->toArray());
         $devices = $keyboard_statistics['devices_ids'];
 
@@ -251,8 +279,7 @@ class BaseKeyCounter extends BaseModel
             $labels[] = (new Carbon($day))->format('d');
 
             foreach ($devices as $device) {
-                $idxColor = rand(0, count($colors) - 1);
-                $color = $colors[$idxColor];
+                $color = $deviceColors[$device] ?? $colors[0];
 
                 // FIXME → Esto no puede quedar haciendo consultas así
                 // TODO → Mejorar forma de preparar los datos y usar REDIS/CACHE
@@ -300,10 +327,14 @@ class BaseKeyCounter extends BaseModel
             $total[] = $t;
         }
 
+        // El total no compite con los dispositivos: rojo profundo en vez del
+        // `#ff0000` puro —que vibra sobre el fondo oscuro— y trazo más grueso,
+        // que es lo que lo separa de las demás líneas sin gastar otro tono.
         $datasetTMP[0] = [
             'data' => $total,
             'label' => 'Total',
-            'borderColor' => '#ff0000',
+            'borderColor' => '#c1121f',
+            'borderWidth' => 3,
             'fill' => 'false',
         ];
 

@@ -124,8 +124,13 @@ class WeatherStationController extends Controller
             ->orderBy('id')
             ->get();
 
-        $mainStationId = app(WeatherStationService::class)
-            ->resolveMainStationId();
+        $servicio = app(WeatherStationService::class);
+
+        // El widget va por ZONA, no por estación: si la que estaba fijada deja
+        // de subir, seguía enseñando su último valor mientras la de al lado, en
+        // la misma azotea, subía el dato bueno.
+        $mainZone = $servicio->resolveMainZone();
+        $mainStationId = $servicio->resolveMainStationId();
 
         $groups = [];
 
@@ -160,7 +165,7 @@ class WeatherStationController extends Controller
         // Reserva: sin estaciones clasificadas mostramos el resumen global.
         $ungrouped = empty($groups) ? $this->buildSensorCards(null) : [];
 
-        return view('weather_station.index', compact('groups', 'ungrouped', 'mainStationId'));
+        return view('weather_station.index', compact('groups', 'ungrouped', 'mainStationId', 'mainZone'));
     }
 
     /**

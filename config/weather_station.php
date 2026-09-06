@@ -21,6 +21,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Zona principal del widget
+    |--------------------------------------------------------------------------
+    |
+    | El widget de portada va por ZONA, no por estación. Fijarlo a una estación
+    | tenía un efecto que se veía en cuanto esa dejaba de subir: seguía
+    | enseñando su último valor mientras la de al lado, en la misma azotea,
+    | subía el dato bueno. Yendo por zona, de cada magnitud se coge el registro
+    | más reciente de cualquiera de sus estaciones.
+    |
+    | En null se resuelve sola: la primera zona de exterior que haya.
+    |
+    */
+
+    'main_zone' => env('WEATHER_STATION_MAIN_ZONE'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Ventana de la cuenta de rayos
     |--------------------------------------------------------------------------
     |

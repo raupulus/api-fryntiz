@@ -16,6 +16,8 @@ if (weatherEl) {
     const weatherApp = createApp(ChipionaWeatherComponent, {
         apiBaseUrl: weatherEl.dataset.apiBaseUrl ?? '',
         apiPath: weatherEl.dataset.apiPath ?? 'api/v2/weather-stations',
+        zone: weatherEl.dataset.zone ?? '',
+        locationType: weatherEl.dataset.locationType ?? '',
         station: weatherEl.dataset.station ?? '',
     });
     weatherApp.mount(weatherEl);

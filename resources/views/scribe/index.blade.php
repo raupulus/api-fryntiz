@@ -188,6 +188,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weather-stations--station-">
                                 <a href="#endpoints-GETapi-v2-weather-stations--station-">Una estación por id. Sin id, la principal (la primera de exterior).</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weather-stations-zone--zone---locationType--">
+                                <a href="#endpoints-GETapi-v2-weather-stations-zone--zone---locationType--">Lectura agregada de una zona.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weather-stations--station---sensor-">
                                 <a href="#endpoints-GETapi-v2-weather-stations--station---sensor-">Lecturas de un sensor de una estación, paginadas.</a>
                             </li>
@@ -223,7 +226,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: September 5, 2026</li>
+        <li>Last updated: September 6, 2026</li>
     </ul>
 </div>
 
@@ -549,10 +552,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"weatherstation:write\"
+        \"keycounter:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-09-28\"
+    \"expires_at\": \"2052-09-29\"
 }"
 </code></pre></div>
 
@@ -570,10 +573,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "weatherstation:write"
+        "keycounter:write"
     ],
     "name": "n",
-    "expires_at": "2052-09-28"
+    "expires_at": "2052-09-29"
 };
 
 fetch(url, {
@@ -705,10 +708,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-09-28"
+               value="2052-09-29"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-28</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-29</code></p>
         </div>
         </form>
 
@@ -1101,7 +1104,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": true,
+    \"privacity\": false,
     \"contactme\": false,
     \"attributes\": [
         \"v\"
@@ -1126,7 +1129,7 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": true,
+    "privacity": false,
     "contactme": false,
     "attributes": [
         "v"
@@ -1284,7 +1287,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -2211,14 +2214,69 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
-    &quot;data&quot;: [],
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 4,
+            &quot;name&quot;: &quot;Desde Chipiona&quot;,
+            &quot;title&quot;: &quot;Desde Chipiona&quot;,
+            &quot;slug&quot;: &quot;desde-chipiona&quot;,
+            &quot;domain&quot;: null,
+            &quot;description&quot;: &quot;Web de meteorolog&iacute;a, turismo e informaci&oacute;n sobre la ciudad de Chipiona&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2023-08-04T22:12:41.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: &quot;La Gu&iacute;a Linux&quot;,
+            &quot;title&quot;: &quot;La Gu&iacute;a Linux&quot;,
+            &quot;slug&quot;: &quot;laguialinux&quot;,
+            &quot;domain&quot;: &quot;laguialinux.com&quot;,
+            &quot;description&quot;: &quot;Web sobre tecnolog&iacute;a, GNU/Linux y software libre&quot;,
+            &quot;image&quot;: {
+                &quot;url&quot;: &quot;http://api.raupulus.dev/file/get/platform/70/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.png&quot;,
+                &quot;width&quot;: 840,
+                &quot;height&quot;: 840,
+                &quot;type&quot;: &quot;image/png&quot;,
+                &quot;alt&quot;: &quot;La Gu&iacute;a Linux&quot;,
+                &quot;thumbnails&quot;: {
+                    &quot;micro&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/311/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
+                    &quot;small&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/312/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
+                    &quot;medium&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/313/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
+                    &quot;large&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/314/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;
+                }
+            },
+            &quot;created_at&quot;: &quot;2023-01-31T15:51:31.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 3,
+            &quot;name&quot;: &quot;Porfolio&quot;,
+            &quot;title&quot;: &quot;Porfolio&quot;,
+            &quot;slug&quot;: &quot;portfolio&quot;,
+            &quot;domain&quot;: &quot;raupulus.dev&quot;,
+            &quot;description&quot;: &quot;Portfolio Personal con mis proyectos&quot;,
+            &quot;image&quot;: {
+                &quot;url&quot;: &quot;http://api.raupulus.dev/file/get/platform/69/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.png&quot;,
+                &quot;width&quot;: 4266,
+                &quot;height&quot;: 4266,
+                &quot;type&quot;: &quot;image/png&quot;,
+                &quot;alt&quot;: &quot;Porfolio&quot;,
+                &quot;thumbnails&quot;: {
+                    &quot;micro&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/306/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
+                    &quot;small&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/307/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
+                    &quot;medium&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/308/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
+                    &quot;large&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/310/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;
+                }
+            },
+            &quot;created_at&quot;: &quot;2023-08-04T22:00:05.000000Z&quot;
+        }
+    ],
     &quot;meta&quot;: {
-        &quot;total&quot;: 0,
+        &quot;total&quot;: 3,
         &quot;per_page&quot;: 25,
         &quot;current_page&quot;: 1,
         &quot;last_page&quot;: 1,
-        &quot;from&quot;: null,
-        &quot;to&quot;: null
+        &quot;from&quot;: 1,
+        &quot;to&quot;: 3
     }
 }</code>
  </pre>
@@ -2309,14 +2367,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16"
+    "https://api.raupulus.dev/api/v2/platforms/4"
 );
 
 const headers = {
@@ -2437,10 +2495,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="slug"                data-endpoint="GETapi-v2-platforms--slug-"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     </form>
 
@@ -2457,14 +2515,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16/categories" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/categories" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16/categories"
+    "https://api.raupulus.dev/api/v2/platforms/4/categories"
 );
 
 const headers = {
@@ -2585,10 +2643,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--categories"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     </form>
 
@@ -2609,14 +2667,14 @@ eran dos rutas para dos filtros de la misma colección.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16/contents" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16/contents"
+    "https://api.raupulus.dev/api/v2/platforms/4/contents"
 );
 
 const headers = {
@@ -2737,10 +2795,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     </form>
 
@@ -2757,14 +2815,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto"
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto"
 );
 
 const headers = {
@@ -2885,10 +2943,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--slug-"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
@@ -2917,14 +2975,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages"
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages"
 );
 
 const headers = {
@@ -3045,10 +3103,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3077,14 +3135,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages/564" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages/564" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/pages/564"
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages/564"
 );
 
 const headers = {
@@ -3205,10 +3263,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -3249,14 +3307,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/related" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/related" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/16/contents/architecto/related"
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/related"
 );
 
 const headers = {
@@ -3377,10 +3435,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--related"
-               value="16"
+               value="4"
                data-component="url">
     <br>
-<p>The slug of the platform. Example: <code>16</code></p>
+<p>The slug of the platform. Example: <code>4</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
@@ -4868,7 +4926,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2026-09-05T10:24:11\",
+    \"read_at\": \"2026-09-06T10:34:43\",
     \"temperature\": 4326.41688,
     \"battery_voltage\": 77,
     \"battery_percentage\": 15,
@@ -4881,7 +4939,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
             \"energy_wh\": 4326.41688,
             \"temperature\": 4326.41688,
             \"fan\": 77,
-            \"read_at\": \"2026-09-05T10:24:11\",
+            \"read_at\": \"2026-09-06T10:34:43\",
             \"battery_voltage\": 8,
             \"battery_percentage\": 8
         }
@@ -4903,7 +4961,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2026-09-05T10:24:11",
+    "read_at": "2026-09-06T10:34:43",
     "temperature": 4326.41688,
     "battery_voltage": 77,
     "battery_percentage": 15,
@@ -4916,7 +4974,7 @@ let body = {
             "energy_wh": 4326.41688,
             "temperature": 4326.41688,
             "fan": 77,
-            "read_at": "2026-09-05T10:24:11",
+            "read_at": "2026-09-06T10:34:43",
             "battery_voltage": 8,
             "battery_percentage": 8
         }
@@ -5048,10 +5106,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-energy-readings"
-               value="2026-09-05T10:24:11"
+               value="2026-09-06T10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
+<p>Must be a valid date. Example: <code>2026-09-06T10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
@@ -5190,10 +5248,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="readings.0.read_at"                data-endpoint="POSTapi-v2-hardware-energy-readings"
-               value="2026-09-05T10:24:11"
+               value="2026-09-06T10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
+<p>Must be a valid date. Example: <code>2026-09-06T10:34:43</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
@@ -5241,8 +5299,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
-    \"date\": \"2026-09-05T10:24:11\",
-    \"read_at\": \"2026-09-05T10:24:11\",
+    \"date\": \"2026-09-06T10:34:43\",
+    \"read_at\": \"2026-09-06T10:34:43\",
     \"hardware\": \"n\",
     \"version\": \"g\",
     \"serial_number\": \"z\",
@@ -5301,8 +5359,8 @@ const headers = {
 
 let body = {
     "hardware_device_id": 16,
-    "date": "2026-09-05T10:24:11",
-    "read_at": "2026-09-05T10:24:11",
+    "date": "2026-09-06T10:34:43",
+    "read_at": "2026-09-06T10:34:43",
     "hardware": "n",
     "version": "g",
     "serial_number": "z",
@@ -5460,10 +5518,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v2-hardware-solar-readings"
-               value="2026-09-05T10:24:11"
+               value="2026-09-06T10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
+<p>Must be a valid date. Example: <code>2026-09-06T10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
@@ -5472,10 +5530,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-hardware-solar-readings"
-               value="2026-09-05T10:24:11"
+               value="2026-09-06T10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-05T10:24:11</code></p>
+<p>Must be a valid date. Example: <code>2026-09-06T10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware</code></b>&nbsp;&nbsp;
@@ -6282,8 +6340,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-05 10:24:11\",
-    \"end_at\": \"2026-09-05 10:24:11\",
+    \"start_at\": \"2026-09-06 10:34:43\",
+    \"end_at\": \"2026-09-06 10:34:43\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6307,8 +6365,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-05 10:24:11",
-    "end_at": "2026-09-05 10:24:11",
+    "start_at": "2026-09-06 10:34:43",
+    "end_at": "2026-09-06 10:34:43",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6442,10 +6500,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-05 10:24:11"
+               value="2026-09-06 10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-06 10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6454,10 +6512,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-05 10:24:11"
+               value="2026-09-06 10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-06 10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6552,8 +6610,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-05 10:24:11\",
-    \"end_at\": \"2026-09-05 10:24:11\",
+    \"start_at\": \"2026-09-06 10:34:43\",
+    \"end_at\": \"2026-09-06 10:34:43\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -6578,8 +6636,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-05 10:24:11",
-    "end_at": "2026-09-05 10:24:11",
+    "start_at": "2026-09-06 10:34:43",
+    "end_at": "2026-09-06 10:34:43",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -6714,10 +6772,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-05 10:24:11"
+               value="2026-09-06 10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-06 10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6726,10 +6784,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-05 10:24:11"
+               value="2026-09-06 10:34:43"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-05 10:24:11</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-06 10:34:43</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7123,9 +7181,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
-    \"full_water_tank\": false,
+    \"full_water_tank\": true,
     \"waterpump_enabled\": false,
-    \"vaporizer_enabled\": false
+    \"vaporizer_enabled\": true
 }"
 </code></pre></div>
 
@@ -7149,9 +7207,9 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
-    "full_water_tank": false,
+    "full_water_tank": true,
     "waterpump_enabled": false,
-    "vaporizer_enabled": false
+    "vaporizer_enabled": true
 };
 
 fetch(url, {
@@ -7377,7 +7435,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -7421,7 +7479,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -7444,7 +7502,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"pressure\"
+        \"rain\"
     ],
     \"location_type\": \"indoor\"
 }"
@@ -7463,7 +7521,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "pressure"
+        "rain"
     ],
     "location_type": "indoor"
 };
@@ -7499,7 +7557,53 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: true,
     &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 10,
+            &quot;name&quot;: &quot;Esp32 D1 WS&quot;,
+            &quot;zone&quot;: null,
+            &quot;location_type&quot;: &quot;indoor&quot;,
+            &quot;location_label&quot;: &quot;Interior&quot;,
+            &quot;instant&quot;: {
+                &quot;day_name&quot;: &quot;domingo&quot;,
+                &quot;date_human_format&quot;: &quot;6 de septiembre de 2026&quot;,
+                &quot;time&quot;: &quot;10:34&quot;,
+                &quot;day_status&quot;: &quot;D&iacute;a&quot;
+            },
+            &quot;temperature&quot;: 33,
+            &quot;humidity&quot;: 49,
+            &quot;pressure&quot;: null,
+            &quot;wind&quot;: {
+                &quot;average&quot;: 3.24,
+                &quot;min&quot;: 3.24,
+                &quot;max&quot;: 3.24,
+                &quot;direction&quot;: &quot;E&quot;,
+                &quot;direction_grades&quot;: 112
+            },
+            &quot;light&quot;: {
+                &quot;lux&quot;: null,
+                &quot;uv_index&quot;: null,
+                &quot;uva&quot;: null,
+                &quot;uvb&quot;: null
+            },
+            &quot;air_quality&quot;: {
+                &quot;quality&quot;: 87,
+                &quot;eco2&quot;: 77,
+                &quot;tvoc&quot;: 421
+            },
+            &quot;rain&quot;: {
+                &quot;value&quot;: 0,
+                &quot;intensity&quot;: 0
+            },
+            &quot;lightning&quot;: {
+                &quot;last_at&quot;: &quot;2024-11-05T13:04:19.000000Z&quot;,
+                &quot;window_minutes&quot;: 60,
+                &quot;count_in_window&quot;: 0,
+                &quot;distance&quot;: 3,
+                &quot;energy&quot;: 90240
+            }
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -7625,7 +7729,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"wind\"
+        \"light\"
     ]
 }"
 </code></pre></div>
@@ -7643,7 +7747,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "wind"
+        "light"
     ]
 };
 
@@ -7784,6 +7888,171 @@ Must be one of:
         </div>
         </form>
 
+                    <h2 id="endpoints-GETapi-v2-weather-stations-zone--zone---locationType--">Lectura agregada de una zona.</h2>
+
+<p>
+</p>
+
+<p>Para cada sensor devuelve el dato más reciente de <strong>cualquier</strong> estación
+de la zona, en vez de atarse a un aparato concreto: si uno deja de subir,
+los demás siguen dando la medida. Es lo que consume el widget de portada.</p>
+<p>El tipo de ubicación acota el resto de sensores (normalmente <code>outdoor</code>),
+pero la presión sale de toda la zona: el barómetro suele estar dentro
+porque mide igual y a la interperie se estropea antes.</p>
+
+<span id="example-requests-GETapi-v2-weather-stations-zone--zone---locationType--">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/weather-stations/zone/architecto/indoor|outdoor" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/weather-stations/zone/architecto/indoor|outdoor"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-weather-stations-zone--zone---locationType--">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 30
+x-ratelimit-remaining: 27
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;API V2 - Endpoint not found&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-weather-stations-zone--zone---locationType--" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-weather-stations-zone--zone---locationType--"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-weather-stations-zone--zone---locationType--"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-weather-stations-zone--zone---locationType--" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-weather-stations-zone--zone---locationType--">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-weather-stations-zone--zone---locationType--" data-method="GET"
+      data-path="api/v2/weather-stations/zone/{zone}/{locationType?}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-weather-stations-zone--zone---locationType--', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-weather-stations-zone--zone---locationType--"
+                    onclick="tryItOut('GETapi-v2-weather-stations-zone--zone---locationType--');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-weather-stations-zone--zone---locationType--"
+                    onclick="cancelTryOut('GETapi-v2-weather-stations-zone--zone---locationType--');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-weather-stations-zone--zone---locationType--"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/weather-stations/zone/{zone}/{locationType?}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-weather-stations-zone--zone---locationType--"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-weather-stations-zone--zone---locationType--"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>zone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="zone"                data-endpoint="GETapi-v2-weather-stations-zone--zone---locationType--"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The zone. Example: <code>architecto</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>locationType</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="locationType"                data-endpoint="GETapi-v2-weather-stations-zone--zone---locationType--"
+               value="indoor|outdoor"
+               data-component="url">
+    <br>
+<p>Example: <code>indoor|outdoor</code></p>
+            </div>
+                    </form>
+
                     <h2 id="endpoints-GETapi-v2-weather-stations--station---sensor-">Lecturas de un sensor de una estación, paginadas.</h2>
 
 <p>
@@ -7834,7 +8103,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 27
+x-ratelimit-remaining: 26
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8362,7 +8631,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 284
+x-ratelimit-remaining: 283
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8507,7 +8776,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 283
+x-ratelimit-remaining: 282
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8655,7 +8924,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 282
+x-ratelimit-remaining: 281
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8803,7 +9072,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 26
+x-ratelimit-remaining: 25
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8963,7 +9232,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 25
+x-ratelimit-remaining: 24
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff

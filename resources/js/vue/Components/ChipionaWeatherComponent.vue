@@ -157,6 +157,26 @@ const props = defineProps({
         type: String,
         default: 'api/v2/weather-stations',
     },
+    /**
+     * Zona cuyo resumen mostrar («Azotea»). Tiene prioridad sobre `station`:
+     * yendo por zona, de cada magnitud se coge el dato más reciente entre
+     * todas sus estaciones, así que si una deja de subir las demás siguen
+     * dando la medida. Atado a una estación concreta, el widget se quedaba
+     * enseñando su último valor durante días.
+     */
+    zone: {
+        type: String,
+        default: '',
+    },
+    /**
+     * Tipo de ubicación al que acotar la zona. La presión se salta este filtro
+     * en el backend: el barómetro suele estar dentro porque mide igual y a la
+     * interperie se estropea antes.
+     */
+    locationType: {
+        type: String,
+        default: '',
+    },
     station: {
         type: [String, Number],
         default: '',
@@ -237,8 +257,22 @@ const fetchData = async () => {
     try {
         // Con id, el recurso: `data` es un objeto. Sin id, la colección: `data`
         // es una lista y la principal es la primera.
+        const porZona = props.zone !== '' && props.zone != null;
         const conId = props.station !== '' && props.station != null;
-        const url = `${props.apiBaseUrl}/${props.apiPath}${conId ? `/${encodeURIComponent(props.station)}` : ''}`;
+
+        let sufijo = '';
+
+        if (porZona) {
+            sufijo = `/zone/${encodeURIComponent(props.zone)}`;
+
+            if (props.locationType !== '' && props.locationType != null) {
+                sufijo += `/${encodeURIComponent(props.locationType)}`;
+            }
+        } else if (conId) {
+            sufijo = `/${encodeURIComponent(props.station)}`;
+        }
+
+        const url = `${props.apiBaseUrl}/${props.apiPath}${sufijo}`;
 
         const response = await fetch(url, {
             headers: { Accept: 'application/json' },

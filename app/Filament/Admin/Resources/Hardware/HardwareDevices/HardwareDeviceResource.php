@@ -68,9 +68,6 @@ class HardwareDeviceResource extends Resource
                         Select::make('hardware_type_id')
                             ->relationship('type', 'name')
                             ->label('Tipo de hardware'),
-                        TextInput::make('referred_thing_id')
-                            ->numeric()
-                            ->label('ID componente asociado'),
                         TextInput::make('name')->label('Nombre'),
                         TextInput::make('name_friendly')->label('Nombre amigable'),
                         TextInput::make('ref')->label('Referencia'),

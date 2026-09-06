@@ -31,7 +31,8 @@
         <div id="app-weather-chipiona"
              data-api-base-url="{{ url('/') }}"
              data-api-path="api/v2/weather-stations"
-             @if(!empty($mainStationId)) data-station="{{ $mainStationId }}" @endif
+             @if(!empty($mainZone)) data-zone="{{ $mainZone }}" data-location-type="outdoor" @endif
+             @if(empty($mainZone) && !empty($mainStationId)) data-station="{{ $mainStationId }}" @endif
              class="w-full max-w-lg">
             <p class="text-on-surface-variant text-center py-8">Cargando datos del clima...</p>
         </div>

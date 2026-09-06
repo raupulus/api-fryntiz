@@ -134,6 +134,9 @@ class KeyboardResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            // Al entrar interesa lo último que ha subido el teclado, no lo
+            // primero que se registró hace tres años.
+            ->defaultSort('start_at', 'desc')
             ->filters([
                 SelectFilter::make('hardware_device_id')
                     ->relationship('hardwareDevice', 'name_friendly')

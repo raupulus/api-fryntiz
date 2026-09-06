@@ -76,4 +76,26 @@ class WeatherStationController extends BaseApiController
             new WeatherStationResource($this->service->getStationReadings($device))
         );
     }
+
+    /**
+     * Lectura agregada de una zona.
+     *
+     * Para cada sensor devuelve el dato más reciente de **cualquier** estación
+     * de la zona, en vez de atarse a un aparato concreto: si uno deja de subir,
+     * los demás siguen dando la medida. Es lo que consume el widget de portada.
+     *
+     * El tipo de ubicación acota el resto de sensores (normalmente `outdoor`),
+     * pero la presión sale de toda la zona: el barómetro suele estar dentro
+     * porque mide igual y a la interperie se estropea antes.
+     */
+    public function zone(string $zone, ?string $locationType = null): JsonResponse
+    {
+        $lecturas = $this->service->getZoneReadings($zone, $locationType);
+
+        if ($lecturas === null) {
+            return $this->notFoundResponse('Zona sin estaciones meteorologicas');
+        }
+
+        return $this->successResponse(new WeatherStationResource($lecturas));
+    }
 }

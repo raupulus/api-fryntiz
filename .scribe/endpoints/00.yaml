@@ -146,7 +146,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'weatherstation:write'
+          - 'keycounter:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -178,7 +178,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-09-28'
+        example: '2052-09-29'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -187,9 +187,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'weatherstation:write'
+        - 'keycounter:write'
       name: 'n'
-      expires_at: '2052-09-28'
+      expires_at: '2052-09-29'
     fileParameters: []
     responses: []
     responseFields: []
@@ -388,7 +388,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -433,7 +433,7 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: true
+      privacity: false
       contactme: false
       attributes:
         - v
@@ -777,7 +777,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[],"meta":{"total":0,"per_page":25,"current_page":1,"last_page":1,"from":null,"to":null}}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":4,"name":"Desde Chipiona","title":"Desde Chipiona","slug":"desde-chipiona","domain":null,"description":"Web de meteorolog\u00eda, turismo e informaci\u00f3n sobre la ciudad de Chipiona","image":null,"created_at":"2023-08-04T22:12:41.000000Z"},{"id":2,"name":"La Gu\u00eda Linux","title":"La Gu\u00eda Linux","slug":"laguialinux","domain":"laguialinux.com","description":"Web sobre tecnolog\u00eda, GNU\/Linux y software libre","image":{"url":"http:\/\/api.raupulus.dev\/file\/get\/platform\/70\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.png","width":840,"height":840,"type":"image\/png","alt":"La Gu\u00eda Linux","thumbnails":{"micro":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/311\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp","small":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/312\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp","medium":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/313\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp","large":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/314\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp"}},"created_at":"2023-01-31T15:51:31.000000Z"},{"id":3,"name":"Porfolio","title":"Porfolio","slug":"portfolio","domain":"raupulus.dev","description":"Portfolio Personal con mis proyectos","image":{"url":"http:\/\/api.raupulus.dev\/file\/get\/platform\/69\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.png","width":4266,"height":4266,"type":"image\/png","alt":"Porfolio","thumbnails":{"micro":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/306\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp","small":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/307\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp","medium":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/308\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp","large":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/310\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp"}},"created_at":"2023-08-04T22:00:05.000000Z"}],"meta":{"total":3,"per_page":25,"current_page":1,"last_page":1,"from":1,"to":3}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -819,14 +819,14 @@ endpoints:
         name: slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      slug: 16
+      slug: 4
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -878,14 +878,14 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 4
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -943,14 +943,14 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 4
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1002,7 +1002,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1020,7 +1020,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 4
       slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1073,7 +1073,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1091,7 +1091,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 4
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -1144,7 +1144,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1173,7 +1173,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 4
       content_slug: architecto
       order: '564'
     queryParameters: []
@@ -1227,7 +1227,7 @@ endpoints:
         name: platform_slug
         description: 'The slug of the platform.'
         required: true
-        example: 16
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1245,7 +1245,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      platform_slug: 16
+      platform_slug: 4
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
@@ -2092,7 +2092,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-05T10:24:11'
+        example: '2026-09-06T10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2225,7 +2225,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-05T10:24:11'
+        example: '2026-09-06T10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2256,7 +2256,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-05T10:24:11'
+      read_at: '2026-09-06T10:34:43'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2269,7 +2269,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-05T10:24:11'
+          read_at: '2026-09-06T10:34:43'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2329,7 +2329,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-05T10:24:11'
+        example: '2026-09-06T10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2340,7 +2340,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-05T10:24:11'
+        example: '2026-09-06T10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2810,8 +2810,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-05T10:24:11'
-      read_at: '2026-09-05T10:24:11'
+      date: '2026-09-06T10:34:43'
+      read_at: '2026-09-06T10:34:43'
       hardware: 'n'
       version: g
       serial_number: z
@@ -3018,7 +3018,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-05 10:24:11'
+        example: '2026-09-06 10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3029,7 +3029,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-05 10:24:11'
+        example: '2026-09-06 10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3104,8 +3104,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-05 10:24:11'
-      end_at: '2026-09-05 10:24:11'
+      start_at: '2026-09-06 10:34:43'
+      end_at: '2026-09-06 10:34:43'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3180,7 +3180,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-05 10:24:11'
+        example: '2026-09-06 10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3191,7 +3191,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-05 10:24:11'
+        example: '2026-09-06 10:34:43'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3277,8 +3277,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-05 10:24:11'
-      end_at: '2026-09-05 10:24:11'
+      start_at: '2026-09-06 10:34:43'
+      end_at: '2026-09-06 10:34:43'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3536,7 +3536,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3558,7 +3558,7 @@ endpoints:
         name: vaporizer_enabled
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3573,9 +3573,9 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: false
+      full_water_tank: true
       waterpump_enabled: false
-      vaporizer_enabled: false
+      vaporizer_enabled: true
     fileParameters: []
     responses: []
     responseFields: []
@@ -3614,7 +3614,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - pressure
+          - rain
         type: 'string[]'
         enumValues:
           - temperature
@@ -3643,14 +3643,14 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - pressure
+        - rain
       location_type: indoor
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[]}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":10,"name":"Esp32 D1 WS","zone":null,"location_type":"indoor","location_label":"Interior","instant":{"day_name":"domingo","date_human_format":"6 de septiembre de 2026","time":"10:34","day_status":"D\u00eda"},"temperature":33,"humidity":49,"pressure":null,"wind":{"average":3.24,"min":3.24,"max":3.24,"direction":"E","direction_grades":112},"light":{"lux":null,"uv_index":null,"uva":null,"uvb":null},"air_quality":{"quality":87,"eco2":77,"tvoc":421},"rain":{"value":0,"intensity":0},"lightning":{"last_at":"2024-11-05T13:04:19.000000Z","window_minutes":60,"count_in_window":0,"distance":3,"energy":90240}}]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -3709,7 +3709,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - wind
+          - light
         type: 'string[]'
         enumValues:
           - temperature
@@ -3725,7 +3725,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - wind
+        - light
     fileParameters: []
     responses:
       -
@@ -3737,6 +3737,84 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '300'
           x-ratelimit-remaining: '286'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/weather-stations/zone/{zone}/{locationType?}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Lectura agregada de una zona.'
+      description: |-
+        Para cada sensor devuelve el dato más reciente de **cualquier** estación
+        de la zona, en vez de atarse a un aparato concreto: si uno deja de subir,
+        los demás siguen dando la medida. Es lo que consume el widget de portada.
+
+        El tipo de ubicación acota el resto de sensores (normalmente `outdoor`),
+        pero la presión sale de toda la zona: el barómetro suele estar dentro
+        porque mide igual y a la interperie se estropea antes.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      zone:
+        custom: []
+        name: zone
+        description: 'The zone.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      locationType:
+        custom: []
+        name: locationType
+        description: ''
+        required: false
+        example: indoor|outdoor
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      zone: architecto
+      locationType: indoor|outdoor
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"API V2 - Endpoint not found"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '30'
+          x-ratelimit-remaining: '27'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -3811,7 +3889,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '27'
+          x-ratelimit-remaining: '26'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4033,7 +4111,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '284'
+          x-ratelimit-remaining: '283'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4094,7 +4172,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '283'
+          x-ratelimit-remaining: '282'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4153,7 +4231,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '282'
+          x-ratelimit-remaining: '281'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4224,7 +4302,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '26'
+          x-ratelimit-remaining: '25'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4288,7 +4366,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '25'
+          x-ratelimit-remaining: '24'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff

@@ -83,9 +83,13 @@
                     Las rachas para el contador de pulsaciones son estadísticas de teclas pulsadas hasta que pasan <strong>15</strong> segundos sin que ninguna tecla sea pulsada, se almacena el promedio de pulsaciones y calcula velocidad media además de generar una puntuación (<em>score</em>) que valora la racha mediante un algoritmo propio.
                 </p>
                 <p class="text-on-surface-variant mb-1">
-                    La herramienta que he creado está sólo disponible para sistemas <strong>GNU/LINUX</strong>.
+                    La herramienta que he creado está disponible para <strong>GNU/Linux</strong> y <strong>macOS</strong>.
                     Ha sido construida utilizando python3:
                     <a href="https://gitlab.com/raupulus/python-keycounter" class="underline text-on-tertiary-container font-bold text-xs" target="_blank">https://gitlab.com/raupulus/python-keycounter</a>
+                </p>
+                <p class="text-on-surface-variant mb-1">
+                    Para macOS hay además <strong>MacOs KeyCounter</strong>, una aplicación complementaria que
+                    muestra las estadísticas en la barra superior del sistema. Está en ese mismo repositorio.
                 </p>
                 <div class="bg-surface-container border border-outline-variant/30 my-4 px-4 py-2 rounded-lg text-center">
                     <span class="font-bold text-on-surface">Franja horaria UTC +0:00</span>

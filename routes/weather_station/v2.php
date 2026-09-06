@@ -41,6 +41,14 @@ Route::prefix('weather-stations')->group(function () use ($sensors) {
         ->whereNumber('station')
         ->name('api.v2.weather_stations.show');
 
+    // Lectura por zona: el dato más reciente de cada sensor entre todas las
+    // estaciones de esa zona. Va antes que `/{station}/{sensor}` para que
+    // «zone» no se coma como si fuera un id — de ahí el `whereNumber` de la
+    // ruta de arriba, que ya lo impedía, y este orden que lo deja explícito.
+    Route::get('/zone/{zone}/{locationType?}', [WeatherStationController::class, 'zone'])
+        ->where('locationType', 'indoor|outdoor')
+        ->name('api.v2.weather_stations.zone');
+
     Route::get('/{station}/{sensor}', [SensorReadingController::class, 'index'])
         ->whereNumber('station')
         ->where('sensor', $sensors)

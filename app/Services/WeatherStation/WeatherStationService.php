@@ -171,6 +171,110 @@ class WeatherStationService
      *
      * @return array Estructura con la estación, el instante y los valores crudos por sensor.
      */
+    /**
+     * Lectura de una ZONA: para cada sensor, el último dato de cualquiera de
+     * sus estaciones.
+     *
+     * El widget de portada iba fijado a una estación (`resolveMainStationId()`),
+     * y eso tenía un efecto que se veía en cuanto una estación dejaba de subir:
+     * seguía enseñando su último valor —humedad al 49 % durante días— mientras
+     * la de al lado, en la misma azotea, estaba subiendo el 20 % real. El dato
+     * bueno estaba en la base y no se miraba.
+     *
+     * Aquí no manda el aparato, manda la magnitud: de cada sensor se coge el
+     * registro más reciente **entre todas las estaciones de la zona**. Si una se
+     * queda muda, las demás siguen dando el dato.
+     *
+     * ## La presión es la excepción
+     *
+     * Un barómetro mide lo mismo dentro que fuera y a la interperie se estropea
+     * antes, así que suele estar en un cacharro de interior. Para la presión
+     * —y sólo para ella— vale cualquier estación de la zona, del tipo que sea;
+     * el resto de sensores se quedan con las que se le hayan pasado.
+     *
+     * @param  string  $zone  Nombre de la zona («Azotea»), sin distinguir mayúsculas.
+     * @param  string|null  $locationType  'outdoor' para el resto de sensores.
+     * @return array<string, mixed>|null Null si la zona no tiene estaciones.
+     */
+    public function getZoneReadings(string $zone, ?string $locationType = null): ?array
+    {
+        $estaciones = $this->getZoneStations($zone, $locationType);
+
+        if ($estaciones->isEmpty()) {
+            return null;
+        }
+
+        $ids = $estaciones->pluck('id')->all();
+
+        // Para la presión, toda la zona: el barómetro suele vivir dentro.
+        $idsPresion = $locationType === null
+            ? $ids
+            : $this->getZoneStations($zone)->pluck('id')->all();
+
+        $lecturas = [];
+
+        foreach (self::SENSORES as $clave => $modelo) {
+            $lecturas[$clave] = $this->latestAmong(
+                $modelo,
+                $clave === 'pressure' ? $idsPresion : $ids
+            );
+        }
+
+        $minutosDeRayos = (int) config('weather_station.lightning_window_minutes', 60);
+
+        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($minutosDeRayos))
+            ->whereIn('hardware_device_id', $ids)
+            ->count();
+
+        // La estación de referencia para nombre y ubicación es la que trae el
+        // dato más reciente de todos: es la que está viva ahora mismo.
+        $referencia = $this->estacionMasReciente($estaciones, $lecturas) ?? $estaciones->first();
+
+        return $this->buildReadings($referencia, $lecturas, $lightningCount, $minutosDeRayos);
+    }
+
+    /**
+     * Última lectura de un sensor entre varias estaciones.
+     *
+     * @param  class-string  $modelClass
+     * @param  list<int>  $stationIds
+     */
+    private function latestAmong(string $modelClass, array $stationIds)
+    {
+        if ($stationIds === []) {
+            return null;
+        }
+
+        return $modelClass::latestRecord()
+            ->whereIn('hardware_device_id', $stationIds)
+            ->first();
+    }
+
+    /**
+     * De qué estación viene el dato más fresco de todos.
+     *
+     * @param  Collection<int, HardwareDevice>  $estaciones
+     * @param  array<string, mixed>  $lecturas
+     */
+    private function estacionMasReciente(Collection $estaciones, array $lecturas): ?HardwareDevice
+    {
+        $mejorId = null;
+        $mejorFecha = null;
+
+        foreach ($lecturas as $lectura) {
+            if ($lectura === null || $lectura->created_at === null) {
+                continue;
+            }
+
+            if ($mejorFecha === null || $lectura->created_at->gt($mejorFecha)) {
+                $mejorFecha = $lectura->created_at;
+                $mejorId = $lectura->hardware_device_id;
+            }
+        }
+
+        return $mejorId === null ? null : $estaciones->firstWhere('id', $mejorId);
+    }
+
     public function getStationReadings(HardwareDevice $station): array
     {
         $stationId = $station->getKey();
@@ -268,6 +372,26 @@ class WeatherStationService
      * Orden de resolución: valor de configuración `weather_station.main_station_id`
      * (si existe y es válido) → primera estación de exterior → cualquier estación.
      */
+    /**
+     * Zona que enseña el widget de portada: la primera de exterior.
+     *
+     * Va por zona y no por estación a propósito — ver {@see self::getZoneReadings()}.
+     */
+    public function resolveMainZone(): ?string
+    {
+        $configurada = config('weather_station.main_zone');
+
+        if (is_string($configurada) && $configurada !== '') {
+            return $configurada;
+        }
+
+        return HardwareDevice::weatherStations()
+            ->where('location_type', HardwareLocationTypeEnum::Outdoor)
+            ->whereNotNull('zone')
+            ->orderBy('id')
+            ->value('zone');
+    }
+
     public function resolveMainStationId(): ?int
     {
         $configured = config('weather_station.main_station_id');

@@ -140,6 +140,8 @@ class MouseResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            // Mismo criterio que en teclados: lo último subido primero.
+            ->defaultSort('start_at', 'desc')
             ->filters([
                 SelectFilter::make('hardware_device_id')
                     ->relationship('hardwareDevice', 'name_friendly')
