@@ -332,20 +332,44 @@ class HardwareService
         $reading = new HardwarePowerGeneratorSolar($data);
         $reading->hardware_energy_id = $element?->id;
 
-        // Un controlador manda su propio acumulado, no una media de periodo: los
-        // vatios-hora del día los da él y no hay nada que derivar.
-        $reading->energy_source = isset($data['day_power_generation_wh']) ? 'device' : 'derived';
+        // `energy_source` dice de dónde sale `energy_wh`, y en una lectura de
+        // controlador solar `energy_wh` no se rellena: el aparato manda sus
+        // acumulados del día y del total, no la energía de este intervalo.
+        //
+        // Miraba `day_power_generation_wh` —que es otro campo, el del día— y con
+        // él ponía 'device'. Resultado: la columna decía «este vatio-hora lo dio
+        // el aparato» junto a un `energy_wh` vacío. Se queda en 'derived', que
+        // es el valor por defecto y no afirma nada sobre un dato que no existe.
+        $reading->energy_source = 'derived';
 
-        // AD-Q04 (auditoría de datos 2026-09-02): se guarda antes de que el
-        // bloque siguiente lo sobrescriba con V×A, para poder comparar lo que
-        // dijo el aparato contra lo calculado.
+        // AD-Q04 (auditoría de datos 2026-09-02): la potencia que dijo el
+        // aparato, para poder compararla con V×A más abajo.
         $devicePower = $reading->power;
+
+        // Queda a null si el controlador no tiene elemento dado de alta: sin
+        // tensión de referencia no hay nada que calcular ni que comparar.
+        $calculada = null;
 
         if ($element !== null) {
             [$voltage, $fuente] = $element->resolveVoltage($reading->voltage);
             $reading->voltage = $voltage;
             $reading->voltage_source = $fuente;
-            $reading->power = $element->computePower($reading->amperage, $voltage);
+
+            $calculada = $element->computePower($reading->amperage, $voltage);
+
+            // **Si lo manda el aparato, se toma; si no, se calcula.** Es la
+            // regla del módulo, y aquí no se cumplía: la potencia se
+            // sobrescribía siempre con V×A, tirando el dato medido. Y cuando el
+            // firmware manda la potencia sin la corriente —el Rover lo hace—,
+            // `computePower()` devuelve null: una lectura con 58,9 W acababa
+            // guardada con la potencia vacía.
+            //
+            // La discrepancia entre lo medido y V×A sigue marcándose abajo, que
+            // es lo que sirve para detectar un sensor descalibrado. Marcar no es
+            // descartar.
+            if ($devicePower === null) {
+                $reading->power = $calculada;
+            }
         }
 
         if ($reading->amperage !== null && $reading->amperage < 0) {
@@ -358,23 +382,156 @@ class HardwareService
         // redondeo: el ruido normal de muestreo se queda por debajo de 20 W).
         // Umbral absoluto y no porcentual: uno porcentual dispara en falso
         // constantemente con corrientes bajas (p.ej. 0,03 A).
-        if ($devicePower !== null && $reading->power !== null
-            && abs($devicePower - $reading->power) > 20.0) {
+        if ($devicePower !== null && $calculada !== null
+            && abs($devicePower - $calculada) > 20.0) {
             $reading->markSuspicious(sprintf(
                 'potencia del aparato (%.2f W) muy distinta de V×A (%.2f W)',
                 $devicePower,
-                $reading->power
+                $calculada
             ));
             $warnings[] = sprintf(
                 'El controlador ha mandado %.2f W pero V×A da %.2f W: revisa la calibración del sensor.',
                 $devicePower,
-                $reading->power
+                $calculada
             );
         }
 
         $reading->save();
 
+        $warnings = array_merge($warnings, $this->summariseSolarReading($reading, $element));
+
         return ['reading' => $reading, 'warnings' => $warnings];
+    }
+
+    /**
+     * Lleva la lectura del controlador solar a los resúmenes del día y a los
+     * acumulados, tanto de generación como de consumo.
+     *
+     * **Esto no se hacía y por eso las cuatro tablas de resumen llevaban vacías
+     * desde la V2.** En la V1 (`SolarChargeController@store` de la rama `main`)
+     * una sola subida del controlador escribía en seis tablas: generación,
+     * consumo y los resúmenes diario e histórico de las dos. Al reescribir el
+     * módulo se quedó guardando sólo la fila cruda, así que el panel de energía
+     * y sus gráficas no tenían de dónde leer.
+     *
+     * Un controlador solar **lleva sus propias cuentas** y las manda en cada
+     * lectura: el día (`day_power_generation_wh`, `day_charging_amp_hours`,
+     * `day_power_consumption_wh`, `day_discharging_amp_hours`) y el total desde
+     * que se instaló (`total_*`). Esas mandan; sólo se calcula lo que no venga.
+     * Los totales del aparato cubren además los años anteriores a estas tablas,
+     * que sumando nuestros días no se pueden reconstruir.
+     *
+     * La salida de carga del controlador (`load_voltage`, `load_current`,
+     * `load_power`) es consumo real y va a las tablas de consumo, como en la V1.
+     * Necesita un elemento de rol `load` dado de alta en el mismo dispositivo.
+     *
+     * @return list<string> Avisos para el cuerpo de la respuesta.
+     */
+    private function summariseSolarReading(
+        HardwarePowerGeneratorSolar $reading,
+        ?HardwareEnergy $generator
+    ): array {
+        // Una lectura marcada no entra en los agregados, igual que en el
+        // monitor de energía.
+        if ($reading->is_suspicious) {
+            return [];
+        }
+
+        $warnings = [];
+        $deviceId = (int) $reading->hardware_device_id;
+        $date = (string) ($reading->date instanceof \DateTimeInterface
+            ? $reading->date->format('Y-m-d')
+            : $reading->date);
+
+        // ── Generación ──────────────────────────────────────────────────────
+        HardwarePowerGeneratorToday::recalculateToday($deviceId, $generator?->id, [
+            'voltage' => $reading->voltage,
+            'amperage' => $reading->amperage,
+            'power' => $reading->power,
+            'temperature' => $reading->temperature,
+            'battery' => $reading->battery_voltage,
+            'battery_percentage' => $reading->battery_percentage,
+            'read_at' => $reading->read_at,
+            'device_energy_wh' => $reading->day_power_generation_wh,
+            'device_energy_ah' => $reading->day_charging_amp_hours,
+        ], $date);
+
+        HardwarePowerGeneratorHistorical::calculateHistoricalFromTodays($deviceId, $generator?->id, [
+            'energy_wh' => $reading->total_power_generation_wh,
+            'energy_ah' => $reading->total_charging_amp_hours,
+            'days_operating' => $reading->total_operating_days,
+        ]);
+
+        // ── Consumo de la salida del controlador ────────────────────────────
+        if ($reading->load_voltage === null && $reading->load_current === null && $reading->load_power === null) {
+            return $warnings;
+        }
+
+        $load = $this->loadElementFor($deviceId);
+
+        if ($load === null) {
+            $warnings[] = 'El controlador manda consumo en su salida de carga, pero no tiene ningún elemento '.
+                'de consumo dado de alta: ese consumo no se está guardando.';
+
+            return $warnings;
+        }
+
+        $consumo = new HardwarePowerLoad([
+            'hardware_device_id' => $deviceId,
+            'hardware_energy_id' => $load->id,
+            'date' => $date,
+            'read_at' => $reading->read_at,
+            'voltage' => $reading->load_voltage,
+            'amperage' => $reading->load_current,
+            'power' => $reading->load_power,
+            'temperature' => $reading->temperature,
+            'battery_voltage' => $reading->battery_voltage,
+            'battery_percentage' => $reading->battery_percentage,
+            'fan' => $reading->load_fan,
+        ]);
+
+        // Si el aparato no manda la potencia de la salida, se deriva.
+        if ($consumo->power === null) {
+            $consumo->power = $load->computePower($consumo->amperage, $consumo->voltage);
+        }
+
+        $consumo->save();
+
+        HardwarePowerLoadToday::recalculateToday($deviceId, $load->id, [
+            'voltage' => $consumo->voltage,
+            'amperage' => $consumo->amperage,
+            'power' => $consumo->power,
+            'temperature' => $consumo->temperature,
+            'battery' => $consumo->battery_voltage,
+            'battery_percentage' => $consumo->battery_percentage,
+            'fan' => $consumo->fan,
+            'read_at' => $consumo->read_at,
+            'device_energy_wh' => $reading->day_power_consumption_wh,
+            'device_energy_ah' => $reading->day_discharging_amp_hours,
+        ], $date);
+
+        HardwarePowerLoadHistorical::calculateHistoricalFromTodays($deviceId, $load->id, [
+            'energy_wh' => $reading->total_power_consumption_wh,
+            'energy_ah' => $reading->total_discharging_amp_hours,
+            'days_operating' => $reading->total_operating_days,
+        ]);
+
+        return $warnings;
+    }
+
+    /**
+     * Elemento de consumo activo del dispositivo, si lo hay.
+     *
+     * Es donde va la salida de carga de un controlador solar.
+     */
+    private function loadElementFor(int $hardwareDeviceId): ?HardwareEnergy
+    {
+        return HardwareEnergy::query()
+            ->where('hardware_device_id', $hardwareDeviceId)
+            ->active()
+            ->where('role', HardwareEnergy::ROLE_LOAD)
+            ->orderBy('sensor_position')
+            ->first();
     }
 
     /**

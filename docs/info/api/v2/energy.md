@@ -199,6 +199,12 @@ temperatura— es del módulo Hardware: `PUT /hardware/devices/{id}/status`, abi
 
 ### `POST /energy/solar-readings` — Sube una lectura de un controlador solar
 
+Una subida escribe en seis tablas: la lectura cruda, y el resumen del día y el
+acumulado tanto de generación como del consumo de su salida de carga. Los
+acumulados que manda el aparato mandan sobre los calculados, y **nunca bajan**
+(un controlador reiniciado no borra el histórico). Detalle en
+[`docs/info/energy.md`](../../energy.md).
+
 Pensado específicamente para un Renogy Rover: el FormRequest traduce sus
 nombres de campo (`pv_voltage`, `battery_soc`, `today_*`,
 `historical_total_*`...) al vocabulario propio. Un campo ausente queda `null`,

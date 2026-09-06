@@ -80,6 +80,41 @@ php artisan iot:device-token <id-del-dispositivo> --abilities=energy:write
 Se le añade sola la ability `device:{id}`, que lo ata a ese aparato: aunque el
 token se filtre, sólo puede escribir lecturas de ése.
 
+## Qué escribe una subida del controlador solar
+
+Una sola petición a `POST /energy/solar-readings` toca **seis tablas**, igual que
+en la V1:
+
+| Tabla | Qué se guarda |
+|---|---|
+| `hardware_power_generators_solar` | La lectura cruda completa del controlador |
+| `hardware_power_generators_today` | Resumen del día del elemento generador |
+| `hardware_power_generators_historical` | Acumulado del elemento generador |
+| `hardware_power_loads` | La salida de carga del controlador, como consumo |
+| `hardware_power_loads_today` | Resumen del día del elemento de consumo |
+| `hardware_power_loads_historical` | Acumulado del elemento de consumo |
+
+Las cinco últimas **no se escribían** desde la V2: `storeSolarReading()` guardaba
+sólo la fila cruda. El panel de energía y sus gráficas leen de los resúmenes, así
+que se quedaron sin datos nuevos mientras la tabla de lecturas crecía. Corregido
+el 2026-09-06.
+
+### Tres reglas
+
+1. **Si lo manda el aparato, se toma; si no, se calcula.** Vale para la potencia
+   de la lectura y para los acumulados del día y del total. Un controlador solar
+   lleva sus propias cuentas (`day_power_generation_wh`, `total_*`…) y las manda
+   en cada lectura: sumar las nuestras encima daría el doble.
+2. **El acumulado nunca baja.** Un controlador se resetea y vuelve a contar desde
+   cero; ese día su «total» es menor que lo guardado. Se conserva el mayor entre
+   lo que había, lo que suman los resúmenes diarios y lo que dice el aparato. Es
+   la regla que ya tenía la V1, y por eso el Rover de producción conserva 66.388
+   Wh acumulados mientras el aparato dice 36.087.
+3. **La salida de carga es consumo.** `load_voltage`, `load_current` y
+   `load_power` van a las tablas de consumo. Necesitan un elemento de rol `load`
+   dado de alta en el mismo dispositivo; si no lo hay, la respuesta lo avisa en
+   `warnings` en vez de tirar el dato en silencio.
+
 ## Modelo de energía (D115)
 
 Tres problemas que arrastraba el módulo y que este modelo resuelve:

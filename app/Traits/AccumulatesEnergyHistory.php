@@ -25,10 +25,30 @@ trait AccumulatesEnergyHistory
      * `days_operating` es el número de días **distintos** con lecturas, que es
      * lo que la palabra significa. Antes era `count(id)`, y como sólo había una
      * fila por dispositivo salía 1 desde 2022.
+     *
+     * **Si el aparato manda su propio total, ese manda… pero el acumulado nunca
+     * baja.** Un controlador solar cuenta desde que se instaló, incluidos los
+     * años en que estos resúmenes no existían, así que su total vale más que
+     * sumar nuestros días. Pero un controlador se resetea —y entonces vuelve a
+     * contar desde cero—, y ese día su «total» es menor que lo que ya hay
+     * guardado: escribirlo borraría el histórico de años.
+     *
+     * Es la regla que tenía la V1 (`HardwarePowerGeneratorHistorical::updateModel`
+     * de la rama `main`: `($power > $this->power) ? $power : $this->power`), y
+     * por eso el Rover de producción tiene 66.388 Wh acumulados mientras el
+     * aparato dice 36.087: se reinició en algún momento y el histórico bueno se
+     * conservó.
+     *
+     * Se pasa en `$deviceTotals` con las claves `energy_wh`, `energy_ah` y
+     * `days_operating`. Lo que no venga se calcula sumando los resúmenes
+     * diarios.
+     *
+     * @param  array<string, mixed>  $deviceTotals
      */
     public static function calculateHistoricalFromTodays(
         int $hardwareDeviceId,
-        ?int $hardwareEnergyId = null
+        ?int $hardwareEnergyId = null,
+        array $deviceTotals = []
     ): static {
         $modeloDelDia = static::todayModel();
 
@@ -78,7 +98,35 @@ trait AccumulatesEnergyHistory
             ]);
         }
 
+        // Lo que ya había guardado, antes de que el agregado lo pise: es la
+        // memoria de todo lo anterior a estos resúmenes, y de lo que el aparato
+        // contó antes de reiniciarse.
+        $previos = [];
+
+        foreach (['energy_wh', 'energy_ah', 'days_operating'] as $campo) {
+            $previos[$campo] = $historical->exists ? $historical->{$campo} : null;
+        }
+
         $historical->forceFill($aggregate);
+
+        foreach ($deviceTotals as $campo => $valor) {
+            if ($valor === null || ! array_key_exists($campo, $previos)) {
+                continue;
+            }
+
+            // Se queda el mayor de los tres: lo que ya había, lo que suman los
+            // resúmenes diarios y lo que dice el aparato. Nunca a la baja.
+            $candidatos = array_filter(
+                [$previos[$campo], $historical->{$campo}, $valor],
+                static fn ($v) => $v !== null
+            );
+
+            $mayor = max(array_map(static fn ($v) => (float) $v, $candidatos));
+
+            // `days_operating` cuenta días, no vatios: es entero.
+            $historical->{$campo} = $campo === 'days_operating' ? (int) $mayor : $mayor;
+        }
+
         $historical->read_at = Carbon::now();
         $historical->save();
 

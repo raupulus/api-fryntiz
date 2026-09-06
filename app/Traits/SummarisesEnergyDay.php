@@ -26,6 +26,13 @@ trait SummarisesEnergyDay
      * `temperature`, `battery`, `battery_percentage`, `fan`—. Las ausentes no
      * tocan nada: no se escribe un 0 donde no había dato.
      *
+     * **Si el aparato manda su propio acumulado del día, ese manda.** Un
+     * controlador solar lleva la cuenta él mismo y la manda en cada lectura
+     * (`day_power_generation_wh`, `day_charging_amp_hours`…): sumar nuestras
+     * lecturas encima daría el doble. Se pasa en `device_energy_wh` y
+     * `device_energy_ah`, y sustituye al acumulado propio en vez de sumarse.
+     * Si no viene, se suma lectura a lectura como siempre.
+     *
      * @param  array<string, mixed>  $data
      */
     public static function recalculateToday(
@@ -58,8 +65,13 @@ trait SummarisesEnergyDay
 
         $summary->fill(self::updatedExtremes($summary, $data));
 
-        $summary->energy_wh = self::sum($summary->energy_wh, $data['energy_wh'] ?? null);
-        $summary->energy_ah = self::sum($summary->energy_ah, $data['energy_ah'] ?? null);
+        $summary->energy_wh = isset($data['device_energy_wh'])
+            ? (float) $data['device_energy_wh']
+            : self::sum($summary->energy_wh, $data['energy_wh'] ?? null);
+
+        $summary->energy_ah = isset($data['device_energy_ah'])
+            ? (float) $data['device_energy_ah']
+            : self::sum($summary->energy_ah, $data['energy_ah'] ?? null);
         $summary->readings_count = (int) ($summary->readings_count ?? 0) + 1;
         $summary->read_at = $readAt;
 

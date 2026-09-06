@@ -6,7 +6,12 @@ namespace Tests\Feature\Api\V2\Persistence;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorSolar;
+use App\Models\Hardware\HardwarePowerGeneratorToday;
+use App\Models\Hardware\HardwarePowerLoad;
+use App\Models\Hardware\HardwarePowerLoadHistorical;
+use App\Models\Hardware\HardwarePowerLoadToday;
 use App\Models\User;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Testing\TestResponse;
@@ -319,7 +324,40 @@ class SolarReadingPersistenceTest extends ApiTestCase
         $this->assertNotNull($row, 'La lectura sospechosa se descartó en vez de marcarse.');
         $this->assertTrue((bool) $row->is_suspicious, 'La potencia inconsistente con V×A no se marcó.');
         $this->assertNotNull($row->suspicious_reason);
-        $this->assertEqualsWithDelta(100.0, (float) $row->power, 0.01, 'El derivado V×A no se guardó: se quedó con el dato crudo del aparato.');
+
+        // Si lo manda el aparato, se guarda lo que manda el aparato. La
+        // discrepancia con V×A se refleja marcando la lectura, no sustituyendo
+        // el dato medido por uno calculado.
+        $this->assertEqualsWithDelta(10.0, (float) $row->power, 0.01, 'Se guardó el derivado V×A en vez de la potencia que midió el aparato.');
+    }
+
+    #[Test]
+    public function la_potencia_del_aparato_se_conserva_cuando_no_manda_corriente(): void
+    {
+        HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $payload = array_merge($this->fullPayload(), [
+            'solar_voltage' => 18.0,
+            'solar_power' => 58.9,
+        ]);
+        unset($payload['solar_current'], $payload['pv_current'], $payload['amperage']);
+
+        $this->send($payload)->assertStatus(201);
+
+        $row = HardwarePowerGeneratorSolar::query()->latest('id')->first();
+
+        // Sin corriente no hay V×A que valga: antes se machacaba con null y se
+        // perdía el único dato de potencia de la lectura.
+        $this->assertEqualsWithDelta(58.9, (float) $row->power, 0.01, 'La potencia del aparato se perdió al no venir la corriente.');
+        $this->assertNull($row->amperage);
+        $this->assertFalse((bool) $row->is_suspicious, 'No hay nada con lo que comparar: no debe marcarse.');
     }
 
     #[Test]
@@ -348,6 +386,179 @@ class SolarReadingPersistenceTest extends ApiTestCase
         $row = HardwarePowerGeneratorSolar::query()->latest('id')->first();
 
         $this->assertFalse((bool) $row->is_suspicious, 'Una diferencia de 2 W (ruido normal) se marcó como sospechosa.');
+    }
+
+    /**
+     * Una subida del controlador tiene que llenar las cuatro tablas de resumen,
+     * como hacía la V1.
+     *
+     * Guardaba sólo la fila cruda, así que `hardware_power_generators_today`,
+     * `_historical`, `hardware_power_loads`, `_today` y `_historical` llevaban
+     * vacías desde la V2 y el panel de energía no tenía de dónde leer.
+     */
+    #[Test]
+    public function una_lectura_del_controlador_llena_los_resumenes_de_generacion_y_consumo(): void
+    {
+        $generador = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $consumo = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Salida de carga del Rover',
+            'role' => HardwareEnergy::ROLE_LOAD,
+            'is_generator' => false,
+            'sensor_position' => 1,
+            'nominal_voltage' => 12.0,
+        ]);
+
+        $payload = array_merge($this->fullPayload(), [
+            'today_discharging_amp_hours' => 18.4,
+            'today_power_consumption' => 221.5,
+            'historical_total_discharging_amp_hours' => 7608.0,
+            'historical_cumulative_power_consumption' => 5385.0,
+        ]);
+
+        $this->send($payload)->assertStatus(201);
+
+        // ── Generación ──
+        $genHoy = HardwarePowerGeneratorToday::query()
+            ->where('hardware_energy_id', $generador->id)->first();
+
+        $this->assertNotNull($genHoy, 'No se creó el resumen del día de generación.');
+        // El acumulado del día lo manda el aparato: se toma tal cual, no se suma.
+        $this->assertEqualsWithDelta(402.5, (float) $genHoy->energy_wh, 0.01);
+        $this->assertEqualsWithDelta(31.2, (float) $genHoy->energy_ah, 0.01);
+
+        $genTotal = HardwarePowerGeneratorHistorical::query()
+            ->where('hardware_energy_id', $generador->id)->first();
+
+        $this->assertNotNull($genTotal, 'No se creó el acumulado de generación.');
+        // El total del aparato cubre años anteriores a estas tablas: manda él.
+        $this->assertEqualsWithDelta(154_320.75, (float) $genTotal->energy_wh, 0.01);
+        $this->assertSame(412, (int) $genTotal->days_operating);
+
+        // ── Consumo de la salida de carga ──
+        $lectura = HardwarePowerLoad::query()
+            ->where('hardware_energy_id', $consumo->id)->first();
+
+        $this->assertNotNull($lectura, 'La salida de carga del controlador no se guardó como consumo.');
+        $this->assertEqualsWithDelta(12.9, (float) $lectura->voltage, 0.01);
+        $this->assertEqualsWithDelta(1.85, (float) $lectura->amperage, 0.01);
+        $this->assertEqualsWithDelta(23.9, (float) $lectura->power, 0.01);
+
+        $loadHoy = HardwarePowerLoadToday::query()
+            ->where('hardware_energy_id', $consumo->id)->first();
+
+        $this->assertNotNull($loadHoy, 'No se creó el resumen del día de consumo.');
+        $this->assertEqualsWithDelta(221.5, (float) $loadHoy->energy_wh, 0.01);
+        $this->assertEqualsWithDelta(18.4, (float) $loadHoy->energy_ah, 0.01);
+
+        $loadTotal = HardwarePowerLoadHistorical::query()
+            ->where('hardware_energy_id', $consumo->id)->first();
+
+        $this->assertNotNull($loadTotal, 'No se creó el acumulado de consumo.');
+        $this->assertEqualsWithDelta(5385.0, (float) $loadTotal->energy_wh, 0.01);
+    }
+
+    /**
+     * Dos lecturas del mismo día no duplican el acumulado del aparato.
+     */
+    #[Test]
+    public function el_acumulado_del_dia_no_se_suma_dos_veces(): void
+    {
+        $generador = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $this->send($this->fullPayload())->assertStatus(201);
+        $this->send(array_merge($this->fullPayload(), [
+            'read_at' => '2026-08-24 11:35:00',
+            'today_power_generation' => 415.0,
+        ]))->assertStatus(201);
+
+        $genHoy = HardwarePowerGeneratorToday::query()
+            ->where('hardware_energy_id', $generador->id)->first();
+
+        // El aparato dice 415 Wh en total del día, no 402,5 + 415.
+        $this->assertEqualsWithDelta(415.0, (float) $genHoy->energy_wh, 0.01);
+        $this->assertSame(2, (int) $genHoy->readings_count);
+    }
+
+    /**
+     * Un reinicio del controlador no puede borrar el acumulado de años.
+     *
+     * El Rover de producción tiene 66.388 Wh guardados y hoy dice 36.087: se
+     * reinició en algún momento y volvió a contar desde cero. Escribir su
+     * «total» encima tiraría treinta megavatios-hora de histórico. La V1 ya
+     * tenía esta regla (`($power > $this->power) ? $power : $this->power`).
+     */
+    #[Test]
+    public function el_acumulado_nunca_baja_aunque_el_aparato_se_haya_reiniciado(): void
+    {
+        $generador = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        HardwarePowerGeneratorHistorical::create([
+            'hardware_device_id' => $this->device->id,
+            'hardware_energy_id' => $generador->id,
+            'energy_wh' => 66_388.0,
+            'energy_ah' => 65_191.0,
+            'days_operating' => 1738,
+            'read_at' => now()->subDay(),
+        ]);
+
+        // El aparato manda un total mucho menor: ha vuelto a contar.
+        $this->send(array_merge($this->fullPayload(), [
+            'historical_cumulative_power_generation' => 36_087.0,
+            'historical_total_charging_amp_hours' => 11_973.0,
+            'historical_total_days_operating' => 12,
+        ]))->assertStatus(201);
+
+        $total = HardwarePowerGeneratorHistorical::query()
+            ->where('hardware_energy_id', $generador->id)->first();
+
+        $this->assertEqualsWithDelta(66_388.0, (float) $total->energy_wh, 0.01, 'El reinicio del controlador borró el acumulado.');
+        $this->assertEqualsWithDelta(65_191.0, (float) $total->energy_ah, 0.01);
+        $this->assertSame(1738, (int) $total->days_operating);
+    }
+
+    /**
+     * Sin elemento de consumo dado de alta, la salida de carga no se pierde en
+     * silencio: se avisa.
+     */
+    #[Test]
+    public function avisa_si_hay_consumo_y_no_hay_elemento_donde_guardarlo(): void
+    {
+        HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $respuesta = $this->send($this->fullPayload());
+
+        $respuesta->assertStatus(201);
+        $this->assertNotEmpty($respuesta->json('warnings'), 'No avisó de que el consumo no tiene dónde guardarse.');
     }
 
     #[Test]
