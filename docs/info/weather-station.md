@@ -208,7 +208,7 @@ unidades): viento en **km/h**, temperatura/magnitudes redondeadas a **2 decimale
   ninguna). `?location_type=indoor|outdoor` acota dentro de la zona. Coincidencia
   de zona insensible a mayúsculas.
 
-#### `GET /api/v2/weather-stations/zone/{zona}/{tipo?}` — lectura AGREGADA de zona
+#### `GET /api/v2/weather-stations/zone/{zone}/{locationType?}` — lectura AGREGADA de zona
 
 **Nuevo el 2026-09-06.** No confundir con el `/zone/{zone}` de arriba, que
 devuelve la lista de estaciones: éste devuelve **una sola lectura**, la de la
@@ -223,10 +223,10 @@ seguía enseñando su último valor —la humedad al 49 % durante días— mient
 estación de al lado, en la misma azotea, subía el 20 % real. El dato bueno
 estaba en la base y no se miraba.
 
-- `{tipo}` es opcional y sólo admite `indoor` o `outdoor`. Acota el resto de
+- `{locationType}` es opcional y sólo admite `indoor` o `outdoor`. Acota el resto de
   sensores; normalmente `outdoor`.
 - **La presión es la excepción**: sale de **cualquier** estación de la zona,
-  interior incluida, se pase el tipo que se pase. Un barómetro mide lo mismo
+  interior incluida, se pase el valor que se pase. Un barómetro mide lo mismo
   dentro que fuera y a la interperie se estropea antes, así que suele vivir en un
   cacharro de interior.
 - Los **rayos** se cuentan en toda la zona, no en un dispositivo.
@@ -272,7 +272,7 @@ Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
   quedaba enseñando su último valor cuando ésa dejaba de subir. Sin zona
   clasificada cae a la estación principal.
 - **Actualización:** Cada 65 segundos vía `fetch()` a
-  `api/v2/weather-stations/zone/{zona}[/{tipo}]`, o al endpoint de estación si no
+  `api/v2/weather-stations/zone/{zone}[/{locationType}]`, o al endpoint de estación si no
   hay zona.
 - **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
 - **Ubicación dinámica:** muestra `data.name` + `data.location_label` en lugar de un literal fijo.

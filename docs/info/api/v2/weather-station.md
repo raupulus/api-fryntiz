@@ -194,7 +194,7 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
   array anterior (no array).
 - **Errores**: `404` `{"success": false, "message": "Estacion meteorologica no encontrada"}`.
 
-### `GET /weather-stations/zone/{zona}/{tipo?}` — Lectura AGREGADA de una zona
+### `GET /weather-stations/zone/{zone}/{locationType?}` — Lectura AGREGADA de una zona
 
 **Nuevo el 2026-09-06.**
 
@@ -213,8 +213,8 @@ estaba en la base y no se miraba.
 
 - **Auth**: pública.
 - **Parámetros de ruta**:
-  - `{zona}`: nombre de la zona, insensible a mayúsculas (`Azotea`).
-  - `{tipo}`: opcional, sólo `indoor` o `outdoor`. Acota el resto de sensores.
+  - `{zone}`: nombre de la zona, insensible a mayúsculas (`Azotea`).
+  - `{locationType}`: opcional, sólo `indoor` o `outdoor`. Acota el resto de sensores.
 - **Respuesta 200**: un único objeto con **la misma forma** que
   `GET /weather-stations/{station}`. Un cliente que ya consumiera aquél sólo
   cambia la URL, no el parseo.
@@ -222,7 +222,7 @@ estaba en la base y no se miraba.
 
 Tres reglas del agregado que conviene tener claras:
 
-1. **La presión ignora `{tipo}`**: sale de cualquier estación de la zona,
+1. **La presión ignora `{locationType}`**: sale de cualquier estación de la zona,
    interior incluida. Un barómetro mide lo mismo dentro que fuera y a la
    interperie se estropea antes, así que suele vivir en un cacharro de interior.
 2. **Los rayos se cuentan en toda la zona**, no en un dispositivo.
