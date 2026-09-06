@@ -281,22 +281,34 @@
                 </div>
                 @endforeach
 
-                {{-- Dispositivo top --}}
-                @if($widgets['top_device'])
-                <div class="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-4 text-center shadow">
-                    <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-3xl">devices</span>
-                    <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($widgets['top_device']->total) }}</p>
-                    <p class="text-xs text-on-surface-variant">{{ __('keycounter.top_device') }}: {{ $widgets['top_device']->name }}</p>
-                </div>
-                @endif
+                {{-- Totales por dispositivo.
 
-                {{-- Totales por dispositivo --}}
+                     El de más pulsaciones se pinta destacado y con el
+                     distintivo «Dispositivo top» en lugar de repetirse: antes
+                     salía también en una tarjeta propia, así que el mismo
+                     equipo aparecía dos veces y dejaba una tarjeta suelta al
+                     final de la rejilla. --}}
+                @php($topDeviceId = (int) ($widgets['top_device']->hardware_device_id ?? 0))
                 @foreach($widgets['totals_by_device'] as $deviceData)
-                <div class="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-lg p-4 text-center shadow">
-                    <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-3xl">dns</span>
-                    <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($deviceData->total) }}</p>
-                    <p class="text-xs text-on-surface-variant">{{ $deviceData->name }}</p>
-                </div>
+                    @if((int) $deviceData->hardware_device_id === $topDeviceId)
+                        <div class="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-4 text-center shadow">
+                            <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-3xl">devices</span>
+                            <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($deviceData->total) }}</p>
+                            <p class="text-xs text-on-surface-variant">{{ $deviceData->name }}</p>
+                            <p class="mt-2">
+                                <span class="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-300">
+                                    <span class="material-symbols-outlined text-sm leading-none">emoji_events</span>
+                                    {{ __('keycounter.top_device') }}
+                                </span>
+                            </p>
+                        </div>
+                    @else
+                        <div class="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-lg p-4 text-center shadow">
+                            <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-3xl">dns</span>
+                            <p class="text-xl font-bold text-on-surface mt-2">{{ number_format($deviceData->total) }}</p>
+                            <p class="text-xs text-on-surface-variant">{{ $deviceData->name }}</p>
+                        </div>
+                    @endif
                 @endforeach
             </div>
         </div>

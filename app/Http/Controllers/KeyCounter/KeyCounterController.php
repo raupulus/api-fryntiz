@@ -116,13 +116,6 @@ class KeyCounterController extends Controller
                 ->orderByDesc('total')
                 ->first();
 
-            // Dispositivo con más pulsaciones (top_device)
-            $topDevice = Keyboard::selectRaw('hardware_device_id, SUM(pulsations) as total')
-                ->whereNotNull('hardware_device_id')
-                ->groupBy('hardware_device_id')
-                ->orderByDesc('total')
-                ->first();
-
             // Totales de pulsaciones por cada dispositivo (totals_by_device),
             // evitando N+1 al resolver los nombres en una única consulta.
             $totalsByDeviceRaw = Keyboard::selectRaw('hardware_device_id, SUM(pulsations) as total')
@@ -152,11 +145,10 @@ class KeyCounterController extends Controller
                 'top_month' => $topMonth,
                 'top_day' => $topDay,
                 'top_hour' => $topHour,
-                'top_device' => $topDevice ? (object) [
-                    'hardware_device_id' => $topDevice->hardware_device_id,
-                    'name' => $deviceName((int) $topDevice->hardware_device_id),
-                    'total' => $topDevice->total,
-                ] : null,
+                // El dispositivo con más pulsaciones sale de la lista ya
+                // ordenada, sin repetir la consulta agregada. La vista no le
+                // dedica una tarjeta propia: marca la suya con el distintivo.
+                'top_device' => $totalsByDevice->first(),
                 'totals_by_device' => $totalsByDevice,
             ];
         });
