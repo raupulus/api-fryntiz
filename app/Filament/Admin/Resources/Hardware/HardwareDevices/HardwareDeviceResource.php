@@ -143,10 +143,21 @@ class HardwareDeviceResource extends Resource
                             ->label('Uso de disco (%)')
                             ->disabled()
                             ->dehydrated(false),
+                        TextInput::make('ram')
+                            ->label('Uso de memoria (%)')
+                            ->disabled()
+                            ->dehydrated(false),
                         TextInput::make('uptime')
                             ->label('Uptime (segundos)')
                             ->disabled()
-                            ->dehydrated(false),
+                            ->dehydrated(false)
+                            // Los segundos son lo que manda el cacharro, pero
+                            // «14212800» no dice nada de un vistazo. La lectura
+                            // va debajo, en el hueco que ya ocupa el campo, sin
+                            // deformar el formulario.
+                            ->helperText(fn (?HardwareDevice $record): ?string => $record?->uptime === null
+                                ? null
+                                : self::uptimeLegible((int) $record->uptime)),
                         TextInput::make('ip_local')
                             ->label('IP Local')
                             ->disabled()
@@ -293,6 +304,49 @@ class HardwareDeviceResource extends Resource
             RelationManagers\ComponentsRelationManager::class,
             RelationManagers\TokensRelationManager::class,
         ];
+    }
+
+    /**
+     * Los segundos de uptime, en unidades que se leen de un vistazo.
+     *
+     * Se queda en las dos unidades más grandes que apliquen: «3 meses, 12 días»
+     * dice lo que hay que saber, y «3 meses, 12 días, 4 horas y 51 minutos» sólo
+     * hace la línea más larga.
+     */
+    private static function uptimeLegible(int $segundos): string
+    {
+        if ($segundos <= 0) {
+            return 'recién arrancado';
+        }
+
+        $unidades = [
+            'mes' => 2_592_000,
+            'día' => 86_400,
+            'hora' => 3_600,
+            'minuto' => 60,
+        ];
+
+        $plurales = ['mes' => 'meses', 'día' => 'días', 'hora' => 'horas', 'minuto' => 'minutos'];
+        $partes = [];
+
+        foreach ($unidades as $nombre => $tamanyo) {
+            if (count($partes) === 2) {
+                break;
+            }
+
+            $cantidad = intdiv($segundos, $tamanyo);
+
+            if ($cantidad === 0 && $partes === []) {
+                continue;
+            }
+
+            if ($cantidad > 0) {
+                $partes[] = $cantidad.' '.($cantidad === 1 ? $nombre : $plurales[$nombre]);
+                $segundos -= $cantidad * $tamanyo;
+            }
+        }
+
+        return $partes === [] ? 'menos de un minuto' : implode(', ', $partes);
     }
 
     public static function getPages(): array

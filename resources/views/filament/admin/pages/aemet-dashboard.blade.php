@@ -81,7 +81,13 @@
                                 </span>
                                 @if ($card['last'])
                                     <span>
-                                        {{ \Carbon\Carbon::parse($card['last'])->format('d/m/Y H:i') }}
+                                        {{-- La base guarda en UTC y la página lo pintaba tal cual, así que un
+                                             cron de las 08:30 salía como 06:30 y parecía que no se había
+                                             ejecutado. `FilamentTimezone` sólo alcanza a las columnas y
+                                             las infolists del panel, no a una vista propia como esta. --}}
+                                        {{ \Carbon\Carbon::parse($card['last'])
+                                            ->timezone(config('app.display_timezone', 'Europe/Madrid'))
+                                            ->format('d/m/Y H:i') }}
                                     </span>
                                 @else
                                     <span class="italic">nunca</span>

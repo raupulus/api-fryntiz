@@ -148,7 +148,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'keycounter:write'
+          - 'smartplant:read'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -189,7 +189,7 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'keycounter:write'
+        - 'smartplant:read'
       name: 'n'
       expires_at: '2052-09-29'
     fileParameters: []
@@ -1969,12 +1969,23 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      ram:
+        custom: []
+        name: ram
+        description: 'Must be between 0 and 100.'
+        required: false
+        example: 1
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       uptime:
         custom: []
         name: uptime
         description: 'Must be at least 0.'
         required: false
-        example: 60
+        example: 42
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2020,7 +2031,8 @@ endpoints:
       battery_level: 0
       cpu: 0
       disk: 0
-      uptime: 60
+      ram: 1
+      uptime: 42
       ip_local: 1.102.226.211
       ip_public: 1.102.226.211
     fileParameters: []
@@ -2094,7 +2106,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T10:34:43'
+        example: '2026-09-06T10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2227,7 +2239,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T10:34:43'
+        example: '2026-09-06T10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2258,7 +2270,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-06T10:34:43'
+      read_at: '2026-09-06T10:45:14'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2271,7 +2283,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-06T10:34:43'
+          read_at: '2026-09-06T10:45:14'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2331,7 +2343,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T10:34:43'
+        example: '2026-09-06T10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2342,7 +2354,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T10:34:43'
+        example: '2026-09-06T10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2812,8 +2824,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-06T10:34:43'
-      read_at: '2026-09-06T10:34:43'
+      date: '2026-09-06T10:45:14'
+      read_at: '2026-09-06T10:45:14'
       hardware: 'n'
       version: g
       serial_number: z
@@ -3020,7 +3032,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:34:43'
+        example: '2026-09-06 10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3031,7 +3043,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:34:43'
+        example: '2026-09-06 10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3106,8 +3118,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 10:34:43'
-      end_at: '2026-09-06 10:34:43'
+      start_at: '2026-09-06 10:45:14'
+      end_at: '2026-09-06 10:45:14'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3182,7 +3194,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:34:43'
+        example: '2026-09-06 10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3193,7 +3205,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:34:43'
+        example: '2026-09-06 10:45:14'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3279,8 +3291,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 10:34:43'
-      end_at: '2026-09-06 10:34:43'
+      start_at: '2026-09-06 10:45:14'
+      end_at: '2026-09-06 10:45:14'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3538,7 +3550,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3575,7 +3587,7 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: true
+      full_water_tank: false
       waterpump_enabled: false
       vaporizer_enabled: true
     fileParameters: []
@@ -3616,7 +3628,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - rain
+          - temperature
         type: 'string[]'
         enumValues:
           - temperature
@@ -3645,14 +3657,14 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - rain
+        - temperature
       location_type: indoor
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":10,"name":"Esp32 D1 WS","zone":null,"location_type":"indoor","location_label":"Interior","instant":{"day_name":"domingo","date_human_format":"6 de septiembre de 2026","time":"10:34","day_status":"D\u00eda"},"temperature":33,"humidity":49,"pressure":null,"wind":{"average":3.24,"min":3.24,"max":3.24,"direction":"E","direction_grades":112},"light":{"lux":null,"uv_index":null,"uva":null,"uvb":null},"air_quality":{"quality":87,"eco2":77,"tvoc":421},"rain":{"value":0,"intensity":0},"lightning":{"last_at":"2024-11-05T13:04:19.000000Z","window_minutes":60,"count_in_window":0,"distance":3,"energy":90240}}]}'
+        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":10,"name":"Esp32 D1 WS","zone":null,"location_type":"indoor","location_label":"Interior","instant":{"day_name":"domingo","date_human_format":"6 de septiembre de 2026","time":"10:45","day_status":"D\u00eda"},"temperature":33,"humidity":49,"pressure":null,"wind":{"average":3.24,"min":3.24,"max":3.24,"direction":"E","direction_grades":112},"light":{"lux":null,"uv_index":null,"uva":null,"uvb":null},"air_quality":{"quality":87,"eco2":77,"tvoc":421},"rain":{"value":0,"intensity":0},"lightning":{"last_at":"2024-11-05T13:04:19.000000Z","window_minutes":60,"count_in_window":0,"distance":3,"energy":90240}}]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -3711,7 +3723,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - light
+          - wind
         type: 'string[]'
         enumValues:
           - temperature
@@ -3727,7 +3739,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - light
+        - wind
     fileParameters: []
     responses:
       -

@@ -58,6 +58,7 @@ class DeviceStatusPayload implements ValidationRule
             'battery_level' => ['nullable', 'integer', 'between:0,100'],
             'cpu' => ['nullable', 'numeric', 'between:0,100'],
             'disk' => ['nullable', 'numeric', 'between:0,100'],
+            'ram' => ['nullable', 'numeric', 'between:0,100'],
             'uptime' => ['nullable', 'integer', 'min:0'],
             'ip_local' => ['nullable', 'ip'],
             'ip_public' => ['nullable', 'ip'],

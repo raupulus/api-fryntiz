@@ -404,14 +404,14 @@ class HardwareService
      * con nulos valores previamente conocidos que no vengan en esta subida.
      *
      * @param  int  $deviceId  Identificador del dispositivo hardware.
-     * @param  array  $data  Estado del dispositivo (temp, voltage, battery_level, cpu, disk, uptime, ip_local, ip_public, extra).
+     * @param  array  $data  Estado del dispositivo (temp, voltage, battery_level, cpu, disk, ram, uptime, ip_local, ip_public, extra).
      * @return HardwareDevice Dispositivo actualizado.
      */
     public function updateDeviceStatus(int $deviceId, array $data): HardwareDevice
     {
         $device = HardwareDevice::query()->findOrFail($deviceId);
 
-        $allowed = ['temp', 'voltage', 'battery_level', 'cpu', 'disk', 'uptime', 'ip_local', 'ip_public', 'extra'];
+        $allowed = ['temp', 'voltage', 'battery_level', 'cpu', 'disk', 'ram', 'uptime', 'ip_local', 'ip_public', 'extra'];
 
         $status = array_intersect_key($data, array_flip($allowed));
 

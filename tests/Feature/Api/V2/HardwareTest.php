@@ -124,7 +124,8 @@ class HardwareTest extends ApiTestCase
             'cpu' => 33,
             'uptime' => 123456,
             'disk' => 80,
-            'extra' => ['ram' => 512],
+            'ram' => 62.5,
+            'extra' => ['swap' => 128],
         ];
 
         $response = $this->putJson($this->apiUrl("hardware/devices/{$device->id}/status"), $payload, $headers);
@@ -134,7 +135,30 @@ class HardwareTest extends ApiTestCase
         $this->assertSame('192.168.1.100', $device->ip_local);
         $this->assertSame(48, $device->battery_level);
         $this->assertNotNull($device->last_seen_at);
-        $this->assertSame(['ram' => 512], $device->extra);
+        // La memoria tiene columna propia: antes sólo cabía dentro de `extra`,
+        // que es JSON y no se puede ordenar ni graficar.
+        $this->assertSame(62.5, $device->ram);
+        $this->assertSame(['swap' => 128], $device->extra);
+
+        // La IP pública la pone el servidor a partir de la petición, no el
+        // dispositivo: lo que mande en `ip_public` se ignora. En las pruebas no
+        // hay proxy ni IP pública, así que queda a null.
+        $this->assertNull($device->ip_public);
+    }
+
+    #[Test]
+    public function la_memoria_fuera_de_rango_se_rechaza(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);
+
+        $device = HardwareDevice::create(['user_id' => $user->id, 'name' => 'Test Device']);
+
+        $this->putJson(
+            $this->apiUrl("hardware/devices/{$device->id}/status"),
+            ['ram' => 140],
+            $headers
+        )->assertStatus(422);
     }
 
     #[Test]

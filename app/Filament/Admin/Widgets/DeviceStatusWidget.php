@@ -46,6 +46,7 @@ class DeviceStatusWidget extends Widget
             ['key' => 'voltage', 'label' => 'Tensión', 'icon' => 'heroicon-o-bolt', 'color' => 'amber', 'unit' => ' V', 'decimals' => 2],
             ['key' => 'cpu', 'label' => 'CPU', 'icon' => 'heroicon-o-cpu-chip', 'color' => 'sky', 'unit' => ' %', 'decimals' => 0],
             ['key' => 'disk', 'label' => 'Disco', 'icon' => 'heroicon-o-circle-stack', 'color' => 'indigo', 'unit' => ' %', 'decimals' => 0],
+            ['key' => 'ram', 'label' => 'RAM', 'icon' => 'heroicon-o-square-3-stack-3d', 'color' => 'violet', 'unit' => ' %', 'decimals' => 0],
             ['key' => 'uptime', 'label' => 'Uptime', 'icon' => 'heroicon-o-clock', 'color' => 'emerald', 'unit' => '', 'decimals' => 0],
             ['key' => 'battery_level', 'label' => 'Batería', 'icon' => 'heroicon-o-battery-50', 'color' => 'green', 'unit' => ' %', 'decimals' => 0],
         ];
@@ -106,7 +107,8 @@ class DeviceStatusWidget extends Widget
                 $query->whereNotNull('temp')
                     ->orWhereNotNull('voltage')
                     ->orWhereNotNull('cpu')
-                    ->orWhereNotNull('disk');
+                    ->orWhereNotNull('disk')
+                    ->orWhereNotNull('ram');
             })
             ->orderByDesc('last_seen_at')
             ->get()

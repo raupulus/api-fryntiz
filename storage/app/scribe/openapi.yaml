@@ -97,7 +97,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'keycounter:write'
+                    - 'smartplant:read'
                   items:
                     type: string
                     enum:
@@ -1209,10 +1209,15 @@ paths:
                   description: 'Must be between 0 and 100.'
                   example: 0
                   nullable: true
+                ram:
+                  type: number
+                  description: 'Must be between 0 and 100.'
+                  example: 1
+                  nullable: true
                 uptime:
                   type: integer
                   description: 'Must be at least 0.'
-                  example: 60
+                  example: 42
                   nullable: true
                 ip_local:
                   type: string
@@ -1276,7 +1281,7 @@ paths:
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T10:34:43'
+                  example: '2026-09-06T10:45:14'
                   nullable: true
                 temperature:
                   type: number
@@ -1338,7 +1343,7 @@ paths:
                       read_at:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2026-09-06T10:34:43'
+                        example: '2026-09-06T10:45:14'
                         nullable: true
                       battery_voltage:
                         type: number
@@ -1384,11 +1389,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T10:34:43'
+                  example: '2026-09-06T10:45:14'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T10:34:43'
+                  example: '2026-09-06T10:45:14'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1661,11 +1666,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:34:43'
+                  example: '2026-09-06 10:45:14'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:34:43'
+                  example: '2026-09-06 10:45:14'
                 duration:
                   type: integer
                   description: ''
@@ -1759,11 +1764,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:34:43'
+                  example: '2026-09-06 10:45:14'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:34:43'
+                  example: '2026-09-06 10:45:14'
                 duration:
                   type: integer
                   description: ''
@@ -1917,7 +1922,7 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 waterpump_enabled:
                   type: boolean
@@ -1969,7 +1974,7 @@ paths:
                       instant:
                         day_name: domingo
                         date_human_format: '6 de septiembre de 2026'
-                        time: '10:34'
+                        time: '10:45'
                         day_status: Día
                       temperature: 33
                       humidity: 49
@@ -2017,7 +2022,7 @@ paths:
                         instant:
                           day_name: domingo
                           date_human_format: '6 de septiembre de 2026'
-                          time: '10:34'
+                          time: '10:45'
                           day_status: Día
                         temperature: 33
                         humidity: 49
@@ -2076,7 +2081,7 @@ paths:
                               example: '6 de septiembre de 2026'
                             time:
                               type: string
-                              example: '10:34'
+                              example: '10:45'
                             day_status:
                               type: string
                               example: Día
@@ -2179,7 +2184,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - rain
+                    - temperature
                   items:
                     type: string
                     enum:
@@ -2236,7 +2241,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - light
+                    - wind
                   items:
                     type: string
                     enum:

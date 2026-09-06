@@ -59,6 +59,24 @@ class StoreDeviceStatusRequest extends BaseFormRequest
             $this->merge(['hardware_device_id' => $this->route('device')]);
         }
 
+        // La IP pública la pone el servidor, no el cacharro.
+        //
+        // El dispositivo sabe su IP de la intranet y la manda en `ip_local`; la
+        // pública no la conoce de forma fiable —tendría que preguntársela a un
+        // servicio externo cada vez— y, si la manda, no hay forma de comprobar
+        // que dice la verdad. Aquí ya viene en la petición: se saca de la
+        // cabecera que escribe el proxy ({@see ClientIp}).
+        //
+        // Va en `prepareForValidation()` y no en `passedValidation()`: allí el
+        // `merge()` llega tarde, porque `validated()` ya se ha resuelto y el
+        // controlador lee de ahí. Se veía en el test, que seguía recibiendo la
+        // IP que mandaba el cliente.
+        //
+        // Si no se puede determinar ninguna IP pública —desarrollo, o una NAT
+        // sin proxy delante— se deja a null en vez de guardar una privada, que
+        // sería mentir en la columna.
+        $this->merge(['ip_public' => ClientIp::public($this)]);
+
         $info = $this->input('hardware_device_info');
 
         if (! is_array($info)) {
@@ -73,25 +91,6 @@ class StoreDeviceStatusRequest extends BaseFormRequest
         if ($allowed !== []) {
             $this->merge($allowed);
         }
-    }
-
-    /**
-     * La IP pública la pone el servidor, no el cacharro.
-     *
-     * El dispositivo sabe su IP de la intranet y la manda en `ip_local`; la
-     * pública no la conoce de forma fiable —tendría que preguntársela a un
-     * servicio externo cada vez— y, si la manda, no hay forma de comprobar que
-     * dice la verdad. Aquí ya viene en la petición: se saca de la cabecera que
-     * escribe el proxy ({@see ClientIp}).
-     *
-     * Se sobreescribe siempre lo que mande el cliente. Si no se puede
-     * determinar ninguna IP pública —desarrollo, o una NAT sin proxy delante—
-     * se deja a null en vez de guardar una privada, que sería mentir en la
-     * columna.
-     */
-    protected function passedValidation(): void
-    {
-        $this->merge(['ip_public' => ClientIp::public($this)]);
     }
 
     public function rules(): array

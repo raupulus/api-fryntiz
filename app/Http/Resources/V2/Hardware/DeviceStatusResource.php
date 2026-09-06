@@ -24,6 +24,7 @@ class DeviceStatusResource extends JsonResource
             'battery_level' => $this->battery_level,
             'cpu' => $this->cpu,
             'disk' => $this->disk,
+            'ram' => $this->ram,
             'uptime' => $this->uptime,
             'ip_local' => $this->ip_local,
             'ip_public' => $this->ip_public,

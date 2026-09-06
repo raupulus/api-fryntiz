@@ -60,6 +60,7 @@ use function array_filter;
  * @property \Illuminate\Support\Carbon|null $battery_read_at Cuándo se midió la batería
  * @property float|null $cpu Último uso de CPU conocido en porcentaje (0-100)
  * @property float|null $disk Último uso de disco conocido en porcentaje (0-100)
+ * @property float|null $ram Último uso de memoria conocido en porcentaje (0-100)
  * @property int|null $uptime Último tiempo de actividad conocido en segundos
  * @property array<string, mixed>|null $extra Métricas de estado adicionales del dispositivo
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -149,7 +150,7 @@ class HardwareDevice extends BaseModel
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
         'battery_nominal_capacity', 'url_company', 'description', 'buy_at',
         'last_seen_at', 'ip_local', 'ip_public', 'temp', 'voltage',
-        'battery_level', 'cpu', 'disk', 'uptime', 'extra',
+        'battery_level', 'cpu', 'disk', 'ram', 'uptime', 'extra',
         // Batería del propio dispositivo (D108). La puede mandar cualquier
         // endpoint IoT y siempre es opcional; no es una lectura de energía.
         'battery_voltage', 'battery_percentage', 'battery_read_at'];
@@ -166,6 +167,7 @@ class HardwareDevice extends BaseModel
         'battery_read_at' => 'datetime',
         'cpu' => 'float',
         'disk' => 'float',
+        'ram' => 'float',
         'uptime' => 'integer',
         'extra' => 'array',
     ];
