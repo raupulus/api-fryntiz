@@ -190,11 +190,11 @@ de adorno: cada una la exige alguna ruta.**
 
 Cambios del **2026-09-06**:
 
-- **Energía se separa de Hardware.** `energy:read/write` son nuevas;
-  antes las lecturas de energía y solares iban con `hardware:*`. A los tokens ya
-  emitidos se les añadió la nueva en el mismo despliegue, así que ningún
-  cacharro dejó de subir. Los tokens nuevos de un aparato de energía llevan
-  `energy:write` y no necesitan `hardware:write`.
+- **Energía se separa de Hardware.** `energy:read/write` son nuevas; antes las
+  lecturas de energía y solares iban con `hardware:*` y colgaban de rutas
+  `/hardware/*`, que ya no existen. **Un token emitido antes del cambio no vale
+  para energía**: hay que reemitirlo con `energy:write`. Y ya no necesita
+  `hardware:write` salvo que además mande `PUT /hardware/devices/{id}/status`.
 - **`weatherstation:read` y `airflight:read` empiezan a mandar.** Las lecturas
   de esos dos módulos eran públicas y esas dos abilities no protegían nada.
   Ahora exigen token; lo que consume la web propia se sirve desde el bloque web

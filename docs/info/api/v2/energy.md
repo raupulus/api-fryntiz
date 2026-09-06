@@ -19,8 +19,10 @@ temperatura— es del módulo Hardware: `PUT /hardware/devices/{id}/status`, abi
 > ⚠️ **Cambio del 2026-09-06.** Estos endpoints estaban bajo `/hardware`
 > (`POST /hardware/solar-readings`, `POST /hardware/energy-readings`) y se
 > cobraban con `hardware:write`. Ahora son `/energy/*` con ability `energy:*`.
-> Un cliente antiguo tiene que cambiar la URL y el token: las rutas viejas
-> **ya no existen** y responden 404.
+>
+> **Un cliente antiguo tiene que cambiar dos cosas: la URL y el token.** Las
+> rutas viejas ya no existen y responden 404, y un token con `hardware:write`
+> responde 403 aquí. No hay periodo de convivencia.
 
 ## Base y convenciones comunes a toda la API V2
 
