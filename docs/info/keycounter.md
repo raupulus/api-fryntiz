@@ -131,6 +131,28 @@ Contrato completo de campos en [`docs/info/hardware.md`](hardware.md) y en
 - **Tablas detalladas eliminadas:** Se eliminaron las tablas con registros individuales por motivos de privacidad.
 - **Meses futuros deshabilitados:** En el selector de fecha, los meses futuros se deshabilitan dinámicamente al cambiar el año (JavaScript).
 
+### Formato de las cifras
+
+Todas las cifras de la vista usan `App\Support\Format\Cifra` (importado en la
+plantilla con `@use`), no `number_format()` directo:
+
+| Método | Uso | Ejemplo |
+|--------|-----|---------|
+| `Cifra::miles()` | Tarjetas de «Estadísticas Globales» | `75884812` → `75.885` |
+| `Cifra::entera()` | Resumen del mes y tarjetas de Keyboard/Mouse | `1234.56` → `1.235` |
+
+Dos decisiones detrás:
+
+- **Punto de millar español y cero decimales.** Antes salía el separador inglés
+  (`75,884,812`) y las medias con dos decimales (`2.0` pulsaciones/min), que a
+  esta escala es precisión sin valor.
+- **Las cifras acumuladas se recortan a millares.** Los tres últimos dígitos de
+  un contador de decenas de millones cambian a cada subida y no dicen nada. Se
+  muestran **sin sufijo de escala**, por decisión explícita del 2026-09-06: una
+  tarjeta de `75.885` son 75,9 millones de pulsaciones, no setenta y cinco mil.
+  Por debajo del millar `Cifra::miles()` devuelve la cifra íntegra, porque
+  redondear 812 pulsaciones dejaría un «0» en la tarjeta.
+
 ### Paleta de iconos por widget
 
 | Widget | Icono | Color |
