@@ -91,7 +91,8 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `buy_at` | date | Fecha de compra |
 | `last_seen_at` | timestamp | Última conexión (se actualiza en cada subida de estado) |
 | `ip_local` | string | IP local |
-| `ip_public` | string | IP pública |
+| `ip_public` | string | IP pública. **La pone el servidor** desde la petición; lo que mande el dispositivo se ignora |
+| `ram` | decimal(5,2) | Último uso de memoria conocido en porcentaje (0-100) |
 | `temp` | decimal | Último estado: temperatura del dispositivo (ºC) |
 | `voltage` | decimal | Último estado: tensión del dispositivo (V) |
 | `battery_level` | smallint | Último estado: nivel de batería (0-100) |
@@ -100,7 +101,7 @@ Módulo IoT para gestionar dispositivos hardware, monitorizar consumos de energ�
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
 | `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
 
-> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía y carga solar (este módulo), y también KeyCounter, SmartPlant, WeatherStation y AirFlight — ver `docs/planning/PLAN-HARDWARE-DEVICE-INFO.md` para el histórico de por qué se generalizó.
+> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía y carga solar (este módulo), y también KeyCounter, SmartPlant, WeatherStation y AirFlight — ver `docs/planning/PLAN-HARDWARE-DEVICE-INFO.md` para el histórico de por qué se generalizó.
 | `battery_voltage` | decimal | Batería del **propio** dispositivo (V). D108 |
 | `battery_percentage` | int | Batería del propio dispositivo (%) |
 | `battery_read_at` | timestamp | Cuándo se midió esa batería |
@@ -342,9 +343,31 @@ el montaje o en la configuración de los elementos.
 Pensado para NAS, Raspberry Pi, portátiles, etc. que suben periódicamente su
 estado. El cuerpo debe incluir siempre `hardware_device_id` (id del dispositivo,
 validado con `OwnedHardwareDevice`). Campos opcionales: `temp`, `voltage`,
-`battery_level`, `cpu`, `disk`, `uptime`, `ip_local`, `ip_public`, `extra`.
+`battery_level`, `cpu`, `disk`, **`ram`**, `uptime`, `ip_local`, `extra`.
 No se guarda histórico: solo se sobrescribe el último estado y se actualiza
 `last_seen_at` al momento actual.
+
+> ⚠️ **`ip_public` ya NO se acepta del cliente** (2026-09-06). Si se manda, se
+> **ignora**: el servidor la sobreescribe siempre con la IP de origen de la
+> propia petición.
+>
+> El dispositivo conoce su IP de la intranet y la manda en `ip_local`; la
+> pública no la sabe de forma fiable —tendría que preguntársela a un servicio
+> externo en cada envío— y, si la manda, no hay forma de comprobar que dice la
+> verdad. La resuelve {@see App\Support\Http\ClientIp} leyendo la cabecera que
+> escribe el proxy: `CF-Connecting-IP`, `True-Client-IP`, `X-Forwarded-For` (la
+> primera de la lista) o `X-Real-IP`, descartando privadas y reservadas.
+>
+> Si no se puede determinar ninguna IP pública —desarrollo, o una NAT sin proxy
+> delante— se guarda `null`, en vez de meter una privada en una columna que dice
+> «pública».
+>
+> **Para el cliente:** quitar `ip_public` del cuerpo. No rompe nada dejarlo —se
+> descarta en silencio—, pero el valor que llegue no se guarda.
+
+> **`ram`** (nuevo, 2026-09-06): uso de memoria en porcentaje (0-100), igual que
+> `cpu` y `disk`. Antes sólo cabía dentro de `extra`, que es JSON y no se puede
+> ordenar ni graficar. Migración `2026_09_06_000001_add_ram_to_hardware_devices_table`.
 
 > **Nombre canónico del dispositivo:** el identificador del dispositivo es
 > **`hardware_device_id`** en entrada y salida en todos los endpoints de
@@ -361,8 +384,8 @@ Ejemplo de cuerpo:
     "voltage": 3.7,
     "battery_level": 48,
     "ip_local": "192.168.1.100",
-    "ip_public": "203.0.113.1",
     "cpu": 33,
+    "ram": 62.5,
     "uptime": 123456,
     "disk": 80,
     "extra": {}
@@ -458,7 +481,7 @@ RelationManagers en la ficha de edición:
 Además, la ficha de edición incluye una sección **"Stats de hardware"**
 (colapsada, solo lectura) al final del formulario que muestra el último estado
 conocido reportado por la API: `temp`, `voltage`, `battery_level`, `cpu`,
-`disk`, `uptime`, `ip_local`, `ip_public` y `extra` (JSON formateado).
+`disk`, `ram`, `uptime`, `ip_local`, `ip_public` y `extra` (JSON formateado).
 
 ### Widget del dashboard — Estado de dispositivos
 
@@ -478,4 +501,4 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

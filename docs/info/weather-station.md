@@ -208,6 +208,38 @@ unidades): viento en **km/h**, temperatura/magnitudes redondeadas a **2 decimale
   ninguna). `?location_type=indoor|outdoor` acota dentro de la zona. Coincidencia
   de zona insensible a mayúsculas.
 
+#### `GET /api/v2/weather-stations/zone/{zona}/{tipo?}` — lectura AGREGADA de zona
+
+**Nuevo el 2026-09-06.** No confundir con el `/zone/{zone}` de arriba, que
+devuelve la lista de estaciones: éste devuelve **una sola lectura**, la de la
+zona entendida como conjunto.
+
+Para cada sensor toma el registro **más reciente de cualquiera de sus
+estaciones**, en vez de atarse a un aparato concreto. Es lo que consume el widget
+de portada.
+
+El porqué: el widget iba fijado a una estación, y en cuanto ésa dejaba de subir
+seguía enseñando su último valor —la humedad al 49 % durante días— mientras la
+estación de al lado, en la misma azotea, subía el 20 % real. El dato bueno
+estaba en la base y no se miraba.
+
+- `{tipo}` es opcional y sólo admite `indoor` o `outdoor`. Acota el resto de
+  sensores; normalmente `outdoor`.
+- **La presión es la excepción**: sale de **cualquier** estación de la zona,
+  interior incluida, se pase el tipo que se pase. Un barómetro mide lo mismo
+  dentro que fuera y a la interperie se estropea antes, así que suele vivir en un
+  cacharro de interior.
+- Los **rayos** se cuentan en toda la zona, no en un dispositivo.
+- La estación que sale como referencia (`name`, `location_label`) es la que trae
+  el dato más reciente de todas: la que está viva ahora mismo.
+- **404** si la zona no tiene estaciones.
+
+La forma de la respuesta es idéntica a la de `GET /{station}`, así que un cliente
+que ya consumiera aquélla no necesita cambiar el parseo.
+
+Zona por defecto del widget: `weather_station.main_zone` (variable
+`WEATHER_STATION_MAIN_ZONE`), o la primera zona de exterior si no se configura.
+
 Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
 `location_label`, `instant`, y un bloque por sensor solicitado
 (`wind` → `{average, min, max, direction, direction_grades}`,
@@ -231,8 +263,17 @@ Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
 
 - **Archivo:** `resources/js/vue/Components/ChipionaWeatherComponent.vue`
 - **Montaje:** `resources/js/vue.js` (carga con `@vite('resources/js/vue.js')`)
-- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default `api/v2/weatherstation/station`), `station` (id de la estación; vacío = principal). En Blade se pasa con `data-station`.
-- **Actualización:** Cada 65 segundos vía `fetch()` al endpoint de una estación (`api/v2/weatherstation/station[/{id}]`).
+- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default
+  `api/v2/weather-stations`), **`zone`** (nombre de la zona) y **`locationType`**
+  (`indoor`/`outdoor`), y `station` (id) como reserva. En Blade se pasan con
+  `data-zone`, `data-location-type` y `data-station`.
+- **`zone` tiene prioridad sobre `station`.** Yendo por zona, de cada magnitud se
+  coge el dato más reciente entre todas sus estaciones; atado a una, el widget se
+  quedaba enseñando su último valor cuando ésa dejaba de subir. Sin zona
+  clasificada cae a la estación principal.
+- **Actualización:** Cada 65 segundos vía `fetch()` a
+  `api/v2/weather-stations/zone/{zona}[/{tipo}]`, o al endpoint de estación si no
+  hay zona.
 - **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
 - **Ubicación dinámica:** muestra `data.name` + `data.location_label` en lugar de un literal fijo.
 - **Contrato:** consume `GET /station/{id?}` (envelope `{success, message, data}`). `data` incluye `name`, `location_label`, `instant` y los bloques de sensores (`wind.average`, `light.uv_index`, `air_quality.quality/eco2/tvoc`, `lightning.last_six_hours`, `temperature`, `humidity`, `pressure`) ya formateados como números.
@@ -292,4 +333,4 @@ y tienen relaciones `user()` y `hardwareDevice()`.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

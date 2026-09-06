@@ -51,7 +51,7 @@ Módulo para enviar formularios de contacto vía API con verificación reCAPTCHA
 | `privacity` | boolean | Aceptación de privacidad |
 | `contactme` | boolean | Contactar de vuelta |
 | `server_ip` | string | IP del servidor |
-| `client_ip` | string | IP del cliente |
+| `client_ip` | string | IP de origen del visitante. Se resuelve con `App\Support\Http\ClientIp`, que lee la cabecera del proxy (`CF-Connecting-IP`, `X-Forwarded-For`…). Es también la que se manda a reCAPTCHA, que valora el riesgo del visitante, no el del proxy |
 | `app_name` | string | Nombre de la aplicación |
 | `app_domain` | string | Dominio de la aplicación |
 | `client_user_agent` | string | User agent del cliente |
@@ -88,4 +88,4 @@ php artisan debug:seed-contact --count=10
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-31
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

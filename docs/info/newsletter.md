@@ -57,7 +57,7 @@ Módulo de suscripción a newsletter con flujo de verificación por email, gesti
 | `subscription_source` | string | Origen: `web`, `api`, `import`, `admin` |
 | `language` | string | Idioma preferido |
 | `preferences` | json | Preferencias (cast a array) |
-| `ip_address` | string | IP del suscriptor |
+| `ip_address` | string | IP de origen del suscriptor. Se resuelve con `App\Support\Http\ClientIp`, que lee la cabecera del proxy (`CF-Connecting-IP`, `X-Forwarded-For`…) en vez de la IP de la conexión |
 | `user_agent` | string | User agent |
 | `metadata` | json | Metadata adicional (cast a array) |
 
@@ -124,4 +124,4 @@ php artisan debug:seed-newsletter --count=10
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

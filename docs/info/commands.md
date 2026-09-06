@@ -334,4 +334,23 @@ Comandos del framework que se usan habitualmente en este proyecto:
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-05
+## Análisis estático
+
+`composer phpstan` (nivel 5) analiza `app/`, `bootstrap/`, `config/`,
+`database/`, `routes/` **y `support/`**.
+
+`support/` se añadió el 2026-09-06 y no es un detalle: ahí viven los helpers
+globales, y al quedar fuera del análisis una llamada a un método inexistente
+—`CapWarnings::desdeTar()`, que es `fromTar()`— llegó a producción y tiró el cron
+de avisos de AEMET sin que saltara nada.
+
+Los 39 avisos heredados de `AEMETHelper` están en `phpstan-baseline-support.neon`.
+Entre ellos hay uno que conviene tener presente: **tres funciones declaradas
+dentro de métodos** (líneas 695, 966 y 1523). PHP las registra en ámbito global
+al primer uso, así que una segunda llamada al mismo método en el mismo proceso
+lanza «Cannot redeclare function». Con un cron por proceso no se nota; en un
+worker de cola, sí.
+
+---
+
+> Creado: 2026-05-26 · Última revisión: 2026-09-06

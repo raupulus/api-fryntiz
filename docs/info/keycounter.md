@@ -149,6 +149,34 @@ Contrato completo de campos en [`docs/info/hardware.md`](hardware.md) y en
 php artisan debug:seed-keycounter --count=50
 ```
 
+
+## Gráfica de pulsaciones por día
+
+Los colores salen de `BaseKeyCounter::getStatisticsForChart()` y se asignan **por
+posición del dispositivo**, no al azar. Antes se elegían con
+`rand(0, count($colors) - 1)` en cada carga, con tres efectos a la vez: dos
+dispositivos podían salir del mismo color, el color cambiaba al recargar la
+página, y la paleta incluía `#000000` —invisible sobre el fondo oscuro— y
+`#e8c3b9`, casi blanco, invisible sobre el claro.
+
+La paleta actual son ocho tonos con la luminancia en la franja media, que
+contrastan tanto sobre `surface` claro (#f8f9ff) como sobre el oscuro (#0f131d):
+es lo que hace falta cuando el mismo `<canvas>` se pinta en los dos temas. Los
+dos primeros son los acentos del sistema (`on-tertiary-container` y el turquesa
+de Obsidian Flux). La serie «Total» va aparte, en rojo profundo (`#c1121f`, no
+`#ff0000` puro) y con trazo más grueso.
+
+Al añadir un color nuevo, comprobar el contraste en **los dos temas** antes de
+darlo por bueno.
+
+## Herramientas cliente
+
+Ambas en <https://gitlab.com/raupulus/python-keycounter>:
+
+- **python-keycounter** — el recolector, en Python 3, para **GNU/Linux y macOS**.
+- **MacOs KeyCounter** — aplicación complementaria de macOS que muestra las
+  estadísticas en la barra superior del sistema.
+
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

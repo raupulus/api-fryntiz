@@ -352,6 +352,27 @@ reproducida antes de arreglarla):
 Ambas están fijadas por `tests/Feature/Filament/RoleEscalationTest.php` y
 `tests/Unit/Policies/UserPolicyTest.php`.
 
+
+## Cambios del panel (2026-09-06)
+
+- **Dispositivos de hardware:** fuera del formulario el campo «ID componente
+  asociado». Era `referred_thing_id`, la clave foránea a `referred_things` —los
+  productos de programas de afiliación—, así que ni la etiqueta ni el sitio eran
+  los suyos. **La columna sigue en la base**; sólo se retiró del formulario.
+- **Uptime legible:** el campo sigue guardando y mostrando segundos, que es lo
+  que manda el dispositivo, pero debajo lleva la lectura en unidades («3 meses,
+  12 días»). Se queda en las dos unidades más grandes que apliquen, para no
+  alargar la línea. El helper es `HardwareDeviceResource::uptimeLegible()`.
+- **Uso de memoria:** campo `ram` (0-100 %) junto a CPU y disco, y una métrica
+  más en `DeviceStatusWidget`.
+- **Teclados y ratones:** ordenan por `start_at` descendente al entrar; lo último
+  subido es lo que se quiere ver.
+- **Página de AEMET:** las fechas de última ejecución se pintan en el huso de
+  visualización (`app.display_timezone`), no en UTC. `FilamentTimezone` alcanza a
+  las columnas y las infolists del panel, **pero no a una vista Blade propia**
+  como la de esa página, así que ahí la conversión va explícita. La base sigue
+  guardando en UTC.
+
 ## Comandos relacionados
 
 ```bash
@@ -374,4 +395,4 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-05
+> Creado: 2026-08-30 · Última revisión: 2026-09-06
