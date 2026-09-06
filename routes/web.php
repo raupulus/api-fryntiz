@@ -115,9 +115,6 @@ Route::group(['prefix' => '/file'], function () {
 });
 
 // Nota: Las rutas de autenticación se manejan por Laravel Fortify.
-// El login genérico de Fortify redirige a /panel/login porque las vistas de login
-// reales viven en Filament (/admin/login y /panel/login).
-Route::get('/login', fn () => redirect()->route('filament.tenant.auth.login'))->name('login');
 
 // Redirecciones de URLs antiguas /dashboard → /panel (panel Filament tenant).
 Route::redirect('/dashboard', '/panel', 301);
