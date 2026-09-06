@@ -169,14 +169,25 @@ php artisan iot:device-token {device_id} --abilities={scope} [--expires={días}]
 | `--abilities` | Sí | Scope(s) del token. Repetible para múltiples abilities. |
 | `--expires` | No | Días hasta la expiración. Sin este flag el token no expira. |
 
-**Abilities disponibles (ejemplos):**
+**Abilities disponibles.** Son las de
+`App\Support\Auth\TokenAbilities::MODULE_ABILITIES`, y el comando rechaza
+cualquier otra. `energy:write` figuraba aquí y **nunca ha existido**: la ability
+de energía es `hardwareenergy:write`.
 
-| Ability | Módulo |
-|---------|--------|
-| `weatherstation:write` | Estación meteorológica |
-| `energy:write` | Energía |
-| `hardware:write` | Hardware genérico |
-| `smartplant:write` | Smart Plant |
+| Ability | Qué abre |
+|---------|----------|
+| `hardware:read` | Listar dispositivos y ver su ficha |
+| `hardware:write` | Último estado conocido del aparato (`PUT .../status`) |
+| `hardwareenergy:read` | Consultar lecturas de energía y solares |
+| `hardwareenergy:write` | Subirlas. Es la de un controlador solar o un contador de consumo |
+| `weatherstation:read` | Estaciones e histórico de sensores |
+| `weatherstation:write` | Subir lecturas de sensores |
+| `keycounter:read` | Sesiones de teclado y ratón |
+| `keycounter:write` | Subirlas |
+| `smartplant:read` | Plantas y sus lecturas |
+| `smartplant:write` | Subir lecturas de una planta |
+| `airflight:read` | Aviones detectados, con historial |
+| `airflight:write` | Registrar aviones |
 
 **Ejemplos de uso:**
 
@@ -184,8 +195,11 @@ php artisan iot:device-token {device_id} --abilities={scope} [--expires={días}]
 # Token para estación meteorológica con expiración de 1 año
 php artisan iot:device-token 10 --abilities=weatherstation:write --expires=365
 
-# Token con múltiples abilities, sin expiración
-php artisan iot:device-token 7 --abilities=energy:write --abilities=hardware:write
+# Controlador solar: sólo sube lecturas de energía
+php artisan iot:device-token 7 --abilities=hardwareenergy:write
+
+# El mismo, si además manda el estado del aparato (IP, uptime, RAM)
+php artisan iot:device-token 7 --abilities=hardwareenergy:write --abilities=hardware:write
 
 # Token permanente para dispositivo concreto
 php artisan iot:device-token 3 --abilities=smartplant:write

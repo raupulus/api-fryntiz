@@ -42,6 +42,10 @@ final class TokenAbilities
 
     public const HARDWARE_WRITE = 'hardware:write';
 
+    public const HARDWAREENERGY_READ = 'hardwareenergy:read';
+
+    public const HARDWAREENERGY_WRITE = 'hardwareenergy:write';
+
     public const WEATHERSTATION_READ = 'weatherstation:read';
 
     public const WEATHERSTATION_WRITE = 'weatherstation:write';
@@ -75,11 +79,26 @@ final class TokenAbilities
      * A un dispositivo se le emite **sólo** la de escritura de su módulo. La de
      * lectura es para un panel o un cliente que consulte datos.
      *
+     * **Hardware y Hardware Energy son módulos distintos** desde el 2026-09-06.
+     * `hardware:*` es el aparato en sí —inventario y último estado conocido—, y
+     * `hardwareenergy:*` son sus lecturas de energía, vengan de un controlador
+     * solar o de una pinza de consumo. Hasta esa fecha las lecturas solares y
+     * de energía iban con `hardware:write`, así que el token de un contador de
+     * consumo también podía reescribir el estado del aparato: son cosas que se
+     * conceden por separado.
+     *
+     * Ninguna ability de este catálogo está sin usar: cada una la exige alguna
+     * ruta. Las que no protegían nada —las lecturas públicas de la estación
+     * meteorológica y del radar de vuelos, que se sirven desde el bloque web—
+     * dejaron de ser casillas que no hacían nada el 2026-09-06.
+     *
      * @var array<string, string>
      */
     public const MODULE_ABILITIES = [
         self::HARDWARE_READ => 'Hardware lectura',
         self::HARDWARE_WRITE => 'Hardware escritura',
+        self::HARDWAREENERGY_READ => 'Hardware Energy lectura',
+        self::HARDWAREENERGY_WRITE => 'Hardware Energy escritura',
         self::WEATHERSTATION_READ => 'WeatherStation lectura',
         self::WEATHERSTATION_WRITE => 'WeatherStation escritura',
         self::KEYCOUNTER_READ => 'KeyCounter lectura',
@@ -88,6 +107,31 @@ final class TokenAbilities
         self::SMARTPLANT_WRITE => 'SmartPlant escritura',
         self::AIRFLIGHT_READ => 'AirFlight lectura',
         self::AIRFLIGHT_WRITE => 'AirFlight escritura',
+    ];
+
+    /**
+     * Qué abre cada ability, para que no haya que adivinarlo en el panel.
+     *
+     * El nombre del módulo no basta: «Hardware escritura» no dice si incluye
+     * las lecturas de un controlador solar (no las incluye) y quien emite el
+     * token acaba marcando de más por si acaso, que es justo lo contrario de
+     * lo que persigue este catálogo.
+     *
+     * @var array<string, string>
+     */
+    public const MODULE_ABILITY_HINTS = [
+        self::HARDWARE_READ => 'Listar tus dispositivos y ver su ficha.',
+        self::HARDWARE_WRITE => 'Actualizar el último estado del dispositivo (IP, uptime, RAM, batería…).',
+        self::HARDWAREENERGY_READ => 'Consultar las lecturas de energía y las del controlador solar.',
+        self::HARDWAREENERGY_WRITE => 'Subir lecturas de energía y del controlador solar. Es la de un contador de consumo o unas placas.',
+        self::WEATHERSTATION_READ => 'Consultar estaciones y el histórico de sus sensores.',
+        self::WEATHERSTATION_WRITE => 'Subir lecturas de sensores de una estación.',
+        self::KEYCOUNTER_READ => 'Consultar tus sesiones de teclado y ratón.',
+        self::KEYCOUNTER_WRITE => 'Subir sesiones de teclado y ratón.',
+        self::SMARTPLANT_READ => 'Consultar tus plantas y sus lecturas.',
+        self::SMARTPLANT_WRITE => 'Subir lecturas de una planta.',
+        self::AIRFLIGHT_READ => 'Consultar aviones detectados, incluido el historial por fechas.',
+        self::AIRFLIGHT_WRITE => 'Registrar aviones detectados, de uno en uno o por lotes.',
     ];
 
     /**
@@ -125,6 +169,23 @@ final class TokenAbilities
         }
 
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * Dispositivos a los que está ligado el token de la petición.
+     *
+     * Vacío cuando no hay token de dispositivo —una sesión humana— o cuando el
+     * token no declara ninguno: ahí el límite lo pone la pertenencia, que se
+     * comprueba aparte. Un listado que acote por dispositivo debe usar esto
+     * para no enseñar el parque entero del dueño a un cacharro concreto.
+     *
+     * @return array<int, int>
+     */
+    public static function devicesReachableBy(?Authenticatable $user): array
+    {
+        $token = self::currentToken($user);
+
+        return $token === null ? [] : self::devicesOf((array) $token->abilities);
     }
 
     /**

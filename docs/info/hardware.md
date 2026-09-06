@@ -331,8 +331,18 @@ Sólo en consumos: `fan`.
 | GET | `/api/v2/hardware/devices` | `ability:hardware:read` | — | Listar dispositivos (`?type=laptop` filtra) |
 | GET | `/api/v2/hardware/devices/{device}` | `ability:hardware:read` | — | Ver dispositivo |
 | PUT | `/api/v2/hardware/devices/{device}/status` | `ability:hardware:write` | api-store | Último estado conocido del dispositivo |
-| POST | `/api/v2/hardware/energy-readings` | `ability:hardware:write` | api-store | Lecturas del monitor de energía (admite `hardware_device_info` opcional) |
-| POST | `/api/v2/hardware/solar-readings` | `ability:hardware:write` | api-store | Lectura del controlador solar (admite `hardware_device_info` opcional) |
+| GET | `/api/v2/hardware/energy-readings` | `ability:hardwareenergy:read` | api | Lecturas de energía paginadas (`?type=load\|generator`) |
+| GET | `/api/v2/hardware/solar-readings` | `ability:hardwareenergy:read` | api | Lecturas del controlador solar, paginadas |
+| POST | `/api/v2/hardware/energy-readings` | `ability:hardwareenergy:write` | api-store | Lecturas del monitor de energía (admite `hardware_device_info` opcional) |
+| POST | `/api/v2/hardware/solar-readings` | `ability:hardwareenergy:write` | api-store | Lectura del controlador solar (admite `hardware_device_info` opcional) |
+
+**Energía es su propio módulo desde el 2026-09-06** (`hardwareenergy:*`). Antes
+iba con `hardware:write`, así que el token de un contador de consumo —que sólo
+tiene que mandar vatios— también podía reescribir el último estado conocido del
+aparato. La migración `2026_09_06_000003_split_hardware_energy_abilities` añadió
+la ability nueva a los tokens ya emitidos, para que ningún cacharro dejara de
+subir al desplegar; los tokens nuevos de un aparato de energía se emiten con
+`hardwareenergy:write` y **no necesitan** `hardware:write`.
 
 Las dos subidas de energía devuelven `warnings` en el cuerpo cuando algo es raro
 pero se ha guardado. Un `warnings` no vacío significa que hay algo que revisar en
@@ -441,13 +451,15 @@ php artisan debug:seed-energy --devices=5 --records=100
 
 Las escrituras IoT se autentican con **tokens Sanctum por dispositivo**. Cada
 token se crea sobre el **usuario propietario** del dispositivo, se nombra
-`device:{id}` y, además de las abilities de módulo (`hardware:write`,
+`device:{id}` y, además de las abilities de módulo (`hardwareenergy:write`,
 `weatherstation:write`, etc.), incluye la ability **`device:{id}`** que lo liga
 de forma estricta a ese dispositivo concreto.
 
 ### Emisión
 
-- **Terminal:** `php artisan iot:device-token <id> --abilities=hardware:write [--expires=días]`.
+- **Terminal:** `php artisan iot:device-token <id> --abilities=hardwareenergy:write [--expires=días]`
+  (la ability que toque: un controlador solar lleva `hardwareenergy:write`, una
+  estación `weatherstation:write`, un teclado `keycounter:write`…).
 - **Filament:** desde la ficha del dispositivo, pestaña **"Tokens IoT"** →
   botón *Emitir token* (selección de abilities de módulo + expiración opcional).
   El token en claro se muestra una sola vez en una notificación persistente.

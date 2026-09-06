@@ -48,10 +48,14 @@ esto le dice qué ha cambiado.
 
 ### Por qué el canal es público
 
-Estas lecturas se sirven **sin autenticar** por
-`GET /api/v2/weather-stations/{id}`. Pedir un token para escuchar por socket lo
-que se puede leer por HTTP sin él no protegería nada y complicaría a las ocho
-webs que consumen la API. Los canales privados —los que sí hay que
+Estas mismas lecturas se sirven **sin autenticar** por el bloque web
+(`GET /weatherstation/widget`), que es lo que consume el widget. Pedir un token
+para escuchar por socket lo que se puede leer por HTTP sin él no protegería nada
+y complicaría a las webs que lo pintan.
+
+(La ruta de API equivalente, `GET /api/v2/weather-stations/{id}`, sí pide
+`weatherstation:read` desde el 2026-09-06; el dato es el mismo, pero por ahí
+viene con filtros, orden e histórico.) Los canales privados —los que sí hay que
 autorizar— se declaran en `routes/channels.php`.
 
 ### Por qué hay un evento y no nueve
@@ -127,8 +131,9 @@ El punto delante de `.readings.received` no es una errata: le dice a Echo que
 es un nombre propio y no la clase PHP. El nombre lo fija `broadcastAs()`
 justamente para que mover o renombrar la clase no rompa a los clientes.
 
-El id de la estación principal sale de `GET /api/v2/weather-stations`, que
-devuelve una colección con la principal cuando no se le pasa `?zone=`.
+El id de la estación principal sale de `GET /weatherstation/widget`, que devuelve
+la principal ya resuelta y sin pedir token (por la API, `GET /api/v2/weather-stations`
+da lo mismo con `weatherstation:read`).
 
 ---
 
@@ -190,4 +195,4 @@ son los pactados, y que una petición rechazada no emite nada.
 
 ---
 
-> Creado: 2026-08-19 · Última revisión: 2026-08-30
+> Creado: 2026-08-19 · Última revisión: 2026-09-06

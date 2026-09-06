@@ -256,11 +256,21 @@ podía listar todas las sesiones y plantas de su dueño (AR-S02).
 
 | Módulo | Contrato | Rutas |
 |---|---|---|
-| Estación meteorológica | [`weather-station.md`](weather-station.md) | `GET /api/v2/weather-stations` (público), `GET /api/v2/weather-stations/{station}` (público), `POST /api/v2/weather-stations/{station}/readings` (`weatherstation:write`), `GET /api/v2/weather-stations/{station}/{sensor}` (público) y `POST` del mismo (`weatherstation:write`) |
-| Hardware / energía | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices` y `GET .../{device}` (`hardware:read`; el `serial_number` sale **sólo en el detalle**), `PUT .../{device}/status`, `POST /api/v2/hardware/energy-readings` y `POST .../solar-readings` (`hardware:write`) |
+| Estación meteorológica | [`weather-station.md`](weather-station.md) | `GET /api/v2/weather-stations`, `GET .../{station}`, `GET .../zone/{zone}` y `GET .../{station}/{sensor}` (`weatherstation:read`), `POST .../{station}/readings` y `POST .../{station}/{sensor}` (`weatherstation:write`) |
+| Hardware | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices` y `GET .../{device}` (`hardware:read`; el `serial_number` sale **sólo en el detalle**), `PUT .../{device}/status` (`hardware:write`) |
+| Hardware Energy | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/energy-readings` y `GET .../solar-readings` (`hardwareenergy:read`), `POST` de las mismas (`hardwareenergy:write`). Módulo aparte desde el 2026-09-06: subir vatios y reescribir el estado del aparato son permisos distintos |
 | Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET /api/v2/keycounter/{keyboard,mouse}-sessions` (`keycounter:read`), `POST` de las mismas (`keycounter:write`) |
 | Plantas inteligentes | [`smart-plant.md`](smart-plant.md) | `GET /api/v2/smartplant/plants` y `GET .../{plant}/readings` (`smartplant:read`), `POST .../{plant}/readings` (`smartplant:write`) |
-| Registro de vuelos | [`airflight.md`](airflight.md) | `GET /api/v2/airflight/aircrafts` y `GET /api/v2/airflight/receiver` (**públicos**), `POST /api/v2/airflight/aircrafts` y `.../batch` (`airflight:write`) |
+| Registro de vuelos | [`airflight.md`](airflight.md) | `GET /api/v2/airflight/aircrafts` y `GET /api/v2/airflight/receiver` (`airflight:read`), `POST /api/v2/airflight/aircrafts` y `.../batch` (`airflight:write`) |
+
+**No queda ninguna lectura pública en la API.** Las de la estación meteorológica
+y las del radar de vuelos lo eran, y por eso `weatherstation:read` y
+`airflight:read` no protegían nada: eran casillas del panel que no cambiaban
+nada. Lo que consume la web propia —el widget del clima y el mapa de vuelos— se
+sirve desde el bloque **web** de la aplicación (`GET /weatherstation/widget`,
+`GET /airflight/aircrafts`, `GET /airflight/receiver`): sin token, ya resuelto
+y cacheado, con lo justo que se pinta. Una página propia no es una integración;
+la API da a cambio filtros, orden, paginación e histórico, y pide token.
 
 ## Model Context Protocol (MCP)
 

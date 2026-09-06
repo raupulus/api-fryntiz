@@ -40,12 +40,27 @@ Route::prefix('hardware')->group(function () {
             ->name('api.v2.hardware.devices.show');
     });
 
-    // # Escrituras IoT: token por dispositivo con ability "hardware:write".
+    // # Estado del aparato: token por dispositivo con ability "hardware:write".
     Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWARE_WRITE, 'throttle:api-store'])->group(function () {
         Route::put('/devices/{device}/status', [HardwareDeviceController::class, 'updateStatus'])
             ->whereNumber('device')
             ->name('api.v2.hardware.devices.status.update');
+    });
 
+    // # Energía: módulo aparte, con sus propias abilities.
+    //
+    // Las lecturas de energía —de un controlador solar o de una pinza de
+    // consumo— iban con `hardware:write` hasta el 2026-09-06. Eso metía dos
+    // permisos distintos en la misma casilla: el token de un contador de
+    // consumo, que sólo tiene que mandar vatios, también podía reescribir el
+    // último estado conocido del aparato. Un cacharro de energía lleva ahora
+    // `hardwareenergy:write` y nada más.
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWAREENERGY_READ, 'throttle:api'])->group(function () {
+        Route::get('/energy-readings', [EnergyMonitorController::class, 'index'])->name('api.v2.hardware.energy_readings.index');
+        Route::get('/solar-readings', [SolarReadingController::class, 'index'])->name('api.v2.hardware.solar_readings.index');
+    });
+
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::HARDWAREENERGY_WRITE, 'throttle:api-store'])->group(function () {
         Route::post('/energy-readings', [EnergyMonitorController::class, 'store'])->name('api.v2.hardware.energy_readings.store');
         Route::post('/solar-readings', [SolarReadingController::class, 'store'])->name('api.v2.hardware.solar_readings.store');
     });

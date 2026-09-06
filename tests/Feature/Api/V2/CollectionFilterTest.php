@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\V2;
 
 use App\Models\Platform;
+use App\Support\Auth\TokenAbilities;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
@@ -46,7 +47,14 @@ class CollectionFilterTest extends ApiTestCase
     #[DataProvider('filtrosInvalidosProvider')]
     public function un_filtro_invalido_responde_422_con_el_envelope(string $url): void
     {
-        $respuesta = $this->getJson($url);
+        // Las colecciones del proveedor son casi todas públicas; la serie
+        // temporal de sensores dejó de serlo el 2026-09-06 y pide
+        // `weatherstation:read`. Ir siempre autenticado no cambia nada en las
+        // demás y evita que el 401 tape el 422 que se está comprobando.
+        $respuesta = $this->getJson($url, $this->moduleHeaders(
+            $this->createAuthenticatedUser(),
+            TokenAbilities::WEATHERSTATION_READ
+        ));
 
         $respuesta->assertStatus(422)
             ->assertJson(['success' => false])

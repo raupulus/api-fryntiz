@@ -30,7 +30,7 @@
     <section class="py-8 bg-surface-container-low flex justify-center">
         <div id="app-weather-chipiona"
              data-api-base-url="{{ url('/') }}"
-             data-api-path="api/v2/weather-stations"
+             data-api-path="weatherstation/widget"
              @if(!empty($mainZone)) data-zone="{{ $mainZone }}" data-location-type="outdoor" @endif
              @if(empty($mainZone) && !empty($mainStationId)) data-station="{{ $mainStationId }}" @endif
              class="w-full max-w-lg">

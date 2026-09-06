@@ -43,9 +43,23 @@
   ```
 
 - **Autenticación**: Laravel Sanctum, cabecera `Authorization: Bearer <token>`.
-  Las lecturas públicas (`GET`) no requieren autenticación. Las escrituras
-  (`POST`) requieren un **token de dispositivo IoT** con la ability
-  `weatherstation:write` (`App\Support\Auth\TokenAbilities::WEATHERSTATION_WRITE`),
+  **Todos los endpoints de este módulo exigen token**, lecturas incluidas: los
+  `GET` piden la ability `weatherstation:read` y los `POST`,
+  `weatherstation:write`.
+
+  > ⚠️ **Cambio de contrato del 2026-09-06.** Las lecturas eran públicas. Lo
+  > eran porque el widget del clima de la propia web las llamaba desde el
+  > navegador, y eso dejaba `weatherstation:read` sin nada que proteger: una
+  > casilla en el panel que no cambiaba nada. El widget se sirve ahora desde el
+  > bloque web de la aplicación (`GET /weatherstation/widget`, sin token, ya
+  > resuelto y cacheado), y la API queda para integraciones de verdad.
+  >
+  > **Qué tiene que hacer un cliente que leyera sin token:** emitir uno con
+  > `weatherstation:read` y mandarlo en `Authorization: Bearer`. Sin él, las
+  > lecturas responden `401`.
+
+  Las escrituras (`POST`) requieren un **token de dispositivo IoT** con la
+  ability `weatherstation:write` (`App\Support\Auth\TokenAbilities::WEATHERSTATION_WRITE`),
   emitido desde `POST /auth/tokens/devices` (ver
   [`docs/info/api/v2/auth.md`](./auth.md)). El token de dispositivo va además
   ligado a un `device:{id}` concreto: solo puede escribir en esa estación.
@@ -112,7 +126,7 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
 
 ### `GET /weather-stations` — Listar estaciones (principal o por zona)
 
-- **Auth**: pública, no requiere token.
+- **Auth**: `auth:sanctum` + `ability:weatherstation:read`.
 - **Query params**:
 
 | Parámetro | Tipo | Descripción |
@@ -187,7 +201,7 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
 
 ### `GET /weather-stations/{station}` — Una estación por id
 
-- **Auth**: pública.
+- **Auth**: `auth:sanctum` + `ability:weatherstation:read`.
 - **Parámetros de ruta**: `{station}` = id numérico (`whereNumber`).
 - **Query params**: `sensors` (igual que arriba).
 - **Respuesta 200**: un único objeto con la misma forma que un elemento del
@@ -211,7 +225,7 @@ seguía enseñando su último valor —la humedad al 49 % durante días— mient
 estación de al lado, en la misma azotea, subía el 20 % real. El dato bueno
 estaba en la base y no se miraba.
 
-- **Auth**: pública.
+- **Auth**: `auth:sanctum` + `ability:weatherstation:read`.
 - **Parámetros de ruta**:
   - `{zone}`: nombre de la zona, insensible a mayúsculas (`Azotea`).
   - `{locationType}`: opcional, sólo `indoor` o `outdoor`. Acota el resto de sensores.
@@ -238,7 +252,7 @@ Zona por defecto del widget: `weather_station.main_zone` (variable de entorno
 
 ### `GET /weather-stations/{station}/{sensor}` — Histórico paginado de un sensor
 
-- **Auth**: pública.
+- **Auth**: `auth:sanctum` + `ability:weatherstation:read`.
 - **Rate limit**: ninguno propio (sujeto solo al limitador general `api`).
 - **Parámetros de ruta**:
   - `{station}`: id numérico de la estación (`whereNumber`).

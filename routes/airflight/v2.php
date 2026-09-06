@@ -28,8 +28,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('airflight')->group(function () {
-    Route::get('/aircrafts', [AirFlightController::class, 'aircrafts'])->name('api.v2.airflight.aircrafts.index');
-    Route::get('/receiver', [AirFlightController::class, 'receiver'])->name('api.v2.airflight.receiver.show');
+    // # Lecturas: exigen `airflight:read`.
+    //
+    // Estaban abiertas a cualquiera porque el mapa de `/airflight` las llamaba
+    // desde el navegador. Eso dejaba la ability sin nada que proteger: una
+    // casilla en el panel que no cambiaba nada. El mapa se sirve ahora desde
+    // el bloque web (`routes/airflight/web.php`), ya cacheado, y aquí queda lo
+    // que es de verdad una integración: historial por fechas, filtros, orden y
+    // paginación.
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::AIRFLIGHT_READ, 'throttle:api'])->group(function () {
+        Route::get('/aircrafts', [AirFlightController::class, 'aircrafts'])->name('api.v2.airflight.aircrafts.index');
+        Route::get('/receiver', [AirFlightController::class, 'receiver'])->name('api.v2.airflight.receiver.show');
+    });
 
     Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::AIRFLIGHT_WRITE])->group(function () {
         Route::post('/aircrafts', [AirFlightController::class, 'store'])

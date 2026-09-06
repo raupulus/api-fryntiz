@@ -12,10 +12,55 @@ class AirFlightTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
+    /**
+     * Cabeceras de un cliente con permiso de lectura.
+     *
+     * Las lecturas de la API dejaron de ser públicas el 2026-09-06: el mapa de
+     * `/airflight` se sirve desde el bloque web, ya cacheado.
+     *
+     * @return array<string, string>
+     */
+    private function lectura(): array
+    {
+        return $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_READ);
+    }
+
+    #[Test]
+    public function las_lecturas_de_la_api_exigen_token(): void
+    {
+        $this->getJson($this->apiUrl('airflight/aircrafts'))->assertUnauthorized();
+        $this->getJson($this->apiUrl('airflight/receiver'))->assertUnauthorized();
+    }
+
+    #[Test]
+    public function un_token_de_escritura_no_lee(): void
+    {
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+
+        $this->getJson($this->apiUrl('airflight/aircrafts'), $headers)->assertForbidden();
+    }
+
+    /**
+     * El mapa de `/airflight` es una página propia: se sirve desde el bloque
+     * web, sin token y cacheado. La API es para integraciones.
+     */
+    #[Test]
+    public function el_mapa_web_se_sirve_sin_token(): void
+    {
+        $this->getJson(route('airflight.aircrafts'))
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonStructure(['data']);
+
+        $this->getJson(route('airflight.receiver'))
+            ->assertOk()
+            ->assertJsonPath('data.refresh', 5000);
+    }
+
     #[Test]
     public function can_get_aircrafts(): void
     {
-        $response = $this->getJson($this->apiUrl('airflight/aircrafts'));
+        $response = $this->getJson($this->apiUrl('airflight/aircrafts'), $this->lectura());
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -23,7 +68,7 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function can_get_history(): void
     {
-        $response = $this->getJson($this->apiUrl('airflight/aircrafts'));
+        $response = $this->getJson($this->apiUrl('airflight/aircrafts'), $this->lectura());
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -113,7 +158,7 @@ class AirFlightTest extends ApiTestCase
     {
         // Es pública y sin base de datos detrás: devuelve la configuración fija
         // que el mapa necesita para centrarse y refrescar.
-        $response = $this->getJson($this->apiUrl('airflight/receiver'));
+        $response = $this->getJson($this->apiUrl('airflight/receiver'), $this->lectura());
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data' => ['history', 'lat', 'lon', 'refresh', 'version']]);
@@ -124,7 +169,7 @@ class AirFlightTest extends ApiTestCase
     {
         // No se guardan snapshots temporales, sólo la última posición de cada
         // avión, así que el mapa no debe ofrecer reproducción de recorrido.
-        $this->getJson($this->apiUrl('airflight/receiver'))
+        $this->getJson($this->apiUrl('airflight/receiver'), $this->lectura())
             ->assertJsonPath('data.history', 0);
     }
 }

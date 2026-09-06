@@ -148,11 +148,13 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'smartplant:read'
+          - 'keycounter:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
           - 'hardware:write'
+          - 'hardwareenergy:read'
+          - 'hardwareenergy:write'
           - 'weatherstation:read'
           - 'weatherstation:write'
           - 'keycounter:read'
@@ -180,7 +182,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-09-29'
+        example: '2052-09-30'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -189,9 +191,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'smartplant:read'
+        - 'keycounter:write'
       name: 'n'
-      expires_at: '2052-09-29'
+      expires_at: '2052-09-30'
     fileParameters: []
     responses: []
     responseFields: []
@@ -390,7 +392,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -401,7 +403,7 @@ endpoints:
         name: contactme
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -435,8 +437,8 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: false
-      contactme: false
+      privacity: true
+      contactme: true
       attributes:
         - v
       g-recaptcha-response: architecto
@@ -1310,13 +1312,11 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[]}'
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '291'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1357,13 +1357,11 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":{"history":0,"lat":36.7381,"lon":-6.4301,"refresh":5000,"version":"api raupulus v2"}}'
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '290'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -2045,6 +2043,107 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - GET
+    uri: api/v2/hardware/energy-readings
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Lecturas de energía, paginadas.'
+      description: |-
+        Exige `hardwareenergy:read`. Consumo y generación viven en dos tablas
+        distintas —comparten columnas por el trait `IsEnergyReading`, no la
+        tabla—, así que se elige con `?type=load|generator`; por defecto,
+        consumo.
+
+        Sólo devuelve lecturas de dispositivos del usuario y, si el token está
+        ligado a dispositivos concretos (`device:{id}`), sólo las de ésos.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v2/hardware/solar-readings
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Lecturas del controlador solar, paginadas.'
+      description: |-
+        Exige `hardwareenergy:read`. Sólo devuelve lecturas de dispositivos del
+        usuario y, si el token está ligado a dispositivos concretos
+        (`device:{id}`), sólo las de ésos: un token de cacharro no lee el resto
+        del parque de su dueño.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - POST
     uri: api/v2/hardware/energy-readings
     metadata:
@@ -2106,7 +2205,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T10:45:14'
+        example: '2026-09-06T18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2239,7 +2338,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T10:45:14'
+        example: '2026-09-06T18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2270,7 +2369,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-06T10:45:14'
+      read_at: '2026-09-06T18:11:50'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2283,7 +2382,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-06T10:45:14'
+          read_at: '2026-09-06T18:11:50'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2343,7 +2442,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T10:45:14'
+        example: '2026-09-06T18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2354,7 +2453,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T10:45:14'
+        example: '2026-09-06T18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2541,7 +2640,7 @@ endpoints:
         name: light_status
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -2824,8 +2923,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-06T10:45:14'
-      read_at: '2026-09-06T10:45:14'
+      date: '2026-09-06T18:11:50'
+      read_at: '2026-09-06T18:11:50'
       hardware: 'n'
       version: g
       serial_number: z
@@ -2842,7 +2941,7 @@ endpoints:
       delta_seconds: 27
       charging_status: 16
       charging_status_label: 'n'
-      light_status: false
+      light_status: true
       light_brightness: 7
       load_voltage: 4326.41688
       load_current: 4326.41688
@@ -3032,7 +3131,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:45:14'
+        example: '2026-09-06 18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3043,7 +3142,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:45:14'
+        example: '2026-09-06 18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3118,8 +3217,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 10:45:14'
-      end_at: '2026-09-06 10:45:14'
+      start_at: '2026-09-06 18:11:50'
+      end_at: '2026-09-06 18:11:50'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3194,7 +3293,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:45:14'
+        example: '2026-09-06 18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3205,7 +3304,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 10:45:14'
+        example: '2026-09-06 18:11:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3291,8 +3390,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 10:45:14'
-      end_at: '2026-09-06 10:45:14'
+      start_at: '2026-09-06 18:11:50'
+      end_at: '2026-09-06 18:11:50'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3550,7 +3649,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3561,7 +3660,7 @@ endpoints:
         name: waterpump_enabled
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3587,8 +3686,8 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: false
-      waterpump_enabled: false
+      full_water_tank: true
+      waterpump_enabled: true
       vaporizer_enabled: true
     fileParameters: []
     responses: []
@@ -3628,7 +3727,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - temperature
+          - light
         type: 'string[]'
         enumValues:
           - temperature
@@ -3657,19 +3756,17 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - temperature
+        - light
       location_type: indoor
     fileParameters: []
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":10,"name":"Esp32 D1 WS","zone":null,"location_type":"indoor","location_label":"Interior","instant":{"day_name":"domingo","date_human_format":"6 de septiembre de 2026","time":"10:45","day_status":"D\u00eda"},"temperature":33,"humidity":49,"pressure":null,"wind":{"average":3.24,"min":3.24,"max":3.24,"direction":"E","direction_grades":112},"light":{"lux":null,"uv_index":null,"uva":null,"uvb":null},"air_quality":{"quality":87,"eco2":77,"tvoc":421},"rain":{"value":0,"intensity":0},"lightning":{"last_at":"2024-11-05T13:04:19.000000Z","window_minutes":60,"count_in_window":0,"distance":3,"energy":90240}}]}'
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '287'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -3723,7 +3820,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - wind
+          - humidity
         type: 'string[]'
         enumValues:
           - temperature
@@ -3739,18 +3836,16 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - wind
+        - humidity
     fileParameters: []
     responses:
       -
         custom: []
-        status: 404
-        content: '{"success":false,"message":"Estacion meteorologica no encontrada"}'
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '286'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4125,7 +4220,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '283'
+          x-ratelimit-remaining: '287'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4186,7 +4281,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '282'
+          x-ratelimit-remaining: '286'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4245,7 +4340,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '281'
+          x-ratelimit-remaining: '285'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff

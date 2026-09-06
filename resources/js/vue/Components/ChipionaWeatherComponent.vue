@@ -133,7 +133,9 @@
  *              pasa a cada 5 minutos y sólo como red de seguridad.
  *
  * @prop {String} apiBaseUrl - Base URL del backend que sirve los datos.
- * @prop {String} apiPath    - Ruta de la colección de estaciones (default 'api/v2/weather-stations').
+ * @prop {String} apiPath    - Ruta web del widget (default 'weatherstation/widget').
+ *                            No es la API: los datos del frontend se sirven ya
+ *                            resueltos y cacheados desde el bloque web, sin token.
  * @prop {String} station    - Id de la estación cuyo resumen mostrar. Si se
  *                             deja vacío, la API resuelve la estación principal
  *                             (por defecto la primera de exterior). Permite
@@ -155,7 +157,7 @@ const props = defineProps({
      */
     apiPath: {
         type: String,
-        default: 'api/v2/weather-stations',
+        default: 'weatherstation/widget',
     },
     /**
      * Zona cuyo resumen mostrar («Azotea»). Tiene prioridad sobre `station`:

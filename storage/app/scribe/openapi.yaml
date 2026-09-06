@@ -97,12 +97,14 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'smartplant:read'
+                    - 'keycounter:write'
                   items:
                     type: string
                     enum:
                       - 'hardware:read'
                       - 'hardware:write'
+                      - 'hardwareenergy:read'
+                      - 'hardwareenergy:write'
                       - 'weatherstation:read'
                       - 'weatherstation:write'
                       - 'keycounter:read'
@@ -119,7 +121,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-09-29'
+                  example: '2052-09-30'
                   nullable: true
               required:
                 - device_id
@@ -214,11 +216,11 @@ paths:
                 privacity:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 contactme:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 attributes:
                   type: array
                   description: 'Must not be greater than 255 characters.'
@@ -855,26 +857,22 @@ paths:
       description: "Absorbe lo que era `GET /airflight/history`: el historial no es otro\nrecurso, es la misma colección sin la ventana de actividad reciente.\n\n  (sin parámetros)      los vistos en los últimos 10 minutos — el mapa en vivo\n  ?minutes=60           ventana de actividad a medida\n  ?from=&to=            historial por fechas, paginado"
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  success: true
-                  message: 'Operación exitosa'
-                  data: []
+                  success: false
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
-                    example: true
+                    example: false
                   message:
                     type: string
-                    example: 'Operación exitosa'
-                  data:
-                    type: array
-                    example: []
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -967,46 +965,22 @@ paths:
       description: ''
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  success: true
-                  message: 'Operación exitosa'
-                  data:
-                    history: 0
-                    lat: 36.7381
-                    lon: -6.4301
-                    refresh: 5000
-                    version: 'api raupulus v2'
+                  success: false
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
-                    example: true
+                    example: false
                   message:
                     type: string
-                    example: 'Operación exitosa'
-                  data:
-                    type: object
-                    properties:
-                      history:
-                        type: integer
-                        example: 0
-                      lat:
-                        type: number
-                        example: 36.7381
-                      lon:
-                        type: number
-                        example: -6.4301
-                      refresh:
-                        type: integer
-                        example: 5000
-                      version:
-                        type: string
-                        example: 'api raupulus v2'
+                    example: Unauthenticated
       tags:
         - Endpoints
       security: []
@@ -1249,6 +1223,31 @@ paths:
         schema:
           type: string
   /api/v2/hardware/energy-readings:
+    get:
+      summary: 'Lecturas de energía, paginadas.'
+      operationId: lecturasDeEnergaPaginadas
+      description: "Exige `hardwareenergy:read`. Consumo y generación viven en dos tablas\ndistintas —comparten columnas por el trait `IsEnergyReading`, no la\ntabla—, así que se elige con `?type=load|generator`; por defecto,\nconsumo.\n\nSólo devuelve lecturas de dispositivos del usuario y, si el token está\nligado a dispositivos concretos (`device:{id}`), sólo las de ésos."
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Endpoints
+      security: []
     post:
       summary: 'Almacena las lecturas de un monitor de energía.'
       operationId: almacenaLasLecturasDeUnMonitorDeEnerga
@@ -1281,7 +1280,7 @@ paths:
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T10:45:14'
+                  example: '2026-09-06T18:11:50'
                   nullable: true
                 temperature:
                   type: number
@@ -1343,7 +1342,7 @@ paths:
                       read_at:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2026-09-06T10:45:14'
+                        example: '2026-09-06T18:11:50'
                         nullable: true
                       battery_voltage:
                         type: number
@@ -1362,6 +1361,31 @@ paths:
                 - readings
       security: []
   /api/v2/hardware/solar-readings:
+    get:
+      summary: 'Lecturas del controlador solar, paginadas.'
+      operationId: lecturasDelControladorSolarPaginadas
+      description: "Exige `hardwareenergy:read`. Sólo devuelve lecturas de dispositivos del\nusuario y, si el token está ligado a dispositivos concretos\n(`device:{id}`), sólo las de ésos: un token de cacharro no lee el resto\ndel parque de su dueño."
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Endpoints
+      security: []
     post:
       summary: 'Almacena una lectura del controlador solar.'
       operationId: almacenaUnaLecturaDelControladorSolar
@@ -1389,11 +1413,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T10:45:14'
+                  example: '2026-09-06T18:11:50'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T10:45:14'
+                  example: '2026-09-06T18:11:50'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1477,7 +1501,7 @@ paths:
                 light_status:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 light_brightness:
                   type: integer
@@ -1666,11 +1690,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:45:14'
+                  example: '2026-09-06 18:11:50'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:45:14'
+                  example: '2026-09-06 18:11:50'
                 duration:
                   type: integer
                   description: ''
@@ -1764,11 +1788,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:45:14'
+                  example: '2026-09-06 18:11:50'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 10:45:14'
+                  example: '2026-09-06 18:11:50'
                 duration:
                   type: integer
                   description: ''
@@ -1922,12 +1946,12 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 waterpump_enabled:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 vaporizer_enabled:
                   type: boolean
@@ -1955,222 +1979,22 @@ paths:
       description: "?zone=chipiona\n  ?location_type=indoor|outdoor"
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  success: true
-                  message: 'Operación exitosa'
-                  data:
-                    -
-                      id: 10
-                      name: 'Esp32 D1 WS'
-                      zone: null
-                      location_type: indoor
-                      location_label: Interior
-                      instant:
-                        day_name: domingo
-                        date_human_format: '6 de septiembre de 2026'
-                        time: '10:45'
-                        day_status: Día
-                      temperature: 33
-                      humidity: 49
-                      pressure: null
-                      wind:
-                        average: 3.24
-                        min: 3.24
-                        max: 3.24
-                        direction: E
-                        direction_grades: 112
-                      light:
-                        lux: null
-                        uv_index: null
-                        uva: null
-                        uvb: null
-                      air_quality:
-                        quality: 87
-                        eco2: 77
-                        tvoc: 421
-                      rain:
-                        value: 0
-                        intensity: 0
-                      lightning:
-                        last_at: '2024-11-05T13:04:19.000000Z'
-                        window_minutes: 60
-                        count_in_window: 0
-                        distance: 3
-                        energy: 90240
+                  success: false
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
-                    example: true
+                    example: false
                   message:
                     type: string
-                    example: 'Operación exitosa'
-                  data:
-                    type: array
-                    example:
-                      -
-                        id: 10
-                        name: 'Esp32 D1 WS'
-                        zone: null
-                        location_type: indoor
-                        location_label: Interior
-                        instant:
-                          day_name: domingo
-                          date_human_format: '6 de septiembre de 2026'
-                          time: '10:45'
-                          day_status: Día
-                        temperature: 33
-                        humidity: 49
-                        pressure: null
-                        wind:
-                          average: 3.24
-                          min: 3.24
-                          max: 3.24
-                          direction: E
-                          direction_grades: 112
-                        light:
-                          lux: null
-                          uv_index: null
-                          uva: null
-                          uvb: null
-                        air_quality:
-                          quality: 87
-                          eco2: 77
-                          tvoc: 421
-                        rain:
-                          value: 0
-                          intensity: 0
-                        lightning:
-                          last_at: '2024-11-05T13:04:19.000000Z'
-                          window_minutes: 60
-                          count_in_window: 0
-                          distance: 3
-                          energy: 90240
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 10
-                        name:
-                          type: string
-                          example: 'Esp32 D1 WS'
-                        zone:
-                          type: string
-                          example: null
-                          nullable: true
-                        location_type:
-                          type: string
-                          example: indoor
-                        location_label:
-                          type: string
-                          example: Interior
-                        instant:
-                          type: object
-                          properties:
-                            day_name:
-                              type: string
-                              example: domingo
-                            date_human_format:
-                              type: string
-                              example: '6 de septiembre de 2026'
-                            time:
-                              type: string
-                              example: '10:45'
-                            day_status:
-                              type: string
-                              example: Día
-                        temperature:
-                          type: integer
-                          example: 33
-                        humidity:
-                          type: integer
-                          example: 49
-                        pressure:
-                          type: string
-                          example: null
-                          nullable: true
-                        wind:
-                          type: object
-                          properties:
-                            average:
-                              type: number
-                              example: 3.24
-                            min:
-                              type: number
-                              example: 3.24
-                            max:
-                              type: number
-                              example: 3.24
-                            direction:
-                              type: string
-                              example: E
-                            direction_grades:
-                              type: integer
-                              example: 112
-                        light:
-                          type: object
-                          properties:
-                            lux:
-                              type: string
-                              example: null
-                              nullable: true
-                            uv_index:
-                              type: string
-                              example: null
-                              nullable: true
-                            uva:
-                              type: string
-                              example: null
-                              nullable: true
-                            uvb:
-                              type: string
-                              example: null
-                              nullable: true
-                        air_quality:
-                          type: object
-                          properties:
-                            quality:
-                              type: integer
-                              example: 87
-                            eco2:
-                              type: integer
-                              example: 77
-                            tvoc:
-                              type: integer
-                              example: 421
-                        rain:
-                          type: object
-                          properties:
-                            value:
-                              type: integer
-                              example: 0
-                            intensity:
-                              type: integer
-                              example: 0
-                        lightning:
-                          type: object
-                          properties:
-                            last_at:
-                              type: string
-                              example: '2024-11-05T13:04:19.000000Z'
-                            window_minutes:
-                              type: integer
-                              example: 60
-                            count_in_window:
-                              type: integer
-                              example: 0
-                            distance:
-                              type: integer
-                              example: 3
-                            energy:
-                              type: integer
-                              example: 90240
+                    example: Unauthenticated
       tags:
         - Endpoints
       requestBody:
@@ -2184,7 +2008,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - temperature
+                    - light
                   items:
                     type: string
                     enum:
@@ -2212,7 +2036,7 @@ paths:
       description: ''
       parameters: []
       responses:
-        404:
+        401:
           description: ''
           content:
             application/json:
@@ -2220,14 +2044,14 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'Estacion meteorologica no encontrada'
+                  message: Unauthenticated
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'Estacion meteorologica no encontrada'
+                    example: Unauthenticated
       tags:
         - Endpoints
       requestBody:
@@ -2241,7 +2065,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - wind
+                    - humidity
                   items:
                     type: string
                     enum:

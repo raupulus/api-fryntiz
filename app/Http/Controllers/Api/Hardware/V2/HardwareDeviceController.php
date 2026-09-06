@@ -57,8 +57,7 @@ class HardwareDeviceController extends BaseApiController
         // el listado no, así que un token de cacharro veía el parque entero de
         // su dueño. `HardwarePolicy` lo dice literalmente: «es la diferencia
         // entre robar un cacharro y robar la cuenta entera».
-        $token = TokenAbilities::currentToken($request->user());
-        $declarados = $token === null ? [] : TokenAbilities::devicesOf((array) $token->abilities);
+        $declarados = TokenAbilities::devicesReachableBy($request->user());
 
         if ($declarados !== []) {
             $query->whereIn('id', $declarados);

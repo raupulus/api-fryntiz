@@ -133,7 +133,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
         return $this->postJson(
             $this->apiUrl('hardware/solar-readings'),
             $payload,
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         );
     }
 

@@ -26,8 +26,9 @@
   Hay dos familias de token que nunca se mezclan:
   - **Token de sesión** (ability `session`): lo emite este módulo. Es el que
     usa una persona desde una app/web propia.
-  - **Token de dispositivo IoT** (abilities de módulo: `hardware:write`,
-    `weatherstation:write`, etc. + `device:{id}`): se emite desde aquí mismo
+  - **Token de dispositivo IoT** (abilities de módulo: `hardwareenergy:write`,
+    `weatherstation:write`, etc. + `device:{id}`, [catálogo completo
+    abajo](#catálogo-de-abilities-de-módulo)): se emite desde aquí mismo
     (`POST /auth/tokens/devices`) pero se usa contra los demás módulos, nunca
     contra las rutas de este archivo salvo que se indique.
 - **Ruta inexistente**: cualquier método/URL que no esté documentado responde
@@ -136,7 +137,7 @@ El token es el recurso; no hay verbos sueltos (`login`/`logout`).
 | Campo | Tipo | Reglas |
 |---|---|---|
 | `device_id` | int | `required`, debe existir en `hardware_devices` |
-| `abilities` | array\<string\> | `required`, mínimo 1, cada valor debe estar en el catálogo de abilities de módulo (`hardware:read`, `hardware:write`, `weatherstation:write`, `keycounter:write`, `smartplant:write`, `airflight:write`) |
+| `abilities` | array\<string\> | `required`, mínimo 1, cada valor debe estar en el catálogo de abilities de módulo (ver la tabla de abajo) |
 | `name` | string\|null | opcional, máx. 255 |
 | `expires_at` | datetime\|null | opcional, debe ser una fecha futura. **Por defecto los tokens de dispositivo no caducan** (a propósito: son cacharros a los que no se sube a reflashear un token) |
 
@@ -166,6 +167,39 @@ El token es el recurso; no hay verbos sueltos (`login`/`logout`).
 - **Errores**: `403` si el dispositivo no es tuyo, `404` si `device_id` no
   existe, `422` si alguna ability no está en el catálogo (nunca se puede pedir
   el comodín `*` ni `session`).
+
+#### Catálogo de abilities de módulo
+
+Es el de `App\Support\Auth\TokenAbilities::MODULE_ABILITIES`. **Ninguna está
+de adorno: cada una la exige alguna ruta.**
+
+| Ability | Qué abre |
+|---|---|
+| `hardware:read` | Listar dispositivos y ver su ficha (`GET /hardware/devices*`) |
+| `hardware:write` | Último estado conocido del aparato (`PUT /hardware/devices/{id}/status`) |
+| `hardwareenergy:read` | Consultar lecturas de energía y solares (`GET /hardware/energy-readings`, `GET /hardware/solar-readings`) |
+| `hardwareenergy:write` | Subirlas (`POST` de esas dos rutas). Es la de un controlador solar o un contador de consumo |
+| `weatherstation:read` | Estaciones y el histórico de sus sensores (`GET /weather-stations*`) |
+| `weatherstation:write` | Subir lecturas de sensores (`POST /weather-stations/{id}/*`) |
+| `keycounter:read` | Sesiones de teclado y ratón (`GET /keycounter/*`) |
+| `keycounter:write` | Subirlas (`POST /keycounter/*`) |
+| `smartplant:read` | Plantas y sus lecturas (`GET /smartplant/*`) |
+| `smartplant:write` | Subir lecturas de una planta (`POST /smartplant/plants/{id}/readings`) |
+| `airflight:read` | Aviones detectados, con historial por fechas (`GET /airflight/*`) |
+| `airflight:write` | Registrar aviones (`POST /airflight/aircrafts*`) |
+
+Cambios del **2026-09-06**:
+
+- **Energía se separa de Hardware.** `hardwareenergy:read/write` son nuevas;
+  antes las lecturas de energía y solares iban con `hardware:*`. A los tokens ya
+  emitidos se les añadió la nueva en el mismo despliegue, así que ningún
+  cacharro dejó de subir. Los tokens nuevos de un aparato de energía llevan
+  `hardwareenergy:write` y no necesitan `hardware:write`.
+- **`weatherstation:read` y `airflight:read` empiezan a mandar.** Las lecturas
+  de esos dos módulos eran públicas y esas dos abilities no protegían nada.
+  Ahora exigen token; lo que consume la web propia se sirve desde el bloque web
+  de la aplicación, sin token (ver [`weather-station.md`](./weather-station.md)
+  y [`airflight.md`](./airflight.md)).
 
 ### `DELETE /auth/tokens/current` — Cerrar la sesión actual (logout)
 

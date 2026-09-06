@@ -30,10 +30,25 @@
     Es obligatoria a propósito: antes cualquier token (incluido el de una
     estación meteorológica) podía leer el inventario completo de todos los
     usuarios, con número de serie incluido.
-  - `hardware:write` — subir lecturas y estado (`PUT .../status`,
-    `POST /energy-readings`, `POST /solar-readings`). La lleva un token de
-    dispositivo emitido con `POST /auth/tokens/devices` (ver
-    [`auth.md`](./auth.md)).
+  - `hardware:write` — actualizar el último estado conocido del aparato
+    (`PUT .../status`). La lleva un token de dispositivo emitido con
+    `POST /auth/tokens/devices` (ver [`auth.md`](./auth.md)).
+  - `hardwareenergy:read` — consultar lecturas de energía y solares
+    (`GET /energy-readings`, `GET /solar-readings`).
+  - `hardwareenergy:write` — subirlas (`POST /energy-readings`,
+    `POST /solar-readings`).
+
+  > ⚠️ **Cambio de contrato del 2026-09-06.** Las lecturas de energía y solares
+  > se cobraban con `hardware:write` y ahora exigen `hardwareenergy:write`.
+  > Energía es un módulo aparte: subir vatios y reescribir el estado del aparato
+  > son permisos distintos, y un contador de consumo sólo necesita el primero.
+  >
+  > **Qué tiene que hacer un cliente:** nada, si su token se emitió antes del
+  > cambio — el despliegue les añadió `hardwareenergy:*` a los tokens que ya
+  > tenían la de hardware, para que ningún cacharro dejara de subir. **Los
+  > tokens nuevos** de un aparato de energía se emiten con
+  > `hardwareenergy:write` y **ya no necesitan** `hardware:write` salvo que
+  > además manden `PUT .../status`.
 
   El token puede venir además ligado a un `HardwareDevice` concreto (ability
   `device:{id}`). Cuando lo está, sólo alcanza ese dispositivo: cualquier
@@ -264,7 +279,7 @@ veces deja el sistema igual (idempotente).
 
 - **Errores**:
   - `401` sin token o token inválido.
-  - `403` token sin la ability `hardware:write`.
+  - `403` token sin la ability `hardwareenergy:write`.
   - `422` validación de los campos de estado; `422` también si
     `hardware_device_id` (el de la URL) no existe en `hardware_devices`, no
     pertenece al usuario del token, o no coincide con el dispositivo al que el
@@ -277,9 +292,32 @@ veces deja el sistema igual (idempotente).
 
 ## Energía (`/hardware/energy-readings`)
 
+### `GET /hardware/energy-readings` — Lecturas de energía, paginadas
+
+- **Auth**: `auth:sanctum` + `ability:hardwareenergy:read`.
+- **Rate limit**: `api` — 120 peticiones/min por token.
+- **Query**:
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `type` | `load\|generator` | Consumo (por defecto) o generación. Son dos tablas distintas: comparten columnas por el trait `IsEnergyReading`, no la tabla. Cualquier otro valor da `422` |
+| `hardware_device_id` | int | Filtra por dispositivo medido |
+| `hardware_energy_id` | int | Filtra por elemento de energía |
+| `date`, `read_at` | fecha o rango | Filtros de colección estándar (ver [`README.md`](./README.md)) |
+| `sort` | `read_at\|date\|id` | Por defecto `-read_at` (lo más reciente primero) |
+| `per_page`, `page` | int | Paginación estándar |
+
+- **Alcance**: sólo lecturas de dispositivos del usuario del token. Si el token
+  está ligado a dispositivos concretos (`device:{id}`), sólo las de ésos: un
+  token de cacharro no lee el resto del parque de su dueño.
+- **Respuesta**: colección paginada de lecturas con la misma forma que devuelve
+  el `POST` (ver abajo).
+
+---
+
 ### `POST /hardware/energy-readings` — Sube lecturas de un monitor de energía
 
-- **Auth**: `auth:sanctum` + `ability:hardware:write`.
+- **Auth**: `auth:sanctum` + `ability:hardwareenergy:write`.
 - **Rate limit**: `api-store` — 60 peticiones/min por token.
 - **Body**:
 
@@ -359,7 +397,7 @@ veces deja el sistema igual (idempotente).
 
 - **Errores**:
   - `401` sin token o token inválido.
-  - `403` token sin la ability `hardware:write`.
+  - `403` token sin la ability `hardwareenergy:write`.
   - `422` validación de campos, incluyendo `hardware_device_id` inexistente,
     ajeno o fuera del alcance del token.
   - `422` (`errorResponse`, no de validación de campos) si `readings` no
@@ -372,6 +410,18 @@ veces deja el sistema igual (idempotente).
 
 ## Controlador solar (`/hardware/solar-readings`)
 
+### `GET /hardware/solar-readings` — Lecturas del controlador solar, paginadas
+
+- **Auth**: `auth:sanctum` + `ability:hardwareenergy:read`.
+- **Rate limit**: `api` — 120 peticiones/min por token.
+- **Query**: `hardware_device_id`, `hardware_energy_id`, `date`, `read_at`,
+  `sort` (`read_at\|date\|id`, por defecto `-read_at`), `per_page`, `page`.
+- **Alcance**: el mismo que el índice de energía — dispositivos del usuario y,
+  si el token los declara, sólo los suyos.
+- **Respuesta**: colección paginada con la forma que devuelve el `POST`.
+
+---
+
 ### `POST /hardware/solar-readings` — Sube una lectura de un controlador solar
 
 Pensado específicamente para un Renogy Rover: el FormRequest traduce sus
@@ -379,7 +429,7 @@ nombres de campo (`pv_voltage`, `battery_soc`, `today_*`,
 `historical_total_*`...) al vocabulario propio. Un campo ausente queda `null`,
 nunca se fuerza a `0`.
 
-- **Auth**: `auth:sanctum` + `ability:hardware:write`.
+- **Auth**: `auth:sanctum` + `ability:hardwareenergy:write`.
 - **Rate limit**: `api-store` — 60 peticiones/min por token.
 - **Body** (nombres del contrato; el Rover puede mandar alias, ver nota):
 
@@ -515,7 +565,7 @@ nunca se fuerza a `0`.
 
 - **Errores**:
   - `401` sin token o token inválido.
-  - `403` token sin la ability `hardware:write`.
+  - `403` token sin la ability `hardwareenergy:write`.
   - `422` validación de campos, incluyendo `hardware_device_id` inexistente,
     ajeno o fuera del alcance del token.
   - `429` al superar 60/min con ese token.

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\WeatherStation;
 
 use App\Enums\HardwareLocationTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V2\WeatherStation\WeatherStationResource;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Eco2;
@@ -19,7 +20,9 @@ use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
 use App\Services\WeatherStation\WeatherStationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 /**
@@ -117,6 +120,64 @@ class WeatherStationController extends Controller
      * Si todavía no hay ninguna estación clasificada (sin `location_type`), se
      * muestra el resumen global de sensores como comportamiento de reserva.
      */
+    /**
+     * Datos del widget del clima, para el frontend de esta misma web.
+     *
+     * Vive en el bloque **web** y no en la API a propósito. Lo que consume una
+     * página propia no es una integración: se sirve ya resuelto —una sola
+     * lectura por zona o estación, la que se pinta— y cacheado, sin exigir
+     * token. La API es para clientes de fuera, y ahí las lecturas piden
+     * `weatherstation:read` y ofrecen a cambio filtros, orden y paginación.
+     *
+     * Hasta el 2026-09-06 el widget llamaba a `GET /api/v2/weather-stations`,
+     * que por eso tenía que quedarse abierta al mundo: era una ruta de API
+     * autenticada… salvo que no lo estaba, y dejaba la ability
+     * `weatherstation:read` sin nada que proteger.
+     *
+     * @param  string|null  $zone  Zona a agregar; sin ella, la estación principal.
+     */
+    public function widget(?string $zone = null, ?string $locationType = null, ?int $station = null): JsonResponse
+    {
+        // (`widgetStation()` entra por aquí con la estación fijada.)
+        $clave = 'weather:widget:'.($zone ?? '-').':'.($locationType ?? '-').':'.($station ?? '-');
+
+        // Los sensores suben cada pocos minutos y la página se recarga sola;
+        // un minuto de caché quita la mayor parte de las consultas sin que el
+        // dato llegue a notarse viejo.
+        $datos = Cache::remember($clave, 60, function () use ($zone, $locationType, $station) {
+            $servicio = app(WeatherStationService::class);
+
+            if ($zone !== null && $zone !== '') {
+                $lecturas = $servicio->getZoneReadings($zone, $locationType);
+
+                return $lecturas === null ? null : (new WeatherStationResource($lecturas))->resolve();
+            }
+
+            $device = $servicio->resolveStation($station);
+
+            return $device === null
+                ? null
+                : (new WeatherStationResource($servicio->getStationReadings($device)))->resolve();
+        });
+
+        if ($datos === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay ninguna estación meteorológica que mostrar.',
+            ], 404);
+        }
+
+        return response()->json(['success' => true, 'data' => $datos]);
+    }
+
+    /**
+     * La misma respuesta del widget, fijada a una estación concreta.
+     */
+    public function widgetStation(int $station): JsonResponse
+    {
+        return $this->widget(null, null, $station);
+    }
+
     public function index()
     {
         $stations = HardwareDevice::weatherStations()

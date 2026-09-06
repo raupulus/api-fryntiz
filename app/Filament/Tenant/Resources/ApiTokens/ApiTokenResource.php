@@ -89,6 +89,7 @@ class ApiTokenResource extends Resource
 
                 CheckboxList::make('abilities')
                     ->options(TokenAbilities::MODULE_ABILITIES)
+                    ->descriptions(TokenAbilities::MODULE_ABILITY_HINTS)
                     ->columns(2)
                     ->required()
                     ->label('Permisos')

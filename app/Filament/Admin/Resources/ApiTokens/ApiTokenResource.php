@@ -72,6 +72,9 @@ class ApiTokenResource extends Resource
                 // aquí podía absolutamente todo.
                 CheckboxList::make('abilities')
                     ->options(TokenAbilities::MODULE_ABILITIES)
+                    // Qué abre cada casilla, para no tener que adivinarlo:
+                    // «Hardware escritura» no incluye las lecturas de energía.
+                    ->descriptions(TokenAbilities::MODULE_ABILITY_HINTS)
                     ->columns(2)
                     ->required()
                     ->label('Permisos de módulo')

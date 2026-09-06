@@ -23,6 +23,19 @@
   `errors` solo aparece si hay detalle (p. ej. errores de validación 422). Un
   borrado (204) no lleva cuerpo en absoluto.
 - **Autenticación**: Laravel Sanctum, cabecera `Authorization: Bearer <token>`.
+  **Todos los endpoints de este módulo exigen token**: los `GET` piden
+  `airflight:read` y los `POST`, `airflight:write`.
+
+  > ⚠️ **Cambio de contrato del 2026-09-06.** Las lecturas eran públicas porque
+  > el mapa de vuelos de la propia web las llamaba desde el navegador, y eso
+  > dejaba `airflight:read` sin nada que proteger. El mapa se sirve ahora desde
+  > el bloque web (`GET /airflight/aircrafts` y `GET /airflight/receiver`, sin
+  > token y cacheados), y la API queda para integraciones, que a cambio tienen
+  > el historial por fechas, filtros y paginación.
+  >
+  > **Qué tiene que hacer un cliente que leyera sin token:** emitir uno con
+  > `airflight:read`. Sin él, las lecturas responden `401`.
+
   Los endpoints de escritura de este módulo requieren un **token de
   dispositivo IoT** con la ability `airflight:write` (catálogo completo en
   `app/Support/Auth/TokenAbilities.php`; se emite con `POST
@@ -43,7 +56,7 @@ Hay un único receptor ADS-B, así que es un recurso único sin colección (no
 
 ### `GET /airflight/receiver` — Datos del receptor
 
-- **Auth**: no requiere autenticación.
+- **Auth**: `auth:sanctum` + `ability:airflight:read`.
 - **Respuesta 200** (valores fijos de configuración, no vienen de base de datos):
 
 ```json
@@ -78,7 +91,7 @@ por fechas; no son recursos distintos.
 
 ### `GET /airflight/aircrafts` — Aviones detectados
 
-- **Auth**: no requiere autenticación.
+- **Auth**: `auth:sanctum` + `ability:airflight:read`.
 - **Comportamiento según query params** (mutuamente excluyente, decidido por
   si `from` o `to` vienen rellenos):
 

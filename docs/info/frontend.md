@@ -50,12 +50,19 @@ color literal**: si hace falta uno nuevo, se añade el token.
 ### `ChipionaWeatherComponent`
 
 El widget del clima. Se monta sobre `#app-weather-chipiona`, que le pasa por
-`data-*` la URL base, la ruta de la colección y —opcionalmente— el id de la
-estación.
+`data-*` la URL base, la ruta del endpoint y —opcionalmente— la zona o el id de
+la estación.
 
-- **Sin id** pide `GET /api/v2/weather-stations`, que es una colección: se
-  queda con la primera, que es la estación principal.
-- **Con id** pide `GET /api/v2/weather-stations/{id}`, que devuelve el objeto.
+Pide sus datos al **bloque web**, no a la API: `GET /weatherstation/widget`.
+Sin token, cacheado 60 s y ya resuelto a la lectura que se pinta. **Hasta el
+2026-09-06 llamaba a `GET /api/v2/weather-stations`**, y eso obligaba a dejar
+esa parte de la API abierta a cualquiera —la ability `weatherstation:read` no
+protegía nada—. Lo que consume una página propia no es una integración.
+
+- **Con zona** pide `GET /weatherstation/widget/zone/{zone}[/{locationType}]`:
+  de cada magnitud, el dato más reciente de cualquier estación de la zona.
+- **Con id** pide `GET /weatherstation/widget/{id}`, esa estación concreta.
+- **Sin nada** pide `GET /weatherstation/widget`, la estación principal.
 - Se refresca por **WebSocket** si hay Reverb montado (`window.Echo`), y por
   sondeo si no. Sin socket, cada 65 s; con socket, cada 5 minutos y sólo como
   red de seguridad.
@@ -113,4 +120,4 @@ Cosas que necesitan un navegador de verdad y no se pueden cerrar desde aquí:
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-09-06

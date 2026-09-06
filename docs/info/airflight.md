@@ -78,31 +78,43 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 
 ## Rutas API V2
 
-| Método | Ruta | Auth | Throttle | Descripción |
-|--------|------|------|----------|-------------|
-| GET | `/api/v2/airflight/aircrafts` | No | — | Aviones recientes |
-| GET | `/api/v2/airflight/history` | No | — | Historial extendido (100) |
-| GET | `/api/v2/airflight/receiver` | No | — | Información del receptor ADS-B |
-| GET | `/api/v2/airflight/db/{bkey}` | No | — | Consulta a la base de datos de aeronaves por clave |
-| POST | `/api/v2/airflight/register` | Sí (`ability:airflight:write`) | api-store | Registrar un avión |
-| POST | `/api/v2/airflight/register/batch` | Sí (`ability:airflight:write`) | api-store-batch | Registrar lote (max 500) |
+**Todas exigen token desde el 2026-09-06**, lecturas incluidas.
 
-> **Nota (2026-08-31):** tabla desactualizada. Las rutas reales en
-> `routes/airflight/v2.php` son `GET /api/v2/airflight/aircrafts`,
-> `GET /api/v2/airflight/receiver`, `POST /api/v2/airflight/aircrafts` y
-> `POST /api/v2/airflight/aircrafts/batch` (`/history` y `/db/{bkey}` ya no
-> existen, ver `AirFlightController`). Contrato exacto en
-> [`docs/info/api/v2/airflight.md`](api/v2/airflight.md), que sí está
-> actualizado. Los dos `POST` admiten desde ahora una clave opcional
-> `hardware_device_info` con el estado del receptor (batería, temperatura,
-> uptime...), solo aplicable si la petición trae también `hardware_device_id`
-> (aquí es opcional, no todos los receptores lo mandan).
+| Método | Ruta | Auth | Throttle |
+|--------|------|------|----------|
+| GET | `/api/v2/airflight/aircrafts` | `ability:airflight:read` | api |
+| GET | `/api/v2/airflight/receiver` | `ability:airflight:read` | api |
+| POST | `/api/v2/airflight/aircrafts` | `ability:airflight:write` | api-store |
+| POST | `/api/v2/airflight/aircrafts/batch` | `ability:airflight:write` | api-store-batch |
+
+`GET /aircrafts` sin parámetros da los vistos en los últimos 10 minutos;
+`?minutes=` cambia la ventana y `?from=&to=` da el historial paginado
+(absorbió el antiguo `/history`). `/db/{bkey}` ya no existe.
+
+Los dos `POST` admiten una clave opcional `hardware_device_info` con el estado
+del receptor (batería, temperatura, uptime…), aplicable sólo si la petición trae
+también `hardware_device_id` (aquí es opcional: no todos los receptores lo
+mandan).
+
+> **Las lecturas eran públicas hasta el 2026-09-06.** Lo eran porque el mapa de
+> `/airflight` las llamaba desde el navegador, y eso dejaba la ability
+> `airflight:read` sin nada que proteger. El mapa se sirve ahora desde el bloque
+> **web** (ver abajo) y la API pide token. Un cliente que leyera sin token
+> necesita emitir uno con `airflight:read`.
+
+> Contrato exacto en [`docs/info/api/v2/airflight.md`](api/v2/airflight.md).
 
 ## Rutas Web
 
 | Ruta | Descripción |
 |------|-------------|
 | `/airflight` | Mapa interactivo de aviones detectados + tabla |
+| `/airflight/aircrafts` | **JSON** de los aviones activos para el mapa, cacheado 10 s. `?minutes=` acota la ventana |
+| `/airflight/receiver` | **JSON** con el centro del mapa y el intervalo de refresco |
+
+Los dos últimos **no piden token**: son los datos de una página propia, no una
+integración. El mapa los consumía antes desde `API_URL/v2/airflight/*`, lo que
+obligaba a dejar esa parte de la API abierta a cualquiera.
 
 ### Frontend (Fix 5)
 
@@ -131,4 +143,4 @@ php artisan debug:seed-airflight --planes=1 --routes=25
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-09-06

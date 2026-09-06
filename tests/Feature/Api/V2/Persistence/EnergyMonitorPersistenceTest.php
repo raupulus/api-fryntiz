@@ -110,7 +110,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
         $this->postJson(
             $this->apiUrl('hardware/energy-readings'),
             $this->payload(),
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         )->assertStatus(201);
 
         $consumption = HardwarePowerLoad::query()->latest('id')->first();
@@ -152,7 +152,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
                 'duration' => 60,
                 'readings' => [['pos' => 0, 'amperage' => 1.4, 'voltage' => 231.0]],
             ],
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         );
 
         $response->assertStatus(201);
@@ -178,7 +178,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
                 'duration' => 60,
                 'readings' => [['pos' => 0, 'amperage' => -1.4, 'voltage' => 12.1]],
             ],
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         );
 
         $response->assertStatus(201);
@@ -204,7 +204,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
                 'battery_voltage' => 3.92,
                 'battery_percentage' => 78,
             ]),
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         )->assertStatus(201);
 
         $this->monitor->refresh();
@@ -224,7 +224,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
         $this->postJson(
             $this->apiUrl('hardware/energy-readings'),
             $this->payload(),
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         )->assertStatus(201);
 
         $this->assertSame(
@@ -250,7 +250,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
         $this->postJson(
             $this->apiUrl('hardware/energy-readings'),
             $this->payload(),
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         )->assertStatus(201);
 
         $this->assertSame(
@@ -274,7 +274,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
                 'duration' => 60,
                 'readings' => [['pos' => 9, 'amperage' => 1.4, 'voltage' => 12.1]],
             ],
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         );
 
         $this->assertSame(
@@ -291,7 +291,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
         $response = $this->postJson(
             $this->apiUrl('hardware/energy-readings'),
             $this->payload(),
-            $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+            $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
         );
 
         $response->assertStatus(201);
@@ -318,7 +318,7 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
             $this->postJson(
                 $this->apiUrl('hardware/energy-readings'),
                 array_merge($this->payload(), ['hardware_device_id' => $foreign->id]),
-                $this->moduleHeaders($this->user, TokenAbilities::HARDWARE_WRITE)
+                $this->moduleHeaders($this->user, TokenAbilities::HARDWAREENERGY_WRITE)
             ),
             422
         );

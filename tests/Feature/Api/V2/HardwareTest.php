@@ -63,7 +63,7 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function store_energy_validates_required_fields(): void
     {
-        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWARE_WRITE);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWAREENERGY_WRITE);
         $response = $this->postJson($this->apiUrl('hardware/energy-readings'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);
@@ -79,7 +79,7 @@ class HardwareTest extends ApiTestCase
     #[Test]
     public function store_solar_reading_validates_required_fields(): void
     {
-        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWARE_WRITE);
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::HARDWAREENERGY_WRITE);
         $response = $this->postJson($this->apiUrl('hardware/solar-readings'), [], $headers);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['hardware_device_id']);

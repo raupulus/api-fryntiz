@@ -6,12 +6,15 @@ namespace Tests\Feature\WeatherStation;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareType;
+use App\Models\User;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Temperature;
 use App\Services\WeatherStation\WeatherStationService;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -163,13 +166,12 @@ class ZoneReadingsTest extends TestCase
     #[Test]
     public function el_endpoint_de_zona_responde_con_el_dato_fresco(): void
     {
-        $vieja = $this->makeStation('outdoor', 'Azotea', 'Vieja');
-        $nueva = $this->makeStation('outdoor', 'Azotea', 'Nueva');
+        $this->zonaConDosEstaciones();
 
-        Humidity::create(['hardware_device_id' => $vieja->id, 'value' => 49.0, 'created_at' => now()->subDays(3)]);
-        Humidity::create(['hardware_device_id' => $nueva->id, 'value' => 20.0, 'created_at' => now()]);
-
-        $this->getJson(route('api.v2.weather_stations.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']))
+        $this->getJson(
+            route('api.v2.weather_stations.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']),
+            $this->lectura()
+        )
             ->assertOk()
             ->assertJsonPath('data.humidity', 20);
     }
@@ -177,7 +179,74 @@ class ZoneReadingsTest extends TestCase
     #[Test]
     public function el_endpoint_de_una_zona_vacia_responde_404(): void
     {
-        $this->getJson(route('api.v2.weather_stations.zone', ['zone' => 'Inexistente']))
+        $this->getJson(
+            route('api.v2.weather_stations.zone', ['zone' => 'Inexistente']),
+            $this->lectura()
+        )->assertNotFound();
+    }
+
+    #[Test]
+    public function el_endpoint_de_la_api_exige_permiso_de_lectura(): void
+    {
+        $this->zonaConDosEstaciones();
+
+        $this->getJson(route('api.v2.weather_stations.zone', ['zone' => 'Azotea']))
+            ->assertUnauthorized();
+    }
+
+    /**
+     * El widget de la web se sirve desde el bloque web: sin token, porque no es
+     * una integración sino una página propia, y con el mismo dato fresco.
+     */
+    #[Test]
+    public function el_widget_web_da_el_dato_fresco_sin_token(): void
+    {
+        $this->zonaConDosEstaciones();
+
+        $this->getJson(route('weather_station.widget.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']))
+            ->assertOk()
+            ->assertJsonPath('data.humidity', 20);
+    }
+
+    #[Test]
+    public function el_widget_web_de_una_zona_vacia_responde_404(): void
+    {
+        $this->getJson(route('weather_station.widget.zone', ['zone' => 'Inexistente']))
             ->assertNotFound();
+    }
+
+    /**
+     * Dos estaciones en la misma azotea: una con el dato viejo y otra con el
+     * bueno.
+     */
+    private function zonaConDosEstaciones(): void
+    {
+        $vieja = $this->makeStation('outdoor', 'Azotea', 'Vieja');
+        $nueva = $this->makeStation('outdoor', 'Azotea', 'Nueva');
+
+        Humidity::create(['hardware_device_id' => $vieja->id, 'value' => 49.0, 'created_at' => now()->subDays(3)]);
+        Humidity::create(['hardware_device_id' => $nueva->id, 'value' => 20.0, 'created_at' => now()]);
+    }
+
+    /**
+     * Cabeceras de un cliente de la API con permiso de lectura.
+     *
+     * @return array<string, string>
+     */
+    private function lectura(): array
+    {
+        // La factory de usuarios apunta al rol 3, que aquí no existe: este test
+        // no hereda de `ApiTestCase` y nadie ha sembrado `user_roles`.
+        DB::table('user_roles')->insertOrIgnore([
+            'id' => 3, 'name' => 'user', 'display_name' => 'Usuario', 'slug' => 'usuario',
+            'description' => 'Usuario normal', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $token = User::factory()->create()->createToken('test', [TokenAbilities::WEATHERSTATION_READ]);
+
+        return [
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer '.$token->plainTextToken,
+        ];
     }
 }

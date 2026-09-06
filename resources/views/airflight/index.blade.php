@@ -258,17 +258,21 @@
     <script src="{{ asset('resources/airflight/ol3/ol3-layerswitcher.js') }}" type="text/javascript"></script>
     <script type="text/javascript" src="{{ asset('resources/airflight/config.js') }}"></script>
 
-    {{-- Endpoints del mapa: se componen en tiempo de request desde API_URL (.env)
-         hacia la API v2, en vez de quedar hardcodeados en el asset estático.
+    {{-- Endpoints del mapa: rutas web de esta misma aplicación, no la API.
+
+         Apuntaban a `API_URL/v2/airflight/*`, que por eso tenía que quedarse
+         abierta a cualquiera y dejaba la ability `airflight:read` sin nada que
+         proteger. El mapa es una página propia: se le sirven los aviones ya
+         filtrados y cacheados desde `routes/airflight/web.php`, y la API queda
+         para integraciones con token.
 
          No se definen urlHistory ni urlDb: el backend no guarda snapshots de
          historial (ver AirFlightController::receiver(), 'history' => 0) ni
          expone un catálogo de matrículas/tipos por ICAO. script.js y
          dbloader.js ya comprueban su ausencia y no llaman a esos endpoints. --}}
     <script>
-        var airflightApiBase = "{{ rtrim(config('app.api_url'), '/') }}/v2/airflight";
-        var urlAircrafts = airflightApiBase + '/aircrafts';
-        var urlReceiver = airflightApiBase + '/receiver';
+        var urlAircrafts = "{{ route('airflight.aircrafts') }}";
+        var urlReceiver = "{{ route('airflight.receiver') }}";
     </script>
 
     <script type="text/javascript" src="{{ asset('resources/airflight/markers.js') }}"></script>

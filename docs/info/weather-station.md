@@ -151,44 +151,30 @@ Todos los sensores heredan estos campos:
 
 ## Rutas API V2
 
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | `/api/v2/weatherstation/station/{id?}` | No | Una estación (datos formateados). Sin `id` → primera de exterior. `?sensors=` para acotar sensores |
-| GET | `/api/v2/weatherstation/zone/{zone}` | No | Colección de estaciones de una zona. `?location_type=indoor\|outdoor` y `?sensors=` opcionales |
-| GET | `/api/v2/weatherstation/temperature` | No | Listado de temperaturas (`?from=&to=` opcional) |
-| GET | `/api/v2/weatherstation/humidity` | No | Listado de humedad |
-| GET | `/api/v2/weatherstation/pressure` | No | Listado de presión |
-| GET | `/api/v2/weatherstation/light` | No | Listado de luz |
-| GET | `/api/v2/weatherstation/wind` | No | Listado de viento |
-| GET | `/api/v2/weatherstation/wind-direction` | No | Listado de dirección del viento |
-| GET | `/api/v2/weatherstation/rain` | No | Listado de lluvia |
-| GET | `/api/v2/weatherstation/eco2` | No | Listado de eCO2 |
-| GET | `/api/v2/weatherstation/tvoc` | No | Listado de TVOC |
-| GET | `/api/v2/weatherstation/air-quality` | No | Listado de calidad del aire |
-| GET | `/api/v2/weatherstation/lightning` | No | Listado de rayos |
-| POST | `/api/v2/weatherstation/generic/store` | Sí (`ability:weatherstation:write`) | Store multi-sensor |
-| POST | `/api/v2/weatherstation/temperature/store` | Sí (`ability:weatherstation:write`) | Store temperatura |
-| POST | `/api/v2/weatherstation/humidity/store` | Sí (`ability:weatherstation:write`) | Store humedad |
-| POST | `/api/v2/weatherstation/pressure/store` | Sí (`ability:weatherstation:write`) | Store presión |
-| POST | `/api/v2/weatherstation/light/store` | Sí (`ability:weatherstation:write`) | Store luz |
-| POST | `/api/v2/weatherstation/wind/store` | Sí (`ability:weatherstation:write`) | Store viento |
-| POST | `/api/v2/weatherstation/wind-direction/store` | Sí (`ability:weatherstation:write`) | Store dirección del viento |
-| POST | `/api/v2/weatherstation/rain/store` | Sí (`ability:weatherstation:write`) | Store lluvia |
-| POST | `/api/v2/weatherstation/eco2/store` | Sí (`ability:weatherstation:write`) | Store eCO2 |
-| POST | `/api/v2/weatherstation/tvoc/store` | Sí (`ability:weatherstation:write`) | Store TVOC |
-| POST | `/api/v2/weatherstation/air-quality/store` | Sí (`ability:weatherstation:write`) | Store calidad del aire |
-| POST | `/api/v2/weatherstation/lightning/store` | Sí (`ability:weatherstation:write`) | Store rayos |
+**Todas exigen token desde el 2026-09-06**, lecturas incluidas.
 
-> Todas las escrituras usan `throttle:api-store` y token IoT con ability `weatherstation:write`.
+| Método | Ruta | Auth |
+|--------|------|------|
+| GET | `/api/v2/weather-stations` | `ability:weatherstation:read` |
+| GET | `/api/v2/weather-stations/{station}` | `ability:weatherstation:read` |
+| GET | `/api/v2/weather-stations/zone/{zone}/{locationType?}` | `ability:weatherstation:read` |
+| GET | `/api/v2/weather-stations/{station}/{sensor}` | `ability:weatherstation:read` |
+| POST | `/api/v2/weather-stations/{station}/readings` | `ability:weatherstation:write` |
+| POST | `/api/v2/weather-stations/{station}/{sensor}` | `ability:weatherstation:write` |
 
-> **Nota (2026-08-31):** esta tabla usa los nombres de ruta antiguos
-> (`/weatherstation/{sensor}/store`); las rutas reales en `routes/weather_station/v2.php`
-> son `POST /api/v2/weather-stations/{station}/{sensor}` (individual) y
-> `POST /api/v2/weather-stations/{station}/readings` (lote multi-sensor). Contrato
-> exacto en [`docs/info/api/v2/weather-station.md`](api/v2/weather-station.md), que sí
-> está actualizado. Ambas escrituras admiten desde ahora una clave opcional
-> `hardware_device_info` con el estado del propio dispositivo (batería, temperatura,
-> uptime...), igual que `/hardware/energy-readings` y `/hardware/solar-readings`.
+Las escrituras usan `throttle:api-store` y un token IoT ligado a su estación
+(`device:{id}`). Admiten la clave opcional `hardware_device_info` con el estado
+del propio dispositivo (batería, temperatura, uptime, RAM…), igual que
+`/hardware/energy-readings` y `/hardware/solar-readings`.
+
+> **Las lecturas eran públicas hasta el 2026-09-06.** Lo eran porque el widget
+> del clima de esta misma web las llamaba desde el navegador, y eso dejaba la
+> ability `weatherstation:read` sin nada que proteger. El widget se sirve ahora
+> desde el bloque **web** (ver más abajo) y la API pide token. Un cliente que
+> leyera sin token necesita emitir uno con `weatherstation:read`.
+
+> Contrato exacto —cuerpos, respuestas y errores— en
+> [`docs/info/api/v2/weather-station.md`](api/v2/weather-station.md).
 
 ### Endpoints de estación (datos formateados)
 
@@ -254,6 +240,14 @@ Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
 |------|-------------|
 | `/weatherstation` | Dashboard público con widget Vue 3 del clima y tarjetas de sensores con iconos |
 | `/weatherstation/sensor/{type}` | Página individual de un sensor con tabla paginada Blade y botón volver |
+| `/weatherstation/widget` | **JSON** del widget: la estación principal, ya resuelta y cacheada 60 s |
+| `/weatherstation/widget/zone/{zone}/{locationType?}` | Lo mismo, agregado por zona. Es lo que consume el widget |
+| `/weatherstation/widget/{station}` | Lo mismo, fijado a una estación por id |
+
+Los tres devuelven `{success, data}` y **no piden token**: son datos de una
+página propia, no una integración. Por eso viven aquí y no en la API — se sirve
+lo justo que se pinta, ya filtrado y cacheado, mientras que la API ofrece
+filtros, orden, paginación e histórico a cambio de un token.
 
 ### Tipos de sensor soportados en ruta web
 
@@ -263,8 +257,8 @@ Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
 
 - **Archivo:** `resources/js/vue/Components/ChipionaWeatherComponent.vue`
 - **Montaje:** `resources/js/vue.js` (carga con `@vite('resources/js/vue.js')`)
-- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta API, default
-  `api/v2/weather-stations`), **`zone`** (nombre de la zona) y **`locationType`**
+- **Props:** `apiBaseUrl` (URL base), `apiPath` (ruta web del widget, default
+  `weatherstation/widget`), **`zone`** (nombre de la zona) y **`locationType`**
   (`indoor`/`outdoor`), y `station` (id) como reserva. En Blade se pasan con
   `data-zone`, `data-location-type` y `data-station`.
 - **`zone` tiene prioridad sobre `station`.** Yendo por zona, de cada magnitud se
@@ -272,8 +266,9 @@ Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
   quedaba enseñando su último valor cuando ésa dejaba de subir. Sin zona
   clasificada cae a la estación principal.
 - **Actualización:** Cada 65 segundos vía `fetch()` a
-  `api/v2/weather-stations/zone/{zone}[/{locationType}]`, o al endpoint de estación si no
-  hay zona.
+  `weatherstation/widget/zone/{zone}[/{locationType}]`, o al de estación si no hay
+  zona. **Hasta el 2026-09-06 llamaba a `api/v2/weather-stations`**, lo que
+  obligaba a dejar esa ruta de API abierta a cualquiera.
 - **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
 - **Ubicación dinámica:** muestra `data.name` + `data.location_label` en lugar de un literal fijo.
 - **Contrato:** consume `GET /station/{id?}` (envelope `{success, message, data}`). `data` incluye `name`, `location_label`, `instant` y los bloques de sensores (`wind.average`, `light.uv_index`, `air_quality.quality/eco2/tvoc`, `lightning.last_six_hours`, `temperature`, `humidity`, `pressure`) ya formateados como números.

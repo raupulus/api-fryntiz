@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Hardware\HardwareDevices\RelationManagers
 
 use App\Models\Hardware\HardwareDevice;
 use App\Services\Hardware\DeviceTokenService;
+use App\Support\Auth\TokenAbilities;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -69,6 +70,7 @@ class TokensRelationManager extends RelationManager
                             ->label('Permisos de módulo')
                             ->helperText('Se añade automáticamente el permiso "device:{id}" que liga el token a este dispositivo.')
                             ->options(DeviceTokenService::MODULE_ABILITIES)
+                            ->descriptions(TokenAbilities::MODULE_ABILITY_HINTS)
                             ->columns(2)
                             ->required(),
                         DateTimePicker::make('expires_at')
