@@ -20,6 +20,15 @@ trait AccumulatesEnergyHistory
     use AggregatesEnergyReadings;
 
     /**
+     * Campos del acumulado que cuentan unidades, no magnitudes.
+     */
+    private const CONTADORES_ENTEROS = [
+        'days_operating',
+        'number_battery_over_discharges',
+        'number_battery_full_charges',
+    ];
+
+    /**
      * Recalcula el acumulado del elemento a partir de sus resúmenes diarios.
      *
      * `days_operating` es el número de días **distintos** con lecturas, que es
@@ -103,14 +112,14 @@ trait AccumulatesEnergyHistory
         // contó antes de reiniciarse.
         $previos = [];
 
-        foreach (['energy_wh', 'energy_ah', 'days_operating'] as $campo) {
+        foreach (array_keys($deviceTotals) as $campo) {
             $previos[$campo] = $historical->exists ? $historical->{$campo} : null;
         }
 
         $historical->forceFill($aggregate);
 
         foreach ($deviceTotals as $campo => $valor) {
-            if ($valor === null || ! array_key_exists($campo, $previos)) {
+            if ($valor === null) {
                 continue;
             }
 
@@ -123,8 +132,10 @@ trait AccumulatesEnergyHistory
 
             $mayor = max(array_map(static fn ($v) => (float) $v, $candidatos));
 
-            // `days_operating` cuenta días, no vatios: es entero.
-            $historical->{$campo} = $campo === 'days_operating' ? (int) $mayor : $mayor;
+            // Los contadores son enteros: días, ciclos de carga y de descarga.
+            $historical->{$campo} = in_array($campo, self::CONTADORES_ENTEROS, true)
+                ? (int) $mayor
+                : $mayor;
         }
 
         $historical->read_at = Carbon::now();

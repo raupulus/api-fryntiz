@@ -496,6 +496,37 @@ class SolarReadingPersistenceTest extends ApiTestCase
     }
 
     /**
+     * Los ciclos de batería sólo los cuenta el controlador.
+     *
+     * `number_battery_over_discharges` y `number_battery_full_charges` tienen
+     * columna en `hardware_power_generators_historical` desde la V1 y llevaban
+     * vacías desde la V2: no hay forma de derivarlas de nuestras lecturas.
+     */
+    #[Test]
+    public function los_ciclos_de_bateria_del_controlador_llegan_al_acumulado(): void
+    {
+        $generador = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'name' => 'Panel del Rover',
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'is_generator' => true,
+            'sensor_position' => 0,
+            'nominal_voltage' => 18.0,
+        ]);
+
+        $this->send(array_merge($this->fullPayload(), [
+            'historical_total_number_battery_over_discharges' => 26,
+            'historical_total_number_battery_full_charges' => 1343,
+        ]))->assertStatus(201);
+
+        $total = HardwarePowerGeneratorHistorical::query()
+            ->where('hardware_energy_id', $generador->id)->first();
+
+        $this->assertSame(26, (int) $total->number_battery_over_discharges);
+        $this->assertSame(1343, (int) $total->number_battery_full_charges);
+    }
+
+    /**
      * Un reinicio del controlador no puede borrar el acumulado de años.
      *
      * El Rover de producción tiene 66.388 Wh guardados y hoy dice 36.087: se

@@ -460,6 +460,11 @@ class HardwareService
             'energy_wh' => $reading->total_power_generation_wh,
             'energy_ah' => $reading->total_charging_amp_hours,
             'days_operating' => $reading->total_operating_days,
+            // Ciclos de la batería. Sólo los cuenta el controlador: no hay forma
+            // de derivarlos de nuestras lecturas, y su tabla tiene columna para
+            // ellos desde la V1. Estaban vacías desde la V2.
+            'number_battery_over_discharges' => $reading->total_battery_over_discharges,
+            'number_battery_full_charges' => $reading->total_battery_full_charges,
         ]);
 
         // ── Consumo de la salida del controlador ────────────────────────────
@@ -479,7 +484,6 @@ class HardwareService
         $consumo = new HardwarePowerLoad([
             'hardware_device_id' => $deviceId,
             'hardware_energy_id' => $load->id,
-            'date' => $date,
             'read_at' => $reading->read_at,
             'voltage' => $reading->load_voltage,
             'amperage' => $reading->load_current,

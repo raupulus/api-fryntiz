@@ -115,6 +115,38 @@ el 2026-09-06.
    dado de alta en el mismo dispositivo; si no lo hay, la respuesta lo avisa en
    `warnings` en vez de tirar el dato en silencio.
 
+### Qué sale de dónde en cada columna
+
+Los mínimos y máximos del día (`*_min`, `*_max` de las tablas `*_today` y
+`*_historical`) se calculan de las lecturas guardadas, como en la V1. Lo que
+manda el aparato ocupa estas columnas:
+
+| Columna | Sale de |
+|---|---|
+| `*_today.energy_wh` | `day_power_generation_wh` / `day_power_consumption_wh` |
+| `*_today.energy_ah` | `day_charging_amp_hours` / `day_discharging_amp_hours` |
+| `*_historical.energy_wh` | `total_power_generation_wh` / `total_power_consumption_wh` |
+| `*_historical.energy_ah` | `total_charging_amp_hours` / `total_discharging_amp_hours` |
+| `*_historical.days_operating` | `total_operating_days` |
+| `generators_historical.number_battery_over_discharges` | `total_battery_over_discharges` |
+| `generators_historical.number_battery_full_charges` | `total_battery_full_charges` |
+
+Los dos contadores de ciclos **sólo** los cuenta el controlador: no se pueden
+derivar de nuestras lecturas. Tienen columna desde la V1 y estuvieron vacíos
+toda la V2.
+
+### Lo que sigue vacío, y por qué
+
+En las tablas de **lecturas** (`hardware_power_generators_solar` y
+`hardware_power_loads`), estas columnas quedan a null en las subidas del
+controlador solar:
+
+- `delta_seconds`, `energy_wh`, `energy_ah`: son la energía **de ese intervalo**.
+  El controlador no manda el intervalo, y sus acumulados del día y del total ya
+  van a las tablas de resumen, que es de donde leen el panel y las gráficas.
+- `battery_current` y `battery_power` (sólo en la tabla solar): el contrato los
+  acepta, pero el Rover no los manda. Tampoco los recibía la V1.
+
 ## Modelo de energía (D115)
 
 Tres problemas que arrastraba el módulo y que este modelo resuelve:
