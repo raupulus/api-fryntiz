@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Wind
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $speed Velocidad del viento m/s
  * @property numeric $average Velocidad promedio del viento m/s
@@ -32,14 +31,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereSpeed($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Wind whereUserId($value)
  *
  * @mixin \Eloquent
  */
 class Wind extends BaseWeatherStation
 {
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'speed',
         'average',

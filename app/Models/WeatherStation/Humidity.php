@@ -13,7 +13,6 @@ use Illuminate\Support\Carbon;
  * Class Humidity
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value
  * @property Carbon|null $created_at
@@ -30,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Humidity whereValue($value)
  *
  * @mixin \Eloquent

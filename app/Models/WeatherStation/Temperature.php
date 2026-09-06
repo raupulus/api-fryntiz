@@ -13,7 +13,6 @@ use Illuminate\Support\Carbon;
  * Class Temperature
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value
  * @property Carbon|null $created_at
@@ -30,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Temperature whereValue($value)
  *
  * @mixin \Eloquent

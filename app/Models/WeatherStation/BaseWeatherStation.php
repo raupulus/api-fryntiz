@@ -28,7 +28,6 @@ class BaseWeatherStation extends BaseModel
     use HasTimestampScopes;
 
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'value',
         'created_at',

@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class WindDirection
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property int $grades Grados según puntos cardinales basados en resistencia, 0 es Norte, 90 es Este, 180 es Sur, 270 es Oeste
  * @property numeric|null $resistance Valor de la resistencia usado para calcular la posición del viento, valor entre 0 y 65535
@@ -30,14 +29,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereResistance($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|WindDirection whereUserId($value)
  *
  * @mixin \Eloquent
  */
 class WindDirection extends BaseWeatherStation
 {
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'resistance',
         'direction',

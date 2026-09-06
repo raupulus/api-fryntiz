@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Rain
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $rain Agua caída en el último periodo de tiempo (mm)
  * @property numeric|null $rain_intensity Intensidad de la lluvia en mm/h
@@ -32,14 +31,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRain($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRainIntensity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereRainMonth($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Rain whereUserId($value)
  *
  * @mixin \Eloquent
  */
 class Rain extends BaseWeatherStation
 {
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'rain',
         'rain_intensity',

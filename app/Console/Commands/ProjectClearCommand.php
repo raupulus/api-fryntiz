@@ -25,6 +25,22 @@ class ProjectClearCommand extends Command
         $this->info('Iniciando limpieza completa del proyecto...');
 
         // 1. Limpieza de cachés de la aplicación
+        // Antes de tocar nada: ¿la clave que está usando la aplicación es la
+        // misma que la del `.env`?
+        //
+        // Con `config:cache`, la APP_KEY que usa la aplicación es la que quedó
+        // CONGELADA en `bootstrap/cache/config.php`, no la del `.env`. Si en
+        // algún momento se regeneró la clave y no se volvió a cachear, las dos
+        // dejan de coincidir y el sitio sigue funcionando con la cacheada sin
+        // que se note nada.
+        //
+        // El día que alguien limpia la caché, la aplicación pasa a leer la del
+        // `.env` y todo lo cifrado con la otra —sesiones, cookies, los
+        // `two_factor_secret`— deja de descifrarse de golpe. Parece que la
+        // limpieza «ha roto la clave», y lo que ha hecho es destapar que ya
+        // estaban desalineadas.
+        $this->avisarSiLaClaveNoCoincide();
+
         $this->line('▶ Limpiando cachés de configuración, rutas, vistas, eventos y optimizaciones...');
         $this->call('optimize:clear');
         $this->call('config:clear');
@@ -83,17 +99,29 @@ class ProjectClearCommand extends Command
                 );
             }
 
-            if (app()->environment('production') && ! $this->option('force') && ! $this->confirm(
-                'Vas a regenerar APP_KEY en producción: esto invalida sesiones, tokens y cualquier '
-                .'dato cifrado con la clave actual. ¿Deseas continuar?'
-            )) {
-                $this->warn('Operación cancelada. Usa --no-key para limpiar sin regenerar la clave, o --force para omitir esta confirmación.');
+            $regenerar = true;
 
-                return self::FAILURE;
+            if (app()->environment('production') && ! $this->option('force')) {
+                $regenerar = $this->confirm(
+                    'Vas a regenerar APP_KEY en producción: esto invalida sesiones, tokens y cualquier '
+                    .'dato cifrado con la clave actual. ¿Deseas continuar?'
+                );
             }
 
-            $this->line('▶ Regenerando clave de aplicación (APP_KEY)...');
-            $this->call('key:generate', ['--force' => true]);
+            // Decir «no» salta la clave y sigue; no aborta el comando.
+            //
+            // Antes hacía `return self::FAILURE` aquí, y eso dejaba el peor de
+            // los estados posibles: las cachés ya se habían limpiado en el paso
+            // 1, así que la aplicación se quedaba SIN caché de configuración ni
+            // de rutas y encima sin recachear, porque el recacheo va al final.
+            // O sea, quien contestaba «no» para no romper nada acababa con el
+            // sitio a medio limpiar.
+            if ($regenerar) {
+                $this->line('▶ Regenerando clave de aplicación (APP_KEY)...');
+                $this->call('key:generate', ['--force' => true]);
+            } else {
+                $this->warn('Se conserva la APP_KEY actual. El resto de la limpieza continúa.');
+            }
         }
 
         // 4. Recomponer autoload de Composer
@@ -147,5 +175,76 @@ class ProjectClearCommand extends Command
         } catch (\Throwable) {
             return 0;
         }
+    }
+
+    /**
+     * Compara la APP_KEY congelada en la caché de configuración con la del
+     * `.env`, y avisa si no son la misma.
+     *
+     * No aborta ni arregla nada: sólo lo dice antes de limpiar, que es cuando
+     * todavía se puede decidir. Ver el comentario de `handle()`.
+     */
+    private function avisarSiLaClaveNoCoincide(): void
+    {
+        $cache = base_path('bootstrap/cache/config.php');
+
+        if (! is_file($cache)) {
+            return;
+        }
+
+        try {
+            $cacheada = (require $cache)['app']['key'] ?? null;
+        } catch (\Throwable) {
+            return;
+        }
+
+        // Se lee el fichero, no `env()` ni `config()`.
+        //
+        // `config('app.key')` devolvería justo la cacheada, que es el otro lado
+        // de la comparación. Y `env()` tampoco vale: con la configuración
+        // cacheada Laravel se salta la carga del `.env` y devuelve null. Lo
+        // único que dice la verdad aquí es el fichero.
+        $delEnv = $this->claveDelFicheroEnv();
+
+        if (! is_string($cacheada) || ! is_string($delEnv) || $cacheada === $delEnv) {
+            return;
+        }
+
+        $this->warn('⚠ La APP_KEY de la caché de configuración NO es la del .env.');
+        $this->line('  La aplicación está funcionando con la cacheada. Al limpiar pasará a usar la');
+        $this->line('  del .env, y lo cifrado con la otra —sesiones, cookies, doble factor— dejará');
+        $this->line('  de descifrarse. Si lo que quieres es conservar la que funciona ahora, cópiala');
+        $this->line('  al .env antes de seguir:');
+        $this->newLine();
+        $this->line('    '.$cacheada);
+        $this->newLine();
+
+        if (! $this->option('force') && ! $this->confirm('¿Seguir de todas formas?', true)) {
+            $this->warn('Limpieza cancelada. No se ha tocado nada.');
+            exit(self::FAILURE);
+        }
+    }
+
+    /**
+     * La APP_KEY tal y como está escrita en el `.env`, sin pasar por la
+     * configuración de Laravel.
+     */
+    private function claveDelFicheroEnv(): ?string
+    {
+        $ruta = base_path('.env');
+
+        if (! is_file($ruta)) {
+            return null;
+        }
+
+        $contenido = (string) file_get_contents($ruta);
+
+        if (preg_match('/^APP_KEY\s*=\s*"?([^"\r\n]*)"?/m', $contenido, $coincidencias) !== 1) {
+            return null;
+        }
+
+        $clave = trim($coincidencias[1]);
+
+        return $clave === '' ? null : $clave;
     }
 }

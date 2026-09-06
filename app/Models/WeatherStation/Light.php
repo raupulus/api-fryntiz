@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Light
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $lumens Lumens
  * @property numeric $lux lux
@@ -32,7 +31,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereIndex($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereLumens($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereLux($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUva($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Light whereUvb($value)
  *
@@ -43,7 +41,6 @@ class Light extends BaseWeatherStation
     protected $table = 'meteorology_light';
 
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'lumens',
         'index',

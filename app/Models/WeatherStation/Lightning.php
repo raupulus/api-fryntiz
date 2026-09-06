@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Lightning
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property int $distance Distancia estimada de la caída del rayo
  * @property int $energy Energía detectada para detectar el rayo
@@ -30,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereNoiseFloor($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Lightning whereUserId($value)
  *
  * @mixin \Eloquent
  */
@@ -39,7 +37,6 @@ class Lightning extends BaseWeatherStation
     protected $table = 'meteorology_lightning';
 
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'distance',
         'energy',

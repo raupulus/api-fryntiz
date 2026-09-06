@@ -8,13 +8,12 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
 use App\Traits\BelongsToHardwareDevice;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * Resumen meteorológico del día actual.
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric|null $air_quality Resultado del algoritmo para calcular porcentaje de calidad del aire según resistencia, medida en frio y compensación por humedad
  * @property numeric|null $eco2 Partículas en el aire. Valor entre 400ppm y 8192ppm
@@ -37,7 +36,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property numeric|null $rain_intensity Intensidad de la lluvia en mm/h
  * @property string|null $created_at
  * @property-read HardwareDevice|null $hardwareDevice
- * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday newQuery()
@@ -57,7 +55,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereRainIntensity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereTemperature($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereTvoc($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereUvIndex($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereUva($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeteorologyResumeToday whereUvb($value)
@@ -78,7 +75,7 @@ class MeteorologyResumeToday extends BaseModel
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id', 'hardware_device_id',
+        'hardware_device_id',
         'air_quality', 'eco2', 'humidity', 'light', 'pressure',
         'temperature', 'tvoc', 'uv_index', 'uva', 'uvb',
         'wind_direction', 'wind_speed', 'wind_speed_max', 'wind_speed_min',
@@ -87,8 +84,22 @@ class MeteorologyResumeToday extends BaseModel
         'created_at',
     ];
 
-    public function user(): BelongsTo
+    /**
+     * El dueño de un resumen es el de la estación que lo generó.
+     *
+     * Antes salía de una columna `user_id` propia, que era el mismo dato
+     * duplicado en cada fila: se retiró en la migración
+     * `2026_09_06_000002_drop_user_id_from_sensor_tables`.
+     */
+    public function user(): HasOneThrough
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOneThrough(
+            User::class,
+            HardwareDevice::class,
+            'id',
+            'id',
+            'hardware_device_id',
+            'user_id'
+        );
     }
 }

@@ -288,7 +288,7 @@ Cada tarjeta de sensor usa un icono representativo definido en `SENSOR_MAP` del 
 php artisan debug:seed-weatherstation --count=20
 ```
 
-El comando rellena todas las tablas de sensores incluyendo `user_id`, además de
+El comando rellena todas las tablas de sensores, además de
 los resúmenes y datos UV (ver modelos nuevos abajo). Si ya existen estaciones
 (dispositivos de tipo "Estación Meteorológica"), las reutiliza; si no, garantiza
 el tipo (vía `HardwareTypesSeeder`) y crea **3 estaciones de ejemplo** (2 de
@@ -310,11 +310,33 @@ Añadidos para representar tablas que ya existían sin modelo Eloquent
 | `MeteorologyUvb` | `meteorology_uvb` | `value` (radiación UVB) |
 
 Todos extienden `BaseModel`, usan `public $timestamps = false` (solo `created_at`)
-y tienen relaciones `user()` y `hardwareDevice()`.
+y tienen relación `hardwareDevice()`. Los dos de resumen conservan `user()`, pero
+como `HasOneThrough` a través del dispositivo.
 
-> **Nota fix_11:** todos los modelos de sensores tienen ahora `user_id` en su
-> `$fillable` (añadido en `BaseWeatherStation` y en los modelos que sobrescriben
-> `$fillable`).
+> ### Las tablas de sensores ya no tienen `user_id` (2026-09-06)
+>
+> El dueño de una lectura es el dueño de la estación que la tomó, y eso está a un
+> salto: `hardware_device_id` → `hardware_devices.user_id`. Guardarlo además en
+> cada fila era duplicar el mismo dato millones de veces —sólo
+> `meteorology_humidity` pasa de los tres millones— y dejaba la puerta abierta a
+> que las dos copias dijeran cosas distintas.
+>
+> Retirado de las trece tablas en
+> `2026_09_06_000002_drop_user_id_from_sensor_tables`. Comprobado antes sobre los
+> datos de producción: **cero** filas tenían un `user_id` distinto al del
+> dispositivo, y ninguna consulta del proyecto filtraba por esa columna.
+>
+> **Para consultar el dueño de una lectura**, ir por el dispositivo:
+>
+> ```php
+> $lectura->hardwareDevice->user_id;
+> // o, con eager loading:
+> Temperature::with('hardwareDevice.user')->get();
+> ```
+>
+> La ingesta de V2 ya no lo rellenaba, así que todo lo que entró desde el
+> despliegue lo tenía a null: la columna estaba a medio abandonar antes de
+> retirarla.
 
 ---
 

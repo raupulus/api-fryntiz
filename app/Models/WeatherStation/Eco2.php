@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Eco2
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value Valor entre 400ppm y 8192ppm
  * @property Carbon|null $created_at
@@ -25,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Eco2 whereValue($value)
  *
  * @mixin \Eloquent

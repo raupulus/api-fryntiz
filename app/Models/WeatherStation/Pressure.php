@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Pressure
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value
  * @property Carbon|null $created_at
@@ -25,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Pressure whereValue($value)
  *
  * @mixin \Eloquent

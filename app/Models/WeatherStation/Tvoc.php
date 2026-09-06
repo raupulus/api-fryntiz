@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class Tvoc
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $value Valor entre  0ppb y 1187ppb
  * @property Carbon|null $created_at
@@ -25,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tvoc whereValue($value)
  *
  * @mixin \Eloquent

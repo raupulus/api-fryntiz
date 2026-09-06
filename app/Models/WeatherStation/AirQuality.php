@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * Class AirQuality
  *
  * @property int $id
- * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property numeric $gas_resistance Valor de la resistencia del sensor
  * @property numeric $air_quality Resultado del algoritmo para calcular porcentaje de calidad del aire según resistencia, medida en frio y compensación por humedad
@@ -28,14 +27,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereGasResistance($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereHardwareDeviceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AirQuality whereUserId($value)
  *
  * @mixin \Eloquent
  */
 class AirQuality extends BaseWeatherStation
 {
     protected $fillable = [
-        'user_id',
         'hardware_device_id',
         'gas_resistance',
         'air_quality',
