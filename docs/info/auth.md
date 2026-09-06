@@ -10,6 +10,15 @@ Módulo de autenticación con soporte dual: Fortify para web y Sanctum para API.
   - `/panel/login` para usuarios (panel `tenant`).
 - **Alta de usuarios**: manual desde el panel admin (Sistema → Users) o con el seeder `UsersTableSeeder` en entorno de desarrollo (el comando `debug:seed-users` fue eliminado en fix_11).
 - **Redirección legacy**: `/dashboard` y `/dashboard/*` redirigen a `/panel` (HTTP 301).
+- **Las rutas de vista de Fortify redirigen al panel.** `config/fortify.php` tiene
+  `views => true`, así que Fortify registra `GET /login`,
+  `GET /two-factor-challenge` y `GET /user/confirm-password`. Aquí no hay vista
+  propia para ninguna, así que `FortifyServiceProvider` las manda a
+  `/panel/login`. Sin eso respondían **500**
+  (`Target [Laravel\Fortify\Contracts\LoginViewResponse] is not instantiable`),
+  como pasó en producción el 2026-09-06 con alguien entrando a `/login` a mano.
+  `redirectGuestsTo()` en `bootstrap/app.php` sólo cubre a quien choca con el
+  middleware `auth`, no a quien escribe la URL.
 
 ### Método `canAccessPanel()`
 
@@ -390,4 +399,4 @@ Si se pierde la contraseña del administrador, se restablece por consola en el s
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-06
+> Creado: 2026-05-25 · Última revisión: 2026-09-07
