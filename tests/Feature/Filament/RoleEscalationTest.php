@@ -65,6 +65,45 @@ class RoleEscalationTest extends TestCase
             ->assertForbidden();
     }
 
+    /**
+     * Lo que el usuario reportó tras el despliegue: «con un admin puedo editar
+     * el rol de un usuario administrador». La página no debe ni abrirse.
+     */
+    #[Test]
+    public function un_admin_no_puede_abrir_la_edicion_de_un_superadmin(): void
+    {
+        $this->actuarComo(UserRoleEnum::Admin);
+
+        $superadmin = User::factory()->create([
+            'role_id' => UserRoleEnum::SuperAdmin->value,
+        ]);
+
+        $this->get(UserResource::getUrl('edit', ['record' => $superadmin], panel: 'admin'))
+            ->assertForbidden();
+    }
+
+    /**
+     * Y si llegara a montarse el formulario, el `Select` de rol está
+     * deshabilitado y no se persiste: la interfaz no ofrece lo que la policy
+     * va a rechazar.
+     */
+    #[Test]
+    public function el_select_de_rol_esta_bloqueado_sobre_un_superadmin(): void
+    {
+        $this->actuarComo(UserRoleEnum::Admin);
+
+        $superadmin = User::factory()->create([
+            'role_id' => UserRoleEnum::SuperAdmin->value,
+        ]);
+
+        $this->assertTrue(UserResourceProbe::intocable($superadmin));
+
+        // Sobre otro `Admin` sí se puede: repartir el mismo nivel no es escalar.
+        $otroAdmin = User::factory()->create(['role_id' => UserRoleEnum::Admin->value]);
+
+        $this->assertFalse(UserResourceProbe::intocable($otroAdmin));
+    }
+
     #[Test]
     public function un_admin_no_puede_ponerse_superadmin(): void
     {
@@ -166,5 +205,17 @@ class RoleEscalationTest extends TestCase
             'email' => 'relevo@raupulus.dev',
             'role_id' => UserRoleEnum::SuperAdmin->value,
         ]);
+    }
+}
+
+/**
+ * `UserResource::esIntocable()` es `protected` porque es un detalle del
+ * formulario, no una API. Esto lo alcanza sin abrirlo al resto del proyecto.
+ */
+class UserResourceProbe extends UserResource
+{
+    public static function intocable(?User $record): bool
+    {
+        return static::esIntocable($record);
     }
 }

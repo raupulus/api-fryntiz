@@ -103,6 +103,45 @@ class UserPolicyTest extends TestCase
         $this->assertFalse($this->policy->forceDelete($admin, $superadmin));
     }
 
+    /**
+     * `restore()` era el único método de la clase que no miraba el rol del
+     * registro: devolvía `isAdmin()` a secas. La tabla de usuarios ofrece
+     * `RestoreAction`, así que un `Admin` podía devolverle el acceso a un
+     * `SuperAdmin` que estaba borrado.
+     */
+    #[Test]
+    public function un_admin_no_restaura_a_un_superadmin(): void
+    {
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+        $superadmin = $this->makeUser(UserRoleEnum::SuperAdmin);
+
+        $this->assertFalse($this->policy->restore($admin, $superadmin));
+
+        // A un usuario normal sí, que es para lo que está.
+        $this->assertTrue($this->policy->restore($admin, $this->makeUser()));
+    }
+
+    /**
+     * Las acciones masivas del listado se resuelven contra los métodos `*Any`.
+     * Sin declararlos, la decisión de borrar usuarios en bloque quedaba en un
+     * comportamiento implícito del framework.
+     */
+    #[Test]
+    public function las_acciones_masivas_son_solo_del_superadmin(): void
+    {
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+
+        $this->assertFalse($this->policy->deleteAny($admin));
+        $this->assertFalse($this->policy->forceDeleteAny($admin));
+        $this->assertFalse($this->policy->restoreAny($admin));
+
+        $superadmin = $this->makeUser(UserRoleEnum::SuperAdmin);
+
+        $this->assertTrue($this->policy->deleteAny($superadmin));
+        $this->assertTrue($this->policy->forceDeleteAny($superadmin));
+        $this->assertTrue($this->policy->restoreAny($superadmin));
+    }
+
     #[Test]
     public function un_admin_no_borra_usuarios(): void
     {

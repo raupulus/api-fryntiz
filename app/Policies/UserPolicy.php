@@ -82,8 +82,49 @@ class UserPolicy
         return $user->isSuperAdmin() && $user->id !== $model->id;
     }
 
+    /**
+     * Restaurar un usuario borrado.
+     *
+     * Este método era el único de la clase que no miraba el rol del registro:
+     * devolvía `isAdmin()` a secas, así que un `Admin` podía restaurar un
+     * `SuperAdmin` borrado desde el listado —la tabla ofrece `RestoreAction`—
+     * y devolverle el acceso. Es una acción sobre un `SuperAdmin`, que es
+     * justamente lo que el resto de la clase impide.
+     */
     public function restore(User $user, User $model): bool
     {
+        if ($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
+            return false;
+        }
+
         return $user->isAdmin();
+    }
+
+    /**
+     * Acciones masivas del listado.
+     *
+     * Filament resuelve `DeleteBulkAction`, `RestoreBulkAction` y
+     * `ForceDeleteBulkAction` contra estos métodos. Sin declararlos, el `Gate`
+     * dependía de un comportamiento implícito —un método que no existe deniega,
+     * salvo que `Gate::before` conceda— y eso no es algo que deba deducirse
+     * leyendo el framework: borrar usuarios en bloque se decide aquí.
+     *
+     * Sólo `SuperAdmin`, y aun así cada registro pasa después por `delete()`,
+     * `forceDelete()` o `restore()`, donde se comprueba a quién se está
+     * tocando. Las dos capas, no una.
+     */
+    public function deleteAny(User $user): bool
+    {
+        return $user->isSuperAdmin();
+    }
+
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->isSuperAdmin();
+    }
+
+    public function restoreAny(User $user): bool
+    {
+        return $user->isSuperAdmin();
     }
 }

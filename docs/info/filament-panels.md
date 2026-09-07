@@ -349,7 +349,25 @@ reproducida antes de arreglarla):
    contraseña elegida por él y entrar después con esa cuenta. Cerrar sólo la
    edición del propio registro no habría bastado.
 
-Ambas están fijadas por `tests/Feature/Filament/RoleEscalationTest.php` y
+3. **Sobre un `SuperAdmin`, el `Select` de rol se pinta deshabilitado.** Quien
+   no sea `SuperAdmin` ni siquiera llega al formulario —`UserPolicy::update()`
+   responde 403—, pero si llegara, el campo no debe aparecer manipulable:
+   `UserResource::esIntocable()` lo deshabilita y le pone `dehydrated(false)`,
+   así que el valor tampoco viaja en el guardado. Una interfaz que ofrece lo que
+   luego rechaza es una interfaz que miente.
+
+4. **`restore()` y las acciones masivas también miran a quién se está tocando.**
+   `UserPolicy::restore()` era el único método de la clase que no comprobaba el
+   rol del registro: devolvía `isAdmin()` a secas, y la tabla ofrece
+   `RestoreAction`, así que un `Admin` podía devolverle el acceso a un
+   `SuperAdmin` borrado. Y `deleteAny()`, `forceDeleteAny()` y `restoreAny()`
+   —los métodos contra los que Filament resuelve las acciones en bloque— no
+   estaban declarados, de modo que borrar usuarios en masa dependía de un
+   comportamiento implícito del framework. Ahora los tres exigen `SuperAdmin`, y
+   además cada registro sigue pasando por `delete()`, `forceDelete()` o
+   `restore()`.
+
+Todas están fijadas por `tests/Feature/Filament/RoleEscalationTest.php` y
 `tests/Unit/Policies/UserPolicyTest.php`.
 
 

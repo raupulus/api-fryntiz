@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\UserRoleEnum;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use BackedEnum;
 use Filament\Actions\Action as FormAction;
 use Filament\Actions\BulkActionGroup;
@@ -79,6 +80,19 @@ class UserResource extends Resource
         return auth()->user()?->assignableRoleIds() ?? [];
     }
 
+    /**
+     * ¿El registro está por encima de quien lo está mirando?
+     *
+     * Un `SuperAdmin` no lo edita nadie que no lo sea. La regla la aplica
+     * {@see UserPolicy::update()}, que es la que manda; esto es
+     * para que el formulario no pinte como editable algo que se va a rechazar.
+     */
+    protected static function esIntocable(?User $record): bool
+    {
+        return $record?->isSuperAdmin() === true
+            && auth()->user()?->isSuperAdmin() !== true;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -147,6 +161,17 @@ class UserResource extends Resource
                         ->rule(Rule::in(self::assignableRoleIds()))
                         ->required()->preload()->searchable()
                         ->live()
+                        // Sobre un `SuperAdmin`, quien no lo sea no toca el rol.
+                        // `UserPolicy::update()` ya lo impide y ni siquiera deja
+                        // abrir el formulario, pero el campo no debe aparecer
+                        // manipulable: una interfaz que ofrece lo que luego
+                        // rechaza es una interfaz que miente. `dehydrated(false)`
+                        // hace además que el valor no viaje en el guardado.
+                        ->disabled(fn (?User $record): bool => self::esIntocable($record))
+                        ->dehydrated(fn (?User $record): bool => ! self::esIntocable($record))
+                        ->helperText(fn (?User $record): ?string => self::esIntocable($record)
+                            ? 'El rol de un Super Administrador sólo lo cambia otro Super Administrador.'
+                            : null)
                         ->label('Rol'),
                     Toggle::make('is_active')
                         ->default(true)
