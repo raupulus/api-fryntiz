@@ -197,6 +197,7 @@ class AppServiceProvider extends ServiceProvider
             RateLimiter::for('api-auth', fn () => Limit::none());
             RateLimiter::for('api-store', fn () => Limit::none());
             RateLimiter::for('api-store-batch', fn () => Limit::none());
+            RateLimiter::for('keycounter-summary', fn () => Limit::none());
         } else {
             // Los números salen de config/rate_limits.php, que explica de dónde
             // sale cada uno. Antes estaban escritos aquí a mano.
@@ -264,6 +265,13 @@ class AppServiceProvider extends ServiceProvider
 
             RateLimiter::for('api-store-batch', function (Request $request) {
                 return Limit::perMinute((int) config('rate_limits.iot_batch_per_minute'))
+                    ->by(self::rateKey($request));
+            });
+
+            // Resumen de KeyCounter: por TOKEN, como las escrituras IoT. Lo
+            // pide un cacharro al arrancar, no una web.
+            RateLimiter::for('keycounter-summary', function (Request $request) {
+                return Limit::perMinute((int) config('rate_limits.keycounter_summary_per_minute'))
                     ->by(self::rateKey($request));
             });
         }

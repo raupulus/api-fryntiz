@@ -291,6 +291,80 @@ Blade directamente contra la base de datos.
 
 ---
 
+## Resumen acumulado (`/keycounter/summary`)
+
+### `GET /keycounter/summary` — Lo acumulado en un periodo
+
+**Nuevo el 2026-09-07.** Para lo que existe: un contador que se apaga, se
+reinicia o cierra el script **pierde lo que llevaba contado del día**. Al
+arrancar pide aquí el acumulado y sigue sumando desde donde estaba, en vez de
+empezar de cero y enseñar un total falso hasta medianoche.
+
+- **Auth**: `auth:sanctum` + `ability:keycounter:read`.
+- **Rate limit**: `keycounter-summary` — **20 peticiones/min por token**. Es una
+  consulta agregada sobre una tabla de millones de filas y está pensada para una
+  petición por arranque, no para sondear.
+- **Query**:
+
+| Parámetro | Tipo | Reglas |
+|---|---|---|
+| `date` | string\|null | El periodo. Cuatro formas y ninguna más: `today` (por defecto), `month`, `AAAA-MM-DD` (ese día) y `AAAA-MM` (ese mes entero). Otra cosa —o una fecha que no existe, como `2026-13-45`— da `422` |
+| `device_id` | int\|null | Acota a un dispositivo. Debe existir y ser del usuario del token (+ ligado a `device:{id}` si aplica), o da `422`. Sin él se suman **todos** los dispositivos del usuario… salvo que el token esté ligado a alguno, y entonces sólo ése |
+
+- **Respuesta 200**:
+
+```json
+{
+  "success": true,
+  "message": "Operación exitosa",
+  "data": {
+    "period": "today",
+    "from": "2026-09-07T00:00:00.000000Z",
+    "to": "2026-09-07T23:59:59.999999Z",
+    "hardware_device_id": 9,
+    "pulsations_total": 5230,
+    "pulsations_total_special_keys": 340,
+    "combo_score": 87,
+    "pulsation_high": 420,
+    "sessions": 12,
+    "duration_seconds": 4300,
+    "mouse": {
+      "clicks_total": 900,
+      "clicks_high": 120,
+      "sessions": 5,
+      "duration_seconds": 3100
+    }
+  }
+}
+```
+
+| Campo | Qué es |
+|---|---|
+| `period` | El periodo tal cual se pidió |
+| `from` / `to` | Los dos extremos, **ambos incluidos**, en UTC |
+| `hardware_device_id` | El `device_id` pedido, o `null` si no se acotó |
+| `pulsations_total` | **Suma** de pulsaciones del periodo. Es el número con el que el cacharro continúa su cuenta |
+| `pulsations_total_special_keys` | Suma de pulsaciones de teclas especiales |
+| `combo_score` | **Máximo** `score` de una racha del periodo: el récord, para no perderlo al reiniciar |
+| `pulsation_high` | **Máximo** de pulsaciones en una sola racha |
+| `sessions` | Número de rachas del periodo |
+| `duration_seconds` | Segundos sumados de todas las rachas |
+| `mouse` | Lo equivalente del ratón: clicks sumados, el máximo de una sesión, sesiones y duración |
+
+Las sumas sirven para **continuar** el total; los máximos, para **no perder** el
+récord del periodo. Por eso van los dos.
+
+**El corte del periodo es por `created_at`** —cuándo llegó la racha a la API—,
+que es lo mismo que usa la web de `/keycounter`: así el «total de hoy» de un
+cacharro y el que enseña la web son el mismo número. Las fechas se guardan en
+UTC y el corte se hace en UTC.
+
+- **Errores**: `401` sin token, `403` con un token sin `keycounter:read`
+  (el de escritura de un teclado no vale), `422` si `date` o `device_id` no
+  cuadran, `429` al pasar de 20 por minuto.
+
+---
+
 ## Lo que ya no existe, y por qué
 
 | Ruta antigua | Qué pasó |
@@ -303,4 +377,4 @@ Antes el módulo solo tenía escritura; los `GET` (`keyboard-sessions` /
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-07

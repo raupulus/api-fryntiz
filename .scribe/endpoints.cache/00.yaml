@@ -148,7 +148,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'weatherstation:read'
+          - 'smartplant:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -191,7 +191,7 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'weatherstation:read'
+        - 'smartplant:write'
       name: 'n'
       expires_at: '2052-09-30'
     fileParameters: []
@@ -1925,7 +1925,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-07T06:52:49'
+        example: '2026-09-07T09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2058,7 +2058,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-07T06:52:49'
+        example: '2026-09-07T09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2089,7 +2089,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-07T06:52:49'
+      read_at: '2026-09-07T09:43:42'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2102,7 +2102,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-07T06:52:49'
+          read_at: '2026-09-07T09:43:42'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2162,7 +2162,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-07T06:52:49'
+        example: '2026-09-07T09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2173,7 +2173,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-07T06:52:49'
+        example: '2026-09-07T09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2448,7 +2448,7 @@ endpoints:
         name: day_charging_current_max
         description: ''
         required: false
-        example: 7148.09249114
+        example: 4326.41688
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -2643,8 +2643,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-07T06:52:49'
-      read_at: '2026-09-07T06:52:49'
+      date: '2026-09-07T09:43:42'
+      read_at: '2026-09-07T09:43:42'
       hardware: 'n'
       version: g
       serial_number: z
@@ -2669,7 +2669,7 @@ endpoints:
       load_fan: 77
       day_battery_voltage_min: 4326.41688
       day_battery_voltage_max: 4326.41688
-      day_charging_current_max: 7148.09249114
+      day_charging_current_max: 4326.41688
       day_discharging_current_max: 4326.41688
       day_charging_power_max: 4326.41688
       day_discharging_power_max: 4326.41688
@@ -3088,6 +3088,80 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - GET
+    uri: api/v2/keycounter/summary
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Acumulado de un periodo.'
+      description: |-
+        ?date=today        el día de hoy (por defecto)
+          ?date=month        el mes en curso
+          ?date=2026-09-07   ese día
+          ?date=2026-09      ese mes entero
+          ?device_id=9       acota a un dispositivo; sin él, todos los del usuario
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      device_id:
+        custom: []
+        name: device_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      date:
+        custom: []
+        name: date
+        description: 'Must match the regex /^(today|month|\d{4}-\d{2}(-\d{2})?)$/.'
+        required: false
+        example: )
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      device_id: 16
+      date: )
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - POST
     uri: api/v2/keycounter/keyboard-sessions
     metadata:
@@ -3146,7 +3220,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 06:52:49'
+        example: '2026-09-07 09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3157,7 +3231,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 06:52:49'
+        example: '2026-09-07 09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3232,8 +3306,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-07 06:52:49'
-      end_at: '2026-09-07 06:52:49'
+      start_at: '2026-09-07 09:43:42'
+      end_at: '2026-09-07 09:43:42'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3308,7 +3382,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 06:52:49'
+        example: '2026-09-07 09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3319,7 +3393,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 06:52:49'
+        example: '2026-09-07 09:43:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3405,8 +3479,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-07 06:52:49'
-      end_at: '2026-09-07 06:52:49'
+      start_at: '2026-09-07 09:43:42'
+      end_at: '2026-09-07 09:43:42'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3664,7 +3738,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3701,7 +3775,7 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: false
+      full_water_tank: true
       waterpump_enabled: false
       vaporizer_enabled: false
     fileParameters: []
@@ -3742,7 +3816,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - air_quality
+          - rain
         type: 'string[]'
         enumValues:
           - temperature
@@ -3771,7 +3845,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - air_quality
+        - rain
       location_type: indoor
     fileParameters: []
     responses:
@@ -3835,7 +3909,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - rain
+          - temperature
         type: 'string[]'
         enumValues:
           - temperature
@@ -3851,7 +3925,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - rain
+        - temperature
     fileParameters: []
     responses:
       -

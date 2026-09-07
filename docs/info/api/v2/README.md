@@ -171,6 +171,7 @@ después del de grupo, así que se aplican los dos y **manda el más estricto**.
 | `api` | 60/min | token, o IP | lecturas autenticadas y gestión de tokens |
 | `api-store` | 60/min | token | escrituras IoT por sensor |
 | `api-store-batch` | 20/min | token | lotes (AirFlight y multi-sensor) |
+| `keycounter-summary` | 20/min | token | `GET /keycounter/summary`: consulta agregada, una por arranque del cacharro |
 | `api-auth` | 10/min | IP **y** email | login y newsletter |
 | `contact` | 5/hora | IP | formulario de contacto |
 | `api-fallback` | 30/min | IP | ruta de cierre `ANY /api/v2/{any}` |
@@ -269,7 +270,7 @@ sin motivo.
 | Estación meteorológica | [`weather-station.md`](weather-station.md) | `GET /api/v2/weather-stations`, `GET .../{station}`, `GET .../zone/{zone}` y `GET .../{station}/{sensor}` (`weatherstation:read`), `POST .../{station}/readings` y `POST .../{station}/{sensor}` (`weatherstation:write`) |
 | Hardware (el dispositivo) | [`hardware.md`](hardware.md) | `GET /api/v2/hardware/devices` y `GET .../{device}` (`hardware:read`; el `serial_number` sale **sólo en el detalle**), `PUT .../{device}/status` (`hardware:write`) |
 | Energía | [`energy.md`](energy.md) | `GET /api/v2/energy/readings` y `GET .../solar-readings` (`energy:read`), `POST` de las mismas (`energy:write`) |
-| Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET /api/v2/keycounter/{keyboard,mouse}-sessions` (`keycounter:read`), `POST` de las mismas (`keycounter:write`) |
+| Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET /api/v2/keycounter/{keyboard,mouse}-sessions` y `GET /api/v2/keycounter/summary` (`keycounter:read`), `POST` de las sesiones (`keycounter:write`) |
 | Plantas inteligentes | [`smart-plant.md`](smart-plant.md) | `GET /api/v2/smartplant/plants` y `GET .../{plant}/readings` (`smartplant:read`), `POST .../{plant}/readings` (`smartplant:write`) |
 | Registro de vuelos | [`airflight.md`](airflight.md) | `GET /api/v2/airflight/aircrafts` y `GET /api/v2/airflight/receiver` (`airflight:read`), `POST /api/v2/airflight/aircrafts` y `.../batch` (`airflight:write`) |
 

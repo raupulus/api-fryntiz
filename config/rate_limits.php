@@ -82,6 +82,23 @@ return [
     'api_per_minute' => (int) env('RATE_LIMIT_API', 60),
 
     /*
+    |--------------------------------------------------------------------------
+    | Resumen de KeyCounter — 20 por minuto
+    |--------------------------------------------------------------------------
+    |
+    | `GET /keycounter/summary`. Lo pide un cacharro **al arrancar**, para
+    | recuperar el acumulado del día que perdió al apagarse o reiniciarse: una
+    | petición por arranque, no un sondeo. Veinte por minuto deja sitio de sobra
+    | para reintentos y para probar a mano, y no para un bucle.
+    |
+    | Es una consulta agregada sobre una tabla de millones de filas: cuesta más
+    | que devolver una fila, y por eso no va con el límite general de lectura.
+    |
+    */
+
+    'keycounter_summary_per_minute' => (int) env('RATE_LIMIT_KEYCOUNTER_SUMMARY', 20),
+
+    /*
      * Servir imágenes redimensionadas (`/file/resize`). Va aparte y MUY por
      * encima del resto a propósito: no es una llamada de API, es una etiqueta
      * <img> de una página web. Una galería o un artículo ilustrado dispara

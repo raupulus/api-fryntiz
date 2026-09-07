@@ -6,6 +6,7 @@ namespace App\Services\KeyCounter;
 
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -50,6 +51,70 @@ class KeyCounterService
 
     // Nota: Mouse no aporta pulsaciones al total anual de Keyboard
     // (`keycounter:year_total:*`), por lo que no necesita invalidar esa caché.
+
+    /**
+     * Resumen acumulado de un periodo, para que un cacharro que arranca
+     * recupere lo que llevaba antes de apagarse.
+     *
+     * Un contador que se reinicia pierde su acumulado del día: lo pide aquí y
+     * sigue sumando desde donde estaba. Por eso las sumas y los máximos van
+     * juntos: las primeras para continuar el total, los segundos para no perder
+     * el récord del periodo.
+     *
+     * @param  int  $userId  Dueño de los datos.
+     * @param  CarbonImmutable  $desde  Inicio del periodo, incluido.
+     * @param  CarbonImmutable  $hasta  Fin del periodo, incluido.
+     * @param  list<int>  $devices  Dispositivos a los que acotar; vacío = todos los del usuario.
+     * @return array<string, mixed>
+     */
+    public function summary(int $userId, CarbonImmutable $desde, CarbonImmutable $hasta, array $devices = []): array
+    {
+        $acotar = static function ($query) use ($userId, $desde, $hasta, $devices) {
+            $query->where('user_id', $userId)
+                ->whereBetween('created_at', [$desde, $hasta]);
+
+            if ($devices !== []) {
+                $query->whereIn('hardware_device_id', $devices);
+            }
+
+            return $query;
+        };
+
+        $teclado = $acotar(Keyboard::query())
+            ->selectRaw(
+                'COALESCE(SUM(pulsations), 0) AS pulsations_total,'.
+                'COALESCE(SUM(pulsations_special_keys), 0) AS pulsations_total_special_keys,'.
+                'COALESCE(MAX(score), 0) AS combo_score,'.
+                'COALESCE(MAX(pulsations), 0) AS pulsation_high,'.
+                'COALESCE(SUM(duration), 0) AS duration_seconds,'.
+                'COUNT(*) AS sessions'
+            )
+            ->first();
+
+        $raton = $acotar(Mouse::query())
+            ->selectRaw(
+                'COALESCE(SUM(total_clicks), 0) AS clicks_total,'.
+                'COALESCE(MAX(total_clicks), 0) AS clicks_high,'.
+                'COALESCE(SUM(duration), 0) AS duration_seconds,'.
+                'COUNT(*) AS sessions'
+            )
+            ->first();
+
+        return [
+            'pulsations_total' => (int) $teclado->pulsations_total,
+            'pulsations_total_special_keys' => (int) $teclado->pulsations_total_special_keys,
+            'combo_score' => (int) $teclado->combo_score,
+            'pulsation_high' => (int) $teclado->pulsation_high,
+            'sessions' => (int) $teclado->sessions,
+            'duration_seconds' => (int) $teclado->duration_seconds,
+            'mouse' => [
+                'clicks_total' => (int) $raton->clicks_total,
+                'clicks_high' => (int) $raton->clicks_high,
+                'sessions' => (int) $raton->sessions,
+                'duration_seconds' => (int) $raton->duration_seconds,
+            ],
+        ];
+    }
 
     /**
      * Calcula las estadísticas agregadas de teclado de un usuario en los últimos días.

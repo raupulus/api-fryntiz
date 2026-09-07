@@ -92,10 +92,35 @@ Ambos FormRequests calculan automáticamente en `prepareForValidation()`:
 
 | Método | Ruta | Auth | Throttle | Qué hace |
 |--------|------|------|----------|----------|
-| GET | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:write` | — | Listar sesiones de teclado |
-| GET | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:write` | — | Listar sesiones de ratón |
+| GET | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:read` | `api` | Listar sesiones de teclado |
+| GET | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:read` | `api` | Listar sesiones de ratón |
+| GET | `/api/v2/keycounter/summary` | `ability:keycounter:read` | `keycounter-summary` (20/min) | Acumulado de un periodo |
 | POST | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de teclado |
 | POST | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de ratón |
+
+Leer y escribir son abilities distintas desde el 2026-09-02: el token que se
+graba en un teclado sólo tiene que hacer `POST`, y con `keycounter:write` podía
+además listar todas las sesiones de su dueño (**AR-S02**).
+
+### `GET /keycounter/summary` — para reanudar tras un reinicio
+
+Un contador que se apaga, se reinicia o cierra el script pierde el acumulado del
+día. Al arrancar pide este resumen y sigue sumando desde donde estaba.
+
+```
+GET /api/v2/keycounter/summary?device_id=9&date=today
+```
+
+`date` admite `today` (por defecto), `month`, `AAAA-MM-DD` y `AAAA-MM`. Devuelve
+**sumas** —`pulsations_total`, `pulsations_total_special_keys`,
+`duration_seconds`, `sessions`— para continuar la cuenta, y **máximos**
+—`combo_score`, `pulsation_high`— para no perder el récord del periodo, más un
+bloque `mouse` con lo equivalente del ratón.
+
+El corte del periodo es por `created_at`, la misma columna que usa la web de
+`/keycounter`: así el «total de hoy» del cacharro y el de la web son el mismo
+número. Contrato completo en
+[`docs/info/api/v2/keycounter.md`](api/v2/keycounter.md).
 
 Las rutas eran `/keycounter/keyboard` y `/keycounter/mouse` (sólo POST). El
 recurso es la **sesión**, así que pasan a `keyboard-sessions` y `mouse-sessions`,
@@ -204,4 +229,4 @@ Ambas en <https://gitlab.com/raupulus/python-keycounter>:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-06
+> Creado: 2026-05-25 · Última revisión: 2026-09-07
