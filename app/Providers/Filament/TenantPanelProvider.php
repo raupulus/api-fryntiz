@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Tenant\Pages\Dashboard;
 use App\Filament\Tenant\Pages\EditProfile;
 use App\Filament\Tenant\Pages\Login;
+use App\Http\Middleware\NoIndex;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -33,6 +34,12 @@ class TenantPanelProvider extends PanelProvider
             ->id('tenant')
             ->path('panel')
             ->login(Login::class)
+            // Respaldo del middleware `NoIndex`: si un proxy delante se
+            // comiera la cabecera, la directiva sigue en el HTML.
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => '<meta name="robots" content="'.NoIndex::VALOR.'">',
+            )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
                 fn (): string => view('filament.components.recaptcha-login-script')->render(),
@@ -55,6 +62,11 @@ class TenantPanelProvider extends PanelProvider
                     ->url(fn () => EditProfile::getUrl()),
             ])
             ->middleware([
+                // Que ni el panel ni su formulario de acceso acaben en un
+                // buscador. `robots.txt` pide que no se rastreen, que no es lo
+                // mismo: sin poder abrir la página, un buscador puede listar la
+                // URL igualmente y no llega a ver ninguna directiva de dentro.
+                NoIndex::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,

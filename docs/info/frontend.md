@@ -94,7 +94,7 @@ pnpm build    # producción, a public/build/
 | `layouts/app.blade.php` | `<head>` con title, description, keywords, Open Graph y Twitter Card, todos con `@yield` para que cada vista los pise |
 | `app/Models/Content/ContentSeo.php` | Las etiquetas de un contenido: genéricas, sociales y de X. Incluye `og:image:width`, `og:image:height` y `og:image:type`, que salen de la miniatura real vía `File::thumbnailModel()` |
 | `SitemapGeneratorCommand` | `php artisan sitemap:generate` → `public/sitemap.xml`. Portada, «sobre mí», documentación, plantas (una por planta), energía, contador de pulsaciones, vuelos y estación meteorológica (índice + una página por sensor con datos) |
-| `public/robots.txt` | Bloquea `/admin`, `/panel`, `/livewire`, sesión y cuenta, y las URL con token (`/newsletter/`, `/cv/s/`). `/docs` sí se indexa |
+| `public/robots.txt` | Bloquea `/admin`, `/panel`, `/livewire`, sesión y cuenta, y las URL con token (`/newsletter/`, `/cv/s/`). `/docs` sí se indexa. **No basta por sí solo**: un `Disallow` impide rastrear, no indexar — quien impide la indexación es `App\Http\Middleware\NoIndex` (`X-Robots-Tag`) en los dos paneles |
 
 `File::thumbnailModel()` devuelve el **modelo** de la miniatura, no sólo su URL, que
 es lo que permite rellenar el ancho, el alto y el mime. Además resuelve el

@@ -8,6 +8,12 @@
 User-agent: *
 
 # Paneles de administración y de usuario.
+#
+# Ojo: esto pide que NO SE RASTREEN, que no es lo mismo que no indexar. Un
+# buscador que llegue por un enlace externo puede listar la URL sin abrir la
+# página, y este mismo Disallow le impide leer la directiva de dentro. Quien
+# impide la indexación de verdad es la cabecera `X-Robots-Tag: noindex` que
+# pone `App\Http\Middleware\NoIndex` en los dos paneles.
 Disallow: /admin
 Disallow: /panel
 Disallow: /livewire

@@ -8,6 +8,7 @@ use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Admin\Pages\Login;
 use App\Filament\Admin\Pages\Profile;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
+use App\Http\Middleware\NoIndex;
 use App\Models\Platform;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
@@ -53,6 +54,11 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->middleware([
+                // Que ni el panel ni su formulario de acceso acaben en un
+                // buscador. `robots.txt` pide que no se rastreen, que no es lo
+                // mismo: sin poder abrir la página, un buscador puede listar la
+                // URL igualmente y no llega a ver ninguna directiva de dentro.
+                NoIndex::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
@@ -78,6 +84,12 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): string => view()->yieldPushContent('scripts'),
+            )
+            // Respaldo del middleware `NoIndex`: si un proxy delante se
+            // comiera la cabecera, la directiva sigue en el HTML.
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => '<meta name="robots" content="'.NoIndex::VALOR.'">',
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
