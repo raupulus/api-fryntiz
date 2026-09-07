@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Debug;
 
 use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
+use App\Enums\KeyCounterWeekdayEnum;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
 use Carbon\Carbon;
@@ -64,7 +65,7 @@ class SeedKeyCounterDebugCommand extends Command
                 'pulsations_special_keys' => fake()->numberBetween(5, 500),
                 'pulsation_average' => fake()->randomFloat(2, 10, 200),
                 'score' => fake()->numberBetween(1, 100),
-                'weekday' => $startAt->dayOfWeek,
+                'weekday' => KeyCounterWeekdayEnum::deLaFecha($startAt)->value,
                 'created_at' => $startAt,
                 'updated_at' => $startAt,
             ])->save();
@@ -88,7 +89,7 @@ class SeedKeyCounterDebugCommand extends Command
                 'clicks_middle' => fake()->numberBetween(0, 50),
                 'total_clicks' => fake()->numberBetween(20, 2000),
                 'clicks_average' => fake()->randomFloat(2, 1, 80),
-                'weekday' => $startAt->dayOfWeek,
+                'weekday' => KeyCounterWeekdayEnum::deLaFecha($startAt)->value,
                 'created_at' => $startAt,
                 'updated_at' => $startAt,
             ])->save();

@@ -127,7 +127,7 @@ class KeyCounterRemoveDuplicate extends Command
         $modo = $force ? 'BORRADO' : 'DRY-RUN (no se ha borrado nada)';
 
         $message = "[keycounter:remove_duplicate] tabla={$table} alcance={$alcance} modo={$modo} "
-            . "duplicados_detectados={$found} filas_borradas={$deleted} tiempo={$elapsed}s";
+            ."duplicados_detectados={$found} filas_borradas={$deleted} tiempo={$elapsed}s";
 
         $this->info($message);
         Log::info($message);
@@ -138,7 +138,7 @@ class KeyCounterRemoveDuplicate extends Command
         // porque en ambos casos ya carece de sentido (o ya se está mirando
         // la tabla completa, o ya se ha confirmado y no hace falta seguir
         // pagando el escaneo completo cada semana).
-        if (!$force && !$full) {
+        if (! $force && ! $full) {
             $outside = (int) DB::selectOne("
                 SELECT COUNT(*) AS total FROM (
                     SELECT id, created_at,
@@ -149,7 +149,7 @@ class KeyCounterRemoveDuplicate extends Command
             ")->total;
 
             $diagnostic = "[keycounter:remove_duplicate] tabla={$table} "
-                . "diagnostico_duplicados_historicos_fuera_de_ventana={$outside}";
+                ."diagnostico_duplicados_historicos_fuera_de_ventana={$outside}";
 
             $this->info($diagnostic);
             Log::info($diagnostic);

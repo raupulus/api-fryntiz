@@ -58,7 +58,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 | `pulsations_special_keys` | int | Pulsaciones de teclas especiales |
 | `pulsation_average` | decimal | Media de pulsaciones por segundo |
 | `score` | int | Puntuación calculada |
-| `weekday` | int | Día de la semana (0=Lun - 6=Dom) |
+| `weekday` | int | Día de la semana. **0 = lunes**, 6 = domingo — ver más abajo |
 
 ## Campos del modelo Mouse
 
@@ -75,7 +75,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 | `clicks_middle` | int | Clicks botón central |
 | `total_clicks` | int | Total de todos los clicks |
 | `clicks_average` | int | Media de clicks por segundo |
-| `weekday` | int | Día de la semana (0-6) |
+| `weekday` | int | Día de la semana. **0 = lunes**, 6 = domingo |
 
 ## Relaciones
 
@@ -245,3 +245,51 @@ Ambas en <https://gitlab.com/raupulus/python-keycounter>:
 ---
 
 > Creado: 2026-05-25 · Última revisión: 2026-09-07
+
+
+## El día de la semana: `0` es lunes, y los datos viejos no
+
+`weekday` sigue la convención de `datetime.weekday()` de Python —**0 = lunes …
+6 = domingo**—, que es la del cliente que sube las rachas. No es la de Carbon ni
+la de JavaScript, donde el 0 es el domingo.
+
+El mapa vive en `App\Enums\KeyCounterWeekdayEnum`, y de ahí salen las etiquetas
+de las tablas del panel, las opciones de sus filtros y el `Select` del
+formulario. Para calcularlo desde PHP, `KeyCounterWeekdayEnum::deLaFecha()`:
+usa `dayOfWeekIso - 1`. **No usar `Carbon::dayOfWeek`**, que da la convención
+contraria; con él se sembraban los datos de depuración, que por eso no se
+parecían a los de producción.
+
+### El cliente cambió de convención en 2020 y nadie se enteró
+
+Comprobado sobre 1,3 millones de filas reales de `keycounter_keyboard`:
+
+| Periodo | `weekday` coincide con | Proporción |
+|---|---|---|
+| 2013-01 … 2019-12 | `EXTRACT(DOW …)` → Carbon, **0 = domingo** | 100 % |
+| 2020-02 … hoy | `EXTRACT(ISODOW …) - 1` → Python, **0 = lunes** | ~95 % |
+
+El corte es limpio: diciembre de 2019 está al 100 % en la convención vieja y
+febrero de 2020 al 95 % en la nueva (en enero de 2020 no hay datos). El 5 % que
+no cuadra en el tramo moderno son rachas que cruzan la medianoche: `start_at`
+está en UTC y el cliente calcula el día en hora local, así que una racha de
+madrugada aparece en UTC como del día anterior. **Ese dato no está mal**, y por
+eso no se toca.
+
+Mientras las dos poblaciones convivan, cualquier gráfica o filtro por día de la
+semana que abarque las dos épocas mezcla peras con manzanas.
+
+**Normalización:** `php artisan keycounter:fix_weekday`
+
+    php artisan keycounter:fix_weekday                  # sólo cuenta y enseña una muestra
+    php artisan keycounter:fix_weekday --write          # escribe
+    php artisan keycounter:fix_weekday --until=2020-01-01
+
+Sale **en seco por defecto** porque reescribe datos históricos que no se pueden
+reconstruir si se hace mal. Sólo toca las filas que hoy cuadran con la
+convención vieja **y no** con la nueva: una fila anterior a 2020 que ya esté
+bien, o que no cuadre con ninguna de las dos, se queda como está. Convertir a
+ciegas todo lo anterior a la fecha estropearía justamente esas.
+
+Al 2026-09-07, en el volcado de producción: **749 991 rachas de teclado y
+219 410 de ratón** en la convención vieja.

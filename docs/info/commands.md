@@ -183,10 +183,12 @@ Enlazado desde [`docs/deploys/deploy-vps.md`](../deploys/deploy-vps.md).
 |---------|-------------|
 | `keycounter:generate_duration` | Calcula duraciones agregadas de actividad. |
 | `keycounter:remove_duplicate` | Elimina duplicados en `keycounter_keyboard` / `keycounter_mouse`. |
+| `keycounter:fix_weekday` | Normaliza `weekday` a **0 = lunes** en las rachas anteriores a 2020, que están en la convención de Carbon. **Sale en seco**: hay que pedir la escritura con `--write`. |
 
 ```bash
 php artisan keycounter:remove_duplicate [--force] [--window-days=15] [--full]
 ```
+
 
 Los duplicados los produce el reintento de un dispositivo IoT al insertar, siempre entre filas
 recientes entre sí — nunca contra una fila de hace meses. Por eso el modo normal solo revisa una
@@ -204,6 +206,26 @@ confirmar en producción que la detección es correcta; el borrado real se activ
 a esa llamada.
 
 ---
+
+
+### `keycounter:fix_weekday` — un cambio de convención que nadie registró
+
+```bash
+php artisan keycounter:fix_weekday                  # sólo cuenta y enseña una muestra
+php artisan keycounter:fix_weekday --write          # escribe
+php artisan keycounter:fix_weekday --until=2020-01-01
+```
+
+La columna `weekday` tiene **dos convenciones mezcladas**: hasta 2019-12 sigue
+la de Carbon (0 = domingo) y desde 2020-02 la del cliente (0 = lunes). El
+cliente cambió y la plataforma no se enteró. Detalle y cifras en
+[`keycounter.md`](keycounter.md).
+
+Sale en seco por defecto porque reescribe datos históricos. Sólo toca las filas
+que cuadran con la convención vieja **y no** con la nueva, así que las rachas
+que cruzan la medianoche —donde el día local y el UTC no coinciden y el dato del
+cliente es el bueno— se quedan como están.
+
 
 ## 6. IoT — Tokens de dispositivo
 

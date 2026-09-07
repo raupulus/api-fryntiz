@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\KeyCounter\Keyboards;
 
+use App\Enums\KeyCounterWeekdayEnum;
 use App\Filament\Admin\Clusters\KeyCounter;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\CreateKeyboard;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\EditKeyboard;
@@ -64,8 +65,14 @@ class KeyboardResource extends Resource
                         ->rule('after_or_equal:start_at'),
                     TextInput::make('duration')
                         ->required()->numeric()->minValue(0)->suffix('s')->label('Duración'),
-                    TextInput::make('weekday')
-                        ->required()->numeric()->minValue(0)->maxValue(6)->label('Día semana (0=Dom)'),
+                    // `0` es lunes: es lo que manda el cliente
+                    // (`datetime.weekday()` de Python). Un `Select` en vez de
+                    // un número suelto para que no haya que acordarse.
+                    Select::make('weekday')
+                        ->options(KeyCounterWeekdayEnum::options())
+                        ->native(false)
+                        ->required()
+                        ->label('Día de la semana'),
                 ])->columnSpanFull(),
                 Section::make('Pulsaciones')->columns(2)->schema([
                     TextInput::make('pulsations')
@@ -87,10 +94,13 @@ class KeyboardResource extends Resource
                 TextColumn::make('user.name')
                     ->label('Usuario')
                     ->searchable(),
-                TextColumn::make('hardware_device_id')
+                // El nombre corto, no el id: `display_name` prefiere
+                // `name_friendly` y cae en `name` cuando no lo hay. El mismo
+                // criterio que ya usaba el filtro de abajo.
+                TextColumn::make('hardwareDevice.display_name')
                     ->label('Dispositivo')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(['name_friendly', 'name']),
                 TextColumn::make('start_at')
                     ->label('Inicio')
                     ->dateTime()
@@ -121,7 +131,7 @@ class KeyboardResource extends Resource
                     ->sortable(),
                 TextColumn::make('weekday')
                     ->label('Día')
-                    ->numeric()
+                    ->formatStateUsing(fn ($state): ?string => KeyCounterWeekdayEnum::etiquetaDe($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Creado el')
@@ -144,9 +154,9 @@ class KeyboardResource extends Resource
                     ->label('Dispositivo'),
                 SelectFilter::make('user_id')
                     ->relationship('user', 'name')->label('Usuario'),
-                SelectFilter::make('weekday')->options([
-                    0 => 'Dom', 1 => 'Lun', 2 => 'Mar', 3 => 'Mié', 4 => 'Jue', 5 => 'Vie', 6 => 'Sáb',
-                ])->label('Día'),
+                SelectFilter::make('weekday')
+                    ->options(KeyCounterWeekdayEnum::options())
+                    ->label('Día'),
                 Filter::make('today')
                     ->query(fn ($q) => $q->whereDate('start_at', today()))
                     ->label('Hoy'),

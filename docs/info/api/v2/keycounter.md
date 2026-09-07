@@ -123,7 +123,7 @@ Blade directamente contra la base de datos.
 | `pulsations_special_keys` | int | `required`, mín. 0 |
 | `pulsation_average` | number | `required`, mín. 0 |
 | `score` | int | `required`, mín. 0 |
-| `weekday` | int | `required`, entre 0 y 6 (0 = domingo) |
+| `weekday` | int | `required`, entre 0 y 6. **`0` es lunes** (`datetime.weekday()` de Python), no domingo — ver la nota de abajo |
 | `hardware_device_info` | object\|null | opcional. Último estado conocido del propio dispositivo que sube la sesión (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status` (`temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `ip_local`, `extra`; **`ip_public` ya no se acepta desde el 2026-09-06**, la pone el servidor); si viene, se aplica sobre `hardware_device_id` en la misma petición. Contrato completo en [`hardware.md`](./hardware.md) |
 
   Dos campos del modelo **no se envían**, se calculan/fuerzan en el servidor
@@ -248,7 +248,7 @@ Blade directamente contra la base de datos.
 | `clicks_middle` | int | `required`, mín. 0 |
 | `total_clicks` | int | `required`, mín. 0 |
 | `clicks_average` | int | opcional (`nullable`), mín. 0 |
-| `weekday` | int | `required`, entre 0 y 6 |
+| `weekday` | int | `required`, entre 0 y 6. **`0` es lunes**, igual que en teclado |
 | `hardware_device_info` | object\|null | opcional. Igual que en teclado: aplica el estado del dispositivo en la misma petición. Contrato completo en [`hardware.md`](./hardware.md) |
 
   Igual que en teclado: `duration` se calcula server-side a partir de
@@ -382,3 +382,28 @@ Antes el módulo solo tenía escritura; los `GET` (`keyboard-sessions` /
 ---
 
 > Creado: 2026-08-30 · Última revisión: 2026-09-07
+
+
+## El día de la semana: `0` es lunes
+
+`weekday` sigue la convención de `datetime.weekday()` de Python, que es la que
+usa el cliente: **0 = lunes … 6 = domingo**. No es la de Carbon ni la de
+JavaScript, donde el 0 es el domingo.
+
+El servidor **no lo calcula ni lo corrige**: los `FormRequest` sólo validan que
+esté entre 0 y 6, así que lo que mande el cliente es lo que se guarda. Y está
+bien que sea así: el cliente conoce la hora local del equipo, y `start_at` se
+guarda en UTC, de modo que una racha de madrugada pertenece a un día distinto
+según se mire desde uno u otro huso. **El día lo decide el cliente.**
+
+En el código, el mapa está en `App\Enums\KeyCounterWeekdayEnum`. Para calcular
+el día de una fecha desde PHP, usar `KeyCounterWeekdayEnum::deLaFecha()`, que va
+por `dayOfWeekIso - 1`; `Carbon::dayOfWeek` da la convención contraria y es el
+origen de todo el lío.
+
+⚠️ **Los datos anteriores a 2020 están en la otra convención.** Comprobado
+sobre 1,3 millones de filas reales: hasta 2019-12 la columna sigue la de Carbon
+(0 = domingo) al 100 %, y desde 2020-02 la de Python en el ~95 % —el resto son
+rachas que cruzan la medianoche. El cliente cambió de convención y la plataforma
+no se enteró. Se normaliza con `php artisan keycounter:fix_weekday`; ver
+[`../../keycounter.md`](../../keycounter.md).
