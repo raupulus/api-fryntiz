@@ -403,95 +403,46 @@ Ah del día llevan el lado en el título: «Generado (panel)» y «Consumido
 **Regla al tocar esta página: los vatios y los vatios-hora se comparan; los
 amperios y los amperios-hora, sólo dentro del mismo lado.**
 
-### Lo que queda pendiente y es de configuración
+### `nominal_voltage` está a `NULL` en los ocho elementos, y así se queda
 
-Los **ocho** elementos de `hardware_energy` tienen `nominal_voltage` a `NULL`:
+**No es un descuido: es lo correcto para esta plataforma.** Se planteó rellenarlo
+y la conclusión, tras mirarlo, fue que no hay que tocarlo.
 
-    #1 Raspberry Pi Pico W          #5 Controlador Solar Sunix 20A
-    #2 Raspberry Pi 4               #6 Raspberry Pi 2
-    #3 Controlador Solar Sunix 20A  #7 Controlador Solar Renogy Rover
-    #4 Controlador Solar Renogy R.  #8 Lenovo Thinkpad E330
+**El cliente manda la tensión en cada lectura.** El `voltage_source` es
+`measured` en el **100 %** de las lecturas de los últimos 90 días. Con eso,
+`nominal_voltage` no participa en ningún cálculo: `resolveVoltage()` usa la
+medida y punto.
 
-Hoy no se nota porque los aparatos mandan su tensión medida (`voltage_source` es
-`measured` en el 100 % de las lecturas), pero `HardwareEnergy::resolveVoltage()`
-sólo tiene la nominal como respaldo: **el día que un cacharro deje de mandar
-`voltage`, no habrá vatios**. El propio servicio lo avisa en el log:
+**Y rellenarlo no sería neutro: activaría un filtro que hoy está apagado.**
+`voltageIsPlausible()` deduce el margen creíble de la nominal cuando no hay
+`voltage_min`/`voltage_max` explícitos, con un factor de ×0,5 a ×2,0. Poner 24 V
+en el elemento de generación del Renogy daría un margen de 12-48 V, y **el 44,7 %
+de sus lecturas están por debajo de 12 V** —de noche el panel no da nada, y esa
+lectura es correcta—: pasarían a considerarse no plausibles y se sustituirían por
+los 24 V nominales. Se cambiaría un dato bueno por uno inventado.
 
-    «X» no trae tensión y el elemento no tiene tensión nominal: sin eso no hay
-    vatios. Rellena `nominal_voltage`.
+Con los tres campos a `NULL` no hay con qué juzgar, **y entonces cualquier
+tensión positiva se acepta tal cual**. Es exactamente el comportamiento que se
+quiere cuando el aparato es la fuente de verdad, y está escrito así en el propio
+`voltageIsPlausible()`:
 
-Los `energy_systems` sí la tienen (12,00 V los dos controladores), pero eso no
-sustituye a la del elemento.
+> Si el elemento no tiene ni nominal ni márgenes no hay con qué juzgar, y
+> entonces cualquier tensión positiva pasa: inventarse un criterio marcaría como
+> sospechosas lecturas correctas.
 
-### Qué valor va en cada elemento
+**Lo único que se pierde** es el caso de que un aparato deje de mandar la
+tensión: ahí `resolveVoltage()` devuelve `null` y esa lectura se queda sin
+vatios, con su aviso en el log. Es el comportamiento honesto —un hueco en vez de
+un número inventado— y hasta hoy no ha ocurrido nunca.
 
-**La tensión del lado que ese elemento mide**, no la del sistema. Un controlador
-solar tiene dos filas en `hardware_energy` y **no están a la misma tensión**:
+**Si algún día hiciera falta**, el criterio sería la tensión del lado que mide
+cada elemento, que no es la misma en las dos instalaciones:
 
-| Lado | Qué mide | De dónde sale el valor |
+| Instalación | Panel (`is_generator = true`) | Batería (`is_generator = false`) |
 |---|---|---|
-| `is_generator = true` | el campo solar | `energy_systems.pv_nominal_voltage` |
-| `is_generator = false` | la salida hacia la batería | `energy_systems.nominal_voltage` |
+| Renogy Rover 20 LI | 24 V (en vacío hasta 43,9 medidos) | 12 V (11,0-14,3) |
+| Sunix 20A | 12 V (llega a 18-20) | 12 V (hasta 13,8) |
 
-Poner lo mismo en los dos sería repetir el error que se acaba de quitar de la
-web: tratar como comparables magnitudes de lados distintos.
-
-### Y la tensión del panel **no es la misma en todas las instalaciones**
-
-Las dos reales de esta plataforma no coinciden:
-
-| Instalación | Panel | Batería |
-|---|---|---|
-| Renogy Rover 20 LI | **24 V** nominales, en vacío hasta 35-40 (máximo medido: 43,9 V) | 12 V, entre 11,8 y 13,8 |
-| Sunix 20A | **12 V** nominales, llega a 18-20 V | 12 V, hasta 13,8 |
-
-Por eso `pv_nominal_voltage` es una columna de `energy_systems` y no un valor
-global: si fuera global, uno de los dos saldría al doble o a la mitad. Se edita
-desde el panel, en el recurso **Sistemas de energía**, junto a la tensión de la
-batería y con la etiqueta que dice cuál es cuál.
-
-`nominal_voltage` de `energy_systems` es la del **banco de baterías**: es lo que
-define la instalación («Casa 24V»), y en las dos reales vale 12 V. No confundir
-una con otra: equivocarse no da ningún error, sólo hace que los vatios de
-respaldo salgan al doble el día que el controlador deje de mandar su tensión.
-
-### El rango importa tanto como la nominal
-
-Sin `voltage_min` / `voltage_max`, `voltageIsPlausible()` los deduce de la
-nominal con un margen de **×0,5 a ×2,0**. Para una batería vale: 12 V da 6-24 V y
-las lecturas reales van de 11,0 a 14,3.
-
-**Para un panel no.** 24 V daría 12-48 V, y **el 44,7 % de las lecturas del
-Renogy están por debajo de 12 V** —de noche el panel no da nada, y esa lectura es
-correcta—, así que se descartarían y se sustituirían por la nominal. Con los
-datos históricos eso hoy no haría daño porque en esas lecturas la corriente es
-exactamente 0 A (comprobado: cero lecturas con V < 12 y A > 0), pero el día que
-el panel reporte 8 V con 0,3 A al amanecer saldrían 7,2 W en vez de 2,4.
-
-Por eso los generadores llevan el rango puesto a mano, calculado sobre su propia
-nominal: **0,1 V a 50,4 V** el Renogy y **0,1 V a 25,2 V** el Sunix. El máximo
-sale de ×2,1, que es lo que cubre la tensión en vacío de un panel sin dar por
-buena una lectura absurda: si el Sunix reporta un día 40 V, es que pasa algo, no
-que le hayan cambiado el panel.
-
-### Cómo se rellena
-
-```bash
-php artisan energy:set-nominal-voltage            # enseña la tabla, no escribe
-php artisan energy:set-nominal-voltage --write    # lo aplica
-```
-
-Si una instalación todavía no tiene declarada la tensión de su campo solar, se
-puede dejar puesta en la misma pasada, sin entrar al panel:
-
-```bash
-php artisan energy:set-nominal-voltage --write --pv=2:12 --pv=3:24
-```
-
-—donde `2` y `3` son los ids de `energy_systems`. El valor queda guardado en la
-instalación, que es donde vive.
-
-Es idempotente, y `--panel=` / `--battery=` son sólo el respaldo para un elemento
-que no esté asignado a ninguna instalación. El criterio está en
-`EnergySetNominalVoltageCommand::valoresPara()` y fijado por
-`tests/Feature/Console/EnergySetNominalVoltageCommandTest.php`.
+Y haría falta poner también `voltage_min`/`voltage_max` a mano en los
+generadores, por lo del 44,7 % de arriba. Pero **mientras el cliente siga
+mandando la tensión, no hace falta nada de esto**.

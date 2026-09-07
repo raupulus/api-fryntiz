@@ -80,17 +80,7 @@ class EnergySystemResource extends Resource
                     ->helperText('Nodo con placa pequeña y batería, sin red.'),
                 TextInput::make('nominal_voltage')
                     ->numeric()->step(0.01)->suffix(' V')
-                    ->label('Tensión de la batería')
-                    ->helperText('La del banco de baterías, que es la que define la instalación.'),
-
-                // Son dos tensiones distintas y confundirlas no da error: sólo
-                // hace que los vatios de respaldo salgan al doble. En el Renogy
-                // el panel es de 24 V y la batería de 12; en el Sunix los dos
-                // son de 12.
-                TextInput::make('pv_nominal_voltage')
-                    ->numeric()->step(0.01)->suffix(' V')
-                    ->label('Tensión del campo solar')
-                    ->helperText('La nominal de los paneles, que puede no ser la de la batería. Vacío si la instalación no tiene paneles.'),
+                    ->label('Tensión nominal'),
                 TextInput::make('battery_capacity_ah')
                     ->numeric()->step(0.01)->suffix(' Ah')
                     ->label('Capacidad del banco de baterías'),
@@ -110,8 +100,7 @@ class EnergySystemResource extends Resource
                     ->counts('elements')
                     ->label('Elementos')
                     ->numeric(),
-                TextColumn::make('nominal_voltage')->label('Batería')->suffix(' V')->placeholder('—'),
-                TextColumn::make('pv_nominal_voltage')->label('Paneles')->suffix(' V')->placeholder('—'),
+                TextColumn::make('nominal_voltage')->label('V nominal')->suffix(' V')->placeholder('—'),
                 TextColumn::make('battery_capacity_ah')->label('Batería')->suffix(' Ah')->placeholder('—'),
                 IconColumn::make('is_standalone')->label('Autoabastecido')->boolean(),
                 TextColumn::make('user.name')->label('Propietario')->toggleable(),
