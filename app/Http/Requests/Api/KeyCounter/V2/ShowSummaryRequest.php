@@ -33,7 +33,7 @@ class ShowSummaryRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'device_id' => ['nullable', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
+            'device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             // El regex fija la forma; la closure, que la fecha exista de verdad:
             // «2026-13-45» tiene la forma buena y no es ninguna fecha.
             'date' => ['nullable', 'string', 'regex:/^(today|month|\d{4}-\d{2}(-\d{2})?)$/', function (string $atributo, mixed $valor, \Closure $fail) {
@@ -84,13 +84,16 @@ class ShowSummaryRequest extends BaseFormRequest
     }
 
     /**
-     * Dispositivo pedido, si se ha indicado.
+     * Dispositivo del que se pide el resumen.
+     *
+     * Obligatorio: el resumen es de **un** cacharro, el que pregunta. No hay
+     * agregado de varios ni falta que hace. `OwnedHardwareDevice` ya comprueba
+     * que sea del usuario del token y que el token lo alcance si está ligado a
+     * un `device:{id}`.
      */
-    public function dispositivo(): ?int
+    public function dispositivo(): int
     {
-        $id = $this->input('device_id');
-
-        return $id === null || $id === '' ? null : (int) $id;
+        return (int) $this->input('device_id');
     }
 
     /**

@@ -94,33 +94,24 @@ Ambos FormRequests calculan automáticamente en `prepareForValidation()`:
 |--------|------|------|----------|----------|
 | GET | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:read` | `api` | Listar sesiones de teclado |
 | GET | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:read` | `api` | Listar sesiones de ratón |
-| GET | `/api/v2/keycounter/summary` | `ability:keycounter:read` | `keycounter-summary` (20/min) | Acumulado de un periodo |
+| GET | `/api/v2/keycounter/summary` | `ability:keycounter:read` | `keycounter-summary` (20/min) | Acumulado de un periodo, de un dispositivo |
 | POST | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de teclado |
 | POST | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de ratón |
+
+> **Cómo leer la columna «Auth».** Un `ability:` **no** es «hace falta estar
+> autenticado»: es «hace falta un token **con esa ability concreta**». Un token
+> de otro cacharro está autenticado y aquí no entra. Poner «Sí» a secas —que es
+> lo que ponía antes esta tabla— borra justo esa diferencia, que es toda la que
+> queda si alguien roba el token de un sensor (**N263**).
 
 Leer y escribir son abilities distintas desde el 2026-09-02: el token que se
 graba en un teclado sólo tiene que hacer `POST`, y con `keycounter:write` podía
 además listar todas las sesiones de su dueño (**AR-S02**).
 
-### `GET /keycounter/summary` — para reanudar tras un reinicio
-
-Un contador que se apaga, se reinicia o cierra el script pierde el acumulado del
-día. Al arrancar pide este resumen y sigue sumando desde donde estaba.
-
-```
-GET /api/v2/keycounter/summary?device_id=9&date=today
-```
-
-`date` admite `today` (por defecto), `month`, `AAAA-MM-DD` y `AAAA-MM`. Devuelve
-**sumas** —`pulsations_total`, `pulsations_total_special_keys`,
-`duration_seconds`, `sessions`— para continuar la cuenta, y **máximos**
-—`combo_score`, `pulsation_high`— para no perder el récord del periodo, más un
-bloque `mouse` con lo equivalente del ratón.
-
-El corte del periodo es por `created_at`, la misma columna que usa la web de
-`/keycounter`: así el «total de hoy» del cacharro y el de la web son el mismo
-número. Contrato completo en
+Contrato completo —cuerpos, respuestas y errores— en
 [`docs/info/api/v2/keycounter.md`](api/v2/keycounter.md).
+
+### Sesiones (`keyboard-sessions`, `mouse-sessions`)
 
 Las rutas eran `/keycounter/keyboard` y `/keycounter/mouse` (sólo POST). El
 recurso es la **sesión**, así que pasan a `keyboard-sessions` y `mouse-sessions`,
@@ -130,16 +121,40 @@ Los dos `POST` admiten, además, una clave opcional `hardware_device_info` con
 el último estado del propio dispositivo (batería, temperatura, uptime...). Se
 aplica sobre `hardware_device_id` en la misma petición mediante el trait
 `App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo`
-(mismo mecanismo que `/energy/readings` y `/energy/solar-readings`).
-Contrato completo de campos en [`docs/info/hardware.md`](hardware.md) y en
-[`docs/info/api/v2/keycounter.md`](api/v2/keycounter.md).
+(mismo mecanismo que `/energy/readings` y `/energy/solar-readings`). Contrato de
+campos en [`docs/info/hardware.md`](hardware.md).
 
-> **Cómo leer la columna «Auth».** Un `ability:` **no** es «hace falta estar
-> autenticado»: es «hace falta un token **con esa ability concreta**». Un token
-> de otro cacharro está autenticado y aquí no entra. Poner «Sí» a secas —que es
-> lo que ponía antes esta tabla— borra justo esa diferencia, que es toda la que
-> queda si alguien roba el token de un sensor (**N263**).
+### `GET /keycounter/summary` — para reanudar tras un reinicio
 
+**Nueva el 2026-09-07.** Un contador que se apaga, se reinicia o cierra el script
+pierde el acumulado del día. Al arrancar pide este resumen y sigue sumando desde
+donde estaba, en vez de empezar de cero y enseñar un total falso hasta
+medianoche.
+
+```
+GET /api/v2/keycounter/summary?device_id=9&date=today
+```
+
+| Parámetro | Obligatorio | Valores |
+|---|---|---|
+| `device_id` | **Sí** | El dispositivo que pregunta. Tiene que ser del usuario del token, y si el token está ligado a un `device:{id}`, ése |
+| `date` | No | `today` (por defecto), `month`, `AAAA-MM-DD` o `AAAA-MM` |
+
+**El resumen es de un dispositivo**, el que pregunta. No hay agregado de varios
+ni forma de pedirlo: lo que cuente el teclado de al lado no es asunto suyo.
+
+Devuelve **sumas** —`pulsations_total`, `pulsations_total_special_keys`,
+`sessions`, `duration_seconds`— para continuar la cuenta, y **máximos**
+—`combo_score`, `pulsation_high`— para no perder el récord del periodo, más un
+bloque `mouse` con lo equivalente del ratón.
+
+El corte del periodo es por `created_at`, la misma columna que usa la web de
+`/keycounter`: así el «total de hoy» del cacharro y el de la web son el mismo
+número. Las fechas se guardan y se cortan en UTC.
+
+Límite propio de **20 peticiones por minuto** por token: es una consulta agregada
+sobre una tabla de millones de filas y está pensada para una petición por
+arranque, no para sondear.
 
 ## Rutas Web
 

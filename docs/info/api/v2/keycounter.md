@@ -308,8 +308,11 @@ empezar de cero y enseñar un total falso hasta medianoche.
 
 | Parámetro | Tipo | Reglas |
 |---|---|---|
+| `device_id` | int | **Obligatorio.** El dispositivo del que se pide el resumen. Debe existir y ser del usuario del token (+ ligado a `device:{id}` si aplica), o da `422` |
 | `date` | string\|null | El periodo. Cuatro formas y ninguna más: `today` (por defecto), `month`, `AAAA-MM-DD` (ese día) y `AAAA-MM` (ese mes entero). Otra cosa —o una fecha que no existe, como `2026-13-45`— da `422` |
-| `device_id` | int\|null | Acota a un dispositivo. Debe existir y ser del usuario del token (+ ligado a `device:{id}` si aplica), o da `422`. Sin él se suman **todos** los dispositivos del usuario… salvo que el token esté ligado a alguno, y entonces sólo ése |
+
+El resumen es **de un dispositivo**: el que pregunta. No hay agregado de varios
+ni forma de pedirlo.
 
 - **Respuesta 200**:
 
@@ -342,7 +345,7 @@ empezar de cero y enseñar un total falso hasta medianoche.
 |---|---|
 | `period` | El periodo tal cual se pidió |
 | `from` / `to` | Los dos extremos, **ambos incluidos**, en UTC |
-| `hardware_device_id` | El `device_id` pedido, o `null` si no se acotó |
+| `hardware_device_id` | El `device_id` pedido |
 | `pulsations_total` | **Suma** de pulsaciones del periodo. Es el número con el que el cacharro continúa su cuenta |
 | `pulsations_total_special_keys` | Suma de pulsaciones de teclas especiales |
 | `combo_score` | **Máximo** `score` de una racha del periodo: el récord, para no perderlo al reiniciar |
@@ -360,8 +363,9 @@ cacharro y el que enseña la web son el mismo número. Las fechas se guardan en
 UTC y el corte se hace en UTC.
 
 - **Errores**: `401` sin token, `403` con un token sin `keycounter:read`
-  (el de escritura de un teclado no vale), `422` si `date` o `device_id` no
-  cuadran, `429` al pasar de 20 por minuto.
+  (el de escritura de un teclado no vale), `422` si falta `device_id`, si el
+  dispositivo no es del usuario o no lo alcanza el token, o si `date` no cuadra.
+  `429` al pasar de 20 por minuto.
 
 ---
 

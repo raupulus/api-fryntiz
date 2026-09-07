@@ -74,7 +74,7 @@ class KeyCounterSummaryTest extends ApiTestCase
         $this->racha($this->teclado, pulsaciones: 500, especiales: 10, score: 40, cuando: now());
         $this->racha($this->teclado, pulsaciones: 700, especiales: 20, score: 50, cuando: now()->startOfMonth());
 
-        $this->pide('?date=month')->assertOk()
+        $this->pide('date=month')->assertOk()
             ->assertJsonPath('data.period', 'month')
             ->assertJsonPath('data.pulsations_total', 1200);
     }
@@ -85,7 +85,7 @@ class KeyCounterSummaryTest extends ApiTestCase
         $this->racha($this->teclado, pulsaciones: 333, especiales: 3, score: 30, cuando: '2026-03-15 10:00:00');
         $this->racha($this->teclado, pulsaciones: 111, especiales: 1, score: 10, cuando: '2026-03-16 10:00:00');
 
-        $this->pide('?date=2026-03-15')->assertOk()
+        $this->pide('date=2026-03-15')->assertOk()
             ->assertJsonPath('data.period', '2026-03-15')
             ->assertJsonPath('data.pulsations_total', 333);
     }
@@ -97,21 +97,35 @@ class KeyCounterSummaryTest extends ApiTestCase
         $this->racha($this->teclado, pulsaciones: 111, especiales: 1, score: 10, cuando: '2026-03-31 23:30:00');
         $this->racha($this->teclado, pulsaciones: 999, especiales: 9, score: 90, cuando: '2026-04-01 00:30:00');
 
-        $this->pide('?date=2026-03')->assertOk()
+        $this->pide('date=2026-03')->assertOk()
             ->assertJsonPath('data.pulsations_total', 444);
     }
 
+    /**
+     * El resumen es de **un** cacharro: el que pregunta. Lo que cuente el de al
+     * lado no es asunto suyo.
+     */
     #[Test]
-    public function device_id_acota_a_ese_dispositivo(): void
+    public function devuelve_solo_lo_del_dispositivo_que_pregunta(): void
     {
         $this->racha($this->teclado, pulsaciones: 1000, especiales: 10, score: 50, cuando: now());
         $this->racha($this->otro, pulsaciones: 2000, especiales: 20, score: 60, cuando: now());
 
-        $this->pide('?date=today')->assertOk()->assertJsonPath('data.pulsations_total', 3000);
-
-        $this->pide('?date=today&device_id='.$this->teclado->id)->assertOk()
+        $this->pide()->assertOk()
             ->assertJsonPath('data.hardware_device_id', $this->teclado->id)
             ->assertJsonPath('data.pulsations_total', 1000);
+    }
+
+    #[Test]
+    public function device_id_es_obligatorio(): void
+    {
+        $respuesta = $this->getJson(
+            $this->apiUrl('keycounter/summary?date=today'),
+            $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_READ)
+        );
+
+        $this->assertErrorResponse($respuesta, 422);
+        $respuesta->assertJsonValidationErrors(['device_id']);
     }
 
     #[Test]
@@ -138,10 +152,10 @@ class KeyCounterSummaryTest extends ApiTestCase
     }
 
     /**
-     * Un token de cacharro sólo suma lo suyo, aunque no pase `device_id`.
+     * Un token ligado a un cacharro no puede preguntar por el de al lado.
      */
     #[Test]
-    public function un_token_ligado_a_un_dispositivo_no_ve_el_de_al_lado(): void
+    public function un_token_ligado_a_un_dispositivo_no_alcanza_a_otro(): void
     {
         $this->racha($this->teclado, pulsaciones: 1000, especiales: 10, score: 50, cuando: now());
         $this->racha($this->otro, pulsaciones: 2000, especiales: 20, score: 60, cuando: now());
@@ -151,16 +165,24 @@ class KeyCounterSummaryTest extends ApiTestCase
             TokenAbilities::forDevice($this->teclado),
         ]);
 
-        $this->getJson($this->apiUrl('keycounter/summary?date=today'), $headers)
+        $this->getJson($this->apiUrl('keycounter/summary?device_id='.$this->teclado->id.'&date=today'), $headers)
             ->assertOk()
             ->assertJsonPath('data.pulsations_total', 1000);
+
+        $ajeno = $this->getJson(
+            $this->apiUrl('keycounter/summary?device_id='.$this->otro->id.'&date=today'),
+            $headers
+        );
+
+        $this->assertErrorResponse($ajeno, 422);
+        $ajeno->assertJsonValidationErrors(['device_id']);
     }
 
     #[Test]
     public function un_periodo_que_no_existe_responde_422(): void
     {
-        $this->assertErrorResponse($this->pide('?date=basura'), 422);
-        $this->assertErrorResponse($this->pide('?date=2026-13-45'), 422);
+        $this->assertErrorResponse($this->pide('date=basura'), 422);
+        $this->assertErrorResponse($this->pide('date=2026-13-45'), 422);
     }
 
     #[Test]
@@ -171,24 +193,37 @@ class KeyCounterSummaryTest extends ApiTestCase
             'name' => 'De otro',
         ]);
 
-        $this->assertErrorResponse($this->pide('?device_id='.$ajeno->id), 422);
+        $respuesta = $this->getJson(
+            $this->apiUrl('keycounter/summary?device_id='.$ajeno->id),
+            $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_READ)
+        );
+
+        $this->assertErrorResponse($respuesta, 422);
     }
 
     #[Test]
     public function exige_la_ability_de_lectura(): void
     {
-        $this->getJson($this->apiUrl('keycounter/summary'), $this->guestHeaders())->assertUnauthorized();
+        $url = 'keycounter/summary?device_id='.$this->teclado->id;
+
+        $this->getJson($this->apiUrl($url), $this->guestHeaders())->assertUnauthorized();
 
         $this->getJson(
-            $this->apiUrl('keycounter/summary'),
+            $this->apiUrl($url),
             $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_WRITE)
         )->assertForbidden();
     }
 
-    private function pide(string $query = '?date=today'): TestResponse
+    /**
+     * `device_id` es obligatorio, así que va siempre salvo que la prueba sea
+     * justamente que falta.
+     */
+    private function pide(string $query = 'date=today'): TestResponse
     {
+        $url = 'keycounter/summary?device_id='.$this->teclado->id.($query === '' ? '' : '&'.$query);
+
         return $this->getJson(
-            $this->apiUrl('keycounter/summary'.$query),
+            $this->apiUrl($url),
             $this->moduleHeaders($this->user, TokenAbilities::KEYCOUNTER_READ)
         );
     }

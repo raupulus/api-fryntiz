@@ -561,7 +561,7 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"smartplant:write\"
+        \"weatherstation:read\"
     ],
     \"name\": \"n\",
     \"expires_at\": \"2052-09-30\"
@@ -582,7 +582,7 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "smartplant:write"
+        "weatherstation:read"
     ],
     "name": "n",
     "expires_at": "2052-09-30"
@@ -4644,7 +4644,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2026-09-07T09:43:42\",
+    \"read_at\": \"2026-09-07T10:04:02\",
     \"temperature\": 4326.41688,
     \"battery_voltage\": 77,
     \"battery_percentage\": 15,
@@ -4657,7 +4657,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
             \"energy_wh\": 4326.41688,
             \"temperature\": 4326.41688,
             \"fan\": 77,
-            \"read_at\": \"2026-09-07T09:43:42\",
+            \"read_at\": \"2026-09-07T10:04:02\",
             \"battery_voltage\": 8,
             \"battery_percentage\": 8
         }
@@ -4679,7 +4679,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2026-09-07T09:43:42",
+    "read_at": "2026-09-07T10:04:02",
     "temperature": 4326.41688,
     "battery_voltage": 77,
     "battery_percentage": 15,
@@ -4692,7 +4692,7 @@ let body = {
             "energy_wh": 4326.41688,
             "temperature": 4326.41688,
             "fan": 77,
-            "read_at": "2026-09-07T09:43:42",
+            "read_at": "2026-09-07T10:04:02",
             "battery_voltage": 8,
             "battery_percentage": 8
         }
@@ -4824,10 +4824,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2026-09-07T09:43:42"
+               value="2026-09-07T10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-07T09:43:42</code></p>
+<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
@@ -4966,10 +4966,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="readings.0.read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2026-09-07T09:43:42"
+               value="2026-09-07T10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-07T09:43:42</code></p>
+<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
@@ -5017,8 +5017,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
-    \"date\": \"2026-09-07T09:43:42\",
-    \"read_at\": \"2026-09-07T09:43:42\",
+    \"date\": \"2026-09-07T10:04:02\",
+    \"read_at\": \"2026-09-07T10:04:02\",
     \"hardware\": \"n\",
     \"version\": \"g\",
     \"serial_number\": \"z\",
@@ -5077,8 +5077,8 @@ const headers = {
 
 let body = {
     "hardware_device_id": 16,
-    "date": "2026-09-07T09:43:42",
-    "read_at": "2026-09-07T09:43:42",
+    "date": "2026-09-07T10:04:02",
+    "read_at": "2026-09-07T10:04:02",
     "hardware": "n",
     "version": "g",
     "serial_number": "z",
@@ -5236,10 +5236,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="2026-09-07T09:43:42"
+               value="2026-09-07T10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-07T09:43:42</code></p>
+<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
@@ -5248,10 +5248,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="2026-09-07T09:43:42"
+               value="2026-09-07T10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-07T09:43:42</code></p>
+<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware</code></b>&nbsp;&nbsp;
@@ -6640,11 +6640,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>
 </p>
 
-<p>?date=today        el día de hoy (por defecto)
+<p>?device_id=9       el cacharro que pregunta (obligatorio)
+?date=today        el día de hoy (por defecto)
 ?date=month        el mes en curso
 ?date=2026-09-07   ese día
-?date=2026-09      ese mes entero
-?device_id=9       acota a un dispositivo; sin él, todos los del usuario</p>
+?date=2026-09      ese mes entero</p>
 
 <span id="example-requests-GETapi-v2-keycounter-summary">
 <blockquote>Example request:</blockquote>
@@ -6784,7 +6784,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
+ &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="device_id"                data-endpoint="GETapi-v2-keycounter-summary"
@@ -6826,8 +6826,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-07 09:43:42\",
-    \"end_at\": \"2026-09-07 09:43:42\",
+    \"start_at\": \"2026-09-07 10:04:02\",
+    \"end_at\": \"2026-09-07 10:04:02\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6851,8 +6851,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-07 09:43:42",
-    "end_at": "2026-09-07 09:43:42",
+    "start_at": "2026-09-07 10:04:02",
+    "end_at": "2026-09-07 10:04:02",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6986,10 +6986,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-07 09:43:42"
+               value="2026-09-07 10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 09:43:42</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6998,10 +6998,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-07 09:43:42"
+               value="2026-09-07 10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 09:43:42</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7096,8 +7096,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-07 09:43:42\",
-    \"end_at\": \"2026-09-07 09:43:42\",
+    \"start_at\": \"2026-09-07 10:04:02\",
+    \"end_at\": \"2026-09-07 10:04:02\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -7122,8 +7122,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-07 09:43:42",
-    "end_at": "2026-09-07 09:43:42",
+    "start_at": "2026-09-07 10:04:02",
+    "end_at": "2026-09-07 10:04:02",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -7258,10 +7258,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-07 09:43:42"
+               value="2026-09-07 10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 09:43:42</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7270,10 +7270,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-07 09:43:42"
+               value="2026-09-07 10:04:02"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 09:43:42</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7668,8 +7668,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
     \"full_water_tank\": true,
-    \"waterpump_enabled\": false,
-    \"vaporizer_enabled\": false
+    \"waterpump_enabled\": true,
+    \"vaporizer_enabled\": true
 }"
 </code></pre></div>
 
@@ -7694,8 +7694,8 @@ let body = {
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
     "full_water_tank": true,
-    "waterpump_enabled": false,
-    "vaporizer_enabled": false
+    "waterpump_enabled": true,
+    "vaporizer_enabled": true
 };
 
 fetch(url, {
@@ -7943,7 +7943,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>vaporizer_enabled</code></b>&nbsp;&nbsp;
@@ -7965,7 +7965,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -7988,7 +7988,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"rain\"
+        \"air_quality\"
     ],
     \"location_type\": \"indoor\"
 }"
@@ -8007,7 +8007,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "rain"
+        "air_quality"
     ],
     "location_type": "indoor"
 };
@@ -8166,7 +8166,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"temperature\"
+        \"wind\"
     ]
 }"
 </code></pre></div>
@@ -8184,7 +8184,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "temperature"
+        "wind"
     ]
 };
 

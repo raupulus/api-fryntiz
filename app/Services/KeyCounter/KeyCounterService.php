@@ -62,22 +62,17 @@ class KeyCounterService
      * el récord del periodo.
      *
      * @param  int  $userId  Dueño de los datos.
+     * @param  int  $deviceId  El cacharro que pregunta. Uno, no varios.
      * @param  CarbonImmutable  $desde  Inicio del periodo, incluido.
      * @param  CarbonImmutable  $hasta  Fin del periodo, incluido.
-     * @param  list<int>  $devices  Dispositivos a los que acotar; vacío = todos los del usuario.
      * @return array<string, mixed>
      */
-    public function summary(int $userId, CarbonImmutable $desde, CarbonImmutable $hasta, array $devices = []): array
+    public function summary(int $userId, int $deviceId, CarbonImmutable $desde, CarbonImmutable $hasta): array
     {
-        $acotar = static function ($query) use ($userId, $desde, $hasta, $devices) {
-            $query->where('user_id', $userId)
+        $acotar = static function ($query) use ($userId, $deviceId, $desde, $hasta) {
+            return $query->where('user_id', $userId)
+                ->where('hardware_device_id', $deviceId)
                 ->whereBetween('created_at', [$desde, $hasta]);
-
-            if ($devices !== []) {
-                $query->whereIn('hardware_device_id', $devices);
-            }
-
-            return $query;
         };
 
         $teclado = $acotar(Keyboard::query())

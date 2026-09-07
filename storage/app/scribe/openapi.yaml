@@ -97,7 +97,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'smartplant:write'
+                    - 'weatherstation:read'
                   items:
                     type: string
                     enum:
@@ -1135,7 +1135,7 @@ paths:
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-07T09:43:42'
+                  example: '2026-09-07T10:04:02'
                   nullable: true
                 temperature:
                   type: number
@@ -1197,7 +1197,7 @@ paths:
                       read_at:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2026-09-07T09:43:42'
+                        example: '2026-09-07T10:04:02'
                         nullable: true
                       battery_voltage:
                         type: number
@@ -1268,11 +1268,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-07T09:43:42'
+                  example: '2026-09-07T10:04:02'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-07T09:43:42'
+                  example: '2026-09-07T10:04:02'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1706,11 +1706,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 09:43:42'
+                  example: '2026-09-07 10:04:02'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 09:43:42'
+                  example: '2026-09-07 10:04:02'
                 duration:
                   type: integer
                   description: ''
@@ -1804,11 +1804,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 09:43:42'
+                  example: '2026-09-07 10:04:02'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 09:43:42'
+                  example: '2026-09-07 10:04:02'
                 duration:
                   type: integer
                   description: ''
@@ -1854,7 +1854,7 @@ paths:
     get:
       summary: 'Acumulado de un periodo.'
       operationId: acumuladoDeUnPeriodo
-      description: "?date=today        el día de hoy (por defecto)\n  ?date=month        el mes en curso\n  ?date=2026-09-07   ese día\n  ?date=2026-09      ese mes entero\n  ?device_id=9       acota a un dispositivo; sin él, todos los del usuario"
+      description: "?device_id=9       el cacharro que pregunta (obligatorio)\n  ?date=today        el día de hoy (por defecto)\n  ?date=month        el mes en curso\n  ?date=2026-09-07   ese día\n  ?date=2026-09      ese mes entero"
       parameters: []
       responses:
         401:
@@ -1876,7 +1876,7 @@ paths:
       tags:
         - Endpoints
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
@@ -1886,12 +1886,13 @@ paths:
                   type: integer
                   description: 'Must match an existing stored value.'
                   example: 16
-                  nullable: true
                 date:
                   type: string
                   description: 'Must match the regex /^(today|month|\d{4}-\d{2}(-\d{2})?)$/.'
                   example: )
                   nullable: true
+              required:
+                - device_id
       security: []
   /api/v2/smartplant/plants:
     get:
@@ -2010,12 +2011,12 @@ paths:
                 waterpump_enabled:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 vaporizer_enabled:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
               required:
                 - plant_id
@@ -2067,7 +2068,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - rain
+                    - air_quality
                   items:
                     type: string
                     enum:
@@ -2124,7 +2125,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - temperature
+                    - wind
                   items:
                     type: string
                     enum:
