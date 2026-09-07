@@ -116,6 +116,13 @@ class EnergySystemResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\ElementsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [

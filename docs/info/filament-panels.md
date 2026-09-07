@@ -469,3 +469,39 @@ necesitan: ésos sí son columnas de ruta.
 Fijado por `tests/Feature/Filament/CurrentImageTest.php`, que comprueba las dos
 mitades: que la imagen aparece y que guardar sin tocarla **no** desvincula la
 clave foránea.
+
+
+## Energía: qué se gestiona en cada pantalla
+
+Un elemento de `hardware_energy` se edita **en una pantalla y sólo en una**. Si
+saliera en dos, editarlo en una y mirarlo en la otra daría respuestas distintas.
+
+| Pantalla | Qué gestiona | Criterio |
+|---|---|---|
+| Ficha del dispositivo · pestaña **Energía** | Los papeles de **ese** aparato, midiéndose a sí mismo | Alta rápida: el papel lo pone el botón y el monitorizado se rellena solo |
+| **Instalaciones** · pestaña *Elementos del controlador* | Lo que mide el **controlador solar** de la instalación | El monitor es de tipo `controlador-solar` |
+| **Elementos de Energía** | Todo lo demás: monitores de energía y cargas sueltas | El monitor **no** es de tipo `controlador-solar` |
+
+El reparto lo decide el **tipo del dispositivo que mide**
+(`hardware_types.slug`), no la fuente de energía: hoy los ocho elementos reales
+tienen fuente «Fotovoltaica» y ésa no distingue nada.
+
+`HardwareEnergyResource::getEloquentQuery()` es donde se aplica, **no**
+`scopeOwnerQuery()`: el trait `ScopesToOwner` se salta ese método cuando quien
+mira es administrador, y este filtro no es de propiedad sino de alcance. Hay un
+test que comprueba que los dos listados no se solapan y que ningún elemento se
+queda sin pantalla.
+
+### Elementos de Energía se agrupa por el dispositivo monitor
+
+Porque **es lo único que no cambia** entre las filas de un mismo medidor: el
+aparato medido, la instalación, la fuente y el `is_active` son de cada canal.
+Una Raspberry con un INA puede llevar la batería de 12 V a un ventilador, la de
+litio a una lámpara y el cargador de red a un microcontrolador.
+
+### El formulario vive en un sitio
+
+`HardwareEnergyForm` tiene los campos y sus ayudas, y lo usan las tres
+pantallas: `deUnDispositivo()` para la ficha —sin preguntar medidor, medido ni
+papel, que los pone el contexto— y `completo()` para las otras dos. Copiarlo
+tres veces es la forma de que acaben diciendo cosas distintas.

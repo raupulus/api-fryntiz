@@ -21,6 +21,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -66,9 +67,57 @@ class HardwareEnergyResource extends Resource
         return HardwareEnergyForm::completo($schema);
     }
 
+    /**
+     * Fuera los elementos de los controladores solares.
+     *
+     * Ésos se gestionan desde la instalación a la que pertenecen: aquí saldrían
+     * mezclados con las cargas que cuelgan de ella y no se distinguiría una cosa
+     * de la otra. El criterio es el tipo del aparato que mide.
+     *
+     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
+     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
+     */
+    private static function sinControladoresSolares(Builder $query): Builder
+    {
+        return $query->whereDoesntHave(
+            'hardwareDevice',
+            fn (Builder $q) => $q->whereHas(
+                'type',
+                fn (Builder $t) => $t->where('slug', 'controlador-solar'),
+            ),
+        );
+    }
+
+    /**
+     * El alcance del listado, encima del filtro por propietario del trait.
+     *
+     * `scopeOwnerQuery()` no vale para esto: el trait se lo salta cuando quien
+     * mira es administrador, y este filtro no es de propiedad —es de qué
+     * pantalla gestiona cada elemento.
+     *
+     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return self::sinControladoresSolares(parent::getEloquentQuery());
+    }
+
     public static function table(Table $table): Table
     {
         return $table
+            // Agrupado por el aparato que mide, que es lo único que no cambia
+            // entre las filas de un mismo medidor: el aparato medido, la
+            // instalación, la fuente y el activo son de cada canal.
+            ->defaultGroup('hardwareDevice.name')
+            ->groups([
+                Group::make('hardwareDevice.name')
+                    ->label('Dispositivo monitor')
+                    ->collapsible(),
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->with([
+                'monitorized', 'hardwareDevice', 'system', 'sourceType',
+            ]))
+            ->defaultSort('sensor_position')
             ->columns([
                 // `name` era un campo que había que rellenar a mano para
                 // escribir lo que ya se sabe. `display_name` lo compone.
@@ -94,8 +143,12 @@ class HardwareEnergyResource extends Resource
                         HardwareEnergy::ROLE_BATTERY => 'warning',
                         default => 'info',
                     }),
+                TextColumn::make('monitorized.display_name')
+                    ->label('Qué mide')
+                    ->placeholder('a sí mismo'),
                 TextColumn::make('sourceType.name')
                     ->label('Fuente')
+                    ->placeholder('sin asignar')
                     ->toggleable(),
                 TextColumn::make('hardwareDevice.name')
                     ->label('Monitor')
