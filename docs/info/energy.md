@@ -421,7 +421,42 @@ sólo tiene la nominal como respaldo: **el día que un cacharro deje de mandar
     vatios. Rellena `nominal_voltage`.
 
 Los `energy_systems` sí la tienen (12,00 V los dos controladores), pero eso no
-sustituye a la del elemento, y además el elemento de generación del Renogy
-trabaja a la tensión del panel, no a la de la batería. **Rellenar esto es una
-decisión de configuración que depende de la instalación real, así que no se ha
-tocado.**
+sustituye a la del elemento.
+
+### Qué valor va en cada elemento
+
+**La tensión del lado que ese elemento mide**, no la del sistema. Un controlador
+solar tiene dos filas en `hardware_energy` y **no están a la misma tensión**:
+
+| Lado | Tensión | Por qué |
+|---|---|---|
+| `is_generator = true` | **24 V** | Mide el panel. Nominal 24 aunque en vacío suba a 35-40; el máximo medido en el Renogy es 43,9 V |
+| `is_generator = false` | **12 V** | Mide la salida hacia la batería: entre 11,8 y 13,8 V, y 13-14 V con sol |
+
+Poner 12 V en los dos sería repetir el error que se acaba de quitar de la web:
+tratar como comparables magnitudes de lados distintos.
+
+### El rango importa tanto como la nominal
+
+Sin `voltage_min` / `voltage_max`, `voltageIsPlausible()` los deduce de la
+nominal con un margen de **×0,5 a ×2,0**. Para una batería vale: 12 V da 6-24 V y
+las lecturas reales van de 11,0 a 14,3.
+
+**Para un panel no.** 24 V daría 12-48 V, y **el 44,7 % de las lecturas del
+Renogy están por debajo de 12 V** —de noche el panel no da nada, y esa lectura es
+correcta—, así que se descartarían y se sustituirían por la nominal. Con los
+datos históricos eso hoy no haría daño porque en esas lecturas la corriente es
+exactamente 0 A (comprobado: cero lecturas con V < 12 y A > 0), pero el día que
+el panel reporte 8 V con 0,3 A al amanecer saldrían 7,2 W en vez de 2,4.
+
+Por eso los generadores llevan el rango puesto a mano: **0,1 V a 50,4 V**.
+
+### Cómo se rellena
+
+```bash
+php artisan energy:set-nominal-voltage            # enseña la tabla, no escribe
+php artisan energy:set-nominal-voltage --write    # lo aplica
+```
+
+Idempotente, y con `--panel=` y `--battery=` para otras instalaciones. El
+criterio de arriba está en `EnergySetNominalVoltageCommand::valoresPara()`.

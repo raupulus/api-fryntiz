@@ -185,6 +185,7 @@ Enlazado desde [`docs/deploys/deploy-vps.md`](../deploys/deploy-vps.md).
 | `keycounter:remove_duplicate` | Elimina duplicados en `keycounter_keyboard` / `keycounter_mouse`. |
 | `keycounter:fix_weekday` | Normaliza `weekday` a **0 = lunes** en las rachas anteriores a 2020, que están en la convención de Carbon. **Sale en seco**: hay que pedir la escritura con `--write`. |
 | `keycounter:warm_cache` | Precalcula las gráficas mensuales que se cachean para siempre, para que no las pague el primer visitante. Semanal, lunes 04:00. |
+| `energy:set-nominal-voltage` | Rellena `nominal_voltage` y el rango plausible de los elementos de energía: 24 V al lado del panel, 12 V al de la batería. **Sale en seco**, hay que pedir `--write`. |
 
 ```bash
 php artisan keycounter:remove_duplicate [--force] [--window-days=15] [--full]
