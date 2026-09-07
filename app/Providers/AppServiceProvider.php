@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -147,6 +148,19 @@ class AppServiceProvider extends ServiceProvider
 
             return app()->isProduction() ? $regla->uncompromised() : $regla;
         });
+
+        // `@safeHtml($texto)` pinta HTML escrito desde la intranet.
+        //
+        // Las descripciones que se editan en el panel salían con `{{ }}`, que
+        // escapa las etiquetas, así que un `<p>` se veía literalmente como
+        // «&lt;p&gt;». Y `{!! !!}` a secas sobre texto que alguien escribe es un
+        // XSS almacenado esperando. Esto va por `HtmlHelper::safeBasic()`, que
+        // deja pasar sólo etiquetas de formato y ningún atributo salvo el
+        // `href` de los enlaces.
+        Blade::directive(
+            'safeHtml',
+            static fn (string $expresion): string => "<?php echo \App\Helpers\HtmlHelper::safeBasic({$expresion}); ?>",
+        );
 
         // Gate global: superadmin tiene acceso a todo.
         //

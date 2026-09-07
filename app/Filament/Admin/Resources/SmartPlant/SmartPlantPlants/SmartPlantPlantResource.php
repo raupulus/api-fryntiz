@@ -52,8 +52,17 @@ class SmartPlantPlantResource extends Resource
                     ->required(),
                 TextInput::make('name_scientific')
                     ->required(),
-                TextInput::make('description')
-                    ->required(),
+                // Admite HTML básico: la web lo pinta con `@safeHtml`, que deja
+                // pasar sólo etiquetas de formato. Es un `Textarea` y no un
+                // `TextInput` porque escribir marcado en una caja de una línea
+                // no hay quien lo lea. La columna es `varchar(255)`, así que el
+                // límite se declara aquí y no se descubre al guardar.
+                Textarea::make('description')
+                    ->required()
+                    ->rows(3)
+                    ->maxLength(255)
+                    ->helperText('Admite HTML básico: <p>, <br>, <strong>, <em>, <ul>/<li>, <a href>. El resto se descarta al mostrarla.')
+                    ->columnSpanFull(),
                 Textarea::make('details')
                     ->required()
                     ->columnSpanFull(),

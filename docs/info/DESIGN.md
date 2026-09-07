@@ -40,7 +40,10 @@ La paleta se define en **`resources/css/app.css`** utilizando la directiva `@the
 | `--color-secondary` | `#5b5b7d` | Elementos de apoyo, etiquetas secundarias |
 | `--color-secondary-container` | `#d8d6fe` | Fondos de chips y badges secundarios |
 | `--color-tertiary-fixed` | `#cce5ff` | Acentos interactivos |
+| `--color-on-tertiary-fixed` | `#084e7d` | **Texto e iconos sobre `tertiary-fixed`** (6,77:1) |
 | `--color-on-tertiary-container` | `#1d8acd` | Enlaces y llamadas a la acción |
+| `--color-success-container` | `#d7f2dd` | Fondo de un estado encendido (riego activo, tanque lleno) |
+| `--color-on-success-container` | `#14532d` | Texto e iconos de un estado encendido (7,65:1) |
 | `--color-background` / `--color-surface` | `#f8f9ff` | Fondo base de la página |
 | `--color-surface-container-lowest` | `#ffffff` | Fondo de tarjetas y elementos elevados |
 | `--color-surface-container-low` | `#eff4ff` | Fondos de sección alternativa |
@@ -57,6 +60,9 @@ La paleta se define en **`resources/css/app.css`** utilizando la directiva `@the
 | Token | Hex | Propósito |
 |-------|-----|-----------|
 | `--color-primary` | `#adc6ff` | Acentos principales y enlaces destacados |
+| `--color-on-tertiary-fixed` | `#5a2d00` | **Texto e iconos sobre `tertiary-fixed`** (9,01:1) |
+| `--color-success-container` | `#173b23` | Fondo de un estado encendido |
+| `--color-on-success-container` | `#86efac` | Texto e iconos de un estado encendido (8,87:1) |
 | `--color-primary-container` | `#4d8eff` | Botones primarios en modo oscuro |
 | `--color-on-primary` | `#002e6a` | Texto de alto contraste sobre botón primario |
 | `--color-secondary` | `#4fdbc8` | Acento cian para telemetría y sensores |
@@ -92,3 +98,51 @@ El layout base `resources/views/layouts/app.blade.php` incluye una pequeña ruti
 ---
 
 > Creado: 2026-08-26 · Última revisión: 2026-08-26
+
+---
+
+## Dos trampas de color, y cómo se evitan
+
+### `on-<algo>-container` va sobre `<algo>-container`, no sobre `<algo>-fixed`
+
+Es la regla de nombres de Material y se saltó en SmartPlant: los badges de
+«Hardware del proyecto» pintaban `text-on-tertiary-container` sobre
+`bg-tertiary-fixed`. Los números:
+
+| | fondo `tertiary-fixed` | texto `on-tertiary-container` | contraste |
+|---|---|---|---|
+| Claro | `#cce5ff` | `#1d8acd` | **2,91:1** — por debajo del 4,5:1 de AA, y son `text-xs` |
+| Oscuro | `#ffdcc6` | `#cce5ff` | **1,01:1** — invisible |
+
+De ahí salían «el círculo color carne» y «los badges que no se leen» del tema
+oscuro. La pareja correcta es `bg-tertiary-fixed` + `text-on-tertiary-fixed`.
+
+**Antes de emparejar un fondo y un texto, comprueba que el token de texto está
+nombrado para ese fondo.** Si no existe, se crea; no se coge el más parecido.
+
+### Un color fijo de Tailwind no cambia con el tema
+
+`bg-green-100` y `text-green-700` no tienen variante oscura: en el tema oscuro
+el fondo se queda claro. Y si encima la etiqueta usa `text-on-surface-variant`
+—que en oscuro **es** un color claro—, queda claro sobre claro. Eso era
+«Riego activo» en `/smartplant`.
+
+Para estados hay tokens: `success-container` / `on-success-container`. **Ningún
+color fijo de la paleta de Tailwind (`*-100`, `*-700`, …) debe aparecer en una
+vista del frontend.** Para encontrarlos:
+
+```bash
+grep -rnE "(bg|text)-(green|red|blue|yellow|amber|orange|emerald)-[0-9]{2,3}" resources/views/
+```
+
+### Pendiente de decidir
+
+`--color-on-tertiary-container` (`#1d8acd`) sobre `surface` blanco da **3,77:1**
+en el tema claro. Cumple AA para texto grande (3:1) pero **no** para el texto
+pequeño con el que se usa hoy: los enlaces `text-xs font-bold` de `home.blade.php`,
+`weather_station/index.blade.php` y `airflight/index.blade.php`. En el tema
+oscuro está perfecto (14,34:1).
+
+Arreglarlo es bajar la luminosidad de ese token **sólo en el tema claro**, y
+como es el acento de toda la plataforma, es una decisión de identidad, no un
+arreglo mecánico. Queda anotado aquí.

@@ -42,15 +42,33 @@
                                 <img src="{{ $plant->url_image }}"
                                      alt="{{ $plant->name ?? 'Planta #'.$plant->id }}"
                                      class="w-full h-40 object-cover rounded-lg mb-4">
-                                <h3 class="text-xl font-bold text-on-surface mb-2 hover:underline underline-offset-2">{{ $plant->name ?? 'Planta #'.$plant->id }}</h3>
+                                <h3 class="text-xl font-bold text-on-surface hover:underline underline-offset-2">{{ $plant->name ?? 'Planta #'.$plant->id }}</h3>
                             </a>
-                            <p class="text-on-surface-variant text-sm mb-2">{{ $plant->description ?? 'Sin descripción' }}</p>
+
+                            {{-- Debajo del título y a la derecha, antes de la descripción. --}}
                             @if($plant->start_at)
-                                <div class="inline-flex items-center gap-1 bg-surface-container rounded-full px-3 py-1 text-xs text-on-surface-variant mb-3">
-                                    <span class="material-symbols-outlined text-sm">eco</span>
-                                    Siembra: {{ $plant->start_at->format('d/m/Y') }}
+                                <div class="flex justify-end mt-1 mb-2">
+                                    <span class="inline-flex items-center gap-1 bg-surface-container rounded-full px-3 py-1 text-xs text-on-surface-variant">
+                                        <span class="material-symbols-outlined text-sm">eco</span>
+                                        Siembra: {{ $plant->start_at->format('d/m/Y') }}
+                                    </span>
                                 </div>
                             @endif
+
+                            {{--
+                                La descripción se escribe desde la intranet y
+                                admite HTML básico. `safeBasic()` deja pasar
+                                sólo un puñado de etiquetas: `{!! !!}` a secas
+                                sobre texto que alguien escribe es una puerta
+                                abierta.
+                            --}}
+                            <div class="text-on-surface-variant text-sm mb-2 prose-basica">
+                                @if(filled($plant->description))
+                                    @safeHtml($plant->description)
+                                @else
+                                    Sin descripción
+                                @endif
+                            </div>
                             @if($plant->registers && $plant->registers->count() > 0)
                                 @php $lastRegister = $plant->registers->first(); @endphp
                                 <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
@@ -73,19 +91,27 @@
                                 </div>
 
                                 {{-- Estado de tanque, riego y vaporizador --}}
+                                {{--
+                                    Estados con tokens del sistema, no con
+                                    `bg-green-100`/`text-green-700`: aquéllos
+                                    eran colores fijos sin variante oscura, así
+                                    que el fondo se quedaba claro y la etiqueta,
+                                    en `on-surface-variant`, también. En modo
+                                    oscuro «Riego activo» era claro sobre claro.
+                                    Y la etiqueta tiene que cambiar de color con
+                                    el estado, no sólo el icono.
+                                --}}
                                 <div class="grid grid-cols-3 gap-2 mt-2 text-sm">
-                                    <div class="rounded-lg p-2 text-center {{ $lastRegister->full_water_tank ? 'bg-green-100' : 'bg-surface-container' }}">
-                                        <span class="material-symbols-outlined block {{ $lastRegister->full_water_tank ? 'text-green-700' : 'text-on-surface-variant' }}">water_full</span>
-                                        <span class="text-on-surface-variant text-xs">Tanque lleno</span>
-                                    </div>
-                                    <div class="rounded-lg p-2 text-center {{ $lastRegister->waterpump_enabled ? 'bg-green-100' : 'bg-surface-container' }}">
-                                        <span class="material-symbols-outlined block {{ $lastRegister->waterpump_enabled ? 'text-green-700' : 'text-on-surface-variant' }}">sprinkler</span>
-                                        <span class="text-on-surface-variant text-xs">Riego activo</span>
-                                    </div>
-                                    <div class="rounded-lg p-2 text-center {{ $lastRegister->vaporizer_enabled ? 'bg-green-100' : 'bg-surface-container' }}">
-                                        <span class="material-symbols-outlined block {{ $lastRegister->vaporizer_enabled ? 'text-green-700' : 'text-on-surface-variant' }}">humidity_high</span>
-                                        <span class="text-on-surface-variant text-xs">Vaporizador</span>
-                                    </div>
+                                    @foreach ([
+                                        ['on' => $lastRegister->full_water_tank, 'icon' => 'water_full', 'label' => 'Tanque lleno'],
+                                        ['on' => $lastRegister->waterpump_enabled, 'icon' => 'sprinkler', 'label' => 'Riego activo'],
+                                        ['on' => $lastRegister->vaporizer_enabled, 'icon' => 'humidity_high', 'label' => 'Vaporizador'],
+                                    ] as $estado)
+                                        <div class="rounded-lg p-2 text-center {{ $estado['on'] ? 'bg-success-container' : 'bg-surface-container' }}">
+                                            <span class="material-symbols-outlined block {{ $estado['on'] ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $estado['icon'] }}</span>
+                                            <span class="text-xs {{ $estado['on'] ? 'text-on-success-container font-semibold' : 'text-on-surface-variant' }}">{{ $estado['label'] }}</span>
+                                        </div>
+                                    @endforeach
                                 </div>
 
                                 {{-- Tabla de últimas 10 lecturas --}}
@@ -170,15 +196,23 @@
                 @foreach($iotProjects as $project)
                     <a href="{{ $project['url'] }}" target="_blank" rel="noopener"
                        class="bg-surface-container-lowest rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow flex flex-col sm:flex-row sm:items-center gap-5 group">
+                        {{--
+                            `on-tertiary-fixed`, no `on-tertiary-container`:
+                            este último va, por definición, sobre
+                            `tertiary-container`. Sobre `tertiary-fixed` daba
+                            2,91:1 en claro y 1,01:1 en oscuro —invisible—,
+                            que es de donde salía el círculo color carne con el
+                            icono que no se leía.
+                        --}}
                         <div class="w-14 h-14 shrink-0 bg-tertiary-fixed rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-tertiary-container text-3xl">{{ $project['icon'] }}</span>
+                            <span class="material-symbols-outlined text-on-tertiary-fixed text-3xl">{{ $project['icon'] }}</span>
                         </div>
                         <div class="flex-1">
                             <span class="block text-lg font-bold text-on-surface group-hover:underline underline-offset-2">{{ $project['name'] }}</span>
                             <p class="text-on-surface-variant text-sm mt-1 mb-3">{{ $project['description'] }}</p>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($project['tags'] as $tag)
-                                    <span class="text-xs font-bold text-on-tertiary-container bg-tertiary-fixed rounded-full px-3 py-1">{{ $tag }}</span>
+                                    <span class="text-xs font-bold text-on-tertiary-fixed bg-tertiary-fixed rounded-full px-3 py-1">{{ $tag }}</span>
                                 @endforeach
                             </div>
                         </div>

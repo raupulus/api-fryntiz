@@ -14,6 +14,24 @@
     --color-tertiary-container: #001d31;
     --color-tertiary-fixed: #cce5ff;
     --color-on-tertiary-container: #1d8acd;
+
+    /* El color del texto que va SOBRE `tertiary-fixed`.
+     *
+     * Faltaba, y por eso se estaba usando `on-tertiary-container` en su lugar
+     * —que por definición Material va sobre `tertiary-container`, no sobre
+     * `tertiary-fixed`. En claro daba 2,91:1 (por debajo del 4,5:1 que pide
+     * WCAG AA para texto pequeño, y los badges son `text-xs`) y en oscuro
+     * 1,01:1, o sea invisible. Éste da 6,77:1. */
+    --color-on-tertiary-fixed: #084e7d;
+
+    /* Estados «encendido» (riego activo, tanque lleno, vaporizador).
+     *
+     * Antes eran `bg-green-100` y `text-green-700`, colores fijos de Tailwind
+     * sin variante para el tema oscuro: el fondo se quedaba claro y la
+     * etiqueta usaba `on-surface-variant`, que en oscuro también es claro.
+     * Claro sobre claro. */
+    --color-success-container: #d7f2dd;
+    --color-on-success-container: #14532d;
     --color-surface: #f8f9ff;
     --color-surface-dim: #d0dbed;
     --color-surface-container: #e6eeff;
@@ -53,6 +71,11 @@ html.dark {
     --color-tertiary-container: #df7412;
     --color-tertiary-fixed: #ffdcc6;
     --color-on-tertiary-container: #cce5ff;
+    /* 9,01:1 sobre el melocotón de `tertiary-fixed`. */
+    --color-on-tertiary-fixed: #5a2d00;
+    /* 8,87:1. */
+    --color-success-container: #173b23;
+    --color-on-success-container: #86efac;
     --color-surface: #0f131d;
     --color-surface-dim: #0f131d;
     --color-surface-container: #1b2029;
@@ -145,3 +168,40 @@ html.dark .navbar-main {
     display: none !important;
 }
 
+/* ============================================
+   HTML escrito desde la intranet
+   ============================================
+   Las descripciones admiten un puñado de etiquetas de formato
+   (`App\Helpers\HtmlHelper::safeBasic()`, directiva `@safeHtml`). Sin esto
+   Tailwind deja los `<p>`, `<ul>` y `<strong>` sin ningún margen ni viñeta,
+   porque su reset los aplana. Es lo mínimo para que se lean, no una hoja de
+   estilos tipográfica: el color y el tamaño los pone el contenedor. */
+.prose-basica > :first-child { margin-top: 0; }
+.prose-basica > :last-child { margin-bottom: 0; }
+.prose-basica p { margin-block: 0.5em; }
+.prose-basica ul,
+.prose-basica ol { margin-block: 0.5em; padding-inline-start: 1.25em; }
+.prose-basica ul { list-style: disc; }
+.prose-basica ol { list-style: decimal; }
+.prose-basica li { margin-block: 0.15em; }
+.prose-basica strong,
+.prose-basica b { font-weight: 700; color: var(--color-on-surface); }
+.prose-basica em,
+.prose-basica i { font-style: italic; }
+.prose-basica a {
+    color: var(--color-on-tertiary-container);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.prose-basica blockquote {
+    margin-block: 0.75em;
+    padding-inline-start: 0.75em;
+    border-inline-start: 2px solid var(--color-outline-variant);
+}
+.prose-basica code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    background-color: var(--color-surface-container);
+    border-radius: 0.25rem;
+    padding: 0.1em 0.3em;
+}

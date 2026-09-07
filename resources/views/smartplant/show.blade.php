@@ -1,12 +1,17 @@
 @extends('layouts.app')
 
 @section('title', $plant->name.' | Smart Plant | Api Raupulus')
-@section('description', $plant->description ?? 'Perfil y estadísticas de '.$plant->name.' en Smart Plant')
+{{--
+    En plano y recortada: la descripción admite HTML básico desde que se pinta
+    con `safeBasic()`, y una `<meta>` no. Si se cuela un `<p>` aquí, sale tal
+    cual en el resultado de búsqueda.
+--}}
+@section('description', \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil y estadísticas de '.$plant->name.' en Smart Plant')
 @section('keywords', 'smart plant, bonsai, '.$plant->name.', '.$plant->name_scientific.', sensores, riego')
 
 @section('rs-title', $plant->name.' - Smart Plant')
 @section('rs-sitename', 'Api Raupulus')
-@section('rs-description', $plant->description ?? 'Perfil y estadísticas de '.$plant->name)
+@section('rs-description', \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil y estadísticas de '.$plant->name)
 @section('rs-image', $plant->url_image)
 @section('rs-url', route('smartplant.show', $plant))
 
@@ -47,7 +52,19 @@
                      class="w-full md:w-64 h-64 object-cover rounded-lg shrink-0">
 
                 <div class="flex-1">
-                    <p class="text-on-surface-variant mb-6">{{ $plant->description ?? 'Sin descripción' }}</p>
+                    {{--
+                        La descripción se escribe desde la intranet y admite
+                        HTML básico. `safeBasic()` deja pasar sólo un puñado de
+                        etiquetas: `{!! !!}` a secas sobre texto que alguien
+                        escribe es una puerta abierta.
+                    --}}
+                    <div class="text-on-surface-variant mb-6 prose-basica">
+                        @if(filled($plant->description))
+                            @safeHtml($plant->description)
+                        @else
+                            Sin descripción
+                        @endif
+                    </div>
 
                     @if($plant->details)
                         @php
@@ -99,18 +116,22 @@
                         <span class="text-on-surface-variant text-xs">Radiación UV</span>
                         <p class="text-on-surface font-bold text-lg">{{ $lastRegister->uv ?? '-' }}</p>
                     </div>
-                    <div class="rounded-lg p-3 text-center shadow-lg {{ $lastRegister->full_water_tank ? 'bg-green-100' : 'bg-surface-container-lowest' }}">
-                        <span class="material-symbols-outlined block {{ $lastRegister->full_water_tank ? 'text-green-700' : 'text-on-surface-variant' }}">water_full</span>
-                        <span class="text-on-surface-variant text-xs">Tanque lleno</span>
-                    </div>
-                    <div class="rounded-lg p-3 text-center shadow-lg {{ $lastRegister->waterpump_enabled ? 'bg-green-100' : 'bg-surface-container-lowest' }}">
-                        <span class="material-symbols-outlined block {{ $lastRegister->waterpump_enabled ? 'text-green-700' : 'text-on-surface-variant' }}">sprinkler</span>
-                        <span class="text-on-surface-variant text-xs">Riego activo</span>
-                    </div>
-                    <div class="rounded-lg p-3 text-center shadow-lg {{ $lastRegister->vaporizer_enabled ? 'bg-green-100' : 'bg-surface-container-lowest' }}">
-                        <span class="material-symbols-outlined block {{ $lastRegister->vaporizer_enabled ? 'text-green-700' : 'text-on-surface-variant' }}">humidity_high</span>
-                        <span class="text-on-surface-variant text-xs">Vaporizador</span>
-                    </div>
+                    {{--
+                        Tokens del sistema, no `bg-green-100`/`text-green-700`:
+                        aquéllos son colores fijos de Tailwind sin variante
+                        oscura, así que en modo oscuro el fondo se quedaba claro
+                        con la etiqueta encima también clara.
+                    --}}
+                    @foreach ([
+                        ['on' => $lastRegister->full_water_tank, 'icon' => 'water_full', 'label' => 'Tanque lleno'],
+                        ['on' => $lastRegister->waterpump_enabled, 'icon' => 'sprinkler', 'label' => 'Riego activo'],
+                        ['on' => $lastRegister->vaporizer_enabled, 'icon' => 'humidity_high', 'label' => 'Vaporizador'],
+                    ] as $estado)
+                        <div class="rounded-lg p-3 text-center shadow-lg {{ $estado['on'] ? 'bg-success-container' : 'bg-surface-container-lowest' }}">
+                            <span class="material-symbols-outlined block {{ $estado['on'] ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $estado['icon'] }}</span>
+                            <span class="text-xs {{ $estado['on'] ? 'text-on-success-container font-semibold' : 'text-on-surface-variant' }}">{{ $estado['label'] }}</span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -147,9 +168,9 @@
                                         <td class="px-4 py-2 text-center text-on-surface font-semibold">{{ $register->humidity ?? '-' }}%</td>
                                         <td class="px-4 py-2 text-center text-on-surface font-semibold">{{ $register->pressure ?? '-' }}</td>
                                         <td class="px-4 py-2 text-center text-on-surface font-semibold">{{ $register->uv ?? '-' }}</td>
-                                        <td class="px-4 py-2 text-center font-semibold {{ $register->full_water_tank ? 'text-green-700' : 'text-on-surface-variant' }}">{{ $register->full_water_tank ? 'Sí' : 'No' }}</td>
-                                        <td class="px-4 py-2 text-center font-semibold {{ $register->waterpump_enabled ? 'text-green-700' : 'text-on-surface-variant' }}">{{ $register->waterpump_enabled ? 'Sí' : 'No' }}</td>
-                                        <td class="px-4 py-2 text-center font-semibold {{ $register->vaporizer_enabled ? 'text-green-700' : 'text-on-surface-variant' }}">{{ $register->vaporizer_enabled ? 'Sí' : 'No' }}</td>
+                                        <td class="px-4 py-2 text-center font-semibold {{ $register->full_water_tank ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $register->full_water_tank ? 'Sí' : 'No' }}</td>
+                                        <td class="px-4 py-2 text-center font-semibold {{ $register->waterpump_enabled ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $register->waterpump_enabled ? 'Sí' : 'No' }}</td>
+                                        <td class="px-4 py-2 text-center font-semibold {{ $register->vaporizer_enabled ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $register->vaporizer_enabled ? 'Sí' : 'No' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
