@@ -209,7 +209,10 @@ class HardwareEnergyResource extends Resource
 
     public static function getRelations(): array
     {
+        // Los papeles primero: es lo que se viene a hacer aquí. Las otras dos
+        // son las lecturas que ha mandado el aparato.
         return [
+            RelationManagers\RolesRelationManager::class,
             RelationManagers\PowerLoadsRelationManager::class,
             RelationManagers\PowerGeneratorsRelationManager::class,
         ];

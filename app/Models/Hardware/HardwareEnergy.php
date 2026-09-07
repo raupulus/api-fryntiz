@@ -170,6 +170,22 @@ class HardwareEnergy extends BaseModel
     }
 
     /**
+     * Los papeles del mismo medidor, éste incluido.
+     *
+     * Un aparato puede tener los tres —lo que produce, lo que gasta y lo que
+     * almacena— y son filas distintas. Sin esta relación, desde la ficha de uno
+     * no había forma de llegar a los otros: había que volver al listado,
+     * buscarlo y entrar, y para el que **todavía no existe** directamente no
+     * había camino.
+     *
+     * @return HasMany<self, $this>
+     */
+    public function rolesDelMismoMedidor(): HasMany
+    {
+        return $this->hasMany(self::class, 'hardware_device_id', 'hardware_device_id');
+    }
+
+    /**
      * Instalación a la que pertenece el elemento.
      */
     public function system(): BelongsTo

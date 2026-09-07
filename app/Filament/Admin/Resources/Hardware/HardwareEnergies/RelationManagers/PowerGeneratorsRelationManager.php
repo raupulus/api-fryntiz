@@ -22,7 +22,7 @@ class PowerGeneratorsRelationManager extends RelationManager
 {
     protected static string $relationship = 'powerGenerators';
 
-    protected static ?string $title = 'Generadores de energía';
+    protected static ?string $title = 'Lecturas de generación';
 
     public function form(Schema $schema): Schema
     {

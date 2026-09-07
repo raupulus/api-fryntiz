@@ -505,3 +505,31 @@ litio a una lámpara y el cargador de red a un microcontrolador.
 pantallas: `deUnDispositivo()` para la ficha —sin preguntar medidor, medido ni
 papel, que los pone el contexto— y `completo()` para las otras dos. Copiarlo
 tres veces es la forma de que acaben diciendo cosas distintas.
+
+### Dónde se crea cada papel
+
+Hay **dos** sitios, y en los dos con los mismos tres botones, para que se busque
+igual se venga de donde se venga:
+
+| Desde | Pestaña | Qué crea |
+|---|---|---|
+| Ficha de un dispositivo | **Energía** | Papeles de ese aparato, midiéndose a sí mismo |
+| Ficha de un elemento energético | **Papeles de este aparato** | Los otros papeles del **mismo medidor** |
+
+El botón de generador y el de batería desaparecen cuando ya existe el suyo; el
+de consumo se queda, porque un medidor mide tantas cargas como canales tenga.
+
+⚠️ **Las pestañas «Lecturas de consumo» y «Lecturas de generación» son las
+medidas que ha ido mandando el aparato, no sus papeles.** Se llamaban «Cargas de
+energía» y «Generadores de energía», y con eso no había forma de dar de alta el
+papel de batería: no existe una tabla de lecturas de batería, así que no había
+tercera pestaña y parecía que ese papel no se podía crear. Renombradas para que
+no se confundan con lo de arriba.
+
+### «Energy» en las migas de pan
+
+`/admin/energy` no es una página: su `mount()` redirige al **primer** elemento de
+la subnavegación del clúster. `EnergyDashboard` y `EnergySystemResource` estaban
+empatados en `navigationSort`, ganaba Instalaciones, y pulsar «Energy» llevaba
+siempre allí — estando ya en esa pantalla, parecía que sólo se recargaba. El
+resumen es la portada del módulo, así que va con `navigationSort = 0`.

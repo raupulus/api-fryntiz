@@ -21,7 +21,10 @@ class PowerLoadsRelationManager extends RelationManager
 {
     protected static string $relationship = 'powerLoads';
 
-    protected static ?string $title = 'Cargas de energía';
+    // «Cargas de energía» sonaba a los papeles del aparato y no a lo que es:
+    // las medidas que ha ido mandando. Con la pestaña de «Papeles» al lado,
+    // la confusión estaba servida.
+    protected static ?string $title = 'Lecturas de consumo';
 
     public function form(Schema $schema): Schema
     {

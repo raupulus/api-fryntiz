@@ -34,7 +34,17 @@ class EnergyDashboard extends Page
 
     protected static ?string $slug = 'energy-dashboard';
 
-    protected static ?int $navigationSort = 1;
+    /**
+     * El primero del clúster, y no por gusto.
+     *
+     * `/admin/energy` no es una página: su `mount()` redirige al **primer**
+     * elemento de la subnavegación. Empatado a 1 con «Instalaciones», ganaba
+     * ésta, así que pulsar «Energy» en las migas de pan llevaba siempre a
+     * Instalaciones —y estando ya allí parecía que la página sólo se recargaba.
+     *
+     * El resumen es la portada del módulo, así que va delante.
+     */
+    protected static ?int $navigationSort = 0;
 
     protected string $view = 'filament.admin.pages.energy-dashboard';
 

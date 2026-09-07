@@ -6,7 +6,9 @@ namespace Tests\Feature\Filament;
 
 use App\Filament\Admin\Resources\Hardware\EnergySystems\EnergySystemResource;
 use App\Filament\Admin\Resources\Hardware\EnergySystems\RelationManagers\ElementsRelationManager;
+use App\Filament\Admin\Resources\Hardware\HardwareEnergies\HardwareEnergyResource;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\ListHardwareEnergies;
+use App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers\RolesRelationManager;
 use App\Models\Hardware\EnergySystem;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
@@ -166,5 +168,64 @@ class EnergyListsTest extends TestCase
             ->assertSuccessful()
             ->assertSee('Raspberry Pi Pico W')
             ->assertSee('Ventilador');
+    }
+
+    /**
+     * Lo que se reportó: estando en «Editar Elemento Energético» no había forma
+     * de crear el papel que falta —la batería de un controlador, por ejemplo—.
+     * Las dos pestañas de abajo son las **lecturas**, no los papeles, y eso
+     * hacía pensar que la batería no se podía crear.
+     */
+    #[Test]
+    public function desde_un_elemento_se_pueden_crear_los_papeles_que_falten(): void
+    {
+        $consumo = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+
+        $panel = Livewire::test(RolesRelationManager::class, [
+            'ownerRecord' => $consumo,
+            'pageClass' => HardwareEnergyResource\Pages\EditHardwareEnergy::class,
+        ]);
+
+        $panel->assertSuccessful()
+            ->assertSee('crear_battery')
+            ->assertSee('crear_generator')
+            // De consumo caben más, así que el botón se queda.
+            ->assertSee('crear_load');
+    }
+
+    #[Test]
+    public function el_boton_del_papel_ya_creado_desaparece(): void
+    {
+        $consumo = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+        $this->elemento($this->monitor, HardwareEnergy::ROLE_BATTERY, canal: 1);
+
+        Livewire::test(RolesRelationManager::class, [
+            'ownerRecord' => $consumo,
+            'pageClass' => HardwareEnergyResource\Pages\EditHardwareEnergy::class,
+        ])->assertDontSee('crear_battery');
+    }
+
+    /**
+     * Y lo que se crea desde ahí cuelga del mismo medidor, sin preguntarlo.
+     */
+    #[Test]
+    public function el_papel_nuevo_cuelga_del_mismo_medidor(): void
+    {
+        $consumo = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+
+        Livewire::test(RolesRelationManager::class, [
+            'ownerRecord' => $consumo,
+            'pageClass' => HardwareEnergyResource\Pages\EditHardwareEnergy::class,
+        ])
+            ->callTableAction('crear_battery', data: [
+                'hardware_device_monitorized_id' => $this->monitor->id,
+                'sensor_position' => 5,
+                'is_active' => true,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $bateria = HardwareEnergy::where('role', HardwareEnergy::ROLE_BATTERY)->sole();
+
+        $this->assertSame($this->monitor->id, $bateria->hardware_device_id);
     }
 }

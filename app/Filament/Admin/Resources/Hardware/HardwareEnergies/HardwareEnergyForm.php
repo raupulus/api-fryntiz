@@ -39,6 +39,7 @@ class HardwareEnergyForm
             Section::make('Qué mide')
                 ->description('Este elemento se mide a sí mismo. Para medir OTRO aparato, dalo de alta desde «Elementos de Energía».')
                 ->columns(2)
+                ->columnSpanFull()
                 ->schema([
                     self::canal(),
                     self::instalacion(),
@@ -56,14 +57,25 @@ class HardwareEnergyForm
     public static function completo(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Qué es y quién lo mide')
-                ->columns(2)
+            // A ancho completo y arriba del todo: el medidor es lo único que no
+            // cambia entre los papeles de un mismo aparato, así que es la
+            // cabecera de la ficha y no una columna más.
+            Section::make('El aparato que mide')
+                ->description('No cambia entre los papeles de este aparato. Todo lo de abajo sí: cada canal mide una cosa, con su fuente y su tensión.')
+                ->columnSpanFull()
                 ->schema([
                     Select::make('hardware_device_id')
                         ->relationship('hardwareDevice', 'name')
                         ->required()->searchable()->preload()
                         ->label('Dispositivo monitor')
-                        ->helperText('El aparato que mide.'),
+                        ->helperText('El aparato que mide.')
+                        ->columnSpanFull(),
+                ]),
+
+            Section::make('Qué mide este canal')
+                ->columns(2)
+                ->columnSpanFull()
+                ->schema([
                     Select::make('hardware_device_monitorized_id')
                         ->relationship('monitorized', 'name')
                         ->required()->searchable()->preload()
@@ -71,14 +83,48 @@ class HardwareEnergyForm
                         ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
                     self::papel(),
                     self::canal(),
+                    self::activo(),
                 ]),
 
             Section::make('Instalación')
                 ->columns(2)
+                ->columnSpanFull()
                 ->schema([
                     self::instalacion(),
                     self::fuente(),
+                ]),
+
+            self::caracteristicasElectricas(),
+        ]);
+    }
+
+    /**
+     * Desde otro papel del mismo aparato: el medidor no se pregunta, que es el
+     * que se está mirando.
+     */
+    public static function delMismoMedidor(Schema $schema): Schema
+    {
+        return $schema->components([
+            Section::make('Qué mide este canal')
+                ->description('El aparato que mide es el mismo del que vienes.')
+                ->columns(2)
+                ->columnSpanFull()
+                ->schema([
+                    Select::make('hardware_device_monitorized_id')
+                        ->relationship('monitorized', 'name')
+                        ->required()->searchable()->preload()
+                        ->label('Dispositivo monitorizado')
+                        ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
+                    self::canal(),
                     self::activo(),
+                ]),
+
+            Section::make('Instalación')
+                ->columns(2)
+                ->columnSpanFull()
+                ->schema([
+                    self::instalacion(),
+                    self::fuente(),
                 ]),
 
             self::caracteristicasElectricas(),
@@ -139,6 +185,7 @@ class HardwareEnergyForm
         return Section::make('Características eléctricas')
             ->description('Para calcular manda siempre la tensión que reporte el aparato en cada lectura. Lo de aquí es el respaldo para cuando no la mande.')
             ->columns(2)
+            ->columnSpanFull()
             ->collapsed()
             ->schema([
                 TextInput::make('nominal_voltage')
