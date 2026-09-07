@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Platforms;
 use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
+use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Platform;
 use BackedEnum;
@@ -45,6 +46,11 @@ class PlatformResource extends Resource
     {
         return $schema->components([
             Section::make('Imagen principal')->schema([
+                // La imagen que ya tiene guardada. El uploader de abajo no puede
+                // enseñarla: apunta a `image_id`, una clave foránea, y espera una
+                // ruta de disco (ver `CurrentImage`).
+                CurrentImage::deLaRelacion(),
+
                 // `image_path` NO existe como columna en ninguna tabla del
                 // proyecto (N232): el formulario pedía un campo que no se
                 // guardaba en ningún sitio, así que la imagen se perdía al

@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Technologies;
 use App\Filament\Admin\Resources\Technologies\Pages\CreateTechnology;
 use App\Filament\Admin\Resources\Technologies\Pages\EditTechnology;
 use App\Filament\Admin\Resources\Technologies\Pages\ListTechnologies;
+use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Technology;
 use BackedEnum;
@@ -46,6 +47,10 @@ class TechnologyResource extends Resource
     {
         return $schema->components([
             Section::make('Logo')->schema([
+                // La imagen que ya tiene guardada. El uploader de abajo no puede
+                // enseñarla: apunta a `image_id`, una clave foránea, y espera una
+                // ruta de disco (ver `CurrentImage`).
+                CurrentImage::deLaRelacion(),
                 ImageCropperUpload::makeImage('image_id')
                     ->storeFiles(false)
                     ->dehydrated(fn ($state) => filled($state))

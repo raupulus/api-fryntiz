@@ -8,6 +8,7 @@ use App\Enums\HardwareLocationTypeEnum;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\CreateHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\EditHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\ListHardwareDevices;
+use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
@@ -50,6 +51,10 @@ class HardwareDeviceResource extends Resource
             ->components([
                 Section::make('Imagen principal')
                     ->schema([
+                        // La imagen que ya tiene guardada. El uploader de abajo no puede
+                        // enseñarla: apunta a `image_id`, una clave foránea, y espera una
+                        // ruta de disco (ver `CurrentImage`).
+                        CurrentImage::deLaRelacion(),
                         ImageCropperUpload::makeImage('image_id')
                             ->cover16x9()
                             ->storeFiles(false)

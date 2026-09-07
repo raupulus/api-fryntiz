@@ -414,3 +414,43 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 ---
 
 > Creado: 2026-08-30 · Última revisión: 2026-09-06
+
+
+## Imágenes: por qué el uploader no enseña la que ya hay
+
+Los recursos suben imágenes con `ImageCropperUpload::makeImage('image_id')`, es
+decir, un `FileUpload` de Filament apuntando a una **clave foránea** a la tabla
+`files`. Un `FileUpload` espera una ruta dentro de un disco, y la URL real de
+una imagen de este proyecto no lo es: `File::getUrlAttribute()` devuelve una
+ruta de controlador (`route('file.get', …)`), que además es la única que sirve
+para los ficheros privados.
+
+El resultado era que el estado del campo llegaba siendo el id numérico y el
+componente intentaba pintar «4» como si fuera una ruta, así que cada página de
+edición acabó haciendo `unset($data['image_id'])` en
+`mutateFormDataBeforeFill()`. Con eso **el panel dejó de enseñar la imagen
+guardada**: sólo el hueco vacío para subir otra. En el frontend sí se veía,
+porque allí se resuelve la relación (`$modelo->image->url`), y de ahí que
+pareciera un problema de `storage`.
+
+**Regla:** donde haya un `makeImage('image_id')`, va delante un
+`CurrentImage::deLaRelacion()`. Resuelve la relación `image` del modelo, pinta
+la miniatura mediana —con la imagen completa como respaldo, que es lo que
+necesitan las que vienen de la v1 y no tienen miniaturas— y se oculta solo
+cuando no hay imagen o cuando es el formulario de creación.
+
+Lo que **no** hay que hacer es hidratar el `FileUpload` con la ruta relativa del
+disco: funcionaría para los ficheros públicos y dejaría fuera a los privados, y
+obligaría a tocar `HasImageFileUpload::resolveImageUpload()`, que es el camino
+de escritura y está probado.
+
+Recursos afectados (10): `PlatformResource`, `TechnologyResource`,
+`ContentResource`, `HardwareDeviceResource`, `CurriculumResource`,
+`CurriculumAvailableRepositoryTypeResource`, `GalleryResource`,
+`CategoryResource`, `ImagesRelationManager` y `PagesRelationManager`.
+`FileTypeResource` (`icon16`…`icon128`) y las fotos de perfil de usuario no lo
+necesitan: ésos sí son columnas de ruta.
+
+Fijado por `tests/Feature/Filament/CurrentImageTest.php`, que comprueba las dos
+mitades: que la imagen aparece y que guardar sin tocarla **no** desvincula la
+clave foránea.

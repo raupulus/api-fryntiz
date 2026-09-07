@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Galleries;
 use App\Filament\Admin\Resources\Galleries\Pages\CreateGallery;
 use App\Filament\Admin\Resources\Galleries\Pages\EditGallery;
 use App\Filament\Admin\Resources\Galleries\Pages\ListGalleries;
+use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Gallery;
@@ -51,6 +52,10 @@ class GalleryResource extends Resource
                 ->searchable()->preload()
                 ->default(fn () => auth()->id())
                 ->label('Usuario'),
+            // La imagen que ya tiene guardada. El uploader de abajo no puede
+            // enseñarla: apunta a `image_id`, una clave foránea, y espera una
+            // ruta de disco (ver `CurrentImage`).
+            CurrentImage::deLaRelacion(),
             ImageCropperUpload::makeImage('image_id')
                 ->cover16x9()
                 ->storeFiles(false)

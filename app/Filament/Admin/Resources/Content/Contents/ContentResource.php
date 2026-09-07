@@ -8,6 +8,7 @@ use App\Enums\ContentStatusEnum;
 use App\Filament\Admin\Resources\Content\Contents\Pages\CreateContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ListContents;
+use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Components\YoutubeVideoField;
 use App\Models\Content\Content;
@@ -83,6 +84,10 @@ class ContentResource extends Resource
                     ]),
                     Textarea::make('excerpt')->maxLength(1023)->rows(2)
                         ->columnSpanFull()->label('Extracto'),
+                    // La imagen que ya tiene guardada. El uploader de abajo no puede
+                    // enseñarla: apunta a `image_id`, una clave foránea, y espera una
+                    // ruta de disco (ver `CurrentImage`).
+                    CurrentImage::deLaRelacion(),
                     ImageCropperUpload::makeImage('image_id')
                         ->storeFiles(false)
                         ->dehydrated(fn ($state) => filled($state))
