@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\JsonAuthorizationException;
+use App\Exceptions\JsonValidationException;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -158,6 +160,20 @@ return Application::configure(basePath: dirname(__DIR__))
         */
 
         $esApi = static fn ($request): bool => $request->is('api/*') || $request->wantsJson();
+
+        // Estas dos NO van al log: son respuestas del contrato, no fallos del
+        // servidor. Un cliente que manda un campo de más, uno mal escrito o un
+        // token sin permiso recibe su 422 o su 403 y ahí acaba la historia.
+        //
+        // Se registraban con traza completa —setenta líneas por petición— y en
+        // producción eso es un log inservible y un disco que se llena. Laravel
+        // ya ignora por defecto las suyas equivalentes (`ValidationException`,
+        // `AuthenticationException`, `HttpException`…); estas son propias y hay
+        // que decírselo.
+        $exceptions->dontReport([
+            JsonValidationException::class,
+            JsonAuthorizationException::class,
+        ]);
 
         $exceptions->render(function (AuthenticationException $e, $request) use ($esApi) {
             if ($esApi($request)) {

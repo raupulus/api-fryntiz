@@ -26,13 +26,17 @@ class JsonAuthorizationException extends Exception
         parent::__construct(__('api.forbidden'));
     }
 
-    /**
-     * No se reporta: es una denegación esperada, no un fallo del servidor.
+    /*
+     * Esta excepción no se registra en el log. La decisión vive en
+     * `bootstrap/app.php` (`$exceptions->dontReport(...)`).
+     *
+     * Aquí había un `report(): bool { return false; }` que hacía **lo
+     * contrario** de lo que decía su comentario: el handler de Laravel sólo
+     * deja de reportar cuando `report()` devuelve algo distinto de `false`
+     * (`Handler::report()`: `... && $this->container->call($reportCallable)
+     * !== false`). Devolver `false` significa «repórtalo tú», así que cada
+     * petición mal formada dejaba una traza de setenta líneas en producción.
      */
-    public function report(): bool
-    {
-        return false;
-    }
 
     public function render($request): JsonResponse
     {

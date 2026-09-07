@@ -501,6 +501,42 @@ antes de un despliegue.
 
 *Origen: API-01 y API-04 de la auditoría 2026-09-01.*
 
+### D18 · Las respuestas de error del cliente no van al log
+
+Un `422` de validación y un `403` de permiso **no se registran**. Son respuestas del contrato: el
+cliente manda un campo mal y se le dice. No son fallos del servidor.
+
+La decisión vive en `bootstrap/app.php`:
+
+```php
+$exceptions->dontReport([
+    JsonValidationException::class,
+    JsonAuthorizationException::class,
+]);
+```
+
+**Por qué está anotado aquí.** Las dos excepciones ya llevaban un método pensado para eso:
+
+```php
+public function report(): bool
+{
+    return false;   // ← hacía lo contrario de lo que dice
+}
+```
+
+El handler de Laravel sólo deja de reportar cuando `report()` devuelve algo **distinto** de `false`
+(`Handler::report()`: `... && $this->container->call($reportCallable) !== false`). Devolver `false`
+significa «repórtalo tú». Con el comentario diciendo una cosa y el código haciendo otra, en
+producción cada petición mal formada dejaba **una traza de setenta líneas**, y un cacharro con el
+firmware desalineado llenaba el disco en un rato.
+
+Los `report()` se han quitado: un solo sitio, explícito, sin depender de qué significa el valor de
+retorno. Laravel ya ignora por defecto las suyas equivalentes (`ValidationException`,
+`AuthenticationException`, `HttpException`…); estas son propias y hay que decírselo.
+
+*Lo fija `tests/Unit/Support/ExcepcionesNoReportablesTest.php`. Origen: log de producción del
+2026-09-06.*
+
 ---
 
 ## Cómo mantener este documento
@@ -512,4 +548,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-09-02
+> Creado: 2026-09-01 · Última revisión: 2026-09-07
