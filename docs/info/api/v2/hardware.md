@@ -176,11 +176,41 @@
 }
 ```
 
+- **Query** — `?include=status` (**nuevo el 2026-09-07**):
+
+| Parámetro | Valores | Descripción |
+|---|---|---|
+| `include` | `status` | Lista separada por comas. Añade el bloque `status` a la respuesta. Un valor que no esté en la lista da `422` |
+
+  Con `?include=status`, `data` lleva además:
+
+```json
+"status": {
+  "hardware_device_id": 7,
+  "temp": 41.2,
+  "voltage": 5.05,
+  "battery_level": 82,
+  "cpu": 12.5,
+  "disk": 63.1,
+  "ram": 34.2,
+  "uptime": 86400,
+  "ip_local": "172.18.1.209",
+  "ip_public": "139.47.158.109",
+  "extra": { "wifi_rssi": -65 },
+  "last_seen_at": "2026-09-05T10:59:24.000000Z"
+}
+```
+
+  Son los mismos campos que devuelve `PUT .../status`. **Sin el parámetro no
+  salen**: la IP local y la pública del cacharro no tienen por qué viajar en
+  cada respuesta del inventario. Sólo está en el detalle, no en la colección.
+
 - **Errores**: `404` tanto si el dispositivo no existe, como si es de otro
   usuario, como si es de este usuario pero el token está ligado a otro
   dispositivo (`device:{id}` distinto) — las tres situaciones dan el mismo
   mensaje "Dispositivo no encontrado" a propósito: no se confirma la
-  existencia de dispositivos fuera de alcance. `401`/`403` como en el índice.
+  existencia de dispositivos fuera de alcance. `422` si `include` trae un valor
+  que no existe. `401`/`403` como en el índice.
 
 ---
 

@@ -13,6 +13,78 @@ class HardwareTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
+    /**
+     * El detalle de un dispositivo puede traer su último estado conocido, con
+     * la IP local y la pública, pidiéndolo con `?include=status`.
+     */
+    #[Test]
+    public function el_detalle_incluye_el_estado_con_include_status(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $device = HardwareDevice::create([
+            'user_id' => $user->id,
+            'name' => 'Pico W',
+            'ip_local' => '172.18.1.209',
+            'ip_public' => '139.47.158.109',
+            'ram' => 34.2,
+            'uptime' => 86400,
+        ]);
+
+        $response = $this->getJson(
+            $this->apiUrl("hardware/devices/{$device->id}?include=status"),
+            $this->moduleHeaders($user, TokenAbilities::HARDWARE_READ)
+        );
+
+        $response->assertOk()
+            ->assertJsonPath('data.status.ip_local', '172.18.1.209')
+            ->assertJsonPath('data.status.ip_public', '139.47.158.109')
+            ->assertJsonPath('data.status.uptime', 86400)
+            ->assertJsonStructure(['data' => ['status' => [
+                'hardware_device_id', 'temp', 'voltage', 'battery_level',
+                'cpu', 'disk', 'ram', 'uptime', 'ip_local', 'ip_public',
+                'extra', 'last_seen_at',
+            ]]]);
+    }
+
+    /**
+     * Sin el parámetro no salen las IPs: son datos del cacharro y no tienen por
+     * qué viajar en cada respuesta del inventario.
+     */
+    #[Test]
+    public function sin_include_status_el_detalle_no_trae_las_ips(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $device = HardwareDevice::create([
+            'user_id' => $user->id,
+            'name' => 'Pico W',
+            'ip_local' => '172.18.1.209',
+            'ip_public' => '139.47.158.109',
+        ]);
+
+        $response = $this->getJson(
+            $this->apiUrl("hardware/devices/{$device->id}"),
+            $this->moduleHeaders($user, TokenAbilities::HARDWARE_READ)
+        );
+
+        $response->assertOk()->assertJsonMissingPath('data.status');
+        $response->assertDontSee('139.47.158.109');
+    }
+
+    #[Test]
+    public function un_include_que_no_existe_responde_422(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $device = HardwareDevice::create(['user_id' => $user->id, 'name' => 'Pico W']);
+
+        $response = $this->getJson(
+            $this->apiUrl("hardware/devices/{$device->id}?include=loquesea"),
+            $this->moduleHeaders($user, TokenAbilities::HARDWARE_READ)
+        );
+
+        $this->assertErrorResponse($response, 422);
+        $response->assertJsonValidationErrors(['include.0']);
+    }
+
     #[Test]
     public function can_get_device_authenticated(): void
     {

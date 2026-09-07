@@ -146,7 +146,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'hardware:read'
+          - 'weatherstation:read'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -189,7 +189,7 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'hardware:read'
+        - 'weatherstation:read'
       name: 'n'
       expires_at: '2052-09-30'
     fileParameters: []
@@ -390,7 +390,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -401,7 +401,7 @@ endpoints:
         name: contactme
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -435,8 +435,8 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: true
-      contactme: false
+      privacity: false
+      contactme: true
       attributes:
         - v
       g-recaptcha-response: architecto
@@ -1923,7 +1923,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T18:30:15'
+        example: '2026-09-07T06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2056,7 +2056,7 @@ endpoints:
         name: 'readings[].read_at'
         description: 'Must be a valid date.'
         required: false
-        example: '2026-09-06T18:30:15'
+        example: '2026-09-07T06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2087,7 +2087,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2026-09-06T18:30:15'
+      read_at: '2026-09-07T06:52:49'
       temperature: 4326.41688
       battery_voltage: 77
       battery_percentage: 15
@@ -2100,7 +2100,7 @@ endpoints:
           energy_wh: 4326.41688
           temperature: 4326.41688
           fan: 77
-          read_at: '2026-09-06T18:30:15'
+          read_at: '2026-09-07T06:52:49'
           battery_voltage: 8
           battery_percentage: 8
     fileParameters: []
@@ -2160,7 +2160,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T18:30:15'
+        example: '2026-09-07T06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2171,7 +2171,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-06T18:30:15'
+        example: '2026-09-07T06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2358,7 +2358,7 @@ endpoints:
         name: light_status
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -2446,7 +2446,7 @@ endpoints:
         name: day_charging_current_max
         description: ''
         required: false
-        example: 4326.41688
+        example: 7148.09249114
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -2641,8 +2641,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-06T18:30:15'
-      read_at: '2026-09-06T18:30:15'
+      date: '2026-09-07T06:52:49'
+      read_at: '2026-09-07T06:52:49'
       hardware: 'n'
       version: g
       serial_number: z
@@ -2659,7 +2659,7 @@ endpoints:
       delta_seconds: 27
       charging_status: 16
       charging_status_label: 'n'
-      light_status: false
+      light_status: true
       light_brightness: 7
       load_voltage: 4326.41688
       load_current: 4326.41688
@@ -2667,7 +2667,7 @@ endpoints:
       load_fan: 77
       day_battery_voltage_min: 4326.41688
       day_battery_voltage_max: 4326.41688
-      day_charging_current_max: 4326.41688
+      day_charging_current_max: 7148.09249114
       day_discharging_current_max: 4326.41688
       day_charging_power_max: 4326.41688
       day_discharging_power_max: 4326.41688
@@ -2771,8 +2771,23 @@ endpoints:
       id: architecto
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      include:
+        custom: []
+        name: include
+        description: ''
+        required: false
+        example:
+          - status
+        type: 'string[]'
+        enumValues:
+          - status
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      include:
+        - status
     fileParameters: []
     responses:
       -
@@ -3129,7 +3144,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:30:15'
+        example: '2026-09-07 06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3140,7 +3155,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:30:15'
+        example: '2026-09-07 06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3215,8 +3230,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 18:30:15'
-      end_at: '2026-09-06 18:30:15'
+      start_at: '2026-09-07 06:52:49'
+      end_at: '2026-09-07 06:52:49'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3291,7 +3306,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:30:15'
+        example: '2026-09-07 06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3302,7 +3317,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-06 18:30:15'
+        example: '2026-09-07 06:52:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3388,8 +3403,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-06 18:30:15'
-      end_at: '2026-09-06 18:30:15'
+      start_at: '2026-09-07 06:52:49'
+      end_at: '2026-09-07 06:52:49'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3647,7 +3662,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3658,7 +3673,7 @@ endpoints:
         name: waterpump_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3684,8 +3699,8 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: true
-      waterpump_enabled: true
+      full_water_tank: false
+      waterpump_enabled: false
       vaporizer_enabled: false
     fileParameters: []
     responses: []
@@ -3725,7 +3740,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - lightning
+          - air_quality
         type: 'string[]'
         enumValues:
           - temperature
@@ -3754,7 +3769,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - lightning
+        - air_quality
       location_type: indoor
     fileParameters: []
     responses:
@@ -3818,7 +3833,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - lightning
+          - rain
         type: 'string[]'
         enumValues:
           - temperature
@@ -3834,7 +3849,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - lightning
+        - rain
     fileParameters: []
     responses:
       -

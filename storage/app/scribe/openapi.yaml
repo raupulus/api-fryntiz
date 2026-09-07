@@ -97,7 +97,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'hardware:read'
+                    - 'weatherstation:read'
                   items:
                     type: string
                     enum:
@@ -216,11 +216,11 @@ paths:
                 privacity:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                 contactme:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 attributes:
                   type: array
                   description: 'Must not be greater than 255 characters.'
@@ -1135,7 +1135,7 @@ paths:
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T18:30:15'
+                  example: '2026-09-07T06:52:49'
                   nullable: true
                 temperature:
                   type: number
@@ -1197,7 +1197,7 @@ paths:
                       read_at:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2026-09-06T18:30:15'
+                        example: '2026-09-07T06:52:49'
                         nullable: true
                       battery_voltage:
                         type: number
@@ -1268,11 +1268,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T18:30:15'
+                  example: '2026-09-07T06:52:49'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-06T18:30:15'
+                  example: '2026-09-07T06:52:49'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1356,7 +1356,7 @@ paths:
                 light_status:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 light_brightness:
                   type: integer
@@ -1396,7 +1396,7 @@ paths:
                 day_charging_current_max:
                   type: number
                   description: ''
-                  example: 4326.41688
+                  example: 7148.09249114
                   nullable: true
                 day_discharging_current_max:
                   type: number
@@ -1539,6 +1539,22 @@ paths:
                     example: 'API V2 - Endpoint not found'
       tags:
         - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                include:
+                  type: array
+                  description: ''
+                  example:
+                    - status
+                  items:
+                    type: string
+                    enum:
+                      - status
       security: []
     parameters:
       -
@@ -1690,11 +1706,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 18:30:15'
+                  example: '2026-09-07 06:52:49'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 18:30:15'
+                  example: '2026-09-07 06:52:49'
                 duration:
                   type: integer
                   description: ''
@@ -1788,11 +1804,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 18:30:15'
+                  example: '2026-09-07 06:52:49'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-06 18:30:15'
+                  example: '2026-09-07 06:52:49'
                 duration:
                   type: integer
                   description: ''
@@ -1946,12 +1962,12 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 waterpump_enabled:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 vaporizer_enabled:
                   type: boolean
@@ -2008,7 +2024,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - lightning
+                    - air_quality
                   items:
                     type: string
                     enum:
@@ -2065,7 +2081,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - lightning
+                    - rain
                   items:
                     type: string
                     enum:

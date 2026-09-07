@@ -21,11 +21,31 @@ class HardwareDeviceResource extends JsonResource
     private bool $withSerialNumber = false;
 
     /**
+     * ¿Se incluye el último estado conocido? Sólo con `?include=status`.
+     */
+    private bool $withStatus = false;
+
+    /**
      * Variante de detalle: la única que enseña el número de serie.
      */
     public function detailed(): self
     {
         $this->withSerialNumber = true;
+
+        return $this;
+    }
+
+    /**
+     * Añade el bloque `status` con el último estado conocido del cacharro:
+     * temperatura, tensión, batería, CPU, disco, RAM, uptime, **IP local e IP
+     * pública** y lo que traiga en `extra`.
+     *
+     * Va detrás de `?include=status` y no de serie: son las IPs del aparato, y
+     * no tienen por qué viajar en cada respuesta del inventario.
+     */
+    public function withStatus(): self
+    {
+        $this->withStatus = true;
 
         return $this;
     }
@@ -60,6 +80,10 @@ class HardwareDeviceResource extends JsonResource
             // iterando páginas. Es el mismo dato que motivó cerrar el endpoint
             // en la auditoría A3.
             'serial_number' => $this->when($this->withSerialNumber, fn () => $this->serial_number),
+            'status' => $this->when(
+                $this->withStatus,
+                fn () => (new DeviceStatusResource($this->resource))->toArray($request)
+            ),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

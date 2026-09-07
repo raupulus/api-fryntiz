@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Hardware\V2;
 
 use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\V2\BaseApiController;
+use App\Http\Requests\Api\Hardware\V2\ShowDeviceRequest;
 use App\Http\Requests\Api\Hardware\V2\StoreDeviceStatusRequest;
 use App\Http\Resources\V2\Hardware\DeviceStatusResource;
 use App\Http\Resources\V2\Hardware\HardwareDeviceResource;
@@ -78,7 +79,7 @@ class HardwareDeviceController extends BaseApiController
     /**
      * Un dispositivo del usuario autenticado.
      */
-    public function show(Request $request, int $device): JsonResponse
+    public function show(ShowDeviceRequest $request, int $device): JsonResponse
     {
         $model = $this->service->getDeviceInfo($device, (int) $request->user()->id);
 
@@ -88,7 +89,16 @@ class HardwareDeviceController extends BaseApiController
             return $this->notFoundResponse('Dispositivo no encontrado');
         }
 
-        return $this->successResponse((new HardwareDeviceResource($model))->detailed());
+        $resource = (new HardwareDeviceResource($model))->detailed();
+
+        // `?include=status` añade el último estado conocido, con la IP local y
+        // la pública. Detrás de un parámetro a propósito: son datos del cacharro
+        // que no tienen por qué ir en cada respuesta.
+        if ($request->quiereEstado()) {
+            $resource->withStatus();
+        }
+
+        return $this->successResponse($resource);
     }
 
     /**

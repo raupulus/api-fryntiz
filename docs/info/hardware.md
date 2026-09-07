@@ -111,7 +111,7 @@ en [energy.md](energy.md).
 | Método | Ruta | Auth | Throttle | Descripción |
 |--------|------|------|----------|-------------|
 | GET | `/api/v2/hardware/devices` | `ability:hardware:read` | api | Listar dispositivos (`?type=laptop` filtra) |
-| GET | `/api/v2/hardware/devices/{device}` | `ability:hardware:read` | api | Ver dispositivo |
+| GET | `/api/v2/hardware/devices/{device}` | `ability:hardware:read` | api | Ver dispositivo. `?include=status` añade el último estado conocido, con `ip_local` e `ip_public` |
 | PUT | `/api/v2/hardware/devices/{device}/status` | `ability:hardware:write` | api-store | Salud del dispositivo: IP, uptime, CPU, RAM, discos, temperatura, batería |
 
 **Este módulo es el aparato y nada más.** Lo que el aparato *mide* pertenece al
