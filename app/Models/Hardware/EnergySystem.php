@@ -26,7 +26,8 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $slug
  * @property bool $is_standalone Nodo autoabastecido: placa pequeña y batería.
- * @property float|null $nominal_voltage
+ * @property float|null $nominal_voltage Tensión del banco de baterías
+ * @property float|null $pv_nominal_voltage Tensión del campo solar
  * @property float|null $battery_capacity_ah
  * @property string|null $notes
  * @property Carbon|null $created_at
@@ -49,13 +50,14 @@ class EnergySystem extends BaseModel
 
     protected $fillable = [
         'user_id', 'name', 'slug', 'is_standalone',
-        'nominal_voltage', 'battery_capacity_ah', 'notes',
+        'nominal_voltage', 'pv_nominal_voltage', 'battery_capacity_ah', 'notes',
     ];
 
     protected $casts = [
         'user_id' => 'integer',
         'is_standalone' => 'boolean',
         'nominal_voltage' => 'float',
+        'pv_nominal_voltage' => 'float',
         'battery_capacity_ah' => 'float',
     ];
 
