@@ -92,8 +92,11 @@ Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de per
 ⚠️ `aemet:check-api-key` no trae datos: comprueba la clave. Existe porque la
 `AEMET_API_KEY` es un JWT que caduca a los ~100 días y **su caducidad no da
 error** —AEMET responde 200 con el cuerpo vacío—, así que sin esto la
-integración se queda muda y no se entera nadie. Sale con código 1 cuando hay que
-renovarla. Ver [apis/aemet.md](apis/aemet.md).
+integración se queda muda y no se entera nadie. El aviso sale en el log como
+`WARNING`; **el comando sale con código 0** aunque haya que renovar la clave, por
+lo mismo que `iot:check-silent-devices` (ver §6-bis): un hallazgo no es un fallo,
+y salir con 1 hacía que el planificador escupiera su traza junto al aviso.
+Ver [apis/aemet.md](apis/aemet.md).
 
 ---
 
@@ -224,12 +227,18 @@ El token se registra en Sanctum como `device:{id}` para facilitar la trazabilida
 
 ## 6-bis. IoT — Vigilancia de dispositivos
 
-| Comando | Descripción |
-|---------|-------------|
-| `iot:check-silent-devices` | Avisa cuando un dispositivo lleva demasiado tiempo sin reportar. |
+| Comando | Opciones | Descripción |
+|---------|----------|-------------|
+| `iot:check-silent-devices` | `--hours=24` | Avisa cuando un dispositivo lleva demasiado tiempo sin reportar. |
 
 Programado en el scheduler (ver §8). Es la única forma de enterarse de que un cacharro se ha caído:
 no hay nadie mirando la gráfica todos los días.
+
+El aviso sale en el log como `WARNING` con el id, el nombre y el `last_seen_at` de cada dispositivo
+mudo. **Sale con código 0 aunque encuentre alguno**: encontrar un cacharro callado es su trabajo, no
+un fallo suyo. Devolvía 1 y el planificador lo tomaba por una excepción, así que junto al aviso útil
+caía cada mañana una traza de veinte líneas de `ScheduleRunCommand` que no decía nada. Un código
+distinto de cero significa ahora que ha fallado el comando de verdad.
 
 ---
 

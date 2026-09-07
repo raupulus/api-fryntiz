@@ -53,8 +53,9 @@ Por eso:
 - `AEMET_API_KEY_EXPIRES_AT` se apunta **a mano en el `.env`** al renovar la clave.
   Si no está, se lee el `exp` del propio JWT como respaldo.
 - `aemet:check-api-key` corre a diario a las 08:00 y avisa **15 días antes**
-  (`config('aemet.warn_days_before_expiry')`). Sale con código 1 para que el
-  planificador lo registre como fallo.
+  (`config('aemet.warn_days_before_expiry')`). El aviso va al log como `WARNING`;
+  el comando sale con código 0 aunque toque renovar, para que el planificador no
+  añada una traza suya encima del aviso cada uno de esos quince días.
 - El panel de AEMET enseña el aviso arriba del todo.
 - Cuando un payload llega vacío, `ValidatesAemetPayload` dice en el log si la
   clave tiene algo que ver. Es el único momento en que alguien lo va a leer.

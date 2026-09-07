@@ -18,8 +18,16 @@ use Illuminate\Support\Facades\Log;
  * meses después y ve el hueco.
  *
  * No manda correos ni notificaciones: deja constancia en el log, que es donde
- * se mira cuando algo va mal, y devuelve código de salida 1 si hay alguno mudo
- * para que el planificador lo marque como fallo.
+ * se mira cuando algo va mal.
+ *
+ * **Sale siempre con código 0 aunque encuentre dispositivos mudos.** Antes
+ * devolvía 1 «para que el planificador lo marcara como fallo», y el efecto real
+ * era el contrario del buscado: `ScheduleRunCommand` convierte cualquier código
+ * distinto de cero en una excepción y la reporta, así que al lado del WARNING
+ * útil —el que dice qué cacharro se ha callado y desde cuándo— caía cada día una
+ * traza de veinte líneas del propio planificador, que no informa de nada. Un
+ * cacharro mudo es un hallazgo del comando, no un fallo del comando: el aviso lo
+ * da el log, y el código de salida queda para los fallos de verdad.
  */
 class CheckSilentDevicesCommand extends Command
 {
@@ -74,6 +82,7 @@ class CheckSilentDevicesCommand extends Command
             ])->values()->all(),
         ]);
 
-        return self::FAILURE;
+        // Éxito: el comando ha hecho su trabajo. Ver arriba por qué no es 1.
+        return self::SUCCESS;
     }
 }

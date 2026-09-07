@@ -17,8 +17,13 @@ use Illuminate\Support\Facades\Log;
  * avisos», así que la integración se queda muda y nadie se entera hasta que
  * alguien echa de menos un dato semanas después.
  *
- * Sale con código 1 cuando hay que renovar, para que el planificador lo trate
- * como una tarea fallida y quede constancia.
+ * **Sale siempre con código 0**, también cuando toca renovar. El aviso lo da el
+ * WARNING del log, que dice qué pasa y cuánto queda. Salir con 1 hacía que
+ * `ScheduleRunCommand` lo tomara por una excepción y volcara su traza, así que
+ * los quince días previos a la caducidad se llenaba el log de trazas inútiles
+ * alrededor del único renglón que sirve. Una clave a punto de caducar es un
+ * hallazgo del comando, no un fallo suyo; el código de salida queda para los
+ * fallos de verdad, que son los que `onFailure` debe recoger.
  */
 class AEMETCheckApiKeyCommand extends Command
 {
@@ -32,20 +37,16 @@ class AEMETCheckApiKeyCommand extends Command
 
         $this->line($status['message']);
 
-        return match ($status['status']) {
-            AemetApiKey::OK => self::SUCCESS,
+        // Todo lo que no sea OK se avisa igual: caducada, a punto de caducar o
+        // sin fecha de caducidad conocida. La rama de `NO_EXPIRY_DATE` estaba
+        // aparte sólo porque salía con un código distinto; ya no lo hace.
+        if ($status['status'] === AemetApiKey::OK) {
+            return self::SUCCESS;
+        }
 
-            AemetApiKey::NO_EXPIRY_DATE => $this->warnAndExit($status['message'], self::SUCCESS),
+        $this->warn($status['message']);
+        Log::warning('AEMET: '.$status['message']);
 
-            default => $this->warnAndExit($status['message'], self::FAILURE),
-        };
-    }
-
-    private function warnAndExit(string $message, int $exitCode): int
-    {
-        $this->warn($message);
-        Log::warning('AEMET: '.$message);
-
-        return $exitCode;
+        return self::SUCCESS;
     }
 }

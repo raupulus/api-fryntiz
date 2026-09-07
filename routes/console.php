@@ -147,8 +147,10 @@ Schedule::command('keycounter:generate_duration')
 
 // Nada avisaba cuando un cacharro dejaba de reportar. En producción el monitor
 // del Rover llevaba parado y no se enteró nadie.
-// Sin `onFailure`: este comando sale con código 1 cuando ENCUENTRA algo, que es
-// su trabajo, no un fallo suyo. Él mismo deja el aviso en el log con el detalle.
+// El aviso lo deja el propio comando en el log, con el detalle de qué cacharro
+// se ha callado y desde cuándo. Encontrar uno mudo NO es un fallo del comando,
+// así que sale con 0 y aquí no hace falta `onFailure`: cuando devolvía 1, el
+// planificador lo tomaba por una excepción y escupía su traza cada mañana.
 Schedule::command('iot:check-silent-devices', ['--hours=24'])
     ->dailyAt('09:00')
     ->timezone('Europe/Madrid')
