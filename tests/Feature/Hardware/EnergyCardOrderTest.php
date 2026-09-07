@@ -8,6 +8,7 @@ use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorToday;
+use App\Models\Hardware\HardwarePowerLoad;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -123,6 +124,61 @@ class EnergyCardOrderTest extends TestCase
         }
 
         $this->assertSame($this->ordenDeLasTarjetas(), $this->ordenDeLasTarjetas());
+    }
+
+    /**
+     * Generación y consumo se miden a tensiones distintas —el panel y la
+     * batería—, así que sus amperios no se pueden enfrentar. La página lo
+     * hacía: dos tarjetas «Generando X A» y «Consumiendo Y A» una al lado de
+     * la otra. Con los datos reales del 5 de septiembre de 2026, eso daba
+     * 1,85 A generando frente a 2,16 A consumiendo, o sea la impresión de que
+     * se consume más de lo que se genera, cuando en vatios eran 64 W contra
+     * 28 W: se genera más del doble.
+     */
+    #[Test]
+    public function no_se_enfrentan_los_amperios_de_los_dos_lados(): void
+    {
+        $device = $this->device('Solar');
+
+        // La página sólo mira los dispositivos que tienen histórico.
+        $this->generadoSiempre($device, 1_000);
+
+        // Generando en el lado del panel: mucha tensión, poca corriente.
+        HardwarePowerGenerator::create([
+            'hardware_device_id' => $device->id,
+            'voltage' => 33.7,
+            'amperage' => 1.85,
+            'power' => 64,
+            'read_at' => now()->subMinutes(5),
+        ]);
+
+        // Consumiendo en el lado de la batería: poca tensión, más corriente.
+        HardwarePowerLoad::create([
+            'hardware_device_id' => $device->id,
+            'voltage' => 13.2,
+            'amperage' => 2.16,
+            'power' => 28,
+            'read_at' => now()->subMinutes(5),
+        ]);
+
+        $respuesta = $this->get(route('hardware.energy.index'))->assertOk();
+
+        $titulos = collect($respuesta->viewData('currentStats'))->pluck('title');
+        $unidades = collect($respuesta->viewData('currentStats'))
+            ->filter(fn (array $s) => $s['unit'] === 'A');
+
+        $this->assertTrue($unidades->isEmpty(), 'No debe quedar ninguna tarjeta en amperios.');
+        $this->assertTrue($titulos->contains('Balance'));
+
+        $generator = $respuesta->viewData('generator');
+        $load = $respuesta->viewData('load');
+
+        // El balance, que es la pregunta de verdad: 64 - 28 = 36 W a favor.
+        $this->assertSame(36.0, round($generator->current - $load->current));
+
+        // Y las dos tensiones, para que se vea que no son la misma.
+        $this->assertSame('33.7', $generator->current_voltage);
+        $this->assertSame('13.2', $load->current_voltage);
     }
 
     /**

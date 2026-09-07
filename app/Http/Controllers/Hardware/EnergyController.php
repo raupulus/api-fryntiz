@@ -79,6 +79,11 @@ class EnergyController extends Controller
         $generator = (object) [
             'current' => round($hardwareGeneratorCurrent->sum('power')),
             'current_amperage' => round($hardwareGeneratorCurrent->sum('amperage')),
+            // La tensión a la que se está midiendo. Sin ella, la corriente de
+            // esta columna no dice nada: 2 A a 33 V y 2 A a 13 V son cosas muy
+            // distintas, y es justo lo que pasa aquí —la generación se mide en
+            // el lado del panel y el consumo en el de la batería.
+            'current_voltage' => number_format((float) ($hardwareGeneratorCurrent->avg('voltage') ?? 0), 1),
             // Del día y del acumulado salen vatios-hora, no vatios: sumar la
             // potencia instantánea daba un número que dependía de cuántas veces
             // hubiera medido el sensor.
@@ -96,6 +101,7 @@ class EnergyController extends Controller
         $load = (object) [
             'current' => round($hardwareLoadCurrent->sum('power')),
             'current_amperage' => number_format($hardwareLoadCurrent->sum('amperage'), 1),
+            'current_voltage' => number_format((float) ($hardwareLoadCurrent->avg('voltage') ?? 0), 1),
             'today' => round($hardwareLoadToday->sum('energy_wh')),
             'today_amperage' => round($hardwareLoadToday->sum('energy_ah')),
             'historical' => number_format($hardwareLoadHistorical->sum('energy_wh') / 1000, 1),
@@ -141,12 +147,15 @@ class EnergyController extends Controller
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'Wh',
             ], [
-                'title' => 'Generado',
+                // Los amperios-hora de cada lado se acumulan a su tensión, así
+                // que tampoco se restan entre sí. Llevan el lado en el título
+                // para que no inviten a hacerlo.
+                'title' => 'Generado (panel)',
                 'value' => $generator->today_amperage,
                 'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'Ah',
             ], [
-                'title' => 'Consumido',
+                'title' => 'Consumido (batería)',
                 'value' => $load->today_amperage,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'Ah',
@@ -165,15 +174,29 @@ class EnergyController extends Controller
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'W',
             ], [
-                'title' => 'Generando',
-                'value' => $generator->current_amperage,
-                'image' => asset('images/icons/solar-panel.svg'),
-                'unit' => 'A',
+                // Aquí había «Generando X A» y «Consumiendo Y A», enfrentados.
+                //
+                // **Los amperios de los dos lados no son comparables.** La
+                // generación se mide en el lado del panel y el consumo en el
+                // de la batería, que están a tensiones distintas: en la
+                // instalación real, una lectura del 5 de septiembre de 2026
+                // daba 1,85 A a 33,7 V generando (64 W) y 2,16 A a 13,2 V
+                // consumiendo (28 W). En amperios parecía que se consumía más
+                // de lo que se generaba; en vatios se genera **más del doble**.
+                //
+                // Los vatios sí son comparables y ya están en las dos tarjetas
+                // de arriba. En su sitio va el balance —que es la pregunta de
+                // verdad: ¿entra más de lo que sale?— y la tensión de cada
+                // lado, para que se vea que no son la misma.
+                'title' => 'Balance',
+                'value' => round($generator->current - $load->current),
+                'image' => asset('images/icons/battery-status.svg'),
+                'unit' => 'W',
             ], [
-                'title' => 'Consumiendo',
-                'value' => $load->current_amperage,
-                'image' => asset('images/icons/energy-green.svg'),
-                'unit' => 'A',
+                'title' => 'Panel / Batería',
+                'value' => $generator->current_voltage.' / '.$load->current_voltage,
+                'image' => asset('images/icons/solar-panel.svg'),
+                'unit' => 'V',
             ],
 
             [

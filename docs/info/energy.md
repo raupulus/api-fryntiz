@@ -355,3 +355,73 @@ Sólo en consumos: `fan`.
 ---
 
 > Creado: 2026-09-06 (separado de `hardware.md`) · Última revisión: 2026-09-06
+
+
+## Las tensiones: por qué los amperios de los dos lados no se comparan
+
+**Diagnóstico sobre los datos reales (2026-09-07, últimos 90 días de la
+instalación del Renogy):**
+
+| | elemento | tensión media | mín | máx | corriente media | `voltage_source` |
+|---|---|---|---|---|---|---|
+| Generación | `hardware_energy` #4 | **18,19 V** | 0,4 | 39,5 | 1,10 A | `measured` |
+| Consumo | `hardware_energy` #7 | **12,69 V** | 11,8 | 14,1 | 2,40 A | `measured` |
+
+Los dos son del mismo controlador (dispositivo 6). La generación se mide en el
+**lado del panel** —tensión variable, hasta 39,5 V, o sea panel de 24 V
+nominales— y el consumo en el **lado de la batería**, a 12 V.
+
+Una lectura concreta del 5 de septiembre de 2026:
+
+    Generando:   1,85 A a 33,7 V  =  64 W
+    Consumiendo: 2,16 A a 13,2 V  =  28 W
+
+**En amperios parece que se consume más de lo que se genera. En vatios se genera
+más del doble.** La página tenía las dos tarjetas enfrentadas, «Generando 1,85 A»
+y «Consumiendo 2,16 A», invitando justo a esa lectura equivocada.
+
+### Lo que SÍ está bien
+
+- **Los vatios.** Cada lado usa su tensión medida y `power = V · A`. Verificado
+  sobre 5 000 lecturas de cada tabla: los desvíos que aparecen son de **±1 W** y
+  vienen de que el controlador manda `power` como entero (28, 29, 64…) mientras
+  que `V × A` da decimales. No es un error de cálculo.
+- **Los `energy_wh` y `energy_ah` del día.** En una lectura de controlador solar
+  no se calculan: vienen del propio aparato (`total_power_generation_wh`,
+  `total_charging_amp_hours`). Comprobado el 2026-09-03: 68 Ah / 878 Wh en
+  generación son 12,9 V, y 59 Ah / 732 Wh en consumo son 12,4 V. Los dos
+  acumulados están referidos a la batería, que es lo correcto.
+
+### Lo que se ha corregido
+
+En `/hardware/energy` ya no hay dos tarjetas de amperios enfrentadas. En su
+lugar van el **balance en vatios** —que es la pregunta de verdad: ¿entra más de
+lo que sale?— y las **dos tensiones**, para que se vea que no son la misma. Los
+Ah del día llevan el lado en el título: «Generado (panel)» y «Consumido
+(batería)».
+
+**Regla al tocar esta página: los vatios y los vatios-hora se comparan; los
+amperios y los amperios-hora, sólo dentro del mismo lado.**
+
+### Lo que queda pendiente y es de configuración
+
+Los **ocho** elementos de `hardware_energy` tienen `nominal_voltage` a `NULL`:
+
+    #1 Raspberry Pi Pico W          #5 Controlador Solar Sunix 20A
+    #2 Raspberry Pi 4               #6 Raspberry Pi 2
+    #3 Controlador Solar Sunix 20A  #7 Controlador Solar Renogy Rover
+    #4 Controlador Solar Renogy R.  #8 Lenovo Thinkpad E330
+
+Hoy no se nota porque los aparatos mandan su tensión medida (`voltage_source` es
+`measured` en el 100 % de las lecturas), pero `HardwareEnergy::resolveVoltage()`
+sólo tiene la nominal como respaldo: **el día que un cacharro deje de mandar
+`voltage`, no habrá vatios**. El propio servicio lo avisa en el log:
+
+    «X» no trae tensión y el elemento no tiene tensión nominal: sin eso no hay
+    vatios. Rellena `nominal_voltage`.
+
+Los `energy_systems` sí la tienen (12,00 V los dos controladores), pero eso no
+sustituye a la del elemento, y además el elemento de generación del Renogy
+trabaja a la tensión del panel, no a la de la batería. **Rellenar esto es una
+decisión de configuración que depende de la instalación real, así que no se ha
+tocado.**
