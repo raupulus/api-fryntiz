@@ -9,7 +9,16 @@
 {{-- Editor.js Core --}}
 <script src="{{ asset('vendor/editorjs/editor.js') }}"></script>
 
-{{-- Plugins --}}
+{{--
+    Plugins.
+
+    `paragraph`, `image`, `link`, `attaches` y `codebox` estaban en `main` y se
+    perdieron al migrar el editor a Filament, aunque sus ficheros seguían en el
+    repositorio. `image` en particular se sustituyó por `simple-image`, que
+    guarda la imagen **incrustada en el JSON como base64**: hincha la fila de
+    `content_page_raw` y no deja nada en el módulo de ficheros.
+--}}
+<script src="{{ asset('vendor/editorjs/paragraph.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/header.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/delimiter.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/editorjs-alert.js') }}"></script>
@@ -20,6 +29,10 @@
 <script src="{{ asset('vendor/editorjs/table.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/raw.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/simple-image.js') }}"></script>
+<script src="{{ asset('vendor/editorjs/image.js') }}"></script>
+<script src="{{ asset('vendor/editorjs/link.js') }}"></script>
+<script src="{{ asset('vendor/editorjs/attaches.js') }}"></script>
+<script src="{{ asset('vendor/editorjs/codebox.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/code.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/warning.js') }}"></script>
 <script src="{{ asset('vendor/editorjs/marker.js') }}"></script>
@@ -28,6 +41,13 @@
 <script src="{{ asset('vendor/editorjs/codeflask.js') }}"></script>
 
 <script>
+    // Endpoints del editor. Detrás de `auth` y del gate `access-editorjs`.
+    window.editorJsEndpoints = {
+        upload: @js(route('admin.editorjs.upload')),
+        urlMetadata: @js(route('admin.editorjs.url-metadata')),
+        csrf: @js(csrf_token()),
+    };
+
     document.addEventListener('alpine:init', () => {
         Alpine.data('editorJsField', ({ state, placeholder, readOnly }) => ({
             editor: null,
@@ -115,27 +135,78 @@
 
             buildTools() {
                 const optional = (name) => (typeof window[name] !== 'undefined' ? window[name] : null);
+                const endpoints = window.editorJsEndpoints ?? {};
+
+                // Cabeceras de las herramientas que suben al servidor. Sin el
+                // token, Laravel devuelve un 419 y el editor sólo enseña
+                // «error al subir», que no dice nada.
+                const cabeceras = { 'X-CSRF-TOKEN': endpoints.csrf };
 
                 const tools = {
                     header: { class: Header, config: { levels: [1, 2, 3, 4, 5, 6], defaultLevel: 2 } },
                     delimiter: Delimiter,
                     list: { class: optional('NestedList') ?? List, inlineToolbar: true },
                     checklist: { class: Checklist, inlineToolbar: true },
-                    quote: { class: Quote, inlineToolbar: true },
-                    table: { class: Table, inlineToolbar: true },
+                    quote: {
+                        class: Quote,
+                        inlineToolbar: true,
+                        config: {
+                            quotePlaceholder: 'Texto de la cita',
+                            captionPlaceholder: 'Autor de la cita',
+                        },
+                    },
+                    table: { class: Table, inlineToolbar: true, config: { rows: 3, cols: 3 } },
                 };
 
+                if (optional('Paragraph')) tools.paragraph = { class: optional('Paragraph'), inlineToolbar: true };
                 if (optional('editorjsAlert')) tools.alert = optional('editorjsAlert');
                 if (optional('RawTool')) tools.raw = optional('RawTool');
-                if (optional('SimpleImage')) tools.image = optional('SimpleImage');
                 if (optional('Embed')) tools.embed = optional('Embed');
                 if (optional('Warning')) tools.warning = optional('Warning');
                 if (optional('Marker')) tools.Marker = { class: optional('Marker') };
                 if (optional('InlineCode')) tools.inlineCode = { class: optional('InlineCode') };
                 if (optional('TextVariantTune')) tools.textVariant = optional('TextVariantTune');
 
+                // Imagen: `ImageTool` sube al servidor y guarda la URL.
+                // `SimpleImage` es el respaldo, y guarda la imagen incrustada
+                // en el JSON como base64 —que es lo que había en v2 y lo que
+                // hincha la fila de `content_page_raw`.
+                if (optional('ImageTool') && endpoints.upload) {
+                    tools.image = {
+                        class: optional('ImageTool'),
+                        config: {
+                            types: 'image/*',
+                            field: 'file',
+                            endpoints: { byFile: endpoints.upload },
+                            additionalRequestHeaders: cabeceras,
+                        },
+                    };
+                } else if (optional('SimpleImage')) {
+                    tools.image = optional('SimpleImage');
+                }
+
+                if (optional('AttachesTool') && endpoints.upload) {
+                    tools.attaches = {
+                        class: optional('AttachesTool'),
+                        config: {
+                            field: 'file',
+                            endpoint: endpoints.upload,
+                            additionalRequestHeaders: cabeceras,
+                        },
+                    };
+                }
+
+                if (optional('LinkTool') && endpoints.urlMetadata) {
+                    tools.linkTool = {
+                        class: optional('LinkTool'),
+                        config: { endpoint: endpoints.urlMetadata },
+                    };
+                }
+
                 if (optional('editorjsCodeflask')) {
                     tools.code = optional('editorjsCodeflask');
+                } else if (optional('CodeBox')) {
+                    tools.code = optional('CodeBox');
                 } else if (optional('CodeTool')) {
                     tools.code = optional('CodeTool');
                 }
@@ -161,6 +232,8 @@
                                 'Table': 'Tabla', 'Warning': 'Advertencia',
                                 'Code': 'Código', 'Raw HTML': 'HTML Raw',
                                 'Image': 'Imagen', 'Link': 'Enlace',
+                                'Attaches': 'Adjunto', 'Alert': 'Aviso',
+                                'Marker': 'Resaltar', 'InlineCode': 'Código en línea',
                             },
                             ui: {
                                 'blockTunes': { 'toggler': { 'Click to tune': 'Configurar bloque' } },

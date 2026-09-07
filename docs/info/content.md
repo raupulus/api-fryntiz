@@ -216,10 +216,58 @@ Recupera el plugin JS original (`public/js/youtube_video_search.js` +
   generados por el propio editor (`lastSaved`) para no re-renderizar mientras
   se escribe, y un listener `focusout` vuelca el último cambio antes de pulsar
   «Guardar».
-- Integrado en `PagesRelationManager` (pestañas «Editor Visual (JSON)» / «HTML»).
-  El JSON se persiste en la relación `raw()` (`content_page_raw`, tipo `json`);
-  al editar se carga solo el raw de tipo `json` (no el más reciente de
-  cualquier tipo).
+- Integrado en `PagesRelationManager`, con tres pestañas sobre **el mismo
+  contenido**: «Editor visual», «JSON en crudo» y «HTML». El JSON se persiste en
+  la relación `raw()` (`content_page_raw`, tipo `json`); al editar se carga solo
+  el raw de tipo `json` (no el más reciente de cualquier tipo).
+
+  La primera se llamaba «Editor Visual (JSON)» y, con el `helperText`, daba a
+  entender que el editor visual se había sustituido por un pegado de JSON. **El
+  JSON es el formato de almacenamiento, no la interfaz.** La pestaña de JSON en
+  crudo existe a propósito —pegar el contenido de otra página es cómodo cuando
+  se sabe lo que se hace— y comparte estado con el editor visual: lo que se pega
+  en una se ve en la otra. Valida que sea un objeto con clave `blocks`.
+
+### Las herramientas, y las que se habían perdido
+
+Al migrar el editor de `main` a Filament se quedaron por el camino cinco
+herramientas cuyos ficheros JS **seguían en el repositorio**, sin cargarse:
+`paragraph`, `image`, `link`, `attaches` y `codebox`. La de imagen es la que más
+duele: se sustituyó por `SimpleImage`, que guarda la imagen **incrustada en el
+JSON como base64**, lo que hincha la fila de `content_page_raw` y no deja nada
+en el módulo de ficheros.
+
+`image`, `attaches` y `linkTool` necesitan endpoints, y ésa es la razón de que
+se cayeran. Están en `App\Http\Controllers\Admin\EditorJsController`:
+
+| Ruta | Para qué |
+|---|---|
+| `POST /admin/editorjs/upload` | Sube el fichero con `File::addFile()` al módulo `content-pages`, así que queda como una fila de `files` más: se ve en el panel, se sirve por `route('file.get', …)` y tiene miniaturas |
+| `GET /admin/editorjs/url-metadata` | Título, descripción e imagen de una página externa, para la tarjeta de `linkTool` |
+
+Las dos van detrás de `auth` y del gate **`access-editorjs`** (mismo criterio que
+abre el panel: `Admin`, `SuperAdmin` o `Editor`, y la cuenta activa). Devuelven
+el formato que exige Editor.js —`{success: 1, file: {…}}` y
+`{success: 1, meta: {…}}`—, **no** el `{success, message, data}` de la API v2:
+son endpoints del panel, no de la API pública.
+
+⚠️ **`url-metadata` hace una petición saliente a una URL que elige quien
+escribe**, o sea SSRF si se deja abierto: `http://169.254.169.254/` es el
+servicio de metadatos de media nube y `http://127.0.0.1:9200` es el
+Elasticsearch de al lado. Lleva cuatro cierres, y si se toca hay que mantener
+los cuatro:
+
+1. sólo `http` y `https` —nada de `file://`, `gopher://` ni `dict://`;
+2. el host se **resuelve** y ninguna de sus IPs puede ser privada, de bucle ni
+   de enlace local (`interna.midominio.com` puede apuntar a 10.0.0.5);
+3. sin seguir redirecciones: una redirección es otra URL que no ha pasado por
+   los dos puntos anteriores;
+4. tiempo de espera corto, `throttle:30,1` y sólo se leen los primeros 128 KB.
+
+Ante la duda responde `success: 0` y `linkTool` enseña el enlace pelado, que es
+un resultado perfectamente válido. Fijado por
+`tests/Feature/Filament/EditorJsTest.php`, que prueba las ocho URL que no debe
+tocar y comprueba que **no sale ninguna petición**.
 
 ## Galerías
 

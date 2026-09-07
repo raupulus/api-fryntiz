@@ -9,10 +9,12 @@ use App\Filament\Components\EditorJsField;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\HasImageFileUpload;
 use App\Models\Content\ContentAvailablePageRaw;
+use Closure;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -44,15 +46,54 @@ class PagesRelationManager extends RelationManager
             TextInput::make('slug')->maxLength(255)->label('Slug'),
             TextInput::make('order')->numeric()->default(0)->label('Orden'),
 
+            // Tres vías sobre el mismo contenido, no tres contenidos.
+            //
+            // La primera pestaña se llamaba «Editor Visual (JSON)», y entre eso
+            // y el `helperText` daba la impresión de que el editor visual se
+            // había sustituido por un pegado de JSON. El JSON es el **formato de
+            // almacenamiento** (`content_available_page_raw.type = 'json'`), no
+            // la interfaz: el editor visual es Editor.js y sigue siendo el sitio
+            // donde se escribe.
+            //
+            // La pestaña de JSON en crudo está a propósito —pegar el JSON de
+            // una página entera es cómodo cuando se sabe lo que se hace—, pero
+            // va la segunda y avisando.
             Tabs::make('Editor')->columnSpanFull()->tabs([
-                Tab::make('Editor Visual (JSON)')
-                    ->icon('heroicon-o-code-bracket')
+                Tab::make('Editor visual')
+                    ->icon('heroicon-o-pencil-square')
                     ->schema([
                         EditorJsField::make('content_json')
-                            ->label('Contenido (Editor.js)')
-                            ->helperText('Este editor guarda en formato JSON para clientes API.')
+                            ->label('Contenido')
+                            ->helperText('Editor.js. Se guarda en JSON, que es lo que consumen los clientes de la API.')
                             ->columnSpanFull(),
                     ]),
+
+                Tab::make('JSON en crudo')
+                    ->icon('heroicon-o-code-bracket')
+                    ->schema([
+                        // Mismo estado que el editor visual: lo que se pegue
+                        // aquí se ve allí al cambiar de pestaña, y al revés.
+                        Textarea::make('content_json')
+                            ->label('JSON de Editor.js')
+                            ->helperText('Para pegar el contenido de otra página o corregir a mano. Tiene que ser un objeto con una clave «blocks»; si no lo es, el editor visual lo ignora y se queda vacío.')
+                            ->rows(18)
+                            ->autosize()
+                            ->rules([
+                                fn (): Closure => function (string $attribute, $value, Closure $fail): void {
+                                    if (blank($value)) {
+                                        return;
+                                    }
+
+                                    $decodificado = json_decode((string) $value, true);
+
+                                    if (! is_array($decodificado) || ! isset($decodificado['blocks'])) {
+                                        $fail('Esto no es un JSON de Editor.js: falta la clave «blocks».');
+                                    }
+                                },
+                            ])
+                            ->columnSpanFull(),
+                    ]),
+
                 Tab::make('HTML')
                     ->icon('heroicon-o-document-text')
                     ->schema([

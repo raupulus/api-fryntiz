@@ -196,6 +196,14 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
 
+        // Quién puede usar los endpoints de Editor.js (subir ficheros y pedir
+        // metadatos de una URL externa). Es el mismo criterio que abre el panel
+        // de administración, donde vive el editor: un `Editor` edita contenido,
+        // así que también entra.
+        Gate::define('access-editorjs', function ($user) {
+            return $user->is_active && ($user->isAdmin() || $user->isEditor());
+        });
+
         // Gate: ver estadísticas globales
         Gate::define('view-statistics', function ($user) {
             return $user->isAdmin();

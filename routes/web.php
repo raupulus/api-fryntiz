@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\EditorJsController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileThumbnailController;
 use App\Http\Controllers\LanguageController;
@@ -70,6 +71,33 @@ Route::middleware('auth')->group(function () {
         return response()->file($path, ['Content-Type' => 'application/json']);
     })->name('scribe.postman');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Editor.js
+|--------------------------------------------------------------------------
+|
+| Lo que el editor del panel necesita del servidor. Las herramientas `image`,
+| `attaches` y `linkTool` no funcionan sin un endpoint detrás, y por eso se
+| quedaron fuera al migrar el editor a Filament: en v2 sólo quedó `SimpleImage`,
+| que incrusta la imagen en el JSON como base64 —lo que hincha la fila de
+| `content_page_raw` y no deja nada en el módulo de ficheros.
+|
+| Detrás de `auth` y del gate del panel: sube ficheros al servidor y hace
+| peticiones salientes, así que no puede estar abierto. El throttle acota lo
+| segundo, que es lo que un editor podría usar para escanear la red interna
+| aunque la comprobación de IP privada ya lo impida.
+*/
+Route::middleware(['auth', 'can:access-editorjs'])
+    ->prefix('admin/editorjs')
+    ->name('admin.editorjs.')
+    ->group(function () {
+        Route::post('/upload', [EditorJsController::class, 'upload'])->name('upload');
+
+        Route::get('/url-metadata', [EditorJsController::class, 'urlMetadata'])
+            ->middleware('throttle:30,1')
+            ->name('url-metadata');
+    });
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
