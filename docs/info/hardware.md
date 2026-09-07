@@ -273,16 +273,38 @@ Panel **Admin**, grupo de navegación **Hardware**
 (`HardwareDeviceResource`). Además de los campos del dispositivo, incluye dos
 RelationManagers en la ficha de edición:
 
-- **Componentes instalados** (`ComponentsRelationManager`).
 - **Tokens IoT** (`TokensRelationManager`): lista solo los tokens de ESE
   dispositivo (nombre `device:{id}`), permite *emitir* uno nuevo ligado al
   dispositivo y *revocar* los existentes. El listado global de todos los tokens
-  sigue disponible en el recurso **API Tokens** (grupo *Sistema*).
+  sigue disponible en el recurso **API Tokens** (grupo *Sistema*). **Va primera
+  a propósito**: Filament abre la primera del array y es la que se usa a diario.
+- **Componentes instalados** (`ComponentsRelationManager`).
 
-Además, la ficha de edición incluye una sección **"Stats de hardware"**
-(colapsada, solo lectura) al final del formulario que muestra el último estado
-conocido reportado por la API: `temp`, `voltage`, `battery_level`, `cpu`,
-`disk`, `ram`, `uptime`, `ip_local`, `ip_public` y `extra` (JSON formateado).
+### Estado del dispositivo: tarjetas, no formulario
+
+En lo alto de la ficha, **antes de la imagen**, va la sección **«Estado del
+dispositivo»**: el último estado conocido que ha reportado el propio cacharro
+por la API (`temp`, `voltage`, `battery_level`, `cpu`, `ram`, `disk`, `uptime`,
+`ip_local`, `ip_public` y `last_seen_at`).
+
+Son `TextEntry` en una rejilla de tarjetas, no campos de formulario. Antes eran
+diez `TextInput` deshabilitados dentro de una sección colapsada al final de la
+página: lectura disfrazada de formulario, y encima escondida detrás de un clic.
+
+Dos reglas al tocar esto:
+
+- **Cada tarjeta se oculta si su valor es `null`.** Un cacharro que no mide CPU
+  no tiene por qué enseñar un hueco, y la rejilla no debe descolocarse. Si el
+  dispositivo no ha reportado nada, la sección entera desaparece.
+- **`uptime` se pinta en unidades legibles** («5 meses, 12 días») con
+  `uptimeLegible()`. El valor crudo en segundos no dice nada de un vistazo.
+
+`extra` se queda aparte, en su propia sección colapsada y como `Textarea` de
+sólo lectura con el JSON formateado: es contenido libre y no cabe en una tarjeta.
+
+Nada de esto se persiste (`dehydrated(false)`): guardar la ficha no escribe en
+las columnas que rellena la API, y hay un test que lo comprueba
+(`tests/Feature/Filament/DeviceStatsTest.php`).
 
 ### Widget del dashboard — Estado de dispositivos
 

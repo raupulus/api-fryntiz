@@ -21,6 +21,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -45,10 +46,117 @@ class HardwareDeviceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Dispositivos';
 
+    /**
+     * Columnas del estado que rellena el propio dispositivo por la API.
+     *
+     * @var list<string>
+     */
+    private const LECTURAS = [
+        'temp', 'voltage', 'battery_level', 'cpu', 'ram', 'disk',
+        'uptime', 'ip_local', 'ip_public', 'last_seen_at',
+    ];
+
+    /**
+     * Una lectura del dispositivo, como tarjeta de sólo lectura.
+     *
+     * Se oculta cuando el valor es `null`, que es lo normal en un cacharro que
+     * no mide esa magnitud: una tarjeta vacía no informa de nada y descoloca la
+     * rejilla.
+     */
+    private static function tarjeta(
+        string $campo,
+        string $etiqueta,
+        string $icono,
+        ?string $unidad = null,
+    ): TextEntry {
+        return TextEntry::make($campo)
+            ->label($etiqueta)
+            ->icon($icono)
+            ->suffix($unidad === null ? null : ' '.$unidad)
+            ->placeholder('—')
+            ->visible(fn (?HardwareDevice $record): bool => $record?->getAttribute($campo) !== null)
+            ->extraAttributes([
+                'class' => 'rounded-xl bg-white p-4 shadow-sm dark:bg-gray-900',
+            ]);
+    }
+
+    /**
+     * ¿El dispositivo ha reportado algo alguna vez?
+     *
+     * Sin ninguna lectura, la sección entera sobra: mejor eso que una fila de
+     * huecos en la parte de arriba de la ficha.
+     */
+    private static function tieneAlgunaLectura(?HardwareDevice $record): bool
+    {
+        if ($record === null) {
+            return false;
+        }
+
+        foreach (self::LECTURAS as $campo) {
+            if ($record->getAttribute($campo) !== null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
+                // Arriba del todo y en tarjetas, no en un formulario: son
+                // lecturas que manda el propio cacharro por la API y aquí no se
+                // editan. Antes eran diez `TextInput` deshabilitados dentro de
+                // una sección colapsada al final de la página, o sea lectura
+                // disfrazada de formulario y encima escondida.
+                //
+                // Cada tarjeta se oculta si su valor es `null`: un dispositivo
+                // que no mide CPU no tiene por qué enseñar un hueco vacío.
+                Section::make('Estado del dispositivo')
+                    ->description('Último estado conocido, reportado por el propio dispositivo a través de la API. Solo lectura.')
+                    ->icon(Heroicon::OutlinedSignal)
+                    ->columns(['default' => 2, 'sm' => 3, 'xl' => 5])
+                    ->schema([
+                        self::tarjeta('temp', 'Temperatura', 'heroicon-o-fire', '°C'),
+                        self::tarjeta('voltage', 'Tensión', 'heroicon-o-bolt', 'V'),
+                        self::tarjeta('battery_level', 'Batería', 'heroicon-o-battery-100', '%'),
+                        self::tarjeta('cpu', 'CPU', 'heroicon-o-cpu-chip', '%'),
+                        self::tarjeta('ram', 'Memoria', 'heroicon-o-circle-stack', '%'),
+                        self::tarjeta('disk', 'Disco', 'heroicon-o-server', '%'),
+
+                        // Los segundos son lo que manda el cacharro, pero
+                        // «14212800» no dice nada de un vistazo.
+                        self::tarjeta('uptime', 'Encendido', 'heroicon-o-clock')
+                            ->formatStateUsing(fn ($state): string => self::uptimeLegible((int) $state)),
+
+                        self::tarjeta('ip_local', 'IP local', 'heroicon-o-computer-desktop'),
+                        self::tarjeta('ip_public', 'IP pública', 'heroicon-o-globe-alt'),
+                        self::tarjeta('last_seen_at', 'Última señal', 'heroicon-o-signal')
+                            ->formatStateUsing(fn ($state): string => $state?->diffForHumans() ?? ''),
+                    ])
+                    ->visible(fn (?HardwareDevice $record): bool => self::tieneAlgunaLectura($record))
+                    ->columnSpanFull(),
+
+                // Lo único que sigue siendo un campo de texto: es JSON libre y
+                // no cabe en una tarjeta.
+                Section::make('Métricas adicionales')
+                    ->description('Lo que el dispositivo manda en `extra`, tal cual.')
+                    ->collapsed()
+                    ->schema([
+                        Textarea::make('extra')
+                            ->hiddenLabel()
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->rows(6)
+                            ->formatStateUsing(fn ($state) => filled($state)
+                                ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                                : null)
+                            ->columnSpanFull(),
+                    ])
+                    ->visible(fn (?HardwareDevice $record): bool => filled($record?->extra))
+                    ->columnSpanFull(),
+
                 Section::make('Imagen principal')
                     ->schema([
                         // La imagen que ya tiene guardada. El uploader de abajo no puede
@@ -123,64 +231,6 @@ class HardwareDeviceResource extends Resource
                             ->placeholder('EJ: Azotea, Salón, Jardín'),
                     ])->columnSpanFull(),
 
-                Section::make('Stats de hardware')
-                    ->description('Último estado conocido reportado por el dispositivo a través de la API. Solo lectura.')
-                    ->columns(3)
-                    ->collapsed()
-                    ->schema([
-                        TextInput::make('temp')
-                            ->label('Temperatura (°C)')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('voltage')
-                            ->label('Tensión (V)')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('battery_level')
-                            ->label('Nivel de batería (%)')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('cpu')
-                            ->label('Uso de CPU (%)')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('disk')
-                            ->label('Uso de disco (%)')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('ram')
-                            ->label('Uso de memoria (%)')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('uptime')
-                            ->label('Uptime (segundos)')
-                            ->disabled()
-                            ->dehydrated(false)
-                            // Los segundos son lo que manda el cacharro, pero
-                            // «14212800» no dice nada de un vistazo. La lectura
-                            // va debajo, en el hueco que ya ocupa el campo, sin
-                            // deformar el formulario.
-                            ->helperText(fn (?HardwareDevice $record): ?string => $record?->uptime === null
-                                ? null
-                                : self::uptimeLegible((int) $record->uptime)),
-                        TextInput::make('ip_local')
-                            ->label('IP Local')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('ip_public')
-                            ->label('IP Pública')
-                            ->disabled()
-                            ->dehydrated(false),
-                        Textarea::make('extra')
-                            ->label('Métricas adicionales (extra)')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->rows(4)
-                            ->formatStateUsing(fn ($state) => filled($state)
-                                ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-                                : null)
-                            ->columnSpanFull(),
-                    ])->columnSpanFull(),
             ]);
     }
 
@@ -305,9 +355,11 @@ class HardwareDeviceResource extends Resource
 
     public static function getRelations(): array
     {
+        // Los tokens primero: Filament abre la primera pestaña, y de las dos
+        // ésta es la que se usa a diario.
         return [
-            RelationManagers\ComponentsRelationManager::class,
             RelationManagers\TokensRelationManager::class,
+            RelationManagers\ComponentsRelationManager::class,
         ];
     }
 
