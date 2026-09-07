@@ -299,7 +299,7 @@
                 {{-- Smart Plant --}}
                 <a href="{{ route('smartplant.index') }}" class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
                     <div class="w-12 h-12 bg-surface-container-lowest rounded-lg flex items-center justify-center mb-6">
-                        <span class="material-symbols-outlined text-green-700">potted_plant</span>
+                        <span class="material-symbols-outlined text-on-success-container">potted_plant</span>
                     </div>
                     <h3 class="text-xl font-bold mb-3 text-on-surface">Smart Plant</h3>
                     <p class="text-secondary text-sm mb-8 flex-grow">

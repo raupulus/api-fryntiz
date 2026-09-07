@@ -418,6 +418,21 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ## Imágenes: por qué el uploader no enseña la que ya hay
 
+**Qué se veía.** En cualquier ficha del panel que tenga imagen —una tecnología,
+un dispositivo de hardware, una plataforma, un contenido…— al abrirla para
+editarla el recuadro de la imagen aparecía **vacío**, como si el registro no
+tuviera ninguna, aunque en la web pública sí se viera. Se notó al traer las
+imágenes de la v1 al `storage`, porque parecía que el problema era ése.
+
+**De dónde viene.** Del propio panel, desde que se generó
+(`97d8c65`, 2026-05-28, «generate CRUD for all módules admin backend»). El
+patrón se copió a cada recurso nuevo según se iban añadiendo (`5baeb90`,
+`ce976d8`), así que **el panel nunca ha enseñado una imagen ya guardada**: no es
+una regresión ni tiene nada que ver con el `storage` ni con la migración de
+datos. Corregido en `fc7845e`.
+
+**Por qué pasaba.**
+
 Los recursos suben imágenes con `ImageCropperUpload::makeImage('image_id')`, es
 decir, un `FileUpload` de Filament apuntando a una **clave foránea** a la tabla
 `files`. Un `FileUpload` espera una ruta dentro de un disco, y la URL real de

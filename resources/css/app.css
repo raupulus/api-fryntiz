@@ -64,7 +64,11 @@
 html.dark {
     --color-primary: #adc6ff;
     --color-primary-container: #4d8eff;
-    --color-on-primary: #002e6a;
+    /* Era #002e6a, que sobre `primary-container` daba 4,15:1 y se quedaba por
+     * debajo del 4,5:1 de WCAG AA para texto normal —y ahí van los botones
+     * primarios (`components/button.blade.php`, `errors/_page.blade.php`).
+     * Mismo tono, más oscuro: 4,95:1. El color del botón no cambia. */
+    --color-on-primary: #00234a;
     --color-secondary: #4fdbc8;
     --color-secondary-container: #04b4a2;
     --color-tertiary: #ffb786;

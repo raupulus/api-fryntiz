@@ -13,6 +13,7 @@ use App\Models\User;
 use Database\Seeders\RolesTableSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -98,6 +99,64 @@ class KeyCounterTablesTest extends TestCase
         Livewire::test(ListMice::class)
             ->assertSee('Thinkpad de la mesa')
             ->assertSee('Domingo');
+    }
+
+    /**
+     * La columna «Dispositivo» pasó de pintar `hardware_device_id` —una columna
+     * de la propia fila— a resolver la relación. Eso es exactamente cómo se
+     * mete un N+1 en una tabla paginada sin darse cuenta: el número de
+     * consultas no puede crecer con el número de filas.
+     */
+    #[Test]
+    public function la_columna_de_dispositivo_no_mete_una_consulta_por_fila(): void
+    {
+        $dispositivos = collect(range(1, 5))->map(fn (int $i) => HardwareDevice::create([
+            'user_id' => $this->user->id,
+            'name' => "cacharro-{$i}",
+            'name_friendly' => "Cacharro {$i}",
+        ]));
+
+        $rachas = function (int $cuantas) use ($dispositivos): void {
+            foreach (range(1, $cuantas) as $i) {
+                Keyboard::create([
+                    'user_id' => $this->user->id,
+                    'hardware_device_id' => $dispositivos[$i % 5]->id,
+                    'start_at' => now()->subMinutes($i),
+                    'end_at' => now()->subMinutes($i),
+                    'duration' => 60,
+                    'pulsations' => 100,
+                    'pulsations_special_keys' => 1,
+                    'pulsation_average' => 1.0,
+                    'score' => 5,
+                    'weekday' => 0,
+                ]);
+            }
+        };
+
+        $consultasCon = function (int $filas) use ($rachas): int {
+            Keyboard::query()->delete();
+            $rachas($filas);
+
+            DB::flushQueryLog();
+            DB::enableQueryLog();
+
+            Livewire::test(ListKeyboards::class)->assertSuccessful();
+
+            $total = count(DB::getQueryLog());
+            DB::disableQueryLog();
+
+            return $total;
+        };
+
+        $conCinco = $consultasCon(5);
+        $conTreinta = $consultasCon(30);
+
+        $this->assertSame(
+            $conCinco,
+            $conTreinta,
+            "Con 5 filas hace {$conCinco} consultas y con 30 hace {$conTreinta}: "
+            .'la columna «Dispositivo» está resolviendo la relación fila a fila.',
+        );
     }
 
     /**
