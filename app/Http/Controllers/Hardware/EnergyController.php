@@ -225,6 +225,27 @@ class EnergyController extends Controller
             ]];
         });
 
+        // Las tarjetas salían en el orden que le conviniera a PostgreSQL: la
+        // consulta de arriba no lleva `ORDER BY`, así que ni siquiera era
+        // estable entre recargas. Arriba lo que está dando señales ahora.
+        //
+        // `sortByDesc` con un array compara elemento a elemento, así que esto
+        // es una ordenación en cascada y no tres ordenaciones encadenadas.
+        $hardwareItems = $hardwareItems->sortByDesc(function ($hw) use ($devicesStats) {
+            $stats = $devicesStats[$hw->id];
+
+            return [
+                // 1. Los que han reportado algo en la última hora, primero.
+                ($stats->generated_now > 0 || $stats->consumed_now > 0) ? 1 : 0,
+                // 2. Entre ésos, por lo que han movido hoy.
+                $stats->generated_today + $stats->consumed_today,
+                // 3. Y a igualdad, por el acumulado de siempre, que es lo que
+                //    distingue a un cacharro parado hoy de uno que no ha
+                //    funcionado nunca.
+                $stats->generated_historical_kwh + $stats->consumed_historical_kwh,
+            ];
+        })->values();
+
         return view('hardware.energy.index', [
             'generator' => $generator,
             'load' => $load,
