@@ -13,9 +13,11 @@
 #  - No reiniciaba los workers de cola. Un worker es un proceso de PHP de larga
 #    vida: se queda con el código viejo en memoria hasta que se le dice que pare.
 #
-#  - NO llama a `project:clear`: ese comando regenera la APP_KEY salvo que se le
-#    pase `--no-key`, y en un pipeline automático eso cerraría la sesión de todo
-#    el mundo en cada despliegue. Aquí se cachea directamente lo que hace falta.
+#  - NO llama a `project:clear`, aunque desde que ese comando decide por APP_ENV
+#    ya sería seguro hacerlo (con APP_ENV=production conserva la clave y no vacía
+#    las colas). Este script cachea directamente lo que hace falta, en el orden
+#    que le toca dentro del despliegue y con la aplicación en mantenimiento;
+#    `project:clear` es para ejecutarlo a mano tras un `git pull`.
 #
 set -euo pipefail
 

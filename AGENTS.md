@@ -426,7 +426,7 @@ Todos los comandos Artisan personalizados del proyecto están especificados y do
 
 ### Comandos del Proyecto
 - `php artisan project:install`: Instalación guiada del entorno (migraciones, seeders y storage:link).
-- `php artisan project:clear`: Limpieza completa de todas las cachés, colas (`queue:clear`), regeneración segura de clave en `.env` (`key:generate --force`, con confirmación explícita si `app()->environment('production')` y no se pasa `--force`) y recomposición del autoload de Composer. Alias: `xerintel:clear`.
+- `php artisan project:clear`: Limpieza completa de las cachés y recomposición del autoload de Composer. **Decide por `APP_ENV` y no necesita flags**: en desarrollo regenera la `APP_KEY` y vacía las colas; en producción conserva la clave, hace `queue:restart` en vez de `queue:clear` y recachea al terminar. `--key` fuerza la rotación de clave en producción (con confirmación salvo `--force`), `--no-key` la impide siempre, `--production` fuerza el recacheo fuera de producción. Alias: `xerintel:clear`.
 - `php artisan project:dummy`: Generación de datos de ejemplo corporativos realistas en todos los módulos para pruebas de cliente y desarrollo local.
 - `php artisan force:clear`: Limpieza agresiva de caché para entornos de desarrollo con inconsistencias.
 - `php artisan sitemap:generate`: Generación del sitemap XML público de todos los sitios navegables con metadatos de frecuencia y prioridad.

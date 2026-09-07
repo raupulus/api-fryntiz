@@ -19,12 +19,42 @@ Listado completo de los comandos Artisan personalizados del proyecto, agrupados 
 |---------|-------|-------------|---------|
 | `project:check-config` | — | **Preflight de despliegue.** Comprueba los ajustes que, mal puestos, no producen ningún error. Ver abajo. | `app/Console/Commands/ProjectCheckConfigCommand.php` |
 | `project:install` | `xerintel:install` | Instalación inicial: migra, semilla básica y enlaces de storage. | `app/Console/Commands/ProjectInstallCommand.php` |
-| `project:clear` | `xerintel:clear` | Limpia todas las cachés, colas, regenera clave segura y recompone autoload. | `app/Console/Commands/ProjectClearCommand.php` |
+| `project:clear` | `xerintel:clear` | Limpia las cachés y recompone el autoload. **Decide por `APP_ENV`**: ver abajo. | `app/Console/Commands/ProjectClearCommand.php` |
 | `project:dummy` | `xerintel:dummy` | Genera contenido y telemetría corporativa de ejemplo para todos los módulos. | `app/Console/Commands/ProjectDummyCommand.php` |
 | `force:clear` | — | Variante agresiva de `project:clear` para entornos rotos. | `app/Console/Commands/ForceClearCommand.php` |
 | `sitemap:generate` | — | Genera el sitemap XML público navegable del sitio. | `app/Console/Commands/SitemapGeneratorCommand.php` |
 | `mcp:inspector` | — | Lanza el inspector de MCP contra el servidor del proyecto. | `app/Console/Commands/Mcp/InspectorCommand.php` |
 | `serve` | — | Sobrescribe el `serve` nativo de Laravel: si `BROADCAST_CONNECTION=reverb`, arranca también `reverb:start` en segundo plano (mismo ciclo de vida, se detiene al cerrar `serve`). | `app/Console/Commands/ServeCommand.php` |
+
+### `project:clear` — lo que hay que ejecutar tras cada subida
+
+```bash
+php artisan project:clear
+```
+
+Sin flags. El comando mira `APP_ENV` y hace lo correcto en cada lado:
+
+| | Desarrollo | Producción |
+|-|-|-|
+| `APP_KEY` | se regenera | se conserva |
+| Colas | `queue:clear` | `queue:restart` |
+| Recacheo (`config`, `route`, `view`, `event`) | no | sí |
+
+En producción no toca la clave —regenerarla en un despliegue cerraría todas las sesiones y dejaría
+sin descifrar los `two_factor_secret` de Fortify— y no vacía las colas, porque la conexión es
+`database` y `queue:clear` borraría los trabajos pendientes. Hace `queue:restart`, que es lo que hay
+que hacer al desplegar: un worker lleva el código en memoria desde que arrancó.
+
+Los flags siguen ahí para forzar la otra columna, pero no hacen falta para el uso normal:
+
+| Flag | Para qué |
+|------|----------|
+| `--key` | Regenerar la `APP_KEY` **también en producción**. Es una rotación de clave, no un despliegue: pide confirmación salvo `--force`. |
+| `--no-key` | No regenerarla nunca. Manda sobre `--key`. |
+| `--production` | Recachear al terminar aunque el entorno no sea producción. |
+| `--force` | No preguntar nada. |
+
+Ver [decisiones-tecnicas.md D15](decisiones-tecnicas.md).
 
 ### `project:check-config` — antes de abrir al público
 

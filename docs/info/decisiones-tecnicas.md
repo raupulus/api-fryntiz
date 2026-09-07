@@ -452,21 +452,37 @@ Si no existe en absoluto, **es un bug**, no ruido de tipado: el valor será `nul
 condición que lo use dará siempre el mismo resultado. Los cinco de arriba eran de ese tipo.
 
 
-### D15 · `project:clear` regenera la `APP_KEY` por defecto, y así se queda
+### D15 · `project:clear` decide por `APP_ENV`, y en desarrollo regenera la `APP_KEY`
 
-El comando regenera la clave salvo que se pase `--no-key`.
+`php artisan project:clear`, sin ningún flag, tiene que ser lo correcto en los dos lados. Ése era el
+objetivo del comando —algo sencillo de recordar y de ejecutar tras cada subida— y se había perdido:
+en el servidor había que acordarse de `--production --no-key --force`, y olvidar `--no-key` una sola
+vez regeneraba la clave de producción.
 
-**Por qué.** `project:clear` deja el proyecto **como recién instalado**: ése es su propósito.
-Conservar la clave sería hacer media limpieza. No es un descuido ni un comportamiento heredado.
+| | Desarrollo | Producción |
+|-|-|-|
+| `APP_KEY` | se regenera | se conserva (hace falta `--key`) |
+| Colas | `queue:clear` | `queue:restart` |
+| Recacheo | no | sí |
 
-**Las salvaguardas ya están donde deben.** En producción pide confirmación explícita, avisa de
-cuántos usuarios tienen 2FA activo —Fortify cifra `two_factor_secret` con la `APP_KEY`, así que esos
-usuarios tendrán que volver a darlo de alta— y `--no-key` existe precisamente para limpiar sin tocar
-la clave.
+**En desarrollo regenera la clave, y así se queda.** `project:clear` deja el proyecto **como recién
+instalado**: ése es su propósito ahí. Conservar la clave sería hacer media limpieza. No es un
+descuido ni un comportamiento heredado.
 
 ⚠️ **Esto lleva propuesto en varias auditorías seguidas**, siempre con el mismo argumento («el
-comportamiento por defecto es destructivo»). Está decidido, revisado y confirmado más de una vez.
-**No hay que invertir la lógica.** El comentario del propio comando remite aquí.
+comportamiento por defecto es destructivo»). En desarrollo **no hay que invertir la lógica**; lo que
+había que arreglar era producción, y ya está arreglado. El comentario del propio comando remite aquí.
+
+**Por qué en producción es al revés.** Allí el comando se ejecuta después de cada despliegue.
+Regenerar la clave en ese momento invalida las sesiones abiertas y deja sin descifrar los
+`two_factor_secret` que Fortify guarda cifrados —los tokens de Sanctum no, que se guardan hasheados—.
+Rotar la clave es una operación aparte, que no tiene nada que ver con subir código: para eso está
+`--key`, que además sigue pidiendo confirmación salvo `--force`.
+
+**Y por qué las colas no se vacían en producción.** La conexión por defecto es `database`, así que
+`queue:clear` borra la tabla `jobs`: correos sin enviar, PDFs de currículum sin generar. Un
+despliegue no tira trabajo pendiente. Lo que sí hace falta ahí es `queue:restart`, porque un worker
+lleva el código en memoria desde que arrancó y seguiría ejecutando el viejo.
 
 ### D16 · `guzzlehttp/guzzle` se queda en 7 — asunto cerrado
 

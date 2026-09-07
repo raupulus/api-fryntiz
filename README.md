@@ -194,16 +194,17 @@ php artisan user:make-admin --superadmin
 
 # 4. Limpieza y compilación de cachés de producción
 #
-#    OJO: `project:clear` REGENERA LA APP_KEY salvo que se le pase `--no-key`.
-#    Es deliberado en este proyecto —cierra todas las sesiones abiertas y obliga
-#    a los clientes a recargar—, pero tiene una consecuencia que no se ve venir:
-#    el 2FA de Fortify guarda `two_factor_secret` cifrado con esa clave, así que
-#    quien lo tuviera activo se queda sin poder completar el segundo factor y hay
-#    que volver a dárselo de alta. Los tokens de API de Sanctum NO se ven
-#    afectados: se guardan hasheados, no cifrados.
+#    Sin flags: con APP_ENV=production el comando conserva la APP_KEY, no vacía
+#    las colas (haría `queue:restart`, no `queue:clear`) y recachea al terminar.
+#    Es el mismo comando que se ejecuta en desarrollo, donde sí regenera la clave.
 #
-#    Para desplegar sin tocar la clave:  php artisan project:clear --production --no-key
-php artisan project:clear --production
+#    Para rotar la clave a propósito —cosa que NO toca en un despliegue— hay que
+#    pedirlo: `php artisan project:clear --key`. Ojo con eso: cierra todas las
+#    sesiones abiertas y el 2FA de Fortify guarda `two_factor_secret` cifrado con
+#    esa clave, así que quien lo tuviera activo se queda sin poder completar el
+#    segundo factor y hay que volver a dárselo de alta. Los tokens de API de
+#    Sanctum NO se ven afectados: se guardan hasheados, no cifrados.
+php artisan project:clear
 
 # 5. Supervisor y Cron  (los dos son obligatorios, no opcionales)
 #
@@ -270,7 +271,7 @@ Catálogo completo en [`docs/info/commands.md`](docs/info/commands.md). Los coma
 
 ```bash
 php artisan project:install              # Inicializar proyecto completo (desarrollo)
-php artisan project:clear                # Limpiar cachés, colas, regenerar clave y recomponer autoload
+php artisan project:clear                # Limpiar cachés (en producción, además, recachea y respeta la APP_KEY)
 php artisan project:dummy                # Poblar base de datos con contenido corporativo realista
 php artisan sitemap:generate             # Generar sitemap.xml navegable del sitio
 php artisan content:publish              # Publicar contenidos programados vencidos

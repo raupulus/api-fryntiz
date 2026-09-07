@@ -11,18 +11,45 @@ use Symfony\Component\Process\Process;
 class ProjectClearCommand extends Command
 {
     protected $signature = 'project:clear
-        {--production : Recachear después de limpiar}
-        {--no-key : No regenerar la clave de aplicación APP_KEY}
-        {--force : Forzar la ejecución sin confirmación en producción}';
+        {--key : Regenerar la APP_KEY también en producción}
+        {--no-key : No regenerar la APP_KEY}
+        {--production : Recachear al terminar aunque el entorno no sea producción}
+        {--force : No preguntar nada}';
 
     /** @var array<string> */
     protected $aliases = ['xerintel:clear'];
 
-    protected $description = 'Limpia todas las cachés, colas, regenera la clave del .env de forma segura y recompone el autoload';
+    protected $description = 'Limpia las cachés del proyecto; en producción además recachea, respeta la APP_KEY y no vacía las colas';
 
+    /**
+     * `php artisan project:clear`, sin nada más, tiene que ser lo correcto en
+     * los dos lados. Ése era el objetivo del comando y se había perdido: en el
+     * servidor había que acordarse de `--production --no-key --force`, y
+     * olvidarse de `--no-key` regeneraba la APP_KEY de producción.
+     *
+     * Ahora el comando mira `APP_ENV` y decide él:
+     *
+     * | | Desarrollo | Producción |
+     * |-|-|-|
+     * | APP_KEY | se regenera | se conserva (hace falta `--key`) |
+     * | Colas | `queue:clear` | `queue:restart` |
+     * | Recacheo | no | sí |
+     *
+     * Los flags siguen ahí para forzar cualquiera de las dos columnas desde el
+     * otro lado, pero ya no hay que recordarlos para el uso normal.
+     */
     public function handle(): int
     {
+        // Se resuelve una vez y se pasa a las decisiones. `config:clear` borra
+        // el fichero de caché, no la configuración ya cargada en memoria, así
+        // que este valor es el mismo antes y después de limpiar.
+        $enProduccion = app()->environment('production');
+
         $this->info('Iniciando limpieza completa del proyecto...');
+
+        if ($enProduccion) {
+            $this->line('▶ Entorno «production»: se conserva la APP_KEY, no se vacían las colas y se recachea al terminar.');
+        }
 
         // 1. Limpieza de cachés de la aplicación
         // Antes de tocar nada: ¿la clave que está usando la aplicación es la
@@ -59,32 +86,32 @@ class ProjectClearCommand extends Command
             // Ignorar si no está instalado o disponible
         }
 
-        // 2. Limpieza de colas
-        $this->line('▶ Limpiando colas de trabajo (queue:clear)...');
-        try {
-            $this->call('queue:clear', ['--force' => true]);
-        } catch (\Throwable $e) {
-            $this->warn('Aviso al limpiar colas: '.$e->getMessage());
+        // 2. Colas
+        //
+        // En producción NO se vacían. La conexión por defecto es `database`, o
+        // sea que `queue:clear` borra la tabla `jobs`: correos sin enviar, PDFs
+        // de currículum sin generar, lo que hubiera esperando. Un despliegue no
+        // tira trabajo pendiente.
+        //
+        // Lo que sí hace falta ahí es lo contrario: un worker lleva el código
+        // cargado en memoria desde que arrancó y seguiría ejecutando el viejo
+        // después de desplegar. `queue:restart` le dice que termine el job que
+        // tenga entre manos y salga, para que el supervisor lo levante con el
+        // código nuevo.
+        if ($enProduccion) {
+            $this->line('▶ Avisando a los workers para que recojan el código nuevo (queue:restart)...');
+            $this->call('queue:restart');
+        } else {
+            $this->line('▶ Limpiando colas de trabajo (queue:clear)...');
+            try {
+                $this->call('queue:clear', ['--force' => true]);
+            } catch (\Throwable $e) {
+                $this->warn('Aviso al limpiar colas: '.$e->getMessage());
+            }
         }
 
         // 3. Regeneración de clave segura en .env
-        if (! $this->option('no-key')) {
-            // ⚠️ REGENERAR POR DEFECTO ES INTENCIONADO. NO INVERTIRLO.
-            //
-            // Cada auditoría propone lo mismo: que la clave sólo se regenere
-            // con un flag explícito, porque «el comportamiento por defecto es
-            // destructivo». Y sí lo es: ése es justamente el propósito del
-            // comando. `project:clear` deja el proyecto como recién instalado;
-            // conservar la clave sería hacer media limpieza.
-            //
-            // Las salvaguardas ya están puestas donde tienen que estar: en
-            // producción pide confirmación explícita, avisa de cuántos usuarios
-            // tienen 2FA, y existe `--no-key` para quien quiera limpiar sin
-            // tocar la clave.
-            //
-            // Está decidido y revisado varias veces. Ver
-            // docs/info/decisiones-tecnicas.md D15 antes de volver a proponerlo.
-            //
+        if ($this->debeRegenerarClave($enProduccion)) {
             // Lo que no se ve venir es el 2FA: Fortify guarda
             // `two_factor_secret` CIFRADO con la APP_KEY, así que quien lo tenga
             // activo se queda sin poder completar el segundo factor y hay que
@@ -101,7 +128,7 @@ class ProjectClearCommand extends Command
 
             $regenerar = true;
 
-            if (app()->environment('production') && ! $this->option('force')) {
+            if ($enProduccion && ! $this->option('force')) {
                 $regenerar = $this->confirm(
                     'Vas a regenerar APP_KEY en producción: esto invalida sesiones, tokens y cualquier '
                     .'dato cifrado con la clave actual. ¿Deseas continuar?'
@@ -122,6 +149,8 @@ class ProjectClearCommand extends Command
             } else {
                 $this->warn('Se conserva la APP_KEY actual. El resto de la limpieza continúa.');
             }
+        } else {
+            $this->line('▶ Se conserva la APP_KEY actual.');
         }
 
         // 4. Recomponer autoload de Composer
@@ -145,8 +174,8 @@ class ProjectClearCommand extends Command
             $this->warn('Aviso al recomponer autoload: '.trim($process->getErrorOutput()));
         }
 
-        // 5. Recacheo opcional para producción
-        if ($this->option('production')) {
+        // 5. Recacheo: siempre en producción, y bajo petición fuera de ella.
+        if ($enProduccion || $this->option('production')) {
             $this->newLine();
             $this->info('Recacheando optimizaciones para producción...');
             $this->call('config:cache');
@@ -159,6 +188,33 @@ class ProjectClearCommand extends Command
         $this->info('✅ El proyecto ha quedado limpio y preparado.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * ¿Se regenera la APP_KEY?
+     *
+     * ⚠️ FUERA DE PRODUCCIÓN, REGENERAR POR DEFECTO ES INTENCIONADO. NO
+     * INVERTIRLO. Cada auditoría propone lo mismo: que la clave sólo se
+     * regenere con un flag explícito, porque «el comportamiento por defecto es
+     * destructivo». Y sí lo es: ése es justamente el propósito del comando en
+     * desarrollo, dejar el proyecto como recién instalado; conservar la clave
+     * sería hacer media limpieza. Ver docs/info/decisiones-tecnicas.md D15
+     * antes de volver a proponerlo.
+     *
+     * En producción es al revés y no por prudencia genérica: allí el comando se
+     * ejecuta después de cada despliegue, y regenerar la clave en ese momento
+     * invalida las sesiones abiertas y deja sin descifrar los
+     * `two_factor_secret`. Hace falta pedirlo a propósito con `--key`, que es
+     * lo suyo para una rotación de clave, que no tiene nada que ver con subir
+     * código.
+     */
+    private function debeRegenerarClave(bool $enProduccion): bool
+    {
+        if ($this->option('no-key')) {
+            return false;
+        }
+
+        return $enProduccion ? (bool) $this->option('key') : true;
     }
 
     /**
