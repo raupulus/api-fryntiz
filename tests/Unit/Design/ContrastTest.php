@@ -122,8 +122,7 @@ class ContrastTest extends TestCase
      *
      * No se arregla aquí porque es **el color de acento de toda la plataforma**
      * y bajarle la luminosidad cambia cómo se ve el sitio entero: es una
-     * decisión de identidad visual. Ver `docs/info/DESIGN.md` y
-     * `docs/planning/DUDAS-pendientes-2026-09-07.md`.
+     * decisión de identidad visual. Ver `docs/info/DESIGN.md`.
      *
      * Este test **falla el día que se arregle**, para que se mueva a la lista de
      * arriba y deje de estar en deuda.

@@ -403,6 +403,44 @@ Ah del día llevan el lado en el título: «Generado (panel)» y «Consumido
 **Regla al tocar esta página: los vatios y los vatios-hora se comparan; los
 amperios y los amperios-hora, sólo dentro del mismo lado.**
 
+## Los roles: una fila por papel, no por dispositivo
+
+Una fila de `hardware_energy` es **un papel de un dispositivo**, no el
+dispositivo. Un mismo aparato puede cumplir varios a la vez, y entonces tiene
+**una fila por cada uno**:
+
+| `role` | Qué mide | `is_generator` | Escribe en |
+|---|---|---|---|
+| `generator` | lo que **produce**: el panel solar, el alternador | `true` | `hardware_power_generators` |
+| `load` | lo que **consume**: la salida de carga, un router, una Raspberry | `false` | `hardware_power_loads` |
+| `storage` | lo que **almacena**: el banco de baterías | `false` | — |
+
+`storage` se etiqueta **«Batería»** en todo el panel; el valor guardado es
+`storage` porque es el que ya existía en `HardwareEnergy::ROLE_STORAGE`.
+
+**Por qué una fila por papel y no una por dispositivo:** así se agrupa, se filtra
+y se asocia por rol. Los totales de generación de una instalación cuentan sólo
+sus `generator`, y el consumo sólo sus `load`, sin tener que mirar de qué
+aparato viene cada lectura.
+
+Un controlador solar es el caso completo: mide lo que entra del panel
+(`generator`), lo que sale por la carga (`load`) y lo que hay en la batería
+(`storage`). Tres filas, mismo `hardware_device_id`.
+
+### La tensión: manda la reportada, la nominal es el respaldo
+
+**Para calcular se toma siempre la tensión que reporta el aparato en la lectura.**
+`nominal_voltage` es el **fallback**, y sólo entra cuando esa tensión falta o no
+es creíble. Ver más abajo por qué eso importa y por qué hoy está a `NULL`.
+
+Y la tensión **es de cada rol**, no del dispositivo: en el Renogy, el
+`generator` mide el panel y el `load` mide la batería, que no están a la misma
+tensión. Las estadísticas tienen que tener en cuenta el rol de cada elemento
+para no comparar magnitudes de lados distintos — es lo que se corrigió en
+`/hardware/energy` (ver «Las tensiones» más abajo).
+
+---
+
 ### `nominal_voltage` está a `NULL` en los ocho elementos, y así se queda
 
 **No es un descuido: es lo correcto para esta plataforma.** Se planteó rellenarlo
