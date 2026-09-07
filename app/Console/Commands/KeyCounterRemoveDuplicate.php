@@ -6,9 +6,29 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class KeyCounterRemoveDuplicate
+ *
+ * La versión anterior reprocesaba las tablas enteras en cada ejecución
+ * semanal (sin índice de apoyo, sin ventana temporal), lo que se traducía en
+ * horas de trabajo cada vez más largas conforme crecía el histórico.
+ *
+ * Los duplicados solo se generan por reintentos de los dispositivos IoT al
+ * insertar, es decir, siempre entre filas recientes entre sí — nunca contra
+ * una fila de hace meses. Por eso el modo normal solo revisa una ventana
+ * (`--window-days`, 15 por defecto: el doble de la cadencia semanal, de
+ * margen) en vez del histórico completo.
+ *
+ * `--force` es el interruptor de seguridad: sin él, el comando solo cuenta y
+ * registra lo que borraría, sin tocar datos. Cuando se confirme que la
+ * detección funciona como se espera, basta con añadir `--force` a la llamada
+ * en `routes/console.php` para que el borrado sea real.
+ *
+ * `--full` ignora la ventana y revisa la tabla completa. Sirve para la
+ * limpieza puntual de duplicados históricos (anteriores a esta versión del
+ * comando), que la ventana nunca llegaría a tocar. Uso manual, no programado.
  */
 class KeyCounterRemoveDuplicate extends Command
 {
@@ -17,7 +37,10 @@ class KeyCounterRemoveDuplicate extends Command
      *
      * @var string
      */
-    protected $signature = 'keycounter:remove_duplicate';
+    protected $signature = 'keycounter:remove_duplicate
+        {--force : Ejecuta el borrado real. Sin este flag no se borra nada, solo se cuenta y registra.}
+        {--window-days=15 : Días hacia atrás a revisar en modo normal.}
+        {--full : Ignora la ventana temporal y revisa la tabla completa (uso puntual, no programado).}';
 
     /**
      * The console command description.
@@ -41,26 +64,95 @@ class KeyCounterRemoveDuplicate extends Command
      */
     public function handle(): void
     {
-        $this->removeDuplicates('keycounter_keyboard', ['start_at', 'end_at', 'pulsations', 'hardware_device_id']);
-        $this->removeDuplicates('keycounter_mouse', ['start_at', 'end_at', 'total_clicks', 'hardware_device_id']);
+        $force = (bool) $this->option('force');
+        $full = (bool) $this->option('full');
+        $windowDays = max(1, (int) $this->option('window-days'));
+
+        $this->processTable(
+            'keycounter_keyboard',
+            ['hardware_device_id', 'start_at', 'end_at', 'pulsations'],
+            $windowDays,
+            $full,
+            $force,
+        );
+
+        $this->processTable(
+            'keycounter_mouse',
+            ['hardware_device_id', 'start_at', 'end_at', 'total_clicks'],
+            $windowDays,
+            $full,
+            $force,
+        );
     }
 
     /**
-     * Remove duplicates accordingly
+     * Detecta (y, en modo --force, borra) los duplicados de una tabla.
      */
-    private function removeDuplicates(string $table, array $groupByColumns): void
-    {
+    private function processTable(
+        string $table,
+        array $groupByColumns,
+        int $windowDays,
+        bool $full,
+        bool $force,
+    ): void {
+        $start = microtime(true);
         $groupByCols = implode(', ', $groupByColumns);
+        $windowClause = $full ? '' : "WHERE created_at >= now() - interval '{$windowDays} days'";
 
-        // CTE (Common Table Expression) to identify duplicates
-        $query = "
-            DELETE FROM $table
-            WHERE id NOT IN (
-                SELECT min(id) FROM $table
-                GROUP BY $groupByCols
-            );
-        ";
+        $found = (int) DB::selectOne("
+            SELECT COUNT(*) AS total FROM (
+                SELECT id, ROW_NUMBER() OVER (PARTITION BY {$groupByCols} ORDER BY id) AS rn
+                FROM {$table}
+                {$windowClause}
+            ) t
+            WHERE rn > 1
+        ")->total;
 
-        DB::statement($query);
+        $deleted = 0;
+
+        if ($force && $found > 0) {
+            $deleted = DB::delete("
+                DELETE FROM {$table} t
+                USING (
+                    SELECT id, ROW_NUMBER() OVER (PARTITION BY {$groupByCols} ORDER BY id) AS rn
+                    FROM {$table}
+                    {$windowClause}
+                ) d
+                WHERE t.id = d.id AND d.rn > 1
+            ");
+        }
+
+        $elapsed = round(microtime(true) - $start, 3);
+        $alcance = $full ? 'tabla completa' : "últimos {$windowDays} días";
+        $modo = $force ? 'BORRADO' : 'DRY-RUN (no se ha borrado nada)';
+
+        $message = "[keycounter:remove_duplicate] tabla={$table} alcance={$alcance} modo={$modo} "
+            . "duplicados_detectados={$found} filas_borradas={$deleted} tiempo={$elapsed}s";
+
+        $this->info($message);
+        Log::info($message);
+
+        // Solo en el dry-run de ventana: cuántos duplicados quedan fuera de
+        // ella (históricos, previos a esta versión) y por tanto la operación
+        // normal semanal nunca tocaría. Se salta en --force y en --full
+        // porque en ambos casos ya carece de sentido (o ya se está mirando
+        // la tabla completa, o ya se ha confirmado y no hace falta seguir
+        // pagando el escaneo completo cada semana).
+        if (!$force && !$full) {
+            $outside = (int) DB::selectOne("
+                SELECT COUNT(*) AS total FROM (
+                    SELECT id, created_at,
+                           ROW_NUMBER() OVER (PARTITION BY {$groupByCols} ORDER BY id) AS rn
+                    FROM {$table}
+                ) t
+                WHERE rn > 1 AND created_at < now() - interval '{$windowDays} days'
+            ")->total;
+
+            $diagnostic = "[keycounter:remove_duplicate] tabla={$table} "
+                . "diagnostico_duplicados_historicos_fuera_de_ventana={$outside}";
+
+            $this->info($diagnostic);
+            Log::info($diagnostic);
+        }
     }
 }

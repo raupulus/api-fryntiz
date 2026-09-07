@@ -182,7 +182,26 @@ Enlazado desde [`docs/deploys/deploy-vps.md`](../deploys/deploy-vps.md).
 | Comando | Descripción |
 |---------|-------------|
 | `keycounter:generate_duration` | Calcula duraciones agregadas de actividad. |
-| `keycounter:remove_duplicate` | Elimina duplicados en eventos por timestamp. |
+| `keycounter:remove_duplicate` | Elimina duplicados en `keycounter_keyboard` / `keycounter_mouse`. |
+
+```bash
+php artisan keycounter:remove_duplicate [--force] [--window-days=15] [--full]
+```
+
+Los duplicados los produce el reintento de un dispositivo IoT al insertar, siempre entre filas
+recientes entre sí — nunca contra una fila de hace meses. Por eso el modo normal solo revisa una
+ventana temporal en vez del histórico completo: reprocesarlo entero cada semana es lo que hacía que
+la tarea se pegara horas conforme crecía la tabla.
+
+| Opción | Qué hace |
+|---|---|
+| `--force` | Ejecuta el borrado real. **Sin este flag el comando no borra nada**: solo cuenta los duplicados que encontraría y lo registra (en consola y en el log de Laravel). |
+| `--window-days=N` | Días hacia atrás a revisar en modo normal. Por defecto 15 (el doble de la cadencia semanal del scheduler, de margen). |
+| `--full` | Ignora la ventana y revisa la tabla completa. Uso puntual para limpiar duplicados históricos anteriores a esta versión del comando — la ventana nunca llegaría a tocarlos. No programado en el scheduler. |
+
+En `routes/console.php` se ejecuta semanalmente sin `--force` (modo de solo detección) hasta
+confirmar en producción que la detección es correcta; el borrado real se activa añadiendo `--force`
+a esa llamada.
 
 ---
 

@@ -131,6 +131,12 @@ Schedule::command('aemet:check-api-key')
 //
 // `keycounter:maintenance` no existe. Los comandos reales son estos dos.
 
+// Sin `--force`: solo detecta y registra duplicados, no borra nada. Es la
+// fase de verificación en producción tras la reescritura del comando (antes
+// reprocesaba las tablas enteras cada semana sin ventana ni índice, de ahí
+// las horas de ejecución). Cuando se confirmen los números del log, añadir
+// `['--force']` como segundo argumento a `Schedule::command` para que el
+// borrado sea real.
 Schedule::command('keycounter:remove_duplicate')
     ->weeklyOn(1, '03:00')
     ->timezone('Europe/Madrid')
