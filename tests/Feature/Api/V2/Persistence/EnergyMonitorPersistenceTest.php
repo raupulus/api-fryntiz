@@ -58,7 +58,6 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
 
         $this->monitor = HardwareDevice::create([
             'user_id' => $this->user->id,
-            'name' => 'Monitor de consumo',
         ]);
         $this->router = HardwareDevice::create([
             'user_id' => $this->user->id,
@@ -73,18 +72,14 @@ class EnergyMonitorPersistenceTest extends ApiTestCase
         HardwareEnergy::create([
             'hardware_device_id' => $this->monitor->id,
             'hardware_device_monitorized_id' => $this->router->id,
-            'name' => 'Router principal',
             'role' => HardwareEnergy::ROLE_LOAD,
-            'is_generator' => false,
             'sensor_position' => 0,
             'nominal_voltage' => 12.0,
         ]);
         HardwareEnergy::create([
             'hardware_device_id' => $this->monitor->id,
             'hardware_device_monitorized_id' => $this->panel->id,
-            'name' => 'Panel sur',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 1,
             'nominal_voltage' => 18.0,
         ]);

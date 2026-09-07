@@ -105,7 +105,7 @@ class HardwareService
         // dispositivo 14: la tensión de una Pico acababa contada como consumo.
         $this->updateDeviceBattery($device, $data);
 
-        $elements = $device->hardwareEnergy->keyBy('sensor_position');
+        $elements = $device->hardwareEnergy()->with('monitorized')->get()->keyBy('sensor_position');
         $now = now();
         $date = $now->format('Y-m-d');
         $duration = isset($data['duration']) ? (int) $data['duration'] : null;
@@ -164,7 +164,10 @@ class HardwareService
         $fuenteDeLaEnergia = $deviceWattHours !== null ? 'device' : 'derived';
 
         $isGenerator = $element->isGenerator();
-        $name = $element->name ?? "canal {$element->sensor_position}";
+        // Antes salía de la columna `name`, que había que rellenar a mano para
+        // escribir lo que ya se sabe. `display_name` lo compone del aparato
+        // medido y su papel: «Renogy Rover · generador».
+        $name = $element->display_name;
 
         $model = $isGenerator ? new HardwarePowerGenerator : new HardwarePowerLoad;
 
@@ -531,6 +534,9 @@ class HardwareService
     private function loadElementFor(int $hardwareDeviceId): ?HardwareEnergy
     {
         return HardwareEnergy::query()
+            // `display_name` sale en los avisos y no carga relaciones por su
+            // cuenta: se le dan hechas.
+            ->with('monitorized')
             ->where('hardware_device_id', $hardwareDeviceId)
             ->active()
             ->where('role', HardwareEnergy::ROLE_LOAD)
@@ -547,6 +553,7 @@ class HardwareService
     private function solarElementFor(int $hardwareDeviceId): ?HardwareEnergy
     {
         return HardwareEnergy::query()
+            ->with('monitorized')
             ->where('hardware_device_id', $hardwareDeviceId)
             ->active()
             ->generators()

@@ -302,9 +302,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
@@ -336,9 +334,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
@@ -367,9 +363,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
         // No debe dispararse con cualquier diferencia, solo con una gorda.
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
@@ -401,18 +395,14 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         $generador = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
 
         $consumo = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Salida de carga del Rover',
             'role' => HardwareEnergy::ROLE_LOAD,
-            'is_generator' => false,
             'sensor_position' => 1,
             'nominal_voltage' => 12.0,
         ]);
@@ -474,9 +464,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         $generador = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
@@ -507,9 +495,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         $generador = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
@@ -539,9 +525,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         $generador = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
@@ -579,9 +563,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
-            'name' => 'Panel del Rover',
             'role' => HardwareEnergy::ROLE_GENERATOR,
-            'is_generator' => true,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);

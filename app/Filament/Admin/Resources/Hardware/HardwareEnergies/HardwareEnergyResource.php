@@ -14,11 +14,7 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -67,97 +63,24 @@ class HardwareEnergyResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Section::make('Qué es y quién lo mide')
-                    ->schema([
-                        TextInput::make('name')
-                            ->maxLength(255)
-                            ->label('Nombre')
-                            ->placeholder('Panel sur, Router principal, Banco de baterías…')
-                            ->helperText('Es el nombre que sale en los avisos cuando una lectura suya es rara.'),
-                        Select::make('hardware_device_id')
-                            ->relationship('hardwareDevice', 'name')
-                            ->required()->searchable()->preload()
-                            ->label('Dispositivo monitor')
-                            ->helperText('El aparato que mide.'),
-                        Select::make('hardware_device_monitorized_id')
-                            ->relationship('monitorized', 'name')
-                            ->required()->searchable()->preload()
-                            ->label('Dispositivo monitorizado')
-                            ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
-                        TextInput::make('sensor_position')
-                            ->numeric()->minValue(0)->required()
-                            ->label('Canal del monitor')
-                            ->helperText('Tiene que coincidir con el «pos» que manda el dispositivo en cada lectura.'),
-                    ])->columns(2),
-
-                Section::make('Instalación y papel')
-                    ->schema([
-                        Select::make('energy_system_id')
-                            ->relationship('system', 'name')
-                            ->searchable()->preload()
-                            ->label('Instalación')
-                            ->helperText('Lo que permite preguntar «cuánto ha generado la casa hoy».'),
-                        Select::make('energy_source_type_id')
-                            ->relationship('sourceType', 'name')
-                            ->searchable()->preload()
-                            ->label('Tipo de fuente'),
-                        Select::make('role')
-                            ->options([
-                                HardwareEnergy::ROLE_GENERATOR => 'Generador',
-                                HardwareEnergy::ROLE_LOAD => 'Consumo',
-                                HardwareEnergy::ROLE_STORAGE => 'Batería',
-                            ])
-                            ->default(HardwareEnergy::ROLE_LOAD)
-                            ->required()
-                            ->label('Papel')
-                            ->helperText('Los totales de generación de una instalación cuentan sólo los generadores.'),
-                        Toggle::make('is_active')
-                            ->default(true)
-                            ->label('Activo')
-                            ->helperText('Un elemento retirado deja de aceptar lecturas nuevas.'),
-                        Toggle::make('is_generator')
-                            ->label('Es generador (columna antigua)')
-                            ->helperText('Se conserva mientras se migra del todo a «Papel». No la uses para nada nuevo.')
-                            ->columnSpanFull(),
-                    ])->columns(2),
-
-                Section::make('Características eléctricas')
-                    ->description('La tensión nominal es la que arregla el cálculo de los vatios cuando la medida falta o no es creíble.')
-                    ->schema([
-                        TextInput::make('nominal_voltage')
-                            ->numeric()->step(0.01)->suffix(' V')
-                            ->label('Tensión nominal'),
-                        TextInput::make('rated_power_w')
-                            ->numeric()->step(0.01)->suffix(' W')
-                            ->label('Potencia nominal'),
-                        TextInput::make('voltage_min')
-                            ->numeric()->step(0.01)->suffix(' V')
-                            ->label('Tensión mínima creíble')
-                            ->helperText('Por debajo de esto, la medida se descarta y se usa la nominal.'),
-                        TextInput::make('voltage_max')
-                            ->numeric()->step(0.01)->suffix(' V')
-                            ->label('Tensión máxima creíble'),
-                        TextInput::make('capacity_mah')
-                            ->numeric()->step(0.01)->suffix(' mAh')
-                            ->label('Capacidad'),
-                        TextInput::make('capacity_wh')
-                            ->numeric()->step(0.01)->suffix(' Wh')
-                            ->label('Capacidad'),
-                    ])->columns(2),
-            ]);
+        return HardwareEnergyForm::completo($schema);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                // `name` era un campo que había que rellenar a mano para
+                // escribir lo que ya se sabe. `display_name` lo compone.
+                TextColumn::make('display_name')
                     ->label('Elemento')
-                    ->description(fn (HardwareEnergy $record): string => $record->monitorized->name ?? '')
-                    ->searchable()
-                    ->sortable(),
+                    // La clave foránea es nullable, así que la relación puede
+                    // venir vacía por mucho que PHPStan crea que no.
+                    ->description(fn (HardwareEnergy $record): string => $record->hardware_device_id === null
+                        ? ''
+                        : (string) $record->getRelationValue('hardwareDevice')?->display_name)
+                    ->searchable(['sensor_position'])
+                    ->sortable(false),
                 TextColumn::make('system.name')
                     ->label('Instalación')
                     ->badge()
@@ -165,14 +88,10 @@ class HardwareEnergyResource extends Resource
                 TextColumn::make('role')
                     ->label('Papel')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        HardwareEnergy::ROLE_GENERATOR => 'Generador',
-                        HardwareEnergy::ROLE_STORAGE => 'Batería',
-                        default => 'Consumo',
-                    })
+                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ETIQUETAS_DE_ROL[$state] ?? (string) $state)
                     ->color(fn (?string $state): string => match ($state) {
                         HardwareEnergy::ROLE_GENERATOR => 'success',
-                        HardwareEnergy::ROLE_STORAGE => 'warning',
+                        HardwareEnergy::ROLE_BATTERY => 'warning',
                         default => 'info',
                     }),
                 TextColumn::make('sourceType.name')
@@ -211,11 +130,7 @@ class HardwareEnergyResource extends Resource
                     ->relationship('system', 'name')
                     ->label('Instalación'),
                 SelectFilter::make('role')
-                    ->options([
-                        HardwareEnergy::ROLE_GENERATOR => 'Generador',
-                        HardwareEnergy::ROLE_LOAD => 'Consumo',
-                        HardwareEnergy::ROLE_STORAGE => 'Batería',
-                    ])
+                    ->options(HardwareEnergy::ETIQUETAS_DE_ROL)
                     ->label('Papel'),
                 TernaryFilter::make('is_active')->label('Activo'),
                 TernaryFilter::make('nominal_voltage')

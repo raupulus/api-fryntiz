@@ -26,12 +26,12 @@ return new class extends Migration
     {
         DB::statement(
             'CREATE INDEX CONCURRENTLY IF NOT EXISTS keycounter_keyboard_dedupe_index '
-            . 'ON keycounter_keyboard (created_at, hardware_device_id, start_at, end_at, pulsations, id)'
+            .'ON keycounter_keyboard (created_at, hardware_device_id, start_at, end_at, pulsations, id)'
         );
 
         DB::statement(
             'CREATE INDEX CONCURRENTLY IF NOT EXISTS keycounter_mouse_dedupe_index '
-            . 'ON keycounter_mouse (created_at, hardware_device_id, start_at, end_at, total_clicks, id)'
+            .'ON keycounter_mouse (created_at, hardware_device_id, start_at, end_at, total_clicks, id)'
         );
     }
 

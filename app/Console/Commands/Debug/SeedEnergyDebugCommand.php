@@ -193,9 +193,12 @@ class SeedEnergyDebugCommand extends Command
                 [
                     'hardware_device_id' => $device->id,
                     'hardware_device_monitorized_id' => $device->id,
+                    'sensor_position' => 0,
                 ],
                 [
-                    'is_generator' => $index % 2 === 0,
+                    'role' => $index % 2 === 0
+                        ? HardwareEnergy::ROLE_GENERATOR
+                        : HardwareEnergy::ROLE_LOAD,
                     'sensor_position' => 0,
                 ]
             );
@@ -212,7 +215,9 @@ class SeedEnergyDebugCommand extends Command
                         'hardware_device_monitorized_id' => $devices[$i]->id,
                     ],
                     [
-                        'is_generator' => $i % 2 === 0,
+                        'role' => $i % 2 === 0
+                            ? HardwareEnergy::ROLE_GENERATOR
+                            : HardwareEnergy::ROLE_LOAD,
                         'sensor_position' => $i,
                     ]
                 );
@@ -225,7 +230,7 @@ class SeedEnergyDebugCommand extends Command
                     'hardware_device_monitorized_id' => $devices[0]->id,
                 ],
                 [
-                    'is_generator' => true,
+                    'role' => HardwareEnergy::ROLE_GENERATOR,
                     'sensor_position' => 0,
                 ]
             );

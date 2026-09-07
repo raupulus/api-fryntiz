@@ -272,20 +272,24 @@ class HardwareDevice extends BaseModel
     public function hardwareEnergyGenerator(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'hardware_energy', 'hardware_device_id', 'hardware_device_monitorized_id')
-            ->whereIn('is_generator', [true])
+            // `is_generator` era una segunda forma de decir lo mismo que
+            // `role`, y no sabía expresar «batería». Se quitó el 2026-09-07.
+            ->wherePivot('role', HardwareEnergy::ROLE_GENERATOR)
             ->orderBy('sensor_position');
     }
 
     /**
      * Devuelve solo los dispositivos de energía que consumen carga (energía).
-     * Se descartan los que son generadores.
+     *
+     * Antes era «todo lo que no sea generador», que con el rol `battery` se
+     * quedó mal: una batería no es una carga.
      *
      * @return HasMany
      */
     public function hardwareEnergyLoad(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'hardware_energy', 'hardware_device_id', 'hardware_device_monitorized_id')
-            ->whereNotIn('is_generator', [true])
+            ->wherePivot('role', HardwareEnergy::ROLE_LOAD)
             ->orderBy('sensor_position');
     }
 

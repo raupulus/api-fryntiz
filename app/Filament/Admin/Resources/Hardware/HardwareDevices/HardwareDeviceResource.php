@@ -359,6 +359,7 @@ class HardwareDeviceResource extends Resource
         // ésta es la que se usa a diario.
         return [
             RelationManagers\TokensRelationManager::class,
+            RelationManagers\EnergyRelationManager::class,
             RelationManagers\ComponentsRelationManager::class,
         ];
     }

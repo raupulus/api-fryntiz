@@ -26,18 +26,28 @@ use function is_finite;
  * petición* —un panel de 24 V y una Pico de 3,7 V en la misma petición dan
  * números sin sentido.
  *
- * `is_generator` sigue existiendo y se rellena desde `role` (D70): primero se
- * migran los datos, después se quita la columna vieja.
+ * **Una fila es un papel de un dispositivo, no el dispositivo.** El mismo
+ * aparato puede tener las tres: lo que produce el panel (`generator`), lo que
+ * gasta la carga (`load`) y lo que hay en la batería (`battery`). Así se agrupa
+ * y se suma por papel sin mirar de qué aparato viene cada lectura.
+ *
+ * De lo único que se puede dar por hecho que no cambia entre las filas de un
+ * mismo monitor es **el propio monitor**: el dispositivo medido, la instalación,
+ * la fuente y el `is_active` son de cada canal. Una Raspberry con un INA puede
+ * llevar la batería de 12 V a un ventilador, la de litio a una lámpara y el
+ * cargador de red a un microcontrolador: tres canales, tres cosas medidas y tres
+ * fuentes distintas.
+ *
+ * `is_generator` **ya no existe** (2026-09-07). Duplicaba a `role` y encima no
+ * sabía decir «batería»: la dejaba en `false`, indistinguible de una carga.
  *
  * @property int $id
  * @property int|null $hardware_device_id Dispositivo que mide
  * @property int|null $hardware_device_monitorized_id Dispositivo medido
  * @property int|null $energy_system_id
  * @property int|null $energy_source_type_id
- * @property string|null $name
- * @property string $role generator | load | storage
- * @property bool|null $is_generator Se conserva hasta migrar del todo a `role` (D70)
- * @property int|null $sensor_position Canal del monitor
+ * @property string $role generator | load | battery
+ * @property int $sensor_position Canal del monitor. 0 si sólo tiene uno
  * @property float|null $nominal_voltage
  * @property float|null $voltage_min
  * @property float|null $voltage_max
@@ -71,10 +81,45 @@ class HardwareEnergy extends BaseModel
 
     public const ROLE_LOAD = 'load';
 
-    public const ROLE_STORAGE = 'storage';
+    /**
+     * Lo que almacena: el banco de baterías.
+     *
+     * Se llamaba `storage` y la etiqueta del panel ya decía «Batería»: el valor
+     * guardado decía una cosa y la interfaz otra.
+     */
+    public const ROLE_BATTERY = 'battery';
 
     /** @var list<string> */
-    public const ROLES = [self::ROLE_GENERATOR, self::ROLE_LOAD, self::ROLE_STORAGE];
+    public const ROLES = [self::ROLE_GENERATOR, self::ROLE_LOAD, self::ROLE_BATTERY];
+
+    /**
+     * Cuántas filas admite cada papel por dispositivo monitor.
+     *
+     * Un montaje tiene un campo solar y un banco de baterías, pero un monitor
+     * mide **tantas cargas como canales tenga**: una Raspberry con un INA puede
+     * llevar la batería de 12 V a un ventilador, la de litio a una lámpara y el
+     * cargador de red a un microcontrolador.
+     *
+     * `null` = sin límite.
+     *
+     * @var array<string, int|null>
+     */
+    public const LIMITE_POR_ROL = [
+        self::ROLE_GENERATOR => 1,
+        self::ROLE_BATTERY => 1,
+        self::ROLE_LOAD => null,
+    ];
+
+    /**
+     * Cómo se llama cada papel en la interfaz.
+     *
+     * @var array<string, string>
+     */
+    public const ETIQUETAS_DE_ROL = [
+        self::ROLE_GENERATOR => 'Generador',
+        self::ROLE_LOAD => 'Consumo',
+        self::ROLE_BATTERY => 'Batería',
+    ];
 
     /**
      * Márgenes con los que se juzga una tensión cuando el elemento no tiene
@@ -94,7 +139,7 @@ class HardwareEnergy extends BaseModel
     protected $fillable = [
         'hardware_device_id', 'hardware_device_monitorized_id',
         'energy_system_id', 'energy_source_type_id',
-        'name', 'role', 'is_generator', 'sensor_position',
+        'role', 'sensor_position',
         'nominal_voltage', 'voltage_min', 'voltage_max',
         'rated_power_w', 'capacity_mah', 'capacity_wh', 'is_active',
     ];
@@ -105,7 +150,6 @@ class HardwareEnergy extends BaseModel
         'energy_system_id' => 'integer',
         'energy_source_type_id' => 'integer',
         'sensor_position' => 'integer',
-        'is_generator' => 'boolean',
         'is_active' => 'boolean',
         'nominal_voltage' => 'float',
         'voltage_min' => 'float',
@@ -245,6 +289,49 @@ class HardwareEnergy extends BaseModel
     public function isGenerator(): bool
     {
         return $this->role === self::ROLE_GENERATOR;
+    }
+
+    /**
+     * Cómo se llama este elemento cuando hay que nombrarlo.
+     *
+     * Sustituye a la columna `name`, que era un campo más que rellenar a mano
+     * para escribir lo que ya se sabe: el elemento es «tal aparato haciendo tal
+     * papel», y las dos cosas están en la fila. Sale en los avisos de la API
+     * cuando una lectura suya es rara.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        // **Sólo relaciones ya cargadas.** Esto es un accesorio, y se pinta en
+        // listados y en los avisos de cada lectura: si tirase de la relación,
+        // sería una consulta por fila. El proyecto tiene el lazy loading
+        // desactivado, así que además reventaría en vez de ir despacio en
+        // silencio.
+        //
+        // Quien lo necesite con nombre, que cargue `monitorized`. Sin eso sale
+        // el id, que sigue identificando la fila.
+        $aparato = 'Elemento #'.$this->id;
+
+        foreach (['monitorized', 'hardwareDevice'] as $relacion) {
+            if (! $this->relationLoaded($relacion)) {
+                continue;
+            }
+
+            $device = $this->getRelation($relacion);
+
+            if ($device instanceof HardwareDevice) {
+                $aparato = $device->display_name;
+
+                break;
+            }
+        }
+
+        $papel = self::ETIQUETAS_DE_ROL[$this->role] ?? $this->role;
+
+        // El canal sólo se nombra cuando el monitor tiene más de uno, que es
+        // cuando de verdad hace falta para distinguirlos.
+        $canal = $this->sensor_position > 0 ? " · canal {$this->sensor_position}" : '';
+
+        return "{$aparato} · ".mb_strtolower($papel).$canal;
     }
 
     /**

@@ -409,14 +409,15 @@ Una fila de `hardware_energy` es **un papel de un dispositivo**, no el
 dispositivo. Un mismo aparato puede cumplir varios a la vez, y entonces tiene
 **una fila por cada uno**:
 
-| `role` | Qué mide | `is_generator` | Escribe en |
-|---|---|---|---|
-| `generator` | lo que **produce**: el panel solar, el alternador | `true` | `hardware_power_generators` |
-| `load` | lo que **consume**: la salida de carga, un router, una Raspberry | `false` | `hardware_power_loads` |
-| `storage` | lo que **almacena**: el banco de baterías | `false` | — |
+| `role` | Qué mide | Escribe en |
+|---|---|---|
+| `generator` | lo que **produce**: el panel solar, el alternador | `hardware_power_generators` |
+| `load` | lo que **consume**: la salida de carga, un router, una Raspberry | `hardware_power_loads` |
+| `battery` | lo que **almacena**: el banco de baterías | — |
 
-`storage` se etiqueta **«Batería»** en todo el panel; el valor guardado es
-`storage` porque es el que ya existía en `HardwareEnergy::ROLE_STORAGE`.
+El valor guardado del tercero es **`battery`**: se llamaba `storage` mientras la
+etiqueta del panel ya decía «Batería», o sea que la base de datos y la interfaz
+decían cosas distintas. Renombrado el 2026-09-07.
 
 **Por qué una fila por papel y no una por dispositivo:** así se agrupa, se filtra
 y se asocia por rol. Los totales de generación de una instalación cuentan sólo
@@ -425,7 +426,54 @@ aparato viene cada lectura.
 
 Un controlador solar es el caso completo: mide lo que entra del panel
 (`generator`), lo que sale por la carga (`load`) y lo que hay en la batería
-(`storage`). Tres filas, mismo `hardware_device_id`.
+(`battery`). Tres filas, mismo `hardware_device_id`.
+
+### `is_generator` ya no existe
+
+Duplicaba a `role` —dos columnas para lo mismo acaban discrepando— y, con el
+tercer papel, se quedó coja: una batería no genera ni consume, así que la
+booleana la dejaba en `false`, **indistinguible de una carga**. Eliminada el
+2026-09-07. Manda `role`.
+
+### Cuántas filas admite cada papel
+
+| Papel | Cuántas | Por qué |
+|---|---|---|
+| `generator` | **1** por monitor | Un montaje tiene un campo solar |
+| `battery` | **1** por monitor | Un banco de baterías |
+| `load` | **las que hagan falta** | Un monitor mide varias cargas, cada una por su canal |
+
+El límite vive en `HardwareEnergy::LIMITE_POR_ROL` y lo aplica la interfaz: los
+botones de generador y batería desaparecen cuando ya existe el suyo.
+
+Debajo hay un índice único sobre
+**`hardware_device_id` + `hardware_device_monitorized_id` + `role` + `sensor_position`**,
+que es la red de seguridad contra un duplicado exacto, no la regla de negocio.
+
+> `sensor_position` es `NOT NULL` con `0` por defecto **porque el índice lo
+> necesita**: en PostgreSQL dos `NULL` no chocan entre sí, así que con la columna
+> nullable dos filas idénticas con el canal vacío pasarían la restricción y ésta
+> no serviría de nada.
+
+### Lo único común entre las filas de un mismo medidor es el medidor
+
+El aparato medido, la instalación, la fuente y el `is_active` son **de cada
+canal**. Una Raspberry con un INA puede llevar la batería de 12 V a un
+ventilador, la de litio a una lámpara y el cargador de red a un
+microcontrolador: tres canales, tres cosas medidas, tres fuentes distintas. Y se
+apaga la monitorización de una carga averiada sin tocar las otras dos.
+
+### El nombre: `display_name`, no una columna
+
+La columna `name` era un campo más que rellenar a mano para escribir lo que ya
+se sabe. Se quitó el 2026-09-07; `HardwareEnergy::display_name` lo compone del
+aparato medido y su papel: «Renogy Rover · generador», con el canal detrás
+cuando el medidor tiene más de uno.
+
+⚠️ **No carga relaciones por su cuenta**, a propósito: se pinta en listados y en
+el aviso de cada lectura, así que tirar de la relación sería una consulta por
+fila —y con el lazy loading desactivado, un error. Quien lo necesite con nombre,
+que cargue `monitorized`; sin eso sale el id, que sigue identificando la fila.
 
 ### La tensión: manda la reportada, la nominal es el respaldo
 
