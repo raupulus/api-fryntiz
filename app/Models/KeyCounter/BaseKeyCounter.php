@@ -267,56 +267,60 @@ class BaseKeyCounter extends BaseModel
         $days = array_unique($stats->pluck('day')->toArray());
         $devices = $keyboard_statistics['devices_ids'];
 
+        // Índice por «día|dispositivo».
+        //
+        // El bucle de abajo buscaba cada celda con
+        // `$stats->where('day', …)->where('hardware_device_id', …)->first()`,
+        // o sea recorriendo la colección entera una vez por cada combinación de
+        // día y dispositivo: con 31 días y 4 cacharros son 124 recorridos de
+        // toda la colección para pintar una gráfica. El propio código lo tenía
+        // marcado con un FIXME.
+        $porCelda = [];
+
+        foreach ($stats as $fila) {
+            $porCelda[$fila->day.'|'.$fila->hardware_device_id] = $fila;
+        }
+
+        // Los nombres, en una consulta y no dentro del bucle.
+        $nombres = HardwareDevice::query()
+            ->whereIn('id', $devices)
+            ->pluck('name', 'id')
+            ->all();
+
         $labels = [];
         $dataset = [];
-        $datasetTMP = [];
 
         // # Array temporal de días con el valor de las pulsaciones por día de todos los dispositivos.
         $totalTMP = [];
+
+        // Cada dispositivo estrena su serie **antes** del bucle. Antes se creaba
+        // dentro, y a un cacharro que no hubiera reportado el primer día del mes
+        // le caía la rama del `else`: se quedaba sin `label` y sin color, y
+        // salía en la leyenda como una línea sin nombre.
+        $datasetTMP = [];
+
+        foreach ($devices as $device) {
+            $datasetTMP[$device] = [
+                'data' => [],
+                'label' => $nombres[$device] ?? ('#'.$device),
+                'borderColor' => $deviceColors[$device] ?? $colors[0],
+                'fill' => 'false',
+            ];
+        }
 
         // # Recorro todos los días y genero por cada dispositivo un array con los datos.
         foreach ($days as $day) {
             $labels[] = (new Carbon($day))->format('d');
 
             foreach ($devices as $device) {
-                $color = $deviceColors[$device] ?? $colors[0];
-
-                // FIXME → Esto no puede quedar haciendo consultas así
-                // TODO → Mejorar forma de preparar los datos y usar REDIS/CACHE
-
-                $s = $stats->where('day', $day)->where('hardware_device_id', $device)->first();
+                $s = $porCelda[$day.'|'.$device] ?? null;
 
                 // # Compruebo que haya registro para este dispositivo este día o seteo 0.
-                if ($s && isset($datasetTMP[$device])) {
-                    if (! isset($datasetTMP[$device]['label'])) {
-                        $datasetTMP[$device]['label'] = $s->hardwareDevice->name;
-                    }
-
-                    if (! isset($datasetTMP[$device]['borderColor'])) {
-                        $datasetTMP[$device]['borderColor'] = $color;
-                    }
-
-                    if (! isset($datasetTMP[$device]['fill'])) {
-                        $datasetTMP[$device]['fill'] = 'false';
-                    }
-
-                    $datasetTMP[$device]['data'][] = $s->total_pulsations;
-                } elseif ($s) {
-                    $datasetTMP[$device] = [
-                        'data' => [$s->total_pulsations],
-                        'label' => $s->hardwareDevice->name,
-                        'borderColor' => $color,
-                        'fill' => 'false',
-                    ];
-                } else {
-                    $datasetTMP[$device]['data'][] = 0;
-                }
+                $datasetTMP[$device]['data'][] = $s ? $s->total_pulsations : 0;
 
                 // # Añado al array total el valor actual.
                 if ($s) {
-                    $totalTMP[$day] = isset($totalTMP[$day]) ? $totalTMP[$day] +
-                        $s->total_pulsations :
-                        $s->total_pulsations;
+                    $totalTMP[$day] = ($totalTMP[$day] ?? 0) + $s->total_pulsations;
                 }
             }
         }

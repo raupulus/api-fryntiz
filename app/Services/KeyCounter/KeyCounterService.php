@@ -6,6 +6,7 @@ namespace App\Services\KeyCounter;
 
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
+use App\Support\KeyCounter\KeyCounterCache;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
 
@@ -28,6 +29,7 @@ class KeyCounterService
         Cache::forget('keycounter:keyboard:summary');
         Cache::forget('keycounter:widgets');
         Cache::forget('keycounter:year_total:'.now()->year);
+        KeyCounterCache::olvidarLoAfectadoPorUnaRachaNueva();
 
         return $keyboard;
     }

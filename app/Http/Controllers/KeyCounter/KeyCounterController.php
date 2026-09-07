@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
+use App\Support\KeyCounter\KeyCounterCache;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -38,15 +39,26 @@ class KeyCounterController extends Controller
         $month = (int) ($request->get('month') ?? date('m'));
         $year = (int) ($request->get('year') ?? date('Y'));
 
-        $statistics = Keyboard::getStatisticsPreparedToGraphics($month, $year);
+        // Lo más caro de la página, y lo único que no estaba cacheado: agrega
+        // todas las rachas del mes por día y dispositivo y prepara los datos de
+        // la gráfica. Un mes cerrado se guarda para siempre —no va a recibir
+        // rachas nuevas—; el mes en curso, un cuarto de hora, que de paso hace
+        // que la web no refleje la actividad en tiempo real.
+        $statistics = KeyCounterCache::recordarGrafica(
+            $year,
+            $month,
+            fn () => Keyboard::getStatisticsPreparedToGraphics($month, $year),
+        );
+
         $monthSummary = $this->buildMonthSummary($statistics['keyboard_statistics']);
 
         $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
             'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
             'Noviembre', 'Diciembre'];
 
-        // Resumen Keyboard (caché 1 hora)
-        $keyboardSummary = Cache::remember('keycounter:keyboard:summary', 3600, function () {
+        // Resumen Keyboard. Misma ventana que la gráfica: que las dos
+        // mitades de la página no cuenten cosas de momentos distintos.
+        $keyboardSummary = Cache::remember('keycounter:keyboard:summary', KeyCounterCache::VENTANA_CORTA, function () {
             $records = Keyboard::whereNotNull('start_at')
                 ->whereNotNull('end_at')
                 ->where('pulsations', '>', 0)
@@ -68,8 +80,8 @@ class KeyCounterController extends Controller
             ];
         });
 
-        // Resumen Mouse (caché 1 hora)
-        $mouseSummary = Cache::remember('keycounter:mouse:summary', 3600, function () {
+        // Resumen Mouse, con la misma ventana.
+        $mouseSummary = Cache::remember('keycounter:mouse:summary', KeyCounterCache::VENTANA_CORTA, function () {
             $records = Mouse::whereNotNull('start_at')
                 ->whereNotNull('end_at')
                 ->where('total_clicks', '>', 0)

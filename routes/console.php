@@ -149,6 +149,17 @@ Schedule::command('keycounter:generate_duration')
     ->withoutOverlapping()
     ->onFailure($warnOnFailure('keycounter:generate_duration'));
 
+// Las gráficas de un mes cerrado se cachean para siempre, pero el cálculo lo
+// paga quien entra primero. Con trece años de datos son unos 150 meses
+// esperando a que alguien los estrene. Esto los deja hechos de madrugada, y va
+// después de las dos tareas de arriba porque las dos pueden mover rachas.
+Schedule::command('keycounter:warm_cache')
+    ->weeklyOn(1, '04:00')
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('keycounter:warm_cache'));
+
 // ── Dispositivos ─────────────────────────────────────────────────────────────
 
 // Nada avisaba cuando un cacharro dejaba de reportar. En producción el monitor

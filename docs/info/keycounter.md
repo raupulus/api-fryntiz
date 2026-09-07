@@ -293,3 +293,74 @@ ciegas todo lo anterior a la fecha estropearía justamente esas.
 
 Al 2026-09-07, en el volcado de producción: **749 991 rachas de teclado y
 219 410 de ratón** en la convención vieja.
+
+
+## Caché de las estadísticas
+
+El almacén es **`file`** (`CACHE_STORE=file`). **No hay Redis** y no lo va a
+haber hasta terminar la migración de los IoT, así que **no se usa
+`Cache::tags()`**: el driver `file` no las soporta. Todo se invalida por clave
+explícita, y las claves viven en `App\Support\KeyCounter\KeyCounterCache`
+para que no se dupliquen como cadenas sueltas por el controlador y el servicio
+—que es la forma clásica de que una invalidación deje de coincidir con lo que
+guarda: la página sigue funcionando y sólo enseña datos viejos.
+
+| Dato | Clave | Ventana |
+|---|---|---|
+| Gráfica de un mes **cerrado** | `keycounter:graph:{año}-{mes}` | para siempre |
+| Gráfica del mes en curso o del anterior | `keycounter:graph:{año}-{mes}` | 15 min |
+| Resumen de teclado | `keycounter:keyboard:summary` | 15 min |
+| Resumen de ratón | `keycounter:mouse:summary` | 15 min |
+| Widgets | `keycounter:widgets` | 24 h |
+| Total de un año cerrado | `keycounter:year_total:{año}` | para siempre |
+| Total del año en curso | `keycounter:year_total:{año}` | 1 h |
+
+Los 15 minutos cumplen dos cosas a la vez: que la página no tarde y que **no
+refleje la actividad en tiempo real**, que es una cuestión de privacidad, no de
+rendimiento.
+
+### Qué se considera un mes «cerrado»
+
+Ni el mes en curso ni el anterior. Del anteanterior hacia atrás, a la caja
+fuerte. Dejar fuera el mes anterior parece exagerado, pero cubre dos casos
+reales: que alguien visitara la página el día 31 por la noche —congelando el mes
+con su último día a medias— y que un cacharro que estuvo sin red suba lo
+acumulado cuando la recupera.
+
+### Invalidación
+
+`KeyCounterService::storeKeyboard()` olvida el resumen, los widgets, el total
+del año y **las gráficas del mes en curso y del anterior**. Si no, el contador
+sube y la web no.
+
+Lo que toca meses ya cerrados —`keycounter:remove_duplicate`,
+`keycounter:fix_weekday`— no invalida nada por su cuenta. Para eso:
+
+    php artisan cache:forget "keycounter:graph:2019-12"
+
+o, si son muchos, `php artisan cache:clear` y luego `keycounter:warm_cache`.
+
+### Precalentado
+
+`keycounter:warm_cache` recorre los meses que tienen rachas y calcula los que
+están cerrados. Va programado los lunes a las 04:00, después de
+`remove_duplicate` (03:00) y `generate_duration` (03:30), porque las dos pueden
+mover rachas.
+
+Sin esto, el cálculo de un mes lo paga **quien entra primero**, y con trece años
+de datos son unos 150 meses esperando a que alguien los estrene. Medido sobre el
+volcado real: **1 261 ms la primera vez, 0,7 ms y ninguna consulta la segunda.**
+
+### El N+1 que había dentro
+
+`getStatisticsPreparedToGraphics()` buscaba cada celda de la gráfica con
+`$stats->where('day', …)->where('hardware_device_id', …)->first()`, o sea
+recorriendo la colección entera una vez por cada combinación de día y
+dispositivo. El propio código lo tenía marcado con un `FIXME`. Ahora se indexa
+por `día|dispositivo` antes del bucle y los nombres se resuelven en una sola
+consulta.
+
+De paso se arregló un fallo que sólo se veía en la leyenda: la serie de cada
+dispositivo se creaba **dentro** del bucle, así que a un cacharro que no hubiera
+reportado el primer día del mes le caía la rama del `else` y se quedaba sin
+`label` ni color. Ahora las series se estrenan antes de recorrer los días.
