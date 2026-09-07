@@ -166,4 +166,41 @@ class ProjectClearCommandTest extends TestCase
 
         $this->cacheOriginal = [];
     }
+
+    /**
+     * El despliegue del 2026-09-07 se quedó a medias con «Please provide a
+     * valid cache path»: `view:cache` aborta si no existe
+     * `storage/framework/views`, y para entonces las cachés ya estaban
+     * borradas. El sitio se queda sin ninguna.
+     */
+    public function test_crea_los_directorios_de_trabajo_que_falten(): void
+    {
+        $views = storage_path('framework/views');
+        $bootstrap = base_path('bootstrap/cache');
+
+        // Se guarda lo que haya dentro para devolverlo tal cual.
+        $este = $this;
+        $restaurar = [];
+
+        foreach ([$views, $bootstrap] as $directorio) {
+            if (is_dir($directorio)) {
+                $restaurar[] = $directorio;
+                @rmdir($directorio);
+            }
+        }
+
+        try {
+            $this->artisan('project:clear --force --no-key')->assertSuccessful();
+
+            $este->assertDirectoryExists($views);
+            $este->assertDirectoryExists($bootstrap);
+            $este->assertDirectoryExists(storage_path('framework/cache/data'));
+        } finally {
+            foreach ($restaurar as $directorio) {
+                if (! is_dir($directorio)) {
+                    @mkdir($directorio, 0775, true);
+                }
+            }
+        }
+    }
 }

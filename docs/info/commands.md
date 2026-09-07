@@ -54,6 +54,17 @@ Los flags siguen ahí para forzar la otra columna, pero no hacen falta para el u
 | `--production` | Recachear al terminar aunque el entorno no sea producción. |
 | `--force` | No preguntar nada. |
 
+Antes de tocar nada crea los directorios de trabajo que falten
+(`storage/framework/views`, `cache/data`, `sessions`, `bootstrap/cache`…). No es
+manía: sin `storage/framework/views`, `view:cache` aborta con **«Please provide a
+valid cache path»** y para entonces las cachés ya están borradas, así que el
+despliegue se queda **sin ninguna**. Pasó el 2026-09-07 en el servidor.
+
+Esos directorios no están en git —su contenido es basura generada— y los
+`.gitignore` que los mantienen vivos son justo lo que un despliegue puede no
+traer. Si alguno no se puede crear, el comando lo dice **con su nombre**, que es
+más útil que «cache path».
+
 Ver [decisiones-tecnicas.md D15](decisiones-tecnicas.md).
 
 ### `project:check-config` — antes de abrir al público

@@ -68,6 +68,12 @@ class ProjectClearCommand extends Command
         // estaban desalineadas.
         $this->avisarSiLaClaveNoCoincide();
 
+        // Antes de nada: los directorios de trabajo. `composer dump-autoload`
+        // dispara `package:discover`, que escribe en `bootstrap/cache`, y
+        // `view:cache` necesita `storage/framework/views`. Si faltan, el
+        // despliegue se queda con las cachés borradas y ninguna rehecha.
+        $this->asegurarDirectoriosDeTrabajo();
+
         $this->line('▶ Limpiando cachés de configuración, rutas, vistas, eventos y optimizaciones...');
         $this->call('optimize:clear');
         $this->call('config:clear');
@@ -188,6 +194,51 @@ class ProjectClearCommand extends Command
         $this->info('✅ El proyecto ha quedado limpio y preparado.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Crea los directorios que Laravel necesita para cachear.
+     *
+     * `view:cache` aborta con «Please provide a valid cache path» si no existe
+     * `storage/framework/views`, y con él se queda el despliegue a medias:
+     * cachés borradas y ninguna rehecha.
+     *
+     * No están en git —su contenido es basura generada— y los `.gitignore` que
+     * los mantienen vivos son justo lo que un despliegue puede no traer. Crearlos
+     * aquí es más barato que descubrirlo con el sitio caído.
+     */
+    private function asegurarDirectoriosDeTrabajo(): void
+    {
+        $directorios = [
+            storage_path('framework/views'),
+            storage_path('framework/cache/data'),
+            storage_path('framework/sessions'),
+            storage_path('framework/testing'),
+            storage_path('logs'),
+            base_path('bootstrap/cache'),
+        ];
+
+        $creados = [];
+
+        foreach ($directorios as $directorio) {
+            if (is_dir($directorio)) {
+                continue;
+            }
+
+            if (@mkdir($directorio, 0775, true) || is_dir($directorio)) {
+                $creados[] = str_replace(base_path().'/', '', $directorio);
+
+                continue;
+            }
+
+            // Sin poder crearlo, el recacheo va a fallar igual: mejor decirlo
+            // ahora y con el nombre del directorio que con «cache path».
+            $this->error("No se ha podido crear «{$directorio}». Compruébalo a mano antes de seguir.");
+        }
+
+        if ($creados !== []) {
+            $this->line('▶ Directorios de trabajo que faltaban: '.implode(', ', $creados));
+        }
     }
 
     /**
