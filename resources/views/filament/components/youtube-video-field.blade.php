@@ -52,8 +52,13 @@
 
 @once
     @push('scripts')
-        <link href="{{ asset('css/youtube_video_search.css') }}" rel="stylesheet" />
-        <script src="{{ asset('js/youtube_video_search.js') }}"></script>
+        {{--
+            Va por Vite, no por `asset()`. Con `asset()` apuntaba a
+            `public/js` y `public/css`, dos directorios que `.gitignore`
+            excluye: el fichero no llegaba al servidor y el 404 en HTML se
+            veía en consola como una discordancia de tipo MIME.
+        --}}
+        @vite('resources/js/youtube-video-search.js')
 
         <script>
             document.addEventListener('alpine:init', () => {

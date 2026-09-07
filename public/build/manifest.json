@@ -4,7 +4,7 @@
     "name": "chunk"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Qn2976BP.css",
+    "file": "assets/app-DrKT9Uar.css",
     "name": "app",
     "names": [
       "app.css"
@@ -48,5 +48,14 @@
   "resources/js/vue/Components/assets/chipiona.webp": {
     "file": "assets/chipiona-BKWz67is.webp",
     "src": "resources/js/vue/Components/assets/chipiona.webp"
+  },
+  "resources/js/youtube-video-search.js": {
+    "file": "assets/youtube-video-search-CkX_dFTF.js",
+    "name": "youtube-video-search",
+    "src": "resources/js/youtube-video-search.js",
+    "isEntry": true,
+    "css": [
+      "assets/youtube-video-search-BX4RpVJF.css"
+    ]
   }
 }
