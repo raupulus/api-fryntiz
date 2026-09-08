@@ -42,9 +42,22 @@ class StoreAirFlightRequest extends BaseFormRequest
             // AD-T01: `track` es `integer` en BD; `numeric` admitía decimales
             // que revientan el INSERT con un 500.
             'track' => ['nullable', 'integer', 'between:0,360'],
+            // Velocidad vertical en m/s. ±50 m/s (~±9800 ft/min) ya es más de
+            // lo que sostiene un avión real; por debajo de eso es una lectura
+            // válida, por encima es ruido del decodificador.
+            'vert_rate' => ['nullable', 'numeric', 'between:-50,50'],
             'seen' => ['nullable', 'numeric'],
             'seen_pos' => ['nullable', 'numeric'],
             'messages' => ['nullable', 'integer', 'min:0'],
+            // dBFS: la columna es "siempre negativo" (ver comentario de la
+            // migración). -100 es ya por debajo del suelo de ruido real de
+            // cualquier receptor SDR de este tipo.
+            'rssi' => ['nullable', 'numeric', 'between:-100,0'],
+            // Cadena corta del decodificador ADS-B: "none", "general",
+            // "lifeguard", "minfuel", "nordo", "unlawful", "downed",
+            // "reserved"... Sin `in:` cerrado porque no hay garantía de que
+            // el capturador solo mande exactamente esos valores.
+            'emergency' => ['nullable', 'string', 'max:20'],
         ];
     }
 }

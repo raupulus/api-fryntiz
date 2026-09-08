@@ -36,6 +36,15 @@
   > **Qué tiene que hacer un cliente que leyera sin token:** emitir uno con
   > `airflight:read`. Sin él, las lecturas responden `401`.
 
+  > ⚠️ **Cambio de contrato del 2026-09-08.** `POST /aircrafts` y `POST
+  > /aircrafts/batch` aceptan ahora `vert_rate`, `rssi` y `emergency`. Antes
+  > se podían mandar y la petición respondía `201` sin quejarse, pero
+  > `StoreAirFlightRequest`/`StoreBatchAirFlightRequest` no los declaraban en
+  > `rules()`: Laravel `->validated()` los descartaba en silencio antes de
+  > llegar a guardarse, aunque el modelo y la respuesta de lectura ya los
+  > soportaban. Un cliente que ya los mandaba no tiene que cambiar nada; a
+  > partir de este cambio, lo que mande sí se guarda.
+
   Los endpoints de escritura de este módulo requieren un **token de
   dispositivo IoT** con la ability `airflight:write` (catálogo completo en
   `app/Support/Auth/TokenAbilities.php`; se emite con `POST
@@ -146,6 +155,7 @@ por fechas; no son recursos distintos.
       "speed": 210.5,
       "track": 134.2,
       "rssi": -12.5,
+      "emergency": null,
       "seen": 3,
       "seen_pos": 3,
       "messages": 128,
@@ -179,6 +189,7 @@ por fechas; no son recursos distintos.
       "speed": 210.5,
       "track": 134.2,
       "rssi": -12.5,
+      "emergency": null,
       "seen": 3,
       "seen_pos": 3,
       "messages": 128,
@@ -197,20 +208,34 @@ por fechas; no son recursos distintos.
 }
 ```
 
-  Notas de campos (vienen del avión + su última posición conocida —
-  `latestRoute`—, no de dos recursos separados):
+  Notas de campos (vienen del avión + su telemetría, no de dos recursos
+  separados, pero **de dos consultas distintas** — ver el porqué):
   - `id`, `icao`, `category`, `created_at` pertenecen al avión.
-  - `flight`, `squawk`, `lat`, `lon`, `altitude`, `vert_rate`, `speed`,
-    `track`, `messages` pertenecen a la última posición (`route`); si el avión
-    no tiene ninguna posición registrada, todos salen `null`.
-  - `rssi` sale `-100.0` (float) si la posición no trae RSSI, nunca `null`.
-  - `seen` y `seen_pos` son el mismo valor (segundos transcurridos desde
-    `seen_at` hasta ahora): el esquema solo guarda un timestamp por detección,
-    así que no hay dos marcas de tiempo distintas que reportar. Si no hay
-    posición, ambos salen `null`.
+  - `flight`, `squawk`, `altitude`, `vert_rate`, `speed`, `track`, `rssi`,
+    `emergency`, `messages` y `seen` vienen del **último mensaje recibido**
+    (`latestRoute`), sea cual sea su contenido.
+  - `lat`, `lon` y `seen_pos` vienen de la **última posición real conocida**
+    (`latestPosition`) — es decir, de la última ruta con `lat`/`lon` no
+    nulos, que puede ser un mensaje **anterior** al de `latestRoute`.
+
+    Por qué la distinción (cambio del 2026-09-08): un receptor ADS-B manda
+    identificación, altitud y posición en mensajes Mode S separados. Si el
+    mensaje más reciente de un avión es, por ejemplo, un squawk suelto sin
+    posición nueva, `latestRoute` no tiene `lat`/`lon` aunque el avión sí
+    tenga una posición real de hace un instante. Antes de este cambio,
+    `lat`/`lon` salían `null` en ese caso pese a existir una posición
+    reciente — y el mapa dibujaba el avión en `(0, 0)`.
+  - Si el avión no tiene ningún mensaje (`latestRoute` nulo), todos los
+    campos de esta lista salen `null` salvo `rssi` (ver abajo).
+  - Si el avión no tiene ninguna posición real conocida (`latestPosition`
+    nulo, aunque sí tenga mensajes), `lat`, `lon` y `seen_pos` salen `null`
+    sin que eso afecte al resto de campos.
+  - `rssi` sale `-100.0` (float) si el mensaje no trae RSSI, nunca `null`.
   - `trail` es el recorrido conocido como lista de pares `[lon, lat]`
-    (el más antiguo primero), limitado a los últimos 50 puntos. Solo se
-    rellena en modo mapa en vivo.
+    (el más antiguo primero), limitado a los últimos 50 puntos, acotado a la
+    última hora y a un radio plausible alrededor del receptor (evita líneas
+    que unan un sobrevuelo de hace días con el de hoy, o una lectura con la
+    posición mal decodificada). Solo se rellena en modo mapa en vivo.
 
 ---
 
@@ -233,9 +258,12 @@ por fechas; no son recursos distintos.
 | `altitude` | number\|null | opcional, mín. 0 |
 | `speed` | number\|null | opcional, mín. 0 |
 | `track` | number\|null | opcional, entre 0 y 360 |
+| `vert_rate` | number\|null | opcional, entre -50 y 50 (m/s; más allá es ruido del decodificador, ningún avión real sostiene esa velocidad vertical) |
 | `seen` | number\|null | opcional (no se persiste: el esquema guarda `seen_at`, calculado al recibir la petición, no "hace cuántos segundos") |
 | `seen_pos` | number\|null | opcional (mismo caso que `seen`, no se persiste) |
 | `messages` | int\|null | opcional, mín. 0 |
+| `rssi` | number\|null | opcional, entre -100 y 0 (dBFS; siempre negativo o cero) |
+| `emergency` | string\|null | opcional, máx. 20. Cadena corta del decodificador ADS-B (`none`, `general`, `lifeguard`, `minfuel`, `nordo`, `unlawful`, `downed`, `reserved`...); sin lista cerrada de valores |
 | `hardware_device_info` | object\|null | opcional. Último estado conocido del receptor (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status`; solo tiene efecto si esta misma petición trae también `hardware_device_id` — sin dispositivo no hay a quién aplicarle el estado, y se ignora sin error. Contrato completo en [`hardware.md`](./hardware.md) |
 
 > ⚠️ **`ip_public` ya no se acepta dentro de `hardware_device_info`**
@@ -264,10 +292,11 @@ por fechas; no son recursos distintos.
     "lat": 36.71,
     "lon": -6.42,
     "altitude": 3500,
-    "vert_rate": null,
+    "vert_rate": -3.5,
     "speed": 210.5,
     "track": 134.2,
-    "rssi": -100.0,
+    "rssi": -12.4,
+    "emergency": "none",
     "seen": 0,
     "seen_pos": 0,
     "messages": 128,
@@ -313,9 +342,12 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.altitude` | number\|null | opcional, mín. 0 |
 | `data.*.speed` | number\|null | opcional, mín. 0 |
 | `data.*.track` | number\|null | opcional, entre 0 y 360 |
+| `data.*.vert_rate` | number\|null | opcional, entre -50 y 50 (m/s) |
 | `data.*.seen` | number\|null | opcional (no se persiste) |
 | `data.*.seen_pos` | number\|null | opcional (no se persiste) |
 | `data.*.messages` | int\|null | opcional, mín. 0 |
+| `data.*.rssi` | number\|null | opcional, entre -100 y 0 (dBFS) |
+| `data.*.emergency` | string\|null | opcional, máx. 20 |
 | `hardware_device_info` | object\|null | opcional. Igual que en el alta individual: solo tiene efecto si el lote trae también `hardware_device_id` en la raíz |
 
   El `hardware_device_id` es único para todo el lote (no por elemento). Cada
@@ -363,4 +395,4 @@ cada petición trae hasta 500 filas).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-08

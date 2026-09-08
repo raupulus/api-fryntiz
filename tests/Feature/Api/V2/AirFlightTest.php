@@ -231,6 +231,30 @@ class AirFlightTest extends ApiTestCase
     }
 
     #[Test]
+    public function store_aircraft_validates_vert_rate_range(): void
+    {
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts'), [
+            'icao' => 'ABC123',
+            'vert_rate' => 500,
+        ], $headers);
+        $this->assertErrorResponse($response, 422);
+        $response->assertJsonValidationErrors(['vert_rate']);
+    }
+
+    #[Test]
+    public function store_aircraft_validates_rssi_is_never_positive(): void
+    {
+        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
+        $response = $this->postJson($this->apiUrl('airflight/aircrafts'), [
+            'icao' => 'ABC123',
+            'rssi' => 5,
+        ], $headers);
+        $this->assertErrorResponse($response, 422);
+        $response->assertJsonValidationErrors(['rssi']);
+    }
+
+    #[Test]
     public function can_store_batch_authenticated(): void
     {
         $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);

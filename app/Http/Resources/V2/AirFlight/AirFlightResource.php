@@ -56,6 +56,7 @@ class AirFlightResource extends JsonResource
             'speed' => $route?->speed,
             'track' => $route?->track,
             'rssi' => $route?->rssi !== null ? (float) $route->rssi : -100.0,
+            'emergency' => $route?->emergency,
             'seen' => $seen,
             'seen_pos' => $seenPos,
             'messages' => $route?->messages,
