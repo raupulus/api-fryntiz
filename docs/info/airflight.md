@@ -173,6 +173,7 @@ repartiendo datos entre varias filas.
 | `app/Policies/AirFlightPolicy.php` | Aeronaves: catálogo de lectura pública, escritura sólo administrador |
 | `app/Policies/AirFlightRoutePolicy.php` | Rutas guardadas: lectura pública, escritura del dueño o administrador |
 | `app/Console/Commands/AirflightFixCommand.php` | Comando corrección datos |
+| `app/Console/Commands/AirFlightRemoveDuplicateRoutesCommand.php` | `airflight:remove_duplicate_routes` — borra subidas duplicadas en `airflight_routes` (ver detalle más abajo) |
 
 ## Campos del modelo AirFlightAirPlane
 
@@ -301,6 +302,56 @@ php artisan debug:seed-airflight --planes=10 --routes=100
 # cada uno con su propia línea de ~25 puntos:
 php artisan debug:seed-airflight --planes=1 --routes=25
 ```
+
+### Comando de limpieza: subidas duplicadas en `airflight_routes`
+
+`AirFlightRemoveDuplicateRoutesCommand` (`airflight:remove_duplicate_routes`)
+borra filas que son la **misma subida repetida**: mismo avión
+(`airplane_id`), mismo instante detectado (`seen_at`) y mismo contador de
+mensajes decodificados (`messages`). No son puntos de ruta distintos —el
+receptor mandó (o la API guardó) el mismo sondeo más de una vez—, así que
+sobran todas menos una.
+
+Esto es la **limpieza** de lo que ya quedó guardado con ese ruido, no la
+prevención: eso ya lo resuelve la fusión por `messages` de
+`AirFlightService::addAircraft()` (ver más arriba, "Ingesta: fusionar por
+`messages`") para las subidas *a partir* de ese cambio. Este comando es para
+lo que se guardó *antes*.
+
+De cada grupo de duplicados se conserva la fila con el `id` más bajo —la
+primera que se guardó, no un valor arbitrario—, con `ROW_NUMBER() OVER
+(PARTITION BY airplane_id, seen_at, messages ORDER BY id)` y borrando las
+`rn > 1`. Mismo patrón que `keycounter:remove_duplicate`, con las mismas dos
+salvaguardas:
+
+- **Sin `--force` no borra nada.** Sólo cuenta cuántas filas se borrarían y
+  lo deja en el log (`Log::info`) y en pantalla. Es el modo por defecto a
+  propósito — para poder revisar el número antes de fiarte del comando.
+- **`--date=YYYY-MM-DD`** acota la revisión a ese día por `seen_at`. Sin este
+  flag se revisa la tabla **completa**, que en una tabla grande puede tardar
+  (en local, con el histórico real, el dry-run sin acotar tardó ~18 s). Sirve
+  para dos cosas: repasar un día concreto antes de fiarte del resultado
+  general, y trocear un borrado grande en varias ejecuciones —una por
+  día— si prefieres no lanzarlo de una vez contra toda la tabla.
+
+```bash
+# Revisar cuántos duplicados hay en toda la tabla (no borra nada)
+php artisan airflight:remove_duplicate_routes
+
+# Revisar solo un día concreto, para comprobar que el número cuadra
+php artisan airflight:remove_duplicate_routes --date=2026-09-08
+
+# Borrar de verdad, acotado a ese día
+php artisan airflight:remove_duplicate_routes --date=2026-09-08 --force
+
+# Borrar de verdad en toda la tabla, una vez comprobado que el número tiene sentido
+php artisan airflight:remove_duplicate_routes --force
+```
+
+No toca las filas sin posición que se guardan a propósito (ver "Regla:
+`airflight_routes` guarda TODO" al principio de este documento) salvo que
+además compartan avión + instante + contador de mensajes con otra fila —en
+cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
