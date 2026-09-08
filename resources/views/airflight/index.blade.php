@@ -71,7 +71,6 @@
                     </div>
                 </div>
 
-                <div class="airflight-split">
                 <!-- Mapa -->
                 <div id="map_container" class="box-map">
                     <span id="loader" class="display-hidden box-map-loader">
@@ -182,7 +181,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
                 </div>
 
                 <div id="SpecialSquawkWarning" class="display-hidden special-squawk-warning">

@@ -49,6 +49,17 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 | `seen_last_at` | timestamp | Última vez detectado |
 | `seen_first_at` | timestamp | Primera vez detectado |
 
+### `trail()` — traza para la línea de vuelo del mapa
+
+Acotada a la **última hora** y a un radio plausible de ~300 km alrededor del
+receptor (`AirFlightAirPlane::RECEIVER_LAT/LON/RANGE_DEGREES`). Sin estos dos
+límites, un ICAO visto en dos sobrevuelos de días distintos —o con una sola
+lectura mal decodificada— quedaba unido por una línea recta como si fuera un
+único vuelo continuo: el origen de la traza no correspondía a ninguna
+posición realmente recibida en esa pasada (se veían líneas saliendo de África
+central hacia Chipiona). El frontend (`planeObject.js::seedTrail`) sólo
+dibuja lo que le llega en `trail`; el filtrado vive en el backend.
+
 ## Campos del modelo AirFlightRoute
 
 | Campo | Tipo | Descripción |

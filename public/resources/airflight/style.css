@@ -13,7 +13,7 @@
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 340px;
+  height: 400px;
   background-color: #aad3df;
 }
 .box-map .map-canvas {
@@ -26,12 +26,6 @@
 html.dark .box-map,
 html.dark .box-map .map-canvas {
   background-color: #17242b;
-}
-
-@media (min-width: 1024px) {
-  .box-map {
-    height: 560px;
-  }
 }
 
 /* Spinner de carga para el mapa */
@@ -60,38 +54,11 @@ html.dark .box-map-loader {
   margin: 40px 0 0 -125px;
 }
 
-/* Reparto del mapa y el panel lateral: apilado en móvil, lado a lado desde
-   desktop (lg). Sin esto sólo había flujo normal en bloque: el panel con la
-   tabla de aviones quedaba siempre debajo del mapa, también en escritorio,
-   desaprovechando el ancho disponible. */
-.airflight-split {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 1024px) {
-  .airflight-split {
-    flex-direction: row;
-    align-items: stretch;
-  }
-
-  .airflight-split .box-map {
-    width: 66%;
-  }
-
-  .airflight-split #sidebar_container {
-    width: 34%;
-    max-height: 560px;
-    overflow-y: auto;
-  }
-}
-
 /* Botones mapa */
 
 .box-buttons {
   display: flex;
-  flex-flow: row wrap;
-  gap: 6px;
+  flex-flow: row nowrap;
   margin-top: 7px;
   margin-bottom: 7px;
   vertical-align: middle;
@@ -100,21 +67,16 @@ html.dark .box-map-loader {
 }
 
 .box-buttons .btn-map {
-  padding: 3px 6px;
-  flex: 1 1 auto;
+  padding: 3px;
+  width: 100%;
   color: var(--color-on-primary);
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: bold;
   background-color: var(--color-primary-container);
-  border-radius: 6px;
-}
-
-@media (max-width: 480px) {
-  .box-buttons .btn-map {
-    flex-basis: calc(50% - 6px);
-    font-size: 0.78rem;
-  }
+  border-left: 3px solid var(--color-surface-container-lowest);
+  border-right: 3px solid var(--color-surface-container-lowest);
+  border-radius: 5px;
 }
 
 /* Información y selector de aviones */

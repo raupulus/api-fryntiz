@@ -85,6 +85,22 @@ class AirFlightAirPlane extends BaseModel
     ];
 
     /**
+     * Posición del receptor ADS-B (Chipiona). Mismas coordenadas que
+     * `AirFlightController::receiver()`; viven aquí también porque `trail()`
+     * las necesita para descartar lecturas fuera de un alcance plausible.
+     */
+    public const RECEIVER_LAT = 36.7381;
+
+    public const RECEIVER_LON = -6.4301;
+
+    /**
+     * Alcance realista del receptor en grados (aprox. 300 km): más allá de
+     * esto, una posición es un fallo de decodificación, no un avión que
+     * estuviera de verdad ahí.
+     */
+    public const RECEIVER_RANGE_DEGREES = 3.0;
+
+    /**
      * Rutas/posiciones registradas para este avión.
      */
     public function routes(): HasMany
@@ -96,12 +112,22 @@ class AirFlightAirPlane extends BaseModel
      * Recorrido reciente (más antiguo primero) para trazar la línea de vuelo
      * en el mapa. El widget del mapa solo dibuja la traza en vivo a base de
      * sondeos sucesivos; esto le da de una vez el historial ya conocido.
+     *
+     * Acotada a la última hora y al alcance plausible del receptor: sin
+     * esto, un ICAO visto en dos sobrevuelos de días distintos —o con una
+     * sola lectura con la posición mal decodificada— quedaba unido por una
+     * línea recta como si fuera un único vuelo continuo. El origen de la
+     * traza tiene que ser una posición realmente recibida en esta pasada,
+     * no un punto inventado por conectar sondeos que no tienen relación.
      */
     public function trail(): HasMany
     {
         return $this->routes()
             ->whereNotNull('lat')
             ->whereNotNull('lon')
+            ->where('seen_at', '>=', now()->subHour())
+            ->whereBetween('lat', [self::RECEIVER_LAT - self::RECEIVER_RANGE_DEGREES, self::RECEIVER_LAT + self::RECEIVER_RANGE_DEGREES])
+            ->whereBetween('lon', [self::RECEIVER_LON - self::RECEIVER_RANGE_DEGREES, self::RECEIVER_LON + self::RECEIVER_RANGE_DEGREES])
             ->orderBy('seen_at');
     }
 
