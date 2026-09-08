@@ -336,18 +336,35 @@ aplicada en `index()` y `detected()`, redondeada al entero):
 - `altitude`: pies → metros (`× 0.3048`).
 - `speed`: nudos → km/h (`× 1.852`).
 
-Por qué pies/nudos y no lo que dice el comentario de la migración
-(`airflight_routes.altitude`/`.speed`, "metros"/"metros por segundos"): esos
-comentarios están equivocados. Comprobado contra datos reales de producción:
-el máximo de `altitude` en la tabla es ~39000 —el techo de vuelo comercial
-real, FL390, en pies— y el máximo de `speed` es exactamente 1347.49, el
-mismo valor que la propia auditoría AD-T01 (`StoreAirFlightRequest.php`)
-documenta como corrupto y llama **"1347 kn"** (nudos). ADS-B/Mode S, el
-estándar real que emiten los receptores, siempre manda altitud en pies y
-velocidad en nudos — es lo que se ingiere, pase lo que diga el comentario de
-la columna. Si en algún momento se corrige la migración para que el
-comentario diga la verdad, esta conversión no cambia: sigue haciendo falta
-mientras el dato real siga llegando en pies/nudos.
+Por qué pies/nudos si `airflight_routes.altitude`/`.speed` dicen "metros"
+(2026-09-08, corregido): el comentario de la migración no estaba mal — ésa
+era la intención real del esquema. Lo que ha estado mal es la ingesta:
+`AirFlightService::routeFieldsOnly()` siempre ha guardado el valor tal cual
+llega del receptor (pies/nudos, el estándar real de ADS-B/Mode S) sin
+convertirlo a metros/m-por-segundo antes de guardarlo. Comprobado contra
+datos reales: el máximo de `altitude` en la tabla es ~39000 —el techo de
+vuelo comercial real, FL390, en pies— y el máximo de `speed` es exactamente
+1347.49, el mismo valor que la propia auditoría AD-T01
+(`StoreAirFlightRequest.php`) documenta como corrupto y llama **"1347 kn"**
+(nudos). Si esos valores fueran de verdad metros/m·s no tendrían sentido
+físico (39000 m de altitud, o 1347 m/s ≈ Mach 4).
+
+Decisión (2026-09-08): no se toca la ingesta ni se migran los datos ya
+guardados —darían un cambio de unidad a mitad de histórico, más confuso que
+útil—. El comentario de la migración se corrige para que documente lo que
+de verdad hay en la columna (`2023_02_18_000004_create_airflight_routes_table.php`,
+sincronizado también en la base de datos local con `COMMENT ON COLUMN`, ya
+que editar el fichero de una migración ya ejecutada no cambia el comentario
+de una base de datos que ya existe). La conversión a metros/km-h de la tabla
+"Aviones detectados" sigue haciendo falta igual: convierte el valor real
+(pies/nudos) para mostrarlo, no depende de lo que diga el comentario.
+
+`vert_rate` no se ha revisado: no hay ningún dato real que comprobar (nadie
+lo ha mandado nunca — la API lo descartaba en silencio hasta el
+2026-09-08). Si en algún momento llega vert_rate real, conviene comprobar
+primero si también es ft/min (el estándar ADS-B) antes de fiarse de su
+comentario o de la validación actual (`between:-50,50`, pensada para m/s;
+en ft/min un ascenso normal de 1500 ft/min la rechazaría).
 
 **Flecha de dirección**: antes de los grados, un icono de Material Symbols
 (`navigation`, una flecha que por defecto apunta hacia arriba) rotado con

@@ -21,12 +21,16 @@ use Illuminate\Support\Facades\Cache;
 class AirFlightController extends Controller
 {
     /**
-     * `airflight_routes.altitude`/`.speed` se ingieren en pies y nudos —el
-     * estándar real de ADS-B/Mode S, pese a que el comentario de la
-     * migración diga "metros" (comprobado contra datos reales: máximos de
-     * ~39000 y ~1347, que son techo de vuelo comercial en FL390 y el propio
-     * valor corrupto de la auditoría AD-T01, "1347 kn"). La tabla "Aviones
-     * detectados" los pinta en metros y km/h.
+     * `airflight_routes.altitude`/`.speed` deberían guardarse en metros y
+     * m/s (así lo documenta la migración), pero la ingesta nunca ha hecho
+     * esa conversión: guarda tal cual llega del receptor, en pies y nudos
+     * —el estándar real de ADS-B/Mode S— (comprobado contra datos reales:
+     * máximos de ~39000 y ~1347, que son techo de vuelo comercial en FL390
+     * y el propio valor corrupto de la auditoría AD-T01, "1347 kn"; no
+     * tendrían sentido físico como metros/m·s). No se toca la ingesta ni
+     * los datos ya guardados (decisión 2026-09-08, ver docs/info/airflight.md);
+     * la tabla "Aviones detectados" convierte al vuelo el valor real
+     * (pies/nudos) a metros y km/h para mostrarlo.
      */
     private const FEET_TO_METERS = 0.3048;
 
