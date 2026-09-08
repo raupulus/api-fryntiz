@@ -70,6 +70,73 @@ rango de fecha) para no bloquear la tabla. Es una decisión de volumen, no de
 código: no se ha automatizado ni programado — se hace a mano el día que haga
 falta.
 
+## Ingesta: fusionar por `messages`, no duplicar por sondeo
+
+`AirFlightService::addAircraft()` (método privado `mergeOrCreateRoute()`)
+fusiona en vez de insertar cuando el sondeo trae el mismo contador
+`messages` que una ruta ya guardada del mismo avión dentro de la última
+hora.
+
+**Por qué**: el SDR sube `messages` cada vez que decodifica un mensaje Mode S
+nuevo de ese avión. Si dos sondeos del mismo avión llegan con el mismo
+`messages`, no ha llegado ningún mensaje nuevo entre uno y otro: es la misma
+detección, que puede traer campos distintos ya decodificados (posición,
+identificación y altitud van en mensajes Mode S separados, así que un
+sondeo puede completar lo que el anterior no traía). Sin esto, cada campo
+que se iba decodificando por separado generaba su propia fila con casi todo
+a `null`.
+
+**Cómo fusiona**: busca una ruta del mismo avión con ese `messages` y
+`seen_at` dentro de la última hora; si existe, hace `fill($path)` +
+`save()`. `$path` (`routeFieldsOnly()`) ya viene sin valores nulos, así que
+rellenar con él nunca borra un dato existente con uno vacío — sólo añade o
+sobrescribe los campos que sí traen valor nuevo. `seen_at` no se toca en la
+fusión: sigue siendo el momento en que se vio esa detección por primera vez,
+no el de la última actualización de campos.
+
+Si el sondeo no trae `messages` (algunos receptores podrían no mandarlo), no
+hay forma de aplicar esta regla y se crea una fila nueva, como antes.
+
+## "Aviones detectados": el último valor CONOCIDO de cada campo, no la última fila
+
+`AirFlightController::index()` (vista) y `::detected()` (JSON del sondeo)
+usan `AirFlightService::getDetectedQuery()` en vez de
+`AirFlightAirPlane::with('latestRoute')`.
+
+**Por qué `latestRoute` no vale aquí** (aunque sí valga para el mapa, ver
+arriba): Mode S manda cada dato en un mensaje distinto, así que la última
+ruta de un avión casi siempre trae uno o dos campos y el resto a `null`. Con
+`latestRoute` la tabla salía casi entera con "-": si la última ruta sólo
+traía `squawk`, la altitud/velocidad/posición de la ruta anterior —dentro de
+la misma última hora— simplemente no se mostraban, aunque existieran.
+
+**Cómo agrega**: `getDetectedQuery()` hace un `JOIN` de `airflight_airplanes`
+con `airflight_routes` acotado a la ventana, agrupa por avión, y para cada
+columna hace:
+
+```sql
+(array_agg(col ORDER BY seen_at DESC) FILTER (WHERE col IS NOT NULL))[1]
+```
+
+el idiom de PostgreSQL para "último valor no nulo por grupo": agrega la
+columna en orden descendente de fecha, descarta los `null` antes de agregar,
+y coge el primer elemento del array resultante — el más reciente de los que
+sí tienen dato. Cada campo de la tabla (`flight`, `squawk`, `altitude`,
+`speed`, `track`, `lat`, `lon`) puede así venir de una fila distinta dentro
+de la misma ventana, que es justo lo que hace falta.
+
+Devuelve un `Illuminate\Database\Query\Builder` (no Eloquent, es un `JOIN` +
+`GROUP BY` con columnas agregadas) para que cada llamante decida
+`->paginate()` (la vista) o `->limit()->get()` (el JSON del sondeo). La vista
+Blade lee `$plane->flight`, `$plane->altitude`, etc. directamente — ya no hay
+relación `latestRoute` que cargar, los campos vienen planos en la fila.
+
+Con la fusión por `messages` de más arriba, este caso debería ir siendo cada
+vez menos frecuente (menos filas nuevas con un único campo cada una), pero
+la agregación se queda: los sondeos de dos receptores distintos, o dos
+mensajes Mode S que de verdad se decodificaron por separado, van a seguir
+repartiendo datos entre varias filas.
+
 ## Archivos principales
 
 ### Modelos
@@ -87,7 +154,7 @@ falta.
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Services/AirFlight/AirFlightService.php` | Lógica: addAircraft, addAircraftBatch, getAircraftHistory |
+| `app/Services/AirFlight/AirFlightService.php` | Lógica: addAircraft (fusiona por `messages`, ver abajo), addAircraftBatch, getActiveAircrafts, getDetectedQuery (agregación por campo, ver abajo), getAircraftHistory |
 
 ### Resources API V2
 | Archivo | Descripción |

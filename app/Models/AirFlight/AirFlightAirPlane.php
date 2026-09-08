@@ -103,6 +103,8 @@ class AirFlightAirPlane extends BaseModel
 
     /**
      * Rutas/posiciones registradas para este avión.
+     *
+     * @return HasMany<AirFlightRoute, $this>
      */
     public function routes(): HasMany
     {

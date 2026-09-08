@@ -129,4 +129,84 @@ class AirFlightServiceTest extends TestCase
         // El squawk sí viene del mensaje más reciente.
         $this->assertSame('7000', $json[0]['squawk']);
     }
+
+    /**
+     * El SDR sube `messages` cada vez que decodifica un mensaje Mode S
+     * nuevo. Si dos sondeos del mismo avión traen el mismo contador dentro
+     * de la última hora, es la misma detección re-decodificada, no una
+     * nueva: se fusiona en la misma fila en vez de crear otra.
+     */
+    #[Test]
+    public function dos_sondeos_con_el_mismo_contador_de_mensajes_fusionan_en_una_fila(): void
+    {
+        $this->service->addAircraft([
+            'icao' => 'MERGE01',
+            'lat' => 36.71,
+            'lon' => -6.41,
+            'messages' => 100,
+        ]);
+
+        $this->service->addAircraft([
+            'icao' => 'MERGE01',
+            'squawk' => '7000',
+            'messages' => 100,
+        ]);
+
+        $avion = AirFlightAirPlane::where('icao', 'MERGE01')->firstOrFail();
+
+        $this->assertSame(1, $avion->routes()->count());
+
+        $ruta = $avion->routes()->first();
+        $this->assertSame('7000', $ruta->squawk);
+        $this->assertSame(36.71, (float) $ruta->lat);
+        $this->assertSame(-6.41, (float) $ruta->lon);
+    }
+
+    #[Test]
+    public function un_contador_de_mensajes_distinto_crea_una_fila_nueva(): void
+    {
+        $this->service->addAircraft(['icao' => 'MERGE02', 'lat' => 36.71, 'lon' => -6.41, 'messages' => 100]);
+        $this->service->addAircraft(['icao' => 'MERGE02', 'lat' => 36.72, 'lon' => -6.42, 'messages' => 101]);
+
+        $avion = AirFlightAirPlane::where('icao', 'MERGE02')->firstOrFail();
+
+        $this->assertSame(2, $avion->routes()->count());
+    }
+
+    /**
+     * `getDetectedQuery()` alimenta "Aviones detectados (última hora)".
+     * Mode S manda cada dato en un mensaje distinto, así que la última fila
+     * de un avión casi siempre trae uno o dos campos y el resto a null. La
+     * tabla necesita el último valor CONOCIDO de cada campo, juntando todas
+     * las rutas de la ventana — no la última fila suelta.
+     */
+    #[Test]
+    public function el_detectado_junta_el_ultimo_valor_no_nulo_de_cada_campo_entre_varias_rutas(): void
+    {
+        $avion = AirFlightAirPlane::create(['icao' => 'AGREGADO', 'seen_last_at' => Carbon::now()]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'lat' => 36.71,
+            'lon' => -6.41,
+            'altitude' => 8000,
+            'seen_at' => Carbon::now()->subMinutes(3),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'squawk' => '7000',
+            'seen_at' => Carbon::now()->subMinute(),
+        ]);
+
+        $resultado = $this->service->getDetectedQuery(Carbon::now()->subHour())->get();
+
+        $this->assertCount(1, $resultado);
+
+        $fila = $resultado->first();
+        $this->assertSame(36.71, (float) $fila->lat);
+        $this->assertSame(-6.41, (float) $fila->lon);
+        $this->assertSame(8000.0, (float) $fila->altitude);
+        $this->assertSame('7000', $fila->squawk);
+    }
 }

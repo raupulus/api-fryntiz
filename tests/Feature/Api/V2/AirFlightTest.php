@@ -61,6 +61,31 @@ class AirFlightTest extends ApiTestCase
     }
 
     /**
+     * `index()` pagina el mismo `getDetectedQuery()` (query builder, no
+     * Eloquent) — que la vista lo consuma con `$plane->campo` en vez de
+     * `$plane->latestRoute->campo` sin explotar es justo lo que aquí se
+     * comprueba.
+     */
+    #[Test]
+    public function la_pagina_airflight_se_sirve_con_datos_agregados(): void
+    {
+        $avion = AirFlightAirPlane::create(['icao' => 'PAGINA1', 'seen_last_at' => Carbon::now()]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'flight' => 'IBE9999',
+            'lat' => 36.7,
+            'lon' => -6.4,
+            'seen_at' => Carbon::now()->subMinutes(2),
+        ]);
+
+        $this->get(route('airflight.index'))
+            ->assertOk()
+            ->assertSee('PAGINA1')
+            ->assertSee('IBE9999');
+    }
+
+    /**
      * Tabla "Aviones detectados (última hora)" de `/airflight`: sondeo cada
      * minuto desde el propio frontend, sin token, y sólo con lo visto dentro
      * de la última hora.
@@ -106,6 +131,45 @@ class AirFlightTest extends ApiTestCase
 
         $this->assertContains('ABC123', $icaos);
         $this->assertNotContains('OLD999', $icaos);
+    }
+
+    /**
+     * Reproduce el bug real reportado: la tabla salía casi toda con "-"
+     * porque se leía sólo la última ruta del avión, y Mode S manda cada
+     * dato en un mensaje distinto. El endpoint tiene que juntar el último
+     * valor no nulo de cada campo entre todas las rutas de la última hora.
+     */
+    #[Test]
+    public function la_tabla_de_detectados_junta_campos_repartidos_en_varias_rutas(): void
+    {
+        $avion = AirFlightAirPlane::create([
+            'icao' => 'REPARTIDO',
+            'seen_last_at' => Carbon::now(),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'lat' => 36.73,
+            'lon' => -6.43,
+            'altitude' => 9000,
+            'seen_at' => Carbon::now()->subMinutes(4),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'squawk' => '2000',
+            'seen_at' => Carbon::now()->subMinute(),
+        ]);
+
+        $response = $this->getJson(route('airflight.detected'))->assertOk();
+
+        $fila = collect($response->json('data'))->firstWhere('icao', 'REPARTIDO');
+
+        $this->assertNotNull($fila);
+        $this->assertSame(36.73, $fila['lat']);
+        $this->assertSame(-6.43, $fila['lon']);
+        $this->assertEquals(9000, $fila['altitude']);
+        $this->assertSame('2000', $fila['squawk']);
     }
 
     #[Test]

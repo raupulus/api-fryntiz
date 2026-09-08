@@ -234,13 +234,13 @@
                         @foreach($planes as $plane)
                             <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
                                 <td class="px-3 py-2 text-center text-on-surface font-mono">{{ $plane->icao ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->latestRoute->flight ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->altitude ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->speed ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->track ?? '-' }}°</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lat ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lon ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->squawk ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->flight ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->altitude ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->speed ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->track !== null ? $plane->track.'°' : '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lat ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lon ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->squawk ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->seen_last_at ?? '-' }}</td>
                             </tr>
                         @endforeach

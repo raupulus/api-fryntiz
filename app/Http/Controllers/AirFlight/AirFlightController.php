@@ -6,7 +6,6 @@ namespace App\Http\Controllers\AirFlight;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V2\AirFlight\AirFlightResource;
-use App\Models\AirFlight\AirFlightAirPlane;
 use App\Services\AirFlight\AirFlightService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
@@ -60,6 +59,10 @@ class AirFlightController extends Controller
      * consume el propio `/airflight` desde el navegador. La vista pinta la
      * primera tanda ya en el HTML (sin petición extra al cargar); esto es lo
      * que llama el sondeo cada minuto para refrescarla.
+     *
+     * Usa `AirFlightService::getDetectedQuery()`: el último valor conocido
+     * de cada campo dentro de la ventana, no la última ruta suelta (ver su
+     * docblock — Mode S manda cada dato en mensajes distintos).
      */
     public function detected(): JsonResponse
     {
@@ -68,20 +71,18 @@ class AirFlightController extends Controller
         $planes = Cache::remember(
             'airflight:web:detected',
             20,
-            fn () => AirFlightAirPlane::with('latestRoute')
-                ->where('seen_last_at', '>=', $lastHour)
-                ->orderByDesc('seen_last_at')
+            fn () => app(AirFlightService::class)->getDetectedQuery($lastHour)
                 ->limit(20)
                 ->get()
-                ->map(fn (AirFlightAirPlane $plane) => [
+                ->map(fn ($plane) => [
                     'icao' => $plane->icao,
-                    'flight' => $plane->latestRoute->flight ?? null,
-                    'altitude' => $plane->latestRoute->altitude ?? null,
-                    'speed' => $plane->latestRoute->speed ?? null,
-                    'track' => $plane->latestRoute->track ?? null,
-                    'lat' => $plane->latestRoute->lat ?? null,
-                    'lon' => $plane->latestRoute->lon ?? null,
-                    'squawk' => $plane->latestRoute->squawk ?? null,
+                    'flight' => $plane->flight,
+                    'altitude' => $plane->altitude !== null ? (float) $plane->altitude : null,
+                    'speed' => $plane->speed !== null ? (float) $plane->speed : null,
+                    'track' => $plane->track !== null ? (int) $plane->track : null,
+                    'lat' => $plane->lat !== null ? (float) $plane->lat : null,
+                    'lon' => $plane->lon !== null ? (float) $plane->lon : null,
+                    'squawk' => $plane->squawk,
                     'seen_last_at' => $plane->seen_last_at,
                 ])
                 ->values()
@@ -117,17 +118,16 @@ class AirFlightController extends Controller
     /**
      * Lleva a la vista de resumen para visualizar la depuración.
      *
+     * Mismo criterio que `detected()`: el último valor conocido de cada
+     * campo dentro de la última hora, no una ruta suelta.
+     *
      * @return Application|Factory|View
      */
     public function index()
     {
-        $now = Carbon::now();
-        $lastHour = (clone $now)->subHour();
+        $lastHour = Carbon::now()->subHour();
 
-        $planes = AirFlightAirPlane::with('latestRoute')
-            ->where('seen_last_at', '>=', $lastHour)
-            ->orderByDesc('seen_last_at')
-            ->paginate(20);
+        $planes = app(AirFlightService::class)->getDetectedQuery($lastHour)->paginate(20);
 
         return view('airflight.index')->with([
             'planes' => $planes,
