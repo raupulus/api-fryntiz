@@ -2,6 +2,45 @@
 
 Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenando datos de vuelo, telemetría y rutas históricas.
 
+## Unidades de `airflight_routes` (contrato definitivo, 2026-09-09)
+
+Tabla cerrada con el propietario del capturador (`dump1090-to-db`, fuera de
+este repo) sobre lo que de verdad sube a `POST /airflight/aircrafts`. **Es
+la única fuente de verdad**; si algo del resto de este documento la
+contradice, manda esta tabla.
+
+| Campo | Tipo | Unidad | Rango |
+|---|---|---|---|
+| `icao` | string | — | 6 hex |
+| `flight` | string\|null | — | callsign sin espacios |
+| `squawk` | string\|null | — | 4 dígitos octales |
+| `lat` | float\|null | grados decimales WGS84 (°) | -90 a 90 |
+| `lon` | float\|null | grados decimales WGS84 (°) | -180 a 180 |
+| `altitude` | float\|null | **metros (m)** | 0 a 60000 |
+| `speed` | float\|null | **metros por segundo (m/s)** | 0 a 1000 |
+| `track` | int\|null | grados sexagesimales (°) | 0 a 360 |
+| `vert_rate` | float\|null | **metros por segundo (m/s)** | -100 a 100 |
+| `messages` | int\|null | conteo de tramas | ≥ 0 |
+| `rssi` | float\|null | dBFS | -100 a 0 |
+| `emergency` | string\|null | cadena de estado | `none`, `general`, `lifeguard`... |
+| `seen` / `seen_pos` | — | — | no se persisten (siempre `null` en el sondeo real) |
+
+**Corrección sobre una confusión propia (2026-09-08 → 09):** un commit de
+esta misma fecha llegó a la conclusión contraria —que `altitude`/`speed` se
+ingerían en pies/nudos— apoyándose en el máximo histórico de la tabla
+(~39000 y ~1347). Ese razonamiento estaba mal: esos máximos eran
+precisamente **datos corruptos**, el mismo tipo de lectura que la auditoría
+AD-T01 ya documentaba como fallo de un receptor de pruebas (ver el
+comentario en `StoreAirFlightRequest.php`) — la validación (`max:60000` en
+metros, `max:1000` en m/s) existe justo para descartar ese ruido, no para
+insinuar que la unidad real fuera otra. El comentario de la migración
+(`airflight_routes.altitude`/`.speed`, "metros"/"metros por segundos")
+**siempre estuvo bien**; no se toca. Lección: un máximo o un valor puntual
+en datos históricos no es un dato fiable de la unidad si la validación ya
+existe precisamente para atrapar decodificaciones corruptas — hay que
+preguntar a quien manda los datos, no inferir de una tabla que puede tener
+ruido.
+
 ## Regla: `airflight_routes` guarda TODO, lo que mira al mapa filtra por posición
 
 Decisión consciente (2026-09-08): se sigue guardando en `airflight_routes`
@@ -330,41 +369,17 @@ reconstruye el sondeo cada minuto (`buildRow()`, sólo en la página 1).
 Latitud y longitud se han quitado de esta tabla (no del mapa, que sigue
 igual): `AirFlightService::getDetectedQuery()` ya no las selecciona.
 
-**Conversión de unidades** (`AirFlightController::toMeters()`/`::toKmh()`,
-aplicada en `index()` y `detected()`, redondeada al entero):
+**Conversión de unidades** (`AirFlightController::roundOrNull()`/`::toKmh()`,
+aplicada en `index()` y `detected()`, redondeada al entero). Unidad real
+según la tabla de arriba:
 
-- `altitude`: pies → metros (`× 0.3048`).
-- `speed`: nudos → km/h (`× 1.852`).
+- `altitude`: ya está en metros — sólo se redondea, no se convierte.
+- `speed`: m/s → km/h (`× 3.6`), que se lee más cómodo que m/s.
 
-Por qué pies/nudos si `airflight_routes.altitude`/`.speed` dicen "metros"
-(2026-09-08, corregido): el comentario de la migración no estaba mal — ésa
-era la intención real del esquema. Lo que ha estado mal es la ingesta:
-`AirFlightService::routeFieldsOnly()` siempre ha guardado el valor tal cual
-llega del receptor (pies/nudos, el estándar real de ADS-B/Mode S) sin
-convertirlo a metros/m-por-segundo antes de guardarlo. Comprobado contra
-datos reales: el máximo de `altitude` en la tabla es ~39000 —el techo de
-vuelo comercial real, FL390, en pies— y el máximo de `speed` es exactamente
-1347.49, el mismo valor que la propia auditoría AD-T01
-(`StoreAirFlightRequest.php`) documenta como corrupto y llama **"1347 kn"**
-(nudos). Si esos valores fueran de verdad metros/m·s no tendrían sentido
-físico (39000 m de altitud, o 1347 m/s ≈ Mach 4).
-
-Decisión (2026-09-08): no se toca la ingesta ni se migran los datos ya
-guardados —darían un cambio de unidad a mitad de histórico, más confuso que
-útil—. El comentario de la migración se corrige para que documente lo que
-de verdad hay en la columna (`2023_02_18_000004_create_airflight_routes_table.php`,
-sincronizado también en la base de datos local con `COMMENT ON COLUMN`, ya
-que editar el fichero de una migración ya ejecutada no cambia el comentario
-de una base de datos que ya existe). La conversión a metros/km-h de la tabla
-"Aviones detectados" sigue haciendo falta igual: convierte el valor real
-(pies/nudos) para mostrarlo, no depende de lo que diga el comentario.
-
-`vert_rate` no se ha revisado: no hay ningún dato real que comprobar (nadie
-lo ha mandado nunca — la API lo descartaba en silencio hasta el
-2026-09-08). Si en algún momento llega vert_rate real, conviene comprobar
-primero si también es ft/min (el estándar ADS-B) antes de fiarse de su
-comentario o de la validación actual (`between:-50,50`, pensada para m/s;
-en ft/min un ascenso normal de 1500 ft/min la rechazaría).
+`vert_rate` no se muestra en esta tabla (no hay columna para él); su
+validación (`StoreAirFlightRequest`/`StoreBatchAirFlightRequest`,
+`between:-100,100`) sí está acotada a m/s, la unidad real confirmada por el
+propietario del capturador el 2026-09-09.
 
 **Flecha de dirección**: antes de los grados, un icono de Material Symbols
 (`navigation`, una flecha que por defecto apunta hacia arriba) rotado con

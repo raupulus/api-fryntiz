@@ -165,10 +165,10 @@ class AirFlightTest extends ApiTestCase
         $fila = collect($response->json('data'))->firstWhere('icao', 'REPARTIDO');
 
         $this->assertNotNull($fila);
-        // Ingerido en pies/nudos, convertido a metros/km-h para la tabla:
-        // 9000 ft * 0.3048 = 2743.2 m; 200 kt * 1.852 = 370.4 km/h.
-        $this->assertSame(2743, $fila['altitude']);
-        $this->assertSame(370, $fila['speed']);
+        // altitude ya está en metros, sólo se redondea. speed se pasa de
+        // m/s a km/h para la tabla: 200 m/s * 3.6 = 720 km/h.
+        $this->assertSame(9000, $fila['altitude']);
+        $this->assertSame(720, $fila['speed']);
         $this->assertSame('2000', $fila['squawk']);
         $this->assertArrayNotHasKey('lat', $fila);
         $this->assertArrayNotHasKey('lon', $fila);

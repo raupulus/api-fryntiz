@@ -66,7 +66,7 @@ class CreateAirFlightRoutesTable extends Migration
 
             $table->float('altitude')
                 ->nullable()
-                ->comment('Altitud en pies (ft), tal cual la reporta ADS-B/Mode S');
+                ->comment('Altitud en metros');
 
             $table->float('vert_rate')
                 ->nullable()
@@ -78,7 +78,7 @@ class CreateAirFlightRoutesTable extends Migration
 
             $table->float('speed')
                 ->nullable()
-                ->comment('Velocidad en nudos (kt), tal cual la reporta ADS-B/Mode S');
+                ->comment('Velocidad en metros por segundos');
 
             $table->timestamp('seen_at')
                 ->nullable()

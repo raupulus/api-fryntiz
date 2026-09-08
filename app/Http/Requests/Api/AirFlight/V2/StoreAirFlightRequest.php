@@ -42,10 +42,10 @@ class StoreAirFlightRequest extends BaseFormRequest
             // AD-T01: `track` es `integer` en BD; `numeric` admitía decimales
             // que revientan el INSERT con un 500.
             'track' => ['nullable', 'integer', 'between:0,360'],
-            // Velocidad vertical en m/s. ±50 m/s (~±9800 ft/min) ya es más de
-            // lo que sostiene un avión real; por debajo de eso es una lectura
-            // válida, por encima es ruido del decodificador.
-            'vert_rate' => ['nullable', 'numeric', 'between:-50,50'],
+            // Velocidad vertical en m/s (contrato definitivo 2026-09-09, ver
+            // docs/info/airflight.md). ±100 m/s es el límite acordado con el
+            // capturador para descartar ruido del decodificador.
+            'vert_rate' => ['nullable', 'numeric', 'between:-100,100'],
             'seen' => ['nullable', 'numeric'],
             'seen_pos' => ['nullable', 'numeric'],
             'messages' => ['nullable', 'integer', 'min:0'],

@@ -36,7 +36,8 @@ class StoreBatchAirFlightRequest extends BaseFormRequest
             'data.*.altitude' => ['nullable', 'numeric', 'min:0', 'max:60000'],
             'data.*.speed' => ['nullable', 'numeric', 'min:0', 'max:1000'],
             'data.*.track' => ['nullable', 'integer', 'between:0,360'],
-            'data.*.vert_rate' => ['nullable', 'numeric', 'between:-50,50'],
+            // Mismo límite que StoreAirFlightRequest, ver ese fichero.
+            'data.*.vert_rate' => ['nullable', 'numeric', 'between:-100,100'],
             'data.*.seen' => ['nullable', 'numeric'],
             'data.*.seen_pos' => ['nullable', 'numeric'],
             'data.*.messages' => ['nullable', 'integer', 'min:0'],

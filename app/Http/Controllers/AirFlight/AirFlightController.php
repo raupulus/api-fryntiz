@@ -21,20 +21,14 @@ use Illuminate\Support\Facades\Cache;
 class AirFlightController extends Controller
 {
     /**
-     * `airflight_routes.altitude`/`.speed` deberían guardarse en metros y
-     * m/s (así lo documenta la migración), pero la ingesta nunca ha hecho
-     * esa conversión: guarda tal cual llega del receptor, en pies y nudos
-     * —el estándar real de ADS-B/Mode S— (comprobado contra datos reales:
-     * máximos de ~39000 y ~1347, que son techo de vuelo comercial en FL390
-     * y el propio valor corrupto de la auditoría AD-T01, "1347 kn"; no
-     * tendrían sentido físico como metros/m·s). No se toca la ingesta ni
-     * los datos ya guardados (decisión 2026-09-08, ver docs/info/airflight.md);
-     * la tabla "Aviones detectados" convierte al vuelo el valor real
-     * (pies/nudos) a metros y km/h para mostrarlo.
+     * Contrato de unidades de `airflight_routes` (definitivo, 2026-09-09 —
+     * ver docs/info/airflight.md): el capturador ya sube `altitude` en
+     * metros y `speed`/`vert_rate` en m/s, tal cual documenta la migración.
+     * No hace falta convertir `altitude` para la tabla "Aviones
+     * detectados"; `speed` sí se pasa a km/h, que se lee más cómodo que
+     * m/s.
      */
-    private const FEET_TO_METERS = 0.3048;
-
-    private const KNOTS_TO_KMH = 1.852;
+    private const METERS_PER_SECOND_TO_KMH = 3.6;
 
     /**
      * Aviones activos para el mapa de esta misma web.
@@ -94,9 +88,10 @@ class AirFlightController extends Controller
                     'icao' => $plane->icao,
                     'squawk' => $plane->squawk,
                     'flight' => $plane->flight,
-                    // Metros y km/h para la tabla, no los pies/nudos en los
-                    // que se ingieren (ver constantes de la clase).
-                    'altitude' => $this->toMeters($plane->altitude),
+                    // `altitude` ya llega en metros, sólo se redondea. `speed`
+                    // se pasa de m/s a km/h para la tabla (ver docblock de la
+                    // clase).
+                    'altitude' => $this->roundOrNull($plane->altitude),
                     'speed' => $this->toKmh($plane->speed),
                     'track' => $plane->track !== null ? (int) $plane->track : null,
                     'seen_last_at' => $this->seenLastAtAsUtcIso($plane->seen_last_at),
@@ -153,9 +148,9 @@ class AirFlightController extends Controller
         // de UTC.
         $planes->getCollection()->transform(function ($plane) {
             $plane->seen_last_at = $this->seenLastAtAsUtcIso($plane->seen_last_at);
-            // Igual que en detected(): pies/nudos ingeridos -> metros/km-h
-            // para la tabla.
-            $plane->altitude = $this->toMeters($plane->altitude);
+            // Igual que en detected(): altitude ya está en metros (sólo se
+            // redondea), speed se pasa de m/s a km/h.
+            $plane->altitude = $this->roundOrNull($plane->altitude);
             $plane->speed = $this->toKmh($plane->speed);
 
             return $plane;
@@ -179,19 +174,21 @@ class AirFlightController extends Controller
     }
 
     /**
-     * Pies (valor ingerido) a metros, redondeado al metro — no tiene sentido
-     * mostrar más precisión de la que ya tenía el dato original.
+     * Redondea al entero para la tabla — no tiene sentido mostrar más
+     * precisión de la que se va a leer de un vistazo.
      */
-    private function toMeters(string|float|null $altitudeFeet): ?int
+    private function roundOrNull(string|float|null $value): ?int
     {
-        return $altitudeFeet !== null ? (int) round(((float) $altitudeFeet) * self::FEET_TO_METERS) : null;
+        return $value !== null ? (int) round((float) $value) : null;
     }
 
     /**
-     * Nudos (valor ingerido) a km/h, redondeado al km/h.
+     * m/s (valor ingerido) a km/h, redondeado al km/h.
      */
-    private function toKmh(string|float|null $speedKnots): ?int
+    private function toKmh(string|float|null $speedMetersPerSecond): ?int
     {
-        return $speedKnots !== null ? (int) round(((float) $speedKnots) * self::KNOTS_TO_KMH) : null;
+        return $speedMetersPerSecond !== null
+            ? (int) round(((float) $speedMetersPerSecond) * self::METERS_PER_SECOND_TO_KMH)
+            : null;
     }
 }

@@ -258,7 +258,7 @@ por fechas; no son recursos distintos.
 | `altitude` | number\|null | opcional, mín. 0 |
 | `speed` | number\|null | opcional, mín. 0 |
 | `track` | number\|null | opcional, entre 0 y 360 |
-| `vert_rate` | number\|null | opcional, entre -50 y 50 (m/s; más allá es ruido del decodificador, ningún avión real sostiene esa velocidad vertical) |
+| `vert_rate` | number\|null | opcional, entre -100 y 100 (m/s; más allá es ruido del decodificador) |
 | `seen` | number\|null | opcional (no se persiste: el esquema guarda `seen_at`, calculado al recibir la petición, no "hace cuántos segundos") |
 | `seen_pos` | number\|null | opcional (mismo caso que `seen`, no se persiste) |
 | `messages` | int\|null | opcional, mín. 0 |
@@ -342,7 +342,7 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.altitude` | number\|null | opcional, mín. 0 |
 | `data.*.speed` | number\|null | opcional, mín. 0 |
 | `data.*.track` | number\|null | opcional, entre 0 y 360 |
-| `data.*.vert_rate` | number\|null | opcional, entre -50 y 50 (m/s) |
+| `data.*.vert_rate` | number\|null | opcional, entre -100 y 100 (m/s) |
 | `data.*.seen` | number\|null | opcional (no se persiste) |
 | `data.*.seen_pos` | number\|null | opcional (no se persiste) |
 | `data.*.messages` | int\|null | opcional, mín. 0 |
