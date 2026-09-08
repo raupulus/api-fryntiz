@@ -125,15 +125,25 @@ class AirFlightService
     }
 
     /**
-     * Aviones vistos en los últimos minutos, con su última posición conocida.
-     * Es la fuente de datos que consume el mapa en vivo.
+     * Aviones con una posición real dentro de los últimos minutos. Es la
+     * fuente de datos que consume el mapa en vivo.
+     *
+     * Filtra por `routes.seen_at` con lat/lon, no por `seen_last_at` del
+     * avión: ese campo se actualiza con cualquier mensaje (p.ej. un squawk
+     * sin posición), así que un avión sin ruta reciente —o sin ruta
+     * alguna— seguía "visto" y se colaba en el mapa sin coordenadas que
+     * pintar, apareciendo detenido en un punto inventado.
      *
      * @param  int  $minutes  Ventana de actividad reciente (por defecto 10 minutos).
      */
     public function getActiveAircrafts(int $minutes = 10): Collection
     {
         return AirFlightAirPlane::with(['latestRoute', 'trail'])
-            ->where('seen_last_at', '>=', now()->subMinutes($minutes))
+            ->whereHas('routes', function ($query) use ($minutes) {
+                $query->where('seen_at', '>=', now()->subMinutes($minutes))
+                    ->whereNotNull('lat')
+                    ->whereNotNull('lon');
+            })
             ->orderByDesc('seen_last_at')
             ->get();
     }

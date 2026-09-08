@@ -383,7 +383,13 @@ PlaneObject.prototype.updateData = function(receiver_timestamp, data) {
 		this.speed	= data.speed;
         if (typeof data.track !== "undefined")
                 this.track	= data.track;
-        if (typeof data.lat !== "undefined") {
+        // El JSON de esta API manda siempre las claves lat/lon, con `null`
+        // cuando el avión no tiene posición conocida (el dump1090 original
+        // directamente las omitía). `typeof data.lat !== "undefined"` daba
+        // `true` también con `null`, así que `this.position` quedaba en
+        // `[null, null]` y OpenLayers lo proyectaba como (0, 0): el avión
+        // aparecía "parado" en el golfo de Guinea en vez de no dibujarse.
+        if (data.lat !== null && typeof data.lat !== "undefined") {
                 this.position   = [data.lon, data.lat];
                 this.last_position_time = receiver_timestamp - data.seen_pos;
 
