@@ -187,8 +187,6 @@ class AirFlightServiceTest extends TestCase
 
         AirFlightRoute::create([
             'airplane_id' => $avion->id,
-            'lat' => 36.71,
-            'lon' => -6.41,
             'altitude' => 8000,
             'seen_at' => Carbon::now()->subMinutes(3),
         ]);
@@ -204,8 +202,6 @@ class AirFlightServiceTest extends TestCase
         $this->assertCount(1, $resultado);
 
         $fila = $resultado->first();
-        $this->assertSame(36.71, (float) $fila->lat);
-        $this->assertSame(-6.41, (float) $fila->lon);
         $this->assertSame(8000.0, (float) $fila->altitude);
         $this->assertSame('7000', $fila->squawk);
     }

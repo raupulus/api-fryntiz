@@ -149,9 +149,8 @@ class AirFlightTest extends ApiTestCase
 
         AirFlightRoute::create([
             'airplane_id' => $avion->id,
-            'lat' => 36.73,
-            'lon' => -6.43,
             'altitude' => 9000,
+            'speed' => 200,
             'seen_at' => Carbon::now()->subMinutes(4),
         ]);
 
@@ -166,10 +165,13 @@ class AirFlightTest extends ApiTestCase
         $fila = collect($response->json('data'))->firstWhere('icao', 'REPARTIDO');
 
         $this->assertNotNull($fila);
-        $this->assertSame(36.73, $fila['lat']);
-        $this->assertSame(-6.43, $fila['lon']);
-        $this->assertEquals(9000, $fila['altitude']);
+        // Ingerido en pies/nudos, convertido a metros/km-h para la tabla:
+        // 9000 ft * 0.3048 = 2743.2 m; 200 kt * 1.852 = 370.4 km/h.
+        $this->assertSame(2743, $fila['altitude']);
+        $this->assertSame(370, $fila['speed']);
         $this->assertSame('2000', $fila['squawk']);
+        $this->assertArrayNotHasKey('lat', $fila);
+        $this->assertArrayNotHasKey('lon', $fila);
     }
 
     /**

@@ -21,6 +21,18 @@ use Illuminate\Support\Facades\Cache;
 class AirFlightController extends Controller
 {
     /**
+     * `airflight_routes.altitude`/`.speed` se ingieren en pies y nudos —el
+     * estándar real de ADS-B/Mode S, pese a que el comentario de la
+     * migración diga "metros" (comprobado contra datos reales: máximos de
+     * ~39000 y ~1347, que son techo de vuelo comercial en FL390 y el propio
+     * valor corrupto de la auditoría AD-T01, "1347 kn"). La tabla "Aviones
+     * detectados" los pinta en metros y km/h.
+     */
+    private const FEET_TO_METERS = 0.3048;
+
+    private const KNOTS_TO_KMH = 1.852;
+
+    /**
      * Aviones activos para el mapa de esta misma web.
      *
      * Vive en el bloque **web** y no en la API a propósito: lo consume el mapa
@@ -76,13 +88,13 @@ class AirFlightController extends Controller
                 ->get()
                 ->map(fn ($plane) => [
                     'icao' => $plane->icao,
-                    'flight' => $plane->flight,
-                    'altitude' => $plane->altitude !== null ? (float) $plane->altitude : null,
-                    'speed' => $plane->speed !== null ? (float) $plane->speed : null,
-                    'track' => $plane->track !== null ? (int) $plane->track : null,
-                    'lat' => $plane->lat !== null ? (float) $plane->lat : null,
-                    'lon' => $plane->lon !== null ? (float) $plane->lon : null,
                     'squawk' => $plane->squawk,
+                    'flight' => $plane->flight,
+                    // Metros y km/h para la tabla, no los pies/nudos en los
+                    // que se ingieren (ver constantes de la clase).
+                    'altitude' => $this->toMeters($plane->altitude),
+                    'speed' => $this->toKmh($plane->speed),
+                    'track' => $plane->track !== null ? (int) $plane->track : null,
                     'seen_last_at' => $this->seenLastAtAsUtcIso($plane->seen_last_at),
                 ])
                 ->values()
@@ -137,6 +149,10 @@ class AirFlightController extends Controller
         // de UTC.
         $planes->getCollection()->transform(function ($plane) {
             $plane->seen_last_at = $this->seenLastAtAsUtcIso($plane->seen_last_at);
+            // Igual que en detected(): pies/nudos ingeridos -> metros/km-h
+            // para la tabla.
+            $plane->altitude = $this->toMeters($plane->altitude);
+            $plane->speed = $this->toKmh($plane->speed);
 
             return $plane;
         });
@@ -156,5 +172,22 @@ class AirFlightController extends Controller
     private function seenLastAtAsUtcIso(?string $value): ?string
     {
         return $value !== null ? Carbon::parse($value, 'UTC')->toISOString() : null;
+    }
+
+    /**
+     * Pies (valor ingerido) a metros, redondeado al metro — no tiene sentido
+     * mostrar más precisión de la que ya tenía el dato original.
+     */
+    private function toMeters(string|float|null $altitudeFeet): ?int
+    {
+        return $altitudeFeet !== null ? (int) round(((float) $altitudeFeet) * self::FEET_TO_METERS) : null;
+    }
+
+    /**
+     * Nudos (valor ingerido) a km/h, redondeado al km/h.
+     */
+    private function toKmh(string|float|null $speedKnots): ?int
+    {
+        return $speedKnots !== null ? (int) round(((float) $speedKnots) * self::KNOTS_TO_KMH) : null;
     }
 }

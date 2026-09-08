@@ -239,8 +239,6 @@ class AirFlightService
                 DB::raw('(array_agg(r.altitude ORDER BY r.seen_at DESC) FILTER (WHERE r.altitude IS NOT NULL))[1] as altitude'),
                 DB::raw('(array_agg(r.speed ORDER BY r.seen_at DESC) FILTER (WHERE r.speed IS NOT NULL))[1] as speed'),
                 DB::raw('(array_agg(r.track ORDER BY r.seen_at DESC) FILTER (WHERE r.track IS NOT NULL))[1] as track'),
-                DB::raw('(array_agg(r.lat ORDER BY r.seen_at DESC) FILTER (WHERE r.lat IS NOT NULL))[1] as lat'),
-                DB::raw('(array_agg(r.lon ORDER BY r.seen_at DESC) FILTER (WHERE r.lon IS NOT NULL))[1] as lon'),
             ]);
     }
 }

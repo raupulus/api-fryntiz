@@ -222,13 +222,11 @@
                     <thead>
                         <tr class="bg-inverse-surface text-inverse-on-surface">
                             <td class="px-3 py-2 text-center">ICAO</td>
-                            <td class="px-3 py-2 text-center">Callsign</td>
-                            <td class="px-3 py-2 text-center">Altitud (ft)</td>
-                            <td class="px-3 py-2 text-center">Velocidad (kt)</td>
-                            <td class="px-3 py-2 text-center">Dirección</td>
-                            <td class="px-3 py-2 text-center">Latitud</td>
-                            <td class="px-3 py-2 text-center">Longitud</td>
                             <td class="px-3 py-2 text-center">Squawk</td>
+                            <td class="px-3 py-2 text-center">Vuelo</td>
+                            <td class="px-3 py-2 text-center">Altitud (m)</td>
+                            <td class="px-3 py-2 text-center">Velocidad (km/h)</td>
+                            <td class="px-3 py-2 text-center">Dirección</td>
                             <td class="px-3 py-2 text-center">Visto última vez</td>
                         </tr>
                     </thead>
@@ -236,13 +234,16 @@
                         @foreach($planes as $plane)
                             <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
                                 <td class="px-3 py-2 text-center text-on-surface font-mono">{{ $plane->icao ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->squawk ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->flight ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->altitude ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->speed ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->track !== null ? $plane->track.'°' : '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lat ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lon ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->squawk ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">
+                                    @if($plane->track !== null)
+                                        <span class="material-symbols-outlined text-base align-middle" style="transform: rotate({{ $plane->track }}deg);">navigation</span>
+                                    @endif
+                                    {{ $plane->track !== null ? $plane->track.'°' : '-' }}
+                                </td>
                                 <td class="px-3 py-2 text-center text-on-surface" data-seen-at="{{ $plane->seen_last_at }}">{{ $plane->seen_last_at ?? '-' }}</td>
                             </tr>
                         @endforeach
@@ -438,20 +439,40 @@
                 return td;
             }
 
+            // Flecha (icono "navigation" de Material Symbols, apunta hacia
+            // arriba por defecto) rotada a los grados de la ruta, igual que
+            // en el HTML que pinta el servidor: la misma orientación
+            // aproximada de un vistazo, no solo el número.
+            function direccionCell(track) {
+                var td = document.createElement('td');
+                td.className = CELL_CLASS;
+
+                if (track === null || track === undefined) {
+                    td.textContent = '-';
+                    return td;
+                }
+
+                var icono = document.createElement('span');
+                icono.className = 'material-symbols-outlined text-base align-middle';
+                icono.style.transform = 'rotate(' + track + 'deg)';
+                icono.textContent = 'navigation';
+
+                td.appendChild(icono);
+                td.appendChild(document.createTextNode(' ' + track + '°'));
+
+                return td;
+            }
+
             function buildRow(plane) {
                 var tr = document.createElement('tr');
                 tr.className = 'bg-surface-container-lowest border-b border-outline-variant/20';
 
-                var track = (plane.track === null || plane.track === undefined) ? null : plane.track + '°';
-
                 tr.appendChild(cell(plane.icao, 'font-mono'));
+                tr.appendChild(cell(plane.squawk));
                 tr.appendChild(cell(plane.flight, 'font-bold'));
                 tr.appendChild(cell(plane.altitude));
                 tr.appendChild(cell(plane.speed));
-                tr.appendChild(cell(track));
-                tr.appendChild(cell(plane.lat));
-                tr.appendChild(cell(plane.lon));
-                tr.appendChild(cell(plane.squawk));
+                tr.appendChild(direccionCell(plane.track));
                 tr.appendChild(cell(window.formatFechaEsLocal(plane.seen_last_at)));
 
                 return tr;

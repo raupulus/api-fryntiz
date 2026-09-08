@@ -313,6 +313,50 @@ las celdas que ya trae el HTML del servidor (marcadas con
 independientemente de en qué página de paginación se esté) y las filas que
 reconstruye el sondeo cada minuto (`buildRow()`, sólo en la página 1).
 
+### Columnas de "Aviones detectados": unidades y orden (2026-09-08)
+
+| Columna | Antes | Ahora |
+|---|---|---|
+| 1 | ICAO | ICAO |
+| 2 | Callsign | **Squawk** (movida aquí, justo detrás de ICAO) |
+| 3 | Altitud (ft) | **Vuelo** (renombrada de "Callsign") |
+| 4 | Velocidad (kt) | **Altitud (m)** |
+| 5 | Dirección | **Velocidad (km/h)** |
+| 6 | Latitud | Dirección (con flecha, ver abajo) |
+| 7 | Longitud | Visto última vez |
+| 8 | Squawk | — |
+| 9 | Visto última vez | — |
+
+Latitud y longitud se han quitado de esta tabla (no del mapa, que sigue
+igual): `AirFlightService::getDetectedQuery()` ya no las selecciona.
+
+**Conversión de unidades** (`AirFlightController::toMeters()`/`::toKmh()`,
+aplicada en `index()` y `detected()`, redondeada al entero):
+
+- `altitude`: pies → metros (`× 0.3048`).
+- `speed`: nudos → km/h (`× 1.852`).
+
+Por qué pies/nudos y no lo que dice el comentario de la migración
+(`airflight_routes.altitude`/`.speed`, "metros"/"metros por segundos"): esos
+comentarios están equivocados. Comprobado contra datos reales de producción:
+el máximo de `altitude` en la tabla es ~39000 —el techo de vuelo comercial
+real, FL390, en pies— y el máximo de `speed` es exactamente 1347.49, el
+mismo valor que la propia auditoría AD-T01 (`StoreAirFlightRequest.php`)
+documenta como corrupto y llama **"1347 kn"** (nudos). ADS-B/Mode S, el
+estándar real que emiten los receptores, siempre manda altitud en pies y
+velocidad en nudos — es lo que se ingiere, pase lo que diga el comentario de
+la columna. Si en algún momento se corrige la migración para que el
+comentario diga la verdad, esta conversión no cambia: sigue haciendo falta
+mientras el dato real siga llegando en pies/nudos.
+
+**Flecha de dirección**: antes de los grados, un icono de Material Symbols
+(`navigation`, una flecha que por defecto apunta hacia arriba) rotado con
+`transform: rotate({{ $plane->track }}deg)` — 0° = arriba, 90° = derecha,
+180° = abajo, 270° = izquierda, igual que la convención de rumbo compás que
+ya usa `track` (0-359°, 0 = norte). Mismo marcado en el HTML del servidor
+(`resources/views/airflight/index.blade.php`) y en `direccionCell()` del
+sondeo cada minuto, para que no diverjan visualmente.
+
 ### Frontend (Fix 5)
 
 - **Mapa interactivo OpenLayers:** Recuperado de la rama `main`, integrado con layout v2 vía `@push('head')` y `@push('scripts')`.
