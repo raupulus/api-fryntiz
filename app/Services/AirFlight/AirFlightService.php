@@ -58,13 +58,21 @@ class AirFlightService
         $path = $this->routeFieldsOnly($data);
 
         if ($path !== []) {
-            $aircraft->routes()->create($path + [
+            $newRoute = $aircraft->routes()->create($path + [
                 'user_id' => $userId,
                 'hardware_device_id' => $hardwareDeviceId,
                 'seen_at' => now(),
             ]);
 
-            $aircraft->setRelation('latestRoute', $aircraft->routes()->orderByDesc('seen_at')->first());
+            $aircraft->setRelation('latestRoute', $newRoute);
+
+            // Este mensaje concreto puede no traer posición (un squawk o una
+            // altitud sueltos): en ese caso `latestPosition` se deja para
+            // que `AirFlightResource` la resuelva bajo demanda si hace falta,
+            // en vez de asumir que la posición nueva es esta.
+            if (isset($path['lat'], $path['lon'])) {
+                $aircraft->setRelation('latestPosition', $newRoute);
+            }
         }
 
         return $aircraft;
@@ -134,11 +142,16 @@ class AirFlightService
      * alguna— seguía "visto" y se colaba en el mapa sin coordenadas que
      * pintar, apareciendo detenido en un punto inventado.
      *
+     * Carga `latestPosition` además de `latestRoute`: si el mensaje más
+     * reciente de un avión no trae posición, `latestRoute` no tiene lat/lon
+     * aunque exista una posición reciente. `AirFlightResource` necesita las
+     * dos.
+     *
      * @param  int  $minutes  Ventana de actividad reciente (por defecto 10 minutos).
      */
     public function getActiveAircrafts(int $minutes = 10): Collection
     {
-        return AirFlightAirPlane::with(['latestRoute', 'trail'])
+        return AirFlightAirPlane::with(['latestRoute', 'latestPosition', 'trail'])
             ->whereHas('routes', function ($query) use ($minutes) {
                 $query->where('seen_at', '>=', now()->subMinutes($minutes))
                     ->whereNotNull('lat')

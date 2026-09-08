@@ -62,7 +62,8 @@ use function file_exists;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AirFlightAirPlane forDevice(int $deviceId)
  *
  * @property-read Collection<int, AirFlightRoute> $trail Rastro con posición conocida, en orden
- * @property-read AirFlightRoute|null $latestRoute Última posición conocida (vive en airflight_routes)
+ * @property-read AirFlightRoute|null $latestRoute Último mensaje recibido, tenga o no posición
+ * @property-read AirFlightRoute|null $latestPosition Última ruta con posición real (lat/lon no nulos)
  *
  * @mixin \Eloquent
  */
@@ -138,6 +139,34 @@ class AirFlightAirPlane extends BaseModel
     public function latestRoute(): HasOne
     {
         return $this->hasOne(AirFlightRoute::class, 'airplane_id')->latestOfMany('seen_at');
+    }
+
+    /**
+     * Última ruta con una posición real (lat/lon no nulos), a diferencia de
+     * `latestRoute()`, que es el último mensaje sea cual sea su contenido.
+     *
+     * Un squawk o una altitud pueden llegar en un mensaje sin posición nueva
+     * (Mode S manda identificación, altitud y posición en mensajes
+     * distintos). Si ese es el mensaje más reciente, `latestRoute` no trae
+     * lat/lon aunque el avión sí tenga una posición reciente: el marcador
+     * del mapa (`AirFlightResource`) necesita específicamente esta relación,
+     * no la genérica.
+     *
+     * `whereNotNull()` encadenado antes de `latestOfMany()` NO sirve aquí:
+     * `ofMany()` calcula el "más reciente" en una subconsulta de agregación
+     * (`MAX(seen_at)`) que no incluye los `where` posteriores —solo los
+     * aplica a la fila final—. Si el mensaje más reciente de verdad no tiene
+     * posición, la subconsulta elige su `seen_at`, la fila no pasa el
+     * `whereNotNull` de fuera, y la relación devuelve `null` en vez de la
+     * posición anterior. Por eso el filtro va dentro del closure de
+     * `ofMany()`, que sí forma parte de esa subconsulta.
+     */
+    public function latestPosition(): HasOne
+    {
+        return $this->hasOne(AirFlightRoute::class, 'airplane_id')
+            ->ofMany(['seen_at' => 'max'], function ($query) {
+                $query->whereNotNull('lat')->whereNotNull('lon');
+            });
     }
 
     /**

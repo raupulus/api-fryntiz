@@ -82,7 +82,7 @@ class AirFlightController extends BaseApiController
             defaultSortColumn: 'seen_last_at',
         );
 
-        $query = AirFlightAirPlane::query()->with('latestRoute');
+        $query = AirFlightAirPlane::query()->with(['latestRoute', 'latestPosition']);
 
         return $this->paginatedResponse(
             $collectionQuery->paginate($query, $request),

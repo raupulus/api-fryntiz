@@ -30,7 +30,18 @@ class AirFlightResource extends JsonResource
     {
         $route = $this->latestRoute;
 
+        // Último mensaje CON posición, que puede ser anterior a `$route`: un
+        // squawk o una altitud llegan a veces sin lat/lon nuevos. Sin esta
+        // distinción, un avión con posición reciente de verdad se mandaba al
+        // mapa con `lat`/`lon` a `null` en cuanto le llegaba después
+        // cualquier mensaje sin posición, y el frontend lo dibujaba en
+        // (0, 0) en vez de en su sitio. Se lee directo, como `latestRoute`
+        // y `trail`: quien use este resource tiene que cargarla con su
+        // `with()` (ver nota de la clase).
+        $position = $this->latestPosition;
+
         $seen = $route?->seen_at ? Carbon::parse($route->seen_at)->diffInSeconds(now()) : null;
+        $seenPos = $position?->seen_at ? Carbon::parse($position->seen_at)->diffInSeconds(now()) : null;
 
         return [
             'id' => $this->id,
@@ -38,16 +49,15 @@ class AirFlightResource extends JsonResource
             'category' => $this->category,
             'flight' => $route?->flight,
             'squawk' => $route?->squawk,
-            'lat' => $route?->lat,
-            'lon' => $route?->lon,
+            'lat' => $position?->lat,
+            'lon' => $position?->lon,
             'altitude' => $route?->altitude,
             'vert_rate' => $route?->vert_rate,
             'speed' => $route?->speed,
             'track' => $route?->track,
             'rssi' => $route?->rssi !== null ? (float) $route->rssi : -100.0,
-            // El esquema solo guarda un timestamp por detección (seen == seen_pos).
             'seen' => $seen,
-            'seen_pos' => $seen,
+            'seen_pos' => $seenPos,
             'messages' => $route?->messages,
             // Recorrido conocido [lon, lat] (más antiguo primero), para que el
             // mapa pueda dibujar la línea de vuelo desde el primer sondeo, sin

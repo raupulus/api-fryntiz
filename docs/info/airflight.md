@@ -122,6 +122,7 @@ mandan).
 | `/airflight` | Mapa interactivo de aviones detectados + tabla |
 | `/airflight/aircrafts` | **JSON** de los aviones activos para el mapa, cacheado 10 s. `?minutes=` acota la ventana |
 | ↳ criterio de "activo" | `AirFlightService::getActiveAircrafts()`: avión con una **ruta** (posición, `lat`/`lon` no nulos) dentro de la ventana — no basta con `seen_last_at` reciente, que se actualiza con cualquier mensaje aunque no traiga posición (p.ej. un squawk suelto). Un avión sin posición reciente no sale: si sale sin `lat`/`lon`, el frontend (`planeObject.js`) lo pinta en `(0, 0)` |
+| ↳ `latestRoute` vs `latestPosition` | `AirFlightAirPlane::latestRoute()` es el último mensaje, sea cual sea; `latestPosition()` es la última ruta CON lat/lon. Mode S manda identificación/altitud y posición en mensajes distintos, así que el más reciente puede no traer posición. `AirFlightResource` usa `latestPosition` para `lat`/`lon`/`seen_pos`, y `latestRoute` para el resto (squawk, altitud, velocidad...). Ojo con `ofMany()`: un `whereNotNull()` encadenado antes de `latestOfMany()` no filtra la subconsulta de agregación (`MAX(seen_at)`), solo la fila final — hay que pasarlo como closure a `ofMany(['seen_at' => 'max'], fn ($q) => ...)` |
 | `/airflight/receiver` | **JSON** con el centro del mapa y el intervalo de refresco |
 | `/airflight/detected` | **JSON** con los hasta 20 aviones vistos en la última hora, cacheado 20 s |
 

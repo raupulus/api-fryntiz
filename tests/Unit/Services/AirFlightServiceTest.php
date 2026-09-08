@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+use App\Http\Resources\V2\AirFlight\AirFlightResource;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
 use App\Services\AirFlight\AirFlightService;
@@ -90,5 +91,42 @@ class AirFlightServiceTest extends TestCase
         $this->assertSame('ACTIVO', $activos->first()->icao);
         $this->assertNotNull($activos->first()->latestRoute);
         $this->assertSame(36.71, (float) $activos->first()->latestRoute->lat);
+    }
+
+    /**
+     * Reproduce el caso real reportado: un avión con una posición reciente
+     * de verdad, seguido de un mensaje posterior sin posición (un squawk
+     * suelto). `latestRoute` pasa a ser ese último mensaje sin lat/lon, así
+     * que el JSON que consume el mapa mandaba `lat`/`lon` a `null` aunque el
+     * avión sí tuviera una posición reciente — y el frontend lo dibujaba en
+     * (0, 0).
+     */
+    #[Test]
+    public function un_mensaje_sin_posicion_posterior_no_borra_la_ultima_posicion_real(): void
+    {
+        $avion = AirFlightAirPlane::create(['icao' => 'CONSQUAWK', 'seen_last_at' => Carbon::now()]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'lat' => 36.71,
+            'lon' => -6.41,
+            'seen_at' => Carbon::now()->subMinutes(5),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'squawk' => '7000',
+            'seen_at' => Carbon::now()->subMinute(),
+        ]);
+
+        $activos = $this->service->getActiveAircrafts(10);
+        $this->assertCount(1, $activos);
+
+        $json = AirFlightResource::collection($activos)->resolve();
+
+        $this->assertSame(36.71, $json[0]['lat']);
+        $this->assertSame(-6.41, $json[0]['lon']);
+        // El squawk sí viene del mensaje más reciente.
+        $this->assertSame('7000', $json[0]['squawk']);
     }
 }
