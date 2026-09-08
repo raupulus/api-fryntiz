@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
+use App\Models\AirFlight\AirFlightAirPlane;
+use App\Models\AirFlight\AirFlightRoute;
 use App\Support\Auth\TokenAbilities;
+use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -55,6 +58,54 @@ class AirFlightTest extends ApiTestCase
         $this->getJson(route('airflight.receiver'))
             ->assertOk()
             ->assertJsonPath('data.refresh', 5000);
+    }
+
+    /**
+     * Tabla "Aviones detectados (última hora)" de `/airflight`: sondeo cada
+     * minuto desde el propio frontend, sin token, y sólo con lo visto dentro
+     * de la última hora.
+     */
+    #[Test]
+    public function la_tabla_de_detectados_se_sirve_sin_token_y_filtra_por_ultima_hora(): void
+    {
+        $reciente = AirFlightAirPlane::create([
+            'icao' => 'ABC123',
+            'seen_last_at' => Carbon::now()->subMinutes(10),
+            'seen_first_at' => Carbon::now()->subMinutes(15),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $reciente->id,
+            'flight' => 'IBE1234',
+            'lat' => 36.73,
+            'lon' => -6.43,
+            'altitude' => 10000,
+            'speed' => 420,
+            'track' => 90,
+            'squawk' => '1000',
+            'seen_at' => Carbon::now()->subMinutes(10),
+        ]);
+
+        $antiguo = AirFlightAirPlane::create([
+            'icao' => 'OLD999',
+            'seen_last_at' => Carbon::now()->subHours(3),
+            'seen_first_at' => Carbon::now()->subHours(3),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $antiguo->id,
+            'flight' => 'OLD999',
+            'seen_at' => Carbon::now()->subHours(3),
+        ]);
+
+        $response = $this->getJson(route('airflight.detected'))
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $icaos = collect($response->json('data'))->pluck('icao');
+
+        $this->assertContains('ABC123', $icaos);
+        $this->assertNotContains('OLD999', $icaos);
     }
 
     #[Test]

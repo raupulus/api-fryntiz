@@ -46,7 +46,7 @@
             </p>
             <p class="text-on-surface-variant mb-2">
                 Puedes ver el desarrollo del programa:
-                <a href="https://gitlab.com/raupulus/dump1090-to-db" class="underline text-on-tertiary-container font-bold text-xs" target="_blank">
+                <a href="https://gitlab.com/raupulus/dump1090-to-db" class="underline text-primary font-bold text-sm" target="_blank">
                     https://gitlab.com/raupulus/dump1090-to-db
                 </a>
             </p>
@@ -64,13 +64,14 @@
                 (Selecciona el avión en el mapa o la tabla para ver el recorrido que realiza.)
             </p>
 
-            <div id="box-airflight" class="w-full bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden">
+            <div id="box-airflight" class="relative w-full bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden">
                 <div class="box-information">
                     <div class="box-buttons">
                         <div class="btn-map btn-downto-map pointer">Ir debajo del Mapa</div>
                     </div>
                 </div>
 
+                <div class="airflight-split">
                 <!-- Mapa -->
                 <div id="map_container" class="box-map">
                     <span id="loader" class="display-hidden box-map-loader">
@@ -182,6 +183,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 <div id="SpecialSquawkWarning" class="display-hidden special-squawk-warning">
                     <b>Squawk 7x00 se informa y se muestra.</b><br/>
@@ -197,54 +199,65 @@
         </div>
     </section>
 
-    {{-- Tabla de aviones detectados --}}
-    <section class="py-12 bg-surface">
+    {{-- Tabla de aviones detectados.
+
+         Se pinta ya con lo que ha resuelto el backend (sin petición extra al
+         cargar). Solo cuando la página termina de cargar y estamos viendo la
+         página 1 de la paginación arranca el sondeo cada minuto contra
+         `airflight.detected` (ruta web, no API) que refresca esta misma
+         tabla. Si el usuario está navegando otra página, el sondeo no se
+         activa para no pisarle la vista. --}}
+    <section class="py-12 bg-surface"
+             id="detected-planes-section"
+             data-url="{{ route('airflight.detected') }}"
+             data-page="{{ $planes->currentPage() }}">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-3xl font-bold text-on-surface mb-6">Aviones detectados (última hora)</h2>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-6">
+                <h2 class="text-3xl font-bold text-on-surface">Aviones detectados (última hora)</h2>
+                <p id="detected-planes-status" class="text-xs text-on-surface-variant"></p>
+            </div>
 
-            @if($planes->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="min-w-max w-full table-auto text-sm">
-                        <thead>
-                            <tr class="bg-inverse-surface text-inverse-on-surface">
-                                <td class="px-3 py-2 text-center">ICAO</td>
-                                <td class="px-3 py-2 text-center">Callsign</td>
-                                <td class="px-3 py-2 text-center">Altitud (ft)</td>
-                                <td class="px-3 py-2 text-center">Velocidad (kt)</td>
-                                <td class="px-3 py-2 text-center">Dirección</td>
-                                <td class="px-3 py-2 text-center">Latitud</td>
-                                <td class="px-3 py-2 text-center">Longitud</td>
-                                <td class="px-3 py-2 text-center">Squawk</td>
-                                <td class="px-3 py-2 text-center">Visto última vez</td>
+            <div id="detected-planes-table-wrap" class="overflow-x-auto" @if($planes->count() === 0) hidden @endif>
+                <table class="min-w-max w-full table-auto text-sm">
+                    <thead>
+                        <tr class="bg-inverse-surface text-inverse-on-surface">
+                            <td class="px-3 py-2 text-center">ICAO</td>
+                            <td class="px-3 py-2 text-center">Callsign</td>
+                            <td class="px-3 py-2 text-center">Altitud (ft)</td>
+                            <td class="px-3 py-2 text-center">Velocidad (kt)</td>
+                            <td class="px-3 py-2 text-center">Dirección</td>
+                            <td class="px-3 py-2 text-center">Latitud</td>
+                            <td class="px-3 py-2 text-center">Longitud</td>
+                            <td class="px-3 py-2 text-center">Squawk</td>
+                            <td class="px-3 py-2 text-center">Visto última vez</td>
+                        </tr>
+                    </thead>
+                    <tbody id="detected-planes-tbody">
+                        @foreach($planes as $plane)
+                            <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
+                                <td class="px-3 py-2 text-center text-on-surface font-mono">{{ $plane->icao ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->latestRoute->flight ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->altitude ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->speed ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->track ?? '-' }}°</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lat ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lon ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->squawk ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->seen_last_at ?? '-' }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($planes as $plane)
-                                <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
-                                    <td class="px-3 py-2 text-center text-on-surface font-mono">{{ $plane->icao ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface font-bold">{{ $plane->latestRoute->flight ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->altitude ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->speed ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->track ?? '-' }}°</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lat ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->lon ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->latestRoute->squawk ?? '-' }}</td>
-                                    <td class="px-3 py-2 text-center text-on-surface">{{ $plane->seen_last_at ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="mt-6">
-                    {{ $planes->links() }}
-                </div>
-            @else
-                <div class="bg-surface-container rounded-xl p-12 text-center">
-                    <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">flight_land</span>
-                    <p class="text-on-surface-variant text-lg">No se han detectado aviones en la última hora.</p>
-                </div>
-            @endif
+            <div id="detected-planes-pagination" class="mt-6">
+                {{ $planes->links() }}
+            </div>
+
+            <div id="detected-planes-empty" class="bg-surface-container rounded-xl p-12 text-center" @if($planes->count() > 0) hidden @endif>
+                <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">flight_land</span>
+                <p class="text-on-surface-variant text-lg">No se han detectado aviones en la última hora.</p>
+            </div>
         </div>
     </section>
 @endsection
@@ -321,5 +334,110 @@
             addEventOnClick('.map-tableinfo-title-messages', sortByMsgs);
             addEventOnClick('.map-tableinfo-title-seen', sortBySeen);
         });
+    </script>
+
+    {{-- Sondeo de la tabla "Aviones detectados (última hora)".
+
+         Independiente del mapa: no toca urlAircrafts/urlReceiver ni el
+         sondeo de 5s del mapa en vivo (receiver().refresh). Arranca al
+         terminar de cargar la página entera (evento `load`, no
+         DOMContentLoaded) y sólo si se está viendo la página 1 de la
+         paginación, para no pisarle a alguien que esté navegando el
+         historial. La primera pintura es la que ya trae el HTML del
+         servidor: no se hace ninguna petición extra hasta pasado el primer
+         minuto. --}}
+    <script>
+        (function () {
+            var section = document.getElementById('detected-planes-section');
+
+            if (!section || section.dataset.page !== '1') {
+                return;
+            }
+
+            var url = section.dataset.url;
+            var tbody = document.getElementById('detected-planes-tbody');
+            var tableWrap = document.getElementById('detected-planes-table-wrap');
+            var emptyState = document.getElementById('detected-planes-empty');
+            var pagination = document.getElementById('detected-planes-pagination');
+            var status = document.getElementById('detected-planes-status');
+
+            var CELL_CLASS = 'px-3 py-2 text-center text-on-surface';
+
+            function cell(value, extraClass) {
+                var td = document.createElement('td');
+                td.className = extraClass ? CELL_CLASS + ' ' + extraClass : CELL_CLASS;
+                td.textContent = (value === null || value === undefined || value === '') ? '-' : value;
+                return td;
+            }
+
+            function buildRow(plane) {
+                var tr = document.createElement('tr');
+                tr.className = 'bg-surface-container-lowest border-b border-outline-variant/20';
+
+                var track = (plane.track === null || plane.track === undefined) ? null : plane.track + '°';
+
+                tr.appendChild(cell(plane.icao, 'font-mono'));
+                tr.appendChild(cell(plane.flight, 'font-bold'));
+                tr.appendChild(cell(plane.altitude));
+                tr.appendChild(cell(plane.speed));
+                tr.appendChild(cell(track));
+                tr.appendChild(cell(plane.lat));
+                tr.appendChild(cell(plane.lon));
+                tr.appendChild(cell(plane.squawk));
+                tr.appendChild(cell(plane.seen_last_at));
+
+                return tr;
+            }
+
+            function applyPlanes(planes) {
+                tbody.textContent = '';
+
+                if (!planes.length) {
+                    tableWrap.hidden = true;
+                    emptyState.hidden = false;
+                } else {
+                    planes.forEach(function (plane) {
+                        tbody.appendChild(buildRow(plane));
+                    });
+                    tableWrap.hidden = false;
+                    emptyState.hidden = true;
+                }
+
+                // A partir del primer refresco esto ya no es "página 1 de N"
+                // del servidor, es "lo último detectado": la paginación deja
+                // de tener sentido.
+                if (pagination) {
+                    pagination.hidden = true;
+                }
+
+                if (status) {
+                    status.textContent = 'Actualizado automáticamente cada minuto · última vez a las '
+                        + new Date().toLocaleTimeString('es-ES');
+                }
+            }
+
+            function fetchDetected() {
+                fetch(url, { headers: { Accept: 'application/json' } })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('HTTP ' + response.status);
+                        }
+
+                        return response.json();
+                    })
+                    .then(function (json) {
+                        applyPlanes(Array.isArray(json.data) ? json.data : []);
+                    })
+                    .catch(function (error) {
+                        // Un fallo puntual no borra lo que ya había pintado
+                        // el servidor: se reintenta en el siguiente minuto.
+                        console.error('Error al refrescar aviones detectados:', error);
+                    });
+            }
+
+            window.addEventListener('load', function () {
+                setInterval(fetchDetected, 60000);
+            });
+        })();
     </script>
 @endpush

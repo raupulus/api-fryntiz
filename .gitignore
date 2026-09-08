@@ -1,6 +1,13 @@
 # Ignorar dependencias y directorios generados
+#
+# `vendor/` va anclado a la raíz (Composer): sin la barra inicial también
+# capturaba `resources/views/vendor/`, que es el mecanismo oficial de Laravel
+# para publicar overrides de vistas de paquetes (aquí, la paginación). Eso
+# dejaba esas vistas fuera de git y, más grave, fuera del escaneo de clases de
+# Tailwind (su detección automática de contenido respeta .gitignore): sus
+# `sm:`/`dark:` etc. nunca se compilaban aunque el archivo sí se sirviera.
 node_modules/
-vendor/
+/vendor/
 template/
 .pnpm-store/
 pnpm-store/

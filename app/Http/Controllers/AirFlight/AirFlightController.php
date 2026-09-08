@@ -53,6 +53,45 @@ class AirFlightController extends Controller
     }
 
     /**
+     * Aviones detectados en la última hora, para refrescar la tabla de esta
+     * misma vista sin recargar la página completa.
+     *
+     * Mismo criterio que `aircrafts()`: vive en el bloque web porque solo la
+     * consume el propio `/airflight` desde el navegador. La vista pinta la
+     * primera tanda ya en el HTML (sin petición extra al cargar); esto es lo
+     * que llama el sondeo cada minuto para refrescarla.
+     */
+    public function detected(): JsonResponse
+    {
+        $lastHour = Carbon::now()->subHour();
+
+        $planes = Cache::remember(
+            'airflight:web:detected',
+            20,
+            fn () => AirFlightAirPlane::with('latestRoute')
+                ->where('seen_last_at', '>=', $lastHour)
+                ->orderByDesc('seen_last_at')
+                ->limit(20)
+                ->get()
+                ->map(fn (AirFlightAirPlane $plane) => [
+                    'icao' => $plane->icao,
+                    'flight' => $plane->latestRoute->flight ?? null,
+                    'altitude' => $plane->latestRoute->altitude ?? null,
+                    'speed' => $plane->latestRoute->speed ?? null,
+                    'track' => $plane->latestRoute->track ?? null,
+                    'lat' => $plane->latestRoute->lat ?? null,
+                    'lon' => $plane->latestRoute->lon ?? null,
+                    'squawk' => $plane->latestRoute->squawk ?? null,
+                    'seen_last_at' => $plane->seen_last_at,
+                ])
+                ->values()
+                ->all()
+        );
+
+        return response()->json(['success' => true, 'data' => $planes]);
+    }
+
+    /**
      * Configuración del receptor para el mapa.
      *
      * Son constantes de pintado (dónde centrar el mapa y cada cuánto refrescar),

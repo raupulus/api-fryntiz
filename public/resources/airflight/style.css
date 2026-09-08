@@ -1,10 +1,19 @@
+/* Estilos del mapa de vuelos (dump1090-fa) para /airflight.
+ *
+ * No es Tailwind: el mapa es JS legado (jQuery + OpenLayers) y este CSS es
+ * suyo. Usa las custom properties de tema que genera `@theme` en
+ * resources/css/app.css (--color-*), así que sigue el tema claro/oscuro sin
+ * necesidad de bloques `html.dark` propios salvo donde el color es semántico
+ * (alertas, estados de squawk) y debe quedarse fijo en ambos temas.
+ */
+
 /* MAPA */
 
 .box-map {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 400px;
+  height: 340px;
   background-color: #aad3df;
 }
 .box-map .map-canvas {
@@ -12,6 +21,17 @@
   width: inherit;
   height: inherit;
   background-color: #aad3df;
+}
+
+html.dark .box-map,
+html.dark .box-map .map-canvas {
+  background-color: #17242b;
+}
+
+@media (min-width: 1024px) {
+  .box-map {
+    height: 560px;
+  }
 }
 
 /* Spinner de carga para el mapa */
@@ -22,7 +42,9 @@
   left: 50%;
   background: #aad3df;
   opacity: 0.7;
-  filter: alpha(opacity=70);
+}
+html.dark .box-map-loader {
+  background: #17242b;
 }
 .box-map-loader .spinny {
   width: 64px;
@@ -38,11 +60,38 @@
   margin: 40px 0 0 -125px;
 }
 
+/* Reparto del mapa y el panel lateral: apilado en móvil, lado a lado desde
+   desktop (lg). Sin esto sólo había flujo normal en bloque: el panel con la
+   tabla de aviones quedaba siempre debajo del mapa, también en escritorio,
+   desaprovechando el ancho disponible. */
+.airflight-split {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .airflight-split {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .airflight-split .box-map {
+    width: 66%;
+  }
+
+  .airflight-split #sidebar_container {
+    width: 34%;
+    max-height: 560px;
+    overflow-y: auto;
+  }
+}
+
 /* Botones mapa */
 
 .box-buttons {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  gap: 6px;
   margin-top: 7px;
   margin-bottom: 7px;
   vertical-align: middle;
@@ -51,22 +100,21 @@
 }
 
 .box-buttons .btn-map {
-  padding: 3px;
-  width: 100%;
-  color: #ffffff;
+  padding: 3px 6px;
+  flex: 1 1 auto;
+  color: var(--color-on-primary);
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: bold;
-  background-color: #0056b3;
-  border-left: 3px solid #ffffff;
-  border-right: 3px solid #ffffff;
-  border-radius: 5px;
+  background-color: var(--color-primary-container);
+  border-radius: 6px;
 }
 
-.btn-reset-map {
-}
-
-.btn-downto-map {
+@media (max-width: 480px) {
+  .box-buttons .btn-map {
+    flex-basis: calc(50% - 6px);
+    font-size: 0.78rem;
+  }
 }
 
 /* Información y selector de aviones */
@@ -74,65 +122,100 @@
 .box-information {
   width: 100%;
   margin: 0;
-  background-color: #fff;
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  padding: 8px 10px;
 }
 
-.special-squawk-warning {
+/* Avisos flotantes sobre el mapa.
+ *
+ * Antes iban con `position: absolute; right: 430px` / `left: 25px` fijos en
+ * píxeles y sin que ningún ancestro tuviera `position: relative` (se lo pone
+ * ahora `#box-airflight`, ver Blade): en pantallas estrechas terminaban fuera
+ * de la caja del mapa, montados sobre el resto de la página. Ahora se anclan
+ * al contenedor del mapa y su ancho es relativo, no un valor fijo. */
+.special-squawk-warning,
+.update-error {
   position: absolute;
-  bottom: 25px;
-  right: 430px;
-  border: 2px solid red;
-  background-color: #ffffa3;
-  opacity: 0.75;
-  filter: alpha(opacity=75);
-  padding: 5px;
+  bottom: 12px;
+  max-width: 360px;
+  border: 2px solid var(--color-error);
+  background-color: #fff8b0;
+  color: #3a2e00;
+  opacity: 0.95;
+  padding: 8px 12px;
+  border-radius: 8px;
   text-align: center;
+  font-size: 0.8rem;
+  z-index: 5;
 }
 
 .update-error {
-  position: absolute;
-  bottom: 25px;
-  left: 25px;
-  border: 2px solid red;
-  background-color: #ffffa3;
-  opacity: 0.75;
-  filter: alpha(opacity=75);
-  padding: 5px;
-  text-align: center;
+  left: 12px;
+}
+
+.special-squawk-warning {
+  right: 12px;
+}
+
+@media (max-width: 640px) {
+  .special-squawk-warning,
+  .update-error {
+    max-width: calc(50% - 18px);
+    font-size: 0.7rem;
+    padding: 6px 8px;
+  }
 }
 
 /* ANTERIORES */
 
 .table-info {
   width: 100%;
-  font-size: x-small;
+  min-width: 640px;
+  font-size: 0.72rem;
   font-family: monospace;
+  color: var(--color-on-surface);
 }
 
+.box-table-planes {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Filas con estado propio: el fondo es semántico (posición conocida, MLAT,
+   squawk de emergencia) y se queda fijo en ambos temas a propósito, así que
+   el texto también se fija en oscuro para que siga siendo legible sobre ese
+   fondo claro — antes heredaba el color claro del tema oscuro y quedaba
+   blanco sobre blanco/verde/amarillo pastel. */
 .vPosition {
   font-weight: bold;
   background-color: #d5ffd5;
+  color: #10331a;
 }
 .mlat {
   font-weight: bold;
   background-color: #d5d5ff;
+  color: #14183a;
 }
 .squawk7500 {
   font-weight: bold;
   background-color: #ff5555;
+  color: #3a0a0a;
 }
 .squawk7600 {
   font-weight: bold;
   background-color: #00ffff;
+  color: #06333a;
 }
 .squawk7700 {
   font-weight: bold;
   background-color: #ffff00;
+  color: #3a3a06;
 }
 .selected {
-  color: #ffffff;
+  color: var(--color-on-primary);
   font-weight: bold;
-  background-color: #0056b3;
+  background-color: var(--color-primary-container);
 }
 .plane_table_row {
   cursor: pointer;
@@ -146,11 +229,12 @@
 }
 .infoblock_heading a {
   text-decoration: none;
-  color: #0056b3;
+  color: var(--color-primary);
   font-size: small;
 }
 .infoblock_body {
   font-size: small;
+  color: var(--color-on-surface);
 }
 
 #selected_icao,
@@ -171,8 +255,8 @@
 
 /* Tabla con aviones */
 .table-info thead {
-  background-color: #0056b3;
-  color: #ffffff;
+  background-color: var(--color-inverse-surface);
+  color: var(--color-inverse-on-surface);
   cursor: pointer;
 }
 .table-info thead tr td {
@@ -188,11 +272,33 @@
   width: 30px;
   height: 18px;
 }
+
+/* Menos columnas en pantallas estrechas: con las 10 columnas originales el
+   texto quedaba ilegible o el scroll horizontal era obligatorio incluso para
+   lo esencial. Las columnas se ocultan, no se eliminan, así que el orden por
+   cabecera (script.js) sigue funcionando aunque no se vean. */
+@media (max-width: 1024px) {
+  .table-info td:nth-child(8),
+  .table-info td:nth-child(9) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .table-info td:nth-child(4),
+  .table-info td:nth-child(7) {
+    display: none;
+  }
+  .table-info {
+    font-size: 0.68rem;
+    min-width: 480px;
+  }
+}
+
 /* OTROS */
 
 .dim {
-  opacity: 0.3;
-  filter: alpha(opacity=30); /* For IE8 and earlier */
+  opacity: 0.5;
 }
 
 .pointer {

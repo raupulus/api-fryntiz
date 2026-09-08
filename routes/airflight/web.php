@@ -19,3 +19,7 @@ Route::get('/', [AirFlightController::class, 'index'])->name('airflight.index');
 // abierta y dejaba la ability `airflight:read` sin nada que proteger.
 Route::get('/aircrafts', [AirFlightController::class, 'aircrafts'])->name('airflight.aircrafts');
 Route::get('/receiver', [AirFlightController::class, 'receiver'])->name('airflight.receiver');
+
+// Aviones detectados en la última hora, para refrescar la tabla de esta
+// misma vista por sondeo (cada minuto) sin recargar la página.
+Route::get('/detected', [AirFlightController::class, 'detected'])->name('airflight.detected');

@@ -111,10 +111,18 @@ mandan).
 | `/airflight` | Mapa interactivo de aviones detectados + tabla |
 | `/airflight/aircrafts` | **JSON** de los aviones activos para el mapa, cacheado 10 s. `?minutes=` acota la ventana |
 | `/airflight/receiver` | **JSON** con el centro del mapa y el intervalo de refresco |
+| `/airflight/detected` | **JSON** con los hasta 20 aviones vistos en la última hora, cacheado 20 s |
 
-Los dos últimos **no piden token**: son los datos de una página propia, no una
+Los tres **no piden token**: son los datos de una página propia, no una
 integración. El mapa los consumía antes desde `API_URL/v2/airflight/*`, lo que
 obligaba a dejar esa parte de la API abierta a cualquiera.
+
+`/airflight/detected` alimenta la tabla "Aviones detectados (última hora)" de
+la propia vista: la primera tanda la pinta el servidor en el HTML (sin
+petición extra al cargar) y, sólo cuando la página termina de cargar del todo
+y se está viendo la página 1 de la paginación, el frontend la sondea cada
+minuto para refrescarla sin recargar. Si se está navegando otra página de la
+paginación, el sondeo no arranca.
 
 ### Frontend (Fix 5)
 
