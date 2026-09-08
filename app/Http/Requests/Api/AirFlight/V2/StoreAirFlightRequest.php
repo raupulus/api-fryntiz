@@ -33,10 +33,17 @@ class StoreAirFlightRequest extends BaseFormRequest
             'squawk' => ['nullable', 'string', 'max:10'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
             'lon' => ['nullable', 'numeric', 'between:-180,180'],
-            // AD-T01: `altitude`/`speed` acotados por arriba con un margen amplio
-            // sobre lo que reporta ADS-B real, para descartar decodificaciones
-            // corruptas del receptor (auditoría de datos 2026-09-02: un único
-            // receptor de pruebas coló 1347 kn y -1000 ft de altitud).
+            // AD-T01: `altitude`/`speed` van en metros y m/s (contrato
+            // definitivo 2026-09-09, ver docs/info/airflight.md — no pies ni
+            // nudos, aunque `dump1090` decodifique en esas unidades: la
+            // conversión a SI la hace el capturador antes de subir).
+            // Acotados por arriba con un margen amplio sobre lo que puede dar
+            // un avión real, para descartar decodificaciones corruptas del
+            // receptor: la auditoría de datos 2026-09-02 encontró un receptor
+            // de pruebas colando un valor corrupto que, EN UNIDADES
+            // EQUIVOCADAS (ft/kt en vez de m/m·s), habría leído como "1347 kn"
+            // y "-1000 ft" — precisamente el tipo de ruido que este límite
+            // descarta, no una pista de que la columna vaya en esas unidades.
             'altitude' => ['nullable', 'numeric', 'min:0', 'max:60000'],
             'speed' => ['nullable', 'numeric', 'min:0', 'max:1000'],
             // AD-T01: `track` es `integer` en BD; `numeric` admitía decimales

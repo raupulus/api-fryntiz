@@ -5,41 +5,64 @@ Módulo IoT para detectar y registrar aviones mediante receptor ADS-B, almacenan
 ## Unidades de `airflight_routes` (contrato definitivo, 2026-09-09)
 
 Tabla cerrada con el propietario del capturador (`dump1090-to-db`, fuera de
-este repo) sobre lo que de verdad sube a `POST /airflight/aircrafts`. **Es
-la única fuente de verdad**; si algo del resto de este documento la
-contradice, manda esta tabla.
+este repo) sobre lo que de verdad sube a `POST /airflight/aircrafts` /
+`POST /airflight/aircrafts/batch`. **Es la única fuente de verdad de este
+proyecto** — no un valor de un dato histórico, no un comentario de código
+sin contrastar, no lo que "suene lógico" para ADS-B. Si algo del resto de
+este documento (o del código) la contradice, manda esta tabla y hay que
+corregir lo otro.
 
-| Campo | Tipo | Unidad | Rango |
-|---|---|---|---|
-| `icao` | string | — | 6 hex |
-| `flight` | string\|null | — | callsign sin espacios |
-| `squawk` | string\|null | — | 4 dígitos octales |
-| `lat` | float\|null | grados decimales WGS84 (°) | -90 a 90 |
-| `lon` | float\|null | grados decimales WGS84 (°) | -180 a 180 |
-| `altitude` | float\|null | **metros (m)** | 0 a 60000 |
-| `speed` | float\|null | **metros por segundo (m/s)** | 0 a 1000 |
-| `track` | int\|null | grados sexagesimales (°) | 0 a 360 |
-| `vert_rate` | float\|null | **metros por segundo (m/s)** | -100 a 100 |
-| `messages` | int\|null | conteo de tramas | ≥ 0 |
-| `rssi` | float\|null | dBFS | -100 a 0 |
-| `emergency` | string\|null | cadena de estado | `none`, `general`, `lifeguard`... |
-| `seen` / `seen_pos` | — | — | no se persisten (siempre `null` en el sondeo real) |
+| Campo | Tipo | Unidad | Rango | Ejemplo |
+|---|---|---|---|---|
+| `icao` | string | — | 6 hex | `"4ca61f"` |
+| `flight` | string\|null | — | callsign sin espacios | `"RYR11CL"` |
+| `squawk` | string\|null | — | 4 dígitos octales | `"7105"` |
+| `lat` | float\|null | grados decimales WGS84 (°) | -90 a 90 | `36.623623` |
+| `lon` | float\|null | grados decimales WGS84 (°) | -180 a 180 | `-5.885049` |
+| `altitude` | float\|null | **metros (m)** | 0 a 60000 | `11277.0` |
+| `speed` | float\|null | **metros por segundo (m/s)** | 0 a 1000 | `232.2` |
+| `track` | int\|null | grados sexagesimales (°) | 0 a 360 | `214` |
+| `vert_rate` | float\|null | **metros por segundo (m/s)** | -100 a 100 | `-21.1` |
+| `messages` | int\|null | conteo de tramas | ≥ 0 | `86` |
+| `rssi` | float\|null | dBFS | -100 a 0 | `-24.7` |
+| `emergency` | string\|null | cadena de estado | `none`, `general`, `lifeguard`... | `"general"` |
+| `seen` / `seen_pos` | — | — | no se persisten (siempre `null` en el sondeo real) | `null` |
 
-**Corrección sobre una confusión propia (2026-09-08 → 09):** un commit de
-esta misma fecha llegó a la conclusión contraria —que `altitude`/`speed` se
-ingerían en pies/nudos— apoyándose en el máximo histórico de la tabla
-(~39000 y ~1347). Ese razonamiento estaba mal: esos máximos eran
-precisamente **datos corruptos**, el mismo tipo de lectura que la auditoría
-AD-T01 ya documentaba como fallo de un receptor de pruebas (ver el
-comentario en `StoreAirFlightRequest.php`) — la validación (`max:60000` en
-metros, `max:1000` en m/s) existe justo para descartar ese ruido, no para
+### La frontera de las unidades: dump1090 decodifica en pies/nudos, el capturador sube en SI
+
+El receptor (Raspberry Pi + `dump1090-to-db`) decodifica Mode S con
+`dump1090`, que —como cualquier decodificador ADS-B— trabaja internamente en
+**pies**, **nudos** y **pies/minuto** (el estándar real de la especificación
+ADS-B). Pero esa conversión a metros/m·s **ya la hace el capturador antes de
+subir**, no esta API: por eso `altitude`/`speed`/`vert_rate` llegan aquí en
+SI, aunque su origen sea ft/kt/ft·min. Esta API nunca ve el dato en pies o
+nudos; sólo el capturador lo ve, y sólo un instante, antes de convertirlo.
+
+Confirmado con un caso real (2026-09-09): un `vert_rate` que en bruto de
+dump1090 era **-1267.906126181 ft/min**, tras la conversión del capturador,
+sube como **≈ -6.44 m/s** (`-1267.906126181 × 0.3048 / 60`) — un descenso
+normal, dentro del rango -100 a 100 de la tabla de arriba.
+
+### Corrección sobre una confusión propia (2026-09-08 → 09)
+
+Un commit de esta misma fecha llegó a la conclusión contraria —que
+`altitude`/`speed` se ingerían en pies/nudos— apoyándose en el máximo
+histórico de la tabla (~39000 y ~1347). Ese razonamiento estaba mal: esos
+máximos eran precisamente **datos corruptos**, el mismo tipo de lectura que
+la auditoría AD-T01 ya documentaba como fallo de un receptor de pruebas (ver
+el comentario en `StoreAirFlightRequest.php`) — la validación (`max:60000`
+en metros, `max:1000` en m/s) existe justo para descartar ese ruido, no para
 insinuar que la unidad real fuera otra. El comentario de la migración
 (`airflight_routes.altitude`/`.speed`, "metros"/"metros por segundos")
-**siempre estuvo bien**; no se toca. Lección: un máximo o un valor puntual
-en datos históricos no es un dato fiable de la unidad si la validación ya
-existe precisamente para atrapar decodificaciones corruptas — hay que
-preguntar a quien manda los datos, no inferir de una tabla que puede tener
-ruido.
+**siempre estuvo bien**; no se toca.
+
+**Lección, para no repetirla:** un máximo o un valor puntual en datos
+históricos no es un dato fiable de la unidad si la validación ya existe
+precisamente para atrapar decodificaciones corruptas — un dato corrupto
+puede, por azar, "parecer" plausible en la unidad equivocada. Ante la duda
+sobre una unidad: **primero la tabla de este apartado**; si algo no está en
+ella, se pregunta a quien manda los datos (el propietario del capturador),
+nunca se infiere de una tabla que puede tener ruido.
 
 ## Regla: `airflight_routes` guarda TODO, lo que mira al mapa filtra por posición
 
@@ -237,23 +260,28 @@ dibuja lo que le llega en `trail`; el filtrado vive en el backend.
 
 ## Campos del modelo AirFlightRoute
 
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `id` | bigint | PK |
-| `airplane_id` | int | FK → `airflight_airplanes.id` |
-| `hardware_device_id` | int | FK → `hardware_devices.id` — receptor |
-| `user_id` | int | FK → `users.id` — propietario del receptor |
-| `squawk` | string(10) | Código squawk (transponder) |
-| `flight` | string(20) | Número de vuelo |
-| `lat` | decimal | Latitud (-90 a 90) |
-| `lon` | decimal | Longitud (-180 a 180) |
-| `altitude` | decimal | Altitud (≥0) |
-| `vert_rate` | decimal | Velocidad vertical |
-| `track` | decimal | Rumbo (0-360°) |
-| `speed` | decimal | Velocidad (≥0) |
-| `seen_at` | timestamp | Momento de detección |
-| `messages` | int | Número de mensajes recibidos (≥0) |
-| `rssi` | decimal | Intensidad de señal |
+> Unidades: ver la tabla definitiva en
+> ["Unidades de `airflight_routes`"](#unidades-de-airflight_routes-contrato-definitivo-2026-09-09)
+> al principio de este documento. Resumen rápido aquí, no la repitas de
+> memoria si tienes dudas — consulta la tabla de arriba.
+
+| Campo | Tipo | Unidad | Descripción |
+|-------|------|--------|-------------|
+| `id` | bigint | — | PK |
+| `airplane_id` | int | — | FK → `airflight_airplanes.id` |
+| `hardware_device_id` | int | — | FK → `hardware_devices.id` — receptor |
+| `user_id` | int | — | FK → `users.id` — propietario del receptor |
+| `squawk` | string(10) | — | Código squawk (transponder) |
+| `flight` | string(20) | — | Número de vuelo |
+| `lat` | decimal | grados (°) | Latitud (-90 a 90) |
+| `lon` | decimal | grados (°) | Longitud (-180 a 180) |
+| `altitude` | decimal | **metros (m)** | Altitud (0 a 60000) |
+| `vert_rate` | decimal | **m/s** | Velocidad vertical (-100 a 100) |
+| `track` | decimal | grados (°) | Rumbo (0-360°) |
+| `speed` | decimal | **m/s** | Velocidad (0 a 1000) |
+| `seen_at` | timestamp | — | Momento de detección |
+| `messages` | int | — | Número de mensajes recibidos (≥0) |
+| `rssi` | decimal | dBFS | Intensidad de señal (-100 a 0) |
 
 ## Relaciones
 

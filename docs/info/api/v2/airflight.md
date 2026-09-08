@@ -8,6 +8,17 @@
 > Para el diseño interno (modelos, receptor ADS-B, decisiones de producto) ver
 > [`docs/info/airflight.md`](../../airflight.md).
 
+> ⚠️ **Unidades (contrato definitivo, 2026-09-09):** `altitude` en **metros**,
+> `speed`/`vert_rate` en **metros por segundo**, `lat`/`lon`/`track` en
+> **grados**, `rssi` en **dBFS**. Todo en SI, sin excepción — pese a que
+> `dump1090` (el decodificador ADS-B que usa el receptor) trabaje
+> internamente en pies/nudos/pies-por-minuto, esa conversión la hace el
+> capturador **antes** de subir: esta API nunca recibe ft/kt. Confirmado con
+> el propietario del capturador; no inferir la unidad de datos históricos
+> (pueden tener ruido/decodificaciones corruptas que parezcan otra unidad
+> por casualidad — ver el porqué en
+> [`docs/info/airflight.md`](../../airflight.md#unidades-de-airflight_routes-contrato-definitivo-2026-09-09)).
+
 ## Base y convenciones comunes a toda la API V2
 
 - **Base URL**: `/api/v2`
@@ -210,6 +221,9 @@ por fechas; no son recursos distintos.
 
   Notas de campos (vienen del avión + su telemetría, no de dos recursos
   separados, pero **de dos consultas distintas** — ver el porqué):
+  - Unidades: `altitude` en metros, `speed`/`vert_rate` en m/s,
+    `lat`/`lon`/`track` en grados, `rssi` en dBFS — ver el aviso de unidades
+    al principio de este documento.
   - `id`, `icao`, `category`, `created_at` pertenecen al avión.
   - `flight`, `squawk`, `altitude`, `vert_rate`, `speed`, `track`, `rssi`,
     `emergency`, `messages` y `seen` vienen del **último mensaje recibido**
@@ -253,11 +267,11 @@ por fechas; no son recursos distintos.
 | `icao` | string | `required`, máx. 10 |
 | `flight` | string\|null | opcional, máx. 20 |
 | `squawk` | string\|null | opcional, máx. 10 |
-| `lat` | number\|null | opcional, entre -90 y 90 |
-| `lon` | number\|null | opcional, entre -180 y 180 |
-| `altitude` | number\|null | opcional, mín. 0 |
-| `speed` | number\|null | opcional, mín. 0 |
-| `track` | number\|null | opcional, entre 0 y 360 |
+| `lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
+| `lon` | number\|null | opcional, grados decimales WGS84 (°), entre -180 y 180 |
+| `altitude` | number\|null | opcional, **metros (m)**, mín. 0, máx. 60000 |
+| `speed` | number\|null | opcional, **metros por segundo (m/s)**, mín. 0, máx. 1000 |
+| `track` | number\|null | opcional, grados (°), entre 0 y 360 |
 | `vert_rate` | number\|null | opcional, entre -100 y 100 (m/s; más allá es ruido del decodificador) |
 | `seen` | number\|null | opcional (no se persiste: el esquema guarda `seen_at`, calculado al recibir la petición, no "hace cuántos segundos") |
 | `seen_pos` | number\|null | opcional (mismo caso que `seen`, no se persiste) |
@@ -337,11 +351,11 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.icao` | string | `required`, máx. 10 |
 | `data.*.flight` | string\|null | opcional, máx. 20 |
 | `data.*.squawk` | string\|null | opcional, máx. 10 |
-| `data.*.lat` | number\|null | opcional, entre -90 y 90 |
-| `data.*.lon` | number\|null | opcional, entre -180 y 180 |
-| `data.*.altitude` | number\|null | opcional, mín. 0 |
-| `data.*.speed` | number\|null | opcional, mín. 0 |
-| `data.*.track` | number\|null | opcional, entre 0 y 360 |
+| `data.*.lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
+| `data.*.lon` | number\|null | opcional, grados decimales WGS84 (°), entre -180 y 180 |
+| `data.*.altitude` | number\|null | opcional, **metros (m)**, mín. 0, máx. 60000 |
+| `data.*.speed` | number\|null | opcional, **metros por segundo (m/s)**, mín. 0, máx. 1000 |
+| `data.*.track` | number\|null | opcional, grados (°), entre 0 y 360 |
 | `data.*.vert_rate` | number\|null | opcional, entre -100 y 100 (m/s) |
 | `data.*.seen` | number\|null | opcional (no se persiste) |
 | `data.*.seen_pos` | number\|null | opcional (no se persiste) |

@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateAirFlightRoutesTable
+ *
+ * Unidades de `altitude`/`speed`/`vert_rate`/`rssi`/`lat`/`lon`: contrato
+ * definitivo confirmado con el propietario del capturador (2026-09-09) en
+ * `docs/info/airflight.md` ("Unidades de airflight_routes"). SI en todo
+ * (metros, m/s, grados, dBFS), aunque el decodificador ADS-B (`dump1090`)
+ * trabaje internamente en pies/nudos — esa conversión la hace el capturador
+ * antes de subir, esta tabla nunca guarda ft/kt. Antes de "corregir" estos
+ * comentarios otra vez, lee ese documento: ya se llegó una vez a la
+ * conclusión contraria apoyándose en datos históricos corruptos, y era un
+ * error (ver la sección "Corrección sobre una confusión propia" de ese
+ * mismo documento).
  */
 class CreateAirFlightRoutesTable extends Migration
 {
@@ -64,6 +75,8 @@ class CreateAirFlightRoutesTable extends Migration
                 ->nullable()
                 ->comment('Longitud');
 
+            // SI confirmado, no pies/nudos — ver el docblock de la clase
+            // antes de tocar estos tres comentarios.
             $table->float('altitude')
                 ->nullable()
                 ->comment('Altitud en metros');
