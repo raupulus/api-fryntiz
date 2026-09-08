@@ -172,6 +172,36 @@ class AirFlightTest extends ApiTestCase
         $this->assertSame('2000', $fila['squawk']);
     }
 
+    /**
+     * `seen_last_at` tiene que llegar al frontend sin ambigüedad de zona
+     * horaria: `getDetectedQuery()` no es Eloquent, así que el valor sale de
+     * Postgres tal cual ("2026-09-08 09:29:34", sin zona). El navegador lo
+     * convierte a la hora local del visitante (`formatFechaEsLocal` en la
+     * vista); para eso necesita ISO-8601 con la zona explícita, no esa
+     * cadena — algunos navegadores la interpretan como hora local en vez de
+     * UTC, desplazando la hora mostrada.
+     */
+    #[Test]
+    public function seen_last_at_llega_en_iso8601_utc_sin_ambiguedad(): void
+    {
+        $avion = AirFlightAirPlane::create([
+            'icao' => 'FECHAUTC',
+            'seen_last_at' => Carbon::create(2026, 9, 8, 9, 29, 34, 'UTC'),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $avion->id,
+            'squawk' => '1000',
+            'seen_at' => Carbon::now()->subMinute(),
+        ]);
+
+        $fila = collect($this->getJson(route('airflight.detected'))->assertOk()->json('data'))
+            ->firstWhere('icao', 'FECHAUTC');
+
+        $this->assertNotNull($fila);
+        $this->assertSame('2026-09-08T09:29:34.000000Z', $fila['seen_last_at']);
+    }
+
     #[Test]
     public function can_get_aircrafts(): void
     {

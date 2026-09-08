@@ -51,7 +51,9 @@
                 </a>
             </p>
             <div class="bg-surface-container border border-outline-variant/30 my-4 px-4 py-2 rounded-lg text-center">
-                <span class="font-bold text-on-surface">Franja horaria UTC +0:00</span>
+                <span class="font-bold text-on-surface">
+                    Horas mostradas en tu zona horaria (<span id="zona-horaria-detectada">detectando…</span>)
+                </span>
             </div>
         </div>
     </section>
@@ -241,7 +243,7 @@
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lat ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->lon ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->squawk ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center text-on-surface">{{ $plane->seen_last_at ?? '-' }}</td>
+                                <td class="px-3 py-2 text-center text-on-surface" data-seen-at="{{ $plane->seen_last_at }}">{{ $plane->seen_last_at ?? '-' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -334,6 +336,74 @@
         });
     </script>
 
+    {{-- Fechas en hora local del navegador, formato español.
+
+         El backend manda `seen_last_at` en ISO-8601 UTC sin ambigüedad
+         (`AirFlightController::seenLastAtAsUtcIso()`). Aquí se convierte a
+         la zona horaria que detecte el navegador (`Intl.DateTimeFormat`);
+         si no se puede detectar o no la admite el motor de fechas, cae a
+         Europe/Madrid. `window.formatFechaEsLocal` queda expuesta para que
+         la use también el sondeo de más abajo al reconstruir filas nuevas.
+
+         Independiente de la paginación: reformatea las fechas que ya trae
+         el HTML del servidor estés en la página que estés, no solo en la 1
+         (eso sí lo es el sondeo de refresco automático, ver más abajo). --}}
+    <script>
+        (function () {
+            function zonaHorariaDetectada() {
+                try {
+                    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
+                } catch (e) {
+                    return 'Europe/Madrid';
+                }
+            }
+
+            var ZONA_HORARIA = zonaHorariaDetectada();
+
+            window.formatFechaEsLocal = function (isoUtc) {
+                if (!isoUtc) {
+                    return '-';
+                }
+
+                var fecha = new Date(isoUtc);
+
+                if (isNaN(fecha.getTime())) {
+                    // No se ha podido interpretar como fecha: se enseña tal
+                    // cual llegó antes que enseñar "-" y perder el dato.
+                    return isoUtc;
+                }
+
+                var opciones = {
+                    timeZone: ZONA_HORARIA,
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+
+                try {
+                    return new Intl.DateTimeFormat('es-ES', opciones).format(fecha);
+                } catch (e) {
+                    // Zona horaria detectada pero no soportada por el motor
+                    // de fechas del navegador: se fuerza Madrid.
+                    opciones.timeZone = 'Europe/Madrid';
+                    return new Intl.DateTimeFormat('es-ES', opciones).format(fecha);
+                }
+            };
+
+            var etiquetaZona = document.getElementById('zona-horaria-detectada');
+            if (etiquetaZona) {
+                etiquetaZona.textContent = ZONA_HORARIA;
+            }
+
+            document.querySelectorAll('[data-seen-at]').forEach(function (celda) {
+                celda.textContent = window.formatFechaEsLocal(celda.dataset.seenAt);
+            });
+        })();
+    </script>
+
     {{-- Sondeo de la tabla "Aviones detectados (última hora)".
 
          Independiente del mapa: no toca urlAircrafts/urlReceiver ni el
@@ -382,7 +452,7 @@
                 tr.appendChild(cell(plane.lat));
                 tr.appendChild(cell(plane.lon));
                 tr.appendChild(cell(plane.squawk));
-                tr.appendChild(cell(plane.seen_last_at));
+                tr.appendChild(cell(window.formatFechaEsLocal(plane.seen_last_at)));
 
                 return tr;
             }

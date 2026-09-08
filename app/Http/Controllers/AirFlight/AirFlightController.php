@@ -83,7 +83,7 @@ class AirFlightController extends Controller
                     'lat' => $plane->lat !== null ? (float) $plane->lat : null,
                     'lon' => $plane->lon !== null ? (float) $plane->lon : null,
                     'squawk' => $plane->squawk,
-                    'seen_last_at' => $plane->seen_last_at,
+                    'seen_last_at' => $this->seenLastAtAsUtcIso($plane->seen_last_at),
                 ])
                 ->values()
                 ->all()
@@ -129,8 +129,32 @@ class AirFlightController extends Controller
 
         $planes = app(AirFlightService::class)->getDetectedQuery($lastHour)->paginate(20);
 
+        // `getDetectedQuery()` no es Eloquent: `seen_last_at` llega tal cual
+        // lo guarda Postgres, "2026-09-08 09:29:34" sin marca de zona. El
+        // frontend lo convierte a la hora local del navegador (con Madrid de
+        // respaldo); para eso necesita un ISO-8601 sin ambigüedad, no esa
+        // cadena — algunos navegadores la interpretan como hora local en vez
+        // de UTC.
+        $planes->getCollection()->transform(function ($plane) {
+            $plane->seen_last_at = $this->seenLastAtAsUtcIso($plane->seen_last_at);
+
+            return $plane;
+        });
+
         return view('airflight.index')->with([
             'planes' => $planes,
         ]);
+    }
+
+    /**
+     * `seen_last_at` se guarda en `APP_TIMEZONE` (UTC, ver `config/app.php`)
+     * como timestamp sin zona. `Carbon::parse($valor, 'UTC')` le pone la
+     * zona explícita antes de formatear a ISO-8601, para que
+     * `new Date(...)` en el navegador lo interprete siempre como UTC y no
+     * como hora local del propio navegador.
+     */
+    private function seenLastAtAsUtcIso(?string $value): ?string
+    {
+        return $value !== null ? Carbon::parse($value, 'UTC')->toISOString() : null;
     }
 }

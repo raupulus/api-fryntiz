@@ -278,6 +278,41 @@ y se está viendo la página 1 de la paginación, el frontend la sondea cada
 minuto para refrescarla sin recargar. Si se está navegando otra página de la
 paginación, el sondeo no arranca.
 
+### `seen_last_at`: hora local del navegador, formato español
+
+Tanto en el JSON de `/airflight/detected` como en la vista `/airflight`
+(columna "Visto última vez" de la tabla), `seen_last_at` sale como
+**ISO-8601 UTC sin ambigüedad** (`AirFlightController::seenLastAtAsUtcIso()`,
+`Carbon::parse($valor, 'UTC')->toISOString()` — p. ej.
+`2026-09-08T20:15:00.000000Z`), no la cadena tal cual la guarda Postgres
+(`"2026-09-08 20:15:00"`, sin zona).
+
+Por qué: `AirFlightService::getDetectedQuery()` no es Eloquent (es un `JOIN` +
+`GROUP BY` con `DB::table()`), así que `seen_last_at` no pasa por el casting
+de fechas de Eloquent — llega el string crudo de la columna, que en este
+proyecto se guarda en `APP_TIMEZONE` (`UTC`, ver `config/app.php`) pero sin
+ninguna marca que lo diga. `new Date("2026-09-08 20:15:00")` en JavaScript es
+territorio ambiguo: algunos navegadores lo interpretan como UTC, otros como
+hora local del propio navegador — con ese formato la hora mostrada podía
+variar varias horas según el navegador de quien mirara la página.
+
+El frontend (`resources/views/airflight/index.blade.php`, función global
+`window.formatFechaEsLocal`) coge ese ISO-8601 y lo formatea con
+`Intl.DateTimeFormat('es-ES', { timeZone: ... })`:
+
+1. Detecta la zona horaria del navegador con
+   `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+2. Si eso falla (excepción) o el motor de fechas no admite la zona detectada
+   al formatear, cae a `Europe/Madrid`.
+3. La zona usada se enseña en el banner de encima del mapa ("Horas mostradas
+   en tu zona horaria (...)"), para que quede claro qué hora se está viendo.
+
+Se aplica en dos sitios con la misma función, para que no diverjan:
+las celdas que ya trae el HTML del servidor (marcadas con
+`data-seen-at="<iso>"`, reformateadas nada más cargar el script,
+independientemente de en qué página de paginación se esté) y las filas que
+reconstruye el sondeo cada minuto (`buildRow()`, sólo en la página 1).
+
 ### Frontend (Fix 5)
 
 - **Mapa interactivo OpenLayers:** Recuperado de la rama `main`, integrado con layout v2 vía `@push('head')` y `@push('scripts')`.
