@@ -131,7 +131,7 @@ Todos los sensores heredan estos campos:
 ### Campos adicionales por sensor
 
 - **Light:** `llesistance` (resistencia lumínica)
-- **Wind:** `speed`, `min`, `max`
+- **Wind:** `speed`, `average`, `min`, `max` — en **m/s** (unidad nativa del sensor); las vistas y la API los convierten a km/h con `Wind::msToKmh()`, la tabla `meteorology_winter` los guarda tal cual llegan
 - **WindDirection:** `grades`, `direction`, `resistance`
 - **Rain:** `intensity`
 - **AirQuality:** `value`

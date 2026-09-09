@@ -307,7 +307,7 @@ Zona por defecto del widget: `weather_station.main_zone` (variable de entorno
 | `eco2-readings` | `value` |
 | `tvoc-readings` | `value` |
 | `lights` | `lumens`, `index`, `lux` (puede ser `null`: falta en ~6 % de las filas de producción aunque la columna sea NOT NULL), `uva`, `uvb` |
-| `winds` | `speed`, `average`, `min`, `max` |
+| `winds` | `speed`, `average`, `min`, `max` (**m/s**, unidad nativa del sensor; se guardan y devuelven tal cual en este endpoint, sin convertir) |
 | `wind-directions` | `resistance`, `direction`, `grades` |
 | `rains` | `rain`, `rain_intensity`, `rain_month`, `moisture` |
 | `air-qualities` | `gas_resistance`, `air_quality` |
@@ -347,7 +347,7 @@ Zona por defecto del widget: `weather_station.main_zone` (variable de entorno
 |---|---|
 | `temperatures`, `humidities`, `pressures`, `eco2-readings`, `tvoc-readings` | `value`: requerido, numérico |
 | `lights` | `lumens`: requerido, numérico · `lux`, `index`, `uva`, `uvb`: opcionales, numéricos |
-| `winds` | `speed`, `average`, `min`, `max`: requeridos, numéricos, ≥ 0 |
+| `winds` | `speed`, `average`, `min`, `max`: requeridos, numéricos, ≥ 0 — se esperan en **m/s** (unidad nativa del sensor), no en km/h |
 | `wind-directions` | `direction`: requerido, string, máx. 10 · `grades`: requerido, numérico, 0–360 · `resistance`: opcional, numérico |
 | `rains` | `rain`: requerido, numérico, ≥ 0 · `moisture`: requerido, numérico · `rain_intensity`, `rain_month`: opcionales, numéricos, ≥ 0 |
 | `air-qualities` | `gas_resistance`, `air_quality`: requeridos, numéricos |
