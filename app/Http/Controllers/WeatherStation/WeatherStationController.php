@@ -60,18 +60,22 @@ class WeatherStationController extends Controller
             // tarjeta ni datos en el listado.
             'title' => 'Luz', 'model' => Light::class, 'icon' => 'light_mode',
             'primary' => ['field' => 'lumens', 'unit' => 'lm'],
-            'secondary' => ['field' => 'index', 'unit' => 'índice'],
+            'secondary' => ['field' => 'lux', 'unit' => 'lux'],
         ],
         // UVA/UVB son columnas del mismo modelo Light, pero al no ser el
         // "primary"/"secondary" del sensor de luz nunca salían como tarjeta
-        // propia aunque las estaciones sí las reportan.
+        // propia aunque las estaciones sí las reportan. `index` es el
+        // índice UV (una única lectura del sensor, no específica de UVA
+        // ni UVB), así que se muestra como secundario en ambas tarjetas.
         'uva' => [
             'title' => 'UVA', 'model' => Light::class, 'icon' => 'wb_sunny',
             'primary' => ['field' => 'uva', 'unit' => ''],
+            'secondary' => ['field' => 'index', 'unit' => 'índice'],
         ],
         'uvb' => [
             'title' => 'UVB', 'model' => Light::class, 'icon' => 'wb_sunny',
             'primary' => ['field' => 'uvb', 'unit' => ''],
+            'secondary' => ['field' => 'index', 'unit' => 'índice'],
         ],
         'wind' => [
             'title' => 'Viento', 'model' => Wind::class, 'icon' => 'air',

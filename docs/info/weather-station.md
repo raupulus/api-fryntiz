@@ -251,7 +251,7 @@ filtros, orden, paginación e histórico a cambio de un token.
 
 ### Tipos de sensor soportados en ruta web
 
-`temperature`, `humidity`, `pressure`, `light`, `wind`, `wind-direction`, `rain`, `eco2`, `tvoc`, `air-quality`, `lightning`
+`temperature`, `humidity`, `pressure`, `light`, `uva`, `uvb`, `wind`, `wind-direction`, `rain`, `eco2`, `tvoc`, `air-quality`, `lightning`
 
 ### Widget Vue 3 (`ChipionaWeatherComponent`)
 
@@ -276,6 +276,24 @@ filtros, orden, paginación e histórico a cambio de un token.
 ### Iconos Material Symbols por sensor
 
 Cada tarjeta de sensor usa un icono representativo definido en `SENSOR_MAP` del controlador.
+
+### Luz, UVA y UVB: qué campo va en cada tarjeta (2026-09-09)
+
+`lumens`, `lux`, `index` (índice UV), `uva` y `uvb` son columnas del mismo
+modelo `Light`, pero se reparten en tres tarjetas distintas del dashboard
+(`SENSOR_MAP` en `WeatherStationController`):
+
+| Tarjeta | `primary` | `secondary` |
+|---------|-----------|--------------|
+| Luz | `lumens` (lm) | `lux` |
+| UVA | `uva` | `index` (índice UV) |
+| UVB | `uvb` | `index` (índice UV) |
+
+`index` es una única lectura del sensor (el índice UV general), no un valor
+distinto para UVA y UVB, así que aparece como secundario en ambas tarjetas.
+Antes se mostraba por error como secundario de la tarjeta de Luz —donde
+parecía "el índice de la luz"— y las tarjetas de UVA/UVB no mostraban nada
+debajo del valor.
 
 ### Comando de debug
 
