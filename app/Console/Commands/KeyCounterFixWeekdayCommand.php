@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Enums\KeyCounterWeekdayEnum;
+use App\Support\KeyCounter\KeyCounterCache;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -48,26 +49,26 @@ class KeyCounterFixWeekdayCommand extends Command
      *
      * @var array<string, string>
      */
-    private const TABLAS = [
+    private const TABLES = [
         'keycounter_keyboard' => 'Teclado',
         'keycounter_mouse' => 'Ratón',
     ];
 
     public function handle(): int
     {
-        $limite = (string) ($this->option('until') ?: KeyCounterWeekdayEnum::CAMBIO_DE_CONVENCION);
-        $escribir = (bool) $this->option('write');
+        $limit = (string) ($this->option('until') ?: KeyCounterWeekdayEnum::CONVENTION_CHANGE_DATE);
+        $write = (bool) $this->option('write');
 
-        $this->line("▶ Rachas con `start_at` anterior a {$limite}.");
+        $this->line("▶ Rachas con `start_at` anterior a {$limit}.");
 
-        if (! $escribir) {
+        if (! $write) {
             $this->warn('Modo seco: no se escribe nada. Añade --write para aplicarlo.');
         }
 
         $total = 0;
 
-        foreach (self::TABLAS as $tabla => $etiqueta) {
-            $total += $this->procesar($tabla, $etiqueta, $limite, $escribir);
+        foreach (self::TABLES as $table => $label) {
+            $total += $this->process($table, $label, $limit, $write);
         }
 
         if ($total === 0) {
@@ -76,7 +77,7 @@ class KeyCounterFixWeekdayCommand extends Command
             return self::SUCCESS;
         }
 
-        if ($escribir) {
+        if ($write) {
             $this->info("Normalizadas {$total} rachas.");
         } else {
             $this->info("Se normalizarían {$total} rachas. Repite con --write para hacerlo.");
@@ -88,61 +89,101 @@ class KeyCounterFixWeekdayCommand extends Command
     /**
      * @return int Rachas afectadas.
      */
-    private function procesar(string $tabla, string $etiqueta, string $limite, bool $escribir): int
+    private function process(string $table, string $label, string $limit, bool $write): int
     {
         // Sólo las que hoy cuadran con la convención de Carbon: si una fila ya
         // está en la buena, o no cuadra con ninguna de las dos —el caso de las
         // rachas que cruzan la medianoche—, se deja como está. Convertir a
         // ciegas todo lo anterior a la fecha estropearía justamente esas.
-        $condicion = 'start_at IS NOT NULL
+        $condition = 'start_at IS NOT NULL
             AND start_at < ?
             AND weekday = EXTRACT(DOW FROM start_at)::int
             AND weekday <> EXTRACT(ISODOW FROM start_at)::int - 1';
 
-        $cuantas = (int) DB::table($tabla)
-            ->whereRaw($condicion, [$limite])
+        $count = (int) DB::table($table)
+            ->whereRaw($condition, [$limit])
             ->count();
 
-        $this->line("  · {$etiqueta} ({$tabla}): {$cuantas}");
+        $this->line("  · {$label} ({$table}): {$count}");
 
-        if ($cuantas === 0) {
+        if ($count === 0) {
             return 0;
         }
 
-        if (! $escribir) {
-            $this->muestra($tabla, $condicion, $limite);
+        if (! $write) {
+            $this->showSample($table, $condition, $limit);
 
-            return $cuantas;
+            return $count;
         }
+
+        // Qué meses se tocan, **antes** de tocarlos: después la condición ya no
+        // los encuentra.
+        $periods = $this->affectedPeriods($table, $condition, $limit);
 
         // Una sola sentencia: son cientos de miles de filas y recorrerlas con
         // Eloquent sería tan lento como innecesario. El valor nuevo sale de la
         // propia fecha, así que no hace falta traerse nada.
-        DB::table($tabla)
-            ->whereRaw($condicion, [$limite])
+        DB::table($table)
+            ->whereRaw($condition, [$limit])
             ->update([
                 'weekday' => DB::raw('EXTRACT(ISODOW FROM start_at)::int - 1'),
             ]);
 
-        return $cuantas;
+        // Esto reescribe rachas de meses **cerrados**, y esos están cacheados
+        // para siempre. Hoy `weekday` no entra en ninguna de las cifras que se
+        // guardan —la gráfica agrupa por día del mes y los widgets por fecha—,
+        // así que en rigor no cambiaría nada de lo cacheado; se invalida
+        // igualmente porque el día que alguien añada un corte por día de la
+        // semana, nadie va a acordarse de volver aquí. Es barato: lo rehace el
+        // pase diario de `keycounter:warm_cache`.
+        if ($table === 'keycounter_keyboard' && $periods !== []) {
+            KeyCounterCache::forgetPeriods($periods);
+
+            $this->line('      Caché olvidada de '.count($periods).' meses. '
+                .'Para no dejársela al primer visitante: `php artisan keycounter:warm_cache`.');
+        }
+
+        return $count;
+    }
+
+    /**
+     * Los meses (año, mes) de las rachas que este comando va a reescribir.
+     *
+     * Va por `created_at` porque es la columna con la que se indexan las
+     * gráficas cacheadas, no por `start_at` —que es la que decide qué filas se
+     * tocan.
+     *
+     * @return list<array{int, int}>
+     */
+    private function affectedPeriods(string $table, string $condition, string $limit): array
+    {
+        $rows = DB::table($table)
+            ->selectRaw('DISTINCT EXTRACT(YEAR FROM created_at)::int AS year, EXTRACT(MONTH FROM created_at)::int AS month')
+            ->whereRaw($condition, [$limit])
+            ->whereNotNull('created_at')
+            ->get();
+
+        return $rows
+            ->map(fn (object $row): array => [(int) $row->year, (int) $row->month])
+            ->all();
     }
 
     /**
      * Cinco filas de ejemplo, para poder comprobar el cambio antes de hacerlo.
      */
-    private function muestra(string $tabla, string $condicion, string $limite): void
+    private function showSample(string $table, string $condition, string $limit): void
     {
-        $filas = DB::table($tabla)
-            ->selectRaw("id, start_at, weekday AS ahora, EXTRACT(ISODOW FROM start_at)::int - 1 AS quedaria, to_char(start_at, 'Dy') AS dia")
-            ->whereRaw($condicion, [$limite])
+        $rows = DB::table($table)
+            ->selectRaw("id, start_at, weekday AS current_value, EXTRACT(ISODOW FROM start_at)::int - 1 AS new_value, to_char(start_at, 'Dy') AS weekday_name")
+            ->whereRaw($condition, [$limit])
             ->limit(5)
             ->get();
 
-        foreach ($filas as $fila) {
-            $ahora = KeyCounterWeekdayEnum::etiquetaDe((int) $fila->ahora);
-            $quedaria = KeyCounterWeekdayEnum::etiquetaDe((int) $fila->quedaria);
+        foreach ($rows as $row) {
+            $current = KeyCounterWeekdayEnum::labelFor((int) $row->current_value);
+            $new = KeyCounterWeekdayEnum::labelFor((int) $row->new_value);
 
-            $this->line("      #{$fila->id} {$fila->start_at} ({$fila->dia}): {$fila->ahora} «{$ahora}» → {$fila->quedaria} «{$quedaria}»");
+            $this->line("      #{$row->id} {$row->start_at} ({$row->weekday_name}): {$row->current_value} «{$current}» → {$row->new_value} «{$new}»");
         }
     }
 }

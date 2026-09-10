@@ -32,21 +32,21 @@ class SummaryController extends BaseApiController
      */
     public function show(ShowSummaryRequest $request): JsonResponse
     {
-        [$desde, $hasta] = $request->rango();
+        [$from, $to] = $request->range();
 
-        $resumen = $this->service->summary(
+        $summary = $this->service->summary(
             (int) $request->user()->id,
-            $request->dispositivo(),
-            $desde,
-            $hasta
+            $request->device(),
+            $from,
+            $to
         );
 
         return $this->successResponse([
-            'period' => $request->periodo(),
-            'from' => $desde->toISOString(),
-            'to' => $hasta->toISOString(),
-            'hardware_device_id' => $request->dispositivo(),
-            ...$resumen,
+            'period' => $request->period(),
+            'from' => $from->toISOString(),
+            'to' => $to->toISOString(),
+            'hardware_device_id' => $request->device(),
+            ...$summary,
         ]);
     }
 }

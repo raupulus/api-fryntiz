@@ -132,15 +132,15 @@ class BaseKeyCounter extends BaseModel
 
         // # Proceso el filtro de condiciones para no null.
         if (isset($filter['whereNotNull']) && count($filter['whereNotNull'])) {
-            foreach ($filter['whereNotNull'] as $ele) {
-                $model->whereNotNull($ele);
+            foreach ($filter['whereNotNull'] as $column) {
+                $model->whereNotNull($column);
             }
         }
 
         // # Proceso el filtro de condiciones para obligar campos null.
         if (isset($filter['whereNull']) && count($filter['whereNull'])) {
-            foreach ($filter['whereNull'] as $ele) {
-                $model->whereNull($ele);
+            foreach ($filter['whereNull'] as $column) {
+                $model->whereNull($column);
             }
         }
 
@@ -217,14 +217,14 @@ class BaseKeyCounter extends BaseModel
         // # Extraigo el id de todos los dispositivos para este mes.
         $devices_ids = array_unique($data->pluck('hardware_device_id')->toArray());
 
-        $total_puntuations = $data->sum('total_pulsations');
+        $totalPulsations = $data->sum('total_pulsations');
 
         return [
             'devices_ids' => $devices_ids,  // # Ids de todos los dispositivos.
             'period_start' => $start,  // # Comienzo del periodo
             'period_end' => $end,  // # Final del periodo
             'period_count' => $count,  // # Total de registros/rachas este periodo
-            'period_total_pulsations' => $total_puntuations,
+            'period_total_pulsations' => $totalPulsations,
             // 'period_max_pulsations' => $day_max_puntuations,
             'data' => $data,  // # Los datos devueltos como resultado
         ];
@@ -275,14 +275,14 @@ class BaseKeyCounter extends BaseModel
         // día y dispositivo: con 31 días y 4 cacharros son 124 recorridos de
         // toda la colección para pintar una gráfica. El propio código lo tenía
         // marcado con un FIXME.
-        $porCelda = [];
+        $byCell = [];
 
-        foreach ($stats as $fila) {
-            $porCelda[$fila->day.'|'.$fila->hardware_device_id] = $fila;
+        foreach ($stats as $row) {
+            $byCell[$row->day.'|'.$row->hardware_device_id] = $row;
         }
 
         // Los nombres, en una consulta y no dentro del bucle.
-        $nombres = HardwareDevice::query()
+        $names = HardwareDevice::query()
             ->whereIn('id', $devices)
             ->pluck('name', 'id')
             ->all();
@@ -302,7 +302,7 @@ class BaseKeyCounter extends BaseModel
         foreach ($devices as $device) {
             $datasetTMP[$device] = [
                 'data' => [],
-                'label' => $nombres[$device] ?? ('#'.$device),
+                'label' => $names[$device] ?? ('#'.$device),
                 'borderColor' => $deviceColors[$device] ?? $colors[0],
                 'fill' => 'false',
             ];
@@ -313,7 +313,7 @@ class BaseKeyCounter extends BaseModel
             $labels[] = (new Carbon($day))->format('d');
 
             foreach ($devices as $device) {
-                $s = $porCelda[$day.'|'.$device] ?? null;
+                $s = $byCell[$day.'|'.$device] ?? null;
 
                 // # Compruebo que haya registro para este dispositivo este día o seteo 0.
                 $datasetTMP[$device]['data'][] = $s ? $s->total_pulsations : 0;

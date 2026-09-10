@@ -36,14 +36,14 @@ class ShowSummaryRequest extends BaseFormRequest
             'device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             // El regex fija la forma; la closure, que la fecha exista de verdad:
             // «2026-13-45» tiene la forma buena y no es ninguna fecha.
-            'date' => ['nullable', 'string', 'regex:/^(today|month|\d{4}-\d{2}(-\d{2})?)$/', function (string $atributo, mixed $valor, \Closure $fail) {
-                if (! is_string($valor) || in_array($valor, ['today', 'month'], true)) {
+            'date' => ['nullable', 'string', 'regex:/^(today|month|\d{4}-\d{2}(-\d{2})?)$/', function (string $attribute, mixed $value, \Closure $fail) {
+                if (! is_string($value) || in_array($value, ['today', 'month'], true)) {
                     return;
                 }
 
-                [$anio, $mes, $dia] = array_pad(array_map('intval', explode('-', $valor)), 3, 1);
+                [$year, $month, $day] = array_pad(array_map('intval', explode('-', $value)), 3, 1);
 
-                if (! checkdate($mes, $dia, $anio)) {
+                if (! checkdate($month, $day, $year)) {
                     $fail('El periodo indica una fecha que no existe.');
                 }
             }],
@@ -76,7 +76,7 @@ class ShowSummaryRequest extends BaseFormRequest
     /**
      * Periodo pedido, tal cual lo escribió el cliente.
      */
-    public function periodo(): string
+    public function period(): string
     {
         $date = $this->input('date');
 
@@ -91,7 +91,7 @@ class ShowSummaryRequest extends BaseFormRequest
      * que sea del usuario del token y que el token lo alcance si está ligado a
      * un `device:{id}`.
      */
-    public function dispositivo(): int
+    public function device(): int
     {
         return (int) $this->input('device_id');
     }
@@ -106,23 +106,23 @@ class ShowSummaryRequest extends BaseFormRequest
      *
      * @return array{0: CarbonImmutable, 1: CarbonImmutable}
      */
-    public function rango(): array
+    public function range(): array
     {
-        $periodo = $this->periodo();
-        $hoy = CarbonImmutable::now('UTC');
+        $period = $this->period();
+        $today = CarbonImmutable::now('UTC');
 
         return match (true) {
-            $periodo === 'today' => [$hoy->startOfDay(), $hoy->endOfDay()],
-            $periodo === 'month' => [$hoy->startOfMonth(), $hoy->endOfMonth()],
+            $period === 'today' => [$today->startOfDay(), $today->endOfDay()],
+            $period === 'month' => [$today->startOfMonth(), $today->endOfMonth()],
             // «2026-09»: mes entero.
-            strlen($periodo) === 7 => [
-                $mes = CarbonImmutable::createFromFormat('Y-m-d', $periodo.'-01', 'UTC')->startOfDay(),
-                $mes->endOfMonth(),
+            strlen($period) === 7 => [
+                $month = CarbonImmutable::createFromFormat('Y-m-d', $period.'-01', 'UTC')->startOfDay(),
+                $month->endOfMonth(),
             ],
             // «2026-09-07»: ese día.
             default => [
-                $dia = CarbonImmutable::createFromFormat('Y-m-d', $periodo, 'UTC')->startOfDay(),
-                $dia->endOfDay(),
+                $day = CarbonImmutable::createFromFormat('Y-m-d', $period, 'UTC')->startOfDay(),
+                $day->endOfDay(),
             ],
         };
     }

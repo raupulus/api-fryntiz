@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@use('App\Support\Format\Cifra')
+@use('App\Support\Format\Figures')
 
 @section('title', 'Keycounter && Mousecounter')
 @section('description', 'Contador de pulsaciones de teclado y ratón por rachas')
@@ -30,7 +30,8 @@
                 <p>
                     <strong>Aviso de privacidad:</strong> Por motivos de privacidad, los datos mostrados pueden tener pequeñas variaciones
                     en las representaciones. Los datos del día actual no serán exactos, por elección del desarrollador, para proteger
-                    información precisa sobre actividad en tiempo real.
+                    información precisa sobre actividad en tiempo real: <strong>lo que se ve aquí se actualiza una vez por hora</strong>,
+                    nunca al instante.
                 </p>
             </div>
         </div>
@@ -107,35 +108,35 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Total de rachas</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($keyboard_statistics['period_count']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($keyboard_statistics['period_count']) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Total de pulsaciones</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($keyboard_statistics['period_total_pulsations']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($keyboard_statistics['period_total_pulsations']) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Max. Puls./disp. en 1 día</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($keyboard_statistics['data']->max('total_pulsations')) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($keyboard_statistics['data']->max('total_pulsations')) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Puntuación total</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($monthSummary['total_score']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($monthSummary['total_score']) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Pulsaciones media (por racha)</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($monthSummary['avg_pulsations']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($monthSummary['avg_pulsations']) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Media teclas especiales</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($monthSummary['avg_special_keys']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($monthSummary['avg_special_keys']) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Pulsaciones por minuto</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($monthSummary['pulsations_per_minute']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($monthSummary['pulsations_per_minute']) }}</h3>
                 </div>
                 <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 text-center">
                     <h4 class="text-sm uppercase text-on-surface-variant leading-tight">Puntuación media</h4>
-                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Cifra::entera($monthSummary['avg_score']) }}</h3>
+                    <h3 class="text-3xl text-on-surface font-semibold my-3">{{ Figures::asInteger($monthSummary['avg_score']) }}</h3>
                 </div>
             </div>
         </div>
@@ -158,31 +159,31 @@
                     <div class="p-5 space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Media de pulsaciones</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($keyboardSummary['avg_pulsations']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($keyboardSummary['avg_pulsations']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Pulsaciones/min (media)</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($keyboardSummary['avg_pulsations_per_minute']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($keyboardSummary['avg_pulsations_per_minute']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Score medio</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($keyboardSummary['avg_score']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($keyboardSummary['avg_score']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Media teclas especiales</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($keyboardSummary['avg_pulsations_special_keys']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($keyboardSummary['avg_pulsations_special_keys']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Máximo pulsaciones en racha</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($keyboardSummary['max_pulsations']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($keyboardSummary['max_pulsations']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Total pulsaciones</span>
-                            <span class="text-on-surface font-bold text-lg">{{ Cifra::entera($keyboardSummary['total_pulsations']) }}</span>
+                            <span class="text-on-surface font-bold text-lg">{{ Figures::asInteger($keyboardSummary['total_pulsations']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Total teclas especiales</span>
-                            <span class="text-on-surface font-bold text-lg">{{ Cifra::entera($keyboardSummary['total_pulsations_special_keys']) }}</span>
+                            <span class="text-on-surface font-bold text-lg">{{ Figures::asInteger($keyboardSummary['total_pulsations_special_keys']) }}</span>
                         </div>
                         <div class="text-xs text-on-surface-variant pt-2 border-t border-surface-container">
                             Período: {{ $keyboardSummary['period_start'] }} — {{ $keyboardSummary['period_end'] }}
@@ -202,19 +203,19 @@
                     <div class="p-5 space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Media de clicks</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($mouseSummary['avg_clicks']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($mouseSummary['avg_clicks']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Clicks/min (media)</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($mouseSummary['avg_clicks_per_minute']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($mouseSummary['avg_clicks_per_minute']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Máximo clicks en racha</span>
-                            <span class="text-on-surface font-bold">{{ Cifra::entera($mouseSummary['max_clicks']) }}</span>
+                            <span class="text-on-surface font-bold">{{ Figures::asInteger($mouseSummary['max_clicks']) }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-on-surface-variant text-sm">Total clicks</span>
-                            <span class="text-on-surface font-bold text-lg">{{ Cifra::entera($mouseSummary['total_clicks']) }}</span>
+                            <span class="text-on-surface font-bold text-lg">{{ Figures::asInteger($mouseSummary['total_clicks']) }}</span>
                         </div>
                         <div class="text-xs text-on-surface-variant pt-2 border-t border-surface-container">
                             Período: {{ $mouseSummary['period_start'] }} — {{ $mouseSummary['period_end'] }}
@@ -233,7 +234,7 @@
                 {{-- Total global --}}
                 <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-center shadow">
                     <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-3xl">functions</span>
-                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Cifra::miles($widgets['total_global']) }}</p>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($widgets['total_global']) }}</p>
                     <p class="text-xs text-on-surface-variant">{{ __('keycounter.total_pulsations') }}</p>
                 </div>
 
@@ -241,7 +242,7 @@
                 @if($widgets['top_year'])
                 <div class="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-center shadow">
                     <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-3xl">military_tech</span>
-                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Cifra::miles($widgets['top_year']->total) }}</p>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($widgets['top_year']->total) }}</p>
                     <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_year') }}: {{ (int)$widgets['top_year']->year }}</p>
                 </div>
                 @endif
@@ -250,7 +251,7 @@
                 @if($widgets['top_month'])
                 <div class="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 text-center shadow">
                     <span class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-3xl">event</span>
-                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Cifra::miles($widgets['top_month']->total) }}</p>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($widgets['top_month']->total) }}</p>
                     <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_month') }}: {{ (int)$widgets['top_month']->month }}/{{ (int)$widgets['top_month']->year }}</p>
                 </div>
                 @endif
@@ -259,7 +260,7 @@
                 @if($widgets['top_day'])
                 <div class="bg-lime-50 dark:bg-lime-950/30 border border-lime-200 dark:border-lime-800 rounded-lg p-4 text-center shadow">
                     <span class="material-symbols-outlined text-lime-600 dark:text-lime-400 text-3xl">calendar_month</span>
-                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Cifra::miles($widgets['top_day']->total) }}</p>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($widgets['top_day']->total) }}</p>
                     <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_day') }}: {{ \Carbon\Carbon::parse($widgets['top_day']->day)->format('d/m/Y') }}</p>
                 </div>
                 @endif
@@ -269,7 +270,7 @@
                 <div class="bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-800 rounded-lg p-4 text-center shadow"
                      data-top-hour-utc="{{ (int) $widgets['top_hour']->hour }}">
                     <span class="material-symbols-outlined text-cyan-600 dark:text-cyan-400 text-3xl">schedule</span>
-                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Cifra::miles($widgets['top_hour']->total) }}</p>
+                    <p class="text-2xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($widgets['top_hour']->total) }}</p>
                     <p class="text-xs text-on-surface-variant">{{ __('keycounter.best_hour') }}: <span id="top-hour-local">--:00</span></p>
                 </div>
                 @endif
@@ -278,7 +279,7 @@
                 @foreach($widgets['totals_by_year'] as $yearData)
                 <div class="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center shadow">
                     <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">bar_chart</span>
-                    <p class="text-xl font-bold text-on-surface mt-2">{{ Cifra::miles($yearData->total) }}</p>
+                    <p class="text-xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($yearData->total) }}</p>
                     <p class="text-xs text-on-surface-variant">{{ __('keycounter.year') }} {{ (int)$yearData->year }}</p>
                 </div>
                 @endforeach
@@ -295,7 +296,7 @@
                     @if((int) $deviceData->hardware_device_id === $topDeviceId)
                         <div class="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-4 text-center shadow">
                             <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-3xl">devices</span>
-                            <p class="text-xl font-bold text-on-surface mt-2">{{ Cifra::miles($deviceData->total) }}</p>
+                            <p class="text-xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($deviceData->total) }}</p>
                             <p class="text-xs text-on-surface-variant">{{ $deviceData->name }}</p>
                             <p class="mt-2">
                                 <span class="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-300">
@@ -307,7 +308,7 @@
                     @else
                         <div class="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-lg p-4 text-center shadow">
                             <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-3xl">dns</span>
-                            <p class="text-xl font-bold text-on-surface mt-2">{{ Cifra::miles($deviceData->total) }}</p>
+                            <p class="text-xl font-bold text-on-surface mt-2">{{ Figures::abbreviated($deviceData->total) }}</p>
                             <p class="text-xs text-on-surface-variant">{{ $deviceData->name }}</p>
                         </div>
                     @endif

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Support\KeyCounter\KeyCounterCache;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -111,6 +112,13 @@ class KeyCounterRemoveDuplicate extends Command
         $deleted = 0;
 
         if ($force && $found > 0) {
+            // Qué meses toca el borrado, **antes** de borrarlos: después ya no
+            // hay forma de saberlo. Sin esto, un duplicado de un mes cerrado se
+            // iba de la base de datos y su gráfica se quedaba puesta con la
+            // cifra vieja, guardada «para siempre» y sin nada que la vuelva a
+            // calcular (auditoría de la caché, 2026-09-10).
+            $periods = $this->affectedPeriods($table, $groupByCols, $windowClause);
+
             $deleted = DB::delete("
                 DELETE FROM {$table} t
                 USING (
@@ -120,13 +128,24 @@ class KeyCounterRemoveDuplicate extends Command
                 ) d
                 WHERE t.id = d.id AND d.rn > 1
             ");
+
+            // Sólo el teclado: la gráfica, los widgets y los totales anuales
+            // salen de `keycounter_keyboard`. Lo del ratón que se cachea es su
+            // tarjeta de resumen, que es un dato vivo y se reescribe sola en el
+            // siguiente refresco horario.
+            if ($table === 'keycounter_keyboard' && $periods !== []) {
+                KeyCounterCache::forgetPeriods($periods);
+
+                $this->line('  · Caché olvidada de '.count($periods).' meses. '
+                    .'Se rehará sola en el próximo `keycounter:warm_cache`.');
+            }
         }
 
         $elapsed = round(microtime(true) - $start, 3);
-        $alcance = $full ? 'tabla completa' : "últimos {$windowDays} días";
-        $modo = $force ? 'BORRADO' : 'DRY-RUN (no se ha borrado nada)';
+        $scope = $full ? 'tabla completa' : "últimos {$windowDays} días";
+        $mode = $force ? 'BORRADO' : 'DRY-RUN (no se ha borrado nada)';
 
-        $message = "[keycounter:remove_duplicate] tabla={$table} alcance={$alcance} modo={$modo} "
+        $message = "[keycounter:remove_duplicate] tabla={$table} alcance={$scope} modo={$mode} "
             ."duplicados_detectados={$found} filas_borradas={$deleted} tiempo={$elapsed}s";
 
         $this->info($message);
@@ -154,5 +173,33 @@ class KeyCounterRemoveDuplicate extends Command
             $this->info($diagnostic);
             Log::info($diagnostic);
         }
+    }
+
+    /**
+     * Los meses (año, mes) donde hay filas que este borrado se va a llevar.
+     *
+     * Va por `created_at` porque es la columna con la que se indexan las
+     * gráficas cacheadas, no por `start_at`.
+     *
+     * @return list<array{int, int}>
+     */
+    private function affectedPeriods(string $table, string $groupByCols, string $windowClause): array
+    {
+        $rows = DB::select("
+            SELECT DISTINCT
+                   EXTRACT(YEAR FROM created_at)::int AS year,
+                   EXTRACT(MONTH FROM created_at)::int AS month
+            FROM (
+                SELECT created_at, ROW_NUMBER() OVER (PARTITION BY {$groupByCols} ORDER BY id) AS rn
+                FROM {$table}
+                {$windowClause}
+            ) t
+            WHERE rn > 1 AND created_at IS NOT NULL
+        ");
+
+        return array_map(
+            static fn (object $row): array => [(int) $row->year, (int) $row->month],
+            $rows,
+        );
     }
 }

@@ -65,7 +65,7 @@ class SeedKeyCounterDebugCommand extends Command
                 'pulsations_special_keys' => fake()->numberBetween(5, 500),
                 'pulsation_average' => fake()->randomFloat(2, 10, 200),
                 'score' => fake()->numberBetween(1, 100),
-                'weekday' => KeyCounterWeekdayEnum::deLaFecha($startAt)->value,
+                'weekday' => KeyCounterWeekdayEnum::fromDate($startAt)->value,
                 'created_at' => $startAt,
                 'updated_at' => $startAt,
             ])->save();
@@ -89,7 +89,7 @@ class SeedKeyCounterDebugCommand extends Command
                 'clicks_middle' => fake()->numberBetween(0, 50),
                 'total_clicks' => fake()->numberBetween(20, 2000),
                 'clicks_average' => fake()->randomFloat(2, 1, 80),
-                'weekday' => KeyCounterWeekdayEnum::deLaFecha($startAt)->value,
+                'weekday' => KeyCounterWeekdayEnum::fromDate($startAt)->value,
                 'created_at' => $startAt,
                 'updated_at' => $startAt,
             ])->save();

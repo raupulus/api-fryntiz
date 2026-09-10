@@ -21,7 +21,8 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Services/KeyCounter/KeyCounterService.php` | Lógica: store teclado/ratón, estadísticas |
+| `app/Services/KeyCounter/KeyCounterService.php` | Ingesta: store de teclado/ratón y resumen para reanudar |
+| `app/Services/KeyCounter/KeyCounterStatisticsService.php` | Todo lo que enseña la web: gráfica, resúmenes, widgets y totales anuales. Lo comparten el controlador (que sólo lee caché) y `keycounter:warm_cache` (que la escribe) |
 
 ### Resources API V2
 | Archivo | Descripción |
@@ -43,6 +44,9 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 | `app/Filament/Concerns/ScopesToOwner.php` | Usado por `KeyboardResource` y `MouseResource`: la tabla del panel sólo muestra las sesiones propias. Sin él, un `Editor` veía las pulsaciones y los horarios de actividad de todos (AR-SEC-02) |
 | `app/Console/Commands/KeyCounterGenerateDuration.php` | Comando para recalcular duraciones |
 | `app/Console/Commands/KeyCounterRemoveDuplicate.php` | Comando para eliminar duplicados |
+| `app/Console/Commands/KeyCounterFixWeekdayCommand.php` | Normaliza `weekday` a 0=lunes en las rachas anteriores a 2020 |
+| `app/Console/Commands/KeyCounterWarmCacheCommand.php` | Precalienta la caché: `--live` cada hora, sin opciones cada día |
+| `app/Support/KeyCounter/KeyCounterCache.php` | Claves y ventanas de caché, en un único sitio |
 
 ## Campos del modelo Keyboard
 
@@ -165,8 +169,8 @@ arranque, no para sondear.
 ### Frontend (Fix 5)
 
 - **Aviso de privacidad:** Se muestra al inicio de la vista, advirtiendo que los datos pueden tener variaciones por privacidad.
-- **Tarjetas resumen (caché 1h):** Resumen de Keyboard y Mouse con estadísticas de los últimos 100 registros. Claves de caché: `keycounter:keyboard:summary`, `keycounter:mouse:summary`.
-- **Widgets estadísticos (caché 24h):** Total global de pulsaciones, mejor año, mejor mes, mejor día, mejor hora, totales por año y **totales por dispositivo**. Cada widget tiene un icono Material Symbols distintivo y una paleta de color propia (amber, yellow, orange, lime, cyan, blue, purple, teal). Clave de caché: `keycounter:widgets`.
+- **Tarjetas resumen (caché 1 h):** Resumen de Keyboard y Mouse con estadísticas de los últimos 100 registros. Claves de caché: `keycounter:keyboard:summary`, `keycounter:mouse:summary`.
+- **Widgets estadísticos (caché 1 h):** Total global de pulsaciones, mejor año, mejor mes, mejor día, mejor hora, totales por año y **totales por dispositivo**. Cada widget tiene un icono Material Symbols distintivo y una paleta de color propia (amber, yellow, orange, lime, cyan, blue, purple, teal). Clave de caché: `keycounter:widgets`.
 - **Dispositivo top:** el equipo con más pulsaciones **no lleva tarjeta propia**. Se destaca su tarjeta dentro de «totales por dispositivo» (morada, icono `devices`) con el distintivo «Dispositivo top» y se muestra sólo el nombre del equipo. Hasta el 2026-09-06 se pintaba además una tarjeta aparte, así que el mismo equipo salía dos veces y descuadraba la rejilla de cinco columnas. `$widgets['top_device']` sigue existiendo —es el primer elemento de `totals_by_device`, que ya viene ordenado— pero la vista sólo lo usa para saber a qué tarjeta ponerle el distintivo.
 - **Tablas detalladas eliminadas:** Se eliminaron las tablas con registros individuales por motivos de privacidad.
 - **Meses futuros deshabilitados:** En el selector de fecha, los meses futuros se deshabilitan dinámicamente al cambiar el año (JavaScript).
@@ -297,59 +301,175 @@ Al 2026-09-07, en el volcado de producción: **749 991 rachas de teclado y
 
 ## Caché de las estadísticas
 
+La página de `/keycounter` agrega trece años de rachas. Sin caché, cada visita
+recalcula: **1 261 ms** medidos sobre el volcado real, contra **0,7 ms y ninguna
+consulta** cuando ya está guardado.
+
+La caché de este módulo persigue **dos cosas a la vez**, y conviene tenerlas
+separadas en la cabeza porque las decisiones raras se entienden sólo con la
+segunda:
+
+1. **Que la web no tarde.** Lo caro se calcula una vez.
+2. **Que la web no refleje la actividad en tiempo real.** Es una cuestión de
+   **privacidad**: quien mire la página no debe poder deducir si se está
+   tecleando ahora mismo. La vista lo avisa arriba del todo.
+
 El almacén es **`file`** (`CACHE_STORE=file`). **No hay Redis** y no lo va a
 haber hasta terminar la migración de los IoT, así que **no se usa
 `Cache::tags()`**: el driver `file` no las soporta. Todo se invalida por clave
-explícita, y las claves viven en `App\Support\KeyCounter\KeyCounterCache`
-para que no se dupliquen como cadenas sueltas por el controlador y el servicio
-—que es la forma clásica de que una invalidación deje de coincidir con lo que
-guarda: la página sigue funcionando y sólo enseña datos viejos.
+explícita, y las claves viven en `App\Support\KeyCounter\KeyCounterCache` para
+que no se dupliquen como cadenas sueltas por el controlador y el servicio —que
+es la forma clásica de que una invalidación deje de coincidir con lo que guarda:
+la página sigue funcionando y sólo enseña datos viejos.
 
-| Dato | Clave | Ventana |
-|---|---|---|
-| Gráfica de un mes **cerrado** | `keycounter:graph:{año}-{mes}` | para siempre |
-| Gráfica del mes en curso o del anterior | `keycounter:graph:{año}-{mes}` | 15 min |
-| Resumen de teclado | `keycounter:keyboard:summary` | 15 min |
-| Resumen de ratón | `keycounter:mouse:summary` | 15 min |
-| Widgets | `keycounter:widgets` | 24 h |
-| Total de un año cerrado | `keycounter:year_total:{año}` | para siempre |
-| Total del año en curso | `keycounter:year_total:{año}` | 1 h |
+### Las dos reglas
 
-Los 15 minutos cumplen dos cosas a la vez: que la página no tarde y que **no
-refleje la actividad en tiempo real**, que es una cuestión de privacidad, no de
-rendimiento.
+**Un mes cerrado no vuelve a cambiar** → se guarda para siempre.
+
+**Lo vivo tiene como mucho una hora** → y esa hora **la escribe el planificador,
+no el visitante**. Es la diferencia entre una caché perezosa y una precalentada:
+con `remember()` a secas, el primer visitante de cada hora se come el cálculo
+entero y la web sigue tardando justo lo que la caché venía a evitar.
+
+### Qué se guarda y cuánto dura
+
+| Dato | Clave | Ventana | Quién la escribe |
+|---|---|---|---|
+| Gráfica de un mes **cerrado** | `keycounter:graph:{año}-{mes}` | para siempre | `keycounter:warm_cache` (diario) |
+| Gráfica del mes en curso o del anterior | `keycounter:graph:{año}-{mes}` | 1 h | `keycounter:warm_cache --live` (horario) |
+| Resumen de teclado | `keycounter:keyboard:summary` | 1 h | `keycounter:warm_cache --live` |
+| Resumen de ratón | `keycounter:mouse:summary` | 1 h | `keycounter:warm_cache --live` |
+| Widgets | `keycounter:widgets` | 1 h | `keycounter:warm_cache --live` |
+| Total de un año **cerrado** | `keycounter:year_total:{año}` | para siempre | el primer visitante |
+| Total del año en curso | `keycounter:year_total:{año}` | 1 h | `keycounter:warm_cache --live` |
+
+La hora sale de `KeyCounterCache::FRESH_WINDOW`. Es a la vez el retardo de
+privacidad y la cadencia del refresco: **una racha que sube un cacharro tarda
+como mucho una hora en verse en la web**.
+
+### El TTL guardado es el doble de la ventana
+
+Lo vivo se guarda con `STORAGE_WINDOW` = 2 h, no con la hora de la ventana. No
+es una contradicción, es el margen del cron:
+
+- En marcha normal, el refresco horario **sobrescribe** cada entrada mucho antes
+  de que caduque, así que lo que se ve tiene siempre menos de una hora.
+- Si un pase se salta o se retrasa —el planificador no corrió, la tarea coincidió
+  con otra, el servidor estaba ocupado—, la entrada **sigue ahí**: la web sirve
+  datos de hasta dos horas en vez de frenarse en seco y cargarle el cálculo al
+  primero que entre.
+
+Con TTL de una hora exacta habría un hueco entre que la entrada caduca y el cron
+la reescribe, y ese hueco lo paga siempre un visitante. Datos algo más viejos no
+son un problema para la privacidad; una página lenta sí lo es para todo lo demás.
 
 ### Qué se considera un mes «cerrado»
 
 Ni el mes en curso ni el anterior. Del anteanterior hacia atrás, a la caja
-fuerte. Dejar fuera el mes anterior parece exagerado, pero cubre dos casos
-reales: que alguien visitara la página el día 31 por la noche —congelando el mes
-con su último día a medias— y que un cacharro que estuvo sin red suba lo
-acumulado cuando la recupera.
+fuerte.
 
-### Invalidación
+Dejar fuera el mes anterior parece exagerado, pero cubre dos casos reales: que
+alguien visitara la página el día 31 por la noche —congelando «para siempre» el
+mes con su último día a medias— y que un cacharro que estuvo sin red suba lo
+acumulado cuando la recupera, con fecha del mes pasado.
 
-`KeyCounterService::storeKeyboard()` olvida el resumen, los widgets, el total
-del año y **las gráficas del mes en curso y del anterior**. Si no, el contador
-sube y la web no.
+### La ingesta NO invalida nada, y es a propósito
 
-Lo que toca meses ya cerrados —`keycounter:remove_duplicate`,
-`keycounter:fix_weekday`— no invalida nada por su cuenta. Para eso:
+`KeyCounterService::storeKeyboard()` y `storeMouse()` guardan la racha y no tocan
+la caché.
 
-    php artisan cache:forget "keycounter:graph:2019-12"
+Hasta el **2026-09-10** hacían lo contrario: olvidaban el resumen, los widgets,
+el total del año y las gráficas del mes en curso y del anterior en **cada racha
+recibida**. Sonaba razonable —«ha llegado un dato, que se vea»— y rompía los dos
+objetivos de golpe:
 
-o, si son muchos, `php artisan cache:clear` y luego `keycounter:warm_cache`.
+- **La ventana no existía.** La primera visita después de cada subida
+  recalculaba con la racha recién llegada: eso es tiempo real con otro nombre,
+  justo lo que el aviso de privacidad de la página dice que no pasa.
+- **El cálculo se lo comía el visitante.** Cada ingesta dejaba la caché vacía,
+  así que la web volvía a tardar más de un segundo en la siguiente carga.
+- Y en un almacén `file`, además, era una escritura de disco por cada racha que
+  sube un cacharro.
+
+Quien refresca es el planificador. Si hace falta que un dato se vea **ya** (una
+demo, una comprobación), se fuerza a mano:
+
+```bash
+php artisan keycounter:warm_cache --live
+```
+
+### Quién sí invalida
+
+Lo que toca rachas **ya guardadas** —y por tanto meses que pueden estar en la
+caja fuerte— sí tiene que olvidar lo que deja mal:
+
+| Comando | Qué olvida |
+|---|---|
+| `keycounter:remove_duplicate --force` | Las gráficas de los meses de las filas borradas, los totales de esos años y los widgets |
+| `keycounter:fix_weekday --write` | Lo mismo, para los meses de las rachas reescritas |
+
+Los dos calculan los meses afectados **antes** de tocar nada —después ya no hay
+forma de saberlo— y sólo miran `keycounter_keyboard`: la gráfica, los widgets y
+los totales anuales salen de esa tabla. Lo que se cachea del ratón es su tarjeta
+de resumen, que es un dato vivo y se reescribe sola en el siguiente refresco.
+
+Hasta el 2026-09-10 no invalidaban nada: un duplicado de un mes cerrado se iba de
+la base de datos y su gráfica se quedaba puesta con la cifra vieja, guardada
+«para siempre», sin nada que la volviera a calcular. `KeyCounterCache::forgetGraph()`
+existía para eso y no lo llamaba nadie.
 
 ### Precalentado
 
-`keycounter:warm_cache` recorre los meses que tienen rachas y calcula los que
-están cerrados. Va programado los lunes a las 04:00, después de
-`remove_duplicate` (03:00) y `generate_duration` (03:30), porque las dos pueden
-mover rachas.
+`keycounter:warm_cache` tiene dos pasadas, y hacen cosas distintas:
 
-Sin esto, el cálculo de un mes lo paga **quien entra primero**, y con trece años
-de datos son unos 150 meses esperando a que alguien los estrene. Medido sobre el
-volcado real: **1 261 ms la primera vez, 0,7 ms y ninguna consulta la segunda.**
+```bash
+php artisan keycounter:warm_cache --live      # lo vivo: mes en curso y anterior, resúmenes, widgets, total del año
+php artisan keycounter:warm_cache             # los meses cerrados que aún no estén hechos
+php artisan keycounter:warm_cache --months=12 # sólo los doce últimos
+php artisan keycounter:warm_cache --force     # recalcula también los cerrados que ya estaban cacheados
+```
+
+Programación (`routes/console.php`):
+
+| Tarea | Cuándo | Por qué |
+|---|---|---|
+| `keycounter:warm_cache --live` | cada hora | Mantiene lo vivo escrito para que no lo pague el visitante, y marca el retardo de privacidad |
+| `keycounter:warm_cache` | a diario, 04:00 | Mete en la caja fuerte los meses cerrados. Va después de `remove_duplicate` (lunes 03:00) y `generate_duration` (lunes 03:30), que pueden mover rachas |
+
+El pase de cerrados era **semanal** hasta el 2026-09-10. El problema no era el
+histórico —ése se calcula una vez en la vida— sino el mes que acaba de cerrarse:
+se quedaba hasta seis días fuera de la caja fuerte, y ese cálculo lo pagaba quien
+entrara. A diario, como mucho espera una madrugada.
+
+`--force` es para después de tocar rachas históricas (`remove_duplicate --full`,
+`fix_weekday --write`): lo que ya está guardado «para siempre» hay que
+reescribirlo, no respetarlo.
+
+### Operativa manual
+
+Olvidar un mes suelto:
+
+```bash
+php artisan cache:forget "keycounter:graph:2019-12"
+```
+
+Rehacerlo todo desde cero (después de una restauración, o si se duda de lo que
+hay guardado):
+
+```bash
+php artisan cache:clear
+php artisan keycounter:warm_cache --live
+php artisan keycounter:warm_cache
+```
+
+### Si algo se ve raro
+
+| Síntoma | Dónde mirar |
+|---|---|
+| La web tarda más de un segundo | ¿Está corriendo el planificador? `php artisan schedule:list` y el log de `keycounter:warm_cache --live` |
+| Una racha de hace rato no aparece | Normal hasta una hora. Para comprobar: `php artisan keycounter:warm_cache --live` y recargar |
+| Un mes viejo enseña una cifra que no cuadra | Está en la caja fuerte con datos previos a un borrado o arreglo: `cache:forget` de ese mes, o `keycounter:warm_cache --force` |
+| Todos los meses se ven vacíos tras un despliegue | `config:cache`/`cache:clear` del despliegue se llevó la caché; el pase diario la rehace, o se lanza a mano |
 
 ### El N+1 que había dentro
 
@@ -364,3 +484,7 @@ De paso se arregló un fallo que sólo se veía en la leyenda: la serie de cada
 dispositivo se creaba **dentro** del bucle, así que a un cacharro que no hubiera
 reportado el primer día del mes le caía la rama del `else` y se quedaba sin
 `label` ni color. Ahora las series se estrenan antes de recorrer los días.
+
+---
+
+> Creado: 2026-05-25 · Última revisión: 2026-09-10

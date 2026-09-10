@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\KeyCounter\Keyboard;
+use App\Services\KeyCounter\KeyCounterStatisticsService;
 use App\Support\KeyCounter\KeyCounterCache;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -12,69 +12,122 @@ use Illuminate\Support\Facades\DB;
 use function count;
 
 /**
- * Deja las gráficas de KeyCounter calculadas antes de que nadie las pida.
+ * Deja las estadísticas de KeyCounter calculadas antes de que nadie las pida.
  *
- * Cada mes de la página se calcula agregando todas las rachas de ese mes por
- * día y por dispositivo. Con el mes cacheado para siempre eso se paga una sola
- * vez, pero la paga **quien entra primero**, y con trece años de datos son
- * unos 150 meses esperando a que alguien los estrene.
+ * Tiene dos pasadas, y hacen cosas distintas:
  *
- * Esto los rellena de madrugada. No sustituye a la caché: la rellena.
+ * **`--live` (cada hora).** Reescribe lo que está vivo: el mes en curso, el
+ * anterior, los dos resúmenes, los widgets y el total del año en curso. Es lo
+ * que hace que la ventana de una hora sea gratis para el visitante: cuando
+ * entra, ya está todo escrito. Sin esta pasada la caché es perezosa y el primer
+ * visitante de cada hora paga el cálculo entero —más de un segundo sobre el
+ * volcado real—, con lo que la web sigue tardando justo lo que la caché venía a
+ * evitar.
  *
- * Sólo toca los meses **cerrados**, que son los que se guardan para siempre; el
- * mes en curso tiene ventana de un cuarto de hora y precalentarlo no serviría
- * de nada.
+ * **Sin opciones (cada día).** Precalcula los meses **cerrados**, que se
+ * guardan para siempre. Cada mes se paga una sola vez en la vida, pero lo
+ * pagaba **quien entrara primero**, y con trece años de datos son unos 150
+ * meses esperando a que alguien los estrene. Va a diario y no semanal porque el
+ * mes que acaba de cerrarse tiene que entrar en la caja fuerte cuanto antes: en
+ * semanal se quedaba hasta seis días fuera, con el coste a cargo del visitante.
+ *
+ * Ninguna de las dos sustituye a la caché: la rellenan.
  */
 class KeyCounterWarmCacheCommand extends Command
 {
     protected $signature = 'keycounter:warm_cache
-        {--months= : Cuántos meses hacia atrás. Sin esto, todos los que tengan datos}';
+        {--live : Refresca lo vivo (mes en curso y anterior, resúmenes, widgets y total del año) en vez de los meses cerrados}
+        {--months= : Cuántos meses hacia atrás. Sin esto, todos los que tengan datos}
+        {--force : Recalcula también los meses cerrados que ya estuvieran cacheados}';
 
-    protected $description = 'Precalcula las gráficas mensuales de KeyCounter que están cacheadas para siempre';
+    protected $description = 'Precalcula las estadísticas de KeyCounter para que no las pague quien entra en la web';
+
+    public function __construct(private KeyCounterStatisticsService $statistics)
+    {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
-        $meses = $this->mesesConDatos();
+        return $this->option('live')
+            ? $this->warmLive()
+            : $this->warmClosedMonths();
+    }
 
-        if ($meses === []) {
+    /**
+     * Reescribe lo vivo. Siempre, esté ya cacheado o no: de eso se trata.
+     */
+    private function warmLive(): int
+    {
+        $this->line('▶ Refrescando las estadísticas vivas.');
+
+        $refreshed = $this->statistics->refreshLive();
+
+        foreach ($refreshed as $key) {
+            $this->line("  · {$key}");
+        }
+
+        $this->info(count($refreshed).' claves reescritas. Antigüedad máxima de la web: 1 h.');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Precalcula los meses cerrados que se guardan para siempre.
+     */
+    private function warmClosedMonths(): int
+    {
+        $months = $this->monthsWithData();
+
+        if ($months === []) {
             $this->info('No hay rachas registradas: nada que precalcular.');
 
             return self::SUCCESS;
         }
 
-        $limite = $this->option('months') !== null
+        $limit = $this->option('months') !== null
             ? max(1, (int) $this->option('months'))
             : null;
 
-        if ($limite !== null) {
-            $meses = array_slice($meses, -$limite);
+        if ($limit !== null) {
+            $months = array_slice($months, -$limit);
         }
 
-        $this->line('▶ Precalculando '.count($meses).' meses.');
+        $force = (bool) $this->option('force');
 
-        $barra = $this->output->createProgressBar(count($meses));
-        $barra->start();
-        $calculados = 0;
+        $this->line('▶ Precalculando '.count($months).' meses.');
 
-        foreach ($meses as [$year, $month]) {
-            // Sólo los cerrados: el mes en curso caduca en 15 minutos y
-            // calentarlo aquí no le ahorra el trabajo a nadie.
-            if (KeyCounterCache::esPeriodoCerrado($year, $month)) {
-                KeyCounterCache::recordarGrafica(
-                    $year,
-                    $month,
-                    fn () => Keyboard::getStatisticsPreparedToGraphics($month, $year),
-                );
+        $bar = $this->output->createProgressBar(count($months));
+        $bar->start();
+        $processed = 0;
 
-                $calculados++;
+        foreach ($months as [$year, $month]) {
+            // Sólo los cerrados: los abiertos son cosa de `--live`, que los
+            // reescribe cada hora.
+            if (KeyCounterCache::isPeriodClosed($year, $month)) {
+                if ($force) {
+                    // Para después de tocar rachas históricas
+                    // (`remove_duplicate --full`, `fix_weekday --write`): lo que
+                    // ya estaba guardado «para siempre» hay que reescribirlo,
+                    // no respetarlo.
+                    KeyCounterCache::putGraph($year, $month, $this->statistics->computeGraph($year, $month));
+                } else {
+                    KeyCounterCache::rememberGraph(
+                        $year,
+                        $month,
+                        fn (): array => $this->statistics->computeGraph($year, $month),
+                    );
+                }
+
+                $processed++;
             }
 
-            $barra->advance();
+            $bar->advance();
         }
 
-        $barra->finish();
+        $bar->finish();
         $this->newLine(2);
-        $this->info($calculados === 1 ? 'Listo 1 mes.' : "Listos {$calculados} meses.");
+        $this->info($processed === 1 ? 'Listo 1 mes.' : "Listos {$processed} meses.");
 
         return self::SUCCESS;
     }
@@ -87,17 +140,17 @@ class KeyCounterWarmCacheCommand extends Command
      *
      * @return list<array{int, int}>
      */
-    private function mesesConDatos(): array
+    private function monthsWithData(): array
     {
-        $filas = DB::table('keycounter_keyboard')
-            ->selectRaw('EXTRACT(YEAR FROM created_at)::int AS anio, EXTRACT(MONTH FROM created_at)::int AS mes')
+        $rows = DB::table('keycounter_keyboard')
+            ->selectRaw('EXTRACT(YEAR FROM created_at)::int AS year, EXTRACT(MONTH FROM created_at)::int AS month')
             ->whereNotNull('created_at')
             ->groupByRaw('1, 2')
             ->orderByRaw('1, 2')
             ->get();
 
-        return $filas
-            ->map(fn (object $fila): array => [(int) $fila->anio, (int) $fila->mes])
+        return $rows
+            ->map(fn (object $row): array => [(int) $row->year, (int) $row->month])
             ->all();
     }
 }
