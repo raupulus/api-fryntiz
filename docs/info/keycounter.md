@@ -168,7 +168,7 @@ arranque, no para sondear.
 
 ### Frontend (Fix 5)
 
-- **Aviso de privacidad:** Se muestra al inicio de la vista, advirtiendo que los datos pueden tener variaciones por privacidad.
+- **Aviso de privacidad:** Se muestra al inicio de la vista: los datos del día actual son aproximados y pueden mostrar ligeras diferencias con la realidad. **A propósito no dice cada cuánto se actualiza** ni por qué: contar la cadencia es dar la pista que el retardo viene a esconder. El detalle técnico va en «Caché de las estadísticas», no en la página.
 - **Tarjetas resumen (caché 1 h):** Resumen de Keyboard y Mouse con estadísticas de los últimos 100 registros. Claves de caché: `keycounter:keyboard:summary`, `keycounter:mouse:summary`.
 - **Widgets estadísticos (caché 1 h):** Total global de pulsaciones, mejor año, mejor mes, mejor día, mejor hora, totales por año y **totales por dispositivo**. Cada widget tiene un icono Material Symbols distintivo y una paleta de color propia (amber, yellow, orange, lime, cyan, blue, purple, teal). Clave de caché: `keycounter:widgets`.
 - **Dispositivo top:** el equipo con más pulsaciones **no lleva tarjeta propia**. Se destaca su tarjeta dentro de «totales por dispositivo» (morada, icono `devices`) con el distintivo «Dispositivo top» y se muestra sólo el nombre del equipo. Hasta el 2026-09-06 se pintaba además una tarjeta aparte, así que el mismo equipo salía dos veces y descuadraba la rejilla de cinco columnas. `$widgets['top_device']` sigue existiendo —es el primer elemento de `totals_by_device`, que ya viene ordenado— pero la vista sólo lo usa para saber a qué tarjeta ponerle el distintivo.
@@ -487,4 +487,4 @@ reportado el primer día del mes le caía la rama del `else` y se quedaba sin
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-10
+> Creado: 2026-05-25 · Última revisión: 2026-09-11

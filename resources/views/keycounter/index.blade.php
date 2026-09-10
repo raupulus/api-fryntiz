@@ -28,10 +28,8 @@
             <div class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-amber-500 mt-0.5">privacy_tip</span>
                 <p>
-                    <strong>Aviso de privacidad:</strong> Por motivos de privacidad, los datos mostrados pueden tener pequeñas variaciones
-                    en las representaciones. Los datos del día actual no serán exactos, por elección del desarrollador, para proteger
-                    información precisa sobre actividad en tiempo real: <strong>lo que se ve aquí se actualiza una vez por hora</strong>,
-                    nunca al instante.
+                    <strong>Aviso de privacidad:</strong> Los datos del día actual son aproximados y pueden mostrar ligeras
+                    diferencias con la realidad.
                 </p>
             </div>
         </div>
