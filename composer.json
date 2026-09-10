@@ -64,6 +64,7 @@
         "phpstan": [
             "./vendor/bin/phpstan analyse --memory-limit=1G"
         ],
+        "serve": "@php -d upload_max_filesize=50M -d post_max_size=50M -d memory_limit=256M artisan serve",
         "pint": "vendor/bin/pint --format agent",
         "pint:test": "vendor/bin/pint --test --format agent",
         "check": [
