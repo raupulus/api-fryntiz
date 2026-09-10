@@ -413,7 +413,7 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-10
 
 
 ## Imágenes: por qué el uploader no enseña la que ya hay
@@ -429,7 +429,7 @@ imágenes de la v1 al `storage`, porque parecía que el problema era ése.
 patrón se copió a cada recurso nuevo según se iban añadiendo (`5baeb90`,
 `ce976d8`), así que **el panel nunca ha enseñado una imagen ya guardada**: no es
 una regresión ni tiene nada que ver con el `storage` ni con la migración de
-datos. Corregido en `fc7845e`.
+datos.
 
 **Por qué pasaba.**
 
@@ -448,27 +448,68 @@ guardada**: sólo el hueco vacío para subir otra. En el frontend sí se veía,
 porque allí se resuelve la relación (`$modelo->image->url`), y de ahí que
 pareciera un problema de `storage`.
 
-**Regla:** donde haya un `makeImage('image_id')`, va delante un
-`CurrentImage::deLaRelacion()`. Resuelve la relación `image` del modelo, pinta
-la miniatura mediana —con la imagen completa como respaldo, que es lo que
-necesitan las que vienen de la v1 y no tienen miniaturas— y se oculta solo
-cuando no hay imagen o cuando es el formulario de creación.
+**El primer arreglo (`fc7845e`) tapaba el síntoma, no la causa.** Añadió
+`CurrentImage::fromRelation()`, un componente aparte que pintaba la imagen
+guardada **encima** del `FileUpload` —que seguía vacío— resolviendo la relación
+como en el frontend. Con eso la imagen volvía a **verse**, pero el campo de
+subida seguía sin saber nada de ella: no se podía recortar la imagen actual, no
+se podía quitar con el botón nativo de Filament (el propio `unset()` de arriba
+seguía ahí, y `HasImageFileUpload::resolveImageUpload()` ignoraba un campo vacío
+para no desvincular la FK por accidente), y guardar sin tocar el campo dejaba la
+sensación de que no había pasado nada, porque la miniatura de `CurrentImage` no
+cambiaba nunca. Es justo lo que reportó el usuario: «debería estar cargada en el
+propio widget de imagen para también poderse editar».
+
+**El arreglo de verdad (2026-09-10) es que el propio campo resuelva la vista
+previa**, con el hook que Filament ya trae para esto —
+`BaseFileUpload::getUploadedFileUsing()`— en vez de un componente aparte que
+sólo lee. `ImageCropperUpload::asFileRecord()` encadena dos cosas:
+
+```php
+ImageCropperUpload::makeImage('image_id')
+    ->asFileRecord()
+    ->storeFiles(false)
+    // …
+```
+
+- `fetchFileInformation(false)`: sin esto, `BaseFileUpload::hydrateFiles()`
+  comprueba `Storage::disk(...)->exists($id)` para cada valor del estado antes
+  de enseñarlo — y un id numérico nunca existe como ruta en el disco, así que
+  Filament lo **descartaba en silencio** antes incluso de llegar a pintar nada.
+- `getUploadedFileUsing()`: el hook que FilePond llama (vía el método expuesto
+  `getUploadedFiles()`) para saber qué ya está subido. Se resuelve a mano desde
+  el modelo `File` — nombre, tamaño, tipo y la URL de `route('file.get', …)` —
+  en vez de que Filament intente leerlo del disco.
+
+Con las dos cosas, el campo **es** la imagen actual: la enseña, deja abrir el
+editor de recorte sobre ella (el lápiz que Filament ya pinta en toda imagen
+cargada) y quitarla con su botón nativo. Ya no hace falta `CurrentImage` —se ha
+retirado— ni el `unset($data['image_id'])` de cada `mutateFormDataBeforeFill()`:
+el id tiene que llegar al campo para que lo resuelva.
+
+Con el campo enseñando de verdad la imagen actual, un estado vacío deja de ser
+ambiguo: antes podía significar tanto «nunca se ha rellenado» como «se acaba de
+quitar», así que `resolveImageUpload()` lo dejaba tal cual para no arriesgarse a
+desvincular la FK sin querer. Ahora sólo puede significar lo segundo, así que
+pone la FK a `null`.
 
 Lo que **no** hay que hacer es hidratar el `FileUpload` con la ruta relativa del
-disco: funcionaría para los ficheros públicos y dejaría fuera a los privados, y
-obligaría a tocar `HasImageFileUpload::resolveImageUpload()`, que es el camino
-de escritura y está probado.
+disco: funcionaría para los ficheros públicos y dejaría fuera a los privados.
 
 Recursos afectados (10): `PlatformResource`, `TechnologyResource`,
 `ContentResource`, `HardwareDeviceResource`, `CurriculumResource`,
 `CurriculumAvailableRepositoryTypeResource`, `GalleryResource`,
 `CategoryResource`, `ImagesRelationManager` y `PagesRelationManager`.
 `FileTypeResource` (`icon16`…`icon128`) y las fotos de perfil de usuario no lo
-necesitan: ésos sí son columnas de ruta.
+necesitan: ésos sí son columnas de ruta, no una FK a `files`, y a Filament ya le
+basta con lo suyo.
 
-Fijado por `tests/Feature/Filament/CurrentImageTest.php`, que comprueba las dos
-mitades: que la imagen aparece y que guardar sin tocarla **no** desvincula la
-clave foránea.
+Fijado por `tests/Feature/Filament/ExistingImagePreloadTest.php` (antes
+`CurrentImageTest.php`), que comprueba: que el id llega al estado del campo al
+editar, que `getUploadedFiles()` resuelve una vista previa real (nombre, tamaño,
+URL) a través de `callSchemaComponentMethod()`, que guardar sin tocar el campo
+**no** desvincula la FK, y que quitar la imagen con el campo vacío **sí** la
+desvincula.
 
 
 ## Energía: qué se gestiona en cada pantalla

@@ -7,7 +7,6 @@ namespace App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes;
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\CreateCurriculumAvailableRepositoryType;
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\EditCurriculumAvailableRepositoryType;
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\ListCurriculumAvailableRepositoryTypes;
-use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\CV\CurriculumAvailableRepositoryType;
 use BackedEnum;
@@ -42,14 +41,10 @@ class CurriculumAvailableRepositoryTypeResource extends Resource
         return $schema
             ->components([
                 Section::make('Logo')->schema([
-                    // La imagen que ya tiene guardada. El uploader de abajo no puede
-                    // enseñarla: apunta a `image_id`, una clave foránea, y espera una
-                    // ruta de disco (ver `CurrentImage`).
-                    CurrentImage::deLaRelacion(),
                     ImageCropperUpload::makeImage('image_id')
+                        ->asFileRecord()
                         ->icon(128)
                         ->storeFiles(false)
-                        ->dehydrated(fn ($state) => filled($state))
                         ->hiddenLabel()
                         ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                         ->columnSpanFull(),

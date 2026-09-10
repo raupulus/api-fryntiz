@@ -8,7 +8,6 @@ use App\Enums\CurriculumVisibilityEnum;
 use App\Filament\Admin\Resources\CV\Curriculum\Pages\CreateCurriculum;
 use App\Filament\Admin\Resources\CV\Curriculum\Pages\EditCurriculum;
 use App\Filament\Admin\Resources\CV\Curriculum\Pages\ListCurriculums;
-use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\CV\Curriculum;
@@ -57,14 +56,10 @@ class CurriculumResource extends Resource
                     ->required()->searchable()->preload()
                     ->default(fn () => auth()->id())
                     ->label('Usuario'),
-                // La imagen que ya tiene guardada. El uploader de abajo no puede
-                // enseñarla: apunta a `image_id`, una clave foránea, y espera una
-                // ruta de disco (ver `CurrentImage`).
-                CurrentImage::deLaRelacion(),
                 ImageCropperUpload::makeImage('image_id')
+                    ->asFileRecord()
                     ->cover16x9()
                     ->storeFiles(false)
-                    ->dehydrated(fn ($state) => filled($state))
                     ->label('Imagen'),
                 TextInput::make('title')
                     ->required()->label('Título')

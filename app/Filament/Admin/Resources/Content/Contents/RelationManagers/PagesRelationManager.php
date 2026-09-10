@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Content\Contents\RelationManagers;
 
-use App\Filament\Components\CurrentImage;
 use App\Filament\Components\EditorJsField;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\HasImageFileUpload;
@@ -104,18 +103,13 @@ class PagesRelationManager extends RelationManager
                     ]),
             ]),
 
-            // La imagen que ya tiene guardada. El uploader de abajo no puede
-            // enseñarla: apunta a `image_id`, una clave foránea, y espera una
-            // ruta de disco (ver `CurrentImage`).
-            CurrentImage::deLaRelacion(),
-
             // Pedía `image_id`... no: pedía `image_path`, una columna que no
             // existe en ninguna tabla del proyecto, así que la imagen se perdía
             // al guardar sin dar ningún error (N232). La columna real es
             // `image_id`, con su clave foránea a `files`.
             ImageCropperUpload::makeImage('image_id')
+                ->asFileRecord()
                 ->storeFiles(false)
-                ->dehydrated(fn ($state) => filled($state))
                 ->cover16x9()
                 ->directory('content-pages')
                 ->columnSpanFull()->label('Imagen de la página'),
@@ -151,11 +145,6 @@ class PagesRelationManager extends RelationManager
                         $data['content_json'] = $record->raw()
                             ->where('available_page_raw_id', $this->jsonTypeId())
                             ->value('content');
-
-                        // El campo de imagen espera un fichero, no la clave
-                        // foránea: si se rellena con el id, el componente
-                        // intenta pintar el número como si fuera una ruta.
-                        unset($data['image_id']);
 
                         return $data;
                     })

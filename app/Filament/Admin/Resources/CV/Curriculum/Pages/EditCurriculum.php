@@ -79,13 +79,6 @@ class EditCurriculum extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        unset($data['image_id']);
-
-        return $data;
-    }
-
     protected function mutateFormDataBeforeSave(array $data): array
     {
         return $this->resolveImageUpload($data, 'image_id', 'curriculum');

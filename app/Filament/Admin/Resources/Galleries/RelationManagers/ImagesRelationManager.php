@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Galleries\RelationManagers;
 
-use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\HasImageFileUpload;
 use Filament\Actions\CreateAction;
@@ -29,11 +28,8 @@ class ImagesRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            // La imagen que ya tiene guardada. El uploader de abajo no puede
-            // enseñarla: apunta a `image_id`, una clave foránea, y espera una
-            // ruta de disco (ver `CurrentImage`).
-            CurrentImage::deLaRelacion(),
             ImageCropperUpload::makeImage('image_id')
+                ->asFileRecord()
                 ->storeFiles(false)
                 ->required()
                 ->columnSpanFull()

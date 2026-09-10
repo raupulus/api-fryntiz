@@ -7,7 +7,6 @@ namespace App\Filament\Admin\Resources\Categories;
 use App\Filament\Admin\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Admin\Resources\Categories\Pages\EditCategory;
 use App\Filament\Admin\Resources\Categories\Pages\ListCategories;
-use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Category;
 use BackedEnum;
@@ -48,13 +47,9 @@ class CategoryResource extends Resource
     {
         return $schema->components([
             Section::make('Logo')->schema([
-                // La imagen que ya tiene guardada. El uploader de abajo no puede
-                // enseñarla: apunta a `image_id`, una clave foránea, y espera una
-                // ruta de disco (ver `CurrentImage`).
-                CurrentImage::deLaRelacion(),
                 ImageCropperUpload::makeImage('image_id')
+                    ->asFileRecord()
                     ->storeFiles(false)
-                    ->dehydrated(fn ($state) => filled($state))
                     ->logo()
                     ->directory('categories')
                     ->hiddenLabel()

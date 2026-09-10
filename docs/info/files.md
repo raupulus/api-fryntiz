@@ -131,7 +131,7 @@ Se definen en `File::$genericImages`:
 
 | Método | Ruta | Middleware | Comprobación de propiedad | Qué hace |
 |--------|------|-----------|---------------------------|----------|
-| GET | `/file/get/{module}/{id}/{slug?}` | — | En el controlador: si `is_private`, sólo el dueño | Sirve el archivo |
+| GET | `/file/get/{module}/{id}/{slug?}` | — | En el controlador: si `is_private`, el dueño o un administrador | Sirve el archivo |
 | GET | `/file/download/{module}/{id}/{slug?}` | — | Ídem | Descarga con el nombre original |
 | GET | `/file/resize/{module}/{id}/{width}/{slug?}` | — | Ídem | Redimensiona y sirve |
 | GET | `/file/thumbnail/get/{module}/{id}/{slug?}` | — | Ídem | Sirve la miniatura |
@@ -189,9 +189,27 @@ desde la web (AR-SEC-05).
 Los identificadores se comparan **con cast a entero**. `user_id` no está en
 `$casts`, así que basta que el driver devuelva el `bigint` como cadena para que
 `'7' !== 7` y el dueño de su propio fichero privado se lleve un «no autorizado»
-que nadie sabría explicar. El helper es `FileController::alcanza()`.
+que nadie sabría explicar. El helper es `FileController::canAccess()`.
 
 Fijado en `tests/Feature/Files/FileDeletionTest.php`.
+
+### Quién ve la miniatura de un fichero privado
+
+El dueño, **o un administrador** — el mismo criterio que `get()`,
+`download()` y `resize()` (`FileController::canAccess()`).
+
+`FileThumbnailController::get()` tenía su propia comprobación, sin el bypass
+de administrador: comparaba sólo `user_id`, así que un administrador que no
+fuera el dueño literal del fichero veía el marcador de «no encontrado» en vez
+de la miniatura real. Es justo lo que sirve `ImageCropperUpload::asFileRecord()`
+(y `ImageTrait::urlThumbnail()`) para pintar la imagen ya guardada en los
+formularios de Filament, así que el panel enseñaba el hueco vacío del
+uploader en cualquier ficha cuyo fichero fuera de otro usuario —el caso
+normal cuando un admin distinto del que subió las imágenes de la v1 revisa el
+panel.
+
+Fijado en `tests/Feature/Files/FileServingTest.php` (mismo `canAccess()` que
+`FileController`, ahora también en `FileThumbnailController`).
 
 ## Uso en la aplicación
 
@@ -204,7 +222,7 @@ El módulo File es referenciado por:
 - `Technology.image_id` — Icono de la tecnología
 - Múltiples modelos vía `ImageTrait`
 
-## Subida de imágenes en Filament (fix_11)
+## Subida de imágenes en Filament (fix_11, revisado 2026-09-10)
 
 - Componente centralizado `app/Filament/Components/ImageCropperUpload.php` (extiende
   `FileUpload`). Métodos: `makeImage()` (disco `public`, cropper, jpeg/png/webp) y
@@ -212,10 +230,41 @@ El módulo File es referenciado por:
 - Todos los Resources de imágenes usan este componente en lugar de `FileUpload`
   directo (User, Profile, Content, Category, Platform, Technology, HardwareDevice,
   FileType, páginas de contenido, CV).
-- Para campos `*_id` que son FK a `files` (HardwareDevice, CV), las Pages usan el
+- Para campos `*_id` que son FK a `files` (diez recursos: HardwareDevice, Platform,
+  Technology, Content, páginas de contenido, Curriculum, tipos de repositorio de CV,
+  Category, Gallery, imágenes de galería), el campo encadena
+  `ImageCropperUpload::makeImage('image_id')->asFileRecord()`, y las Pages usan el
   trait `app/Filament/Concerns/HasImageFileUpload.php` (`resolveImageUpload`), que
   convierte el upload temporal en un registro `File` vía `File::addFile()` y guarda
   su id. El campo usa `->storeFiles(false)` para conservar el `UploadedFile`.
+
+  **`asFileRecord()` es lo que hace que el campo enseñe, recorte y permita quitar la
+  imagen ya guardada** con los controles nativos de Filament. Sin él, el estado del
+  campo es un id numérico y `FileUpload` lo trata como una ruta dentro del disco
+  configurado: nunca la encuentra, y el campo se enseña siempre vacío aunque el
+  registro sí tenga imagen — el bug que reportó el usuario (AR-N310). El método
+  quita la comprobación de disco (`fetchFileInformation(false)`) y resuelve la
+  vista previa a mano desde el propio modelo `File` (`getUploadedFileUsing()`).
+
+  Antes de esto existía `CurrentImage`, un componente aparte que pintaba la imagen
+  guardada **encima** del uploader —que seguía vacío— a base de resolver la
+  relación como en el frontend. Tapaba que no se viera la imagen, pero no que no se
+  pudiera editar, recortar ni quitar desde el propio campo, y guardar sin tocar
+  nada daba la sensación de que no pasaba nada porque la miniatura de arriba no
+  cambiaba. Se ha retirado: ya no hace falta con `asFileRecord()`.
+
+  Cada `Edit*Page` tenía además un `mutateFormDataBeforeFill()` que hacía
+  `unset($data['image_id'])`, porque sin `asFileRecord()` dejar el id ahí rompía el
+  campo. Ya no hace falta: el id tiene que llegar para que el campo lo resuelva.
+
+  `resolveImageUpload()` también cambió: antes, un campo vacío se ignoraba
+  (`unset`) para no pisar la FK, porque un campo vacío no se distinguía de uno que
+  nunca había llegado a rellenarse. Con el campo enseñando de verdad la imagen
+  actual, un estado vacío ya no es ambiguo: significa que el usuario la ha quitado
+  con el botón nativo de Filament, así que ahora pone la FK a `null`.
+
+  Fijado en `tests/Feature/Filament/ExistingImagePreloadTest.php` (antes
+  `CurrentImageTest.php`).
 
 ---
 

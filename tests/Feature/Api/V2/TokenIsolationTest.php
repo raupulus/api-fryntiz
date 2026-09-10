@@ -22,57 +22,57 @@ use Tests\Feature\Api\ApiTestCase;
  * Quien pone el límite es la ability `device:{id}`, no la de módulo: sin ella,
  * `hardware:write` alcanzaría a cualquier dispositivo de la misma cuenta.
  */
-class TokenAislamientoTest extends ApiTestCase
+class TokenIsolationTest extends ApiTestCase
 {
     protected string $apiPrefix = 'api/v2';
 
-    private User $usuario;
+    private User $user;
 
-    private HardwareDevice $placas;
+    private HardwareDevice $solarDevice;
 
-    private HardwareDevice $portatil;
+    private HardwareDevice $laptopDevice;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->usuario = $this->createAuthenticatedUser();
-        $tipo = HardwareType::create(['name' => 'Controlador Solar', 'description' => 'Tipo de prueba']);
+        $this->user = $this->createAuthenticatedUser();
+        $type = HardwareType::create(['name' => 'Controlador Solar', 'description' => 'Tipo de prueba']);
 
-        $this->placas = HardwareDevice::create([
-            'user_id' => $this->usuario->id,
-            'hardware_type_id' => $tipo->id,
+        $this->solarDevice = HardwareDevice::create([
+            'user_id' => $this->user->id,
+            'hardware_type_id' => $type->id,
             'name' => 'renogy',
             'name_friendly' => 'Renogy',
         ]);
 
-        $this->portatil = HardwareDevice::create([
-            'user_id' => $this->usuario->id,
-            'hardware_type_id' => $tipo->id,
+        $this->laptopDevice = HardwareDevice::create([
+            'user_id' => $this->user->id,
+            'hardware_type_id' => $type->id,
             'name' => 'thinkpad',
             'name_friendly' => 'Thinkpad',
         ]);
     }
 
     #[Test]
-    public function el_token_de_las_placas_sube_sus_propias_lecturas(): void
+    public function the_solar_device_token_uploads_its_own_readings(): void
     {
         $response = $this->postJson(
             $this->apiUrl('energy/solar-readings'),
-            $this->lecturaSolar($this->placas),
-            $this->tokenDeLasPlacas()
+            $this->solarReading($this->solarDevice),
+            $this->solarDeviceToken()
         );
 
         $response->assertSuccessful();
     }
 
     #[Test]
-    public function el_token_de_las_placas_no_escribe_lecturas_de_otro_dispositivo(): void
+    public function the_solar_device_token_cannot_write_readings_for_another_device(): void
     {
         $response = $this->postJson(
             $this->apiUrl('energy/solar-readings'),
-            $this->lecturaSolar($this->portatil),
-            $this->tokenDeLasPlacas()
+            $this->solarReading($this->laptopDevice),
+            $this->solarDeviceToken()
         );
 
         $this->assertErrorResponse($response, 422);
@@ -80,16 +80,16 @@ class TokenAislamientoTest extends ApiTestCase
     }
 
     #[Test]
-    public function el_token_de_las_placas_no_toca_el_estado_de_ningun_dispositivo(): void
+    public function the_solar_device_token_does_not_touch_any_devices_status(): void
     {
         // Ni el del portátil ni el suyo propio: subir vatios y reescribir el
         // último estado conocido del aparato son permisos distintos desde que
         // energía es su propio módulo.
-        foreach ([$this->portatil, $this->placas] as $dispositivo) {
+        foreach ([$this->laptopDevice, $this->solarDevice] as $device) {
             $response = $this->putJson(
-                $this->apiUrl('hardware/devices/'.$dispositivo->id.'/status'),
+                $this->apiUrl('hardware/devices/'.$device->id.'/status'),
                 ['uptime' => 120],
-                $this->tokenDeLasPlacas()
+                $this->solarDeviceToken()
             );
 
             $this->assertErrorResponse($response, 403);
@@ -97,105 +97,105 @@ class TokenAislamientoTest extends ApiTestCase
     }
 
     #[Test]
-    public function el_token_de_las_placas_lee_sus_lecturas_pero_no_las_del_otro(): void
+    public function the_solar_device_token_reads_its_own_readings_but_not_the_others(): void
     {
         $this->postJson(
             $this->apiUrl('energy/solar-readings'),
-            $this->lecturaSolar($this->placas),
-            $this->tokenDeLasPlacas()
+            $this->solarReading($this->solarDevice),
+            $this->solarDeviceToken()
         )->assertSuccessful();
 
         // Con `energy:read` sólo alcanza las de los dispositivos que
         // declara su token.
-        $headers = $this->headersWithAbilities($this->usuario, [
+        $headers = $this->headersWithAbilities($this->user, [
             TokenAbilities::ENERGY_READ,
-            TokenAbilities::forDevice($this->placas),
+            TokenAbilities::forDevice($this->solarDevice),
         ]);
 
         $response = $this->getJson($this->apiUrl('energy/solar-readings'), $headers);
 
         $response->assertSuccessful();
 
-        foreach ($response->json('data') as $lectura) {
-            $this->assertSame($this->placas->id, $lectura['hardware_device_id']);
+        foreach ($response->json('data') as $reading) {
+            $this->assertSame($this->solarDevice->id, $reading['hardware_device_id']);
         }
     }
 
     #[Test]
-    public function el_token_de_energia_no_lee_el_inventario(): void
+    public function the_energy_token_cannot_read_the_inventory(): void
     {
-        $headers = $this->headersWithAbilities($this->usuario, [
+        $headers = $this->headersWithAbilities($this->user, [
             TokenAbilities::ENERGY_READ,
-            TokenAbilities::forDevice($this->placas),
+            TokenAbilities::forDevice($this->solarDevice),
         ]);
 
         $this->assertErrorResponse($this->getJson($this->apiUrl('hardware/devices'), $headers), 403);
     }
 
     #[Test]
-    public function el_token_de_las_placas_no_lista_el_parque_de_su_dueno(): void
+    public function the_solar_device_token_cannot_list_its_owners_fleet(): void
     {
         // Sin `hardware:read` no llega ni a la ruta del inventario.
-        $response = $this->getJson($this->apiUrl('hardware/devices'), $this->tokenDeLasPlacas());
+        $response = $this->getJson($this->apiUrl('hardware/devices'), $this->solarDeviceToken());
 
         $this->assertErrorResponse($response, 403);
     }
 
     #[Test]
-    public function el_token_de_las_placas_no_lee_las_sesiones_de_keycounter(): void
+    public function the_solar_device_token_cannot_read_keycounter_sessions(): void
     {
-        $response = $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $this->tokenDeLasPlacas());
+        $response = $this->getJson($this->apiUrl('keycounter/keyboard-sessions'), $this->solarDeviceToken());
 
         $this->assertErrorResponse($response, 403);
     }
 
     #[Test]
-    public function el_token_de_las_placas_no_sube_pulsaciones_del_portatil(): void
+    public function the_solar_device_token_cannot_upload_the_laptops_keystrokes(): void
     {
         $response = $this->postJson(
             $this->apiUrl('keycounter/keyboard-sessions'),
-            $this->sesionDeTeclado($this->portatil),
-            $this->tokenDeLasPlacas()
+            $this->keyboardSession($this->laptopDevice),
+            $this->solarDeviceToken()
         );
 
         $this->assertErrorResponse($response, 403);
     }
 
     #[Test]
-    public function el_token_del_portatil_sube_sus_pulsaciones_pero_no_las_del_otro(): void
+    public function the_laptop_token_uploads_its_own_keystrokes_but_not_the_others(): void
     {
-        $headers = $this->headersWithAbilities($this->usuario, [
+        $headers = $this->headersWithAbilities($this->user, [
             TokenAbilities::KEYCOUNTER_WRITE,
-            TokenAbilities::forDevice($this->portatil),
+            TokenAbilities::forDevice($this->laptopDevice),
         ]);
 
-        $propia = $this->postJson(
+        $ownSession = $this->postJson(
             $this->apiUrl('keycounter/keyboard-sessions'),
-            $this->sesionDeTeclado($this->portatil),
+            $this->keyboardSession($this->laptopDevice),
             $headers
         );
-        $propia->assertSuccessful();
+        $ownSession->assertSuccessful();
 
-        $ajena = $this->postJson(
+        $foreignSession = $this->postJson(
             $this->apiUrl('keycounter/keyboard-sessions'),
-            $this->sesionDeTeclado($this->placas),
+            $this->keyboardSession($this->solarDevice),
             $headers
         );
-        $this->assertErrorResponse($ajena, 422);
-        $ajena->assertJsonValidationErrors(['hardware_device_id']);
+        $this->assertErrorResponse($foreignSession, 422);
+        $foreignSession->assertJsonValidationErrors(['hardware_device_id']);
     }
 
     #[Test]
-    public function el_token_del_portatil_no_escribe_lecturas_solares(): void
+    public function the_laptop_token_cannot_write_solar_readings(): void
     {
-        $headers = $this->headersWithAbilities($this->usuario, [
+        $headers = $this->headersWithAbilities($this->user, [
             TokenAbilities::KEYCOUNTER_WRITE,
-            TokenAbilities::forDevice($this->portatil),
+            TokenAbilities::forDevice($this->laptopDevice),
         ]);
 
         $response = $this->postJson(
             $this->apiUrl('energy/solar-readings'),
-            $this->lecturaSolar($this->portatil),
+            $this->solarReading($this->laptopDevice),
             $headers
         );
 
@@ -212,18 +212,18 @@ class TokenAislamientoTest extends ApiTestCase
      *
      * @return array<string, string>
      */
-    private function tokenDeLasPlacas(): array
+    private function solarDeviceToken(): array
     {
-        return $this->headersWithAbilities($this->usuario, [
+        return $this->headersWithAbilities($this->user, [
             TokenAbilities::ENERGY_WRITE,
-            TokenAbilities::forDevice($this->placas),
+            TokenAbilities::forDevice($this->solarDevice),
         ]);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function lecturaSolar(HardwareDevice $device): array
+    private function solarReading(HardwareDevice $device): array
     {
         return [
             'hardware_device_id' => $device->id,
@@ -236,11 +236,11 @@ class TokenAislamientoTest extends ApiTestCase
     /**
      * @return array<string, mixed>
      */
-    private function sesionDeTeclado(HardwareDevice $device): array
+    private function keyboardSession(HardwareDevice $device): array
     {
         return [
             'hardware_device_id' => $device->id,
-            'user_id' => $this->usuario->id,
+            'user_id' => $this->user->id,
             'start_at' => now()->subMinutes(5)->format('Y-m-d H:i:s'),
             'end_at' => now()->format('Y-m-d H:i:s'),
             'duration' => 300,

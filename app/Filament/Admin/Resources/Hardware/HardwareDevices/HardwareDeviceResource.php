@@ -8,7 +8,6 @@ use App\Enums\HardwareLocationTypeEnum;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\CreateHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\EditHardwareDevice;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\ListHardwareDevices;
-use App\Filament\Components\CurrentImage;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
@@ -51,7 +50,7 @@ class HardwareDeviceResource extends Resource
      *
      * @var list<string>
      */
-    private const LECTURAS = [
+    private const READING_FIELDS = [
         'temp', 'voltage', 'battery_level', 'cpu', 'ram', 'disk',
         'uptime', 'ip_local', 'ip_public', 'last_seen_at',
     ];
@@ -63,18 +62,18 @@ class HardwareDeviceResource extends Resource
      * no mide esa magnitud: una tarjeta vacía no informa de nada y descoloca la
      * rejilla.
      */
-    private static function tarjeta(
-        string $campo,
-        string $etiqueta,
-        string $icono,
-        ?string $unidad = null,
+    private static function readingCard(
+        string $field,
+        string $label,
+        string $icon,
+        ?string $unit = null,
     ): TextEntry {
-        return TextEntry::make($campo)
-            ->label($etiqueta)
-            ->icon($icono)
-            ->suffix($unidad === null ? null : ' '.$unidad)
+        return TextEntry::make($field)
+            ->label($label)
+            ->icon($icon)
+            ->suffix($unit === null ? null : ' '.$unit)
             ->placeholder('—')
-            ->visible(fn (?HardwareDevice $record): bool => $record?->getAttribute($campo) !== null)
+            ->visible(fn (?HardwareDevice $record): bool => $record?->getAttribute($field) !== null)
             ->extraAttributes([
                 'class' => 'rounded-xl bg-white p-4 shadow-sm dark:bg-gray-900',
             ]);
@@ -86,14 +85,14 @@ class HardwareDeviceResource extends Resource
      * Sin ninguna lectura, la sección entera sobra: mejor eso que una fila de
      * huecos en la parte de arriba de la ficha.
      */
-    private static function tieneAlgunaLectura(?HardwareDevice $record): bool
+    private static function hasAnyReading(?HardwareDevice $record): bool
     {
         if ($record === null) {
             return false;
         }
 
-        foreach (self::LECTURAS as $campo) {
-            if ($record->getAttribute($campo) !== null) {
+        foreach (self::READING_FIELDS as $field) {
+            if ($record->getAttribute($field) !== null) {
                 return true;
             }
         }
@@ -118,24 +117,24 @@ class HardwareDeviceResource extends Resource
                     ->icon(Heroicon::OutlinedSignal)
                     ->columns(['default' => 2, 'sm' => 3, 'xl' => 5])
                     ->schema([
-                        self::tarjeta('temp', 'Temperatura', 'heroicon-o-fire', '°C'),
-                        self::tarjeta('voltage', 'Tensión', 'heroicon-o-bolt', 'V'),
-                        self::tarjeta('battery_level', 'Batería', 'heroicon-o-battery-100', '%'),
-                        self::tarjeta('cpu', 'CPU', 'heroicon-o-cpu-chip', '%'),
-                        self::tarjeta('ram', 'Memoria', 'heroicon-o-circle-stack', '%'),
-                        self::tarjeta('disk', 'Disco', 'heroicon-o-server', '%'),
+                        self::readingCard('temp', 'Temperatura', 'heroicon-o-fire', '°C'),
+                        self::readingCard('voltage', 'Tensión', 'heroicon-o-bolt', 'V'),
+                        self::readingCard('battery_level', 'Batería', 'heroicon-o-battery-100', '%'),
+                        self::readingCard('cpu', 'CPU', 'heroicon-o-cpu-chip', '%'),
+                        self::readingCard('ram', 'Memoria', 'heroicon-o-circle-stack', '%'),
+                        self::readingCard('disk', 'Disco', 'heroicon-o-server', '%'),
 
                         // Los segundos son lo que manda el cacharro, pero
                         // «14212800» no dice nada de un vistazo.
-                        self::tarjeta('uptime', 'Encendido', 'heroicon-o-clock')
-                            ->formatStateUsing(fn ($state): string => self::uptimeLegible((int) $state)),
+                        self::readingCard('uptime', 'Encendido', 'heroicon-o-clock')
+                            ->formatStateUsing(fn ($state): string => self::humanReadableUptime((int) $state)),
 
-                        self::tarjeta('ip_local', 'IP local', 'heroicon-o-computer-desktop'),
-                        self::tarjeta('ip_public', 'IP pública', 'heroicon-o-globe-alt'),
-                        self::tarjeta('last_seen_at', 'Última señal', 'heroicon-o-signal')
+                        self::readingCard('ip_local', 'IP local', 'heroicon-o-computer-desktop'),
+                        self::readingCard('ip_public', 'IP pública', 'heroicon-o-globe-alt'),
+                        self::readingCard('last_seen_at', 'Última señal', 'heroicon-o-signal')
                             ->formatStateUsing(fn ($state): string => $state?->diffForHumans() ?? ''),
                     ])
-                    ->visible(fn (?HardwareDevice $record): bool => self::tieneAlgunaLectura($record))
+                    ->visible(fn (?HardwareDevice $record): bool => self::hasAnyReading($record))
                     ->columnSpanFull(),
 
                 // Lo único que sigue siendo un campo de texto: es JSON libre y
@@ -159,14 +158,10 @@ class HardwareDeviceResource extends Resource
 
                 Section::make('Imagen principal')
                     ->schema([
-                        // La imagen que ya tiene guardada. El uploader de abajo no puede
-                        // enseñarla: apunta a `image_id`, una clave foránea, y espera una
-                        // ruta de disco (ver `CurrentImage`).
-                        CurrentImage::deLaRelacion(),
                         ImageCropperUpload::makeImage('image_id')
+                            ->asFileRecord()
                             ->cover16x9()
                             ->storeFiles(false)
-                            ->dehydrated(fn ($state) => filled($state))
                             ->hiddenLabel()
                             ->extraAttributes(['class' => 'flex justify-center mx-auto'])
                             ->columnSpanFull(),
@@ -371,40 +366,40 @@ class HardwareDeviceResource extends Resource
      * dice lo que hay que saber, y «3 meses, 12 días, 4 horas y 51 minutos» sólo
      * hace la línea más larga.
      */
-    private static function uptimeLegible(int $segundos): string
+    private static function humanReadableUptime(int $seconds): string
     {
-        if ($segundos <= 0) {
+        if ($seconds <= 0) {
             return 'recién arrancado';
         }
 
-        $unidades = [
+        $unitSeconds = [
             'mes' => 2_592_000,
             'día' => 86_400,
             'hora' => 3_600,
             'minuto' => 60,
         ];
 
-        $plurales = ['mes' => 'meses', 'día' => 'días', 'hora' => 'horas', 'minuto' => 'minutos'];
-        $partes = [];
+        $unitPlurals = ['mes' => 'meses', 'día' => 'días', 'hora' => 'horas', 'minuto' => 'minutos'];
+        $parts = [];
 
-        foreach ($unidades as $nombre => $tamanyo) {
-            if (count($partes) === 2) {
+        foreach ($unitSeconds as $unit => $unitSize) {
+            if (count($parts) === 2) {
                 break;
             }
 
-            $cantidad = intdiv($segundos, $tamanyo);
+            $amount = intdiv($seconds, $unitSize);
 
-            if ($cantidad === 0 && $partes === []) {
+            if ($amount === 0 && $parts === []) {
                 continue;
             }
 
-            if ($cantidad > 0) {
-                $partes[] = $cantidad.' '.($cantidad === 1 ? $nombre : $plurales[$nombre]);
-                $segundos -= $cantidad * $tamanyo;
+            if ($amount > 0) {
+                $parts[] = $amount.' '.($amount === 1 ? $unit : $unitPlurals[$unit]);
+                $seconds -= $amount * $unitSize;
             }
         }
 
-        return $partes === [] ? 'menos de un minuto' : implode(', ', $partes);
+        return $parts === [] ? 'menos de un minuto' : implode(', ', $parts);
     }
 
     public static function getPages(): array
