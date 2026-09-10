@@ -45,16 +45,16 @@ class AirFlightController extends Controller
      */
     public function aircrafts(Request $request): JsonResponse
     {
-        $minutos = max(1, min((int) $request->query('minutes', '10'), 1440));
+        $minutes = max(1, min((int) $request->query('minutes', '10'), 1440));
 
         // Los aviones se refrescan cada 5 s en el mapa (`refresh` de
         // `receiver()`), así que diez segundos de caché quitan casi todas las
         // consultas sin que se note en pantalla.
         $aviones = Cache::remember(
-            'airflight:web:aircrafts:'.$minutos,
+            'airflight:web:aircrafts:'.$minutes,
             10,
             fn () => AirFlightResource::collection(
-                app(AirFlightService::class)->getActiveAircrafts($minutos)
+                app(AirFlightService::class)->getActiveAircrafts($minutes)
             )->resolve()
         );
 

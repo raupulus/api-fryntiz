@@ -32,7 +32,7 @@ use Filament\Tables\Table;
  */
 class RolesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'rolesDelMismoMedidor';
+    protected static string $relationship = 'rolesOnSameMeter';
 
     protected static ?string $title = 'Papeles de este aparato';
 
@@ -42,7 +42,7 @@ class RolesRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return HardwareEnergyForm::delMismoMedidor($schema);
+        return HardwareEnergyForm::forSameMeter($schema);
     }
 
     public function table(Table $table): Table
@@ -59,7 +59,7 @@ class RolesRelationManager extends RelationManager
                 TextColumn::make('role')
                     ->label('Papel')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ETIQUETAS_DE_ROL[$state] ?? (string) $state)
+                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ROLE_LABELS[$state] ?? (string) $state)
                     ->color(fn (?string $state): string => match ($state) {
                         HardwareEnergy::ROLE_GENERATOR => 'success',
                         HardwareEnergy::ROLE_BATTERY => 'warning',
@@ -80,7 +80,7 @@ class RolesRelationManager extends RelationManager
                     ->label('Activo')
                     ->boolean(),
             ])
-            ->headerActions($this->botonesDeAlta())
+            ->headerActions($this->creationButtons())
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -92,61 +92,61 @@ class RolesRelationManager extends RelationManager
      *
      * @return list<CreateAction>
      */
-    private function botonesDeAlta(): array
+    private function creationButtons(): array
     {
-        $descripciones = [
+        $descriptions = [
             HardwareEnergy::ROLE_GENERATOR => 'Lo que produce: el panel solar, el alternador…',
             HardwareEnergy::ROLE_LOAD => 'Lo que gasta: la salida de carga, un router, una Raspberry…',
             HardwareEnergy::ROLE_BATTERY => 'Lo que almacena: el banco de baterías.',
         ];
 
-        $iconos = [
+        $icons = [
             HardwareEnergy::ROLE_GENERATOR => 'heroicon-o-sun',
             HardwareEnergy::ROLE_LOAD => 'heroicon-o-bolt',
             HardwareEnergy::ROLE_BATTERY => 'heroicon-o-battery-50',
         ];
 
-        $colores = [
+        $colors = [
             HardwareEnergy::ROLE_GENERATOR => 'success',
             HardwareEnergy::ROLE_LOAD => 'info',
             HardwareEnergy::ROLE_BATTERY => 'warning',
         ];
 
-        $acciones = [];
+        $actions = [];
 
-        foreach (HardwareEnergy::ROLES as $rol) {
-            $acciones[] = CreateAction::make('crear_'.$rol)
-                ->label('Añadir '.mb_strtolower(HardwareEnergy::ETIQUETAS_DE_ROL[$rol]))
-                ->icon($iconos[$rol])
-                ->color($colores[$rol])
-                ->modalHeading(HardwareEnergy::ETIQUETAS_DE_ROL[$rol].' de este aparato')
-                ->modalDescription($descripciones[$rol])
+        foreach (HardwareEnergy::ROLES as $role) {
+            $actions[] = CreateAction::make('create_'.$role)
+                ->label('Añadir '.mb_strtolower(HardwareEnergy::ROLE_LABELS[$role]))
+                ->icon($icons[$role])
+                ->color($colors[$role])
+                ->modalHeading(HardwareEnergy::ROLE_LABELS[$role].' de este aparato')
+                ->modalDescription($descriptions[$role])
                 // El papel lo dice el botón, y el medidor es el mismo del que
                 // se viene: los dos los pone el contexto.
-                ->mutateDataUsing(function (array $data) use ($rol): array {
-                    $data['role'] = $rol;
-                    $data['hardware_device_id'] = $this->elemento()->hardware_device_id;
+                ->mutateDataUsing(function (array $data) use ($role): array {
+                    $data['role'] = $role;
+                    $data['hardware_device_id'] = $this->element()->hardware_device_id;
 
                     return $data;
                 })
-                ->visible(fn (): bool => $this->cabeOtro($rol));
+                ->visible(fn (): bool => $this->hasRoomForAnother($role));
         }
 
-        return $acciones;
+        return $actions;
     }
 
     /**
      * ¿Queda sitio para otro elemento de este papel en este medidor?
      */
-    private function cabeOtro(string $rol): bool
+    private function hasRoomForAnother(string $role): bool
     {
-        $limite = HardwareEnergy::LIMITE_POR_ROL[$rol] ?? null;
+        $limit = HardwareEnergy::LIMIT_PER_ROLE[$role] ?? null;
 
-        if ($limite === null) {
+        if ($limit === null) {
             return true;
         }
 
-        return $this->elemento()->rolesDelMismoMedidor()->where('role', $rol)->count() < $limite;
+        return $this->element()->rolesOnSameMeter()->where('role', $role)->count() < $limit;
     }
 
     /**
@@ -155,14 +155,14 @@ class RolesRelationManager extends RelationManager
      * `getOwnerRecord()` devuelve un `Model` genérico, y de ahí no salen ni la
      * relación ni la columna sin que el analizador proteste con razón.
      */
-    private function elemento(): HardwareEnergy
+    private function element(): HardwareEnergy
     {
-        $registro = $this->getOwnerRecord();
+        $record = $this->getOwnerRecord();
 
-        if (! $registro instanceof HardwareEnergy) {
+        if (! $record instanceof HardwareEnergy) {
             throw new \LogicException('Este panel sólo cuelga de un elemento de energía.');
         }
 
-        return $registro;
+        return $record;
     }
 }

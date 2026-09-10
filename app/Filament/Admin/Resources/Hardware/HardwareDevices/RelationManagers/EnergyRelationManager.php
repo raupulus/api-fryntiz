@@ -46,7 +46,7 @@ class EnergyRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return HardwareEnergyForm::deUnDispositivo($schema);
+        return HardwareEnergyForm::forADevice($schema);
     }
 
     public function table(Table $table): Table
@@ -62,7 +62,7 @@ class EnergyRelationManager extends RelationManager
                 TextColumn::make('role')
                     ->label('Papel')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ETIQUETAS_DE_ROL[$state] ?? (string) $state)
+                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ROLE_LABELS[$state] ?? (string) $state)
                     ->color(fn (?string $state): string => match ($state) {
                         HardwareEnergy::ROLE_GENERATOR => 'success',
                         HardwareEnergy::ROLE_BATTERY => 'warning',
@@ -87,7 +87,7 @@ class EnergyRelationManager extends RelationManager
                     ->label('Activo')
                     ->boolean(),
             ])
-            ->headerActions($this->botonesDeAlta())
+            ->headerActions($this->creationButtons())
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -104,67 +104,67 @@ class EnergyRelationManager extends RelationManager
      *
      * @return list<CreateAction>
      */
-    private function botonesDeAlta(): array
+    private function creationButtons(): array
     {
-        $descripciones = [
+        $descriptions = [
             HardwareEnergy::ROLE_GENERATOR => 'Lo que produce: el panel solar, el alternador…',
             HardwareEnergy::ROLE_LOAD => 'Lo que gasta: la salida de carga, un router, una Raspberry…',
             HardwareEnergy::ROLE_BATTERY => 'Lo que almacena: el banco de baterías.',
         ];
 
-        $iconos = [
+        $icons = [
             HardwareEnergy::ROLE_GENERATOR => 'heroicon-o-sun',
             HardwareEnergy::ROLE_LOAD => 'heroicon-o-bolt',
             HardwareEnergy::ROLE_BATTERY => 'heroicon-o-battery-50',
         ];
 
-        $colores = [
+        $colors = [
             HardwareEnergy::ROLE_GENERATOR => 'success',
             HardwareEnergy::ROLE_LOAD => 'info',
             HardwareEnergy::ROLE_BATTERY => 'warning',
         ];
 
-        $acciones = [];
+        $actions = [];
 
-        foreach (HardwareEnergy::ROLES as $rol) {
-            $acciones[] = CreateAction::make('crear_'.$rol)
-                ->label(HardwareEnergy::ETIQUETAS_DE_ROL[$rol])
-                ->icon($iconos[$rol])
-                ->color($colores[$rol])
-                ->modalHeading(HardwareEnergy::ETIQUETAS_DE_ROL[$rol].' de este aparato')
-                ->modalDescription($descripciones[$rol])
+        foreach (HardwareEnergy::ROLES as $role) {
+            $actions[] = CreateAction::make('create_'.$role)
+                ->label(HardwareEnergy::ROLE_LABELS[$role])
+                ->icon($icons[$role])
+                ->color($colors[$role])
+                ->modalHeading(HardwareEnergy::ROLE_LABELS[$role].' de este aparato')
+                ->modalDescription($descriptions[$role])
                 // El papel no se pregunta: lo dice el botón que se ha pulsado.
                 // Y se mide a sí mismo, que es lo que significa darlo de alta
                 // desde su propia ficha.
-                ->mutateDataUsing(function (array $data) use ($rol): array {
-                    $data['role'] = $rol;
+                ->mutateDataUsing(function (array $data) use ($role): array {
+                    $data['role'] = $role;
                     $data['hardware_device_monitorized_id'] = $this->getOwnerRecord()->getKey();
 
                     return $data;
                 })
-                ->visible(fn (): bool => $this->cabeOtro($rol));
+                ->visible(fn (): bool => $this->hasRoomForAnother($role));
         }
 
-        return $acciones;
+        return $actions;
     }
 
     /**
      * ¿Queda sitio para otro elemento de este papel?
      *
      * De generador y de batería hay uno; de consumo, tantos como canales tenga
-     * el medidor. El límite vive en {@see HardwareEnergy::LIMITE_POR_ROL}.
+     * el medidor. El límite vive en {@see HardwareEnergy::LIMIT_PER_ROLE}.
      */
-    private function cabeOtro(string $rol): bool
+    private function hasRoomForAnother(string $role): bool
     {
-        $limite = HardwareEnergy::LIMITE_POR_ROL[$rol] ?? null;
+        $limit = HardwareEnergy::LIMIT_PER_ROLE[$role] ?? null;
 
-        if ($limite === null) {
+        if ($limit === null) {
             return true;
         }
 
         /** @var HardwareDevice $device */
         $device = $this->getOwnerRecord();
 
-        return $device->hardwareEnergy()->where('role', $rol)->count() < $limite;
+        return $device->hardwareEnergy()->where('role', $role)->count() < $limit;
     }
 }

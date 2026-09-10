@@ -104,7 +104,7 @@ class HardwareEnergy extends BaseModel
      *
      * @var array<string, int|null>
      */
-    public const LIMITE_POR_ROL = [
+    public const LIMIT_PER_ROLE = [
         self::ROLE_GENERATOR => 1,
         self::ROLE_BATTERY => 1,
         self::ROLE_LOAD => null,
@@ -115,7 +115,7 @@ class HardwareEnergy extends BaseModel
      *
      * @var array<string, string>
      */
-    public const ETIQUETAS_DE_ROL = [
+    public const ROLE_LABELS = [
         self::ROLE_GENERATOR => 'Generador',
         self::ROLE_LOAD => 'Consumo',
         self::ROLE_BATTERY => 'Batería',
@@ -180,7 +180,7 @@ class HardwareEnergy extends BaseModel
      *
      * @return HasMany<self, $this>
      */
-    public function rolesDelMismoMedidor(): HasMany
+    public function rolesOnSameMeter(): HasMany
     {
         return $this->hasMany(self::class, 'hardware_device_id', 'hardware_device_id');
     }
@@ -325,29 +325,29 @@ class HardwareEnergy extends BaseModel
         //
         // Quien lo necesite con nombre, que cargue `monitorized`. Sin eso sale
         // el id, que sigue identificando la fila.
-        $aparato = 'Elemento #'.$this->id;
+        $deviceName = 'Elemento #'.$this->id;
 
-        foreach (['monitorized', 'hardwareDevice'] as $relacion) {
-            if (! $this->relationLoaded($relacion)) {
+        foreach (['monitorized', 'hardwareDevice'] as $relation) {
+            if (! $this->relationLoaded($relation)) {
                 continue;
             }
 
-            $device = $this->getRelation($relacion);
+            $device = $this->getRelation($relation);
 
             if ($device instanceof HardwareDevice) {
-                $aparato = $device->display_name;
+                $deviceName = $device->display_name;
 
                 break;
             }
         }
 
-        $papel = self::ETIQUETAS_DE_ROL[$this->role] ?? $this->role;
+        $role = self::ROLE_LABELS[$this->role] ?? $this->role;
 
         // El canal sólo se nombra cuando el monitor tiene más de uno, que es
         // cuando de verdad hace falta para distinguirlos.
-        $canal = $this->sensor_position > 0 ? " · canal {$this->sensor_position}" : '';
+        $channel = $this->sensor_position > 0 ? " · canal {$this->sensor_position}" : '';
 
-        return "{$aparato} · ".mb_strtolower($papel).$canal;
+        return "{$deviceName} · ".mb_strtolower($role).$channel;
     }
 
     /**

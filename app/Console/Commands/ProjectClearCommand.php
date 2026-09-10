@@ -43,11 +43,11 @@ class ProjectClearCommand extends Command
         // Se resuelve una vez y se pasa a las decisiones. `config:clear` borra
         // el fichero de caché, no la configuración ya cargada en memoria, así
         // que este valor es el mismo antes y después de limpiar.
-        $enProduccion = app()->environment('production');
+        $inProduction = app()->environment('production');
 
         $this->info('Iniciando limpieza completa del proyecto...');
 
-        if ($enProduccion) {
+        if ($inProduction) {
             $this->line('▶ Entorno «production»: se conserva la APP_KEY, no se vacían las colas y se recachea al terminar.');
         }
 
@@ -66,13 +66,13 @@ class ProjectClearCommand extends Command
         // `two_factor_secret`— deja de descifrarse de golpe. Parece que la
         // limpieza «ha roto la clave», y lo que ha hecho es destapar que ya
         // estaban desalineadas.
-        $this->avisarSiLaClaveNoCoincide();
+        $this->warnIfKeyMismatch();
 
         // Antes de nada: los directorios de trabajo. `composer dump-autoload`
         // dispara `package:discover`, que escribe en `bootstrap/cache`, y
         // `view:cache` necesita `storage/framework/views`. Si faltan, el
         // despliegue se queda con las cachés borradas y ninguna rehecha.
-        $this->asegurarDirectoriosDeTrabajo();
+        $this->ensureWorkingDirectories();
 
         $this->line('▶ Limpiando cachés de configuración, rutas, vistas, eventos y optimizaciones...');
         $this->call('optimize:clear');
@@ -104,7 +104,7 @@ class ProjectClearCommand extends Command
         // después de desplegar. `queue:restart` le dice que termine el job que
         // tenga entre manos y salga, para que el supervisor lo levante con el
         // código nuevo.
-        if ($enProduccion) {
+        if ($inProduction) {
             $this->line('▶ Avisando a los workers para que recojan el código nuevo (queue:restart)...');
             $this->call('queue:restart');
         } else {
@@ -117,24 +117,24 @@ class ProjectClearCommand extends Command
         }
 
         // 3. Regeneración de clave segura en .env
-        if ($this->debeRegenerarClave($enProduccion)) {
+        if ($this->shouldRegenerateKey($inProduction)) {
             // Lo que no se ve venir es el 2FA: Fortify guarda
             // `two_factor_secret` CIFRADO con la APP_KEY, así que quien lo tenga
             // activo se queda sin poder completar el segundo factor y hay que
             // volver a darlo de alta. Los tokens de Sanctum no se ven afectados
             // porque se guardan hasheados, no cifrados.
-            $con2fa = $this->contarUsuariosCon2fa();
+            $twoFactorUsers = $this->count2faUsers();
 
-            if ($con2fa > 0) {
+            if ($twoFactorUsers > 0) {
                 $this->warn(
-                    "Aviso: {$con2fa} usuario(s) tienen el doble factor activo. Al cambiar la APP_KEY "
+                    "Aviso: {$twoFactorUsers} usuario(s) tienen el doble factor activo. Al cambiar la APP_KEY "
                     .'su `two_factor_secret` deja de poder descifrarse y tendrán que volver a configurarlo.'
                 );
             }
 
             $regenerar = true;
 
-            if ($enProduccion && ! $this->option('force')) {
+            if ($inProduction && ! $this->option('force')) {
                 $regenerar = $this->confirm(
                     'Vas a regenerar APP_KEY en producción: esto invalida sesiones, tokens y cualquier '
                     .'dato cifrado con la clave actual. ¿Deseas continuar?'
@@ -181,7 +181,7 @@ class ProjectClearCommand extends Command
         }
 
         // 5. Recacheo: siempre en producción, y bajo petición fuera de ella.
-        if ($enProduccion || $this->option('production')) {
+        if ($inProduction || $this->option('production')) {
             $this->newLine();
             $this->info('Recacheando optimizaciones para producción...');
             $this->call('config:cache');
@@ -207,9 +207,9 @@ class ProjectClearCommand extends Command
      * los mantienen vivos son justo lo que un despliegue puede no traer. Crearlos
      * aquí es más barato que descubrirlo con el sitio caído.
      */
-    private function asegurarDirectoriosDeTrabajo(): void
+    private function ensureWorkingDirectories(): void
     {
-        $directorios = [
+        $directories = [
             storage_path('framework/views'),
             storage_path('framework/cache/data'),
             storage_path('framework/sessions'),
@@ -218,26 +218,26 @@ class ProjectClearCommand extends Command
             base_path('bootstrap/cache'),
         ];
 
-        $creados = [];
+        $created = [];
 
-        foreach ($directorios as $directorio) {
-            if (is_dir($directorio)) {
+        foreach ($directories as $directory) {
+            if (is_dir($directory)) {
                 continue;
             }
 
-            if (@mkdir($directorio, 0775, true) || is_dir($directorio)) {
-                $creados[] = str_replace(base_path().'/', '', $directorio);
+            if (@mkdir($directory, 0775, true) || is_dir($directory)) {
+                $created[] = str_replace(base_path().'/', '', $directory);
 
                 continue;
             }
 
             // Sin poder crearlo, el recacheo va a fallar igual: mejor decirlo
             // ahora y con el nombre del directorio que con «cache path».
-            $this->error("No se ha podido crear «{$directorio}». Compruébalo a mano antes de seguir.");
+            $this->error("No se ha podido crear «{$directory}». Compruébalo a mano antes de seguir.");
         }
 
-        if ($creados !== []) {
-            $this->line('▶ Directorios de trabajo que faltaban: '.implode(', ', $creados));
+        if ($created !== []) {
+            $this->line('▶ Directorios de trabajo que faltaban: '.implode(', ', $created));
         }
     }
 
@@ -259,13 +259,13 @@ class ProjectClearCommand extends Command
      * lo suyo para una rotación de clave, que no tiene nada que ver con subir
      * código.
      */
-    private function debeRegenerarClave(bool $enProduccion): bool
+    private function shouldRegenerateKey(bool $inProduction): bool
     {
         if ($this->option('no-key')) {
             return false;
         }
 
-        return $enProduccion ? (bool) $this->option('key') : true;
+        return $inProduction ? (bool) $this->option('key') : true;
     }
 
     /**
@@ -275,7 +275,7 @@ class ProjectClearCommand extends Command
      * a fallos: es un aviso, no puede tumbar la limpieza (por ejemplo, si se
      * ejecuta sin base de datos disponible).
      */
-    private function contarUsuariosCon2fa(): int
+    private function count2faUsers(): int
     {
         try {
             return DB::table('users')->whereNotNull('two_factor_secret')->count();
@@ -291,7 +291,7 @@ class ProjectClearCommand extends Command
      * No aborta ni arregla nada: sólo lo dice antes de limpiar, que es cuando
      * todavía se puede decidir. Ver el comentario de `handle()`.
      */
-    private function avisarSiLaClaveNoCoincide(): void
+    private function warnIfKeyMismatch(): void
     {
         $cache = base_path('bootstrap/cache/config.php');
 
@@ -300,7 +300,7 @@ class ProjectClearCommand extends Command
         }
 
         try {
-            $cacheada = (require $cache)['app']['key'] ?? null;
+            $cached = (require $cache)['app']['key'] ?? null;
         } catch (\Throwable) {
             return;
         }
@@ -311,9 +311,9 @@ class ProjectClearCommand extends Command
         // de la comparación. Y `env()` tampoco vale: con la configuración
         // cacheada Laravel se salta la carga del `.env` y devuelve null. Lo
         // único que dice la verdad aquí es el fichero.
-        $delEnv = $this->claveDelFicheroEnv();
+        $fromEnv = $this->keyFromEnvFile();
 
-        if (! is_string($cacheada) || ! is_string($delEnv) || $cacheada === $delEnv) {
+        if (! is_string($cached) || ! is_string($fromEnv) || $cached === $fromEnv) {
             return;
         }
 
@@ -323,7 +323,7 @@ class ProjectClearCommand extends Command
         $this->line('  de descifrarse. Si lo que quieres es conservar la que funciona ahora, cópiala');
         $this->line('  al .env antes de seguir:');
         $this->newLine();
-        $this->line('    '.$cacheada);
+        $this->line('    '.$cached);
         $this->newLine();
 
         if (! $this->option('force') && ! $this->confirm('¿Seguir de todas formas?', true)) {
@@ -336,22 +336,22 @@ class ProjectClearCommand extends Command
      * La APP_KEY tal y como está escrita en el `.env`, sin pasar por la
      * configuración de Laravel.
      */
-    private function claveDelFicheroEnv(): ?string
+    private function keyFromEnvFile(): ?string
     {
-        $ruta = base_path('.env');
+        $path = base_path('.env');
 
-        if (! is_file($ruta)) {
+        if (! is_file($path)) {
             return null;
         }
 
-        $contenido = (string) file_get_contents($ruta);
+        $contents = (string) file_get_contents($path);
 
-        if (preg_match('/^APP_KEY\s*=\s*"?([^"\r\n]*)"?/m', $contenido, $coincidencias) !== 1) {
+        if (preg_match('/^APP_KEY\s*=\s*"?([^"\r\n]*)"?/m', $contents, $matches) !== 1) {
             return null;
         }
 
-        $clave = trim($coincidencias[1]);
+        $key = trim($matches[1]);
 
-        return $clave === '' ? null : $clave;
+        return $key === '' ? null : $key;
     }
 }

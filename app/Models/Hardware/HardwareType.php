@@ -51,9 +51,9 @@ class HardwareType extends BaseModel
      */
     protected static function booted(): void
     {
-        static::saving(static function (self $tipo): void {
-            if (blank($tipo->slug) && filled($tipo->name)) {
-                $tipo->slug = Str::slug($tipo->name);
+        static::saving(static function (self $type): void {
+            if (blank($type->slug) && filled($type->name)) {
+                $type->slug = Str::slug($type->name);
             }
         });
     }

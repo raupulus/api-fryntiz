@@ -40,17 +40,17 @@ class ApiTokenPolicy
 
     public function viewAny(User $user): bool
     {
-        return $this->administra($user);
+        return $this->isAdminUser($user);
     }
 
     public function view(User $user, ApiToken $token): bool
     {
-        return $this->administra($user) && ! $this->esDeSuperAdmin($token);
+        return $this->isAdminUser($user) && ! $this->belongsToSuperAdmin($token);
     }
 
     public function create(User $user): bool
     {
-        return $this->administra($user);
+        return $this->isAdminUser($user);
     }
 
     public function update(User $user, ApiToken $token): bool
@@ -65,7 +65,7 @@ class ApiTokenPolicy
 
     public function deleteAny(User $user): bool
     {
-        return $this->administra($user);
+        return $this->isAdminUser($user);
     }
 
     public function restore(User $user, ApiToken $token): bool
@@ -83,7 +83,7 @@ class ApiTokenPolicy
      * cacharros es `SuperAdmin`, y sin descartar las peticiones de dispositivo
      * el token grabado en una placa acabaría pudiendo emitir tokens nuevos.
      */
-    private function administra(User $user): bool
+    private function isAdminUser(User $user): bool
     {
         return $user->isAdmin() && ! TokenAbilities::deviceRequest($user);
     }
@@ -94,7 +94,7 @@ class ApiTokenPolicy
      * Sólo un `SuperAdmin` toca los tokens de otro `SuperAdmin`, y ése no pasa
      * por aquí porque `Gate::before` lo resuelve antes.
      */
-    private function esDeSuperAdmin(ApiToken $token): bool
+    private function belongsToSuperAdmin(ApiToken $token): bool
     {
         if ($token->tokenable_type !== User::class) {
             return false;

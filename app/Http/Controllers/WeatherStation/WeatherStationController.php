@@ -143,35 +143,35 @@ class WeatherStationController extends Controller
     public function widget(?string $zone = null, ?string $locationType = null, ?int $station = null): JsonResponse
     {
         // (`widgetStation()` entra por aquí con la estación fijada.)
-        $clave = 'weather:widget:'.($zone ?? '-').':'.($locationType ?? '-').':'.($station ?? '-');
+        $cacheKey = 'weather:widget:'.($zone ?? '-').':'.($locationType ?? '-').':'.($station ?? '-');
 
         // Los sensores suben cada pocos minutos y la página se recarga sola;
         // un minuto de caché quita la mayor parte de las consultas sin que el
         // dato llegue a notarse viejo.
-        $datos = Cache::remember($clave, 60, function () use ($zone, $locationType, $station) {
-            $servicio = app(WeatherStationService::class);
+        $data = Cache::remember($cacheKey, 60, function () use ($zone, $locationType, $station) {
+            $service = app(WeatherStationService::class);
 
             if ($zone !== null && $zone !== '') {
-                $lecturas = $servicio->getZoneReadings($zone, $locationType);
+                $readings = $service->getZoneReadings($zone, $locationType);
 
-                return $lecturas === null ? null : (new WeatherStationResource($lecturas))->resolve();
+                return $readings === null ? null : (new WeatherStationResource($readings))->resolve();
             }
 
-            $device = $servicio->resolveStation($station);
+            $device = $service->resolveStation($station);
 
             return $device === null
                 ? null
-                : (new WeatherStationResource($servicio->getStationReadings($device)))->resolve();
+                : (new WeatherStationResource($service->getStationReadings($device)))->resolve();
         });
 
-        if ($datos === null) {
+        if ($data === null) {
             return response()->json([
                 'success' => false,
                 'message' => 'No hay ninguna estación meteorológica que mostrar.',
             ], 404);
         }
 
-        return response()->json(['success' => true, 'data' => $datos]);
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
     /**
@@ -189,13 +189,13 @@ class WeatherStationController extends Controller
             ->orderBy('id')
             ->get();
 
-        $servicio = app(WeatherStationService::class);
+        $service = app(WeatherStationService::class);
 
         // El widget va por ZONA, no por estación: si la que estaba fijada deja
         // de subir, seguía enseñando su último valor mientras la de al lado, en
         // la misma azotea, subía el dato bueno.
-        $mainZone = $servicio->resolveMainZone();
-        $mainStationId = $servicio->resolveMainStationId();
+        $mainZone = $service->resolveMainZone();
+        $mainStationId = $service->resolveMainStationId();
 
         $groups = [];
 

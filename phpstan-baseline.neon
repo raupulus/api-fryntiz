@@ -61,43 +61,6 @@ parameters:
 			path: app/Http/Controllers/FileController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_private\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FileThumbnailController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FileThumbnailController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\KeyCounter\\Keyboard\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\KeyCounter\\Keyboard\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
-
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name_friendly" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/KeyCounter/KeyCounterController.php
-
-		-
 			message: '#^Static method App\\Models\\Language\:\:getTableHeads\(\) invoked with 1 parameter, 0 required\.$#'
 			identifier: arguments.count
 			count: 1

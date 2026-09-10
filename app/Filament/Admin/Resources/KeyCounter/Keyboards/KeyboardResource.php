@@ -131,7 +131,7 @@ class KeyboardResource extends Resource
                     ->sortable(),
                 TextColumn::make('weekday')
                     ->label('Día')
-                    ->formatStateUsing(fn ($state): ?string => KeyCounterWeekdayEnum::etiquetaDe($state))
+                    ->formatStateUsing(fn ($state): ?string => KeyCounterWeekdayEnum::labelFor($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Creado el')

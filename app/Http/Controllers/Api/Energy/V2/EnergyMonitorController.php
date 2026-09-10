@@ -39,15 +39,15 @@ class EnergyMonitorController extends BaseApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $tipo = $request->query('type', 'load');
+        $type = $request->query('type', 'load');
 
-        if (! in_array($tipo, ['load', 'generator'], true)) {
+        if (! in_array($type, ['load', 'generator'], true)) {
             return $this->errorResponse('El parámetro «type» sólo admite «load» o «generator».', 422);
         }
 
-        return $tipo === 'generator'
-            ? $this->pagina(HardwarePowerGenerator::query(), $request)
-            : $this->pagina(HardwarePowerLoad::query(), $request);
+        return $type === 'generator'
+            ? $this->page(HardwarePowerGenerator::query(), $request)
+            : $this->page(HardwarePowerLoad::query(), $request);
     }
 
     /**
@@ -57,7 +57,7 @@ class EnergyMonitorController extends BaseApiController
      *
      * @param  Builder<TModel>  $query
      */
-    private function pagina(Builder $query, Request $request): JsonResponse
+    private function page(Builder $query, Request $request): JsonResponse
     {
         $collectionQuery = new CollectionQuery(
             filterable: ['hardware_device_id', 'hardware_energy_id', 'date', 'read_at'],
@@ -68,10 +68,10 @@ class EnergyMonitorController extends BaseApiController
 
         $query->whereHas('hardwareDevice', fn ($q) => $q->where('user_id', $request->user()->id));
 
-        $declarados = TokenAbilities::devicesReachableBy($request->user());
+        $declaredDevices = TokenAbilities::devicesReachableBy($request->user());
 
-        if ($declarados !== []) {
-            $query->whereIn('hardware_device_id', $declarados);
+        if ($declaredDevices !== []) {
+            $query->whereIn('hardware_device_id', $declaredDevices);
         }
 
         return $this->paginatedResponse(

@@ -157,15 +157,15 @@ class TokenController extends BaseApiController
      */
     public function destroy(Request $request, int $token): JsonResponse
     {
-        $encontrado = $request->user()->tokens()->whereKey($token)->first();
+        $found = $request->user()->tokens()->whereKey($token)->first();
 
         // Mismo 404 si no existe que si es de otro: no se confirma la
         // existencia de tokens ajenos.
-        if (! $encontrado) {
+        if (! $found) {
             return $this->notFoundResponse('Token no encontrado');
         }
 
-        $encontrado->delete();
+        $found->delete();
 
         return $this->deletedResponse();
     }

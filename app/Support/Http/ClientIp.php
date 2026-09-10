@@ -70,16 +70,16 @@ final class ClientIp
         $request ??= request();
 
         foreach (self::HEADERS as $header) {
-            $valor = $request->header($header);
+            $value = $request->header($header);
 
-            if (! is_string($valor) || $valor === '') {
+            if (! is_string($value) || $value === '') {
                 continue;
             }
 
             // `X-Forwarded-For` encadena proxies: «cliente, proxy1, proxy2».
             // El primero es el que originó la petición.
-            foreach (explode(',', $valor) as $candidata) {
-                $ip = self::publicaONull(trim($candidata));
+            foreach (explode(',', $value) as $candidate) {
+                $ip = self::publicOrNull(trim($candidate));
 
                 if ($ip !== null) {
                     return $ip;
@@ -89,7 +89,7 @@ final class ClientIp
 
         // Sin proxy delante, la IP de la conexión ya es la de origen — pero
         // sólo vale si es pública.
-        return self::publicaONull((string) $request->ip());
+        return self::publicOrNull((string) $request->ip());
     }
 
     /**
@@ -106,18 +106,18 @@ final class ClientIp
     /**
      * La IP si es pública y válida; `null` en cualquier otro caso.
      */
-    private static function publicaONull(string $ip): ?string
+    private static function publicOrNull(string $ip): ?string
     {
         if ($ip === '') {
             return null;
         }
 
-        $valida = filter_var(
+        $valid = filter_var(
             $ip,
             FILTER_VALIDATE_IP,
             FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
         );
 
-        return $valida === false ? null : $ip;
+        return $valid === false ? null : $ip;
     }
 }

@@ -45,12 +45,12 @@ enum CurriculumVisibilityEnum: string
      */
     public static function options(): array
     {
-        $opciones = [];
+        $options = [];
 
-        foreach (self::cases() as $caso) {
-            $opciones[$caso->value] = $caso->label();
+        foreach (self::cases() as $case) {
+            $options[$case->value] = $case->label();
         }
 
-        return $opciones;
+        return $options;
     }
 }

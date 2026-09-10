@@ -550,7 +550,7 @@ Los `report()` se han quitado: un solo sitio, explícito, sin depender de qué s
 retorno. Laravel ya ignora por defecto las suyas equivalentes (`ValidationException`,
 `AuthenticationException`, `HttpException`…); estas son propias y hay que decírselo.
 
-*Lo fija `tests/Unit/Support/ExcepcionesNoReportablesTest.php`. Origen: log de producción del
+*Lo fija `tests/Unit/Support/NonReportableExceptionsTest.php`. Origen: log de producción del
 2026-09-06.*
 
 ---

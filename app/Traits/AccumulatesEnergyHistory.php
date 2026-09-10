@@ -22,7 +22,7 @@ trait AccumulatesEnergyHistory
     /**
      * Campos del acumulado que cuentan unidades, no magnitudes.
      */
-    private const CONTADORES_ENTEROS = [
+    private const INTEGER_COUNTERS = [
         'days_operating',
         'number_battery_over_discharges',
         'number_battery_full_charges',
@@ -110,32 +110,32 @@ trait AccumulatesEnergyHistory
         // Lo que ya había guardado, antes de que el agregado lo pise: es la
         // memoria de todo lo anterior a estos resúmenes, y de lo que el aparato
         // contó antes de reiniciarse.
-        $previos = [];
+        $previous = [];
 
-        foreach (array_keys($deviceTotals) as $campo) {
-            $previos[$campo] = $historical->exists ? $historical->{$campo} : null;
+        foreach (array_keys($deviceTotals) as $field) {
+            $previous[$field] = $historical->exists ? $historical->{$field} : null;
         }
 
         $historical->forceFill($aggregate);
 
-        foreach ($deviceTotals as $campo => $valor) {
-            if ($valor === null) {
+        foreach ($deviceTotals as $field => $value) {
+            if ($value === null) {
                 continue;
             }
 
             // Se queda el mayor de los tres: lo que ya había, lo que suman los
             // resúmenes diarios y lo que dice el aparato. Nunca a la baja.
-            $candidatos = array_filter(
-                [$previos[$campo], $historical->{$campo}, $valor],
+            $candidates = array_filter(
+                [$previous[$field], $historical->{$field}, $value],
                 static fn ($v) => $v !== null
             );
 
-            $mayor = max(array_map(static fn ($v) => (float) $v, $candidatos));
+            $highest = max(array_map(static fn ($v) => (float) $v, $candidates));
 
             // Los contadores son enteros: días, ciclos de carga y de descarga.
-            $historical->{$campo} = in_array($campo, self::CONTADORES_ENTEROS, true)
-                ? (int) $mayor
-                : $mayor;
+            $historical->{$field} = in_array($field, self::INTEGER_COUNTERS, true)
+                ? (int) $highest
+                : $highest;
         }
 
         $historical->read_at = Carbon::now();

@@ -54,12 +54,12 @@ class SecurityHeaders
     {
         $response = $next($request);
 
-        foreach (self::HEADERS as $nombre => $valor) {
+        foreach (self::HEADERS as $name => $value) {
             // `headers->set()` sin sobrescribir lo que una respuesta concreta
             // haya decidido: `CurriculumController::shared()` pone su propio
             // `X-Robots-Tag` y no queremos pisar ese tipo de decisiones.
-            if (! $response->headers->has($nombre)) {
-                $response->headers->set($nombre, $valor);
+            if (! $response->headers->has($name)) {
+                $response->headers->set($name, $value);
             }
         }
 

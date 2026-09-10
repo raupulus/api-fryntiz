@@ -90,12 +90,12 @@ class WeatherStationController extends BaseApiController
      */
     public function zone(string $zone, ?string $locationType = null): JsonResponse
     {
-        $lecturas = $this->service->getZoneReadings($zone, $locationType);
+        $readings = $this->service->getZoneReadings($zone, $locationType);
 
-        if ($lecturas === null) {
+        if ($readings === null) {
             return $this->notFoundResponse('Zona sin estaciones meteorologicas');
         }
 
-        return $this->successResponse(new WeatherStationResource($lecturas));
+        return $this->successResponse(new WeatherStationResource($readings));
     }
 }

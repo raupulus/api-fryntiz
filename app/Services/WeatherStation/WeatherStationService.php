@@ -68,7 +68,7 @@ class WeatherStationService
      *
      * @var array<string, class-string<Model>>
      */
-    private const SENSORES = [
+    private const SENSORS = [
         'temperature' => Temperature::class,
         'humidity' => Humidity::class,
         'pressure' => Pressure::class,
@@ -106,36 +106,36 @@ class WeatherStationService
 
         // # Última fila de cada sensor para cada estación, indexada por id de
         // dispositivo: once consultas en total, sean dos estaciones o veinte.
-        $ultimas = [];
+        $latest = [];
 
-        foreach (self::SENSORES as $clave => $modelo) {
-            $ultimas[$clave] = $this->latestPerStation($modelo, $stationIds);
+        foreach (self::SENSORS as $sensor => $modelClass) {
+            $latest[$sensor] = $this->latestPerStation($modelClass, $stationIds);
         }
 
-        $minutosDeRayos = (int) config('weather_station.lightning_window_minutes', 60);
+        $lightningWindowMinutes = (int) config('weather_station.lightning_window_minutes', 60);
 
         // # El recuento de rayos de la ventana, agrupado en una sola consulta.
-        $conteoDeRayos = Lightning::query()
+        $lightningCounts = Lightning::query()
             ->selectRaw('hardware_device_id, COUNT(*) AS total')
-            ->where('created_at', '>=', now()->subMinutes($minutosDeRayos))
+            ->where('created_at', '>=', now()->subMinutes($lightningWindowMinutes))
             ->whereIn('hardware_device_id', $stationIds)
             ->groupBy('hardware_device_id')
             ->pluck('total', 'hardware_device_id');
 
-        return $stations->map(function (HardwareDevice $station) use ($ultimas, $conteoDeRayos, $minutosDeRayos): array {
+        return $stations->map(function (HardwareDevice $station) use ($latest, $lightningCounts, $lightningWindowMinutes): array {
             $id = $station->getKey();
 
-            $lecturas = [];
+            $readings = [];
 
-            foreach (array_keys(self::SENSORES) as $clave) {
-                $lecturas[$clave] = $ultimas[$clave][$id] ?? null;
+            foreach (array_keys(self::SENSORS) as $sensor) {
+                $readings[$sensor] = $latest[$sensor][$id] ?? null;
             }
 
             return $this->buildReadings(
                 $station,
-                $lecturas,
-                (int) ($conteoDeRayos[$id] ?? 0),
-                $minutosDeRayos
+                $readings,
+                (int) ($lightningCounts[$id] ?? 0),
+                $lightningWindowMinutes
             );
         })->all();
     }
@@ -198,39 +198,39 @@ class WeatherStationService
      */
     public function getZoneReadings(string $zone, ?string $locationType = null): ?array
     {
-        $estaciones = $this->getZoneStations($zone, $locationType);
+        $stations = $this->getZoneStations($zone, $locationType);
 
-        if ($estaciones->isEmpty()) {
+        if ($stations->isEmpty()) {
             return null;
         }
 
-        $ids = $estaciones->pluck('id')->all();
+        $ids = $stations->pluck('id')->all();
 
         // Para la presión, toda la zona: el barómetro suele vivir dentro.
-        $idsPresion = $locationType === null
+        $pressureIds = $locationType === null
             ? $ids
             : $this->getZoneStations($zone)->pluck('id')->all();
 
-        $lecturas = [];
+        $readings = [];
 
-        foreach (self::SENSORES as $clave => $modelo) {
-            $lecturas[$clave] = $this->latestAmong(
-                $modelo,
-                $clave === 'pressure' ? $idsPresion : $ids
+        foreach (self::SENSORS as $sensor => $modelClass) {
+            $readings[$sensor] = $this->latestAmong(
+                $modelClass,
+                $sensor === 'pressure' ? $pressureIds : $ids
             );
         }
 
-        $minutosDeRayos = (int) config('weather_station.lightning_window_minutes', 60);
+        $lightningWindowMinutes = (int) config('weather_station.lightning_window_minutes', 60);
 
-        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($minutosDeRayos))
+        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($lightningWindowMinutes))
             ->whereIn('hardware_device_id', $ids)
             ->count();
 
         // La estación de referencia para nombre y ubicación es la que trae el
         // dato más reciente de todos: es la que está viva ahora mismo.
-        $referencia = $this->estacionMasReciente($estaciones, $lecturas) ?? $estaciones->first();
+        $reference = $this->freshestStation($stations, $readings) ?? $stations->first();
 
-        return $this->buildReadings($referencia, $lecturas, $lightningCount, $minutosDeRayos);
+        return $this->buildReadings($reference, $readings, $lightningCount, $lightningWindowMinutes);
     }
 
     /**
@@ -253,47 +253,47 @@ class WeatherStationService
     /**
      * De qué estación viene el dato más fresco de todos.
      *
-     * @param  Collection<int, HardwareDevice>  $estaciones
-     * @param  array<string, mixed>  $lecturas
+     * @param  Collection<int, HardwareDevice>  $stations
+     * @param  array<string, mixed>  $readings
      */
-    private function estacionMasReciente(Collection $estaciones, array $lecturas): ?HardwareDevice
+    private function freshestStation(Collection $stations, array $readings): ?HardwareDevice
     {
-        $mejorId = null;
-        $mejorFecha = null;
+        $bestId = null;
+        $bestDate = null;
 
-        foreach ($lecturas as $lectura) {
-            if ($lectura === null || $lectura->created_at === null) {
+        foreach ($readings as $reading) {
+            if ($reading === null || $reading->created_at === null) {
                 continue;
             }
 
-            if ($mejorFecha === null || $lectura->created_at->gt($mejorFecha)) {
-                $mejorFecha = $lectura->created_at;
-                $mejorId = $lectura->hardware_device_id;
+            if ($bestDate === null || $reading->created_at->gt($bestDate)) {
+                $bestDate = $reading->created_at;
+                $bestId = $reading->hardware_device_id;
             }
         }
 
-        return $mejorId === null ? null : $estaciones->firstWhere('id', $mejorId);
+        return $bestId === null ? null : $stations->firstWhere('id', $bestId);
     }
 
     public function getStationReadings(HardwareDevice $station): array
     {
         $stationId = $station->getKey();
 
-        $lecturas = [];
+        $readings = [];
 
-        foreach (self::SENSORES as $clave => $modelo) {
-            $lecturas[$clave] = $this->latestFor($modelo, $stationId);
+        foreach (self::SENSORS as $sensor => $modelClass) {
+            $readings[$sensor] = $this->latestFor($modelClass, $stationId);
         }
 
         // Ventana configurable (C3): v1 contaba 10 minutos, v2 seis horas. Por
         // defecto una hora, parametrizable.
-        $minutosDeRayos = (int) config('weather_station.lightning_window_minutes', 60);
+        $lightningWindowMinutes = (int) config('weather_station.lightning_window_minutes', 60);
 
-        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($minutosDeRayos))
+        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($lightningWindowMinutes))
             ->where('hardware_device_id', $stationId)
             ->count();
 
-        return $this->buildReadings($station, $lecturas, $lightningCount, $minutosDeRayos);
+        return $this->buildReadings($station, $readings, $lightningCount, $lightningWindowMinutes);
     }
 
     /**
@@ -303,25 +303,25 @@ class WeatherStationService
      * la respuesta salga de un único sitio: si se añade un sensor, se añade
      * aquí y las dos vías lo devuelven igual.
      *
-     * @param  array<string, mixed>  $lecturas  Último registro de cada sensor, o null.
+     * @param  array<string, mixed>  $readings  Último registro de cada sensor, o null.
      * @return array<string, mixed>
      */
-    private function buildReadings(HardwareDevice $station, array $lecturas, int $lightningCount, int $minutosDeRayos): array
+    private function buildReadings(HardwareDevice $station, array $readings, int $lightningCount, int $lightningWindowMinutes): array
     {
         $now = now();
         $hour = (int) $now->format('H');
 
-        $temperature = $lecturas['temperature'] ?? null;
-        $humidity = $lecturas['humidity'] ?? null;
-        $pressure = $lecturas['pressure'] ?? null;
-        $light = $lecturas['light'] ?? null;
-        $airQuality = $lecturas['airQuality'] ?? null;
-        $tvoc = $lecturas['tvoc'] ?? null;
-        $eco2 = $lecturas['eco2'] ?? null;
-        $wind = $lecturas['wind'] ?? null;
-        $windDirection = $lecturas['windDirection'] ?? null;
-        $rain = $lecturas['rain'] ?? null;
-        $lastLightning = $lecturas['lightning'] ?? null;
+        $temperature = $readings['temperature'] ?? null;
+        $humidity = $readings['humidity'] ?? null;
+        $pressure = $readings['pressure'] ?? null;
+        $light = $readings['light'] ?? null;
+        $airQuality = $readings['airQuality'] ?? null;
+        $tvoc = $readings['tvoc'] ?? null;
+        $eco2 = $readings['eco2'] ?? null;
+        $wind = $readings['wind'] ?? null;
+        $windDirection = $readings['windDirection'] ?? null;
+        $rain = $readings['rain'] ?? null;
+        $lastLightning = $readings['lightning'] ?? null;
 
         return [
             'station' => $station,
@@ -358,7 +358,7 @@ class WeatherStationService
             ],
             'lightning' => [
                 'last_at' => $lastLightning?->created_at,
-                'window_minutes' => $minutosDeRayos,
+                'window_minutes' => $lightningWindowMinutes,
                 'count_in_window' => $lightningCount,
                 'distance' => $lastLightning?->distance,
                 'energy' => $lastLightning?->energy,
@@ -379,10 +379,10 @@ class WeatherStationService
      */
     public function resolveMainZone(): ?string
     {
-        $configurada = config('weather_station.main_zone');
+        $configuredZone = config('weather_station.main_zone');
 
-        if (is_string($configurada) && $configurada !== '') {
-            return $configurada;
+        if (is_string($configuredZone) && $configuredZone !== '') {
+            return $configuredZone;
         }
 
         return HardwareDevice::weatherStations()

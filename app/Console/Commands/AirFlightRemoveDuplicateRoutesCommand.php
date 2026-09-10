@@ -61,7 +61,7 @@ class AirFlightRemoveDuplicateRoutesCommand extends Command
         $force = (bool) $this->option('force');
         $date = $this->option('date');
 
-        if ($date !== null && ! $this->esFechaValida($date)) {
+        if ($date !== null && ! $this->isValidDate($date)) {
             $this->error("Fecha inválida: «{$date}». Formato esperado: YYYY-MM-DD (ej. 2026-09-08).");
 
             return self::FAILURE;
@@ -120,7 +120,7 @@ class AirFlightRemoveDuplicateRoutesCommand extends Command
      * con la fecha equivocada por una interpretación distinta a la
      * esperada.
      */
-    private function esFechaValida(string $date): bool
+    private function isValidDate(string $date): bool
     {
         return (bool) preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)
             && checkdate((int) substr($date, 5, 2), (int) substr($date, 8, 2), (int) substr($date, 0, 4));

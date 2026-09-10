@@ -60,10 +60,10 @@ class SmartPlantRegisterController extends BaseApiController
      */
     public function index(Request $request, int $plant): JsonResponse
     {
-        $planta = SmartPlantPlant::query()->find($plant);
+        $plant = SmartPlantPlant::query()->find($plant);
 
         // Mismo 404 si no existe que si es de otro.
-        if (! $planta || $request->user()->cannot('view', $planta)) {
+        if (! $plant || $request->user()->cannot('view', $plant)) {
             return $this->notFoundResponse('Planta no encontrada');
         }
 
@@ -73,7 +73,7 @@ class SmartPlantRegisterController extends BaseApiController
             defaultSortColumn: 'created_at',
         );
 
-        $query = SmartPlantRegister::query()->where('plant_id', $plant);
+        $query = SmartPlantRegister::query()->where('plant_id', $plant->id);
 
         return $this->paginatedResponse(
             $collectionQuery->paginate($query, $request),

@@ -41,7 +41,7 @@ class ElementsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return HardwareEnergyForm::completo($schema);
+        return HardwareEnergyForm::full($schema);
     }
 
     public function table(Table $table): Table
@@ -64,7 +64,7 @@ class ElementsRelationManager extends RelationManager
                 TextColumn::make('role')
                     ->label('Papel')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ETIQUETAS_DE_ROL[$state] ?? (string) $state)
+                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ROLE_LABELS[$state] ?? (string) $state)
                     ->color(fn (?string $state): string => match ($state) {
                         HardwareEnergy::ROLE_GENERATOR => 'success',
                         HardwareEnergy::ROLE_BATTERY => 'warning',

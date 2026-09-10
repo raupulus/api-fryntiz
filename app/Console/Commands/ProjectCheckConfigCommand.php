@@ -35,40 +35,40 @@ class ProjectCheckConfigCommand extends Command
 
     protected $description = 'Comprueba la configuración desplegada y avisa de los fallos que no dan error por sí solos';
 
-    /** @var list<array{nivel: string, titulo: string, detalle: string}> */
-    private array $hallazgos = [];
+    /** @var list<array{level: string, title: string, detail: string}> */
+    private array $findings = [];
 
     public function handle(): int
     {
         $this->info('Comprobando la configuración de '.app()->environment().'…');
         $this->newLine();
 
-        $this->comprobarClaveDeAplicacion();
-        $this->comprobarDepuracion();
-        $this->comprobarCors();
-        $this->comprobarProxies();
-        $this->comprobarCaptcha();
-        $this->comprobarSesion();
-        $this->comprobarPolicies();
-        $this->comprobarColasYBroadcast();
+        $this->checkAppKey();
+        $this->checkDebugMode();
+        $this->checkCors();
+        $this->checkProxies();
+        $this->checkCaptcha();
+        $this->checkSession();
+        $this->checkPolicies();
+        $this->checkQueuesAndBroadcast();
 
-        return $this->informar();
+        return $this->report();
     }
 
-    private function comprobarClaveDeAplicacion(): void
+    private function checkAppKey(): void
     {
         if (blank(config('app.key'))) {
-            $this->fallo(
+            $this->recordFailure(
                 'APP_KEY vacía',
                 'Sin ella no se pueden descifrar las sesiones ni las cookies. `php artisan key:generate`.'
             );
         }
     }
 
-    private function comprobarDepuracion(): void
+    private function checkDebugMode(): void
     {
         if (app()->isProduction() && config('app.debug')) {
-            $this->fallo(
+            $this->recordFailure(
                 'APP_DEBUG=true en producción',
                 'Cualquier error enseña el stack trace con rutas del servidor, y el bloque `debug` '.
                 'de las respuestas de la API sale con el contexto de cada petición.'
@@ -76,19 +76,19 @@ class ProjectCheckConfigCommand extends Command
         }
 
         if (app()->isProduction() && config('logging.default') === 'single') {
-            $this->apunte(
+            $this->note(
                 'LOG_CHANNEL=single',
                 'Un único fichero que crece hasta llenar el disco. `daily` rota y conserva 14 días.'
             );
         }
     }
 
-    private function comprobarCors(): void
+    private function checkCors(): void
     {
-        $origenes = config('cors.allowed_origins', []);
+        $origins = config('cors.allowed_origins', []);
 
-        if ($origenes === []) {
-            $this->fallo(
+        if ($origins === []) {
+            $this->recordFailure(
                 'FRONTEND_URLS vacío',
                 'CORS no permite ningún origen: la API responde 200 y el navegador bloquea TODAS las '.
                 'respuestas. Ninguna web podrá consumirla, y no habrá ni un error en el log.'
@@ -97,18 +97,18 @@ class ProjectCheckConfigCommand extends Command
             return;
         }
 
-        if (in_array('*', $origenes, true) && config('cors.supports_credentials')) {
-            $this->fallo(
+        if (in_array('*', $origins, true) && config('cors.supports_credentials')) {
+            $this->recordFailure(
                 'FRONTEND_URLS con comodín y credenciales',
                 '`*` junto a `supports_credentials` es una combinación que el navegador rechaza, '.
                 'así que además de inseguro no funciona. Pon los dominios uno a uno.'
             );
         }
 
-        foreach ($origenes as $origen) {
-            if (! str_starts_with((string) $origen, 'http')) {
-                $this->apunte(
-                    'Origen CORS sin esquema: '.$origen,
+        foreach ($origins as $origin) {
+            if (! str_starts_with((string) $origin, 'http')) {
+                $this->note(
+                    'Origen CORS sin esquema: '.$origin,
                     'Van URL completas («https://raupulus.dev»), no dominios sueltos. '.
                     'Sin esquema no casa con nada y el origen queda fuera en silencio.'
                 );
@@ -116,12 +116,12 @@ class ProjectCheckConfigCommand extends Command
         }
     }
 
-    private function comprobarProxies(): void
+    private function checkProxies(): void
     {
         $proxies = array_filter(array_map('trim', explode(',', (string) config('app.trusted_proxies'))));
 
         if (in_array('*', $proxies, true)) {
-            $this->apunte(
+            $this->note(
                 'TRUSTED_PROXIES=*',
                 'Se confía en cualquier origen para la cabecera X-Forwarded-For. Si la aplicación es '.
                 'alcanzable sin pasar por el proxy, la IP se puede falsificar y con ella todos los '.
@@ -130,7 +130,7 @@ class ProjectCheckConfigCommand extends Command
         }
 
         if ($proxies === []) {
-            $this->apunte(
+            $this->note(
                 'TRUSTED_PROXIES vacío',
                 'Detrás de nginx o Apache, $request->ip() devuelve la IP del proxy: los límites por IP '.
                 'pasan a ser un cupo global compartido por todos los visitantes.'
@@ -138,14 +138,14 @@ class ProjectCheckConfigCommand extends Command
         }
     }
 
-    private function comprobarCaptcha(): void
+    private function checkCaptcha(): void
     {
         if (! app()->isProduction()) {
             return;
         }
 
         if (blank(config('google.recaptcha.secret_key'))) {
-            $this->fallo(
+            $this->recordFailure(
                 'RECAPTCHA_SECRET_KEY vacía en producción',
                 'La verificación se desactiva sola y los formularios públicos —contacto, newsletter y '.
                 'el login de los paneles— quedan sin protección, sin un solo error en los logs.'
@@ -154,10 +154,10 @@ class ProjectCheckConfigCommand extends Command
             return;
         }
 
-        $umbral = (float) config('google.recaptcha.min_score', 0);
+        $threshold = (float) config('google.recaptcha.min_score', 0);
 
-        if ($umbral <= 0.0) {
-            $this->apunte(
+        if ($threshold <= 0.0) {
+            $this->note(
                 'RECAPTCHA_MIN_SCORE en 0',
                 'reCAPTCHA v3 no dice «humano» o «bot», da una puntuación. Con el umbral a 0 pasa '.
                 'cualquier token válido, también el de un bot: el captcha está puesto y no filtra nada.'
@@ -165,14 +165,14 @@ class ProjectCheckConfigCommand extends Command
         }
     }
 
-    private function comprobarSesion(): void
+    private function checkSession(): void
     {
         if (! app()->isProduction()) {
             return;
         }
 
         if (! config('session.secure')) {
-            $this->fallo(
+            $this->recordFailure(
                 'SESSION_SECURE_COOKIE sin activar',
                 'La cookie de sesión del panel de administración viaja sin el flag `Secure`: basta una '.
                 'petición en claro para que se vea por la red.'
@@ -180,7 +180,7 @@ class ProjectCheckConfigCommand extends Command
         }
 
         if (blank(config('app.url')) || str_starts_with((string) config('app.url'), 'http://')) {
-            $this->apunte(
+            $this->note(
                 'APP_URL no es https',
                 'De ahí salen los enlaces de los correos y las URL absolutas de la API.'
             );
@@ -193,7 +193,7 @@ class ProjectCheckConfigCommand extends Command
         // servidor no aparece ni una línea, porque la petición nunca llega a
         // salir. Es un fallo que sólo se ve abriendo la web.
         if (str_starts_with((string) config('app.api_url'), 'http://')) {
-            $this->fallo(
+            $this->recordFailure(
                 'API_URL no es https',
                 'Las vistas la meten en el JavaScript del cliente. Sobre una página HTTPS el '.
                 'navegador bloquea esas llamadas por contenido mixto y el mapa de vuelos se queda '.
@@ -214,36 +214,36 @@ class ProjectCheckConfigCommand extends Command
      * No hace falta base de datos ni usuario: se pregunta al Gate por el mapa de
      * policies, que es información estática del arranque.
      */
-    private function comprobarPolicies(): void
+    private function checkPolicies(): void
     {
-        $sinPolicy = [];
+        $withoutPolicy = [];
 
         foreach (Filament::getPanels() as $panel) {
-            foreach ($panel->getResources() as $recurso) {
-                $modelo = $recurso::getModel();
+            foreach ($panel->getResources() as $resource) {
+                $model = $resource::getModel();
 
-                if (Gate::getPolicyFor($modelo) === null) {
-                    $sinPolicy[$modelo] = true;
+                if (Gate::getPolicyFor($model) === null) {
+                    $withoutPolicy[$model] = true;
                 }
             }
         }
 
-        if ($sinPolicy === []) {
+        if ($withoutPolicy === []) {
             return;
         }
 
-        $this->fallo(
-            'Recursos del panel sin policy: '.count($sinPolicy),
+        $this->recordFailure(
+            'Recursos del panel sin policy: '.count($withoutPolicy),
             'Un modelo sin policy no está restringido, está abierto: Filament autoriza ver, crear, '.
             'editar y borrar a cualquiera que entre al panel, y al panel entra también el rol Editor. '.
-            'Sin policy: '.implode(', ', array_keys($sinPolicy))
+            'Sin policy: '.implode(', ', array_keys($withoutPolicy))
         );
     }
 
-    private function comprobarColasYBroadcast(): void
+    private function checkQueuesAndBroadcast(): void
     {
         if (app()->isProduction() && config('queue.default') === 'sync') {
-            $this->apunte(
+            $this->note(
                 'QUEUE_CONNECTION=sync en producción',
                 'Cada job corre DENTRO de la petición: el visitante espera al contador de visitas y al '.
                 'servidor de correo, y si el SMTP está caído se lleva el error.'
@@ -255,13 +255,13 @@ class ProjectCheckConfigCommand extends Command
             // `config:cache` y a partir de ahí Laravel no carga el `.env`, así
             // que `env()` devuelve null y este comando avisaría de un problema
             // inventado. Es el mismo despiste que tuvo `TRUSTED_PROXIES`.
-            $origenes = collect(config('reverb.apps.apps.0.allowed_origins', []))
-                ->map(static fn ($origen): string => trim((string) $origen))
+            $origins = collect(config('reverb.apps.apps.0.allowed_origins', []))
+                ->map(static fn ($origin): string => trim((string) $origin))
                 ->filter()
                 ->all();
 
-            if ($origenes === [] || in_array('*', $origenes, true)) {
-                $this->apunte(
+            if ($origins === [] || in_array('*', $origins, true)) {
+                $this->note(
                     'REVERB_ALLOWED_ORIGINS sin acotar',
                     'Es lo único que impide que cualquier web abra un socket contra el servidor.'
                 );
@@ -271,56 +271,57 @@ class ProjectCheckConfigCommand extends Command
 
     /**
      * Un fallo: algo está mal y hay que arreglarlo antes de dar por bueno el
-     * despliegue. Se llama `fallo()` y no `error()` porque `Command::error()`
-     * ya existe y es lo que pinta en rojo.
+     * despliegue. Se llama `recordFailure()` y no `fail()` ni `error()`:
+     * `Command` ya tiene ambos —`fail()` lanza una excepción y `error()` pinta
+     * en rojo— y esto sólo acumula el hallazgo para pintarlo al final.
      */
-    private function fallo(string $titulo, string $detalle): void
+    private function recordFailure(string $title, string $detail): void
     {
-        $this->hallazgos[] = ['nivel' => 'error', 'titulo' => $titulo, 'detalle' => $detalle];
+        $this->findings[] = ['level' => 'error', 'title' => $title, 'detail' => $detail];
     }
 
     /**
      * Un aviso: puede ser deliberado, pero conviene mirarlo. Con `--strict`
      * también hace fallar el comando.
      */
-    private function apunte(string $titulo, string $detalle): void
+    private function note(string $title, string $detail): void
     {
-        $this->hallazgos[] = ['nivel' => 'aviso', 'titulo' => $titulo, 'detalle' => $detalle];
+        $this->findings[] = ['level' => 'notice', 'title' => $title, 'detail' => $detail];
     }
 
     /**
      * Pinta el resultado y devuelve el código de salida.
      */
-    private function informar(): int
+    private function report(): int
     {
-        if ($this->hallazgos === []) {
+        if ($this->findings === []) {
             $this->components->info('Sin problemas. La configuración está completa.');
 
             return self::SUCCESS;
         }
 
-        $errores = 0;
+        $errors = 0;
 
-        foreach ($this->hallazgos as $hallazgo) {
-            if ($hallazgo['nivel'] === 'error') {
-                $errores++;
-                $this->components->error($hallazgo['titulo']);
+        foreach ($this->findings as $finding) {
+            if ($finding['level'] === 'error') {
+                $errors++;
+                $this->components->error($finding['title']);
             } else {
-                $this->components->warn($hallazgo['titulo']);
+                $this->components->warn($finding['title']);
             }
 
-            $this->line('   '.$hallazgo['detalle']);
+            $this->line('   '.$finding['detail']);
             $this->newLine();
         }
 
-        $avisos = count($this->hallazgos) - $errores;
+        $notices = count($this->findings) - $errors;
 
-        $this->line(sprintf('  <fg=red>%d error(es)</> · <fg=yellow>%d aviso(s)</>', $errores, $avisos));
+        $this->line(sprintf('  <fg=red>%d error(es)</> · <fg=yellow>%d aviso(s)</>', $errors, $notices));
 
-        if ($errores > 0) {
+        if ($errors > 0) {
             return self::FAILURE;
         }
 
-        return $this->option('strict') && $avisos > 0 ? self::FAILURE : self::SUCCESS;
+        return $this->option('strict') && $notices > 0 ? self::FAILURE : self::SUCCESS;
     }
 }

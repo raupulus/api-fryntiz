@@ -32,32 +32,32 @@ class AdminCatalogPolicy
 
     public function viewAny(User $user): bool
     {
-        return $this->esAdministrador($user);
+        return $this->isAdministrator($user);
     }
 
     public function view(User $user, Model $model): bool
     {
-        return $this->esAdministrador($user);
+        return $this->isAdministrator($user);
     }
 
     public function create(User $user): bool
     {
-        return $this->esAdministrador($user);
+        return $this->isAdministrator($user);
     }
 
     public function update(User $user, Model $model): bool
     {
-        return $this->esAdministrador($user);
+        return $this->isAdministrator($user);
     }
 
     public function delete(User $user, Model $model): bool
     {
-        return $this->esAdministrador($user);
+        return $this->isAdministrator($user);
     }
 
     public function restore(User $user, Model $model): bool
     {
-        return $this->esAdministrador($user);
+        return $this->isAdministrator($user);
     }
 
     public function forceDelete(User $user, Model $model): bool
@@ -72,7 +72,7 @@ class AdminCatalogPolicy
      * que sin descartar las peticiones de dispositivo el token grabado en una
      * estación meteorológica heredaría permiso para reescribir los catálogos.
      */
-    private function esAdministrador(User $user): bool
+    private function isAdministrator(User $user): bool
     {
         return $user->isAdmin() && ! TokenAbilities::deviceRequest($user);
     }

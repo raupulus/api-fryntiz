@@ -87,7 +87,7 @@ class UserResource extends Resource
      * {@see UserPolicy::update()}, que es la que manda; esto es
      * para que el formulario no pinte como editable algo que se va a rechazar.
      */
-    protected static function esIntocable(?User $record): bool
+    protected static function isUntouchable(?User $record): bool
     {
         return $record?->isSuperAdmin() === true
             && auth()->user()?->isSuperAdmin() !== true;
@@ -167,9 +167,9 @@ class UserResource extends Resource
                         // manipulable: una interfaz que ofrece lo que luego
                         // rechaza es una interfaz que miente. `dehydrated(false)`
                         // hace además que el valor no viaje en el guardado.
-                        ->disabled(fn (?User $record): bool => self::esIntocable($record))
-                        ->dehydrated(fn (?User $record): bool => ! self::esIntocable($record))
-                        ->helperText(fn (?User $record): ?string => self::esIntocable($record)
+                        ->disabled(fn (?User $record): bool => self::isUntouchable($record))
+                        ->dehydrated(fn (?User $record): bool => ! self::isUntouchable($record))
+                        ->helperText(fn (?User $record): ?string => self::isUntouchable($record)
                             ? 'El rol de un Super Administrador sólo lo cambia otro Super Administrador.'
                             : null)
                         ->label('Rol'),

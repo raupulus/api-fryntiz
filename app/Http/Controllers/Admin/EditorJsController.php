@@ -50,12 +50,12 @@ class EditorJsController extends Controller
             'file' => ['required', 'file', 'max:8192'],
         ]);
 
-        $subido = $request->file('file');
-        $esImagen = str_starts_with((string) $subido->getMimeType(), 'image/');
+        $uploaded = $request->file('file');
+        $isImage = str_starts_with((string) $uploaded->getMimeType(), 'image/');
 
         // `validate: false` porque por aquí entran también los adjuntos, que
         // no tienen por qué ser imágenes.
-        $file = File::addFile($subido, 'content-pages', false, validate: false);
+        $file = File::addFile($uploaded, 'content-pages', false, validate: false);
 
         if (! $file) {
             return response()->json(['success' => 0], 422);
@@ -66,7 +66,7 @@ class EditorJsController extends Controller
             'file' => [
                 // Editor.js pinta `file.url`. Para una imagen, la mediana; para
                 // un adjunto, el fichero tal cual.
-                'url' => $esImagen ? $file->thumbnail('large') : $file->url,
+                'url' => $isImage ? $file->thumbnail('large') : $file->url,
                 'name' => $file->original_name ?? $file->name,
                 'size' => $file->size,
                 'extension' => $file->fileType?->extension,
@@ -97,14 +97,14 @@ class EditorJsController extends Controller
     public function urlMetadata(Request $request): JsonResponse
     {
         $url = trim((string) $request->query('url'));
-        $vacio = response()->json(['success' => 0, 'meta' => []]);
+        $empty = response()->json(['success' => 0, 'meta' => []]);
 
-        if (! $this->urlAlcanzable($url)) {
-            return $vacio;
+        if (! $this->isReachableUrl($url)) {
+            return $empty;
         }
 
         try {
-            $respuesta = Http::timeout(5)
+            $response = Http::timeout(5)
                 ->connectTimeout(3)
                 ->withHeaders(['Accept' => 'text/html,application/xhtml+xml'])
                 ->withUserAgent('ApiRaupulusBot/1.0 (+https://api.raupulus.dev)')
@@ -113,23 +113,23 @@ class EditorJsController extends Controller
                 ->withoutRedirecting()
                 ->get($url);
         } catch (\Throwable) {
-            return $vacio;
+            return $empty;
         }
 
-        if (! $respuesta->successful()) {
-            return $vacio;
+        if (! $response->successful()) {
+            return $empty;
         }
 
-        $html = mb_substr($respuesta->body(), 0, 131_072);
-        $codificacion = mb_detect_encoding($html) ?: 'UTF-8';
-        $html = mb_convert_encoding($html, 'UTF-8', $codificacion);
+        $html = mb_substr($response->body(), 0, 131_072);
+        $encoding = mb_detect_encoding($html) ?: 'UTF-8';
+        $html = mb_convert_encoding($html, 'UTF-8', $encoding);
 
         return response()->json([
             'success' => 1,
             'meta' => [
-                'title' => $this->extraerTitulo($html),
-                'description' => $this->extraerMeta($html, 'description'),
-                'image' => ['url' => $this->extraerMeta($html, 'og:image')],
+                'title' => $this->extractTitle($html),
+                'description' => $this->extractMeta($html, 'description'),
+                'image' => ['url' => $this->extractMeta($html, 'og:image')],
             ],
         ]);
     }
@@ -137,19 +137,19 @@ class EditorJsController extends Controller
     /**
      * ¿La URL es una página pública que se puede ir a buscar?
      */
-    private function urlAlcanzable(string $url): bool
+    private function isReachableUrl(string $url): bool
     {
         if ($url === '' || filter_var($url, FILTER_VALIDATE_URL) === false) {
             return false;
         }
 
-        $partes = parse_url($url);
+        $parts = parse_url($url);
 
-        if (! in_array($partes['scheme'] ?? '', ['http', 'https'], true)) {
+        if (! in_array($parts['scheme'] ?? '', ['http', 'https'], true)) {
             return false;
         }
 
-        $host = $partes['host'] ?? '';
+        $host = $parts['host'] ?? '';
 
         if ($host === '') {
             return false;
@@ -164,13 +164,13 @@ class EditorJsController extends Controller
         }
 
         foreach ($ips as $ip) {
-            $publica = filter_var(
+            $public = filter_var(
                 $ip,
                 FILTER_VALIDATE_IP,
                 FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
             );
 
-            if ($publica === false) {
+            if ($public === false) {
                 return false;
             }
         }
@@ -195,7 +195,7 @@ class EditorJsController extends Controller
         return gethostbynamel($host) ?: [];
     }
 
-    private function extraerTitulo(string $html): string
+    private function extractTitle(string $html): string
     {
         return preg_match('!<title[^>]*>(.*?)</title>!is', $html, $m) === 1
             ? trim(html_entity_decode($m[1]))
@@ -206,17 +206,17 @@ class EditorJsController extends Controller
      * Una `<meta>` por su nombre, admitiendo `name` y `property` en cualquier
      * orden respecto a `content`, que es como se escriben en la vida real.
      */
-    private function extraerMeta(string $html, string $nombre): string
+    private function extractMeta(string $html, string $name): string
     {
-        $escapado = preg_quote($nombre, '!');
+        $escaped = preg_quote($name, '!');
 
-        $patrones = [
-            '!<meta[^>]+(?:name|property)=["\']'.$escapado.'["\'][^>]*content=["\'](.*?)["\']!is',
-            '!<meta[^>]+content=["\'](.*?)["\'][^>]*(?:name|property)=["\']'.$escapado.'["\']!is',
+        $patterns = [
+            '!<meta[^>]+(?:name|property)=["\']'.$escaped.'["\'][^>]*content=["\'](.*?)["\']!is',
+            '!<meta[^>]+content=["\'](.*?)["\'][^>]*(?:name|property)=["\']'.$escaped.'["\']!is',
         ];
 
-        foreach ($patrones as $patron) {
-            if (preg_match($patron, $html, $m) === 1) {
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $html, $m) === 1) {
                 return trim(html_entity_decode($m[1]));
             }
         }

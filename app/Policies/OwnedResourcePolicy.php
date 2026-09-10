@@ -55,7 +55,7 @@ abstract class OwnedResourcePolicy
 
     public function view(User $user, Model $model): bool
     {
-        return $this->alcanza($user, $model);
+        return $this->canAccess($user, $model);
     }
 
     public function create(User $user): bool
@@ -65,17 +65,17 @@ abstract class OwnedResourcePolicy
 
     public function update(User $user, Model $model): bool
     {
-        return $this->alcanza($user, $model);
+        return $this->canAccess($user, $model);
     }
 
     public function delete(User $user, Model $model): bool
     {
-        return $this->alcanza($user, $model);
+        return $this->canAccess($user, $model);
     }
 
     public function restore(User $user, Model $model): bool
     {
-        return $this->alcanza($user, $model);
+        return $this->canAccess($user, $model);
     }
 
     public function forceDelete(User $user, Model $model): bool
@@ -86,15 +86,15 @@ abstract class OwnedResourcePolicy
     /**
      * Es suyo, o quien pregunta es un administrador con sesión.
      */
-    protected function alcanza(User $user, Model $model): bool
+    protected function canAccess(User $user, Model $model): bool
     {
         if (TokenAbilities::deviceRequest($user)) {
             return false;
         }
 
-        $propietario = $this->ownerId($model);
+        $ownerId = $this->ownerId($model);
 
-        if ($propietario !== null && $propietario === (int) $user->id) {
+        if ($ownerId !== null && $ownerId === (int) $user->id) {
             return true;
         }
 

@@ -33,7 +33,7 @@ class HardwareEnergyForm
      * Desde la ficha de un dispositivo: sin preguntar el medidor, el medido ni
      * el papel, porque los tres los pone el contexto.
      */
-    public static function deUnDispositivo(Schema $schema): Schema
+    public static function forADevice(Schema $schema): Schema
     {
         return $schema->components([
             Section::make('Qué mide')
@@ -41,20 +41,20 @@ class HardwareEnergyForm
                 ->columns(2)
                 ->columnSpanFull()
                 ->schema([
-                    self::canal(),
-                    self::instalacion(),
-                    self::fuente(),
-                    self::activo(),
+                    self::channel(),
+                    self::installation(),
+                    self::source(),
+                    self::active(),
                 ]),
 
-            self::caracteristicasElectricas(),
+            self::electricalCharacteristics(),
         ]);
     }
 
     /**
      * Desde Elementos de Energía: aquí sí se elige qué se mide y con qué papel.
      */
-    public static function completo(Schema $schema): Schema
+    public static function full(Schema $schema): Schema
     {
         return $schema->components([
             // A ancho completo y arriba del todo: el medidor es lo único que no
@@ -81,20 +81,20 @@ class HardwareEnergyForm
                         ->required()->searchable()->preload()
                         ->label('Dispositivo monitorizado')
                         ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
-                    self::papel(),
-                    self::canal(),
-                    self::activo(),
+                    self::role(),
+                    self::channel(),
+                    self::active(),
                 ]),
 
             Section::make('Instalación')
                 ->columns(2)
                 ->columnSpanFull()
                 ->schema([
-                    self::instalacion(),
-                    self::fuente(),
+                    self::installation(),
+                    self::source(),
                 ]),
 
-            self::caracteristicasElectricas(),
+            self::electricalCharacteristics(),
         ]);
     }
 
@@ -102,7 +102,7 @@ class HardwareEnergyForm
      * Desde otro papel del mismo aparato: el medidor no se pregunta, que es el
      * que se está mirando.
      */
-    public static function delMismoMedidor(Schema $schema): Schema
+    public static function forSameMeter(Schema $schema): Schema
     {
         return $schema->components([
             Section::make('Qué mide este canal')
@@ -115,26 +115,26 @@ class HardwareEnergyForm
                         ->required()->searchable()->preload()
                         ->label('Dispositivo monitorizado')
                         ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
-                    self::canal(),
-                    self::activo(),
+                    self::channel(),
+                    self::active(),
                 ]),
 
             Section::make('Instalación')
                 ->columns(2)
                 ->columnSpanFull()
                 ->schema([
-                    self::instalacion(),
-                    self::fuente(),
+                    self::installation(),
+                    self::source(),
                 ]),
 
-            self::caracteristicasElectricas(),
+            self::electricalCharacteristics(),
         ]);
     }
 
-    private static function papel(): Select
+    private static function role(): Select
     {
         return Select::make('role')
-            ->options(HardwareEnergy::ETIQUETAS_DE_ROL)
+            ->options(HardwareEnergy::ROLE_LABELS)
             ->default(HardwareEnergy::ROLE_LOAD)
             ->required()
             ->live()
@@ -142,7 +142,7 @@ class HardwareEnergyForm
             ->helperText('Generador es lo que produce, consumo lo que gasta y batería lo que almacena.');
     }
 
-    private static function canal(): TextInput
+    private static function channel(): TextInput
     {
         return TextInput::make('sensor_position')
             ->numeric()->minValue(0)->default(0)->required()
@@ -150,7 +150,7 @@ class HardwareEnergyForm
             ->helperText('Tiene que coincidir con el «pos» que manda el dispositivo en cada lectura. 0 si sólo tiene uno.');
     }
 
-    private static function instalacion(): Select
+    private static function installation(): Select
     {
         return Select::make('energy_system_id')
             ->relationship('system', 'name')
@@ -159,7 +159,7 @@ class HardwareEnergyForm
             ->helperText('Lo que permite preguntar «cuánto ha generado la casa hoy».');
     }
 
-    private static function fuente(): Select
+    private static function source(): Select
     {
         return Select::make('energy_source_type_id')
             ->relationship('sourceType', 'name')
@@ -168,7 +168,7 @@ class HardwareEnergyForm
             ->helperText('De dónde sale la energía de ESTE canal, que puede no ser la misma que la del de al lado.');
     }
 
-    private static function activo(): Toggle
+    private static function active(): Toggle
     {
         return Toggle::make('is_active')
             ->default(true)
@@ -180,7 +180,7 @@ class HardwareEnergyForm
      * La tensión y la capacidad, que son de cada papel: en un controlador solar,
      * el generador mide el panel y el consumo mide la batería.
      */
-    private static function caracteristicasElectricas(): Section
+    private static function electricalCharacteristics(): Section
     {
         return Section::make('Características eléctricas')
             ->description('Para calcular manda siempre la tensión que reporte el aparato en cada lectura. Lo de aquí es el respaldo para cuando no la mande.')
@@ -207,11 +207,11 @@ class HardwareEnergyForm
                 TextInput::make('capacity_mah')
                     ->numeric()->step(0.01)->suffix(' mAh')
                     ->label('Capacidad')
-                    ->visible(fn (Get $get): bool => self::esBateria($get)),
+                    ->visible(fn (Get $get): bool => self::isBattery($get)),
                 TextInput::make('capacity_wh')
                     ->numeric()->step(0.01)->suffix(' Wh')
                     ->label('Capacidad')
-                    ->visible(fn (Get $get): bool => self::esBateria($get)),
+                    ->visible(fn (Get $get): bool => self::isBattery($get)),
             ]);
     }
 
@@ -220,10 +220,10 @@ class HardwareEnergyForm
      * botón—, así que ahí no hay `role` que mirar y los campos de capacidad se
      * enseñan igual.
      */
-    private static function esBateria(Get $get): bool
+    private static function isBattery(Get $get): bool
     {
-        $rol = $get('role');
+        $role = $get('role');
 
-        return $rol === null || $rol === HardwareEnergy::ROLE_BATTERY;
+        return $role === null || $role === HardwareEnergy::ROLE_BATTERY;
     }
 }

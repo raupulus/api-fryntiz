@@ -64,7 +64,7 @@ class HardwareEnergyResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return HardwareEnergyForm::completo($schema);
+        return HardwareEnergyForm::full($schema);
     }
 
     /**
@@ -137,7 +137,7 @@ class HardwareEnergyResource extends Resource
                 TextColumn::make('role')
                     ->label('Papel')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ETIQUETAS_DE_ROL[$state] ?? (string) $state)
+                    ->formatStateUsing(fn (?string $state): string => HardwareEnergy::ROLE_LABELS[$state] ?? (string) $state)
                     ->color(fn (?string $state): string => match ($state) {
                         HardwareEnergy::ROLE_GENERATOR => 'success',
                         HardwareEnergy::ROLE_BATTERY => 'warning',
@@ -183,7 +183,7 @@ class HardwareEnergyResource extends Resource
                     ->relationship('system', 'name')
                     ->label('Instalación'),
                 SelectFilter::make('role')
-                    ->options(HardwareEnergy::ETIQUETAS_DE_ROL)
+                    ->options(HardwareEnergy::ROLE_LABELS)
                     ->label('Papel'),
                 TernaryFilter::make('is_active')->label('Activo'),
                 TernaryFilter::make('nominal_voltage')

@@ -41,7 +41,7 @@ class HtmlHelper
      *
      * @var list<string>
      */
-    private const ETIQUETAS = [
+    private const ALLOWED_TAGS = [
         'p', 'br', 'div', 'span',
         'strong', 'b', 'em', 'i', 'u', 's',
         'ul', 'ol', 'li',
@@ -70,7 +70,7 @@ class HtmlHelper
      * Las etiquetas `description`, `og:description` y `twitter:description` no
      * admiten HTML, y meterlo ahí sale en el resultado de búsqueda tal cual.
      */
-    public static function toMetaDescription(?string $html, int $limite = 160): string
+    public static function toMetaDescription(?string $html, int $limit = 160): string
     {
         if ($html === null) {
             return '';
@@ -78,13 +78,13 @@ class HtmlHelper
 
         // `strip_tags` basta aquí: lo que quede va dentro de un atributo, que
         // Blade escapa igualmente. Lo que se busca es texto legible.
-        $texto = trim((string) preg_replace('/\s+/u', ' ', strip_tags($html)));
+        $text = trim((string) preg_replace('/\s+/u', ' ', strip_tags($html)));
 
-        if (mb_strlen($texto) <= $limite) {
-            return $texto;
+        if (mb_strlen($text) <= $limit) {
+            return $text;
         }
 
-        return trim(mb_substr($texto, 0, $limite - 1)).'…';
+        return trim(mb_substr($text, 0, $limit - 1)).'…';
     }
 
     /**
@@ -106,8 +106,8 @@ class HtmlHelper
             // externos; lo que importa es el esquema.
             ->forceAttribute('a', 'rel', 'noopener noreferrer');
 
-        foreach (self::ETIQUETAS as $etiqueta) {
-            $config = $config->allowElement($etiqueta);
+        foreach (self::ALLOWED_TAGS as $tag) {
+            $config = $config->allowElement($tag);
         }
 
         // El único atributo que sobrevive. Sin `target`: que un enlace decida

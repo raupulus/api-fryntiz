@@ -36,13 +36,13 @@ use Carbon\CarbonInterface;
  */
 enum KeyCounterWeekdayEnum: int
 {
-    case Lunes = 0;
-    case Martes = 1;
-    case Miercoles = 2;
-    case Jueves = 3;
-    case Viernes = 4;
-    case Sabado = 5;
-    case Domingo = 6;
+    case Monday = 0;
+    case Tuesday = 1;
+    case Wednesday = 2;
+    case Thursday = 3;
+    case Friday = 4;
+    case Saturday = 5;
+    case Sunday = 6;
 
     /**
      * Fecha a partir de la cual los datos usan esta convención.
@@ -50,31 +50,31 @@ enum KeyCounterWeekdayEnum: int
      * Antes de esto la columna `weekday` está en la convención de Carbon. Sirve
      * de límite al comando de normalización.
      */
-    public const CAMBIO_DE_CONVENCION = '2020-01-01';
+    public const CONVENTION_CHANGE_DATE = '2020-01-01';
 
     public function label(): string
     {
         return match ($this) {
-            self::Lunes => 'Lunes',
-            self::Martes => 'Martes',
-            self::Miercoles => 'Miércoles',
-            self::Jueves => 'Jueves',
-            self::Viernes => 'Viernes',
-            self::Sabado => 'Sábado',
-            self::Domingo => 'Domingo',
+            self::Monday => 'Lunes',
+            self::Tuesday => 'Martes',
+            self::Wednesday => 'Miércoles',
+            self::Thursday => 'Jueves',
+            self::Friday => 'Viernes',
+            self::Saturday => 'Sábado',
+            self::Sunday => 'Domingo',
         };
     }
 
-    public function abreviatura(): string
+    public function abbreviation(): string
     {
         return match ($this) {
-            self::Lunes => 'Lun',
-            self::Martes => 'Mar',
-            self::Miercoles => 'Mié',
-            self::Jueves => 'Jue',
-            self::Viernes => 'Vie',
-            self::Sabado => 'Sáb',
-            self::Domingo => 'Dom',
+            self::Monday => 'Lun',
+            self::Tuesday => 'Mar',
+            self::Wednesday => 'Mié',
+            self::Thursday => 'Jue',
+            self::Friday => 'Vie',
+            self::Saturday => 'Sáb',
+            self::Sunday => 'Dom',
         };
     }
 
@@ -84,7 +84,7 @@ enum KeyCounterWeekdayEnum: int
      * Un valor fuera de rango se enseña tal cual en vez de reventar: en una
      * tabla de administración interesa más ver el dato raro que un error.
      */
-    public static function etiquetaDe(int|string|null $weekday): ?string
+    public static function labelFor(int|string|null $weekday): ?string
     {
         if ($weekday === null || $weekday === '') {
             return null;
@@ -100,13 +100,13 @@ enum KeyCounterWeekdayEnum: int
      */
     public static function options(): array
     {
-        $opciones = [];
+        $options = [];
 
-        foreach (self::cases() as $dia) {
-            $opciones[$dia->value] = $dia->label();
+        foreach (self::cases() as $day) {
+            $options[$day->value] = $day->label();
         }
 
-        return $opciones;
+        return $options;
     }
 
     /**
@@ -116,8 +116,8 @@ enum KeyCounterWeekdayEnum: int
      * justo lo que manda el cliente. Usar `dayOfWeek` daría la convención
      * contraria, que es de donde viene todo el lío.
      */
-    public static function deLaFecha(CarbonInterface $fecha): self
+    public static function fromDate(CarbonInterface $date): self
     {
-        return self::from($fecha->dayOfWeekIso - 1);
+        return self::from($date->dayOfWeekIso - 1);
     }
 }

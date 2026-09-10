@@ -180,7 +180,7 @@ final class CapWarnings
         $fenomeno = self::valuePairs($info['eventCode'] ?? null);
         $zonasAceptadas = (array) config('aemet.warnings.zones', []);
 
-        $comun = [
+        $common = [
             'identifier' => self::text($alert['identifier'] ?? null),
             'msg_type' => self::text($alert['msgType'] ?? null),
             'status' => $status,
@@ -231,7 +231,7 @@ final class CapWarnings
                 continue;
             }
 
-            $rows[] = $comun + [
+            $rows[] = $common + [
                 'name' => $name,
                 'slug' => Str::slug($name, '_'),
                 'geocode' => $zone,
