@@ -511,6 +511,54 @@ URL) a través de `callSchemaComponentMethod()`, que guardar sin tocar el campo
 **no** desvincula la FK, y que quitar la imagen con el campo vacío **sí** la
 desvincula.
 
+### Checklist al añadir un campo de imagen nuevo
+
+Esto tardó varias vueltas (reporte del usuario → primer arreglo que sólo
+tapaba el síntoma → glitch visual al reemplazar → arreglo de verdad) porque
+cada paso se investigó desde cero. Antes de tocar un `FileUpload` en el panel,
+mira aquí primero.
+
+1. **¿Qué guarda la columna?** Es lo único que importa para decidir el patrón:
+   - **Un id que apunta a `files`** (una FK, típicamente `image_id`) → patrón
+     "FK": usa `ImageCropperUpload::makeImage('image_id')->asFileRecord()` +
+     `->storeFiles(false)`, y en la Page (Create y Edit) el trait
+     `HasImageFileUpload::resolveImageUpload($data, 'image_id', 'directorio')`
+     en `mutateFormDataBeforeSave()`. **No** añadas
+     `mutateFormDataBeforeFill()` para quitar el id: sin `asFileRecord()` el
+     campo no sabe pintarlo, pero con él tiene que llegar.
+   - **Una ruta de disco en la propia columna** (`profile_photo_path`,
+     `icon16`…`icon128`) → patrón "disco": `ImageCropperUpload::makeImage(...)`
+     a secas ya funciona, Filament resuelve la ruta contra el disco sin nada
+     más. No necesita `asFileRecord()` ni el trait.
+   - Si dudas cuál es, mira la migración de la columna (`bigint`/FK vs
+     `string`), no el nombre del campo.
+2. **No mezcles los dos patrones en el mismo campo.** `asFileRecord()` en un
+   campo de ruta de disco (o al revés) es la fuente más probable de un campo
+   que se enseña vacío o que no guarda.
+3. **Prueba con `callSchemaComponentMethod()`, no sólo mirando el estado.** Un
+   test con Livewire que sólo comprueba `assertSet('data.campo', $valor)` no
+   detecta que FilePond (JavaScript) sea incapaz de resolver la vista previa:
+   el estado puede llegar bien y el campo seguir vacío en el navegador. Hay
+   que llamar al método que FilePond invoca de verdad:
+   ```php
+   $component = Livewire::test(EditX::class, ['record' => $x->getKey()])->instance();
+   $preview = $component->callSchemaComponentMethod('form.<campo>', 'getUploadedFiles');
+   ```
+   La clave es `'form.<nombre_del_campo>'` en una página de edición estándar.
+   Ver `ExistingImagePreloadTest.php` para el patrón completo (llega el id,
+   resuelve vista previa real, guardar sin tocar no desvincula, quitar sí
+   desvincula).
+4. **`->maxFiles(1)` en todo campo no `multiple()`.** Sin esto, si el navegador
+   añade el archivo nuevo antes de que la retirada del anterior termine de
+   sincronizarse con el servidor, el campo llega a tener dos elementos a la
+   vez y se ve como si la imagen nueva se superpusiera a la vieja en vez de
+   reemplazarla. Ya está en `ImageCropperUpload::makeImage()`, así que sólo
+   hace falta pensar en esto si se usa `FileUpload` fuera de ese componente.
+5. **Repite el mismo cambio en los dos paneles si aplica.** Este proyecto tiene
+   panel `Admin` y panel `Tenant`; un campo de imagen que viva en ambos (como
+   la foto de perfil, vía `EditsOwnProfile`) sólo necesita un sitio porque el
+   trait ya está compartido — pero si se duplica el formulario en vez de
+   compartirlo, hay que arreglarlo en los dos.
 
 ## Energía: qué se gestiona en cada pantalla
 
