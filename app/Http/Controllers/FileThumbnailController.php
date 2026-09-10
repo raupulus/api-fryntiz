@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use App\Models\FileThumbnail;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -42,15 +43,37 @@ class FileThumbnailController extends Controller
         // huérfana no se sabe de quién es: no se sirve.
         $file = $thumbnail->file;
 
-        if (! $file) {
+        if (! $file instanceof File) {
             return $this->missing();
         }
 
-        if ($file->is_private && (int) $file->user_id !== (int) auth()->id()) {
+        if ($file->is_private && ! $this->canAccess($file)) {
             return response()->file(FileThumbnail::genericImagePath('not_authorized'));
         }
 
         return $this->serve($thumbnail);
+    }
+
+    /**
+     * ¿Quien pide puede acceder a este fichero? Mismo criterio que
+     * `FileController::canAccess()`: es suyo, o es administrador.
+     *
+     * Antes sólo comprobaba la propiedad, así que un administrador que no
+     * fuera el dueño literal del fichero (`user_id`) veía el marcador de «no
+     * autorizado» en vez de la miniatura real — justo lo que sirve
+     * `ImageCropperUpload::asFileRecord()` y `ImageTrait::urlThumbnail()` en el
+     * panel.
+     */
+    private function canAccess(File $file): bool
+    {
+        $userId = auth()->id();
+
+        if ($userId === null) {
+            return false;
+        }
+
+        return (int) $file->user_id === (int) $userId
+            || (bool) auth()->user()?->isAdmin();
     }
 
     /**

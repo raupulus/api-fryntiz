@@ -44,7 +44,7 @@ class FileController extends Controller
         }
 
         // # Compruebo si es un archivo privado.
-        if ($file->is_private && ! $this->alcanza($file)) {
+        if ($file->is_private && ! $this->canAccess($file)) {
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
@@ -89,7 +89,7 @@ class FileController extends Controller
         }
 
         // # Compruebo si es un archivo privado.
-        if ($file->is_private && ! $this->alcanza($file)) {
+        if ($file->is_private && ! $this->canAccess($file)) {
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
@@ -136,7 +136,7 @@ class FileController extends Controller
     }
 
     /**
-     * ¿Quien pide alcanza este fichero?
+     * ¿Quien pide puede acceder a este fichero?
      *
      * Es suyo, o es un administrador. Lo segundo hace falta para moderar:
      * ficheros huérfanos o subidos por otro usuario que hay que retirar.
@@ -147,7 +147,7 @@ class FileController extends Controller
      * para que `'7' !== 7` y el dueño de su propio fichero privado se lleve un
      * «no autorizado» que nadie sabría explicar.
      */
-    private function alcanza(File $file): bool
+    private function canAccess(File $file): bool
     {
         $userId = auth()->id();
 
@@ -221,7 +221,7 @@ class FileController extends Controller
             return $this->missing();
         }
 
-        if ($file->is_private && ! $this->alcanza($file)) {
+        if ($file->is_private && ! $this->canAccess($file)) {
             return response()->file(File::genericImagePath('not_authorized'));
         }
 
@@ -270,9 +270,9 @@ class FileController extends Controller
      */
     private function existsOnDisk(File $file): bool
     {
-        $ruta = $file->storagePathFile;
+        $path = $file->storagePathFile;
 
-        return $ruta !== '' && is_file($ruta);
+        return $path !== '' && is_file($path);
     }
 
     /**
@@ -323,7 +323,7 @@ class FileController extends Controller
         // Un administrador también borra: si un usuario sube algo que infringe
         // las normas, o el fichero queda huérfano, la única salida era artisan
         // o tocar la base de datos a mano (AR-SEC-05).
-        if (! $this->alcanza($file)) {
+        if (! $this->canAccess($file)) {
             abort(403, 'Ese archivo no es tuyo.');
         }
 
