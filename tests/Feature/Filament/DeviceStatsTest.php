@@ -48,7 +48,7 @@ class DeviceStatsTest extends TestCase
     }
 
     #[Test]
-    public function solo_se_pintan_las_lecturas_que_el_dispositivo_ha_reportado(): void
+    public function only_the_readings_the_device_has_reported_are_shown(): void
     {
         $device = HardwareDevice::create([
             'name' => 'Pico Display',
@@ -69,7 +69,7 @@ class DeviceStatsTest extends TestCase
     }
 
     #[Test]
-    public function los_segundos_de_uptime_se_leen_de_un_vistazo(): void
+    public function the_uptime_seconds_read_at_a_glance(): void
     {
         $device = HardwareDevice::create([
             'name' => 'Rover',
@@ -82,7 +82,7 @@ class DeviceStatsTest extends TestCase
     }
 
     #[Test]
-    public function un_dispositivo_que_nunca_ha_reportado_no_ensena_la_seccion(): void
+    public function a_device_that_has_never_reported_does_not_show_the_section(): void
     {
         $device = HardwareDevice::create(['name' => 'Recién dado de alta']);
 
@@ -95,7 +95,7 @@ class DeviceStatsTest extends TestCase
      * Lo importante: son lecturas de la API, no campos del formulario.
      */
     #[Test]
-    public function guardar_la_ficha_no_toca_las_lecturas(): void
+    public function saving_the_form_does_not_touch_the_readings(): void
     {
         $device = HardwareDevice::create([
             'name' => 'Pico Display',
@@ -108,7 +108,7 @@ class DeviceStatsTest extends TestCase
             'ip_public' => '80.30.20.10',
         ]);
 
-        $antes = $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public']);
+        $before = $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public']);
 
         Livewire::test(EditHardwareDevice::class, ['record' => $device->getKey()])
             ->fillForm(['name_friendly' => 'El de la mesa'])
@@ -119,7 +119,7 @@ class DeviceStatsTest extends TestCase
 
         $this->assertSame('El de la mesa', $device->name_friendly);
         $this->assertEquals(
-            $antes,
+            $before,
             $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public']),
         );
     }
@@ -129,7 +129,7 @@ class DeviceStatsTest extends TestCase
      * Filament abre la primera del array.
      */
     #[Test]
-    public function la_primera_pestana_es_la_de_tokens_iot(): void
+    public function the_first_tab_is_the_iot_tokens_one(): void
     {
         $this->assertSame(
             TokensRelationManager::class,

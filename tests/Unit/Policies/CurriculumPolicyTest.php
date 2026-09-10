@@ -48,7 +48,7 @@ class CurriculumPolicyTest extends TestCase
     }
 
     #[Test]
-    public function el_dueno_ve_edita_y_borra_su_curriculum(): void
+    public function the_owner_views_edits_and_deletes_their_curriculum(): void
     {
         $user = $this->makeUser();
         $cv = $this->makeCurriculum($user);
@@ -59,27 +59,27 @@ class CurriculumPolicyTest extends TestCase
     }
 
     #[Test]
-    public function un_usuario_normal_no_toca_el_curriculum_de_otro(): void
+    public function a_regular_user_does_not_touch_another_users_curriculum(): void
     {
-        $ajeno = $this->makeCurriculum($this->makeUser());
-        $mirón = $this->makeUser();
+        $othersCurriculum = $this->makeCurriculum($this->makeUser());
+        $viewer = $this->makeUser();
 
-        $this->assertFalse($this->policy->view($mirón, $ajeno));
-        $this->assertFalse($this->policy->update($mirón, $ajeno));
-        $this->assertFalse($this->policy->delete($mirón, $ajeno));
+        $this->assertFalse($this->policy->view($viewer, $othersCurriculum));
+        $this->assertFalse($this->policy->update($viewer, $othersCurriculum));
+        $this->assertFalse($this->policy->delete($viewer, $othersCurriculum));
     }
 
     #[Test]
-    public function el_admin_alcanza_cualquier_curriculum(): void
+    public function the_admin_can_reach_any_curriculum(): void
     {
-        $ajeno = $this->makeCurriculum($this->makeUser());
+        $othersCurriculum = $this->makeCurriculum($this->makeUser());
 
-        $this->assertTrue($this->policy->view($this->makeUser(UserRoleEnum::Admin), $ajeno));
-        $this->assertTrue($this->policy->update($this->makeUser(UserRoleEnum::Admin), $ajeno));
+        $this->assertTrue($this->policy->view($this->makeUser(UserRoleEnum::Admin), $othersCurriculum));
+        $this->assertTrue($this->policy->update($this->makeUser(UserRoleEnum::Admin), $othersCurriculum));
     }
 
     #[Test]
-    public function cualquiera_puede_listar(): void
+    public function anyone_can_list(): void
     {
         // El filtrado de qué currículos se ven es de la consulta, no de aquí.
         $this->assertTrue($this->policy->viewAny($this->makeUser()));

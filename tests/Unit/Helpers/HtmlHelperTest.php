@@ -18,7 +18,7 @@ use Tests\TestCase;
 class HtmlHelperTest extends TestCase
 {
     #[Test]
-    public function deja_pasar_el_formato_basico(): void
+    public function allows_basic_formatting_through(): void
     {
         $html = '<p>Un <strong>bonsái</strong> con <em>riego</em>.<br/>Segunda línea.</p>';
 
@@ -30,23 +30,23 @@ class HtmlHelperTest extends TestCase
     }
 
     #[Test]
-    public function admite_listas_y_divs(): void
+    public function allows_lists_and_divs(): void
     {
-        $limpio = (string) HtmlHelper::safeBasic('<div><ul><li>Uno</li><li>Dos</li></ul></div>');
+        $clean = (string) HtmlHelper::safeBasic('<div><ul><li>Uno</li><li>Dos</li></ul></div>');
 
-        $this->assertStringContainsString('<ul>', $limpio);
-        $this->assertStringContainsString('<li>Uno</li>', $limpio);
-        $this->assertStringContainsString('<div>', $limpio);
+        $this->assertStringContainsString('<ul>', $clean);
+        $this->assertStringContainsString('<li>Uno</li>', $clean);
+        $this->assertStringContainsString('<div>', $clean);
     }
 
     #[Test]
-    public function se_lleva_los_scripts(): void
+    public function strips_scripts(): void
     {
-        $limpio = (string) HtmlHelper::safeBasic('<p>Hola</p><script>alert(1)</script>');
+        $clean = (string) HtmlHelper::safeBasic('<p>Hola</p><script>alert(1)</script>');
 
-        $this->assertStringNotContainsString('<script', $limpio);
-        $this->assertStringNotContainsString('alert(1)', $limpio);
-        $this->assertStringContainsString('<p>Hola</p>', $limpio);
+        $this->assertStringNotContainsString('<script', $clean);
+        $this->assertStringNotContainsString('alert(1)', $clean);
+        $this->assertStringContainsString('<p>Hola</p>', $clean);
     }
 
     /**
@@ -54,45 +54,45 @@ class HtmlHelperTest extends TestCase
      * está permitida y el veneno va en el atributo.
      */
     #[Test]
-    public function se_lleva_los_atributos_de_evento(): void
+    public function strips_event_attributes(): void
     {
-        $limpio = (string) HtmlHelper::safeBasic('<p onclick="alert(1)">Hola</p>');
+        $clean = (string) HtmlHelper::safeBasic('<p onclick="alert(1)">Hola</p>');
 
-        $this->assertStringNotContainsString('onclick', $limpio);
-        $this->assertStringContainsString('Hola', $limpio);
+        $this->assertStringNotContainsString('onclick', $clean);
+        $this->assertStringContainsString('Hola', $clean);
     }
 
     #[Test]
-    public function un_enlace_con_javascript_no_pasa(): void
+    public function a_javascript_link_does_not_pass(): void
     {
-        $limpio = (string) HtmlHelper::safeBasic('<a href="javascript:alert(1)">Pulsa</a>');
+        $clean = (string) HtmlHelper::safeBasic('<a href="javascript:alert(1)">Pulsa</a>');
 
-        $this->assertStringNotContainsString('javascript:', $limpio);
+        $this->assertStringNotContainsString('javascript:', $clean);
     }
 
     #[Test]
-    public function un_enlace_normal_si_pasa_y_sale_con_rel(): void
+    public function a_normal_link_passes_and_gets_a_rel_attribute(): void
     {
-        $limpio = (string) HtmlHelper::safeBasic('<a href="https://raupulus.dev">Web</a>');
+        $clean = (string) HtmlHelper::safeBasic('<a href="https://raupulus.dev">Web</a>');
 
-        $this->assertStringContainsString('href="https://raupulus.dev"', $limpio);
-        $this->assertStringContainsString('rel="noopener noreferrer"', $limpio);
+        $this->assertStringContainsString('href="https://raupulus.dev"', $clean);
+        $this->assertStringContainsString('rel="noopener noreferrer"', $clean);
     }
 
     #[Test]
-    public function no_admite_imagenes_ni_iframes(): void
+    public function does_not_allow_images_or_iframes(): void
     {
-        $limpio = (string) HtmlHelper::safeBasic(
+        $clean = (string) HtmlHelper::safeBasic(
             '<p>Texto</p><img src="x" onerror="alert(1)"><iframe src="https://ejemplo.test"></iframe>'
         );
 
-        $this->assertStringNotContainsString('<img', $limpio);
-        $this->assertStringNotContainsString('<iframe', $limpio);
-        $this->assertStringContainsString('Texto', $limpio);
+        $this->assertStringNotContainsString('<img', $clean);
+        $this->assertStringNotContainsString('<iframe', $clean);
+        $this->assertStringContainsString('Texto', $clean);
     }
 
     #[Test]
-    public function un_texto_vacio_no_revienta(): void
+    public function an_empty_text_does_not_crash(): void
     {
         $this->assertSame('', (string) HtmlHelper::safeBasic(null));
         $this->assertSame('', (string) HtmlHelper::safeBasic(''));
@@ -104,25 +104,25 @@ class HtmlHelperTest extends TestCase
      * datos— tiene que salir igual que entró.
      */
     #[Test]
-    public function el_texto_plano_de_siempre_sigue_saliendo_igual(): void
+    public function plain_text_still_comes_out_unchanged(): void
     {
-        $texto = 'Bonsái de olmo chino regado con sensor de humedad.';
+        $text = 'Bonsái de olmo chino regado con sensor de humedad.';
 
-        $this->assertSame($texto, (string) HtmlHelper::safeBasic($texto));
+        $this->assertSame($text, (string) HtmlHelper::safeBasic($text));
     }
 
     #[Test]
-    public function la_meta_description_va_en_plano_y_recortada(): void
+    public function the_meta_description_is_plain_and_trimmed(): void
     {
         $this->assertSame(
             'Un bonsái con riego.',
             HtmlHelper::toMetaDescription('<p>Un <strong>bonsái</strong> con riego.</p>')
         );
 
-        $largo = HtmlHelper::toMetaDescription('<p>'.str_repeat('palabra ', 60).'</p>', 50);
+        $long = HtmlHelper::toMetaDescription('<p>'.str_repeat('palabra ', 60).'</p>', 50);
 
-        $this->assertLessThanOrEqual(50, mb_strlen($largo));
-        $this->assertStringEndsWith('…', $largo);
-        $this->assertStringNotContainsString('<', $largo);
+        $this->assertLessThanOrEqual(50, mb_strlen($long));
+        $this->assertStringEndsWith('…', $long);
+        $this->assertStringNotContainsString('<', $long);
     }
 }

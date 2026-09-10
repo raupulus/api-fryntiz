@@ -23,10 +23,10 @@ class AirFlightAirPlaneTrailTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function crearRuta(AirFlightAirPlane $avion, float $lat, float $lon, Carbon $seenAt): AirFlightRoute
+    private function createRoute(AirFlightAirPlane $airplane, float $lat, float $lon, Carbon $seenAt): AirFlightRoute
     {
         return AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'flight' => 'TEST123',
             'lat' => $lat,
             'lon' => $lon,
@@ -35,46 +35,46 @@ class AirFlightAirPlaneTrailTest extends TestCase
     }
 
     #[Test]
-    public function no_une_la_traza_de_hoy_con_un_sobrevuelo_de_hace_dias(): void
+    public function does_not_join_todays_trail_with_a_flyover_from_days_ago(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'ABC123']);
+        $airplane = AirFlightAirPlane::create(['icao' => 'ABC123']);
 
-        $antigua = $this->crearRuta($avion, AirFlightAirPlane::RECEIVER_LAT, AirFlightAirPlane::RECEIVER_LON, Carbon::now()->subDays(3));
-        $reciente = $this->crearRuta($avion, 36.71, -6.41, Carbon::now()->subMinutes(5));
+        $old = $this->createRoute($airplane, AirFlightAirPlane::RECEIVER_LAT, AirFlightAirPlane::RECEIVER_LON, Carbon::now()->subDays(3));
+        $recent = $this->createRoute($airplane, 36.71, -6.41, Carbon::now()->subMinutes(5));
 
-        $traza = $avion->trail()->get();
+        $trail = $airplane->trail()->get();
 
-        $this->assertTrue($traza->contains('id', $reciente->id));
-        $this->assertFalse($traza->contains('id', $antigua->id));
+        $this->assertTrue($trail->contains('id', $recent->id));
+        $this->assertFalse($trail->contains('id', $old->id));
     }
 
     #[Test]
-    public function descarta_una_lectura_fuera_del_alcance_plausible_del_receptor(): void
+    public function discards_a_reading_outside_the_receivers_plausible_range(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'DEF456']);
+        $airplane = AirFlightAirPlane::create(['icao' => 'DEF456']);
 
         // Punto en África central: un fallo de decodificación, no un avión
         // real dentro del alcance del receptor de Chipiona.
-        $glitch = $this->crearRuta($avion, 2.0, 10.0, Carbon::now()->subMinutes(2));
-        $real = $this->crearRuta($avion, 36.71, -6.41, Carbon::now()->subMinute());
+        $glitch = $this->createRoute($airplane, 2.0, 10.0, Carbon::now()->subMinutes(2));
+        $real = $this->createRoute($airplane, 36.71, -6.41, Carbon::now()->subMinute());
 
-        $traza = $avion->trail()->get();
+        $trail = $airplane->trail()->get();
 
-        $this->assertTrue($traza->contains('id', $real->id));
-        $this->assertFalse($traza->contains('id', $glitch->id));
+        $this->assertTrue($trail->contains('id', $real->id));
+        $this->assertFalse($trail->contains('id', $glitch->id));
     }
 
     #[Test]
-    public function conserva_la_traza_normal_de_una_pasada_reciente_y_cercana(): void
+    public function keeps_the_normal_trail_of_a_recent_nearby_pass(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'GHI789']);
+        $airplane = AirFlightAirPlane::create(['icao' => 'GHI789']);
 
-        $p1 = $this->crearRuta($avion, 36.70, -6.45, Carbon::now()->subMinutes(3));
-        $p2 = $this->crearRuta($avion, 36.72, -6.42, Carbon::now()->subMinutes(2));
-        $p3 = $this->crearRuta($avion, 36.74, -6.40, Carbon::now()->subMinute());
+        $p1 = $this->createRoute($airplane, 36.70, -6.45, Carbon::now()->subMinutes(3));
+        $p2 = $this->createRoute($airplane, 36.72, -6.42, Carbon::now()->subMinutes(2));
+        $p3 = $this->createRoute($airplane, 36.74, -6.40, Carbon::now()->subMinute());
 
-        $traza = $avion->trail()->get();
+        $trail = $airplane->trail()->get();
 
-        $this->assertSame([$p1->id, $p2->id, $p3->id], $traza->pluck('id')->all());
+        $this->assertSame([$p1->id, $p2->id, $p3->id], $trail->pluck('id')->all());
     }
 }

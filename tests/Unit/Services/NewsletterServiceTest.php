@@ -38,7 +38,7 @@ class NewsletterServiceTest extends TestCase
     // ─── Alta ───
 
     #[Test]
-    public function el_alta_deja_la_suscripcion_sin_verificar(): void
+    public function subscribing_leaves_the_subscription_unverified(): void
     {
         // Nadie queda suscrito por el mero hecho de escribir su correo: hasta
         // que no confirma, no cuenta.
@@ -49,7 +49,7 @@ class NewsletterServiceTest extends TestCase
     }
 
     #[Test]
-    public function el_alta_genera_token_de_verificacion_y_envia_el_correo(): void
+    public function subscribing_generates_a_verification_token_and_sends_the_email(): void
     {
         $newsletter = $this->service->subscribe('alguien@example.com', 'Alguien', $this->platform->id);
 
@@ -59,7 +59,7 @@ class NewsletterServiceTest extends TestCase
     }
 
     #[Test]
-    public function el_alta_guarda_el_contexto_de_la_peticion(): void
+    public function subscribing_stores_the_request_context(): void
     {
         $newsletter = $this->service->subscribe('alguien@example.com', null, $this->platform->id, [
             'language' => 'en',
@@ -74,7 +74,7 @@ class NewsletterServiceTest extends TestCase
     // ─── Verificación ───
 
     #[Test]
-    public function verificar_con_el_token_correcto_activa_la_suscripcion(): void
+    public function verifying_with_the_correct_token_activates_the_subscription(): void
     {
         $newsletter = $this->service->subscribe('alguien@example.com', 'Alguien', $this->platform->id);
 
@@ -86,7 +86,7 @@ class NewsletterServiceTest extends TestCase
     }
 
     #[Test]
-    public function verificar_con_un_token_desconocido_devuelve_false(): void
+    public function verifying_with_an_unknown_token_returns_false(): void
     {
         $this->assertFalse($this->service->verify('token-que-no-existe'));
     }
@@ -94,7 +94,7 @@ class NewsletterServiceTest extends TestCase
     // ─── Baja ───
 
     #[Test]
-    public function darse_de_baja_con_el_token_correcto_marca_la_fecha(): void
+    public function unsubscribing_with_the_correct_token_sets_the_timestamp(): void
     {
         $newsletter = $this->service->subscribe('alguien@example.com', 'Alguien', $this->platform->id);
         $newsletter->refresh();
@@ -106,7 +106,7 @@ class NewsletterServiceTest extends TestCase
     }
 
     #[Test]
-    public function darse_de_baja_con_un_token_desconocido_devuelve_false(): void
+    public function unsubscribing_with_an_unknown_token_returns_false(): void
     {
         $this->assertFalse($this->service->unsubscribe('token-que-no-existe'));
     }
@@ -114,7 +114,7 @@ class NewsletterServiceTest extends TestCase
     // ─── Reenvío ───
 
     #[Test]
-    public function reenviar_a_quien_no_esta_suscrito_devuelve_null(): void
+    public function resending_to_someone_not_subscribed_returns_null(): void
     {
         // El controlador responde igual exista o no, para no convertir el
         // endpoint en un oráculo de qué direcciones están en la lista. Aquí,
@@ -123,7 +123,7 @@ class NewsletterServiceTest extends TestCase
     }
 
     #[Test]
-    public function reenviar_a_quien_si_esta_suscrito_devuelve_la_suscripcion(): void
+    public function resending_to_someone_subscribed_returns_the_subscription(): void
     {
         $this->service->subscribe('alguien@example.com', 'Alguien', $this->platform->id);
 
@@ -133,7 +133,7 @@ class NewsletterServiceTest extends TestCase
     // ─── Estadísticas ───
 
     #[Test]
-    public function las_estadisticas_cuentan_las_suscripciones(): void
+    public function the_stats_count_the_subscriptions(): void
     {
         $this->service->subscribe('uno@example.com', 'Uno', $this->platform->id);
         $this->service->subscribe('dos@example.com', 'Dos', $this->platform->id);

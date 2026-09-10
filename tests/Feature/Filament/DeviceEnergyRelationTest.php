@@ -55,7 +55,7 @@ class DeviceEnergyRelationTest extends TestCase
     }
 
     #[Test]
-    public function el_relation_manager_esta_en_la_ficha_del_dispositivo(): void
+    public function the_relation_manager_is_on_the_device_page(): void
     {
         $this->assertContains(
             EnergyRelationManager::class,
@@ -64,13 +64,13 @@ class DeviceEnergyRelationTest extends TestCase
     }
 
     #[Test]
-    public function ofrece_un_boton_por_cada_papel(): void
+    public function it_offers_a_button_for_each_role(): void
     {
         $this->panel()
             ->assertTableHeaderActionsExistInOrder([
-                'crear_generator',
-                'crear_load',
-                'crear_battery',
+                'create_generator',
+                'create_load',
+                'create_battery',
             ]);
     }
 
@@ -79,7 +79,7 @@ class DeviceEnergyRelationTest extends TestCase
      * consumo se queda: un monitor mide tantas cargas como canales tenga.
      */
     #[Test]
-    public function el_boton_desaparece_cuando_el_papel_ya_esta_ocupado(): void
+    public function the_button_disappears_when_the_role_is_already_taken(): void
     {
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
@@ -92,24 +92,24 @@ class DeviceEnergyRelationTest extends TestCase
         // está es que el botón no se ha pintado.
         $panel = $this->panel();
 
-        $panel->assertDontSee('crear_generator');
-        $panel->assertSee('crear_battery');
-        $panel->assertSee('crear_load');
+        $panel->assertDontSee('create_generator');
+        $panel->assertSee('create_battery');
+        $panel->assertSee('create_load');
     }
 
     #[Test]
-    public function el_de_consumo_se_queda_aunque_ya_haya_cargas(): void
+    public function the_load_button_stays_even_when_loads_already_exist(): void
     {
-        foreach ([1, 2, 3] as $canal) {
+        foreach ([1, 2, 3] as $channel) {
             HardwareEnergy::create([
                 'hardware_device_id' => $this->device->id,
                 'hardware_device_monitorized_id' => $this->device->id,
                 'role' => HardwareEnergy::ROLE_LOAD,
-                'sensor_position' => $canal,
+                'sensor_position' => $channel,
             ]);
         }
 
-        $this->panel()->assertSee('crear_load');
+        $this->panel()->assertSee('create_load');
     }
 
     /**
@@ -117,31 +117,31 @@ class DeviceEnergyRelationTest extends TestCase
      * hacían falta saber de memoria y ya no se preguntan.
      */
     #[Test]
-    public function lo_creado_desde_la_ficha_se_mide_a_si_mismo(): void
+    public function what_is_created_from_the_page_measures_itself(): void
     {
         $this->panel()
-            ->callTableAction('crear_battery', data: [
+            ->callTableAction('create_battery', data: [
                 'sensor_position' => 0,
                 'nominal_voltage' => 12.0,
                 'is_active' => true,
             ])
             ->assertHasNoTableActionErrors();
 
-        $elemento = HardwareEnergy::where('hardware_device_id', $this->device->id)->sole();
+        $energy = HardwareEnergy::where('hardware_device_id', $this->device->id)->sole();
 
-        $this->assertSame(HardwareEnergy::ROLE_BATTERY, $elemento->role);
-        $this->assertSame($this->device->id, $elemento->hardware_device_monitorized_id);
-        $this->assertSame(12.0, (float) $elemento->nominal_voltage);
+        $this->assertSame(HardwareEnergy::ROLE_BATTERY, $energy->role);
+        $this->assertSame($this->device->id, $energy->hardware_device_monitorized_id);
+        $this->assertSame(12.0, (float) $energy->nominal_voltage);
     }
 
     #[Test]
-    public function la_tabla_ensena_los_papeles_que_ya_tiene(): void
+    public function the_table_shows_the_roles_it_already_has(): void
     {
-        foreach ([HardwareEnergy::ROLE_GENERATOR, HardwareEnergy::ROLE_LOAD] as $i => $rol) {
+        foreach ([HardwareEnergy::ROLE_GENERATOR, HardwareEnergy::ROLE_LOAD] as $i => $role) {
             HardwareEnergy::create([
                 'hardware_device_id' => $this->device->id,
                 'hardware_device_monitorized_id' => $this->device->id,
-                'role' => $rol,
+                'role' => $role,
                 'sensor_position' => $i,
             ]);
         }

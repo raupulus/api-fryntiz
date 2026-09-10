@@ -26,36 +26,36 @@ class SmartPlantViewsTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function planta(string $descripcion = 'Un bonsái'): SmartPlantPlant
+    private function plant(string $description = 'Un bonsái'): SmartPlantPlant
     {
         return SmartPlantPlant::create([
             'name' => 'Olmo chino',
             'name_scientific' => 'Ulmus parvifolia',
-            'description' => $descripcion,
+            'description' => $description,
             'details' => 'Detalles de la planta.',
             'image' => 'smartplant/default.jpg',
             'start_at' => now()->subYear(),
         ]);
     }
 
-    private function lectura(SmartPlantPlant $planta, bool $regando): void
+    private function reading(SmartPlantPlant $plant, bool $watering): void
     {
         SmartPlantRegister::create([
-            'plant_id' => $planta->id,
+            'plant_id' => $plant->id,
             'soil_humidity' => 40,
             'temperature' => 21.5,
             'humidity' => 55,
             'uv' => 3,
             'full_water_tank' => true,
-            'waterpump_enabled' => $regando,
+            'waterpump_enabled' => $watering,
             'vaporizer_enabled' => false,
         ]);
     }
 
     #[Test]
-    public function la_descripcion_admite_html_basico(): void
+    public function the_description_allows_basic_html(): void
     {
-        $this->planta('<p>Un <strong>bonsái</strong> de interior.</p>');
+        $this->plant('<p>Un <strong>bonsái</strong> de interior.</p>');
 
         $this->get(route('smartplant.index'))
             ->assertOk()
@@ -65,23 +65,23 @@ class SmartPlantViewsTest extends TestCase
     }
 
     #[Test]
-    public function la_descripcion_no_deja_pasar_un_script(): void
+    public function the_description_does_not_let_a_script_through(): void
     {
-        $this->planta('<p>Hola</p><script>alert(1)</script><a href="javascript:alert(2)">x</a>');
+        $this->plant('<p>Hola</p><script>alert(1)</script><a href="javascript:alert(2)">x</a>');
 
-        $respuesta = $this->get(route('smartplant.index'));
+        $response = $this->get(route('smartplant.index'));
 
-        $respuesta->assertOk()
+        $response->assertOk()
             ->assertDontSee('<script>alert(1)</script>', escape: false)
             ->assertDontSee('javascript:alert(2)', escape: false);
     }
 
     #[Test]
-    public function la_descripcion_tambien_admite_html_en_la_ficha(): void
+    public function the_description_also_allows_html_on_the_detail_page(): void
     {
-        $planta = $this->planta('<p>Un <em>olmo</em> con riego automático.</p>');
+        $plant = $this->plant('<p>Un <em>olmo</em> con riego automático.</p>');
 
-        $this->get(route('smartplant.show', $planta))
+        $this->get(route('smartplant.show', $plant))
             ->assertOk()
             ->assertSee('<em>olmo</em>', escape: false);
     }
@@ -91,11 +91,11 @@ class SmartPlantViewsTest extends TestCase
      * cual en el resultado de búsqueda.
      */
     #[Test]
-    public function las_metas_de_la_ficha_van_en_texto_plano(): void
+    public function the_detail_pages_meta_tags_are_plain_text(): void
     {
-        $planta = $this->planta('<p>Un <strong>olmo</strong> chino.</p>');
+        $plant = $this->plant('<p>Un <strong>olmo</strong> chino.</p>');
 
-        $html = $this->get(route('smartplant.show', $planta))->assertOk()->getContent();
+        $html = $this->get(route('smartplant.show', $plant))->assertOk()->getContent();
 
         preg_match('/<meta name="description" content="([^"]*)"/', (string) $html, $m);
 
@@ -104,12 +104,12 @@ class SmartPlantViewsTest extends TestCase
     }
 
     #[Test]
-    public function una_planta_sin_descripcion_no_revienta(): void
+    public function a_plant_without_a_description_does_not_blow_up(): void
     {
-        $planta = $this->planta('');
+        $plant = $this->plant('');
 
         $this->get(route('smartplant.index'))->assertOk()->assertSee('Sin descripción');
-        $this->get(route('smartplant.show', $planta))->assertOk()->assertSee('Sin descripción');
+        $this->get(route('smartplant.show', $plant))->assertOk()->assertSee('Sin descripción');
     }
 
     /**
@@ -117,12 +117,12 @@ class SmartPlantViewsTest extends TestCase
      * tema, y no con los verdes fijos de Tailwind.
      */
     #[Test]
-    public function los_estados_usan_tokens_y_no_colores_fijos(): void
+    public function the_statuses_use_tokens_and_not_fixed_colors(): void
     {
-        $planta = $this->planta();
-        $this->lectura($planta, regando: true);
+        $plant = $this->plant();
+        $this->reading($plant, watering: true);
 
-        foreach ([route('smartplant.index'), route('smartplant.show', $planta)] as $url) {
+        foreach ([route('smartplant.index'), route('smartplant.show', $plant)] as $url) {
             $html = (string) $this->get($url)->assertOk()->getContent();
 
             $this->assertStringContainsString('bg-success-container', $html);
@@ -138,7 +138,7 @@ class SmartPlantViewsTest extends TestCase
      * en oscuro, o sea el círculo color carne con el texto invisible.
      */
     #[Test]
-    public function los_badges_de_los_repositorios_usan_el_token_correcto(): void
+    public function the_repository_badges_use_the_correct_token(): void
     {
         $html = (string) $this->get(route('smartplant.index'))->assertOk()->getContent();
 

@@ -64,8 +64,8 @@ class SmartPlantTest extends ApiTestCase
     public function the_plant_list_does_not_show_someone_elses_plants(): void
     {
         $user = $this->createAuthenticatedUser();
-        $otro = $this->createAuthenticatedUser();
-        $this->makePlantFor($otro, 'De otro');
+        $other = $this->createAuthenticatedUser();
+        $this->makePlantFor($other, 'De otro');
 
         $response = $this->getJson(
             $this->apiUrl('smartplant/plants'),
@@ -107,11 +107,11 @@ class SmartPlantTest extends ApiTestCase
         // El mismo 404 si no existe que si es de otro: un 403 confirmaría que
         // esa planta existe, que es justo lo que no se quiere decir.
         $user = $this->createAuthenticatedUser();
-        $otro = $this->createAuthenticatedUser();
-        $ajena = $this->makePlantFor($otro, 'De otro');
+        $other = $this->createAuthenticatedUser();
+        $foreignPlant = $this->makePlantFor($other, 'De otro');
 
         $this->getJson(
-            $this->apiUrl('smartplant/plants/'.$ajena->id.'/readings'),
+            $this->apiUrl('smartplant/plants/'.$foreignPlant->id.'/readings'),
             $this->moduleHeaders($user, TokenAbilities::SMARTPLANT_READ)
         )->assertStatus(404);
     }
@@ -151,7 +151,7 @@ class SmartPlantTest extends ApiTestCase
     }
 
     #[Test]
-    public function un_token_de_escritura_no_puede_leer(): void
+    public function a_write_token_cannot_read(): void
     {
         // AR-S02: mismo caso que KeyCounter. El token de la planta sólo tiene
         // que subir lecturas, no listar el jardín entero.
@@ -161,7 +161,7 @@ class SmartPlantTest extends ApiTestCase
     }
 
     #[Test]
-    public function un_token_de_lectura_no_puede_escribir(): void
+    public function a_read_token_cannot_write(): void
     {
         $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::SMARTPLANT_READ);
 

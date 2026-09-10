@@ -24,7 +24,7 @@ class FileUploadTest extends TestCase
     use RefreshDatabase;
 
     /** Directorio de trabajo dentro de storage/app, propio de estos tests. */
-    private string $directorio = 'pruebas-subida';
+    private string $directory = 'pruebas-subida';
 
     protected function setUp(): void
     {
@@ -35,135 +35,135 @@ class FileUploadTest extends TestCase
         // disco falso dejaría los archivos en un sitio y el modelo los buscaría
         // en otro. Se trabaja sobre el disco real en un directorio propio y se
         // limpia al terminar.
-        $this->limpiarDirectorio();
+        $this->cleanDirectory();
     }
 
     protected function tearDown(): void
     {
-        $this->limpiarDirectorio();
+        $this->cleanDirectory();
 
         parent::tearDown();
     }
 
-    private function limpiarDirectorio(): void
+    private function cleanDirectory(): void
     {
-        foreach (['private', 'public'] as $ambito) {
-            $ruta = storage_path('app/'.$ambito.'/'.$this->directorio);
+        foreach (['private', 'public'] as $scope) {
+            $path = storage_path('app/'.$scope.'/'.$this->directory);
 
-            if (is_dir($ruta)) {
-                exec('rm -rf '.escapeshellarg($ruta));
+            if (is_dir($path)) {
+                exec('rm -rf '.escapeshellarg($path));
             }
         }
     }
 
     /** Archivos que hay ahora mismo en el directorio de trabajo. */
-    private function archivosEnDisco(): array
+    private function filesOnDisk(): array
     {
-        $ruta = storage_path('app/private/'.$this->directorio);
+        $path = storage_path('app/private/'.$this->directory);
 
-        if (! is_dir($ruta)) {
+        if (! is_dir($path)) {
             return [];
         }
 
-        return array_values(array_diff(scandir($ruta), ['.', '..']));
+        return array_values(array_diff(scandir($path), ['.', '..']));
     }
 
-    public function test_rechaza_un_tipo_fuera_de_safe_mimes_cuando_valida(): void
+    public function test_rejects_a_type_outside_safe_mimes_when_validating(): void
     {
-        $archivo = UploadedFile::fake()->createWithContent('malicioso.html', '<script>alert(1)</script>');
+        $file = UploadedFile::fake()->createWithContent('malicioso.html', '<script>alert(1)</script>');
 
-        $resultado = File::addFile($archivo, $this->directorio);
+        $result = File::addFile($file, $this->directory);
 
-        $this->assertNull($resultado);
+        $this->assertNull($result);
         $this->assertSame(0, File::query()->count());
     }
 
-    public function test_no_deja_el_archivo_en_disco_cuando_lo_rechaza(): void
+    public function test_does_not_leave_the_file_on_disk_when_it_is_rejected(): void
     {
-        $archivo = UploadedFile::fake()->createWithContent('malicioso.html', '<script>alert(1)</script>');
+        $file = UploadedFile::fake()->createWithContent('malicioso.html', '<script>alert(1)</script>');
 
-        File::addFile($archivo, $this->directorio);
+        File::addFile($file, $this->directory);
 
-        $this->assertSame([], $this->archivosEnDisco());
+        $this->assertSame([], $this->filesOnDisk());
     }
 
-    public function test_rechaza_un_archivo_por_encima_del_tamano_maximo(): void
+    public function test_rejects_a_file_above_the_maximum_size(): void
     {
-        $tamanoEnKb = (int) (File::MAX_FILE_SIZE / 1024) + 1024;
-        $archivo = UploadedFile::fake()->image('enorme.jpg')->size($tamanoEnKb);
+        $sizeInKb = (int) (File::MAX_FILE_SIZE / 1024) + 1024;
+        $file = UploadedFile::fake()->image('enorme.jpg')->size($sizeInKb);
 
-        $this->assertNull(File::addFile($archivo, $this->directorio));
+        $this->assertNull(File::addFile($file, $this->directory));
     }
 
-    public function test_acepta_un_tipo_arbitrario_cuando_la_validacion_esta_desactivada(): void
+    public function test_accepts_an_arbitrary_type_when_validation_is_disabled(): void
     {
         // El editor de contenido y los adjuntos suben lo que haga falta: la
         // validación protege los campos que esperan una imagen, no la
         // plataforma entera. Si este test se cae porque alguien "endureció" el
         // modelo, lo que se ha roto es el editor.
-        $archivo = UploadedFile::fake()->createWithContent('modelo.stl', 'solid cube endsolid');
+        $file = UploadedFile::fake()->createWithContent('modelo.stl', 'solid cube endsolid');
 
-        $resultado = File::addFile($archivo, $this->directorio, validate: false);
+        $result = File::addFile($file, $this->directory, validate: false);
 
-        $this->assertNotNull($resultado);
+        $this->assertNotNull($result);
         $this->assertSame(1, File::query()->count());
     }
 
-    public function test_acota_el_ancho_del_original_al_maximo(): void
+    public function test_caps_the_original_width_to_the_maximum(): void
     {
-        $anchoOriginal = File::MAX_IMAGE_WIDTH + 800;
-        $archivo = UploadedFile::fake()->image('grande.jpg', $anchoOriginal, 1000);
+        $originalWidth = File::MAX_IMAGE_WIDTH + 800;
+        $file = UploadedFile::fake()->image('grande.jpg', $originalWidth, 1000);
 
-        $file = File::addFile($archivo, $this->directorio, has_thumbnails: false);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
 
-        $this->assertNotNull($file);
-        $this->assertSame(File::MAX_IMAGE_WIDTH, $file->width);
+        $this->assertNotNull($result);
+        $this->assertSame(File::MAX_IMAGE_WIDTH, $result->width);
     }
 
-    public function test_la_fila_describe_el_archivo_ya_procesado(): void
+    public function test_the_row_describes_the_already_processed_file(): void
     {
-        $archivo = UploadedFile::fake()->image('grande.jpg', File::MAX_IMAGE_WIDTH + 800, 1000);
+        $file = UploadedFile::fake()->image('grande.jpg', File::MAX_IMAGE_WIDTH + 800, 1000);
 
-        $file = File::addFile($archivo, $this->directorio, has_thumbnails: false);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
 
-        $this->assertNotNull($file);
+        $this->assertNotNull($result);
 
-        $rutaEnDisco = $file->storagePathFile;
-        $this->assertFileExists($rutaEnDisco);
+        $pathOnDisk = $result->storagePathFile;
+        $this->assertFileExists($pathOnDisk);
 
-        [$anchoReal, $altoReal] = getimagesize($rutaEnDisco);
+        [$realWidth, $realHeight] = getimagesize($pathOnDisk);
 
-        $this->assertSame($anchoReal, $file->width);
-        $this->assertSame($altoReal, $file->height);
-        $this->assertSame(filesize($rutaEnDisco), $file->size);
+        $this->assertSame($realWidth, $result->width);
+        $this->assertSame($realHeight, $result->height);
+        $this->assertSame(filesize($pathOnDisk), $result->size);
     }
 
-    public function test_elimina_los_metadatos_exif_de_la_imagen_almacenada(): void
+    public function test_strips_exif_metadata_from_the_stored_image(): void
     {
         if (! function_exists('exif_read_data')) {
             $this->markTestSkipped('La extensión exif no está disponible.');
         }
 
-        $rutaConExif = $this->crearJpegConExifGps();
+        $pathWithExif = $this->createJpegWithExifGps();
 
-        $archivo = new UploadedFile($rutaConExif, 'con-gps.jpg', 'image/jpeg', null, true);
+        $file = new UploadedFile($pathWithExif, 'con-gps.jpg', 'image/jpeg', null, true);
 
         // Comprobación de partida: si el archivo de origen no llevara EXIF, el
         // test pasaría sin demostrar nada.
-        $exifOriginal = @exif_read_data($rutaConExif);
-        $this->assertNotFalse($exifOriginal, 'El JPEG de partida debería llevar EXIF.');
+        $originalExif = @exif_read_data($pathWithExif);
+        $this->assertNotFalse($originalExif, 'El JPEG de partida debería llevar EXIF.');
 
-        $file = File::addFile($archivo, $this->directorio, has_thumbnails: false);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
 
-        $this->assertNotNull($file);
+        $this->assertNotNull($result);
 
-        $exifResultante = @exif_read_data($file->storagePathFile);
+        $resultingExif = @exif_read_data($result->storagePathFile);
 
-        if ($exifResultante !== false) {
-            $this->assertArrayNotHasKey('GPSLatitude', $exifResultante);
-            $this->assertArrayNotHasKey('GPSLongitude', $exifResultante);
+        if ($resultingExif !== false) {
+            $this->assertArrayNotHasKey('GPSLatitude', $resultingExif);
+            $this->assertArrayNotHasKey('GPSLongitude', $resultingExif);
         } else {
-            $this->assertFalse($exifResultante);
+            $this->assertFalse($resultingExif);
         }
     }
 
@@ -179,54 +179,54 @@ class FileUploadTest extends TestCase
      * primero avisa; si alguien quita la llamada por redundante, avisa el
      * segundo.
      */
-    public function test_strip_metadata_deja_la_imagen_sin_exif(): void
+    public function test_strip_metadata_leaves_the_image_without_exif(): void
     {
-        $imagen = Image::decodePath($this->crearJpegConExifGps());
+        $image = Image::decodePath($this->createJpegWithExifGps());
 
-        $this->assertGreaterThan(0, $imagen->exif()->count(), 'La imagen de partida debería traer EXIF.');
+        $this->assertGreaterThan(0, $image->exif()->count(), 'La imagen de partida debería traer EXIF.');
 
-        $metodo = new \ReflectionMethod(File::class, 'stripMetadata');
-        $metodo->invoke(null, $imagen);
+        $method = new \ReflectionMethod(File::class, 'stripMetadata');
+        $method->invoke(null, $image);
 
-        $this->assertSame(0, $imagen->exif()->count());
-        $this->assertNull($imagen->profile ?? null);
+        $this->assertSame(0, $image->exif()->count());
+        $this->assertNull($image->profile ?? null);
     }
 
-    public function test_rechaza_un_base64_por_encima_del_tamano_maximo(): void
+    public function test_rejects_a_base64_string_above_the_maximum_size(): void
     {
-        $cadena = 'data:image/jpeg;base64,'.str_repeat('A', File::MAX_FILE_SIZE + 1024);
+        $string = 'data:image/jpeg;base64,'.str_repeat('A', File::MAX_FILE_SIZE + 1024);
 
-        $resultado = File::addFileFromBase64($cadena, $this->directorio);
+        $result = File::addFileFromBase64($string, $this->directory);
 
-        $this->assertNull($resultado);
+        $this->assertNull($result);
         $this->assertSame(0, File::query()->count());
     }
 
     /**
      * Genera un JPEG real con un bloque EXIF que incluye coordenadas GPS.
      */
-    private function crearJpegConExifGps(): string
+    private function createJpegWithExifGps(): string
     {
-        $ruta = tempnam(sys_get_temp_dir(), 'exif').'.jpg';
+        $path = tempnam(sys_get_temp_dir(), 'exif').'.jpg';
 
-        $imagen = imagecreatetruecolor(100, 100);
-        imagejpeg($imagen, $ruta, 90);
-        imagedestroy($imagen);
+        $image = imagecreatetruecolor(100, 100);
+        imagejpeg($image, $path, 90);
+        imagedestroy($image);
 
         // Se inyecta un APP1/Exif mínimo con GPSLatitude y GPSLongitude. Se
         // construye a mano porque GD no escribe EXIF.
-        $contenido = file_get_contents($ruta);
-        $exif = $this->bloqueExifConGps();
-        $contenido = substr($contenido, 0, 2).$exif.substr($contenido, 2);
-        file_put_contents($ruta, $contenido);
+        $content = file_get_contents($path);
+        $exifBlock = $this->exifBlockWithGps();
+        $content = substr($content, 0, 2).$exifBlock.substr($content, 2);
+        file_put_contents($path, $content);
 
-        return $ruta;
+        return $path;
     }
 
     /**
      * Segmento APP1 con un IFD GPS mínimo (latitud y longitud).
      */
-    private function bloqueExifConGps(): string
+    private function exifBlockWithGps(): string
     {
         // TIFF header little-endian, IFD0 con un único puntero al IFD GPS.
         $tiff = "II\x2A\x00\x08\x00\x00\x00";
@@ -244,10 +244,10 @@ class FileUploadTest extends TestCase
         $gps .= pack('V', 0);
 
         // 36° 44' 30" N / 6° 25' 40" O, en RATIONAL (numerador/denominador).
-        $datos = pack('VVVVVV', 36, 1, 44, 1, 30, 1);
-        $datos .= pack('VVVVVV', 6, 1, 25, 1, 40, 1);
+        $data = pack('VVVVVV', 36, 1, 44, 1, 30, 1);
+        $data .= pack('VVVVVV', 6, 1, 25, 1, 40, 1);
 
-        $payload = "Exif\x00\x00".$tiff.$gps.$datos;
+        $payload = "Exif\x00\x00".$tiff.$gps.$data;
 
         return "\xFF\xE1".pack('n', strlen($payload) + 2).$payload;
     }
@@ -262,35 +262,35 @@ class FileUploadTest extends TestCase
      *
      * PHPStan lo señalaba y estaba silenciado en el baseline.
      */
-    public function test_resize_devuelve_la_imagen_y_no_el_marcador_de_no_es_imagen(): void
+    public function test_resize_returns_the_image_and_not_the_not_an_image_placeholder(): void
     {
-        $archivo = UploadedFile::fake()->image('foto.jpg', 1200, 800);
-        $file = File::addFile($archivo, $this->directorio, is_private: false);
+        $uploaded = UploadedFile::fake()->image('foto.jpg', 1200, 800);
+        $file = File::addFile($uploaded, $this->directory, is_private: false);
 
         $this->assertNotNull($file);
 
-        $ancho = File::$thumbnailsSizeWidth['small'];
+        $width = File::$thumbnailsSizeWidth['small'];
 
-        $response = $this->get("/file/resize/{$file->module}/{$file->id}/{$ancho}/foto");
+        $response = $this->get("/file/resize/{$file->module}/{$file->id}/{$width}/foto");
 
         $response->assertOk();
         $this->assertStringStartsWith('image/', (string) $response->headers->get('Content-Type'));
 
         // El marcador de "no es una imagen" se sirve desde public/images; si la
         // respuesta fuera ese fichero, el ancho no coincidiría con el pedido.
-        $contenido = $response->streamedContent() ?: $response->getContent();
+        $content = $response->streamedContent() ?: $response->getContent();
         $tmp = tempnam(sys_get_temp_dir(), 'resize');
-        file_put_contents($tmp, $contenido);
-        [$anchoServido] = getimagesize($tmp) ?: [null];
+        file_put_contents($tmp, $content);
+        [$servedWidth] = getimagesize($tmp) ?: [null];
         @unlink($tmp);
 
-        $this->assertSame($ancho, $anchoServido);
+        $this->assertSame($width, $servedWidth);
     }
 
-    public function test_resize_ignora_un_ancho_fuera_del_catalogo(): void
+    public function test_resize_ignores_a_width_outside_the_catalog(): void
     {
-        $archivo = UploadedFile::fake()->image('foto.jpg', 1200, 800);
-        $file = File::addFile($archivo, $this->directorio, is_private: false);
+        $uploaded = UploadedFile::fake()->image('foto.jpg', 1200, 800);
+        $file = File::addFile($uploaded, $this->directory, is_private: false);
 
         // 7 px no está en el catálogo y es menor que el más pequeño: no hay
         // nada que servir.

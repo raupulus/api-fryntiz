@@ -137,13 +137,13 @@ class CapWarningsTest extends TestCase
             $header .= str_repeat("\0", 32 + 32 + 8 + 8 + 155); // uname, gname, dev*, prefix
             $header = str_pad($header, 512, "\0");
 
-            $suma = 0;
+            $checksum = 0;
             for ($i = 0; $i < 512; $i++) {
-                $suma += ord($header[$i]);
+                $checksum += ord($header[$i]);
             }
             $header = substr_replace(
                 $header,
-                str_pad(decoct($suma), 6, '0', STR_PAD_LEFT)."\0 ",
+                str_pad(decoct($checksum), 6, '0', STR_PAD_LEFT)."\0 ",
                 148,
                 8
             );
@@ -298,10 +298,10 @@ class CapWarningsTest extends TestCase
 
         $this->assertCount(2, $warnings);
 
-        $despues = glob(sys_get_temp_dir().'/aemet-avisos-*') ?: [];
+        $after = glob(sys_get_temp_dir().'/aemet-avisos-*') ?: [];
         $this->assertSame(
             count($before),
-            count($despues),
+            count($after),
             'El lector ha dejado el paquete descomprimido en el temporal.'
         );
     }

@@ -142,7 +142,7 @@ class AirFlightPersistenceTest extends ApiTestCase
     #[Test]
     public function the_same_aircraft_reported_twice_is_not_duplicated(): void
     {
-        foreach ([1, 2, 3] as $ignorado) {
+        foreach ([1, 2, 3] as $attempt) {
             $this->postJson(
                 $this->apiUrl('airflight/aircrafts'),
                 $this->probe(),
@@ -186,7 +186,7 @@ class AirFlightPersistenceTest extends ApiTestCase
     #[Test]
     public function the_batch_stores_every_aircraft_it_receives(): void
     {
-        $lote = [
+        $batch = [
             $this->probe('3444d2'),
             $this->probe('45ac1f'),
             $this->probe('4ca7b3'),
@@ -194,7 +194,7 @@ class AirFlightPersistenceTest extends ApiTestCase
 
         $this->postJson(
             $this->apiUrl('airflight/aircrafts/batch'),
-            ['data' => $lote],
+            ['data' => $batch],
             $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
         )->assertStatus(201);
 

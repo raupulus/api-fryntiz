@@ -24,26 +24,26 @@ class EnergyCardOrderTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function device(string $nombre): HardwareDevice
+    private function device(string $name): HardwareDevice
     {
-        return HardwareDevice::create(['name' => $nombre]);
+        return HardwareDevice::create(['name' => $name]);
     }
 
     /**
      * Una lectura de hace un rato, para que cuente como «ahora mismo».
      */
-    private function generandoAhora(HardwareDevice $device, float $vatios): void
+    private function generatingNow(HardwareDevice $device, float $watts): void
     {
         HardwarePowerGenerator::create([
             'hardware_device_id' => $device->id,
             'voltage' => 12.0,
-            'amperage' => $vatios / 12.0,
-            'power' => $vatios,
+            'amperage' => $watts / 12.0,
+            'power' => $watts,
             'read_at' => now()->subMinutes(5),
         ]);
     }
 
-    private function generadoHoy(HardwareDevice $device, float $wh): void
+    private function generatedToday(HardwareDevice $device, float $wh): void
     {
         HardwarePowerGeneratorToday::create([
             'hardware_device_id' => $device->id,
@@ -52,7 +52,7 @@ class EnergyCardOrderTest extends TestCase
         ]);
     }
 
-    private function generadoSiempre(HardwareDevice $device, float $wh): void
+    private function generatedAllTime(HardwareDevice $device, float $wh): void
     {
         HardwarePowerGeneratorHistorical::create([
             'hardware_device_id' => $device->id,
@@ -64,66 +64,66 @@ class EnergyCardOrderTest extends TestCase
     /**
      * @return list<int> Ids en el orden en que la página los va a pintar.
      */
-    private function ordenDeLasTarjetas(): array
+    private function cardOrder(): array
     {
-        $respuesta = $this->get(route('hardware.energy.index'));
-        $respuesta->assertOk();
+        $response = $this->get(route('hardware.energy.index'));
+        $response->assertOk();
 
-        return $respuesta->viewData('hardwareItems')->pluck('id')->all();
+        return $response->viewData('hardwareItems')->pluck('id')->all();
     }
 
     #[Test]
-    public function los_que_estan_dando_senales_ahora_van_primero(): void
+    public function devices_currently_reporting_come_first(): void
     {
         // Sólo histórico: lleva tiempo parado.
-        $parado = $this->device('Parado');
-        $this->generadoSiempre($parado, 50_000);
+        $stopped = $this->device('Parado');
+        $this->generatedAllTime($stopped, 50_000);
 
         // Activo ahora mismo, pero con muy poco histórico.
-        $activo = $this->device('Activo');
-        $this->generandoAhora($activo, 120);
-        $this->generadoHoy($activo, 300);
-        $this->generadoSiempre($activo, 10);
+        $active = $this->device('Activo');
+        $this->generatingNow($active, 120);
+        $this->generatedToday($active, 300);
+        $this->generatedAllTime($active, 10);
 
-        $this->assertSame([$activo->id, $parado->id], $this->ordenDeLasTarjetas());
+        $this->assertSame([$active->id, $stopped->id], $this->cardOrder());
     }
 
     #[Test]
-    public function entre_los_activos_manda_lo_que_han_movido_hoy(): void
+    public function among_active_devices_todays_output_wins(): void
     {
-        $poco = $this->device('Poco hoy');
-        $this->generandoAhora($poco, 10);
-        $this->generadoHoy($poco, 50);
-        $this->generadoSiempre($poco, 90_000);
+        $little = $this->device('Poco hoy');
+        $this->generatingNow($little, 10);
+        $this->generatedToday($little, 50);
+        $this->generatedAllTime($little, 90_000);
 
-        $mucho = $this->device('Mucho hoy');
-        $this->generandoAhora($mucho, 10);
-        $this->generadoHoy($mucho, 900);
-        $this->generadoSiempre($mucho, 10);
+        $lots = $this->device('Mucho hoy');
+        $this->generatingNow($lots, 10);
+        $this->generatedToday($lots, 900);
+        $this->generatedAllTime($lots, 10);
 
-        $this->assertSame([$mucho->id, $poco->id], $this->ordenDeLasTarjetas());
+        $this->assertSame([$lots->id, $little->id], $this->cardOrder());
     }
 
     #[Test]
-    public function entre_los_parados_manda_el_acumulado_de_siempre(): void
+    public function among_stopped_devices_the_all_time_total_wins(): void
     {
-        $flojo = $this->device('Flojo');
-        $this->generadoSiempre($flojo, 100);
+        $modest = $this->device('Flojo');
+        $this->generatedAllTime($modest, 100);
 
-        $veterano = $this->device('Veterano');
-        $this->generadoSiempre($veterano, 900_000);
+        $veteran = $this->device('Veterano');
+        $this->generatedAllTime($veteran, 900_000);
 
-        $this->assertSame([$veterano->id, $flojo->id], $this->ordenDeLasTarjetas());
+        $this->assertSame([$veteran->id, $modest->id], $this->cardOrder());
     }
 
     #[Test]
-    public function el_orden_es_estable_entre_recargas(): void
+    public function the_order_is_stable_across_reloads(): void
     {
-        foreach (['Uno', 'Dos', 'Tres', 'Cuatro'] as $nombre) {
-            $this->generadoSiempre($this->device($nombre), random_int(1, 1000));
+        foreach (['Uno', 'Dos', 'Tres', 'Cuatro'] as $name) {
+            $this->generatedAllTime($this->device($name), random_int(1, 1000));
         }
 
-        $this->assertSame($this->ordenDeLasTarjetas(), $this->ordenDeLasTarjetas());
+        $this->assertSame($this->cardOrder(), $this->cardOrder());
     }
 
     /**
@@ -136,12 +136,12 @@ class EnergyCardOrderTest extends TestCase
      * 28 W: se genera más del doble.
      */
     #[Test]
-    public function no_se_enfrentan_los_amperios_de_los_dos_lados(): void
+    public function the_amperages_of_the_two_sides_are_not_pitted_against_each_other(): void
     {
         $device = $this->device('Solar');
 
         // La página sólo mira los dispositivos que tienen histórico.
-        $this->generadoSiempre($device, 1_000);
+        $this->generatedAllTime($device, 1_000);
 
         // Generando en el lado del panel: mucha tensión, poca corriente.
         HardwarePowerGenerator::create([
@@ -161,17 +161,17 @@ class EnergyCardOrderTest extends TestCase
             'read_at' => now()->subMinutes(5),
         ]);
 
-        $respuesta = $this->get(route('hardware.energy.index'))->assertOk();
+        $response = $this->get(route('hardware.energy.index'))->assertOk();
 
-        $titulos = collect($respuesta->viewData('currentStats'))->pluck('title');
-        $unidades = collect($respuesta->viewData('currentStats'))
+        $titles = collect($response->viewData('currentStats'))->pluck('title');
+        $units = collect($response->viewData('currentStats'))
             ->filter(fn (array $s) => $s['unit'] === 'A');
 
-        $this->assertTrue($unidades->isEmpty(), 'No debe quedar ninguna tarjeta en amperios.');
-        $this->assertTrue($titulos->contains('Balance'));
+        $this->assertTrue($units->isEmpty(), 'No debe quedar ninguna tarjeta en amperios.');
+        $this->assertTrue($titles->contains('Balance'));
 
-        $generator = $respuesta->viewData('generator');
-        $load = $respuesta->viewData('load');
+        $generator = $response->viewData('generator');
+        $load = $response->viewData('load');
 
         // El balance, que es la pregunta de verdad: 64 - 28 = 36 W a favor.
         $this->assertSame(36.0, round($generator->current - $load->current));
@@ -185,21 +185,21 @@ class EnergyCardOrderTest extends TestCase
      * Ordenar no puede alterar ninguna suma de las tarjetas de cabecera.
      */
     #[Test]
-    public function los_totales_de_arriba_no_cambian(): void
+    public function the_totals_at_the_top_do_not_change(): void
     {
         $a = $this->device('A');
-        $this->generandoAhora($a, 100);
-        $this->generadoHoy($a, 400);
-        $this->generadoSiempre($a, 1_000);
+        $this->generatingNow($a, 100);
+        $this->generatedToday($a, 400);
+        $this->generatedAllTime($a, 1_000);
 
         $b = $this->device('B');
-        $this->generadoHoy($b, 600);
-        $this->generadoSiempre($b, 2_000);
+        $this->generatedToday($b, 600);
+        $this->generatedAllTime($b, 2_000);
 
-        $respuesta = $this->get(route('hardware.energy.index'));
-        $respuesta->assertOk();
+        $response = $this->get(route('hardware.energy.index'));
+        $response->assertOk();
 
-        $generator = $respuesta->viewData('generator');
+        $generator = $response->viewData('generator');
 
         $this->assertSame(100.0, (float) $generator->current);
         $this->assertSame(1000.0, (float) $generator->today);

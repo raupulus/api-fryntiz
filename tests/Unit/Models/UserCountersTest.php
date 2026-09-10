@@ -34,14 +34,14 @@ class UserCountersTest extends TestCase
         (new RolesTableSeeder)->run();
     }
 
-    private function crear(bool $activo, bool $borrado = false): User
+    private function createUser(bool $active, bool $deleted = false): User
     {
         $user = User::factory()->create([
             'role_id' => UserRoleEnum::User->value,
-            'is_active' => $activo,
+            'is_active' => $active,
         ]);
 
-        if ($borrado) {
+        if ($deleted) {
             $user->delete();
         }
 
@@ -49,22 +49,22 @@ class UserCountersTest extends TestCase
     }
 
     #[Test]
-    public function los_activos_se_cuentan_por_is_active_y_no_por_deleted_at(): void
+    public function active_users_are_counted_by_is_active_and_not_by_deleted_at(): void
     {
-        $this->crear(activo: true);
-        $this->crear(activo: true);
-        $this->crear(activo: false);
+        $this->createUser(active: true);
+        $this->createUser(active: true);
+        $this->createUser(active: false);
 
         $this->assertSame(2, User::countActive());
         $this->assertCount(2, User::getAllActive());
     }
 
     #[Test]
-    public function los_inactivos_son_los_desactivados_no_los_vivos(): void
+    public function the_inactive_ones_are_the_deactivated_ones_not_the_alive_ones(): void
     {
-        $this->crear(activo: true);
-        $this->crear(activo: false);
-        $this->crear(activo: false);
+        $this->createUser(active: true);
+        $this->createUser(active: false);
+        $this->createUser(active: false);
 
         $this->assertSame(2, User::countInactive());
         $this->assertCount(2, User::getAllInactive());
@@ -75,12 +75,12 @@ class UserCountersTest extends TestCase
     }
 
     #[Test]
-    public function un_usuario_borrado_no_cuenta_en_ninguno_de_los_dos(): void
+    public function a_deleted_user_does_not_count_in_either_of_the_two(): void
     {
         // El global scope de SoftDeletes lo deja fuera de las dos consultas, que
         // es lo correcto: borrado no es ni activo ni inactivo, es que ya no está.
-        $this->crear(activo: true, borrado: true);
-        $this->crear(activo: false, borrado: true);
+        $this->createUser(active: true, deleted: true);
+        $this->createUser(active: false, deleted: true);
 
         $this->assertSame(0, User::countActive());
         $this->assertSame(0, User::countInactive());

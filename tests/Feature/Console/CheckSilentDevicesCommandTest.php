@@ -21,15 +21,15 @@ class CheckSilentDevicesCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_sale_con_cero_aunque_encuentre_dispositivos_mudos(): void
+    public function test_it_exits_with_zero_even_when_it_finds_silent_devices(): void
     {
-        $this->dispositivo('Pico Display', now()->subDays(3));
+        $this->device('Pico Display', now()->subDays(3));
 
         Log::shouldReceive('warning')->once()->withArgs(
-            function (string $mensaje, array $contexto): bool {
-                return str_contains($mensaje, 'dejado de reportar')
-                    && $contexto['horas'] === 24
-                    && $contexto['dispositivos'][0]['name'] === 'Pico Display';
+            function (string $message, array $context): bool {
+                return str_contains($message, 'dejado de reportar')
+                    && $context['horas'] === 24
+                    && $context['dispositivos'][0]['name'] === 'Pico Display';
             }
         );
 
@@ -37,9 +37,9 @@ class CheckSilentDevicesCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_sale_con_cero_cuando_todos_han_reportado(): void
+    public function test_it_exits_with_zero_when_all_devices_have_reported(): void
     {
-        $this->dispositivo('Rover', now()->subHour());
+        $this->device('Rover', now()->subHour());
 
         Log::shouldReceive('warning')->never();
 
@@ -48,9 +48,9 @@ class CheckSilentDevicesCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_un_dispositivo_que_nunca_ha_reportado_no_cuenta_como_mudo(): void
+    public function test_a_device_that_has_never_reported_does_not_count_as_silent(): void
     {
-        $this->dispositivo('Recién dado de alta', null);
+        $this->device('Recién dado de alta', null);
 
         Log::shouldReceive('warning')->never();
 
@@ -58,7 +58,7 @@ class CheckSilentDevicesCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_sin_dispositivos_registrados_no_avisa(): void
+    public function test_it_does_not_warn_when_there_are_no_registered_devices(): void
     {
         Log::shouldReceive('warning')->never();
 
@@ -67,12 +67,12 @@ class CheckSilentDevicesCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    private function dispositivo(string $nombre, mixed $lastSeenAt): HardwareDevice
+    private function device(string $name, mixed $lastSeenAt): HardwareDevice
     {
         // Sin dueño a propósito: el comando mira todo el parque, no filtra por
         // usuario. Montar uno sólo para satisfacer una FK nullable es ruido.
         return HardwareDevice::create([
-            'name' => $nombre,
+            'name' => $name,
             'last_seen_at' => $lastSeenAt,
         ]);
     }

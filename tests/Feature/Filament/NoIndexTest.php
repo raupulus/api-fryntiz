@@ -29,7 +29,7 @@ class NoIndexTest extends TestCase
     /**
      * @return list<array{string}>
      */
-    public static function rutasDelPanel(): array
+    public static function panelRoutes(): array
     {
         return [
             'login del admin' => ['/admin/login'],
@@ -40,16 +40,16 @@ class NoIndexTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('rutasDelPanel')]
-    public function las_rutas_del_panel_piden_no_ser_indexadas(string $ruta): void
+    #[DataProvider('panelRoutes')]
+    public function panel_routes_ask_not_to_be_indexed(string $route): void
     {
         // Sin autenticar: una raíz de panel redirige a su login, y la cabecera
         // tiene que viajar también en la redirección.
-        $this->get($ruta)->assertHeader('X-Robots-Tag', NoIndex::VALOR);
+        $this->get($route)->assertHeader('X-Robots-Tag', NoIndex::VALOR);
     }
 
     #[Test]
-    public function el_login_lleva_ademas_la_etiqueta_meta(): void
+    public function the_login_page_also_carries_the_meta_tag(): void
     {
         // Respaldo por si un proxy delante se comiera la cabecera.
         $this->get('/admin/login')
@@ -60,7 +60,7 @@ class NoIndexTest extends TestCase
     /**
      * @return list<array{string}>
      */
-    public static function rutasPublicas(): array
+    public static function publicRoutes(): array
     {
         return [
             'portada' => ['/'],
@@ -70,14 +70,14 @@ class NoIndexTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('rutasPublicas')]
-    public function las_paginas_publicas_se_siguen_indexando(string $ruta): void
+    #[DataProvider('publicRoutes')]
+    public function public_pages_keep_being_indexed(string $route): void
     {
-        $respuesta = $this->get($ruta);
+        $response = $this->get($route);
 
         $this->assertFalse(
-            $respuesta->headers->has('X-Robots-Tag'),
-            "La ruta pública {$ruta} está pidiendo no ser indexada. El "
+            $response->headers->has('X-Robots-Tag'),
+            "La ruta pública {$route} está pidiendo no ser indexada. El "
             .'middleware NoIndex se ha escapado del panel.'
         );
     }

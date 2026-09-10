@@ -48,7 +48,7 @@ class ContentSeoServiceTest extends TestCase
     }
 
     #[Test]
-    public function crea_el_seo_de_un_contenido_que_no_lo_tenia(): void
+    public function creates_the_seo_for_content_that_did_not_have_it(): void
     {
         $content = $this->makeContent();
 
@@ -63,33 +63,33 @@ class ContentSeoServiceTest extends TestCase
     }
 
     #[Test]
-    public function guardar_dos_veces_actualiza_y_no_duplica(): void
+    public function saving_twice_updates_and_does_not_duplicate(): void
     {
         $content = $this->makeContent();
 
-        $primero = $this->service->upsert($content, ['description' => 'Primera']);
-        $segundo = $this->service->upsert($content, ['description' => 'Segunda']);
+        $first = $this->service->upsert($content, ['description' => 'Primera']);
+        $second = $this->service->upsert($content, ['description' => 'Segunda']);
 
-        $this->assertSame($primero->id, $segundo->id);
-        $this->assertSame('Segunda', $segundo->fresh()->description);
+        $this->assertSame($first->id, $second->id);
+        $this->assertSame('Segunda', $second->fresh()->description);
         $this->assertSame(1, ContentSeo::where('content_id', $content->id)->count());
     }
 
     #[Test]
-    public function cada_contenido_tiene_su_propia_fila_de_seo(): void
+    public function each_content_has_its_own_seo_row(): void
     {
-        $uno = $this->makeContent();
-        $otro = $this->makeContent();
+        $first = $this->makeContent();
+        $second = $this->makeContent();
 
-        $this->service->upsert($uno, ['description' => 'La del primero']);
-        $this->service->upsert($otro, ['description' => 'La del segundo']);
+        $this->service->upsert($first, ['description' => 'La del primero']);
+        $this->service->upsert($second, ['description' => 'La del segundo']);
 
         $this->assertSame(2, ContentSeo::query()->count());
-        $this->assertSame('La del primero', ContentSeo::where('content_id', $uno->id)->first()->description);
+        $this->assertSame('La del primero', ContentSeo::where('content_id', $first->id)->first()->description);
     }
 
     #[Test]
-    public function un_upsert_parcial_no_borra_lo_que_no_se_manda(): void
+    public function a_partial_upsert_does_not_clear_what_is_not_sent(): void
     {
         // Editar sólo la descripción desde el panel no debe vaciar las
         // keywords que ya estaban puestas.
@@ -109,7 +109,7 @@ class ContentSeoServiceTest extends TestCase
     }
 
     #[Test]
-    public function guarda_los_campos_de_redes_sociales(): void
+    public function saves_the_social_media_fields(): void
     {
         $content = $this->makeContent();
 

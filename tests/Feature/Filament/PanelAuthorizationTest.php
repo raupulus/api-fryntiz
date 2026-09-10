@@ -73,7 +73,7 @@ class PanelAuthorizationTest extends TestCase
         (new RolesTableSeeder)->run();
     }
 
-    private function actuarComo(UserRoleEnum $role): User
+    private function actingAsRole(UserRoleEnum $role): User
     {
         $user = User::factory()->create([
             'role_id' => $role->value,
@@ -93,7 +93,7 @@ class PanelAuthorizationTest extends TestCase
     // Laravel busca una clase que no existe. Es el mismo patrón que usa
     // `tests/Unit/Policies/HardwarePolicyTest.php`.
 
-    private function crearCurriculum(User $owner): Curriculum
+    private function createCurriculum(User $owner): Curriculum
     {
         return Curriculum::create([
             'user_id' => $owner->id,
@@ -102,7 +102,7 @@ class PanelAuthorizationTest extends TestCase
         ]);
     }
 
-    private function crearTeclado(User $owner): Keyboard
+    private function createKeyboard(User $owner): Keyboard
     {
         return Keyboard::create([
             'user_id' => $owner->id,
@@ -117,7 +117,7 @@ class PanelAuthorizationTest extends TestCase
         ]);
     }
 
-    private function crearRaton(User $owner): Mouse
+    private function createMouse(User $owner): Mouse
     {
         return Mouse::create([
             'user_id' => $owner->id,
@@ -133,7 +133,7 @@ class PanelAuthorizationTest extends TestCase
         ]);
     }
 
-    private function crearDispositivo(User $owner): HardwareDevice
+    private function createDevice(User $owner): HardwareDevice
     {
         return HardwareDevice::create([
             'hardware_type_id' => HardwareType::firstOrCreate(['name' => HardwareType::WEATHER_STATION])->id,
@@ -142,7 +142,7 @@ class PanelAuthorizationTest extends TestCase
         ]);
     }
 
-    private function crearImpresora(User $owner): Printer
+    private function createPrinter(User $owner): Printer
     {
         return Printer::create([
             'user_id' => $owner->id,
@@ -154,7 +154,7 @@ class PanelAuthorizationTest extends TestCase
         ]);
     }
 
-    private function crearPlanta(User $owner): SmartPlantPlant
+    private function createPlant(User $owner): SmartPlantPlant
     {
         return SmartPlantPlant::create([
             'user_id' => $owner->id,
@@ -167,40 +167,40 @@ class PanelAuthorizationTest extends TestCase
     }
 
     #[Test]
-    public function ningun_recurso_del_panel_administra_un_modelo_sin_policy(): void
+    public function no_panel_resource_manages_a_model_without_a_policy(): void
     {
-        $sinPolicy = [];
+        $withoutPolicy = [];
 
         foreach (Filament::getPanels() as $panel) {
-            foreach ($panel->getResources() as $recurso) {
-                $modelo = $recurso::getModel();
+            foreach ($panel->getResources() as $resource) {
+                $model = $resource::getModel();
 
-                if (Gate::getPolicyFor($modelo) === null) {
-                    $sinPolicy[] = $recurso;
+                if (Gate::getPolicyFor($model) === null) {
+                    $withoutPolicy[] = $resource;
                 }
             }
         }
 
-        $this->assertSame([], $sinPolicy, implode("\n", [
+        $this->assertSame([], $withoutPolicy, implode("\n", [
             'Hay recursos cuyo modelo no tiene policy registrada en AuthServiceProvider.',
             'Eso NO los deja cerrados: los deja abiertos a cualquiera que entre al panel,',
-            'rol Editor incluido. Registra una policy para: '.implode(', ', $sinPolicy),
+            'rol Editor incluido. Registra una policy para: '.implode(', ', $withoutPolicy),
         ]));
     }
 
     #[Test]
-    public function un_editor_no_alcanza_los_tokens_de_la_api(): void
+    public function an_editor_cannot_reach_the_api_tokens(): void
     {
-        $this->actuarComo(UserRoleEnum::Editor);
+        $this->actingAsRole(UserRoleEnum::Editor);
 
         $this->assertFalse(ApiTokenResource::canViewAny(), 'Un Editor podía listar los tokens de todos los usuarios.');
         $this->assertFalse(ApiTokenResource::canCreate(), 'Un Editor podía emitirse un token a nombre de quien quisiera.');
     }
 
     #[Test]
-    public function un_admin_gestiona_tokens_pero_no_los_de_un_superadmin(): void
+    public function an_admin_manages_tokens_but_not_a_superadmins(): void
     {
-        $admin = $this->actuarComo(UserRoleEnum::Admin);
+        $admin = $this->actingAsRole(UserRoleEnum::Admin);
         $superadmin = User::factory()->create([
             'role_id' => UserRoleEnum::SuperAdmin->value,
             'is_active' => true,
@@ -212,26 +212,26 @@ class PanelAuthorizationTest extends TestCase
         $this->assertTrue(ApiTokenResource::canViewAny());
         $this->assertTrue(ApiTokenResource::canCreate());
 
-        $delNormal = $normal->createToken('cacharro', [TokenAbilities::HARDWARE_WRITE])->accessToken;
-        $delSuper = $superadmin->createToken('suyo', [TokenAbilities::HARDWARE_WRITE])->accessToken;
+        $normalToken = $normal->createToken('cacharro', [TokenAbilities::HARDWARE_WRITE])->accessToken;
+        $superToken = $superadmin->createToken('suyo', [TokenAbilities::HARDWARE_WRITE])->accessToken;
 
-        $this->assertTrue($admin->can('delete', $delNormal));
+        $this->assertTrue($admin->can('delete', $normalToken));
         $this->assertFalse(
-            $admin->can('delete', $delSuper),
+            $admin->can('delete', $superToken),
             'Revocar el token de un SuperAdmin es escalar por la puerta de atrás.'
         );
 
         // Y tampoco lo ve listado: la tabla enseña lo que devuelva la consulta,
         // no lo que autorice `view()` fila a fila.
         $ids = ApiTokenResource::getEloquentQuery()->pluck('id')->all();
-        $this->assertContains($delNormal->id, $ids);
-        $this->assertNotContains($delSuper->id, $ids);
+        $this->assertContains($normalToken->id, $ids);
+        $this->assertNotContains($superToken->id, $ids);
     }
 
     #[Test]
-    public function un_superadmin_si_gestiona_los_tokens(): void
+    public function a_superadmin_does_manage_the_tokens(): void
     {
-        $this->actuarComo(UserRoleEnum::SuperAdmin);
+        $this->actingAsRole(UserRoleEnum::SuperAdmin);
 
         $this->assertTrue(ApiTokenResource::canViewAny());
         $this->assertTrue(ApiTokenResource::canCreate());
@@ -240,7 +240,7 @@ class PanelAuthorizationTest extends TestCase
     /**
      * @return array<string, array{class-string}>
      */
-    public static function catalogosGlobales(): array
+    public static function globalCatalogs(): array
     {
         return [
             'tipos de fichero' => [FileTypeResource::class],
@@ -251,35 +251,35 @@ class PanelAuthorizationTest extends TestCase
     }
 
     /**
-     * @param  class-string<\Filament\Resources\Resource>  $recurso
+     * @param  class-string<\Filament\Resources\Resource>  $resource
      */
     #[Test]
-    #[DataProvider('catalogosGlobales')]
-    public function un_editor_no_toca_los_catalogos_globales(string $recurso): void
+    #[DataProvider('globalCatalogs')]
+    public function an_editor_cannot_touch_the_global_catalogs(string $resource): void
     {
-        $this->actuarComo(UserRoleEnum::Editor);
+        $this->actingAsRole(UserRoleEnum::Editor);
 
-        $this->assertFalse($recurso::canViewAny());
-        $this->assertFalse($recurso::canCreate());
+        $this->assertFalse($resource::canViewAny());
+        $this->assertFalse($resource::canCreate());
     }
 
     /**
-     * @param  class-string<\Filament\Resources\Resource>  $recurso
+     * @param  class-string<\Filament\Resources\Resource>  $resource
      */
     #[Test]
-    #[DataProvider('catalogosGlobales')]
-    public function un_admin_si_gestiona_los_catalogos_globales(string $recurso): void
+    #[DataProvider('globalCatalogs')]
+    public function an_admin_does_manage_the_global_catalogs(string $resource): void
     {
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actingAsRole(UserRoleEnum::Admin);
 
-        $this->assertTrue($recurso::canViewAny());
-        $this->assertTrue($recurso::canCreate());
+        $this->assertTrue($resource::canViewAny());
+        $this->assertTrue($resource::canCreate());
     }
 
     #[Test]
-    public function un_editor_no_ve_la_telemetria_ni_los_modulos_de_infraestructura(): void
+    public function an_editor_cannot_see_telemetry_or_infrastructure_modules(): void
     {
-        $this->actuarComo(UserRoleEnum::Editor);
+        $this->actingAsRole(UserRoleEnum::Editor);
 
         // Widgets: nombres de servidores, CPU, disco, uptime y consumos.
         $this->assertFalse(DeviceStatusWidget::canView());
@@ -296,9 +296,9 @@ class PanelAuthorizationTest extends TestCase
     }
 
     #[Test]
-    public function un_admin_si_ve_la_telemetria(): void
+    public function an_admin_does_see_the_telemetry(): void
     {
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actingAsRole(UserRoleEnum::Admin);
 
         $this->assertTrue(DeviceStatusWidget::canView());
         $this->assertTrue(EnergyStatsWidget::canView());
@@ -309,113 +309,113 @@ class PanelAuthorizationTest extends TestCase
     // ───────────────────── Alcance de las tablas (AR-SEC-02) ─────────────────
 
     #[Test]
-    public function la_tabla_de_curriculums_solo_muestra_los_propios(): void
+    public function the_curriculums_table_only_shows_its_own(): void
     {
-        $editor = $this->actuarComo(UserRoleEnum::Editor);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $editor = $this->actingAsRole(UserRoleEnum::Editor);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $suyo = $this->crearCurriculum($editor);
-        $ajeno = $this->crearCurriculum($otro);
+        $own = $this->createCurriculum($editor);
+        $someoneElses = $this->createCurriculum($other);
 
         $ids = CurriculumResource::getEloquentQuery()->pluck('id')->all();
 
-        $this->assertContains($suyo->id, $ids);
+        $this->assertContains($own->id, $ids);
         $this->assertNotContains(
-            $ajeno->id,
+            $someoneElses->id,
             $ids,
             'Un Editor veía en /admin el listado completo de currículums de todos los usuarios.'
         );
     }
 
     #[Test]
-    public function la_tabla_de_teclados_solo_muestra_los_propios(): void
+    public function the_keyboards_table_only_shows_its_own(): void
     {
-        $editor = $this->actuarComo(UserRoleEnum::Editor);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $editor = $this->actingAsRole(UserRoleEnum::Editor);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $suyo = $this->crearTeclado($editor);
-        $ajeno = $this->crearTeclado($otro);
+        $own = $this->createKeyboard($editor);
+        $someoneElses = $this->createKeyboard($other);
 
         $ids = KeyboardResource::getEloquentQuery()->pluck('id')->all();
 
-        $this->assertContains($suyo->id, $ids);
+        $this->assertContains($own->id, $ids);
         $this->assertNotContains(
-            $ajeno->id,
+            $someoneElses->id,
             $ids,
             'Las pulsaciones y los horarios de actividad de otros usuarios eran visibles para un Editor.'
         );
     }
 
     #[Test]
-    public function la_tabla_de_dispositivos_solo_muestra_los_propios(): void
+    public function the_devices_table_only_shows_its_own(): void
     {
-        $editor = $this->actuarComo(UserRoleEnum::Editor);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $editor = $this->actingAsRole(UserRoleEnum::Editor);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $suyo = $this->crearDispositivo($editor);
-        $ajeno = $this->crearDispositivo($otro);
+        $own = $this->createDevice($editor);
+        $someoneElses = $this->createDevice($other);
 
         $ids = HardwareDeviceResource::getEloquentQuery()->pluck('id')->all();
 
-        $this->assertContains($suyo->id, $ids);
-        $this->assertNotContains($ajeno->id, $ids);
+        $this->assertContains($own->id, $ids);
+        $this->assertNotContains($someoneElses->id, $ids);
     }
 
     #[Test]
-    public function la_tabla_de_impresoras_solo_muestra_las_propias(): void
+    public function the_printers_table_only_shows_its_own(): void
     {
-        $editor = $this->actuarComo(UserRoleEnum::Editor);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $editor = $this->actingAsRole(UserRoleEnum::Editor);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $suya = $this->crearImpresora($editor);
-        $ajena = $this->crearImpresora($otro);
+        $own = $this->createPrinter($editor);
+        $someoneElses = $this->createPrinter($other);
 
         $ids = PrinterResource::getEloquentQuery()->pluck('id')->all();
 
-        $this->assertContains($suya->id, $ids);
-        $this->assertNotContains($ajena->id, $ids);
+        $this->assertContains($own->id, $ids);
+        $this->assertNotContains($someoneElses->id, $ids);
     }
 
     #[Test]
-    public function un_administrador_sigue_viendo_las_tablas_enteras(): void
+    public function an_administrator_still_sees_the_full_tables(): void
     {
-        $admin = $this->actuarComo(UserRoleEnum::Admin);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $admin = $this->actingAsRole(UserRoleEnum::Admin);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $suyo = $this->crearTeclado($admin);
-        $ajeno = $this->crearTeclado($otro);
+        $own = $this->createKeyboard($admin);
+        $someoneElses = $this->createKeyboard($other);
 
         $ids = KeyboardResource::getEloquentQuery()->pluck('id')->all();
 
-        $this->assertContains($suyo->id, $ids);
-        $this->assertContains($ajeno->id, $ids, 'El alcance por dueño no debe dejar fuera a un administrador.');
+        $this->assertContains($own->id, $ids);
+        $this->assertContains($someoneElses->id, $ids, 'El alcance por dueño no debe dejar fuera a un administrador.');
     }
 
     #[Test]
-    public function la_tabla_de_ratones_solo_muestra_los_propios(): void
+    public function the_mice_table_only_shows_its_own(): void
     {
-        $editor = $this->actuarComo(UserRoleEnum::Editor);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $editor = $this->actingAsRole(UserRoleEnum::Editor);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $suyo = $this->crearRaton($editor);
-        $ajeno = $this->crearRaton($otro);
+        $own = $this->createMouse($editor);
+        $someoneElses = $this->createMouse($other);
 
         $ids = MouseResource::getEloquentQuery()->pluck('id')->all();
 
-        $this->assertContains($suyo->id, $ids);
-        $this->assertNotContains($ajeno->id, $ids);
+        $this->assertContains($own->id, $ids);
+        $this->assertNotContains($someoneElses->id, $ids);
     }
 
     // ──────────── El Admin no se queda fuera de su panel (AR-SEC-03) ─────────
 
     #[Test]
-    public function un_admin_abre_dispositivos_y_plantas_de_otros_usuarios(): void
+    public function an_admin_opens_devices_and_plants_of_other_users(): void
     {
-        $admin = $this->actuarComo(UserRoleEnum::Admin);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $admin = $this->actingAsRole(UserRoleEnum::Admin);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $device = $this->crearDispositivo($otro);
-        $plant = $this->crearPlanta($otro);
+        $device = $this->createDevice($other);
+        $plant = $this->createPlant($other);
 
         // Antes daban 403: `isOwnedBy()` no contemplaba al administrador y el
         // atajo `Gate::before` sólo cubre a SuperAdmin.
@@ -427,13 +427,13 @@ class PanelAuthorizationTest extends TestCase
     }
 
     #[Test]
-    public function un_editor_no_abre_dispositivos_ni_plantas_de_otros(): void
+    public function an_editor_cannot_open_devices_or_plants_of_others(): void
     {
-        $editor = $this->actuarComo(UserRoleEnum::Editor);
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $editor = $this->actingAsRole(UserRoleEnum::Editor);
+        $other = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $device = $this->crearDispositivo($otro);
-        $plant = $this->crearPlanta($otro);
+        $device = $this->createDevice($other);
+        $plant = $this->createPlant($other);
 
         $this->assertFalse($editor->can('view', $device));
         $this->assertFalse($editor->can('update', $device));
@@ -450,36 +450,36 @@ class PanelAuthorizationTest extends TestCase
      * dispositivo por esta misma razón; las policies tienen que hacer lo mismo.
      */
     #[Test]
-    public function el_token_de_un_cacharro_no_hereda_los_permisos_de_administrador(): void
+    public function a_devices_token_does_not_inherit_admin_permissions(): void
     {
-        $duenyo = User::factory()->create([
+        $owner = User::factory()->create([
             'role_id' => UserRoleEnum::SuperAdmin->value,
             'is_active' => true,
         ]);
 
-        $propio = $this->crearDispositivo($duenyo);
-        $ajeno = $this->crearDispositivo($duenyo);
+        $own = $this->createDevice($owner);
+        $other = $this->createDevice($owner);
 
         // Token ligado a UN dispositivo concreto, como el de un cacharro real.
-        $token = $duenyo->createToken('estacion', [
+        $token = $owner->createToken('estacion', [
             TokenAbilities::HARDWARE_WRITE,
-            TokenAbilities::DEVICE_PREFIX.$propio->id,
+            TokenAbilities::DEVICE_PREFIX.$own->id,
         ]);
 
-        $duenyo->withAccessToken(
+        $owner->withAccessToken(
             ApiToken::findToken($token->plainTextToken)
         );
 
         $this->assertTrue(
-            $duenyo->can('writeData', $propio),
+            $owner->can('writeData', $own),
             'El cacharro debe poder escribir contra su propio dispositivo.'
         );
         $this->assertFalse(
-            $duenyo->can('writeData', $ajeno),
+            $owner->can('writeData', $other),
             'El token de un cacharro no puede alcanzar los demás dispositivos, ni siendo su dueño SuperAdmin.'
         );
         $this->assertFalse(
-            $duenyo->can('delete', $ajeno),
+            $owner->can('delete', $other),
             'Borrar un dispositivo no es tarea de un dispositivo.'
         );
     }

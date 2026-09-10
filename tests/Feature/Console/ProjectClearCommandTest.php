@@ -25,19 +25,19 @@ class ProjectClearCommandTest extends TestCase
     use RefreshDatabase;
 
     /** @var array<string, string> */
-    private array $cacheOriginal = [];
+    private array $originalCache = [];
 
-    private ?string $envOriginal = null;
+    private ?string $originalEnv = null;
 
     protected function tearDown(): void
     {
-        $this->restaurarCacheDeArranque();
-        $this->restaurarEnv();
+        $this->restoreBootstrapCache();
+        $this->restoreEnv();
 
         parent::tearDown();
     }
 
-    public function test_fuera_de_produccion_regenera_la_clave_sin_pedir_nada(): void
+    public function test_outside_production_it_regenerates_the_key_without_asking(): void
     {
         // Con `--no-key` para no tocar el `.env` de quien ejecute los tests; lo
         // que se comprueba es que no aparece el aviso de conservación, o sea que
@@ -47,9 +47,9 @@ class ProjectClearCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_en_produccion_conserva_la_clave_sin_flags(): void
+    public function test_in_production_it_keeps_the_key_without_flags(): void
     {
-        $this->simularProduccion();
+        $this->simulateProduction();
 
         $this->artisan('project:clear')
             ->expectsOutputToContain('Entorno «production»')
@@ -58,9 +58,9 @@ class ProjectClearCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_en_produccion_no_vacia_las_colas(): void
+    public function test_in_production_it_does_not_empty_the_queues(): void
     {
-        $this->simularProduccion();
+        $this->simulateProduction();
 
         // `queue:clear` borra la tabla `jobs`: correos sin enviar, PDFs sin
         // generar. Un despliegue no tira trabajo pendiente.
@@ -70,9 +70,9 @@ class ProjectClearCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_en_produccion_recachea_sin_pasar_production(): void
+    public function test_in_production_it_recaches_without_passing_production(): void
     {
-        $this->simularProduccion();
+        $this->simulateProduction();
 
         $this->artisan('project:clear')
             ->expectsOutputToContain('Recacheando optimizaciones para producción')
@@ -84,24 +84,24 @@ class ProjectClearCommandTest extends TestCase
         );
     }
 
-    public function test_en_produccion_la_clave_se_regenera_solo_pidiendola(): void
+    public function test_in_production_the_key_is_only_regenerated_when_asked(): void
     {
-        $this->simularProduccion();
+        $this->simulateProduction();
 
         // Este caso SÍ ejecuta `key:generate --force`, que reescribe el `.env`
         // del proyecto. Se guarda antes y se devuelve tal cual en `tearDown()`:
         // sin esto, correr la suite le cambia a cualquiera la APP_KEY de su
         // entorno local y se queda sin poder descifrar lo que tuviera cifrado.
-        $this->protegerEnv();
+        $this->protectEnv();
 
         $this->artisan('project:clear', ['--key' => true, '--force' => true])
             ->expectsOutputToContain('Regenerando clave de aplicación')
             ->assertExitCode(0);
     }
 
-    public function test_no_key_manda_sobre_key(): void
+    public function test_no_key_overrides_key(): void
     {
-        $this->simularProduccion();
+        $this->simulateProduction();
 
         $this->artisan('project:clear', ['--key' => true, '--no-key' => true, '--force' => true])
             ->expectsOutputToContain('Se conserva la APP_KEY actual.')
@@ -112,9 +112,9 @@ class ProjectClearCommandTest extends TestCase
      * Pone la aplicación en «production» y guarda las cachés de arranque para
      * devolverlas como estaban.
      */
-    private function simularProduccion(): void
+    private function simulateProduction(): void
     {
-        $this->guardarCacheDeArranque();
+        $this->saveBootstrapCache();
 
         $this->app->detectEnvironment(static fn () => 'production');
     }
@@ -122,49 +122,49 @@ class ProjectClearCommandTest extends TestCase
     /**
      * Guarda el `.env` para devolverlo intacto pase lo que pase en el test.
      */
-    private function protegerEnv(): void
+    private function protectEnv(): void
     {
-        $ruta = base_path('.env');
+        $path = base_path('.env');
 
-        if (File::exists($ruta)) {
-            $this->envOriginal = (string) File::get($ruta);
+        if (File::exists($path)) {
+            $this->originalEnv = (string) File::get($path);
         }
     }
 
-    private function restaurarEnv(): void
+    private function restoreEnv(): void
     {
-        if ($this->envOriginal === null) {
+        if ($this->originalEnv === null) {
             return;
         }
 
-        File::put(base_path('.env'), $this->envOriginal);
-        $this->envOriginal = null;
+        File::put(base_path('.env'), $this->originalEnv);
+        $this->originalEnv = null;
     }
 
-    private function guardarCacheDeArranque(): void
+    private function saveBootstrapCache(): void
     {
-        foreach (File::glob(base_path('bootstrap/cache/*.php')) as $fichero) {
-            $this->cacheOriginal[$fichero] = (string) File::get($fichero);
+        foreach (File::glob(base_path('bootstrap/cache/*.php')) as $file) {
+            $this->originalCache[$file] = (string) File::get($file);
         }
     }
 
-    private function restaurarCacheDeArranque(): void
+    private function restoreBootstrapCache(): void
     {
-        if ($this->cacheOriginal === []) {
+        if ($this->originalCache === []) {
             return;
         }
 
-        foreach (File::glob(base_path('bootstrap/cache/*.php')) as $fichero) {
-            if (! array_key_exists($fichero, $this->cacheOriginal)) {
-                File::delete($fichero);
+        foreach (File::glob(base_path('bootstrap/cache/*.php')) as $file) {
+            if (! array_key_exists($file, $this->originalCache)) {
+                File::delete($file);
             }
         }
 
-        foreach ($this->cacheOriginal as $fichero => $contenido) {
-            File::put($fichero, $contenido);
+        foreach ($this->originalCache as $file => $contents) {
+            File::put($file, $contents);
         }
 
-        $this->cacheOriginal = [];
+        $this->originalCache = [];
     }
 
     /**
@@ -173,32 +173,32 @@ class ProjectClearCommandTest extends TestCase
      * `storage/framework/views`, y para entonces las cachés ya estaban
      * borradas. El sitio se queda sin ninguna.
      */
-    public function test_crea_los_directorios_de_trabajo_que_falten(): void
+    public function test_it_creates_missing_working_directories(): void
     {
         $views = storage_path('framework/views');
         $bootstrap = base_path('bootstrap/cache');
 
         // Se guarda lo que haya dentro para devolverlo tal cual.
-        $este = $this;
-        $restaurar = [];
+        $test = $this;
+        $toRestore = [];
 
-        foreach ([$views, $bootstrap] as $directorio) {
-            if (is_dir($directorio)) {
-                $restaurar[] = $directorio;
-                @rmdir($directorio);
+        foreach ([$views, $bootstrap] as $directory) {
+            if (is_dir($directory)) {
+                $toRestore[] = $directory;
+                @rmdir($directory);
             }
         }
 
         try {
             $this->artisan('project:clear --force --no-key')->assertSuccessful();
 
-            $este->assertDirectoryExists($views);
-            $este->assertDirectoryExists($bootstrap);
-            $este->assertDirectoryExists(storage_path('framework/cache/data'));
+            $test->assertDirectoryExists($views);
+            $test->assertDirectoryExists($bootstrap);
+            $test->assertDirectoryExists(storage_path('framework/cache/data'));
         } finally {
-            foreach ($restaurar as $directorio) {
-                if (! is_dir($directorio)) {
-                    @mkdir($directorio, 0775, true);
+            foreach ($toRestore as $directory) {
+                if (! is_dir($directory)) {
+                    @mkdir($directory, 0775, true);
                 }
             }
         }

@@ -29,7 +29,7 @@ class CollectionFilterTest extends ApiTestCase
     /**
      * @return array<string, array{0: string}>
      */
-    public static function filtrosInvalidosProvider(): array
+    public static function invalidFiltersProvider(): array
     {
         return [
             'fecha que no es fecha' => ['/api/v2/platforms?created_at=abc'],
@@ -44,19 +44,19 @@ class CollectionFilterTest extends ApiTestCase
     }
 
     #[Test]
-    #[DataProvider('filtrosInvalidosProvider')]
-    public function un_filtro_invalido_responde_422_con_el_envelope(string $url): void
+    #[DataProvider('invalidFiltersProvider')]
+    public function an_invalid_filter_responds_422_with_the_envelope(string $url): void
     {
         // Las colecciones del proveedor son casi todas públicas; la serie
         // temporal de sensores dejó de serlo el 2026-09-06 y pide
         // `weatherstation:read`. Ir siempre autenticado no cambia nada en las
         // demás y evita que el 401 tape el 422 que se está comprobando.
-        $respuesta = $this->getJson($url, $this->moduleHeaders(
+        $response = $this->getJson($url, $this->moduleHeaders(
             $this->createAuthenticatedUser(),
             TokenAbilities::WEATHERSTATION_READ
         ));
 
-        $respuesta->assertStatus(422)
+        $response->assertStatus(422)
             ->assertJson(['success' => false])
             ->assertJsonStructure(['success', 'message', 'errors']);
     }
@@ -64,7 +64,7 @@ class CollectionFilterTest extends ApiTestCase
     /**
      * @return array<string, array{0: string}>
      */
-    public static function filtrosValidosProvider(): array
+    public static function validFiltersProvider(): array
     {
         return [
             'sin filtros' => ['/api/v2/platforms'],
@@ -86,14 +86,14 @@ class CollectionFilterTest extends ApiTestCase
     }
 
     #[Test]
-    #[DataProvider('filtrosValidosProvider')]
-    public function un_filtro_valido_sigue_funcionando(string $url): void
+    #[DataProvider('validFiltersProvider')]
+    public function a_valid_filter_still_works(string $url): void
     {
         $this->getJson($url)->assertOk()->assertJson(['success' => true]);
     }
 
     #[Test]
-    public function el_error_dice_que_campo_falla(): void
+    public function the_error_says_which_field_fails(): void
     {
         $this->getJson('/api/v2/platforms?created_at=abc')
             ->assertStatus(422)
@@ -101,14 +101,14 @@ class CollectionFilterTest extends ApiTestCase
     }
 
     #[Test]
-    public function el_tipo_se_deduce_del_nombre_de_la_columna(): void
+    public function the_type_is_inferred_from_the_column_name(): void
     {
         // `is_featured` es booleano por el prefijo `is_`, `type_id` entero por
         // el sufijo `_id`, `published_at` fecha por `_at`. Sin la convención
         // habría que repetir el tipo en los once sitios donde se construye un
         // CollectionQuery.
-        $plataforma = Platform::factory()->create();
-        $url = "/api/v2/platforms/{$plataforma->slug}/contents";
+        $platform = Platform::factory()->create();
+        $url = "/api/v2/platforms/{$platform->slug}/contents";
 
         $this->getJson($url.'?is_featured=quiza')->assertStatus(422);
         $this->getJson($url.'?type_id=abc')->assertStatus(422);

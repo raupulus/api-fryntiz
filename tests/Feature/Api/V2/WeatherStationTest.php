@@ -41,7 +41,7 @@ class WeatherStationTest extends ApiTestCase
      *
      * @return array<string, string>
      */
-    private function lectura(): array
+    private function readHeaders(): array
     {
         return $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::WEATHERSTATION_READ);
     }
@@ -62,7 +62,7 @@ class WeatherStationTest extends ApiTestCase
         Temperature::create(['hardware_device_id' => $indoor->id, 'value' => 22.0, 'created_at' => now()]);
         Temperature::create(['hardware_device_id' => $outdoor->id, 'value' => 38.0, 'created_at' => now()]);
 
-        $response = $this->getJson($this->apiUrl('weather-stations'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations'), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $this->assertCount(1, $response->json('data'));
@@ -79,7 +79,7 @@ class WeatherStationTest extends ApiTestCase
 
         Temperature::create(['hardware_device_id' => $indoor->id, 'value' => 22.126, 'created_at' => now()]);
 
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$indoor->id), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$indoor->id), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $this->assertEquals($indoor->id, $response->json('data.id'));
@@ -97,7 +97,7 @@ class WeatherStationTest extends ApiTestCase
             'created_at' => now(),
         ]);
 
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         // 10 m/s * 3.6 = 36 km/h
@@ -111,7 +111,7 @@ class WeatherStationTest extends ApiTestCase
         $station = $this->makeStation('outdoor', 'Azotea', 'Azotea');
         Temperature::create(['hardware_device_id' => $station->id, 'value' => 30.0, 'created_at' => now()]);
 
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id.'?sensors=temperature,wind'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id.'?sensors=temperature,wind'), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data' => ['id', 'temperature', 'wind']]);
@@ -124,7 +124,7 @@ class WeatherStationTest extends ApiTestCase
     {
         $station = $this->makeStation('outdoor', 'Azotea', 'Azotea');
 
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id.'?sensors=temperature,foo'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id.'?sensors=temperature,foo'), $this->readHeaders());
 
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['sensors.1']);
@@ -133,7 +133,7 @@ class WeatherStationTest extends ApiTestCase
     #[Test]
     public function station_not_found_returns_404(): void
     {
-        $response = $this->getJson($this->apiUrl('weather-stations/999999'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/999999'), $this->readHeaders());
         $this->assertErrorResponse($response, 404);
     }
 
@@ -153,7 +153,7 @@ class WeatherStationTest extends ApiTestCase
         // Fuera de la ventana: no debe contar.
         Lightning::create(['hardware_device_id' => $station->id, 'distance' => 10, 'energy' => 100, 'created_at' => now()->subHours(7)]);
 
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$station->id), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $this->assertEquals(360, $response->json('data.lightning.window_minutes'));
@@ -176,7 +176,7 @@ class WeatherStationTest extends ApiTestCase
             'zone' => 'Azotea',
         ]);
 
-        $response = $this->getJson($this->apiUrl('weather-stations'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations'), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $this->assertSame([], $response->json('data'));
@@ -191,7 +191,7 @@ class WeatherStationTest extends ApiTestCase
         $this->makeStation('outdoor', 'Chipiona', 'Azotea 2');
         $this->makeStation('outdoor', 'Jardín', 'Otra');
 
-        $response = $this->getJson($this->apiUrl('weather-stations?zone=Chipiona'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations?zone=Chipiona'), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $this->assertCount(2, $response->json('data'));
@@ -203,7 +203,7 @@ class WeatherStationTest extends ApiTestCase
         $this->makeStation('outdoor', 'Casa', 'Exterior casa');
         $this->makeStation('indoor', 'Casa', 'Interior casa');
 
-        $response = $this->getJson($this->apiUrl('weather-stations?zone=Casa&location_type=indoor'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations?zone=Casa&location_type=indoor'), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $this->assertCount(1, $response->json('data'));
@@ -213,7 +213,7 @@ class WeatherStationTest extends ApiTestCase
     #[Test]
     public function zone_rejects_invalid_location_type(): void
     {
-        $response = $this->getJson($this->apiUrl('weather-stations?zone=Casa&location_type=basement'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations?zone=Casa&location_type=basement'), $this->readHeaders());
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['location_type']);
     }
@@ -221,14 +221,14 @@ class WeatherStationTest extends ApiTestCase
     #[Test]
     public function can_get_temperature(): void
     {
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/temperatures'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/temperatures'), $this->readHeaders());
         $this->assertSuccessResponse($response);
     }
 
     #[Test]
     public function can_get_humidity(): void
     {
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/humidities'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/humidities'), $this->readHeaders());
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -236,7 +236,7 @@ class WeatherStationTest extends ApiTestCase
     #[Test]
     public function can_get_pressure(): void
     {
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/pressures'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/pressures'), $this->readHeaders());
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -244,7 +244,7 @@ class WeatherStationTest extends ApiTestCase
     #[Test]
     public function temperature_index_accepts_date_range_filter(): void
     {
-        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/temperatures?from=2025-01-01&to=2025-01-31'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('weather-stations/'.$this->stationForTests().'/temperatures?from=2025-01-01&to=2025-01-31'), $this->readHeaders());
         $this->assertSuccessResponse($response);
     }
 
@@ -299,21 +299,21 @@ class WeatherStationTest extends ApiTestCase
     {
         $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::WEATHERSTATION_WRITE);
 
-        $sinNada = $this->postJson(
+        $withoutAnything = $this->postJson(
             $this->apiUrl('weather-stations/'.$this->stationForTests().'/temperatures'),
             [],
             $headers
         );
-        $this->assertErrorResponse($sinNada, 422);
-        $sinNada->assertJsonValidationErrors(['readings']);
+        $this->assertErrorResponse($withoutAnything, 422);
+        $withoutAnything->assertJsonValidationErrors(['readings']);
 
-        $loteSinValor = $this->postJson(
+        $batchWithoutValue = $this->postJson(
             $this->apiUrl('weather-stations/'.$this->stationForTests().'/temperatures'),
             ['readings' => [[]]],
             $headers
         );
-        $this->assertErrorResponse($loteSinValor, 422);
-        $loteSinValor->assertJsonValidationErrors(['readings.0.value']);
+        $this->assertErrorResponse($batchWithoutValue, 422);
+        $batchWithoutValue->assertJsonValidationErrors(['readings.0.value']);
     }
 
     #[Test]
@@ -335,7 +335,7 @@ class WeatherStationTest extends ApiTestCase
 
     private function stationForTests(): int
     {
-        return $this->estacionDePruebas ??= HardwareDevice::create([
+        return $this->stationForTests ??= HardwareDevice::create([
             'user_id' => $this->createAuthenticatedUser()->id,
             'name' => 'Estación de pruebas',
         ])->id;

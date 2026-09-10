@@ -34,29 +34,29 @@ use function str_replace;
 class PanelAssetsTest extends TestCase
 {
     #[Test]
-    public function ninguna_vista_carga_assets_desde_los_directorios_ignorados(): void
+    public function no_view_loads_assets_from_ignored_directories(): void
     {
-        $culpables = [];
+        $offenders = [];
 
-        foreach ($this->vistas() as $vista) {
-            $contenido = (string) file_get_contents($vista);
+        foreach ($this->views() as $view) {
+            $content = (string) file_get_contents($view);
 
             // `public/js` y `public/css` están en `.gitignore`: lo que se
             // cargue desde ahí no existe en el servidor.
             preg_match_all(
                 '/asset\(\s*[\'"](?:js|css)\//',
-                $contenido,
-                $coincidencias
+                $content,
+                $matches
             );
 
-            if ($coincidencias[0] !== []) {
-                $culpables[] = str_replace(base_path().'/', '', $vista);
+            if ($matches[0] !== []) {
+                $offenders[] = str_replace(base_path().'/', '', $view);
             }
         }
 
         $this->assertSame(
             [],
-            $culpables,
+            $offenders,
             'Estas vistas cargan assets desde public/js o public/css, que no se '
             .'versionan y no llegan al servidor. Muévelos a resources/ y '
             .'cárgalos con @vite().'
@@ -64,7 +64,7 @@ class PanelAssetsTest extends TestCase
     }
 
     #[Test]
-    public function el_buscador_de_youtube_se_carga_desde_resources(): void
+    public function the_youtube_search_widget_loads_from_resources(): void
     {
         $this->assertFileExists(
             base_path('resources/js/youtube-video-search.js'),
@@ -72,13 +72,13 @@ class PanelAssetsTest extends TestCase
             .'para que lo compile Vite.'
         );
 
-        $vista = (string) file_get_contents(
+        $view = (string) file_get_contents(
             base_path('resources/views/filament/components/youtube-video-field.blade.php')
         );
 
         $this->assertStringContainsString(
             "@vite('resources/js/youtube-video-search.js')",
-            $vista
+            $view
         );
     }
 
@@ -90,30 +90,30 @@ class PanelAssetsTest extends TestCase
      *
      * @return list<string>
      */
-    private function vistas(): array
+    private function views(): array
     {
         // `glob()` no baja recursivamente, así que se recorre a mano.
-        $pendientes = [base_path('resources/views')];
-        $encontradas = [];
+        $pending = [base_path('resources/views')];
+        $found = [];
 
-        while ($pendientes !== []) {
-            $directorio = array_pop($pendientes);
+        while ($pending !== []) {
+            $directory = array_pop($pending);
 
-            foreach ((array) glob($directorio.'/*') as $ruta) {
-                if (is_dir($ruta)) {
-                    if (! str_ends_with($ruta, '/scribe')) {
-                        $pendientes[] = $ruta;
+            foreach ((array) glob($directory.'/*') as $path) {
+                if (is_dir($path)) {
+                    if (! str_ends_with($path, '/scribe')) {
+                        $pending[] = $path;
                     }
 
                     continue;
                 }
 
-                if (is_file($ruta) && str_ends_with($ruta, '.blade.php')) {
-                    $encontradas[] = $ruta;
+                if (is_file($path) && str_ends_with($path, '.blade.php')) {
+                    $found[] = $path;
                 }
             }
         }
 
-        return $encontradas;
+        return $found;
     }
 }

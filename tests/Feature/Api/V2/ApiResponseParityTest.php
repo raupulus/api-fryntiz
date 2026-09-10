@@ -53,45 +53,45 @@ class ApiResponseParityTest extends TestCase
         return $reflection->invoke($this->controller, ...$arguments);
     }
 
-    private function assertMismaRespuesta(JsonResponse $helper, JsonResponse $trait, string $caso): void
+    private function assertSameResponse(JsonResponse $helper, JsonResponse $trait, string $case): void
     {
         $this->assertSame(
             $helper->getStatusCode(),
             $trait->getStatusCode(),
-            "El código HTTP de «{$caso}» no coincide entre JsonHelper y ApiResponseTrait."
+            "El código HTTP de «{$case}» no coincide entre JsonHelper y ApiResponseTrait."
         );
 
         $this->assertSame(
             $helper->getContent(),
             $trait->getContent(),
-            "El cuerpo de «{$caso}» no coincide entre JsonHelper y ApiResponseTrait."
+            "El cuerpo de «{$case}» no coincide entre JsonHelper y ApiResponseTrait."
         );
     }
 
-    public function test_respuesta_correcta_es_identica(): void
+    public function test_a_correct_response_is_identical(): void
     {
-        $this->assertMismaRespuesta(
+        $this->assertSameResponse(
             JsonHelper::success(['id' => 1], 'Hecho'),
             $this->viaTrait('successResponse', ['id' => 1], 'Hecho'),
             'success'
         );
     }
 
-    public function test_respuesta_correcta_con_valores_por_defecto_es_identica(): void
+    public function test_a_correct_response_with_default_values_is_identical(): void
     {
-        $this->assertMismaRespuesta(
+        $this->assertSameResponse(
             JsonHelper::success(),
             $this->viaTrait('successResponse'),
             'success por defecto'
         );
     }
 
-    public function test_recurso_creado_es_identico(): void
+    public function test_a_created_resource_is_identical(): void
     {
         $helper = JsonHelper::created(['id' => 7], 'Creado', 'https://api.raupulus.dev/x');
         $trait = $this->viaTrait('createdResponse', ['id' => 7], 'Creado', 'https://api.raupulus.dev/x');
 
-        $this->assertMismaRespuesta($helper, $trait, 'created');
+        $this->assertSameResponse($helper, $trait, 'created');
 
         $this->assertSame(
             $helper->headers->get('Location'),
@@ -100,36 +100,36 @@ class ApiResponseParityTest extends TestCase
         );
     }
 
-    public function test_borrado_es_identico_y_sigue_siendo_204_sin_cuerpo(): void
+    public function test_a_deletion_is_identical_and_still_204_without_body(): void
     {
         $helper = JsonHelper::deleted();
         $trait = $this->viaTrait('deletedResponse');
 
-        $this->assertMismaRespuesta($helper, $trait, 'deleted');
+        $this->assertSameResponse($helper, $trait, 'deleted');
 
         // Decisión del 2026-09-02: el borrado se queda en 204 sin cuerpo, que
         // es lo correcto en REST, aunque sea la única respuesta sin envelope.
         $this->assertSame(204, $helper->getStatusCode());
     }
 
-    public function test_coleccion_paginada_es_identica(): void
+    public function test_a_paginated_collection_is_identical(): void
     {
-        $paginador = new LengthAwarePaginator([['id' => 1], ['id' => 2]], 40, 25, 1);
+        $paginator = new LengthAwarePaginator([['id' => 1], ['id' => 2]], 40, 25, 1);
 
-        $this->assertMismaRespuesta(
-            JsonHelper::paginated($paginador),
-            $this->viaTrait('paginatedResponse', $paginador),
+        $this->assertSameResponse(
+            JsonHelper::paginated($paginator),
+            $this->viaTrait('paginatedResponse', $paginator),
             'paginated'
         );
     }
 
-    public function test_avisos_son_identicos(): void
+    public function test_warnings_are_identical(): void
     {
-        $avisos = ['El canal 3 no tiene elemento activo.', 'Corriente negativa.'];
+        $warnings = ['El canal 3 no tiene elemento activo.', 'Corriente negativa.'];
 
-        $this->assertMismaRespuesta(
-            JsonHelper::withWarnings(JsonHelper::success(['ok' => true]), $avisos),
-            $this->viaTrait('withWarnings', $this->viaTrait('successResponse', ['ok' => true]), $avisos),
+        $this->assertSameResponse(
+            JsonHelper::withWarnings(JsonHelper::success(['ok' => true]), $warnings),
+            $this->viaTrait('withWarnings', $this->viaTrait('successResponse', ['ok' => true]), $warnings),
             'withWarnings'
         );
     }
@@ -137,7 +137,7 @@ class ApiResponseParityTest extends TestCase
     /**
      * @return array<string, array{0: string, 1: string, 2: array<int, mixed>}>
      */
-    public static function erroresProvider(): array
+    public static function errorsProvider(): array
     {
         return [
             'error genérico' => ['error', 'errorResponse', ['Se ha roto', 400, ['campo' => ['mal']]]],
@@ -156,10 +156,10 @@ class ApiResponseParityTest extends TestCase
     /**
      * @param  array<int, mixed>  $arguments
      */
-    #[DataProvider('erroresProvider')]
-    public function test_los_errores_son_identicos(string $helperMethod, string $traitMethod, array $arguments): void
+    #[DataProvider('errorsProvider')]
+    public function test_errors_are_identical(string $helperMethod, string $traitMethod, array $arguments): void
     {
-        $this->assertMismaRespuesta(
+        $this->assertSameResponse(
             JsonHelper::{$helperMethod}(...$arguments),
             $this->viaTrait($traitMethod, ...$arguments),
             $helperMethod
@@ -170,41 +170,41 @@ class ApiResponseParityTest extends TestCase
      * Cada método público de `JsonHelper` tiene su gemelo en el trait, o está
      * en la lista de los que a propósito no lo tienen.
      */
-    public function test_no_hay_metodos_del_helper_sin_gemelo_en_el_trait(): void
+    public function test_no_helper_method_is_missing_its_twin_in_the_trait(): void
     {
         // `serverError` sólo la usa el handler de cierre: un controlador no
         // devuelve un 500 a mano, lo provoca. `failed`, `accepted` y `updated`
         // son nombres históricos de la V1 que se conservan para los `render()`
         // de las excepciones.
-        $sinGemelo = ['serverError', 'failed', 'accepted', 'updated'];
+        $methodsWithoutTwin = ['serverError', 'failed', 'accepted', 'updated'];
 
-        $metodosHelper = array_column(
+        $helperMethods = array_column(
             (new \ReflectionClass(JsonHelper::class))->getMethods(\ReflectionMethod::IS_PUBLIC),
             'name'
         );
 
-        $metodosTrait = array_column(
+        $traitMethods = array_column(
             (new \ReflectionClass(ApiResponseTrait::class))->getMethods(),
             'name'
         );
 
-        foreach ($metodosHelper as $metodo) {
-            if (in_array($metodo, $sinGemelo, true)) {
+        foreach ($helperMethods as $method) {
+            if (in_array($method, $methodsWithoutTwin, true)) {
                 continue;
             }
 
-            $gemelo = $metodo === 'withWarnings' ? 'withWarnings' : $metodo.'Response';
+            $twin = $method === 'withWarnings' ? 'withWarnings' : $method.'Response';
 
             $this->assertContains(
-                $gemelo,
-                $metodosTrait,
-                "JsonHelper::{$metodo}() no tiene gemelo «{$gemelo}» en ApiResponseTrait. ".
-                'Si es deliberado, añádelo a la lista $sinGemelo de este test y explica por qué.'
+                $twin,
+                $traitMethods,
+                "JsonHelper::{$method}() no tiene gemelo «{$twin}» en ApiResponseTrait. ".
+                'Si es deliberado, añádelo a la lista $methodsWithoutTwin de este test y explica por qué.'
             );
         }
     }
 
-    public function test_el_bloque_debug_no_existe_sin_app_debug(): void
+    public function test_the_debug_block_does_not_exist_without_app_debug(): void
     {
         config(['app.debug' => false]);
 
@@ -213,7 +213,7 @@ class ApiResponseParityTest extends TestCase
         $this->assertArrayNotHasKey('debug', $payload);
     }
 
-    public function test_el_bloque_debug_aparece_con_app_debug(): void
+    public function test_the_debug_block_appears_with_app_debug(): void
     {
         config(['app.debug' => true]);
 
@@ -224,33 +224,33 @@ class ApiResponseParityTest extends TestCase
         $this->assertArrayHasKey('parameters', $payload['debug']);
     }
 
-    public function test_el_bloque_debug_no_filtra_cabeceras_sensibles(): void
+    public function test_the_debug_block_does_not_leak_sensitive_headers(): void
     {
         config(['app.debug' => true]);
 
-        $respuesta = $this->withHeaders([
+        $response = $this->withHeaders([
             'Authorization' => 'Bearer 1|secretodeverdad',
             'Cookie' => 'laravel_session=abcdef',
             'Accept' => 'application/json',
         ])->getJson('/api/v2/platforms');
 
-        $cuerpo = $respuesta->getContent();
+        $body = $response->getContent();
 
-        $this->assertStringNotContainsString('secretodeverdad', $cuerpo);
-        $this->assertStringNotContainsString('laravel_session', $cuerpo);
-        $this->assertStringNotContainsString('authorization', mb_strtolower($cuerpo));
+        $this->assertStringNotContainsString('secretodeverdad', $body);
+        $this->assertStringNotContainsString('laravel_session', $body);
+        $this->assertStringNotContainsString('authorization', mb_strtolower($body));
     }
 
-    public function test_el_bloque_debug_tapa_la_contrasena(): void
+    public function test_the_debug_block_redacts_the_password(): void
     {
         config(['app.debug' => true]);
 
-        $respuesta = $this->postJson('/api/v2/auth/tokens', [
+        $response = $this->postJson('/api/v2/auth/tokens', [
             'email' => 'no-existe@raupulus.dev',
             'password' => 'estonodebesalir',
         ]);
 
-        $this->assertStringNotContainsString('estonodebesalir', $respuesta->getContent());
-        $this->assertStringContainsString(ApiEnvelope::REDACTED_PLACEHOLDER, $respuesta->getContent());
+        $this->assertStringNotContainsString('estonodebesalir', $response->getContent());
+        $this->assertStringContainsString(ApiEnvelope::REDACTED_PLACEHOLDER, $response->getContent());
     }
 }

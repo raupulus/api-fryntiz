@@ -111,21 +111,21 @@ class NewsletterTest extends ApiTestCase
             'platform_id' => $this->platform->id,
         ])->assertStatus(201);
 
-        $existente = $this->postJson($this->apiUrl('newsletter/subscriptions/verification'), [
+        $existing = $this->postJson($this->apiUrl('newsletter/subscriptions/verification'), [
             'email' => 'existe@example.com',
             'platform_id' => $this->platform->id,
         ]);
 
-        $inexistente = $this->postJson($this->apiUrl('newsletter/subscriptions/verification'), [
+        $nonexistent = $this->postJson($this->apiUrl('newsletter/subscriptions/verification'), [
             'email' => 'no-existe@example.com',
             'platform_id' => $this->platform->id,
         ]);
 
-        $existente->assertStatus(200);
-        $inexistente->assertStatus(200);
+        $existing->assertStatus(200);
+        $nonexistent->assertStatus(200);
         $this->assertSame(
-            $existente->json('message'),
-            $inexistente->json('message'),
+            $existing->json('message'),
+            $nonexistent->json('message'),
             'La respuesta debe ser idéntica para no revelar si el email está suscrito.'
         );
     }
@@ -154,16 +154,16 @@ class NewsletterTest extends ApiTestCase
         // Es la URL de la cabecera List-Unsubscribe (RFC 8058), así que va por
         // POST: en GET la abrían los antivirus y los clientes de correo al
         // hacer prefetch, dando de baja a quien no lo había pedido.
-        $suscripcion = $this->makeSubscription();
+        $subscription = $this->makeSubscription();
 
         $response = $this->postJson(
-            $this->apiUrl('newsletter/subscriptions/'.$suscripcion->unsubscribe_token.'/unsubscription')
+            $this->apiUrl('newsletter/subscriptions/'.$subscription->unsubscribe_token.'/unsubscription')
         );
 
         $this->assertSuccessResponse($response);
 
-        $suscripcion->refresh();
-        $this->assertNotNull($suscripcion->unsubscribed_at);
+        $subscription->refresh();
+        $this->assertNotNull($subscription->unsubscribed_at);
     }
 
     #[Test]
@@ -179,16 +179,16 @@ class NewsletterTest extends ApiTestCase
         // Lo que importa no es el código exacto —la API convierte el 405 en un
         // 404 por su fallback— sino que un GET NO dé de baja a nadie: era el
         // motivo de pasar esta ruta a POST.
-        $suscripcion = $this->makeSubscription();
+        $subscription = $this->makeSubscription();
 
         $response = $this->getJson(
-            $this->apiUrl('newsletter/subscriptions/'.$suscripcion->unsubscribe_token.'/unsubscription')
+            $this->apiUrl('newsletter/subscriptions/'.$subscription->unsubscribe_token.'/unsubscription')
         );
 
         $this->assertContains($response->getStatusCode(), [404, 405]);
 
-        $suscripcion->refresh();
-        $this->assertNull($suscripcion->unsubscribed_at);
+        $subscription->refresh();
+        $this->assertNull($subscription->unsubscribed_at);
     }
 
     private function makeSubscription(): Newsletter

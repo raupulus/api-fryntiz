@@ -58,20 +58,20 @@ class ContentPolicyTest extends TestCase
     // ─── viewAny / create ───
 
     #[Test]
-    public function un_usuario_normal_no_entra_al_listado_de_contenidos(): void
+    public function a_regular_user_does_not_enter_the_content_listing(): void
     {
         $this->assertFalse($this->policy->viewAny($this->makeUser(UserRoleEnum::User)));
     }
 
     #[Test]
-    public function admin_y_editor_entran_al_listado(): void
+    public function admin_and_editor_enter_the_listing(): void
     {
         $this->assertTrue($this->policy->viewAny($this->makeUser(UserRoleEnum::Admin)));
         $this->assertTrue($this->policy->viewAny($this->makeUser(UserRoleEnum::Editor)));
     }
 
     #[Test]
-    public function un_usuario_normal_no_crea_contenidos(): void
+    public function a_regular_user_does_not_create_content(): void
     {
         $this->assertFalse($this->policy->create($this->makeUser(UserRoleEnum::User)));
     }
@@ -79,67 +79,67 @@ class ContentPolicyTest extends TestCase
     // ─── view / update ───
 
     #[Test]
-    public function el_autor_alcanza_su_propio_contenido(): void
+    public function the_author_can_reach_their_own_content(): void
     {
-        $autor = $this->makeUser(UserRoleEnum::User);
-        $content = $this->makeContent($autor);
+        $author = $this->makeUser(UserRoleEnum::User);
+        $content = $this->makeContent($author);
 
-        $this->assertTrue($this->policy->view($autor, $content));
-        $this->assertTrue($this->policy->update($autor, $content));
+        $this->assertTrue($this->policy->view($author, $content));
+        $this->assertTrue($this->policy->update($author, $content));
     }
 
     #[Test]
-    public function un_usuario_normal_no_alcanza_el_contenido_de_otro(): void
+    public function a_regular_user_cannot_reach_another_users_content(): void
     {
-        $ajeno = $this->makeContent($this->makeUser(UserRoleEnum::User));
-        $mirón = $this->makeUser(UserRoleEnum::User);
+        $othersContent = $this->makeContent($this->makeUser(UserRoleEnum::User));
+        $viewer = $this->makeUser(UserRoleEnum::User);
 
-        $this->assertFalse($this->policy->view($mirón, $ajeno));
-        $this->assertFalse($this->policy->update($mirón, $ajeno));
+        $this->assertFalse($this->policy->view($viewer, $othersContent));
+        $this->assertFalse($this->policy->update($viewer, $othersContent));
     }
 
     #[Test]
-    public function el_admin_alcanza_cualquier_contenido(): void
+    public function the_admin_can_reach_any_content(): void
     {
-        $ajeno = $this->makeContent($this->makeUser(UserRoleEnum::User));
+        $othersContent = $this->makeContent($this->makeUser(UserRoleEnum::User));
 
-        $this->assertTrue($this->policy->view($this->makeUser(UserRoleEnum::Admin), $ajeno));
+        $this->assertTrue($this->policy->view($this->makeUser(UserRoleEnum::Admin), $othersContent));
     }
 
     #[Test]
-    public function un_editor_solo_alcanza_las_plataformas_que_tiene_asignadas(): void
+    public function an_editor_only_reaches_the_platforms_they_have_assigned(): void
     {
         // Es el eje que da sentido a esta policy: poder tener a alguien que
         // escriba en una web y no en las otras.
-        $suya = Platform::factory()->create();
-        $ajena = Platform::factory()->create();
+        $ownPlatform = Platform::factory()->create();
+        $otherPlatform = Platform::factory()->create();
 
         $editor = $this->makeUser(UserRoleEnum::Editor);
-        $editor->platforms()->attach($suya->id);
+        $editor->platforms()->attach($ownPlatform->id);
 
-        $propio = $this->makeContent(null, $suya);
-        $deOtraWeb = $this->makeContent(null, $ajena);
+        $ownContent = $this->makeContent(null, $ownPlatform);
+        $otherSiteContent = $this->makeContent(null, $otherPlatform);
 
-        $this->assertTrue($this->policy->update($editor, $propio));
-        $this->assertFalse($this->policy->update($editor, $deOtraWeb));
+        $this->assertTrue($this->policy->update($editor, $ownContent));
+        $this->assertFalse($this->policy->update($editor, $otherSiteContent));
     }
 
     #[Test]
-    public function un_contenido_sin_plataforma_es_de_administracion_general(): void
+    public function content_without_a_platform_belongs_to_general_administration(): void
     {
         $editor = $this->makeUser(UserRoleEnum::Editor);
         $editor->platforms()->attach(Platform::factory()->create()->id);
 
-        $general = $this->makeContent(null, null);
+        $generalContent = $this->makeContent(null, null);
 
-        $this->assertFalse($this->policy->update($editor, $general));
-        $this->assertTrue($this->policy->update($this->makeUser(UserRoleEnum::Admin), $general));
+        $this->assertFalse($this->policy->update($editor, $generalContent));
+        $this->assertTrue($this->policy->update($this->makeUser(UserRoleEnum::Admin), $generalContent));
     }
 
     // ─── delete ───
 
     #[Test]
-    public function un_editor_no_borra_el_contenido_de_otro_aunque_alcance_la_plataforma(): void
+    public function an_editor_does_not_delete_another_users_content_even_when_reaching_the_platform(): void
     {
         // Alcanzar para editar no es alcanzar para borrar: sólo se borra lo
         // propio, salvo que seas admin.
@@ -148,22 +148,22 @@ class ContentPolicyTest extends TestCase
         $editor = $this->makeUser(UserRoleEnum::Editor);
         $editor->platforms()->attach($platform->id);
 
-        $deOtro = $this->makeContent($this->makeUser(UserRoleEnum::User), $platform);
+        $othersContent = $this->makeContent($this->makeUser(UserRoleEnum::User), $platform);
 
-        $this->assertTrue($this->policy->update($editor, $deOtro));
-        $this->assertFalse($this->policy->delete($editor, $deOtro));
+        $this->assertTrue($this->policy->update($editor, $othersContent));
+        $this->assertFalse($this->policy->delete($editor, $othersContent));
     }
 
     #[Test]
-    public function el_admin_borra_cualquier_contenido(): void
+    public function the_admin_deletes_any_content(): void
     {
-        $deOtro = $this->makeContent($this->makeUser(UserRoleEnum::User));
+        $othersContent = $this->makeContent($this->makeUser(UserRoleEnum::User));
 
-        $this->assertTrue($this->policy->delete($this->makeUser(UserRoleEnum::Admin), $deOtro));
+        $this->assertTrue($this->policy->delete($this->makeUser(UserRoleEnum::Admin), $othersContent));
     }
 
     #[Test]
-    public function solo_el_superadmin_borra_definitivamente(): void
+    public function only_the_superadmin_can_force_delete(): void
     {
         $content = $this->makeContent();
 

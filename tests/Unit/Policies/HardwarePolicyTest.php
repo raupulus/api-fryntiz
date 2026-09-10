@@ -53,7 +53,7 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function el_dueno_ve_y_edita_su_dispositivo(): void
+    public function the_owner_views_and_edits_their_device(): void
     {
         $user = $this->makeUser();
         $device = $this->makeDevice($user);
@@ -63,15 +63,15 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function un_usuario_normal_no_ve_el_dispositivo_de_otro(): void
+    public function a_regular_user_does_not_see_another_users_device(): void
     {
-        $ajeno = $this->makeDevice($this->makeUser());
+        $othersDevice = $this->makeDevice($this->makeUser());
 
-        $this->assertFalse($this->policy->view($this->makeUser(), $ajeno));
+        $this->assertFalse($this->policy->view($this->makeUser(), $othersDevice));
     }
 
     #[Test]
-    public function el_admin_si_ve_y_edita_el_dispositivo_de_otro(): void
+    public function the_admin_does_see_and_edit_another_users_device(): void
     {
         // Este test afirmaba lo contrario —«los cacharros son de su dueño y
         // punto»— y con ello dejaba fuera de su propio panel a un rol que
@@ -82,16 +82,16 @@ class HardwarePolicyTest extends TestCase
         // sólo implementa el primer escalón, así que si la policy no contempla
         // al Admin, éste ve el listado y se lleva un 403 al abrir cualquier
         // ficha ajena (AR-SEC-03).
-        $ajeno = $this->makeDevice($this->makeUser());
+        $othersDevice = $this->makeDevice($this->makeUser());
         $admin = $this->makeUser(UserRoleEnum::Admin);
 
-        $this->assertTrue($this->policy->view($admin, $ajeno));
-        $this->assertTrue($this->policy->update($admin, $ajeno));
-        $this->assertTrue($this->policy->delete($admin, $ajeno));
+        $this->assertTrue($this->policy->view($admin, $othersDevice));
+        $this->assertTrue($this->policy->update($admin, $othersDevice));
+        $this->assertTrue($this->policy->delete($admin, $othersDevice));
     }
 
     #[Test]
-    public function el_dueno_borra_su_dispositivo(): void
+    public function the_owner_deletes_their_device(): void
     {
         $user = $this->makeUser();
 
@@ -99,15 +99,15 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function un_usuario_normal_no_borra_el_dispositivo_de_otro(): void
+    public function a_regular_user_does_not_delete_another_users_device(): void
     {
-        $ajeno = $this->makeDevice($this->makeUser());
+        $othersDevice = $this->makeDevice($this->makeUser());
 
-        $this->assertFalse($this->policy->delete($this->makeUser(), $ajeno));
+        $this->assertFalse($this->policy->delete($this->makeUser(), $othersDevice));
     }
 
     #[Test]
-    public function el_dueno_escribe_lecturas_en_su_dispositivo(): void
+    public function the_owner_writes_readings_to_their_device(): void
     {
         $user = $this->makeUser();
 
@@ -115,18 +115,18 @@ class HardwarePolicyTest extends TestCase
     }
 
     #[Test]
-    public function no_se_escriben_lecturas_en_el_dispositivo_de_otro(): void
+    public function no_readings_are_written_to_another_users_device(): void
     {
-        $ajeno = $this->makeDevice($this->makeUser());
+        $othersDevice = $this->makeDevice($this->makeUser());
 
-        $this->assertFalse($this->policy->writeData($this->makeUser(), $ajeno));
+        $this->assertFalse($this->policy->writeData($this->makeUser(), $othersDevice));
     }
 
     #[Test]
-    public function un_dispositivo_sin_dueno_no_es_de_nadie(): void
+    public function a_device_without_an_owner_belongs_to_no_one(): void
     {
-        $huerfano = $this->makeDevice(null);
+        $orphanDevice = $this->makeDevice(null);
 
-        $this->assertFalse($this->policy->view($this->makeUser(), $huerfano));
+        $this->assertFalse($this->policy->view($this->makeUser(), $orphanDevice));
     }
 }

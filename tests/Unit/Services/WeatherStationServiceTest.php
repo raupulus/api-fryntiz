@@ -47,34 +47,34 @@ class WeatherStationServiceTest extends TestCase
      * un refactor descuidado.
      */
     #[Test]
-    public function el_coste_en_consultas_no_crece_con_el_numero_de_estaciones(): void
+    public function the_query_cost_does_not_grow_with_the_number_of_stations(): void
     {
-        $dos = collect([$this->makeStation('A'), $this->makeStation('B')]);
+        $twoStations = collect([$this->makeStation('A'), $this->makeStation('B')]);
 
-        foreach ($dos as $station) {
+        foreach ($twoStations as $station) {
             Temperature::create(['hardware_device_id' => $station->id, 'value' => 20.0, 'created_at' => now()]);
         }
 
-        $consultasConDos = $this->contarConsultas(fn () => $this->service->getStationsReadings($dos));
+        $queriesWithTwo = $this->countQueries(fn () => $this->service->getStationsReadings($twoStations));
 
-        $cinco = $dos->concat([
+        $fiveStations = $twoStations->concat([
             $this->makeStation('C'),
             $this->makeStation('D'),
             $this->makeStation('E'),
         ]);
 
-        foreach ($cinco as $station) {
+        foreach ($fiveStations as $station) {
             Temperature::firstOrCreate(
                 ['hardware_device_id' => $station->id],
                 ['value' => 20.0, 'created_at' => now()]
             );
         }
 
-        $consultasConCinco = $this->contarConsultas(fn () => $this->service->getStationsReadings($cinco));
+        $queriesWithFive = $this->countQueries(fn () => $this->service->getStationsReadings($fiveStations));
 
         $this->assertSame(
-            $consultasConDos,
-            $consultasConCinco,
+            $queriesWithTwo,
+            $queriesWithFive,
             'El número de consultas debe ser el mismo con dos estaciones que con cinco.'
         );
     }
@@ -84,28 +84,28 @@ class WeatherStationServiceTest extends TestCase
      * la de una: comparten `buildReadings()` justamente para eso.
      */
     #[Test]
-    public function la_lectura_por_lotes_coincide_con_la_individual(): void
+    public function the_batch_reading_matches_the_individual_one(): void
     {
         $station = $this->makeStation('A');
         Temperature::create(['hardware_device_id' => $station->id, 'value' => 21.5, 'created_at' => now()]);
 
         $individual = $this->service->getStationReadings($station);
-        $porLotes = $this->service->getStationsReadings(collect([$station]))[0];
+        $batched = $this->service->getStationsReadings(collect([$station]))[0];
 
-        $this->assertSame($individual['temperature'], $porLotes['temperature']);
-        $this->assertSame(array_keys($individual), array_keys($porLotes));
-        $this->assertEquals($individual['wind'], $porLotes['wind']);
-        $this->assertEquals($individual['air_quality'], $porLotes['air_quality']);
+        $this->assertSame($individual['temperature'], $batched['temperature']);
+        $this->assertSame(array_keys($individual), array_keys($batched));
+        $this->assertEquals($individual['wind'], $batched['wind']);
+        $this->assertEquals($individual['air_quality'], $batched['air_quality']);
     }
 
     #[Test]
-    public function sin_estaciones_devuelve_una_lista_vacia(): void
+    public function without_stations_it_returns_an_empty_list(): void
     {
         $this->assertSame([], $this->service->getStationsReadings(collect()));
     }
 
     #[Test]
-    public function resolve_station_devuelve_la_primera_de_exterior(): void
+    public function resolve_station_returns_the_first_outdoor_one(): void
     {
         $this->makeStation('Interior', 'indoor', 'Salón');
         $exterior = $this->makeStation('Exterior', 'outdoor', 'Azotea');
@@ -114,20 +114,20 @@ class WeatherStationServiceTest extends TestCase
     }
 
     #[Test]
-    public function resolve_station_con_id_devuelve_esa_estacion(): void
+    public function resolve_station_with_an_id_returns_that_station(): void
     {
         $this->makeStation('Otra');
-        $buscada = $this->makeStation('Buscada');
+        $target = $this->makeStation('Buscada');
 
-        $this->assertSame($buscada->id, $this->service->resolveStation($buscada->id)?->id);
+        $this->assertSame($target->id, $this->service->resolveStation($target->id)?->id);
     }
 
-    private function contarConsultas(callable $accion): int
+    private function countQueries(callable $action): int
     {
         DB::flushQueryLog();
         DB::enableQueryLog();
 
-        $accion();
+        $action();
 
         $total = count(DB::getQueryLog());
         DB::disableQueryLog();

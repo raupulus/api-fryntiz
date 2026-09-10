@@ -38,14 +38,14 @@ use function substr;
 class ContrastTest extends TestCase
 {
     /** Mínimo de WCAG AA para texto normal. */
-    private const AA_TEXTO = 4.5;
+    private const AA_TEXT = 4.5;
 
     /**
      * Parejas fondo/texto que se usan en las vistas, con el sitio donde viven.
      *
      * @return array<string, array{string, string}>
      */
-    public static function parejas(): array
+    public static function pairs(): array
     {
         return [
             // SmartPlant: estados encendidos (riego activo, tanque lleno…).
@@ -73,41 +73,41 @@ class ContrastTest extends TestCase
     /**
      * @return list<array{string, string, string}>
      */
-    public static function parejasPorTema(): array
+    public static function pairsByTheme(): array
     {
-        $casos = [];
+        $cases = [];
 
-        foreach (self::parejas() as $nombre => [$fondo, $texto]) {
-            foreach (['claro', 'oscuro'] as $tema) {
-                $casos["{$nombre} ({$tema})"] = [$tema, $fondo, $texto];
+        foreach (self::pairs() as $name => [$background, $text]) {
+            foreach (['claro', 'oscuro'] as $theme) {
+                $cases["{$name} ({$theme})"] = [$theme, $background, $text];
             }
         }
 
-        return $casos;
+        return $cases;
     }
 
     #[Test]
-    #[DataProvider('parejasPorTema')]
-    public function cada_pareja_de_la_interfaz_llega_al_minimo_de_wcag(
-        string $tema,
-        string $fondo,
-        string $texto,
+    #[DataProvider('pairsByTheme')]
+    public function each_ui_pair_reaches_the_wcag_minimum(
+        string $theme,
+        string $background,
+        string $text,
     ): void {
-        $tokens = $this->tokens($tema);
+        $tokens = $this->tokens($theme);
 
-        $this->assertArrayHasKey($fondo, $tokens, "Falta el token --color-{$fondo} en el tema {$tema}.");
-        $this->assertArrayHasKey($texto, $tokens, "Falta el token --color-{$texto} en el tema {$tema}.");
+        $this->assertArrayHasKey($background, $tokens, "Falta el token --color-{$background} en el tema {$theme}.");
+        $this->assertArrayHasKey($text, $tokens, "Falta el token --color-{$text} en el tema {$theme}.");
 
-        $ratio = $this->ratio($tokens[$fondo], $tokens[$texto]);
+        $ratio = $this->ratio($tokens[$background], $tokens[$text]);
 
         $this->assertGreaterThanOrEqual(
-            self::AA_TEXTO,
+            self::AA_TEXT,
             $ratio,
             sprintf(
                 'En el tema %s, «%s» (%s) sobre «%s» (%s) da %s:1, por debajo del %s:1 que pide WCAG AA. '
                 .'Comprueba que el token de texto está nombrado para ESE fondo: '
                 .'`on-<algo>-container` va sobre `<algo>-container`, no sobre `<algo>-fixed`.',
-                $tema, $texto, $tokens[$texto], $fondo, $tokens[$fondo], round($ratio, 2), self::AA_TEXTO,
+                $theme, $text, $tokens[$text], $background, $tokens[$background], round($ratio, 2), self::AA_TEXT,
             ),
         );
     }
@@ -128,10 +128,10 @@ class ContrastTest extends TestCase
      * arriba y deje de estar en deuda.
      */
     #[Test]
-    public function el_acento_del_tema_claro_sigue_por_debajo_de_aa(): void
+    public function the_light_theme_accent_is_still_below_aa(): void
     {
-        $claro = $this->tokens('claro');
-        $ratio = round($this->ratio($claro['surface'], $claro['on-tertiary-container']), 2);
+        $light = $this->tokens('claro');
+        $ratio = round($this->ratio($light['surface'], $light['on-tertiary-container']), 2);
 
         $this->assertSame(
             3.59,
@@ -141,11 +141,11 @@ class ContrastTest extends TestCase
         );
 
         // En oscuro nunca ha sido un problema, y conviene que siga así.
-        $oscuro = $this->tokens('oscuro');
+        $dark = $this->tokens('oscuro');
 
         $this->assertGreaterThanOrEqual(
-            self::AA_TEXTO,
-            $this->ratio($oscuro['surface'], $oscuro['on-tertiary-container']),
+            self::AA_TEXT,
+            $this->ratio($dark['surface'], $dark['on-tertiary-container']),
         );
     }
 
@@ -165,21 +165,21 @@ class ContrastTest extends TestCase
      * seguridad, no el criterio.
      */
     #[Test]
-    public function ningun_color_fijo_se_queda_sin_su_variante_oscura(): void
+    public function no_fixed_color_is_left_without_its_dark_variant(): void
     {
-        $culpables = [];
+        $culprits = [];
 
-        foreach ($this->vistas() as $vista) {
-            $huerfanos = $this->coloresHuerfanos($vista);
+        foreach ($this->views() as $view) {
+            $orphans = $this->orphanColors($view);
 
-            if ($huerfanos !== []) {
-                $culpables[str_replace(base_path().'/', '', $vista)] = $huerfanos;
+            if ($orphans !== []) {
+                $culprits[str_replace(base_path().'/', '', $view)] = $orphans;
             }
         }
 
         // Excepciones justificadas: colores sólidos que se pintan sobre un
         // fondo propio y por tanto no dependen del tema de la página.
-        $permitidos = [
+        $allowed = [
             // Botón verde sólido con texto blanco encima.
             'resources/views/components/button.blade.php',
             'resources/views/newsletter/manage.blade.php',
@@ -189,17 +189,17 @@ class ContrastTest extends TestCase
             'resources/views/keycounter/index.blade.php',
         ];
 
-        foreach ($permitidos as $permitido) {
-            unset($culpables[$permitido]);
+        foreach ($allowed as $exception) {
+            unset($culprits[$exception]);
         }
 
         $this->assertSame(
             [],
-            $culpables,
+            $culprits,
             'Estas vistas usan un color fijo de Tailwind sin variante `dark:`, así que no '
             .'cambia con el tema. Usa un token del sistema, o añade la variante si el color '
             .'va sobre un fondo sólido propio: '
-            .json_encode($culpables, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            .json_encode($culprits, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
         );
     }
 
@@ -208,44 +208,44 @@ class ContrastTest extends TestCase
      *
      * @return list<string>
      */
-    private function coloresHuerfanos(string $vista): array
+    private function orphanColors(string $view): array
     {
-        $paleta = 'red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue'
+        $palette = 'red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue'
             .'|indigo|violet|purple|fuchsia|pink|rose';
-        $patron = '/(?P<dark>dark:)?(?P<prop>bg|text|border)-(?:'.$paleta.')-\d{2,3}(?:\/\d+)?/';
+        $pattern = '/(?P<dark>dark:)?(?P<prop>bg|text|border)-(?:'.$palette.')-\d{2,3}(?:\/\d+)?/';
 
-        $contenido = (string) file_get_contents($vista);
+        $content = (string) file_get_contents($view);
 
         // Los comentarios Blade explican precisamente estos casos; citarlos no
         // puede hacer fallar el test.
-        $contenido = (string) preg_replace('/\{\{--.*?--\}\}/s', '', $contenido);
+        $content = (string) preg_replace('/\{\{--.*?--\}\}/s', '', $content);
 
-        $huerfanos = [];
+        $orphans = [];
 
-        foreach (explode("\n", $contenido) as $numero => $linea) {
-            if (preg_match_all($patron, $linea, $coincidencias, PREG_SET_ORDER) === 0) {
+        foreach (explode("\n", $content) as $number => $line) {
+            if (preg_match_all($pattern, $line, $matches, PREG_SET_ORDER) === 0) {
                 continue;
             }
 
-            $conVarianteOscura = [];
-            $sinVariante = [];
+            $withDarkVariant = [];
+            $withoutVariant = [];
 
-            foreach ($coincidencias as $clase) {
-                if (($clase['dark'] ?? '') !== '') {
-                    $conVarianteOscura[$clase['prop']] = true;
+            foreach ($matches as $class) {
+                if (($class['dark'] ?? '') !== '') {
+                    $withDarkVariant[$class['prop']] = true;
                 } else {
-                    $sinVariante[] = [$clase['prop'], $clase[0]];
+                    $withoutVariant[] = [$class['prop'], $class[0]];
                 }
             }
 
-            foreach ($sinVariante as [$propiedad, $clase]) {
-                if (! isset($conVarianteOscura[$propiedad])) {
-                    $huerfanos[] = ($numero + 1).': '.$clase;
+            foreach ($withoutVariant as [$property, $class]) {
+                if (! isset($withDarkVariant[$property])) {
+                    $orphans[] = ($number + 1).': '.$class;
                 }
             }
         }
 
-        return $huerfanos;
+        return $orphans;
     }
 
     // ── Utilidades ───────────────────────────────────────────────────────────
@@ -258,38 +258,38 @@ class ContrastTest extends TestCase
      *
      * @return array<string, string>
      */
-    private function tokens(string $tema): array
+    private function tokens(string $theme): array
     {
         static $cache = [];
 
-        if (isset($cache[$tema])) {
-            return $cache[$tema];
+        if (isset($cache[$theme])) {
+            return $cache[$theme];
         }
 
         $css = (string) file_get_contents(base_path('resources/css/app.css'));
 
-        $claro = $this->tokensDelBloque($css, '@theme');
+        $light = $this->tokensFromBlock($css, '@theme');
 
-        if ($tema === 'claro') {
-            return $cache[$tema] = $claro;
+        if ($theme === 'claro') {
+            return $cache[$theme] = $light;
         }
 
-        return $cache[$tema] = array_merge($claro, $this->tokensDelBloque($css, 'html.dark'));
+        return $cache[$theme] = array_merge($light, $this->tokensFromBlock($css, 'html.dark'));
     }
 
     /**
      * @return array<string, string>
      */
-    private function tokensDelBloque(string $css, string $selector): array
+    private function tokensFromBlock(string $css, string $selector): array
     {
-        $inicio = mb_strpos($css, $selector.' {');
+        $start = mb_strpos($css, $selector.' {');
 
-        $this->assertNotFalse($inicio, "No se encuentra el bloque {$selector} en app.css.");
+        $this->assertNotFalse($start, "No se encuentra el bloque {$selector} en app.css.");
 
-        $fin = mb_strpos($css, "\n}", $inicio);
-        $bloque = mb_substr($css, $inicio, $fin - $inicio);
+        $end = mb_strpos($css, "\n}", $start);
+        $block = mb_substr($css, $start, $end - $start);
 
-        preg_match_all('/--color-([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;/', $bloque, $m, PREG_SET_ORDER);
+        preg_match_all('/--color-([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;/', $block, $m, PREG_SET_ORDER);
 
         $tokens = [];
 
@@ -305,8 +305,8 @@ class ContrastTest extends TestCase
      */
     private function ratio(string $a, string $b): float
     {
-        $la = $this->luminancia($a);
-        $lb = $this->luminancia($b);
+        $la = $this->luminance($a);
+        $lb = $this->luminance($b);
 
         return (max($la, $lb) + 0.05) / (min($la, $lb) + 0.05);
     }
@@ -314,19 +314,19 @@ class ContrastTest extends TestCase
     /**
      * Luminancia relativa, tal cual la define WCAG.
      */
-    private function luminancia(string $hex): float
+    private function luminance(string $hex): float
     {
-        $canales = [];
+        $channels = [];
 
-        foreach ([1, 3, 5] as $posicion) {
-            $valor = hexdec(substr($hex, $posicion, 2)) / 255;
+        foreach ([1, 3, 5] as $position) {
+            $value = hexdec(substr($hex, $position, 2)) / 255;
 
-            $canales[] = $valor <= 0.03928
-                ? $valor / 12.92
-                : (($valor + 0.055) / 1.055) ** 2.4;
+            $channels[] = $value <= 0.03928
+                ? $value / 12.92
+                : (($value + 0.055) / 1.055) ** 2.4;
         }
 
-        return 0.2126 * $canales[0] + 0.7152 * $canales[1] + 0.0722 * $canales[2];
+        return 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
     }
 
     /**
@@ -337,34 +337,34 @@ class ContrastTest extends TestCase
      *
      * @return list<string>
      */
-    private function vistas(): array
+    private function views(): array
     {
-        $pendientes = [base_path('resources/views')];
-        $encontradas = [];
-        $excluidos = ['/scribe', '/filament', '/vendor', '/editor'];
+        $pending = [base_path('resources/views')];
+        $found = [];
+        $excluded = ['/scribe', '/filament', '/vendor', '/editor'];
 
-        while ($pendientes !== []) {
-            $directorio = array_pop($pendientes);
+        while ($pending !== []) {
+            $directory = array_pop($pending);
 
-            foreach ((array) glob($directorio.'/*') as $ruta) {
-                if (is_dir($ruta)) {
-                    foreach ($excluidos as $excluido) {
-                        if (str_ends_with((string) $ruta, $excluido)) {
+            foreach ((array) glob($directory.'/*') as $path) {
+                if (is_dir($path)) {
+                    foreach ($excluded as $exclusion) {
+                        if (str_ends_with((string) $path, $exclusion)) {
                             continue 2;
                         }
                     }
 
-                    $pendientes[] = $ruta;
+                    $pending[] = $path;
 
                     continue;
                 }
 
-                if (is_file($ruta) && str_ends_with((string) $ruta, '.blade.php')) {
-                    $encontradas[] = (string) $ruta;
+                if (is_file($path) && str_ends_with((string) $path, '.blade.php')) {
+                    $found[] = (string) $path;
                 }
             }
         }
 
-        return $encontradas;
+        return $found;
     }
 }

@@ -90,28 +90,28 @@ class ScribeDocsTest extends TestCase
     #[Test]
     public function the_generated_documentation_covers_every_api_route(): void
     {
-        $documentadas = $this->documentedRoutes();
+        $documented = $this->documentedRoutes();
 
         $this->assertNotEmpty(
-            $documentadas,
+            $documented,
             'No hay documentación generada en .scribe/endpoints/. Ejecuta: php artisan scribe:generate'
         );
 
-        $reales = $this->apiRoutes();
+        $actual = $this->apiRoutes();
 
-        $sinDocumentar = array_values(array_diff($reales, $documentadas));
-        $fantasma = array_values(array_diff($documentadas, $reales));
+        $undocumented = array_values(array_diff($actual, $documented));
+        $stale = array_values(array_diff($documented, $actual));
 
-        $this->assertSame([], $sinDocumentar, sprintf(
+        $this->assertSame([], $undocumented, sprintf(
             "%d ruta(s) de la API sin documentar. Ejecuta `php artisan scribe:generate`:\n  - %s\n",
-            count($sinDocumentar),
-            implode("\n  - ", $sinDocumentar)
+            count($undocumented),
+            implode("\n  - ", $undocumented)
         ));
 
-        $this->assertSame([], $fantasma, sprintf(
+        $this->assertSame([], $stale, sprintf(
             "%d ruta(s) documentadas que ya NO existen. Ejecuta `php artisan scribe:generate`:\n  - %s\n",
-            count($fantasma),
-            implode("\n  - ", $fantasma)
+            count($stale),
+            implode("\n  - ", $stale)
         ));
     }
 
@@ -122,7 +122,7 @@ class ScribeDocsTest extends TestCase
      */
     private function apiRoutes(): array
     {
-        $rutas = [];
+        $routes = [];
 
         foreach (Route::getRoutes() as $route) {
             $uri = $route->uri();
@@ -131,18 +131,18 @@ class ScribeDocsTest extends TestCase
                 continue;
             }
 
-            foreach ($route->methods() as $metodo) {
-                if (in_array($metodo, ['HEAD', 'OPTIONS'], true)) {
+            foreach ($route->methods() as $method) {
+                if (in_array($method, ['HEAD', 'OPTIONS'], true)) {
                     continue;
                 }
 
-                $rutas[] = $metodo.' '.self::normaliza($uri);
+                $routes[] = $method.' '.self::normalize($uri);
             }
         }
 
-        sort($rutas);
+        sort($routes);
 
-        return array_values(array_unique($rutas));
+        return array_values(array_unique($routes));
     }
 
     /**
@@ -156,31 +156,31 @@ class ScribeDocsTest extends TestCase
      */
     private function documentedRoutes(): array
     {
-        $rutas = [];
+        $routes = [];
 
-        foreach (glob(base_path('.scribe/endpoints/*.yaml')) ?: [] as $fichero) {
-            $datos = Yaml::parseFile($fichero);
+        foreach (glob(base_path('.scribe/endpoints/*.yaml')) ?: [] as $file) {
+            $data = Yaml::parseFile($file);
 
-            foreach ($datos['endpoints'] ?? [] as $endpoint) {
+            foreach ($data['endpoints'] ?? [] as $endpoint) {
                 $uri = $endpoint['uri'] ?? null;
 
                 if (! is_string($uri) || ! str_starts_with($uri, 'api/v2')) {
                     continue;
                 }
 
-                foreach ($endpoint['httpMethods'] ?? [] as $metodo) {
-                    if (in_array($metodo, ['HEAD', 'OPTIONS'], true)) {
+                foreach ($endpoint['httpMethods'] ?? [] as $method) {
+                    if (in_array($method, ['HEAD', 'OPTIONS'], true)) {
                         continue;
                     }
 
-                    $rutas[] = $metodo.' '.self::normaliza($uri);
+                    $routes[] = $method.' '.self::normalize($uri);
                 }
             }
         }
 
-        sort($rutas);
+        sort($routes);
 
-        return array_values(array_unique($rutas));
+        return array_values(array_unique($routes));
     }
 
     /**
@@ -191,7 +191,7 @@ class ScribeDocsTest extends TestCase
      * Scribe la documenta como `{slug}`. Es la misma ruta, así que se compara
      * la forma y no el nombre.
      */
-    private static function normaliza(string $uri): string
+    private static function normalize(string $uri): string
     {
         return preg_replace('/\{[^}]+\}/', '{param}', $uri) ?? $uri;
     }

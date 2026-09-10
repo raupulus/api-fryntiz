@@ -52,10 +52,10 @@ class SmartPlantPersistenceTest extends ApiTestCase
      * (name_scientific, description, details, start_at). Crear una planta sólo
      * con `name` revienta con 23502, así que va aquí y no suelto por los tests.
      */
-    private function createPlant(User $duenyo, string $name = 'Bonsái de pruebas'): SmartPlantPlant
+    private function createPlant(User $owner, string $name = 'Bonsái de pruebas'): SmartPlantPlant
     {
         return SmartPlantPlant::create([
-            'user_id' => $duenyo->id,
+            'user_id' => $owner->id,
             'name' => $name,
             'name_scientific' => 'Ficus retusa',
             'description' => 'Planta de pruebas',
@@ -148,9 +148,9 @@ class SmartPlantPersistenceTest extends ApiTestCase
     public function cannot_write_on_someone_elses_plant(): void
     {
         $other = $this->createAuthenticatedUser(3);
-        $suPlanta = $this->createPlant($other, 'Planta ajena');
+        $otherPlant = $this->createPlant($other, 'Planta ajena');
 
-        $payload = array_merge($this->payload(), ['plant_id' => $suPlanta->id]);
+        $payload = array_merge($this->payload(), ['plant_id' => $otherPlant->id]);
 
         $response = $this->postJson(
             $this->apiUrl("smartplant/plants/{$this->plant->id}/readings"),
@@ -162,7 +162,7 @@ class SmartPlantPersistenceTest extends ApiTestCase
 
         $this->assertSame(
             0,
-            SmartPlantRegister::query()->where('plant_id', $suPlanta->id)->count(),
+            SmartPlantRegister::query()->where('plant_id', $otherPlant->id)->count(),
             'Se guardó una lectura en la planta de otro usuario (H5).'
         );
         $this->assertSame(

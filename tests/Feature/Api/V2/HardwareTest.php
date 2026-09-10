@@ -18,7 +18,7 @@ class HardwareTest extends ApiTestCase
      * la IP local y la pública, pidiéndolo con `?include=status`.
      */
     #[Test]
-    public function el_detalle_incluye_el_estado_con_include_status(): void
+    public function the_detail_includes_the_status_with_include_status(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = HardwareDevice::create([
@@ -51,7 +51,7 @@ class HardwareTest extends ApiTestCase
      * qué viajar en cada respuesta del inventario.
      */
     #[Test]
-    public function sin_include_status_el_detalle_no_trae_las_ips(): void
+    public function without_include_status_the_detail_does_not_include_the_ips(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = HardwareDevice::create([
@@ -71,7 +71,7 @@ class HardwareTest extends ApiTestCase
     }
 
     #[Test]
-    public function un_include_que_no_existe_responde_422(): void
+    public function an_unknown_include_responds_422(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = HardwareDevice::create(['user_id' => $user->id, 'name' => 'Pico W']);
@@ -219,7 +219,7 @@ class HardwareTest extends ApiTestCase
     }
 
     #[Test]
-    public function la_memoria_fuera_de_rango_se_rechaza(): void
+    public function memory_out_of_range_is_rejected(): void
     {
         $user = $this->createAuthenticatedUser();
         $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);

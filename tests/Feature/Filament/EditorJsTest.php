@@ -37,7 +37,7 @@ class EditorJsTest extends TestCase
         (new RolesTableSeeder)->run();
     }
 
-    private function comoEditor(): User
+    private function asEditor(): User
     {
         $user = User::factory()->create([
             'role_id' => UserRoleEnum::Editor->value,
@@ -52,28 +52,28 @@ class EditorJsTest extends TestCase
     // ── Subida ───────────────────────────────────────────────────────────────
 
     #[Test]
-    public function sube_una_imagen_y_la_deja_en_el_modulo_de_ficheros(): void
+    public function it_uploads_an_image_and_leaves_it_in_the_files_module(): void
     {
-        $this->comoEditor();
+        $this->asEditor();
 
-        $respuesta = $this->post(route('admin.editorjs.upload'), [
+        $response = $this->post(route('admin.editorjs.upload'), [
             'file' => UploadedFile::fake()->image('foto.jpg', 800, 600),
         ]);
 
-        $respuesta->assertOk()
+        $response->assertOk()
             ->assertJsonPath('success', 1)
             ->assertJsonStructure(['success', 'file' => ['url', 'name', 'size', 'file_id']]);
 
         // Lo que `SimpleImage` no hacía: dejar una fila de verdad, que se ve en
         // el panel y se sirve por el controlador de ficheros.
-        $this->assertNotNull(File::find($respuesta->json('file.file_id')));
-        $this->assertStringNotContainsString('base64', (string) $respuesta->json('file.url'));
+        $this->assertNotNull(File::find($response->json('file.file_id')));
+        $this->assertStringNotContainsString('base64', (string) $response->json('file.url'));
     }
 
     #[Test]
-    public function sin_fichero_responde_error_de_validacion(): void
+    public function without_a_file_it_responds_with_a_validation_error(): void
     {
-        $this->comoEditor();
+        $this->asEditor();
 
         $this->postJson(route('admin.editorjs.upload'), [])
             ->assertStatus(422)
@@ -81,7 +81,7 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    public function subir_exige_estar_autenticado(): void
+    public function uploading_requires_being_authenticated(): void
     {
         $this->post(route('admin.editorjs.upload'), [
             'file' => UploadedFile::fake()->image('foto.jpg'),
@@ -89,7 +89,7 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    public function un_usuario_normal_no_sube_nada(): void
+    public function a_regular_user_cannot_upload_anything(): void
     {
         $this->actingAs(User::factory()->create([
             'role_id' => UserRoleEnum::User->value,
@@ -102,7 +102,7 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    public function una_cuenta_desactivada_tampoco(): void
+    public function a_deactivated_account_cannot_either(): void
     {
         $this->actingAs(User::factory()->create([
             'role_id' => UserRoleEnum::Admin->value,
@@ -121,7 +121,7 @@ class EditorJsTest extends TestCase
      * sustituye por una IP pública. Sin esto el caso feliz dependería de que
      * haya DNS y de que el dominio exista de verdad.
      */
-    private function conDnsFalso(): void
+    private function withFakeDns(): void
     {
         $this->app->bind(EditorJsController::class, fn () => new class extends EditorJsController
         {
@@ -133,10 +133,10 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    public function lee_el_titulo_y_la_descripcion_de_una_pagina(): void
+    public function it_reads_the_title_and_description_of_a_page(): void
     {
-        $this->comoEditor();
-        $this->conDnsFalso();
+        $this->asEditor();
+        $this->withFakeDns();
 
         Http::fake([
             '*' => Http::response(
@@ -162,7 +162,7 @@ class EditorJsTest extends TestCase
      *
      * @return list<array{string}>
      */
-    public static function urlsProhibidas(): array
+    public static function forbiddenUrls(): array
     {
         return [
             'bucle' => ['http://127.0.0.1:9200/'],
@@ -177,10 +177,10 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('urlsProhibidas')]
-    public function no_va_a_buscar_nada_a_la_red_interna(string $url): void
+    #[DataProvider('forbiddenUrls')]
+    public function it_does_not_reach_out_to_the_internal_network(string $url): void
     {
-        $this->comoEditor();
+        $this->asEditor();
 
         Http::fake();
 
@@ -194,11 +194,11 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    public function una_respuesta_que_falla_no_revienta(): void
+    public function a_failing_response_does_not_blow_up(): void
     {
-        $this->comoEditor();
+        $this->asEditor();
 
-        $this->conDnsFalso();
+        $this->withFakeDns();
 
         Http::fake(['*' => Http::response('', 500)]);
 
@@ -208,7 +208,7 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
-    public function pedir_metadatos_exige_permiso(): void
+    public function requesting_metadata_requires_permission(): void
     {
         $this->getJson(route('admin.editorjs.url-metadata', ['url' => 'https://ejemplo.test/']))
             ->assertUnauthorized();

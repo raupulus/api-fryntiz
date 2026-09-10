@@ -22,10 +22,10 @@ use Tests\TestCase;
  * Laravel sólo deja de reportar cuando `report()` devuelve algo **distinto** de
  * `false`. En producción cada petición mal formada llenaba el log.
  */
-class ExcepcionesNoReportablesTest extends TestCase
+class NonReportableExceptionsTest extends TestCase
 {
     #[Test]
-    public function un_error_de_validacion_no_se_registra(): void
+    public function a_validation_error_is_not_logged(): void
     {
         $validator = Validator::make([], ['campo' => 'required']);
 
@@ -36,7 +36,7 @@ class ExcepcionesNoReportablesTest extends TestCase
     }
 
     #[Test]
-    public function una_denegacion_no_se_registra(): void
+    public function an_authorization_denial_is_not_logged(): void
     {
         $this->assertFalse(
             app(ExceptionHandler::class)->shouldReport(new JsonAuthorizationException),

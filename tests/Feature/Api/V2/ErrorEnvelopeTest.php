@@ -42,75 +42,75 @@ class ErrorEnvelopeTest extends TestCase
     /**
      * Comprueba que una ruta devuelve el envelope con las tres cabeceras.
      */
-    private function assertEnvelopeConCualquierAccept(
+    private function assertEnvelopeWithAnyAccept(
         string $method,
         string $uri,
         int $status,
         array $payload = []
     ): void {
-        foreach (self::ACCEPTS as $etiqueta => $accept) {
+        foreach (self::ACCEPTS as $label => $accept) {
             // El idioma se fija a propósito: el cliente HTTP de las pruebas
             // manda `Accept-Language: en-us` por su cuenta, y desde que los
             // mensajes del envelope se traducen eso decide el texto.
             $headers = ['Accept-Language' => 'es'] + ($accept === '' ? [] : ['Accept' => $accept]);
 
-            $respuesta = $this->call($method, $uri, $payload, [], [], $this->transformHeadersToServerVars($headers));
+            $response = $this->call($method, $uri, $payload, [], [], $this->transformHeadersToServerVars($headers));
 
             $this->assertSame(
                 $status,
-                $respuesta->getStatusCode(),
-                "Con Accept «{$etiqueta}», {$method} {$uri} debía responder {$status}."
+                $response->getStatusCode(),
+                "Con Accept «{$label}», {$method} {$uri} debía responder {$status}."
             );
 
             $this->assertStringContainsString(
                 'application/json',
-                (string) $respuesta->headers->get('Content-Type'),
-                "Con Accept «{$etiqueta}», {$method} {$uri} no ha respondido JSON."
+                (string) $response->headers->get('Content-Type'),
+                "Con Accept «{$label}», {$method} {$uri} no ha respondido JSON."
             );
 
-            $cuerpo = json_decode((string) $respuesta->getContent(), true);
+            $body = json_decode((string) $response->getContent(), true);
 
-            $this->assertIsArray($cuerpo, "Con Accept «{$etiqueta}», el cuerpo no es JSON válido.");
-            $this->assertArrayHasKey('success', $cuerpo, "Con Accept «{$etiqueta}», falta la clave «success».");
-            $this->assertFalse($cuerpo['success'], "Con Accept «{$etiqueta}», «success» debería ser false.");
-            $this->assertArrayHasKey('message', $cuerpo, "Con Accept «{$etiqueta}», falta la clave «message».");
+            $this->assertIsArray($body, "Con Accept «{$label}», el cuerpo no es JSON válido.");
+            $this->assertArrayHasKey('success', $body, "Con Accept «{$label}», falta la clave «success».");
+            $this->assertFalse($body['success'], "Con Accept «{$label}», «success» debería ser false.");
+            $this->assertArrayHasKey('message', $body, "Con Accept «{$label}», falta la clave «message».");
 
             // La forma de Laravel, que es de lo que se venía: nunca debe salir.
-            $this->assertArrayNotHasKey('exception', $cuerpo, "Con Accept «{$etiqueta}», se ha filtrado «exception» a la raíz.");
-            $this->assertArrayNotHasKey('trace', $cuerpo, "Con Accept «{$etiqueta}», se ha filtrado «trace».");
-            $this->assertArrayNotHasKey('file', $cuerpo, "Con Accept «{$etiqueta}», se ha filtrado «file».");
+            $this->assertArrayNotHasKey('exception', $body, "Con Accept «{$label}», se ha filtrado «exception» a la raíz.");
+            $this->assertArrayNotHasKey('trace', $body, "Con Accept «{$label}», se ha filtrado «trace».");
+            $this->assertArrayNotHasKey('file', $body, "Con Accept «{$label}», se ha filtrado «file».");
         }
     }
 
-    public function test_endpoint_inexistente(): void
+    public function test_nonexistent_endpoint(): void
     {
-        $this->assertEnvelopeConCualquierAccept('GET', '/api/v2/no-existe-esto', 404);
+        $this->assertEnvelopeWithAnyAccept('GET', '/api/v2/no-existe-esto', 404);
     }
 
-    public function test_endpoint_inexistente_por_post(): void
+    public function test_nonexistent_endpoint_via_post(): void
     {
-        $this->assertEnvelopeConCualquierAccept('POST', '/api/v2/no-existe-esto', 404);
+        $this->assertEnvelopeWithAnyAccept('POST', '/api/v2/no-existe-esto', 404);
     }
 
-    public function test_sin_autenticar(): void
+    public function test_unauthenticated(): void
     {
-        $this->assertEnvelopeConCualquierAccept('GET', '/api/v2/users/me', 401);
+        $this->assertEnvelopeWithAnyAccept('GET', '/api/v2/users/me', 401);
     }
 
-    public function test_validacion_fallida(): void
+    public function test_failed_validation(): void
     {
-        $this->assertEnvelopeConCualquierAccept('POST', '/api/v2/auth/tokens', 422);
+        $this->assertEnvelopeWithAnyAccept('POST', '/api/v2/auth/tokens', 422);
     }
 
-    public function test_api_v1_eliminada(): void
+    public function test_api_v1_removed(): void
     {
-        $this->assertEnvelopeConCualquierAccept('GET', '/api/v1/lo-que-sea', 410);
+        $this->assertEnvelopeWithAnyAccept('GET', '/api/v1/lo-que-sea', 410);
     }
 
     /**
      * El caso que motivó todo esto: un 500 no controlado.
      */
-    public function test_error_no_controlado(): void
+    public function test_uncontrolled_error(): void
     {
         Route::middleware('api')->get('/api/test-boom', function () {
             throw new RuntimeException('detalle interno que no debe salir');
@@ -119,29 +119,29 @@ class ErrorEnvelopeTest extends TestCase
         config(['app.debug' => false]);
 
         foreach (['application/json', '*/*'] as $accept) {
-            $respuesta = $this->call('GET', '/api/test-boom', [], [], [], [
+            $response = $this->call('GET', '/api/test-boom', [], [], [], [
                 'HTTP_ACCEPT' => $accept,
                 'HTTP_ACCEPT_LANGUAGE' => 'es',
             ]);
 
-            $this->assertSame(500, $respuesta->getStatusCode());
-            $this->assertStringContainsString('application/json', (string) $respuesta->headers->get('Content-Type'));
+            $this->assertSame(500, $response->getStatusCode());
+            $this->assertStringContainsString('application/json', (string) $response->headers->get('Content-Type'));
 
-            $cuerpo = json_decode((string) $respuesta->getContent(), true);
+            $body = json_decode((string) $response->getContent(), true);
 
-            $this->assertFalse($cuerpo['success']);
-            $this->assertSame(__('api.server_error', [], 'es'), $cuerpo['message']);
+            $this->assertFalse($body['success']);
+            $this->assertSame(__('api.server_error', [], 'es'), $body['message']);
 
             // Sin APP_DEBUG no se filtra nada del fallo real.
-            $this->assertArrayNotHasKey('debug', $cuerpo);
-            $this->assertStringNotContainsString('detalle interno', (string) $respuesta->getContent());
+            $this->assertArrayNotHasKey('debug', $body);
+            $this->assertStringNotContainsString('detalle interno', (string) $response->getContent());
         }
     }
 
     /**
      * Con APP_DEBUG el detalle aparece, pero dentro de `debug` y sólo ahí.
      */
-    public function test_error_no_controlado_en_desarrollo_lleva_bloque_debug(): void
+    public function test_uncontrolled_error_in_development_carries_a_debug_block(): void
     {
         Route::middleware('api')->get('/api/test-boom-debug', function () {
             throw new RuntimeException('detalle interno para depurar');
@@ -149,22 +149,22 @@ class ErrorEnvelopeTest extends TestCase
 
         config(['app.debug' => true]);
 
-        $respuesta = $this->withHeaders(['Accept-Language' => 'es'])->getJson('/api/test-boom-debug');
-        $cuerpo = $respuesta->json();
+        $response = $this->withHeaders(['Accept-Language' => 'es'])->getJson('/api/test-boom-debug');
+        $body = $response->json();
 
-        $this->assertSame(500, $respuesta->getStatusCode());
-        $this->assertFalse($cuerpo['success']);
-        $this->assertSame(__('api.server_error', [], 'es'), $cuerpo['message']);
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertFalse($body['success']);
+        $this->assertSame(__('api.server_error', [], 'es'), $body['message']);
 
-        $this->assertArrayHasKey('debug', $cuerpo);
-        $this->assertSame(RuntimeException::class, $cuerpo['debug']['exception']['class']);
-        $this->assertSame('detalle interno para depurar', $cuerpo['debug']['exception']['message']);
+        $this->assertArrayHasKey('debug', $body);
+        $this->assertSame(RuntimeException::class, $body['debug']['exception']['class']);
+        $this->assertSame('detalle interno para depurar', $body['debug']['exception']['message']);
     }
 
     /**
      * El 429 del throttle: lo provoca cualquiera y se salía del contrato.
      */
-    public function test_demasiadas_peticiones(): void
+    public function test_too_many_requests(): void
     {
         Route::middleware(['api', 'throttle:1,1'])->get('/api/test-throttle', fn () => response()->json(['ok' => true]));
 
@@ -172,24 +172,24 @@ class ErrorEnvelopeTest extends TestCase
         $this->getJson('/api/test-throttle');
 
         foreach (['application/json', '*/*'] as $accept) {
-            $respuesta = $this->call('GET', '/api/test-throttle', [], [], [], [
+            $response = $this->call('GET', '/api/test-throttle', [], [], [], [
                 'HTTP_ACCEPT' => $accept,
                 'HTTP_ACCEPT_LANGUAGE' => 'es',
             ]);
 
-            $this->assertSame(429, $respuesta->getStatusCode());
-            $this->assertStringContainsString('application/json', (string) $respuesta->headers->get('Content-Type'));
+            $this->assertSame(429, $response->getStatusCode());
+            $this->assertStringContainsString('application/json', (string) $response->headers->get('Content-Type'));
 
-            $cuerpo = json_decode((string) $respuesta->getContent(), true);
+            $body = json_decode((string) $response->getContent(), true);
 
-            $this->assertFalse($cuerpo['success']);
-            $this->assertSame(__('api.too_many_requests', [], 'es'), $cuerpo['message']);
-            $this->assertArrayNotHasKey('trace', $cuerpo);
+            $this->assertFalse($body['success']);
+            $this->assertSame(__('api.too_many_requests', [], 'es'), $body['message']);
+            $this->assertArrayNotHasKey('trace', $body);
 
             // El cliente necesita saber cuánto esperar: la cabecera de la
             // excepción HTTP tiene que sobrevivir al envelope.
             $this->assertNotNull(
-                $respuesta->headers->get('Retry-After'),
+                $response->headers->get('Retry-After'),
                 'El 429 ha perdido la cabecera Retry-After al pasar por el envelope.'
             );
         }
@@ -199,15 +199,15 @@ class ErrorEnvelopeTest extends TestCase
      * Un borrado sigue siendo 204 sin cuerpo: es la única excepción consciente
      * a «todas las respuestas llevan envelope», y está decidida.
      */
-    public function test_el_borrado_sigue_siendo_204_sin_cuerpo(): void
+    public function test_a_deletion_is_still_204_without_body(): void
     {
         Route::middleware('api')->delete('/api/test-delete', function () {
             return response()->json(null, 204);
         });
 
-        $respuesta = $this->deleteJson('/api/test-delete');
+        $response = $this->deleteJson('/api/test-delete');
 
-        $respuesta->assertNoContent();
-        $this->assertSame('', $respuesta->getContent());
+        $response->assertNoContent();
+        $this->assertSame('', $response->getContent());
     }
 }

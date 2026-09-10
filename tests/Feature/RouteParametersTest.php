@@ -27,12 +27,12 @@ use Tests\TestCase;
 class RouteParametersTest extends TestCase
 {
     /** Tipos que Laravel rellena desde la URL; el resto los inyecta el contenedor. */
-    private const ESCALARES = ['int', 'string', 'float', 'bool', 'mixed'];
+    private const SCALARS = ['int', 'string', 'float', 'bool', 'mixed'];
 
     #[Test]
-    public function los_parametros_de_cada_ruta_llegan_en_el_orden_de_su_firma(): void
+    public function each_routes_parameters_arrive_in_the_order_of_its_signature(): void
     {
-        $cruzadas = [];
+        $mismatched = [];
 
         foreach (Route::getRoutes() as $route) {
             $action = $route->getActionName();
@@ -47,40 +47,40 @@ class RouteParametersTest extends TestCase
                 continue;
             }
 
-            $enRuta = $route->parameterNames();
+            $inRoute = $route->parameterNames();
 
-            if ($enRuta === []) {
+            if ($inRoute === []) {
                 continue;
             }
 
-            $enFirma = $this->parametrosEscalares($class, $method);
+            $inSignature = $this->scalarParameters($class, $method);
 
-            if ($enFirma === []) {
+            if ($inSignature === []) {
                 continue;
             }
 
             // Se comparan sólo los que aparecen en ambos lados: un método puede
             // recibir parámetros que la ruta no declara, y viceversa.
-            $ordenFirma = array_values(array_intersect($enFirma, $enRuta));
-            $ordenRuta = array_values(array_intersect($enRuta, $enFirma));
+            $signatureOrder = array_values(array_intersect($inSignature, $inRoute));
+            $routeOrder = array_values(array_intersect($inRoute, $inSignature));
 
-            if ($ordenFirma !== $ordenRuta) {
-                $cruzadas[] = sprintf(
+            if ($signatureOrder !== $routeOrder) {
+                $mismatched[] = sprintf(
                     '%s → %s::%s (ruta: %s | firma: %s)',
                     $route->uri(),
                     class_basename($class),
                     $method,
-                    implode(', ', $ordenRuta),
-                    implode(', ', $ordenFirma)
+                    implode(', ', $routeOrder),
+                    implode(', ', $signatureOrder)
                 );
             }
         }
 
-        $this->assertSame([], $cruzadas, sprintf(
+        $this->assertSame([], $mismatched, sprintf(
             "%d ruta(s) reciben sus parámetros en distinto orden del que declaran.\n".
             "Laravel los pasa por posición, así que esto es un 500 en cuanto los tipos no cuadran:\n  - %s\n",
-            count($cruzadas),
-            implode("\n  - ", $cruzadas)
+            count($mismatched),
+            implode("\n  - ", $mismatched)
         ));
     }
 
@@ -89,23 +89,23 @@ class RouteParametersTest extends TestCase
      *
      * @return list<string>
      */
-    private function parametrosEscalares(string $class, string $method): array
+    private function scalarParameters(string $class, string $method): array
     {
-        $nombres = [];
+        $names = [];
 
-        foreach ((new ReflectionMethod($class, $method))->getParameters() as $parametro) {
-            $tipo = $parametro->getType();
-            $nombre = $tipo instanceof ReflectionNamedType ? $tipo->getName() : null;
+        foreach ((new ReflectionMethod($class, $method))->getParameters() as $parameter) {
+            $type = $parameter->getType();
+            $name = $type instanceof ReflectionNamedType ? $type->getName() : null;
 
             // Request, FormRequest y modelos los resuelve el contenedor o el
             // route model binding: no ocupan posición de la URL.
-            if ($nombre !== null && ! in_array($nombre, self::ESCALARES, true)) {
+            if ($name !== null && ! in_array($name, self::SCALARS, true)) {
                 continue;
             }
 
-            $nombres[] = $parametro->getName();
+            $names[] = $parameter->getName();
         }
 
-        return $nombres;
+        return $names;
     }
 }

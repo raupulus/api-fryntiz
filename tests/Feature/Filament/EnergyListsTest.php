@@ -35,11 +35,11 @@ class EnergyListsTest extends TestCase
 
     private User $user;
 
-    private HardwareDevice $controlador;
+    private HardwareDevice $controller;
 
     private HardwareDevice $monitor;
 
-    private EnergySystem $instalacion;
+    private EnergySystem $installation;
 
     protected function setUp(): void
     {
@@ -52,96 +52,96 @@ class EnergyListsTest extends TestCase
         Filament::setServingStatus(true);
         Filament::setCurrentPanel(Filament::getPanel('admin'));
 
-        $solar = HardwareType::firstOrCreate(
+        $solarType = HardwareType::firstOrCreate(
             ['slug' => 'controlador-solar'],
             ['name' => 'Controlador Solar'],
         );
-        $otro = HardwareType::firstOrCreate(
+        $otherType = HardwareType::firstOrCreate(
             ['slug' => 'monitor-de-energia'],
             ['name' => 'Monitor de Energía'],
         );
 
-        $this->instalacion = EnergySystem::create([
+        $this->installation = EnergySystem::create([
             'user_id' => $this->user->id,
             'name' => 'Renogy Rover',
             'slug' => Str::slug('Renogy Rover'),
         ]);
 
-        $this->controlador = HardwareDevice::create([
+        $this->controller = HardwareDevice::create([
             'user_id' => $this->user->id,
             'name' => 'Renogy Rover 20 LI',
-            'hardware_type_id' => $solar->id,
+            'hardware_type_id' => $solarType->id,
         ]);
 
         $this->monitor = HardwareDevice::create([
             'user_id' => $this->user->id,
             'name' => 'Raspberry Pi Pico W',
-            'hardware_type_id' => $otro->id,
+            'hardware_type_id' => $otherType->id,
         ]);
     }
 
-    private function elemento(HardwareDevice $medidor, string $role, int $canal = 0): HardwareEnergy
+    private function element(HardwareDevice $meter, string $role, int $channel = 0): HardwareEnergy
     {
         return HardwareEnergy::create([
-            'hardware_device_id' => $medidor->id,
-            'hardware_device_monitorized_id' => $medidor->id,
-            'energy_system_id' => $this->instalacion->id,
+            'hardware_device_id' => $meter->id,
+            'hardware_device_monitorized_id' => $meter->id,
+            'energy_system_id' => $this->installation->id,
             'role' => $role,
-            'sensor_position' => $canal,
+            'sensor_position' => $channel,
         ]);
     }
 
     #[Test]
-    public function elementos_de_energia_deja_fuera_los_controladores_solares(): void
+    public function energy_elements_excludes_solar_controllers(): void
     {
-        $delControlador = $this->elemento($this->controlador, HardwareEnergy::ROLE_GENERATOR);
-        $delMonitor = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+        $controllerElement = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
+        $monitorElement = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
 
         Livewire::test(ListHardwareEnergies::class)
-            ->assertCanSeeTableRecords([$delMonitor])
-            ->assertCanNotSeeTableRecords([$delControlador]);
+            ->assertCanSeeTableRecords([$monitorElement])
+            ->assertCanNotSeeTableRecords([$controllerElement]);
     }
 
     #[Test]
-    public function la_instalacion_solo_ensena_los_del_controlador(): void
+    public function the_installation_only_shows_the_controllers_elements(): void
     {
-        $delControlador = $this->elemento($this->controlador, HardwareEnergy::ROLE_GENERATOR);
-        $delMonitor = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+        $controllerElement = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
+        $monitorElement = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
 
         Livewire::test(ElementsRelationManager::class, [
-            'ownerRecord' => $this->instalacion,
+            'ownerRecord' => $this->installation,
             'pageClass' => EnergySystemResource\Pages\EditEnergySystem::class,
         ])
-            ->assertCanSeeTableRecords([$delControlador])
-            ->assertCanNotSeeTableRecords([$delMonitor]);
+            ->assertCanSeeTableRecords([$controllerElement])
+            ->assertCanNotSeeTableRecords([$monitorElement]);
     }
 
     /**
      * Ningún elemento puede quedarse sin pantalla ni salir en las dos.
      */
     #[Test]
-    public function los_dos_listados_no_se_solapan_y_no_dejan_nada_fuera(): void
+    public function the_two_lists_do_not_overlap_and_leave_nothing_out(): void
     {
-        $todos = collect([
-            $this->elemento($this->controlador, HardwareEnergy::ROLE_GENERATOR),
-            $this->elemento($this->controlador, HardwareEnergy::ROLE_LOAD),
-            $this->elemento($this->controlador, HardwareEnergy::ROLE_BATTERY),
-            $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD, canal: 1),
-            $this->elemento($this->monitor, HardwareEnergy::ROLE_BATTERY, canal: 2),
+        $all = collect([
+            $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR),
+            $this->element($this->controller, HardwareEnergy::ROLE_LOAD),
+            $this->element($this->controller, HardwareEnergy::ROLE_BATTERY),
+            $this->element($this->monitor, HardwareEnergy::ROLE_LOAD, channel: 1),
+            $this->element($this->monitor, HardwareEnergy::ROLE_BATTERY, channel: 2),
         ]);
 
-        $enElementos = HardwareEnergy::query()
+        $inElements = HardwareEnergy::query()
             ->whereDoesntHave('hardwareDevice', fn ($q) => $q->whereHas('type', fn ($t) => $t->where('slug', 'controlador-solar')))
             ->pluck('id');
 
-        $enInstalacion = HardwareEnergy::query()
+        $inInstallation = HardwareEnergy::query()
             ->whereHas('hardwareDevice', fn ($q) => $q->whereHas('type', fn ($t) => $t->where('slug', 'controlador-solar')))
             ->pluck('id');
 
-        $this->assertCount(0, $enElementos->intersect($enInstalacion), 'Ningún elemento debe salir en las dos pantallas.');
+        $this->assertCount(0, $inElements->intersect($inInstallation), 'Ningún elemento debe salir en las dos pantallas.');
         $this->assertSame(
-            $todos->pluck('id')->sort()->values()->all(),
-            $enElementos->merge($enInstalacion)->sort()->values()->all(),
+            $all->pluck('id')->sort()->values()->all(),
+            $inElements->merge($inInstallation)->sort()->values()->all(),
             'Ningún elemento debe quedarse sin pantalla.',
         );
     }
@@ -151,15 +151,15 @@ class EnergyListsTest extends TestCase
      * cambia entre las filas de un mismo medidor.
      */
     #[Test]
-    public function elementos_de_energia_se_agrupa_por_el_dispositivo_monitor(): void
+    public function energy_elements_are_grouped_by_the_monitoring_device(): void
     {
-        $ventilador = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Ventilador']);
+        $fan = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Ventilador']);
 
-        $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD, canal: 1);
+        $this->element($this->monitor, HardwareEnergy::ROLE_LOAD, channel: 1);
 
         HardwareEnergy::create([
             'hardware_device_id' => $this->monitor->id,
-            'hardware_device_monitorized_id' => $ventilador->id,
+            'hardware_device_monitorized_id' => $fan->id,
             'role' => HardwareEnergy::ROLE_LOAD,
             'sensor_position' => 2,
         ]);
@@ -177,55 +177,55 @@ class EnergyListsTest extends TestCase
      * hacía pensar que la batería no se podía crear.
      */
     #[Test]
-    public function desde_un_elemento_se_pueden_crear_los_papeles_que_falten(): void
+    public function missing_roles_can_be_created_from_an_element(): void
     {
-        $consumo = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+        $load = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
 
         $panel = Livewire::test(RolesRelationManager::class, [
-            'ownerRecord' => $consumo,
+            'ownerRecord' => $load,
             'pageClass' => HardwareEnergyResource\Pages\EditHardwareEnergy::class,
         ]);
 
         $panel->assertSuccessful()
-            ->assertSee('crear_battery')
-            ->assertSee('crear_generator')
+            ->assertSee('create_battery')
+            ->assertSee('create_generator')
             // De consumo caben más, así que el botón se queda.
-            ->assertSee('crear_load');
+            ->assertSee('create_load');
     }
 
     #[Test]
-    public function el_boton_del_papel_ya_creado_desaparece(): void
+    public function the_button_for_an_already_created_role_disappears(): void
     {
-        $consumo = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
-        $this->elemento($this->monitor, HardwareEnergy::ROLE_BATTERY, canal: 1);
+        $load = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
+        $this->element($this->monitor, HardwareEnergy::ROLE_BATTERY, channel: 1);
 
         Livewire::test(RolesRelationManager::class, [
-            'ownerRecord' => $consumo,
+            'ownerRecord' => $load,
             'pageClass' => HardwareEnergyResource\Pages\EditHardwareEnergy::class,
-        ])->assertDontSee('crear_battery');
+        ])->assertDontSee('create_battery');
     }
 
     /**
      * Y lo que se crea desde ahí cuelga del mismo medidor, sin preguntarlo.
      */
     #[Test]
-    public function el_papel_nuevo_cuelga_del_mismo_medidor(): void
+    public function the_new_role_hangs_off_the_same_meter(): void
     {
-        $consumo = $this->elemento($this->monitor, HardwareEnergy::ROLE_LOAD);
+        $load = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
 
         Livewire::test(RolesRelationManager::class, [
-            'ownerRecord' => $consumo,
+            'ownerRecord' => $load,
             'pageClass' => HardwareEnergyResource\Pages\EditHardwareEnergy::class,
         ])
-            ->callTableAction('crear_battery', data: [
+            ->callTableAction('create_battery', data: [
                 'hardware_device_monitorized_id' => $this->monitor->id,
                 'sensor_position' => 5,
                 'is_active' => true,
             ])
             ->assertHasNoTableActionErrors();
 
-        $bateria = HardwareEnergy::where('role', HardwareEnergy::ROLE_BATTERY)->sole();
+        $battery = HardwareEnergy::where('role', HardwareEnergy::ROLE_BATTERY)->sole();
 
-        $this->assertSame($this->monitor->id, $bateria->hardware_device_id);
+        $this->assertSame($this->monitor->id, $battery->hardware_device_id);
     }
 }

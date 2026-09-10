@@ -34,19 +34,19 @@ class AssignableFieldsTest extends TestCase
     use RefreshDatabase;
 
     /** Componentes de Filament que escriben un valor en el modelo. */
-    private const ENTRADAS = 'TextInput|Textarea|Select|Toggle|Checkbox|DatePicker|DateTimePicker|'
+    private const INPUTS = 'TextInput|Textarea|Select|Toggle|Checkbox|DatePicker|DateTimePicker|'
         .'TimePicker|FileUpload|ImageCropperUpload|RichEditor|MarkdownEditor|ColorPicker|KeyValue|'
         .'Repeater|TagsInput|Radio|CheckboxList|EditorJsField|YoutubeVideoField|Hidden|MultiSelect';
 
     /** Columnas que gestiona Eloquent y nunca deben ser asignables. */
-    private const NO_ASIGNABLES = ['id', 'created_at', 'updated_at', 'deleted_at'];
+    private const NON_ASSIGNABLE = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
     #[Test]
-    public function ningun_campo_de_formulario_del_panel_se_descarta_al_guardar(): void
+    public function no_form_field_in_the_panel_is_discarded_on_save(): void
     {
-        $perdidos = [];
+        $lost = [];
 
-        foreach ($this->clasesDeFilament() as $class) {
+        foreach ($this->filamentClasses() as $class) {
             if (! method_exists($class, 'getModel')) {
                 continue;
             }
@@ -55,7 +55,7 @@ class AssignableFieldsTest extends TestCase
             // masiva que valga: los campos del formulario son entrada de una
             // lógica propia, no columnas que Eloquent vaya a escribir. Es el
             // caso de los tokens de API, que se emiten por DeviceTokenService.
-            if ($this->persisteAMano($class)) {
+            if ($this->persistsManually($class)) {
                 continue;
             }
 
@@ -70,62 +70,62 @@ class AssignableFieldsTest extends TestCase
             }
 
             $model = new $modelClass;
-            $tabla = $model->getTable();
+            $table = $model->getTable();
 
-            if (! Schema::hasTable($tabla)) {
+            if (! Schema::hasTable($table)) {
                 continue;
             }
 
-            $columnas = Schema::getColumnListing($tabla);
+            $columns = Schema::getColumnListing($table);
 
-            foreach ($this->camposDelFormulario($class) as $campo) {
-                if (! in_array($campo, $columnas, true)) {
+            foreach ($this->formFields($class) as $field) {
+                if (! in_array($field, $columns, true)) {
                     // No es columna: relación, campo virtual o estado del
                     // formulario. No hay nada que guardar.
                     continue;
                 }
 
-                if (in_array($campo, self::NO_ASIGNABLES, true)) {
+                if (in_array($field, self::NON_ASSIGNABLE, true)) {
                     continue;
                 }
 
-                if ($model->isFillable($campo)) {
+                if ($model->isFillable($field)) {
                     continue;
                 }
 
-                $perdidos[] = $this->nombreLargo($class)." → {$tabla}.{$campo}";
+                $lost[] = $this->qualifiedName($class)." → {$table}.{$field}";
             }
         }
 
-        $this->assertSame([], $perdidos, sprintf(
+        $this->assertSame([], $lost, sprintf(
             "Hay %d campo(s) de formulario que Eloquent descartaría al guardar.\n".
             "Añádelos al \$fillable de su modelo, o quítalos del formulario:\n  - %s\n",
-            count($perdidos),
-            implode("\n  - ", $perdidos)
+            count($lost),
+            implode("\n  - ", $lost)
         ));
     }
 
     #[Test]
-    public function todo_modelo_declara_su_politica_de_asignacion_masiva(): void
+    public function every_model_declares_its_mass_assignment_policy(): void
     {
         // Sin `$fillable` ni `$guarded` propios, Eloquent aplica su
         // `$guarded = ['*']` y el modelo no admite asignación masiva en
         // absoluto: cualquier create() revienta con MassAssignmentException.
         // Es un despiste fácil, porque el modelo se lee igual de bien.
-        $mudos = [];
+        $silent = [];
 
-        foreach ($this->clasesDeModelos() as $class) {
+        foreach ($this->modelClasses() as $class) {
             $model = new $class;
 
             if ($model->getFillable() === [] && $model->getGuarded() === ['*']) {
-                $mudos[] = class_basename($class);
+                $silent[] = class_basename($class);
             }
         }
 
-        $this->assertSame([], $mudos, sprintf(
+        $this->assertSame([], $silent, sprintf(
             'Estos modelos no declaran $fillable ni $guarded, así que no admiten '.
             "asignación masiva:\n  - %s\n",
-            implode("\n  - ", $mudos)
+            implode("\n  - ", $silent)
         ));
     }
 
@@ -136,21 +136,21 @@ class AssignableFieldsTest extends TestCase
      * `handleRecordUpdate()`: con eso, la persistencia no pasa por `fill()` y
      * el `$fillable` del modelo no pinta nada.
      */
-    private function persisteAMano(string $class): bool
+    private function persistsManually(string $class): bool
     {
-        $ruta = (new ReflectionClass($class))->getFileName();
+        $path = (new ReflectionClass($class))->getFileName();
 
-        if ($ruta === false) {
+        if ($path === false) {
             return false;
         }
 
-        $directorioPages = dirname($ruta).'/Pages';
+        $pagesDirectory = dirname($path).'/Pages';
 
-        if (! is_dir($directorioPages)) {
+        if (! is_dir($pagesDirectory)) {
             return false;
         }
 
-        foreach (glob($directorioPages.'/*.php') ?: [] as $page) {
+        foreach (glob($pagesDirectory.'/*.php') ?: [] as $page) {
             $src = file_get_contents($page);
 
             if (str_contains($src, 'handleRecordCreation') || str_contains($src, 'handleRecordUpdate')) {
@@ -162,43 +162,43 @@ class AssignableFieldsTest extends TestCase
     }
 
     /** Nombre con panel incluido: hay dos ApiTokenResource, Admin y Tenant. */
-    private function nombreLargo(string $class): string
+    private function qualifiedName(string $class): string
     {
-        $partes = explode('\\', $class);
-        $panel = $partes[2] ?? '';
+        $parts = explode('\\', $class);
+        $panel = $parts[2] ?? '';
 
         return $panel.'/'.class_basename($class);
     }
 
     /** @return list<class-string> */
-    private function clasesDeFilament(): array
+    private function filamentClasses(): array
     {
-        $clases = [];
+        $classes = [];
 
-        foreach ($this->ficherosPhp('app/Filament') as $ruta) {
-            $nombre = basename($ruta);
+        foreach ($this->phpFiles('app/Filament') as $path) {
+            $name = basename($path);
 
-            if (! str_ends_with($nombre, 'Resource.php') && ! str_ends_with($nombre, 'RelationManager.php')) {
+            if (! str_ends_with($name, 'Resource.php') && ! str_ends_with($name, 'RelationManager.php')) {
                 continue;
             }
 
-            $class = $this->claseDe($ruta);
+            $class = $this->classFrom($path);
 
             if ($class !== null) {
-                $clases[] = $class;
+                $classes[] = $class;
             }
         }
 
-        return $clases;
+        return $classes;
     }
 
     /** @return list<class-string<Model>> */
-    private function clasesDeModelos(): array
+    private function modelClasses(): array
     {
-        $clases = [];
+        $classes = [];
 
-        foreach ($this->ficherosPhp('app/Models') as $ruta) {
-            $class = $this->claseDe($ruta);
+        foreach ($this->phpFiles('app/Models') as $path) {
+            $class = $this->classFrom($path);
 
             if ($class === null) {
                 continue;
@@ -215,10 +215,10 @@ class AssignableFieldsTest extends TestCase
                 continue;
             }
 
-            $clases[] = $class;
+            $classes[] = $class;
         }
 
-        return $clases;
+        return $classes;
     }
 
     /**
@@ -229,65 +229,65 @@ class AssignableFieldsTest extends TestCase
      *
      * @return list<string>
      */
-    private function camposDelFormulario(string $class): array
+    private function formFields(string $class): array
     {
-        $ruta = (new ReflectionClass($class))->getFileName();
+        $path = (new ReflectionClass($class))->getFileName();
 
-        if ($ruta === false) {
+        if ($path === false) {
             return [];
         }
 
-        $src = file_get_contents($ruta);
-        $inicio = stripos($src, 'function form');
+        $src = file_get_contents($path);
+        $start = stripos($src, 'function form');
 
-        if ($inicio === false) {
+        if ($start === false) {
             return [];
         }
 
         // El formulario acaba donde empieza la tabla; si no hay tabla, en el
         // final del fichero.
-        $fin = stripos($src, 'function table', $inicio);
-        $cuerpo = substr($src, $inicio, $fin === false ? null : $fin - $inicio);
+        $end = stripos($src, 'function table', $start);
+        $body = substr($src, $start, $end === false ? null : $end - $start);
 
         preg_match_all(
-            '/(?:'.self::ENTRADAS.")::(?:make|makeImage)\(\s*'([a-z0-9_]+)'/i",
-            $cuerpo,
-            $encontrados
+            '/(?:'.self::INPUTS.")::(?:make|makeImage)\(\s*'([a-z0-9_]+)'/i",
+            $body,
+            $found
         );
 
-        return array_values(array_unique($encontrados[1]));
+        return array_values(array_unique($found[1]));
     }
 
     /** @return list<string> */
-    private function ficherosPhp(string $directorio): array
+    private function phpFiles(string $directory): array
     {
-        if (! is_dir($directorio)) {
+        if (! is_dir($directory)) {
             return [];
         }
 
-        $rutas = [];
-        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directorio));
+        $paths = [];
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
 
-        foreach ($it as $fichero) {
-            if ($fichero->isDir() || ! str_ends_with($fichero->getFilename(), '.php')) {
+        foreach ($it as $file) {
+            if ($file->isDir() || ! str_ends_with($file->getFilename(), '.php')) {
                 continue;
             }
 
-            $rutas[] = $fichero->getPathname();
+            $paths[] = $file->getPathname();
         }
 
-        return $rutas;
+        return $paths;
     }
 
-    private function claseDe(string $ruta): ?string
+    private function classFrom(string $path): ?string
     {
-        $src = file_get_contents($ruta);
+        $src = file_get_contents($path);
 
         if (! preg_match('/namespace ([^;]+);/', $src, $m)) {
             return null;
         }
 
-        $class = $m[1].'\\'.basename($ruta, '.php');
+        $class = $m[1].'\\'.basename($path, '.php');
 
         return class_exists($class) ? $class : null;
     }

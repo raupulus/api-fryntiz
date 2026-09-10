@@ -50,7 +50,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function el_token_emitido_queda_ligado_a_su_dispositivo(): void
+    public function the_issued_token_is_bound_to_its_device(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = $this->makeDevice($user);
@@ -65,7 +65,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function nunca_emite_la_ability_de_sesion(): void
+    public function it_never_issues_the_session_ability(): void
     {
         // Un cacharro con la ability de sesión podría cerrar la sesión de su
         // dueño y listar sus tokens. No debe poder pedirla ni de casualidad.
@@ -78,7 +78,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function nunca_emite_el_comodin(): void
+    public function it_never_issues_the_wildcard(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = $this->makeDevice($user);
@@ -89,7 +89,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function rechaza_una_ability_que_no_esta_en_el_catalogo(): void
+    public function it_rejects_an_ability_not_in_the_catalog(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = $this->makeDevice($user);
@@ -100,7 +100,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function exige_al_menos_una_ability(): void
+    public function it_requires_at_least_one_ability(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = $this->makeDevice($user);
@@ -111,7 +111,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function un_dispositivo_sin_dueno_no_puede_tener_token(): void
+    public function a_device_without_an_owner_cannot_have_a_token(): void
     {
         // Sin propietario no hay a quién colgarle el token, y un token
         // huérfano no habría manera de revocarlo desde ninguna cuenta.
@@ -123,7 +123,7 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function no_duplica_abilities_repetidas(): void
+    public function it_does_not_duplicate_repeated_abilities(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = $this->makeDevice($user);
@@ -142,19 +142,19 @@ class DeviceTokenServiceTest extends TestCase
     }
 
     #[Test]
-    public function respeta_la_caducidad_pedida(): void
+    public function it_respects_the_requested_expiration(): void
     {
         $user = $this->createAuthenticatedUser();
         $device = $this->makeDevice($user);
-        $caduca = now()->addDays(30);
+        $expiresAt = now()->addDays(30);
 
-        $this->service->issue($device, [TokenAbilities::WEATHERSTATION_WRITE], $caduca);
+        $this->service->issue($device, [TokenAbilities::WEATHERSTATION_WRITE], $expiresAt);
 
         $this->assertNotNull($user->tokens()->latest('id')->first()->expires_at);
     }
 
     #[Test]
-    public function por_defecto_el_token_de_cacharro_no_caduca(): void
+    public function by_default_a_device_token_never_expires(): void
     {
         // Decisión D1: están en sitios a los que no se sube a reflashear.
         $user = $this->createAuthenticatedUser();

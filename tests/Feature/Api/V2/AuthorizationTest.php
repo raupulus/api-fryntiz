@@ -36,11 +36,11 @@ class AuthorizationTest extends ApiTestCase
 
         $attacker = $this->createAuthenticatedUser();
 
-        $sinAbility = $this->moduleHeaders($attacker, TokenAbilities::WEATHERSTATION_WRITE);
-        $this->getJson($this->apiUrl("hardware/devices/{$foreign->id}"), $sinAbility)->assertStatus(403);
+        $withoutAbility = $this->moduleHeaders($attacker, TokenAbilities::WEATHERSTATION_WRITE);
+        $this->getJson($this->apiUrl("hardware/devices/{$foreign->id}"), $withoutAbility)->assertStatus(403);
 
-        $conAbility = $this->moduleHeaders($attacker, TokenAbilities::HARDWARE_READ);
-        $this->getJson($this->apiUrl("hardware/devices/{$foreign->id}"), $conAbility)->assertStatus(404);
+        $withAbility = $this->moduleHeaders($attacker, TokenAbilities::HARDWARE_READ);
+        $this->getJson($this->apiUrl("hardware/devices/{$foreign->id}"), $withAbility)->assertStatus(404);
     }
 
     #[Test]
@@ -126,9 +126,9 @@ class AuthorizationTest extends ApiTestCase
         // llegaba la petición. Como el dueño de los cacharros ES superadmin,
         // eso anulaba las 16 policies justo para el principal del que hay que
         // defenderse.
-        $jefe = $this->createAuthenticatedUser(1);
-        $own = HardwareDevice::create(['user_id' => $jefe->id, 'name' => 'Estación A']);
-        $theOther = HardwareDevice::create(['user_id' => $jefe->id, 'name' => 'Estación B']);
+        $boss = $this->createAuthenticatedUser(1);
+        $own = HardwareDevice::create(['user_id' => $boss->id, 'name' => 'Estación A']);
+        $theOther = HardwareDevice::create(['user_id' => $boss->id, 'name' => 'Estación B']);
 
         $headers = $this->deviceHeaders($own, [TokenAbilities::HARDWARE_READ]);
 

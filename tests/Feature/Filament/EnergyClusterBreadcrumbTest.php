@@ -25,7 +25,7 @@ class EnergyClusterBreadcrumbTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function la_raiz_del_cluster_lleva_al_resumen(): void
+    public function the_cluster_root_leads_to_the_dashboard(): void
     {
         (new RolesTableSeeder)->run();
 

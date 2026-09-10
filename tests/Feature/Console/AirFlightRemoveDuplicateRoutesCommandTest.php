@@ -24,100 +24,100 @@ class AirFlightRemoveDuplicateRoutesCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    private AirFlightAirPlane $avion;
+    private AirFlightAirPlane $airplane;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->avion = AirFlightAirPlane::create(['icao' => 'DUPTEST', 'seen_last_at' => Carbon::now()]);
+        $this->airplane = AirFlightAirPlane::create(['icao' => 'DUPTEST', 'seen_last_at' => Carbon::now()]);
     }
 
-    private function ruta(Carbon $seenAt, ?int $messages, array $extra = []): AirFlightRoute
+    private function route(Carbon $seenAt, ?int $messages, array $extra = []): AirFlightRoute
     {
         return AirFlightRoute::create(array_merge([
-            'airplane_id' => $this->avion->id,
+            'airplane_id' => $this->airplane->id,
             'seen_at' => $seenAt,
             'messages' => $messages,
         ], $extra));
     }
 
     #[Test]
-    public function sin_force_detecta_pero_no_borra_nada(): void
+    public function without_force_it_detects_but_deletes_nothing(): void
     {
         $seenAt = Carbon::now()->subMinutes(3);
-        $this->ruta($seenAt, 42);
-        $this->ruta($seenAt, 42);
-        $this->ruta($seenAt, 42);
+        $this->route($seenAt, 42);
+        $this->route($seenAt, 42);
+        $this->route($seenAt, 42);
 
         $this->artisan('airflight:remove_duplicate_routes')->assertExitCode(0);
 
-        $this->assertSame(3, $this->avion->routes()->count());
+        $this->assertSame(3, $this->airplane->routes()->count());
     }
 
     #[Test]
-    public function con_force_deja_solo_una_fila_por_grupo_duplicado_y_conserva_la_mas_antigua(): void
+    public function with_force_it_keeps_only_one_row_per_duplicate_group_and_keeps_the_oldest(): void
     {
         $seenAt = Carbon::now()->subMinutes(3);
-        $primera = $this->ruta($seenAt, 42);
-        $this->ruta($seenAt, 42);
-        $this->ruta($seenAt, 42);
+        $first = $this->route($seenAt, 42);
+        $this->route($seenAt, 42);
+        $this->route($seenAt, 42);
 
         $this->artisan('airflight:remove_duplicate_routes', ['--force' => true])->assertExitCode(0);
 
-        $restantes = $this->avion->routes()->get();
-        $this->assertCount(1, $restantes);
-        $this->assertSame($primera->id, $restantes->first()->id);
+        $remaining = $this->airplane->routes()->get();
+        $this->assertCount(1, $remaining);
+        $this->assertSame($first->id, $remaining->first()->id);
     }
 
     #[Test]
-    public function filas_con_distinto_messages_o_seen_at_no_se_tocan(): void
+    public function rows_with_a_different_messages_or_seen_at_are_not_touched(): void
     {
         $seenAt = Carbon::now()->subMinutes(3);
-        $this->ruta($seenAt, 42);
-        $this->ruta($seenAt, 43);
-        $this->ruta($seenAt->copy()->addSecond(), 42);
+        $this->route($seenAt, 42);
+        $this->route($seenAt, 43);
+        $this->route($seenAt->copy()->addSecond(), 42);
 
         $this->artisan('airflight:remove_duplicate_routes', ['--force' => true])->assertExitCode(0);
 
-        $this->assertSame(3, $this->avion->routes()->count());
+        $this->assertSame(3, $this->airplane->routes()->count());
     }
 
     #[Test]
-    public function el_parametro_date_acota_el_borrado_a_ese_dia(): void
+    public function the_date_parameter_limits_the_deletion_to_that_day(): void
     {
-        $hoy = Carbon::now()->subMinutes(3);
-        $ayer = Carbon::now()->subDay();
+        $today = Carbon::now()->subMinutes(3);
+        $yesterday = Carbon::now()->subDay();
 
         // Duplicado de hoy.
-        $this->ruta($hoy, 42);
-        $this->ruta($hoy, 42);
+        $this->route($today, 42);
+        $this->route($today, 42);
 
         // Duplicado de ayer: no debe tocarse al acotar por la fecha de hoy.
-        $this->ruta($ayer, 99);
-        $this->ruta($ayer, 99);
+        $this->route($yesterday, 99);
+        $this->route($yesterday, 99);
 
         $this->artisan('airflight:remove_duplicate_routes', [
             '--date' => Carbon::now()->toDateString(),
             '--force' => true,
         ])->assertExitCode(0);
 
-        $this->assertSame(1, $this->avion->routes()->where('messages', 42)->count());
-        $this->assertSame(2, $this->avion->routes()->where('messages', 99)->count());
+        $this->assertSame(1, $this->airplane->routes()->where('messages', 42)->count());
+        $this->assertSame(2, $this->airplane->routes()->where('messages', 99)->count());
     }
 
     #[Test]
-    public function una_fecha_con_formato_invalido_falla_sin_tocar_datos(): void
+    public function an_invalid_date_format_fails_without_touching_data(): void
     {
         $seenAt = Carbon::now()->subMinutes(3);
-        $this->ruta($seenAt, 42);
-        $this->ruta($seenAt, 42);
+        $this->route($seenAt, 42);
+        $this->route($seenAt, 42);
 
         $this->artisan('airflight:remove_duplicate_routes', [
             '--date' => '08-09-2026',
             '--force' => true,
         ])->assertExitCode(1);
 
-        $this->assertSame(2, $this->avion->routes()->count());
+        $this->assertSame(2, $this->airplane->routes()->count());
     }
 }

@@ -54,7 +54,7 @@ class ModelAllTest extends TestCase
     /**
      * @return array<string, array{0: class-string}>
      */
-    public static function modelosProvider(): array
+    public static function modelsProvider(): array
     {
         return [
             'Light' => [Light::class],
@@ -69,17 +69,17 @@ class ModelAllTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('modelosProvider')]
-    public function all_devuelve_una_coleccion_sin_reventar(string $modelo): void
+    #[DataProvider('modelsProvider')]
+    public function all_returns_a_collection_without_blowing_up(string $model): void
     {
-        $resultado = $modelo::all();
+        $result = $model::all();
 
-        $this->assertInstanceOf(Collection::class, $resultado);
+        $this->assertInstanceOf(Collection::class, $result);
     }
 
     #[Test]
-    #[DataProvider('modelosProvider')]
-    public function un_update_no_intenta_escribir_updated_at(string $modelo): void
+    #[DataProvider('modelsProvider')]
+    public function an_update_does_not_try_to_write_updated_at(string $model): void
     {
         // Estas tablas no tienen `updated_at`. Se resolvía sobrescribiendo
         // `setUpdatedAt()` con un cuerpo vacío, y eso no bastaba:
@@ -93,8 +93,8 @@ class ModelAllTest extends TestCase
         // No daba la cara porque la ingesta escribe con `insert()` del query
         // builder. Salió al limpiar el baseline de PHPStan (AR-E03 / D14).
         $this->assertNull(
-            (new $modelo)->getUpdatedAtColumn(),
-            $modelo.' declara una columna updated_at que su tabla no tiene.'
+            (new $model)->getUpdatedAtColumn(),
+            $model.' declara una columna updated_at que su tabla no tiene.'
         );
 
         // La consulta se construye y se ejecuta: si volviera a colarse
@@ -102,12 +102,12 @@ class ModelAllTest extends TestCase
         // `hardware_device_id` porque es la única columna que tienen todas
         // —cada sensor guarda lo suyo en `lumens`, `rain`, `average`…— y el
         // `whereKey(-1)` garantiza que no toca ninguna fila.
-        $modelo::query()->whereKey(-1)->update(['hardware_device_id' => 1]);
+        $model::query()->whereKey(-1)->update(['hardware_device_id' => 1]);
     }
 
     #[Test]
-    #[DataProvider('modelosProvider')]
-    public function all_devuelve_lo_mismo_que_una_consulta_normal(string $modelo): void
+    #[DataProvider('modelsProvider')]
+    public function all_returns_the_same_as_a_plain_query(string $model): void
     {
         // El `all()` roto aparentaba filtrar por «valor no nulo» y en realidad
         // devolvía la colección entera, porque el resultado del filtro se
@@ -118,8 +118,8 @@ class ModelAllTest extends TestCase
         // con `insert()` del query builder—, así que se compara contra la
         // consulta directa en lugar de sembrar filas.
         $this->assertSame(
-            $modelo::query()->pluck('id')->all(),
-            $modelo::all()->pluck('id')->all(),
+            $model::query()->pluck('id')->all(),
+            $model::all()->pluck('id')->all(),
         );
     }
 }

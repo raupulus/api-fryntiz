@@ -85,13 +85,13 @@ trait AssertsPersistence
      * Comprueba que un campo NO se guarda: para dejar por escrito lo que la API
      * acepta y tira a propósito, y que nadie lo "arregle" sin querer.
      */
-    protected function assertNotPersisted(Model $row, string $field, string $porque): void
+    protected function assertNotPersisted(Model $row, string $field, string $reason): void
     {
         $real = Schema::hasColumn($row->getTable(), $field)
             ? $row->getAttribute($field)
             : null;
 
-        $this->assertNull($real, "Se esperaba que `{$field}` NO se guardara ({$porque}) y sí se guardó: ".$this->asText($real));
+        $this->assertNull($real, "Se esperaba que `{$field}` NO se guardara ({$reason}) y sí se guardó: ".$this->asText($real));
     }
 
     /**

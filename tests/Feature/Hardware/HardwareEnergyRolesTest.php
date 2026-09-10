@@ -37,20 +37,20 @@ class HardwareEnergyRolesTest extends TestCase
         $this->monitor = HardwareDevice::create(['name' => 'Raspberry Pi Pico W']);
     }
 
-    private function elemento(string $role, int $canal = 0, ?HardwareDevice $medido = null): HardwareEnergy
+    private function element(string $role, int $channel = 0, ?HardwareDevice $monitored = null): HardwareEnergy
     {
         return HardwareEnergy::create([
             'hardware_device_id' => $this->monitor->id,
-            'hardware_device_monitorized_id' => ($medido ?? $this->monitor)->id,
+            'hardware_device_monitorized_id' => ($monitored ?? $this->monitor)->id,
             'role' => $role,
-            'sensor_position' => $canal,
+            'sensor_position' => $channel,
         ]);
     }
 
     // ── La tabla ─────────────────────────────────────────────────────────────
 
     #[Test]
-    public function las_columnas_duplicadas_ya_no_existen(): void
+    public function the_duplicated_columns_no_longer_exist(): void
     {
         $this->assertFalse(
             Schema::hasColumn('hardware_energy', 'is_generator'),
@@ -64,7 +64,7 @@ class HardwareEnergyRolesTest extends TestCase
     }
 
     #[Test]
-    public function el_tercer_papel_se_llama_battery(): void
+    public function the_third_role_is_called_battery(): void
     {
         $this->assertSame('battery', HardwareEnergy::ROLE_BATTERY);
 
@@ -73,17 +73,17 @@ class HardwareEnergyRolesTest extends TestCase
             HardwareEnergy::ROLES,
         );
 
-        $bateria = $this->elemento(HardwareEnergy::ROLE_BATTERY);
+        $battery = $this->element(HardwareEnergy::ROLE_BATTERY);
 
-        $this->assertSame('battery', $bateria->refresh()->role);
+        $this->assertSame('battery', $battery->refresh()->role);
     }
 
     #[Test]
-    public function un_dispositivo_puede_tener_los_tres_papeles(): void
+    public function a_device_can_have_all_three_roles(): void
     {
-        $this->elemento(HardwareEnergy::ROLE_GENERATOR);
-        $this->elemento(HardwareEnergy::ROLE_LOAD);
-        $this->elemento(HardwareEnergy::ROLE_BATTERY);
+        $this->element(HardwareEnergy::ROLE_GENERATOR);
+        $this->element(HardwareEnergy::ROLE_LOAD);
+        $this->element(HardwareEnergy::ROLE_BATTERY);
 
         $this->assertSame(3, HardwareEnergy::where('hardware_device_id', $this->monitor->id)->count());
     }
@@ -91,13 +91,13 @@ class HardwareEnergyRolesTest extends TestCase
     // ── La restricción ───────────────────────────────────────────────────────
 
     #[Test]
-    public function no_se_puede_repetir_el_mismo_papel_en_el_mismo_canal(): void
+    public function the_same_role_cannot_repeat_on_the_same_channel(): void
     {
-        $this->elemento(HardwareEnergy::ROLE_GENERATOR, canal: 0);
+        $this->element(HardwareEnergy::ROLE_GENERATOR, channel: 0);
 
         $this->expectException(QueryException::class);
 
-        $this->elemento(HardwareEnergy::ROLE_GENERATOR, canal: 0);
+        $this->element(HardwareEnergy::ROLE_GENERATOR, channel: 0);
     }
 
     /**
@@ -105,15 +105,15 @@ class HardwareEnergyRolesTest extends TestCase
      * una por su canal y cada una midiendo **otro** aparato.
      */
     #[Test]
-    public function un_monitor_puede_medir_varias_cargas_por_canales_distintos(): void
+    public function a_monitor_can_measure_several_loads_on_different_channels(): void
     {
-        $ventilador = HardwareDevice::create(['name' => 'Ventilador']);
-        $lampara = HardwareDevice::create(['name' => 'Lámpara']);
+        $fan = HardwareDevice::create(['name' => 'Ventilador']);
+        $lamp = HardwareDevice::create(['name' => 'Lámpara']);
         $micro = HardwareDevice::create(['name' => 'Microcontrolador']);
 
-        $this->elemento(HardwareEnergy::ROLE_LOAD, canal: 1, medido: $ventilador);
-        $this->elemento(HardwareEnergy::ROLE_LOAD, canal: 2, medido: $lampara);
-        $this->elemento(HardwareEnergy::ROLE_LOAD, canal: 3, medido: $micro);
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 1, monitored: $fan);
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 2, monitored: $lamp);
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 3, monitored: $micro);
 
         $this->assertSame(3, HardwareEnergy::where('hardware_device_id', $this->monitor->id)->count());
     }
@@ -124,11 +124,11 @@ class HardwareEnergyRolesTest extends TestCase
      * la columna es `NOT NULL` con `0` por defecto.
      */
     #[Test]
-    public function el_canal_no_admite_nulos(): void
+    public function the_channel_does_not_accept_nulls(): void
     {
-        $elemento = $this->elemento(HardwareEnergy::ROLE_LOAD);
+        $element = $this->element(HardwareEnergy::ROLE_LOAD);
 
-        $this->assertSame(0, $elemento->refresh()->sensor_position);
+        $this->assertSame(0, $element->refresh()->sensor_position);
 
         $this->expectException(QueryException::class);
 
@@ -143,23 +143,23 @@ class HardwareEnergyRolesTest extends TestCase
     // ── Cuántos admite cada papel ────────────────────────────────────────────
 
     #[Test]
-    public function generador_y_bateria_estan_limitados_a_uno_y_consumo_no(): void
+    public function generator_and_battery_are_limited_to_one_and_load_is_not(): void
     {
-        $this->assertSame(1, HardwareEnergy::LIMITE_POR_ROL[HardwareEnergy::ROLE_GENERATOR]);
-        $this->assertSame(1, HardwareEnergy::LIMITE_POR_ROL[HardwareEnergy::ROLE_BATTERY]);
-        $this->assertNull(HardwareEnergy::LIMITE_POR_ROL[HardwareEnergy::ROLE_LOAD]);
+        $this->assertSame(1, HardwareEnergy::LIMIT_PER_ROLE[HardwareEnergy::ROLE_GENERATOR]);
+        $this->assertSame(1, HardwareEnergy::LIMIT_PER_ROLE[HardwareEnergy::ROLE_BATTERY]);
+        $this->assertNull(HardwareEnergy::LIMIT_PER_ROLE[HardwareEnergy::ROLE_LOAD]);
     }
 
     // ── El nombre compuesto ──────────────────────────────────────────────────
 
     #[Test]
-    public function el_nombre_sale_del_aparato_medido_y_su_papel(): void
+    public function the_name_comes_from_the_monitored_device_and_its_role(): void
     {
         $panel = HardwareDevice::create(['name' => 'Renogy Rover']);
 
-        $elemento = $this->elemento(HardwareEnergy::ROLE_GENERATOR, medido: $panel);
+        $element = $this->element(HardwareEnergy::ROLE_GENERATOR, monitored: $panel);
 
-        $this->assertSame('Renogy Rover · generador', $elemento->load('monitorized')->display_name);
+        $this->assertSame('Renogy Rover · generador', $element->load('monitorized')->display_name);
     }
 
     /**
@@ -168,56 +168,56 @@ class HardwareEnergyRolesTest extends TestCase
      * desactivado, además, reventaría en vez de ir despacio en silencio.
      */
     #[Test]
-    public function el_nombre_no_carga_relaciones_por_su_cuenta(): void
+    public function the_name_does_not_load_relations_on_its_own(): void
     {
         $panel = HardwareDevice::create(['name' => 'Renogy Rover']);
-        $this->elemento(HardwareEnergy::ROLE_GENERATOR, medido: $panel);
+        $this->element(HardwareEnergy::ROLE_GENERATOR, monitored: $panel);
 
         // Recién traído de la base de datos, sin relaciones cargadas.
-        $sinCargar = HardwareEnergy::query()->sole();
+        $unloaded = HardwareEnergy::query()->sole();
 
-        $this->assertStringContainsString('Elemento #', $sinCargar->display_name);
-        $this->assertStringContainsString('generador', $sinCargar->display_name);
+        $this->assertStringContainsString('Elemento #', $unloaded->display_name);
+        $this->assertStringContainsString('generador', $unloaded->display_name);
 
         // Y con la relación cargada, el nombre de verdad.
         $this->assertStringContainsString(
             'Renogy Rover',
-            $sinCargar->load('monitorized')->display_name,
+            $unloaded->load('monitorized')->display_name,
         );
     }
 
     #[Test]
-    public function el_nombre_lleva_el_canal_solo_cuando_hay_varios(): void
+    public function the_name_carries_the_channel_only_when_there_are_several(): void
     {
-        $ventilador = HardwareDevice::create(['name' => 'Ventilador']);
+        $fan = HardwareDevice::create(['name' => 'Ventilador']);
 
-        $sinCanal = $this->elemento(HardwareEnergy::ROLE_LOAD, canal: 0, medido: $ventilador);
-        $conCanal = $this->elemento(HardwareEnergy::ROLE_BATTERY, canal: 2, medido: $ventilador);
+        $withoutChannel = $this->element(HardwareEnergy::ROLE_LOAD, channel: 0, monitored: $fan);
+        $withChannel = $this->element(HardwareEnergy::ROLE_BATTERY, channel: 2, monitored: $fan);
 
-        $this->assertSame('Ventilador · consumo', $sinCanal->load('monitorized')->display_name);
-        $this->assertSame('Ventilador · batería · canal 2', $conCanal->load('monitorized')->display_name);
+        $this->assertSame('Ventilador · consumo', $withoutChannel->load('monitorized')->display_name);
+        $this->assertSame('Ventilador · batería · canal 2', $withChannel->load('monitorized')->display_name);
     }
 
     // ── Las relaciones del dispositivo ───────────────────────────────────────
 
     #[Test]
-    public function las_relaciones_del_dispositivo_filtran_por_papel(): void
+    public function the_devices_relations_filter_by_role(): void
     {
         $panel = HardwareDevice::create(['name' => 'Panel']);
         $router = HardwareDevice::create(['name' => 'Router']);
-        $bateria = HardwareDevice::create(['name' => 'Banco de baterías']);
+        $battery = HardwareDevice::create(['name' => 'Banco de baterías']);
 
-        $this->elemento(HardwareEnergy::ROLE_GENERATOR, canal: 1, medido: $panel);
-        $this->elemento(HardwareEnergy::ROLE_LOAD, canal: 2, medido: $router);
-        $this->elemento(HardwareEnergy::ROLE_BATTERY, canal: 3, medido: $bateria);
+        $this->element(HardwareEnergy::ROLE_GENERATOR, channel: 1, monitored: $panel);
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 2, monitored: $router);
+        $this->element(HardwareEnergy::ROLE_BATTERY, channel: 3, monitored: $battery);
 
-        $generadores = $this->monitor->hardwareEnergyGenerator()->pluck('hardware_devices.id');
-        $cargas = $this->monitor->hardwareEnergyLoad()->pluck('hardware_devices.id');
+        $generators = $this->monitor->hardwareEnergyGenerator()->pluck('hardware_devices.id');
+        $loads = $this->monitor->hardwareEnergyLoad()->pluck('hardware_devices.id');
 
-        $this->assertSame([$panel->id], $generadores->all());
+        $this->assertSame([$panel->id], $generators->all());
 
         // Antes era «todo lo que no sea generador», así que la batería contaba
         // como carga. Ahora no.
-        $this->assertSame([$router->id], $cargas->all());
+        $this->assertSame([$router->id], $loads->all());
     }
 }

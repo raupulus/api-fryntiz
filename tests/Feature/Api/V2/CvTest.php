@@ -36,7 +36,7 @@ class CvTest extends ApiTestCase
     #[Test]
     public function the_listing_only_shows_public_ones(): void
     {
-        $publico = $this->createCurriculum('Perfil público', CurriculumVisibilityEnum::Public);
+        $publicOne = $this->createCurriculum('Perfil público', CurriculumVisibilityEnum::Public);
         $this->createCurriculum('Perfil privado', CurriculumVisibilityEnum::Private);
         $this->createCurriculum('Perfil compartido', CurriculumVisibilityEnum::Shared);
 
@@ -44,7 +44,7 @@ class CvTest extends ApiTestCase
 
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
-        $response->assertJsonPath('data.0.slug', $publico->slug);
+        $response->assertJsonPath('data.0.slug', $publicOne->slug);
     }
 
     #[Test]
@@ -132,14 +132,14 @@ class CvTest extends ApiTestCase
         $this->getJson($this->apiUrl("curriculum/{$cv->slug}/inventada"))->assertStatus(404);
     }
 
-    private function createCurriculum(string $title, CurriculumVisibilityEnum $visibilidad): Curriculum
+    private function createCurriculum(string $title, CurriculumVisibilityEnum $visibility): Curriculum
     {
         $cv = new Curriculum;
         $cv->forceFill([
             'user_id' => $this->user->id,
             'title' => $title,
             'slug' => Str::slug($title),
-            'visibility' => $visibilidad->value,
+            'visibility' => $visibility->value,
             'is_active' => true,
             'is_downloadable' => true,
             'is_default' => false,

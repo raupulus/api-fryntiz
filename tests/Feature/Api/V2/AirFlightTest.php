@@ -23,20 +23,20 @@ class AirFlightTest extends ApiTestCase
      *
      * @return array<string, string>
      */
-    private function lectura(): array
+    private function readHeaders(): array
     {
         return $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_READ);
     }
 
     #[Test]
-    public function las_lecturas_de_la_api_exigen_token(): void
+    public function api_reads_require_a_token(): void
     {
         $this->getJson($this->apiUrl('airflight/aircrafts'))->assertUnauthorized();
         $this->getJson($this->apiUrl('airflight/receiver'))->assertUnauthorized();
     }
 
     #[Test]
-    public function un_token_de_escritura_no_lee(): void
+    public function a_write_token_cannot_read(): void
     {
         $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::AIRFLIGHT_WRITE);
 
@@ -48,7 +48,7 @@ class AirFlightTest extends ApiTestCase
      * web, sin token y cacheado. La API es para integraciones.
      */
     #[Test]
-    public function el_mapa_web_se_sirve_sin_token(): void
+    public function the_web_map_is_served_without_a_token(): void
     {
         $this->getJson(route('airflight.aircrafts'))
             ->assertOk()
@@ -67,12 +67,12 @@ class AirFlightTest extends ApiTestCase
      * comprueba.
      */
     #[Test]
-    public function la_pagina_airflight_se_sirve_con_datos_agregados(): void
+    public function the_airflight_page_is_served_with_aggregated_data(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'PAGINA1', 'seen_last_at' => Carbon::now()]);
+        $airplane = AirFlightAirPlane::create(['icao' => 'PAGINA1', 'seen_last_at' => Carbon::now()]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'flight' => 'IBE9999',
             'lat' => 36.7,
             'lon' => -6.4,
@@ -91,16 +91,16 @@ class AirFlightTest extends ApiTestCase
      * de la última hora.
      */
     #[Test]
-    public function la_tabla_de_detectados_se_sirve_sin_token_y_filtra_por_ultima_hora(): void
+    public function the_detected_table_is_served_without_a_token_and_filters_by_the_last_hour(): void
     {
-        $reciente = AirFlightAirPlane::create([
+        $recentPlane = AirFlightAirPlane::create([
             'icao' => 'ABC123',
             'seen_last_at' => Carbon::now()->subMinutes(10),
             'seen_first_at' => Carbon::now()->subMinutes(15),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $reciente->id,
+            'airplane_id' => $recentPlane->id,
             'flight' => 'IBE1234',
             'lat' => 36.73,
             'lon' => -6.43,
@@ -111,14 +111,14 @@ class AirFlightTest extends ApiTestCase
             'seen_at' => Carbon::now()->subMinutes(10),
         ]);
 
-        $antiguo = AirFlightAirPlane::create([
+        $oldPlane = AirFlightAirPlane::create([
             'icao' => 'OLD999',
             'seen_last_at' => Carbon::now()->subHours(3),
             'seen_first_at' => Carbon::now()->subHours(3),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $antiguo->id,
+            'airplane_id' => $oldPlane->id,
             'flight' => 'OLD999',
             'seen_at' => Carbon::now()->subHours(3),
         ]);
@@ -127,10 +127,10 @@ class AirFlightTest extends ApiTestCase
             ->assertOk()
             ->assertJsonPath('success', true);
 
-        $icaos = collect($response->json('data'))->pluck('icao');
+        $icaoCodes = collect($response->json('data'))->pluck('icao');
 
-        $this->assertContains('ABC123', $icaos);
-        $this->assertNotContains('OLD999', $icaos);
+        $this->assertContains('ABC123', $icaoCodes);
+        $this->assertNotContains('OLD999', $icaoCodes);
     }
 
     /**
@@ -140,38 +140,38 @@ class AirFlightTest extends ApiTestCase
      * valor no nulo de cada campo entre todas las rutas de la última hora.
      */
     #[Test]
-    public function la_tabla_de_detectados_junta_campos_repartidos_en_varias_rutas(): void
+    public function the_detected_table_merges_fields_spread_across_several_routes(): void
     {
-        $avion = AirFlightAirPlane::create([
+        $airplane = AirFlightAirPlane::create([
             'icao' => 'REPARTIDO',
             'seen_last_at' => Carbon::now(),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'altitude' => 9000,
             'speed' => 200,
             'seen_at' => Carbon::now()->subMinutes(4),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'squawk' => '2000',
             'seen_at' => Carbon::now()->subMinute(),
         ]);
 
         $response = $this->getJson(route('airflight.detected'))->assertOk();
 
-        $fila = collect($response->json('data'))->firstWhere('icao', 'REPARTIDO');
+        $row = collect($response->json('data'))->firstWhere('icao', 'REPARTIDO');
 
-        $this->assertNotNull($fila);
+        $this->assertNotNull($row);
         // altitude ya está en metros, sólo se redondea. speed se pasa de
         // m/s a km/h para la tabla: 200 m/s * 3.6 = 720 km/h.
-        $this->assertSame(9000, $fila['altitude']);
-        $this->assertSame(720, $fila['speed']);
-        $this->assertSame('2000', $fila['squawk']);
-        $this->assertArrayNotHasKey('lat', $fila);
-        $this->assertArrayNotHasKey('lon', $fila);
+        $this->assertSame(9000, $row['altitude']);
+        $this->assertSame(720, $row['speed']);
+        $this->assertSame('2000', $row['squawk']);
+        $this->assertArrayNotHasKey('lat', $row);
+        $this->assertArrayNotHasKey('lon', $row);
     }
 
     /**
@@ -184,30 +184,30 @@ class AirFlightTest extends ApiTestCase
      * UTC, desplazando la hora mostrada.
      */
     #[Test]
-    public function seen_last_at_llega_en_iso8601_utc_sin_ambiguedad(): void
+    public function seen_last_at_arrives_in_iso8601_utc_without_ambiguity(): void
     {
-        $avion = AirFlightAirPlane::create([
+        $airplane = AirFlightAirPlane::create([
             'icao' => 'FECHAUTC',
             'seen_last_at' => Carbon::create(2026, 9, 8, 9, 29, 34, 'UTC'),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'squawk' => '1000',
             'seen_at' => Carbon::now()->subMinute(),
         ]);
 
-        $fila = collect($this->getJson(route('airflight.detected'))->assertOk()->json('data'))
+        $row = collect($this->getJson(route('airflight.detected'))->assertOk()->json('data'))
             ->firstWhere('icao', 'FECHAUTC');
 
-        $this->assertNotNull($fila);
-        $this->assertSame('2026-09-08T09:29:34.000000Z', $fila['seen_last_at']);
+        $this->assertNotNull($row);
+        $this->assertSame('2026-09-08T09:29:34.000000Z', $row['seen_last_at']);
     }
 
     #[Test]
     public function can_get_aircrafts(): void
     {
-        $response = $this->getJson($this->apiUrl('airflight/aircrafts'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('airflight/aircrafts'), $this->readHeaders());
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -215,7 +215,7 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function can_get_history(): void
     {
-        $response = $this->getJson($this->apiUrl('airflight/aircrafts'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('airflight/aircrafts'), $this->readHeaders());
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data']);
     }
@@ -329,7 +329,7 @@ class AirFlightTest extends ApiTestCase
     {
         // Es pública y sin base de datos detrás: devuelve la configuración fija
         // que el mapa necesita para centrarse y refrescar.
-        $response = $this->getJson($this->apiUrl('airflight/receiver'), $this->lectura());
+        $response = $this->getJson($this->apiUrl('airflight/receiver'), $this->readHeaders());
 
         $this->assertSuccessResponse($response);
         $response->assertJsonStructure(['data' => ['history', 'lat', 'lon', 'refresh', 'version']]);
@@ -340,7 +340,7 @@ class AirFlightTest extends ApiTestCase
     {
         // No se guardan snapshots temporales, sólo la última posición de cada
         // avión, así que el mapa no debe ofrecer reproducción de recorrido.
-        $this->getJson($this->apiUrl('airflight/receiver'), $this->lectura())
+        $this->getJson($this->apiUrl('airflight/receiver'), $this->readHeaders())
             ->assertJsonPath('data.history', 0);
     }
 }

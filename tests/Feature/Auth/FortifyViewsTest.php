@@ -31,7 +31,7 @@ class FortifyViewsTest extends TestCase
     /**
      * @return array<string, array{0: string}>
      */
-    public static function rutasQueNoExistenProvider(): array
+    public static function routesThatDoNotExistProvider(): array
     {
         return [
             'login' => ['/login'],
@@ -41,18 +41,18 @@ class FortifyViewsTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('rutasQueNoExistenProvider')]
-    public function las_vistas_de_fortify_responden_404(string $ruta): void
+    #[DataProvider('routesThatDoNotExistProvider')]
+    public function the_fortify_views_respond_with_404(string $route): void
     {
-        $respuesta = $this->get($ruta);
+        $response = $this->get($route);
 
-        $respuesta->assertNotFound();
+        $response->assertNotFound();
         // La 404 de la propia web, no una pantalla de Laravel ni una redirección.
-        $respuesta->assertSee('Esta página no existe', false);
+        $response->assertSee('Esta página no existe', false);
     }
 
     #[Test]
-    public function el_login_de_filament_sigue_en_pie(): void
+    public function the_filament_login_is_still_up(): void
     {
         $this->get('/panel/login')->assertOk();
         $this->get('/admin/login')->assertOk();
@@ -63,17 +63,17 @@ class FortifyViewsTest extends TestCase
      * Filament, y por tanto sin su reCAPTCHA.
      */
     #[Test]
-    public function fortify_no_registra_ninguna_ruta(): void
+    public function fortify_does_not_register_any_route(): void
     {
         foreach ([
             'login', 'login.store', 'logout',
             'two-factor.login', 'two-factor.login.store',
             'password.confirm', 'password.confirm.store',
             'two-factor.enable', 'two-factor.qr-code',
-        ] as $nombre) {
+        ] as $name) {
             $this->assertFalse(
-                Route::has($nombre),
-                "La ruta «{$nombre}» de Fortify sigue registrada."
+                Route::has($name),
+                "La ruta «{$name}» de Fortify sigue registrada."
             );
         }
 

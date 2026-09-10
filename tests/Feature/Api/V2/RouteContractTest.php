@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
-use Illuminate\Routing\Route as RutaLaravel;
+use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -27,36 +27,36 @@ class RouteContractTest extends TestCase
     /**
      * Rutas registradas bajo `api/`.
      *
-     * @return list<RutaLaravel>
+     * @return list<LaravelRoute>
      */
-    private function rutasDeLaApi(): array
+    private function apiRoutes(): array
     {
         return array_values(array_filter(
             Route::getRoutes()->getRoutes(),
-            static fn (RutaLaravel $ruta): bool => str_starts_with($ruta->uri(), 'api/')
+            static fn (LaravelRoute $route): bool => str_starts_with($route->uri(), 'api/')
         ));
     }
 
     /**
      * Middleware efectivo de una ruta, con los grupos ya expandidos.
      *
-     * `$ruta->middleware()` devuelve `['api']` sin desplegar, así que un
+     * `$route->middleware()` devuelve `['api']` sin desplegar, así que un
      * `throttle` declarado sobre el grupo no se vería. `gatherMiddleware()` sí
      * lo despliega, que es lo que de verdad corre.
      *
      * @return list<string>
      */
-    private function middlewareDe(RutaLaravel $ruta): array
+    private function middlewareOf(LaravelRoute $route): array
     {
         return array_values(array_map(
             static fn ($m): string => is_string($m) ? $m : '',
-            Route::gatherRouteMiddleware($ruta)
+            Route::gatherRouteMiddleware($route)
         ));
     }
 
-    private function tieneThrottle(RutaLaravel $ruta): bool
+    private function hasThrottle(LaravelRoute $route): bool
     {
-        foreach ($this->middlewareDe($ruta) as $middleware) {
+        foreach ($this->middlewareOf($route) as $middleware) {
             if (str_contains(mb_strtolower($middleware), 'throttle')) {
                 return true;
             }
@@ -66,36 +66,36 @@ class RouteContractTest extends TestCase
     }
 
     #[Test]
-    public function todas_las_rutas_de_la_api_tienen_limite_de_peticiones(): void
+    public function all_api_routes_have_a_rate_limit(): void
     {
-        $sinLimite = [];
+        $withoutLimit = [];
 
-        foreach ($this->rutasDeLaApi() as $ruta) {
-            if (! $this->tieneThrottle($ruta)) {
-                $sinLimite[] = implode('|', $ruta->methods()).' /'.$ruta->uri();
+        foreach ($this->apiRoutes() as $route) {
+            if (! $this->hasThrottle($route)) {
+                $withoutLimit[] = implode('|', $route->methods()).' /'.$route->uri();
             }
         }
 
         $this->assertSame(
             [],
-            $sinLimite,
+            $withoutLimit,
             "Estas rutas de la API no tienen ningún límite de peticiones:\n  ".
-            implode("\n  ", $sinLimite)."\n\n".
+            implode("\n  ", $withoutLimit)."\n\n".
             'El grupo `api` trae un techo (`throttle:api-global`, en bootstrap/app.php). '.
             'Si una ruta aparece aquí es que está fuera del grupo o que el techo se ha quitado.'
         );
     }
 
     #[Test]
-    public function hay_rutas_de_la_api_registradas(): void
+    public function there_are_registered_api_routes(): void
     {
         // Red de seguridad del test de arriba: si el enrutador devolviera una
         // lista vacía, aquel pasaría sin comprobar nada.
-        $this->assertGreaterThan(40, count($this->rutasDeLaApi()));
+        $this->assertGreaterThan(40, count($this->apiRoutes()));
     }
 
     #[Test]
-    public function toda_escritura_de_la_api_exige_autenticacion(): void
+    public function every_api_write_requires_authentication(): void
     {
         // Excepciones conscientes, todas públicas por diseño y todas con su
         // propio limitador declarado en la ruta:
@@ -104,85 +104,85 @@ class RouteContractTest extends TestCase
         //  · newsletter/**           alta y baja por token del correo
         //  · auth/tokens             es el login: no puede exigir estar dentro
         //  · api/v2/{any}            la ruta de cierre, que responde 404 a todo
-        $publicas = [
+        $publicRoutes = [
             'api/v2/contact-messages',
             'api/v2/auth/tokens',
             'api/v2/{any}',
         ];
 
-        $sinAuth = [];
+        $withoutAuth = [];
 
-        foreach ($this->rutasDeLaApi() as $ruta) {
-            $metodos = array_diff($ruta->methods(), ['GET', 'HEAD', 'OPTIONS']);
+        foreach ($this->apiRoutes() as $route) {
+            $methods = array_diff($route->methods(), ['GET', 'HEAD', 'OPTIONS']);
 
-            if ($metodos === []) {
+            if ($methods === []) {
                 continue;
             }
 
-            if (in_array($ruta->uri(), $publicas, true) || str_starts_with($ruta->uri(), 'api/v2/newsletter/')) {
+            if (in_array($route->uri(), $publicRoutes, true) || str_starts_with($route->uri(), 'api/v2/newsletter/')) {
                 continue;
             }
 
-            $autenticada = false;
+            $isAuthenticated = false;
 
-            foreach ($this->middlewareDe($ruta) as $middleware) {
+            foreach ($this->middlewareOf($route) as $middleware) {
                 if (str_contains($middleware, 'Authenticate') || str_starts_with($middleware, 'auth:')) {
-                    $autenticada = true;
+                    $isAuthenticated = true;
                 }
             }
 
-            if (! $autenticada) {
-                $sinAuth[] = implode('|', $metodos).' /'.$ruta->uri();
+            if (! $isAuthenticated) {
+                $withoutAuth[] = implode('|', $methods).' /'.$route->uri();
             }
         }
 
         $this->assertSame(
             [],
-            $sinAuth,
-            "Estas escrituras de la API no exigen autenticación:\n  ".implode("\n  ", $sinAuth)
+            $withoutAuth,
+            "Estas escrituras de la API no exigen autenticación:\n  ".implode("\n  ", $withoutAuth)
         );
     }
 
     #[Test]
-    public function las_escrituras_iot_exigen_una_ability_de_modulo(): void
+    public function iot_writes_require_a_module_ability(): void
     {
         // La ability es lo que acota un token robado a su módulo. Una escritura
         // IoT con `auth:sanctum` pero sin `ability:` la alcanzaría cualquier
         // token, incluido el de una estación meteorológica (auditoría A3).
-        $modulos = ['hardware', 'weather-stations', 'keycounter', 'smartplant', 'airflight'];
-        $sinAbility = [];
+        $modules = ['hardware', 'weather-stations', 'keycounter', 'smartplant', 'airflight'];
+        $withoutAbility = [];
 
-        foreach ($this->rutasDeLaApi() as $ruta) {
-            $metodos = array_diff($ruta->methods(), ['GET', 'HEAD', 'OPTIONS']);
-            $esDeModulo = false;
+        foreach ($this->apiRoutes() as $route) {
+            $methods = array_diff($route->methods(), ['GET', 'HEAD', 'OPTIONS']);
+            $isModuleRoute = false;
 
-            foreach ($modulos as $modulo) {
-                if (str_starts_with($ruta->uri(), 'api/v2/'.$modulo)) {
-                    $esDeModulo = true;
+            foreach ($modules as $module) {
+                if (str_starts_with($route->uri(), 'api/v2/'.$module)) {
+                    $isModuleRoute = true;
                 }
             }
 
-            if ($metodos === [] || ! $esDeModulo) {
+            if ($methods === [] || ! $isModuleRoute) {
                 continue;
             }
 
-            $conAbility = false;
+            $hasAbility = false;
 
-            foreach ($this->middlewareDe($ruta) as $middleware) {
+            foreach ($this->middlewareOf($route) as $middleware) {
                 if (str_contains($middleware, 'Abilit')) {
-                    $conAbility = true;
+                    $hasAbility = true;
                 }
             }
 
-            if (! $conAbility) {
-                $sinAbility[] = implode('|', $metodos).' /'.$ruta->uri();
+            if (! $hasAbility) {
+                $withoutAbility[] = implode('|', $methods).' /'.$route->uri();
             }
         }
 
         $this->assertSame(
             [],
-            $sinAbility,
-            "Estas escrituras IoT no exigen ninguna ability:\n  ".implode("\n  ", $sinAbility)
+            $withoutAbility,
+            "Estas escrituras IoT no exigen ninguna ability:\n  ".implode("\n  ", $withoutAbility)
         );
     }
 }

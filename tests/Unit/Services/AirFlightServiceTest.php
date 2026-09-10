@@ -35,7 +35,7 @@ class AirFlightServiceTest extends TestCase
     }
 
     #[Test]
-    public function un_avion_sin_ninguna_ruta_no_sale_como_activo(): void
+    public function an_airplane_without_any_route_does_not_show_as_active(): void
     {
         AirFlightAirPlane::create(['icao' => 'SINRUTA', 'seen_last_at' => Carbon::now()]);
 
@@ -43,14 +43,14 @@ class AirFlightServiceTest extends TestCase
     }
 
     #[Test]
-    public function un_avion_con_ping_reciente_pero_sin_posicion_no_sale_como_activo(): void
+    public function an_airplane_with_a_recent_ping_but_no_position_does_not_show_as_active(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'SOLOSQUAWK', 'seen_last_at' => Carbon::now()]);
+        $airplane = AirFlightAirPlane::create(['icao' => 'SOLOSQUAWK', 'seen_last_at' => Carbon::now()]);
 
         // Mensaje recibido hace un instante, pero sin lat/lon: un squawk o
         // una altitud sueltos, sin posición decodificada.
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'squawk' => '7000',
             'seen_at' => Carbon::now()->subSeconds(30),
         ]);
@@ -59,12 +59,12 @@ class AirFlightServiceTest extends TestCase
     }
 
     #[Test]
-    public function un_avion_con_posicion_antigua_fuera_de_ventana_no_sale_como_activo(): void
+    public function an_airplane_with_an_old_position_outside_the_window_does_not_show_as_active(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'VIEJO', 'seen_last_at' => Carbon::now()]);
+        $airplane = AirFlightAirPlane::create(['icao' => 'VIEJO', 'seen_last_at' => Carbon::now()]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'lat' => 36.71,
             'lon' => -6.41,
             'seen_at' => Carbon::now()->subMinutes(30),
@@ -74,23 +74,23 @@ class AirFlightServiceTest extends TestCase
     }
 
     #[Test]
-    public function un_avion_con_posicion_reciente_si_sale_como_activo(): void
+    public function an_airplane_with_a_recent_position_does_show_as_active(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'ACTIVO', 'seen_last_at' => Carbon::now()]);
+        $airplane = AirFlightAirPlane::create(['icao' => 'ACTIVO', 'seen_last_at' => Carbon::now()]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'lat' => 36.71,
             'lon' => -6.41,
             'seen_at' => Carbon::now()->subMinutes(2),
         ]);
 
-        $activos = $this->service->getActiveAircrafts(10);
+        $activeAircrafts = $this->service->getActiveAircrafts(10);
 
-        $this->assertCount(1, $activos);
-        $this->assertSame('ACTIVO', $activos->first()->icao);
-        $this->assertNotNull($activos->first()->latestRoute);
-        $this->assertSame(36.71, (float) $activos->first()->latestRoute->lat);
+        $this->assertCount(1, $activeAircrafts);
+        $this->assertSame('ACTIVO', $activeAircrafts->first()->icao);
+        $this->assertNotNull($activeAircrafts->first()->latestRoute);
+        $this->assertSame(36.71, (float) $activeAircrafts->first()->latestRoute->lat);
     }
 
     /**
@@ -102,27 +102,27 @@ class AirFlightServiceTest extends TestCase
      * (0, 0).
      */
     #[Test]
-    public function un_mensaje_sin_posicion_posterior_no_borra_la_ultima_posicion_real(): void
+    public function a_later_message_without_a_position_does_not_erase_the_last_real_position(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'CONSQUAWK', 'seen_last_at' => Carbon::now()]);
+        $airplane = AirFlightAirPlane::create(['icao' => 'CONSQUAWK', 'seen_last_at' => Carbon::now()]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'lat' => 36.71,
             'lon' => -6.41,
             'seen_at' => Carbon::now()->subMinutes(5),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'squawk' => '7000',
             'seen_at' => Carbon::now()->subMinute(),
         ]);
 
-        $activos = $this->service->getActiveAircrafts(10);
-        $this->assertCount(1, $activos);
+        $activeAircrafts = $this->service->getActiveAircrafts(10);
+        $this->assertCount(1, $activeAircrafts);
 
-        $json = AirFlightResource::collection($activos)->resolve();
+        $json = AirFlightResource::collection($activeAircrafts)->resolve();
 
         $this->assertSame(36.71, $json[0]['lat']);
         $this->assertSame(-6.41, $json[0]['lon']);
@@ -137,7 +137,7 @@ class AirFlightServiceTest extends TestCase
      * nueva: se fusiona en la misma fila en vez de crear otra.
      */
     #[Test]
-    public function dos_sondeos_con_el_mismo_contador_de_mensajes_fusionan_en_una_fila(): void
+    public function two_probes_with_the_same_message_counter_merge_into_one_row(): void
     {
         $this->service->addAircraft([
             'icao' => 'MERGE01',
@@ -152,25 +152,25 @@ class AirFlightServiceTest extends TestCase
             'messages' => 100,
         ]);
 
-        $avion = AirFlightAirPlane::where('icao', 'MERGE01')->firstOrFail();
+        $airplane = AirFlightAirPlane::where('icao', 'MERGE01')->firstOrFail();
 
-        $this->assertSame(1, $avion->routes()->count());
+        $this->assertSame(1, $airplane->routes()->count());
 
-        $ruta = $avion->routes()->first();
-        $this->assertSame('7000', $ruta->squawk);
-        $this->assertSame(36.71, (float) $ruta->lat);
-        $this->assertSame(-6.41, (float) $ruta->lon);
+        $route = $airplane->routes()->first();
+        $this->assertSame('7000', $route->squawk);
+        $this->assertSame(36.71, (float) $route->lat);
+        $this->assertSame(-6.41, (float) $route->lon);
     }
 
     #[Test]
-    public function un_contador_de_mensajes_distinto_crea_una_fila_nueva(): void
+    public function a_different_message_counter_creates_a_new_row(): void
     {
         $this->service->addAircraft(['icao' => 'MERGE02', 'lat' => 36.71, 'lon' => -6.41, 'messages' => 100]);
         $this->service->addAircraft(['icao' => 'MERGE02', 'lat' => 36.72, 'lon' => -6.42, 'messages' => 101]);
 
-        $avion = AirFlightAirPlane::where('icao', 'MERGE02')->firstOrFail();
+        $airplane = AirFlightAirPlane::where('icao', 'MERGE02')->firstOrFail();
 
-        $this->assertSame(2, $avion->routes()->count());
+        $this->assertSame(2, $airplane->routes()->count());
     }
 
     /**
@@ -181,28 +181,28 @@ class AirFlightServiceTest extends TestCase
      * las rutas de la ventana — no la última fila suelta.
      */
     #[Test]
-    public function el_detectado_junta_el_ultimo_valor_no_nulo_de_cada_campo_entre_varias_rutas(): void
+    public function the_detected_query_merges_the_last_non_null_value_of_each_field_across_several_routes(): void
     {
-        $avion = AirFlightAirPlane::create(['icao' => 'AGREGADO', 'seen_last_at' => Carbon::now()]);
+        $airplane = AirFlightAirPlane::create(['icao' => 'AGREGADO', 'seen_last_at' => Carbon::now()]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'altitude' => 8000,
             'seen_at' => Carbon::now()->subMinutes(3),
         ]);
 
         AirFlightRoute::create([
-            'airplane_id' => $avion->id,
+            'airplane_id' => $airplane->id,
             'squawk' => '7000',
             'seen_at' => Carbon::now()->subMinute(),
         ]);
 
-        $resultado = $this->service->getDetectedQuery(Carbon::now()->subHour())->get();
+        $result = $this->service->getDetectedQuery(Carbon::now()->subHour())->get();
 
-        $this->assertCount(1, $resultado);
+        $this->assertCount(1, $result);
 
-        $fila = $resultado->first();
-        $this->assertSame(8000.0, (float) $fila->altitude);
-        $this->assertSame('7000', $fila->squawk);
+        $row = $result->first();
+        $this->assertSame(8000.0, (float) $row->altitude);
+        $this->assertSame('7000', $row->squawk);
     }
 }

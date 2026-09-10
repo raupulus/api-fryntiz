@@ -36,7 +36,7 @@ class FileDeletionTest extends TestCase
         (new RolesTableSeeder)->run();
     }
 
-    private function ficheroDe(User $owner): File
+    private function fileOwnedBy(User $owner): File
     {
         $file = new File;
 
@@ -57,10 +57,10 @@ class FileDeletionTest extends TestCase
     }
 
     #[Test]
-    public function el_dueno_borra_su_fichero(): void
+    public function the_owner_deletes_their_file(): void
     {
         $owner = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
-        $file = $this->ficheroDe($owner);
+        $file = $this->fileOwnedBy($owner);
 
         $this->actingAs($owner)
             ->post("/file/delete/{$file->id}")
@@ -70,12 +70,12 @@ class FileDeletionTest extends TestCase
     }
 
     #[Test]
-    public function un_usuario_normal_no_borra_el_fichero_de_otro(): void
+    public function a_regular_user_cannot_delete_someone_elses_file(): void
     {
-        $file = $this->ficheroDe(User::factory()->create(['role_id' => UserRoleEnum::User->value]));
-        $intruso = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $file = $this->fileOwnedBy(User::factory()->create(['role_id' => UserRoleEnum::User->value]));
+        $intruder = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        $this->actingAs($intruso)
+        $this->actingAs($intruder)
             ->post("/file/delete/{$file->id}")
             ->assertForbidden();
 
@@ -83,9 +83,9 @@ class FileDeletionTest extends TestCase
     }
 
     #[Test]
-    public function un_administrador_si_borra_el_fichero_de_otro(): void
+    public function an_administrator_can_delete_someone_elses_file(): void
     {
-        $file = $this->ficheroDe(User::factory()->create(['role_id' => UserRoleEnum::User->value]));
+        $file = $this->fileOwnedBy(User::factory()->create(['role_id' => UserRoleEnum::User->value]));
         $admin = User::factory()->create(['role_id' => UserRoleEnum::Admin->value]);
 
         $this->actingAs($admin)
@@ -96,9 +96,9 @@ class FileDeletionTest extends TestCase
     }
 
     #[Test]
-    public function sin_sesion_no_se_borra_nada(): void
+    public function nothing_gets_deleted_without_a_session(): void
     {
-        $file = $this->ficheroDe(User::factory()->create(['role_id' => UserRoleEnum::User->value]));
+        $file = $this->fileOwnedBy(User::factory()->create(['role_id' => UserRoleEnum::User->value]));
 
         $this->post("/file/delete/{$file->id}")->assertRedirect('/panel/login');
 
@@ -106,7 +106,7 @@ class FileDeletionTest extends TestCase
     }
 
     #[Test]
-    public function borrar_un_fichero_que_no_existe_no_revienta(): void
+    public function deleting_a_nonexistent_file_does_not_blow_up(): void
     {
         $user = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 

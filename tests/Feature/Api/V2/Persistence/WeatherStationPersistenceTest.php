@@ -153,14 +153,14 @@ class WeatherStationPersistenceTest extends ApiTestCase
     #[DataProvider('unvalidatedRequiredFields')]
     public function a_missing_required_database_field_blows_up_with_500(
         string $path,
-        array $payloadIncompleto,
+        array $incompletePayload,
         string $column
     ): void {
-        $payloadIncompleto['hardware_device_id'] = $this->device->id;
+        $incompletePayload['hardware_device_id'] = $this->device->id;
 
         $response = $this->postJson(
             $this->apiUrl("weather-stations/{$this->device->id}/{$path}"),
-            $payloadIncompleto,
+            $incompletePayload,
             $this->moduleHeaders($this->user, TokenAbilities::WEATHERSTATION_WRITE)
         );
 

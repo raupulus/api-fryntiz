@@ -33,9 +33,9 @@ class TimeSeriesIndexesTest extends TestCase
      *
      * @return array<string, array{0: string, 1: string}>
      */
-    public static function tablasProvider(): array
+    public static function tablesProvider(): array
     {
-        $sensores = [
+        $sensors = [
             'meteorology_temperature', 'meteorology_humidity', 'meteorology_pressure',
             'meteorology_light', 'meteorology_rain', 'meteorology_wind_direction',
             'meteorology_lightning', 'meteorology_eco2', 'meteorology_tvoc',
@@ -43,47 +43,47 @@ class TimeSeriesIndexesTest extends TestCase
             'meteorology_resume_today', 'meteorology_resume_historical',
         ];
 
-        $casos = [];
+        $cases = [];
 
-        foreach ($sensores as $tabla) {
-            $casos[$tabla] = [$tabla, 'hardware_device_id, created_at'];
+        foreach ($sensors as $table) {
+            $cases[$table] = [$table, 'hardware_device_id, created_at'];
         }
 
-        $casos['smartplant_registers'] = ['smartplant_registers', 'plant_id, created_at'];
-        $casos['keycounter_keyboard'] = ['keycounter_keyboard', 'user_id, start_at'];
-        $casos['keycounter_mouse'] = ['keycounter_mouse', 'user_id, start_at'];
-        $casos['airflight_routes'] = ['airflight_routes', 'airplane_id, created_at'];
+        $cases['smartplant_registers'] = ['smartplant_registers', 'plant_id, created_at'];
+        $cases['keycounter_keyboard'] = ['keycounter_keyboard', 'user_id, start_at'];
+        $cases['keycounter_mouse'] = ['keycounter_mouse', 'user_id, start_at'];
+        $cases['airflight_routes'] = ['airflight_routes', 'airplane_id, created_at'];
 
-        return $casos;
+        return $cases;
     }
 
     #[Test]
-    #[DataProvider('tablasProvider')]
-    public function la_tabla_tiene_su_indice_compuesto(string $tabla, string $columnas): void
+    #[DataProvider('tablesProvider')]
+    public function the_table_has_its_composite_index(string $table, string $columns): void
     {
-        $definiciones = collect(DB::select(
+        $definitions = collect(DB::select(
             'select indexdef from pg_indexes where schemaname = current_schema() and tablename = ?',
-            [$tabla]
+            [$table]
         ))->pluck('indexdef');
 
         $this->assertTrue(
-            $definiciones->contains(fn (string $def): bool => str_contains($def, "({$columnas})")),
-            "La tabla «{$tabla}» no tiene índice por ({$columnas}), que es justo por donde la ".
-            "consulta la API.\nÍndices que tiene:\n  ".$definiciones->implode("\n  ")
+            $definitions->contains(fn (string $def): bool => str_contains($def, "({$columns})")),
+            "La tabla «{$table}» no tiene índice por ({$columns}), que es justo por donde la ".
+            "consulta la API.\nÍndices que tiene:\n  ".$definitions->implode("\n  ")
         );
     }
 
     #[Test]
-    public function el_orden_de_las_columnas_importa(): void
+    public function the_column_order_matters(): void
     {
         // Un índice `(created_at, hardware_device_id)` no serviría para lo que
         // más filas descarta —acotar por dispositivo— y encima no daría el
         // orden gratis. Se comprueba sobre la tabla más consultada.
-        $definiciones = collect(DB::select(
+        $definitions = collect(DB::select(
             "select indexdef from pg_indexes where schemaname = current_schema() and tablename = 'meteorology_temperature'"
         ))->pluck('indexdef');
 
-        $this->assertTrue($definiciones->contains(fn (string $d): bool => str_contains($d, '(hardware_device_id, created_at)')));
-        $this->assertFalse($definiciones->contains(fn (string $d): bool => str_contains($d, '(created_at, hardware_device_id)')));
+        $this->assertTrue($definitions->contains(fn (string $d): bool => str_contains($d, '(hardware_device_id, created_at)')));
+        $this->assertFalse($definitions->contains(fn (string $d): bool => str_contains($d, '(created_at, hardware_device_id)')));
     }
 }

@@ -42,7 +42,7 @@ class RoleEscalationTest extends TestCase
         (new RolesTableSeeder)->run();
     }
 
-    private function actuarComo(UserRoleEnum $role): User
+    private function actAsRole(UserRoleEnum $role): User
     {
         $user = User::factory()->create([
             'role_id' => $role->value,
@@ -57,9 +57,9 @@ class RoleEscalationTest extends TestCase
     }
 
     #[Test]
-    public function un_admin_no_puede_abrir_su_propia_edicion(): void
+    public function an_admin_cannot_open_their_own_edit_page(): void
     {
-        $admin = $this->actuarComo(UserRoleEnum::Admin);
+        $admin = $this->actAsRole(UserRoleEnum::Admin);
 
         $this->get(UserResource::getUrl('edit', ['record' => $admin], panel: 'admin'))
             ->assertForbidden();
@@ -70,9 +70,9 @@ class RoleEscalationTest extends TestCase
      * el rol de un usuario administrador». La página no debe ni abrirse.
      */
     #[Test]
-    public function un_admin_no_puede_abrir_la_edicion_de_un_superadmin(): void
+    public function an_admin_cannot_open_a_superadmins_edit_page(): void
     {
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actAsRole(UserRoleEnum::Admin);
 
         $superadmin = User::factory()->create([
             'role_id' => UserRoleEnum::SuperAdmin->value,
@@ -88,26 +88,26 @@ class RoleEscalationTest extends TestCase
      * va a rechazar.
      */
     #[Test]
-    public function el_select_de_rol_esta_bloqueado_sobre_un_superadmin(): void
+    public function the_role_select_is_locked_on_a_superadmin(): void
     {
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actAsRole(UserRoleEnum::Admin);
 
         $superadmin = User::factory()->create([
             'role_id' => UserRoleEnum::SuperAdmin->value,
         ]);
 
-        $this->assertTrue(UserResourceProbe::intocable($superadmin));
+        $this->assertTrue(UserResourceProbe::untouchable($superadmin));
 
         // Sobre otro `Admin` sí se puede: repartir el mismo nivel no es escalar.
-        $otroAdmin = User::factory()->create(['role_id' => UserRoleEnum::Admin->value]);
+        $anotherAdmin = User::factory()->create(['role_id' => UserRoleEnum::Admin->value]);
 
-        $this->assertFalse(UserResourceProbe::intocable($otroAdmin));
+        $this->assertFalse(UserResourceProbe::untouchable($anotherAdmin));
     }
 
     #[Test]
-    public function un_admin_no_puede_ponerse_superadmin(): void
+    public function an_admin_cannot_promote_themselves_to_superadmin(): void
     {
-        $admin = $this->actuarComo(UserRoleEnum::Admin);
+        $admin = $this->actAsRole(UserRoleEnum::Admin);
 
         try {
             Livewire::test(EditUser::class, ['record' => $admin->getKey()])
@@ -125,9 +125,9 @@ class RoleEscalationTest extends TestCase
     }
 
     #[Test]
-    public function un_admin_no_puede_crear_un_superadmin(): void
+    public function an_admin_cannot_create_a_superadmin(): void
     {
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actAsRole(UserRoleEnum::Admin);
 
         Livewire::test(CreateUser::class)
             ->fillForm([
@@ -147,11 +147,11 @@ class RoleEscalationTest extends TestCase
     }
 
     #[Test]
-    public function un_admin_si_puede_crear_un_admin(): void
+    public function an_admin_can_create_another_admin(): void
     {
         // Cerrar la escalada no puede llevarse por delante el trabajo normal
         // del panel: repartir su mismo nivel no es escalar.
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actAsRole(UserRoleEnum::Admin);
 
         Livewire::test(CreateUser::class)
             ->fillForm([
@@ -171,24 +171,24 @@ class RoleEscalationTest extends TestCase
     }
 
     #[Test]
-    public function un_admin_si_puede_editar_a_otro_usuario(): void
+    public function an_admin_can_edit_another_user(): void
     {
-        $this->actuarComo(UserRoleEnum::Admin);
+        $this->actAsRole(UserRoleEnum::Admin);
 
-        $otro = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
+        $anotherUser = User::factory()->create(['role_id' => UserRoleEnum::User->value]);
 
-        Livewire::test(EditUser::class, ['record' => $otro->getKey()])
+        Livewire::test(EditUser::class, ['record' => $anotherUser->getKey()])
             ->fillForm(['name' => 'Nombre cambiado'])
             ->call('save')
             ->assertHasNoFormErrors();
 
-        $this->assertSame('Nombre cambiado', $otro->fresh()->name);
+        $this->assertSame('Nombre cambiado', $anotherUser->fresh()->name);
     }
 
     #[Test]
-    public function un_superadmin_sigue_pudiendo_repartir_cualquier_rol(): void
+    public function a_superadmin_can_still_assign_any_role(): void
     {
-        $this->actuarComo(UserRoleEnum::SuperAdmin);
+        $this->actAsRole(UserRoleEnum::SuperAdmin);
 
         Livewire::test(CreateUser::class)
             ->fillForm([
@@ -209,13 +209,13 @@ class RoleEscalationTest extends TestCase
 }
 
 /**
- * `UserResource::esIntocable()` es `protected` porque es un detalle del
+ * `UserResource::isUntouchable()` es `protected` porque es un detalle del
  * formulario, no una API. Esto lo alcanza sin abrirlo al resto del proyecto.
  */
 class UserResourceProbe extends UserResource
 {
-    public static function intocable(?User $record): bool
+    public static function untouchable(?User $record): bool
     {
-        return static::esIntocable($record);
+        return static::isUntouchable($record);
     }
 }

@@ -235,13 +235,13 @@ class SolarReadingPersistenceTest extends ApiTestCase
     {
         $this->send($this->fullPayload())->assertStatus(201);
 
-        $trasElReinicio = array_merge($this->fullPayload(), [
+        $afterRestart = array_merge($this->fullPayload(), [
             'read_at' => '2026-08-24 11:35:00',
             'historical_total_days_operating' => 1,
             'historical_cumulative_power_generation' => 0.4,
         ]);
 
-        $response = $this->send($trasElReinicio);
+        $response = $this->send($afterRestart);
         $response->assertStatus(201);
 
         $this->assertSame(
@@ -330,7 +330,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
     }
 
     #[Test]
-    public function la_potencia_del_aparato_se_conserva_cuando_no_manda_corriente(): void
+    public function the_device_power_is_kept_when_current_is_not_sent(): void
     {
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
@@ -391,16 +391,16 @@ class SolarReadingPersistenceTest extends ApiTestCase
      * vacías desde la V2 y el panel de energía no tenía de dónde leer.
      */
     #[Test]
-    public function una_lectura_del_controlador_llena_los_resumenes_de_generacion_y_consumo(): void
+    public function a_controller_reading_fills_the_generation_and_consumption_summaries(): void
     {
-        $generador = HardwareEnergy::create([
+        $generator = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
             'role' => HardwareEnergy::ROLE_GENERATOR,
             'sensor_position' => 0,
             'nominal_voltage' => 18.0,
         ]);
 
-        $consumo = HardwareEnergy::create([
+        $loadElement = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
             'role' => HardwareEnergy::ROLE_LOAD,
             'sensor_position' => 1,
@@ -418,7 +418,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
 
         // ── Generación ──
         $genHoy = HardwarePowerGeneratorToday::query()
-            ->where('hardware_energy_id', $generador->id)->first();
+            ->where('hardware_energy_id', $generator->id)->first();
 
         $this->assertNotNull($genHoy, 'No se creó el resumen del día de generación.');
         // El acumulado del día lo manda el aparato: se toma tal cual, no se suma.
@@ -426,7 +426,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
         $this->assertEqualsWithDelta(31.2, (float) $genHoy->energy_ah, 0.01);
 
         $genTotal = HardwarePowerGeneratorHistorical::query()
-            ->where('hardware_energy_id', $generador->id)->first();
+            ->where('hardware_energy_id', $generator->id)->first();
 
         $this->assertNotNull($genTotal, 'No se creó el acumulado de generación.');
         // El total del aparato cubre años anteriores a estas tablas: manda él.
@@ -434,23 +434,23 @@ class SolarReadingPersistenceTest extends ApiTestCase
         $this->assertSame(412, (int) $genTotal->days_operating);
 
         // ── Consumo de la salida de carga ──
-        $lectura = HardwarePowerLoad::query()
-            ->where('hardware_energy_id', $consumo->id)->first();
+        $loadReading = HardwarePowerLoad::query()
+            ->where('hardware_energy_id', $loadElement->id)->first();
 
-        $this->assertNotNull($lectura, 'La salida de carga del controlador no se guardó como consumo.');
-        $this->assertEqualsWithDelta(12.9, (float) $lectura->voltage, 0.01);
-        $this->assertEqualsWithDelta(1.85, (float) $lectura->amperage, 0.01);
-        $this->assertEqualsWithDelta(23.9, (float) $lectura->power, 0.01);
+        $this->assertNotNull($loadReading, 'La salida de carga del controlador no se guardó como consumo.');
+        $this->assertEqualsWithDelta(12.9, (float) $loadReading->voltage, 0.01);
+        $this->assertEqualsWithDelta(1.85, (float) $loadReading->amperage, 0.01);
+        $this->assertEqualsWithDelta(23.9, (float) $loadReading->power, 0.01);
 
         $loadHoy = HardwarePowerLoadToday::query()
-            ->where('hardware_energy_id', $consumo->id)->first();
+            ->where('hardware_energy_id', $loadElement->id)->first();
 
         $this->assertNotNull($loadHoy, 'No se creó el resumen del día de consumo.');
         $this->assertEqualsWithDelta(221.5, (float) $loadHoy->energy_wh, 0.01);
         $this->assertEqualsWithDelta(18.4, (float) $loadHoy->energy_ah, 0.01);
 
         $loadTotal = HardwarePowerLoadHistorical::query()
-            ->where('hardware_energy_id', $consumo->id)->first();
+            ->where('hardware_energy_id', $loadElement->id)->first();
 
         $this->assertNotNull($loadTotal, 'No se creó el acumulado de consumo.');
         $this->assertEqualsWithDelta(5385.0, (float) $loadTotal->energy_wh, 0.01);
@@ -460,9 +460,9 @@ class SolarReadingPersistenceTest extends ApiTestCase
      * Dos lecturas del mismo día no duplican el acumulado del aparato.
      */
     #[Test]
-    public function el_acumulado_del_dia_no_se_suma_dos_veces(): void
+    public function the_day_accumulator_is_not_summed_twice(): void
     {
-        $generador = HardwareEnergy::create([
+        $generator = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
             'role' => HardwareEnergy::ROLE_GENERATOR,
             'sensor_position' => 0,
@@ -476,7 +476,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
         ]))->assertStatus(201);
 
         $genHoy = HardwarePowerGeneratorToday::query()
-            ->where('hardware_energy_id', $generador->id)->first();
+            ->where('hardware_energy_id', $generator->id)->first();
 
         // El aparato dice 415 Wh en total del día, no 402,5 + 415.
         $this->assertEqualsWithDelta(415.0, (float) $genHoy->energy_wh, 0.01);
@@ -491,9 +491,9 @@ class SolarReadingPersistenceTest extends ApiTestCase
      * vacías desde la V2: no hay forma de derivarlas de nuestras lecturas.
      */
     #[Test]
-    public function los_ciclos_de_bateria_del_controlador_llegan_al_acumulado(): void
+    public function the_controller_battery_cycles_reach_the_accumulator(): void
     {
-        $generador = HardwareEnergy::create([
+        $generator = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
             'role' => HardwareEnergy::ROLE_GENERATOR,
             'sensor_position' => 0,
@@ -506,7 +506,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
         ]))->assertStatus(201);
 
         $total = HardwarePowerGeneratorHistorical::query()
-            ->where('hardware_energy_id', $generador->id)->first();
+            ->where('hardware_energy_id', $generator->id)->first();
 
         $this->assertSame(26, (int) $total->number_battery_over_discharges);
         $this->assertSame(1343, (int) $total->number_battery_full_charges);
@@ -521,9 +521,9 @@ class SolarReadingPersistenceTest extends ApiTestCase
      * tenía esta regla (`($power > $this->power) ? $power : $this->power`).
      */
     #[Test]
-    public function el_acumulado_nunca_baja_aunque_el_aparato_se_haya_reiniciado(): void
+    public function the_accumulator_never_drops_even_if_the_device_restarted(): void
     {
-        $generador = HardwareEnergy::create([
+        $generator = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
             'role' => HardwareEnergy::ROLE_GENERATOR,
             'sensor_position' => 0,
@@ -532,7 +532,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
 
         HardwarePowerGeneratorHistorical::create([
             'hardware_device_id' => $this->device->id,
-            'hardware_energy_id' => $generador->id,
+            'hardware_energy_id' => $generator->id,
             'energy_wh' => 66_388.0,
             'energy_ah' => 65_191.0,
             'days_operating' => 1738,
@@ -547,7 +547,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
         ]))->assertStatus(201);
 
         $total = HardwarePowerGeneratorHistorical::query()
-            ->where('hardware_energy_id', $generador->id)->first();
+            ->where('hardware_energy_id', $generator->id)->first();
 
         $this->assertEqualsWithDelta(66_388.0, (float) $total->energy_wh, 0.01, 'El reinicio del controlador borró el acumulado.');
         $this->assertEqualsWithDelta(65_191.0, (float) $total->energy_ah, 0.01);
@@ -559,7 +559,7 @@ class SolarReadingPersistenceTest extends ApiTestCase
      * silencio: se avisa.
      */
     #[Test]
-    public function avisa_si_hay_consumo_y_no_hay_elemento_donde_guardarlo(): void
+    public function it_warns_when_there_is_consumption_and_no_element_to_store_it_in(): void
     {
         HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,
@@ -568,23 +568,23 @@ class SolarReadingPersistenceTest extends ApiTestCase
             'nominal_voltage' => 18.0,
         ]);
 
-        $respuesta = $this->send($this->fullPayload());
+        $response = $this->send($this->fullPayload());
 
-        $respuesta->assertStatus(201);
-        $this->assertNotEmpty($respuesta->json('warnings'), 'No avisó de que el consumo no tiene dónde guardarse.');
+        $response->assertStatus(201);
+        $this->assertNotEmpty($response->json('warnings'), 'No avisó de que el consumo no tiene dónde guardarse.');
     }
 
     #[Test]
     public function cannot_write_on_someone_elses_device(): void
     {
         $other = $this->createAuthenticatedUser(3);
-        $suDispositivo = HardwareDevice::create([
+        $otherDevice = HardwareDevice::create([
             'user_id' => $other->id,
             'name' => 'Dispositivo ajeno',
         ]);
 
         $response = $this->send(array_merge($this->fullPayload(), [
-            'hardware_device_id' => $suDispositivo->id,
+            'hardware_device_id' => $otherDevice->id,
         ]));
 
         $this->assertErrorResponse($response, 422);

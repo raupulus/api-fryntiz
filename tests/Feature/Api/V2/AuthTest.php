@@ -249,17 +249,17 @@ class AuthTest extends ApiTestCase
         $response->assertStatus(201);
         $response->assertJsonStructure(['data' => ['token']]);
 
-        $emitido = $user->tokens()->latest('id')->first();
-        $this->assertContains('device:'.$device->id, $emitido->abilities);
-        $this->assertNotContains(TokenAbilities::SESSION, $emitido->abilities);
+        $issuedToken = $user->tokens()->latest('id')->first();
+        $this->assertContains('device:'.$device->id, $issuedToken->abilities);
+        $this->assertNotContains(TokenAbilities::SESSION, $issuedToken->abilities);
     }
 
     #[Test]
     public function cannot_issue_a_device_token_for_someone_elses_device(): void
     {
         $user = $this->createAuthenticatedUser();
-        $otro = $this->createAuthenticatedUser();
-        $device = $this->makeDeviceFor($otro);
+        $other = $this->createAuthenticatedUser();
+        $device = $this->makeDeviceFor($other);
 
         $this->postJson($this->apiUrl('auth/tokens/devices'), [
             'device_id' => $device->id,
@@ -299,12 +299,12 @@ class AuthTest extends ApiTestCase
         $user = $this->createAuthenticatedUser();
         $headers = $this->authenticatedHeaders($user);
 
-        $aRevocar = $user->createToken('otro', [TokenAbilities::SESSION]);
+        $tokenToRevoke = $user->createToken('otro', [TokenAbilities::SESSION]);
 
-        $this->deleteJson($this->apiUrl('auth/tokens/'.$aRevocar->accessToken->id), [], $headers)
+        $this->deleteJson($this->apiUrl('auth/tokens/'.$tokenToRevoke->accessToken->id), [], $headers)
             ->assertStatus(204);
 
-        $this->assertNull($user->tokens()->find($aRevocar->accessToken->id));
+        $this->assertNull($user->tokens()->find($tokenToRevoke->accessToken->id));
     }
 
     #[Test]
@@ -313,17 +313,17 @@ class AuthTest extends ApiTestCase
         // Lo importante de los tres endpoints de token: que el id sea un número
         // no significa que sea tuyo.
         $user = $this->createAuthenticatedUser();
-        $otro = $this->createAuthenticatedUser();
+        $other = $this->createAuthenticatedUser();
 
-        $ajeno = $otro->createToken('del otro', [TokenAbilities::SESSION]);
+        $foreignToken = $other->createToken('del otro', [TokenAbilities::SESSION]);
 
         $this->deleteJson(
-            $this->apiUrl('auth/tokens/'.$ajeno->accessToken->id),
+            $this->apiUrl('auth/tokens/'.$foreignToken->accessToken->id),
             [],
             $this->authenticatedHeaders($user)
         )->assertStatus(404);
 
-        $this->assertNotNull($otro->tokens()->find($ajeno->accessToken->id));
+        $this->assertNotNull($other->tokens()->find($foreignToken->accessToken->id));
     }
 
     #[Test]

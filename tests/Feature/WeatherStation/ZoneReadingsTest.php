@@ -52,37 +52,37 @@ class ZoneReadingsTest extends TestCase
     }
 
     #[Test]
-    public function la_zona_toma_el_dato_mas_reciente_aunque_sea_de_otra_estacion(): void
+    public function the_zone_takes_the_freshest_reading_even_from_another_station(): void
     {
-        $vieja = $this->makeStation('outdoor', 'Azotea', 'Vieja');
-        $nueva = $this->makeStation('outdoor', 'Azotea', 'Nueva');
+        $old = $this->makeStation('outdoor', 'Azotea', 'Vieja');
+        $new = $this->makeStation('outdoor', 'Azotea', 'Nueva');
 
         // La que se quedó muda hace días, con el valor que se veía congelado.
         Humidity::create([
-            'hardware_device_id' => $vieja->id,
+            'hardware_device_id' => $old->id,
             'value' => 49.0,
             'created_at' => now()->subDays(3),
         ]);
 
         // La que está subiendo ahora.
         Humidity::create([
-            'hardware_device_id' => $nueva->id,
+            'hardware_device_id' => $new->id,
             'value' => 20.0,
             'created_at' => now(),
         ]);
 
-        $lecturas = $this->service()->getZoneReadings('Azotea', 'outdoor');
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
 
-        $this->assertNotNull($lecturas);
+        $this->assertNotNull($readings);
         $this->assertSame(
             20.0,
-            (float) $lecturas['humidity'],
+            (float) $readings['humidity'],
             'La zona debe dar el dato fresco, no el de la estación que dejó de subir.'
         );
     }
 
     #[Test]
-    public function cada_magnitud_va_por_su_cuenta(): void
+    public function each_magnitude_is_resolved_independently(): void
     {
         $a = $this->makeStation('outdoor', 'Azotea', 'A');
         $b = $this->makeStation('outdoor', 'Azotea', 'B');
@@ -93,49 +93,49 @@ class ZoneReadingsTest extends TestCase
         Humidity::create(['hardware_device_id' => $a->id, 'value' => 90.0, 'created_at' => now()->subHour()]);
         Humidity::create(['hardware_device_id' => $b->id, 'value' => 40.0, 'created_at' => now()]);
 
-        $lecturas = $this->service()->getZoneReadings('Azotea', 'outdoor');
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
 
-        $this->assertSame(30.0, (float) $lecturas['temperature']);
-        $this->assertSame(40.0, (float) $lecturas['humidity']);
+        $this->assertSame(30.0, (float) $readings['temperature']);
+        $this->assertSame(40.0, (float) $readings['humidity']);
     }
 
     #[Test]
-    public function la_presion_vale_tambien_de_una_estacion_de_interior(): void
+    public function pressure_also_counts_from_an_indoor_station(): void
     {
         // El barómetro mide igual dentro que fuera y a la interperie se
         // estropea antes, así que suele vivir en un cacharro de interior.
-        $fuera = $this->makeStation('outdoor', 'Azotea', 'Fuera');
-        $dentro = $this->makeStation('indoor', 'Azotea', 'Dentro');
+        $outside = $this->makeStation('outdoor', 'Azotea', 'Fuera');
+        $inside = $this->makeStation('indoor', 'Azotea', 'Dentro');
 
-        Temperature::create(['hardware_device_id' => $fuera->id, 'value' => 25.0, 'created_at' => now()]);
-        Pressure::create(['hardware_device_id' => $dentro->id, 'value' => 1013.0, 'created_at' => now()]);
+        Temperature::create(['hardware_device_id' => $outside->id, 'value' => 25.0, 'created_at' => now()]);
+        Pressure::create(['hardware_device_id' => $inside->id, 'value' => 1013.0, 'created_at' => now()]);
 
-        $lecturas = $this->service()->getZoneReadings('Azotea', 'outdoor');
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
 
         $this->assertSame(
             1013.0,
-            (float) $lecturas['pressure'],
+            (float) $readings['pressure'],
             'La presión es la excepción: vale cualquier estación de la zona.'
         );
     }
 
     #[Test]
-    public function el_resto_de_sensores_no_se_cuela_desde_el_interior(): void
+    public function other_sensors_do_not_leak_in_from_indoors(): void
     {
-        $fuera = $this->makeStation('outdoor', 'Azotea', 'Fuera');
-        $dentro = $this->makeStation('indoor', 'Azotea', 'Dentro');
+        $outside = $this->makeStation('outdoor', 'Azotea', 'Fuera');
+        $inside = $this->makeStation('indoor', 'Azotea', 'Dentro');
 
-        Temperature::create(['hardware_device_id' => $fuera->id, 'value' => 25.0, 'created_at' => now()->subHour()]);
+        Temperature::create(['hardware_device_id' => $outside->id, 'value' => 25.0, 'created_at' => now()->subHour()]);
         // Más reciente, pero de interior: 22 grados dentro no son los de la calle.
-        Temperature::create(['hardware_device_id' => $dentro->id, 'value' => 22.0, 'created_at' => now()]);
+        Temperature::create(['hardware_device_id' => $inside->id, 'value' => 22.0, 'created_at' => now()]);
 
-        $lecturas = $this->service()->getZoneReadings('Azotea', 'outdoor');
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
 
-        $this->assertSame(25.0, (float) $lecturas['temperature']);
+        $this->assertSame(25.0, (float) $readings['temperature']);
     }
 
     #[Test]
-    public function los_rayos_se_cuentan_en_toda_la_zona(): void
+    public function lightning_strikes_are_counted_across_the_whole_zone(): void
     {
         $a = $this->makeStation('outdoor', 'Azotea', 'A');
         $b = $this->makeStation('outdoor', 'Azotea', 'B');
@@ -143,19 +143,19 @@ class ZoneReadingsTest extends TestCase
         Lightning::create(['hardware_device_id' => $a->id, 'distance' => 5, 'energy' => 100, 'created_at' => now()->subMinutes(5)]);
         Lightning::create(['hardware_device_id' => $b->id, 'distance' => 8, 'energy' => 120, 'created_at' => now()->subMinutes(10)]);
 
-        $lecturas = $this->service()->getZoneReadings('Azotea', 'outdoor');
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
 
-        $this->assertSame(2, $lecturas['lightning']['count_in_window']);
+        $this->assertSame(2, $readings['lightning']['count_in_window']);
     }
 
     #[Test]
-    public function una_zona_sin_estaciones_devuelve_null(): void
+    public function a_zone_without_stations_returns_null(): void
     {
         $this->assertNull($this->service()->getZoneReadings('Inexistente'));
     }
 
     #[Test]
-    public function la_zona_principal_es_la_primera_de_exterior(): void
+    public function the_main_zone_is_the_first_outdoor_one(): void
     {
         $this->makeStation('indoor', 'Salón', 'Interior');
         $this->makeStation('outdoor', 'Azotea', 'Exterior');
@@ -164,31 +164,31 @@ class ZoneReadingsTest extends TestCase
     }
 
     #[Test]
-    public function el_endpoint_de_zona_responde_con_el_dato_fresco(): void
+    public function the_zone_endpoint_responds_with_the_freshest_reading(): void
     {
-        $this->zonaConDosEstaciones();
+        $this->zoneWithTwoStations();
 
         $this->getJson(
             route('api.v2.weather_stations.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']),
-            $this->lectura()
+            $this->readerHeaders()
         )
             ->assertOk()
             ->assertJsonPath('data.humidity', 20);
     }
 
     #[Test]
-    public function el_endpoint_de_una_zona_vacia_responde_404(): void
+    public function the_endpoint_for_an_empty_zone_returns_404(): void
     {
         $this->getJson(
             route('api.v2.weather_stations.zone', ['zone' => 'Inexistente']),
-            $this->lectura()
+            $this->readerHeaders()
         )->assertNotFound();
     }
 
     #[Test]
-    public function el_endpoint_de_la_api_exige_permiso_de_lectura(): void
+    public function the_api_endpoint_requires_read_permission(): void
     {
-        $this->zonaConDosEstaciones();
+        $this->zoneWithTwoStations();
 
         $this->getJson(route('api.v2.weather_stations.zone', ['zone' => 'Azotea']))
             ->assertUnauthorized();
@@ -199,9 +199,9 @@ class ZoneReadingsTest extends TestCase
      * una integración sino una página propia, y con el mismo dato fresco.
      */
     #[Test]
-    public function el_widget_web_da_el_dato_fresco_sin_token(): void
+    public function the_web_widget_gives_the_freshest_reading_without_a_token(): void
     {
-        $this->zonaConDosEstaciones();
+        $this->zoneWithTwoStations();
 
         $this->getJson(route('weather_station.widget.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']))
             ->assertOk()
@@ -209,7 +209,7 @@ class ZoneReadingsTest extends TestCase
     }
 
     #[Test]
-    public function el_widget_web_de_una_zona_vacia_responde_404(): void
+    public function the_web_widget_for_an_empty_zone_returns_404(): void
     {
         $this->getJson(route('weather_station.widget.zone', ['zone' => 'Inexistente']))
             ->assertNotFound();
@@ -219,13 +219,13 @@ class ZoneReadingsTest extends TestCase
      * Dos estaciones en la misma azotea: una con el dato viejo y otra con el
      * bueno.
      */
-    private function zonaConDosEstaciones(): void
+    private function zoneWithTwoStations(): void
     {
-        $vieja = $this->makeStation('outdoor', 'Azotea', 'Vieja');
-        $nueva = $this->makeStation('outdoor', 'Azotea', 'Nueva');
+        $old = $this->makeStation('outdoor', 'Azotea', 'Vieja');
+        $new = $this->makeStation('outdoor', 'Azotea', 'Nueva');
 
-        Humidity::create(['hardware_device_id' => $vieja->id, 'value' => 49.0, 'created_at' => now()->subDays(3)]);
-        Humidity::create(['hardware_device_id' => $nueva->id, 'value' => 20.0, 'created_at' => now()]);
+        Humidity::create(['hardware_device_id' => $old->id, 'value' => 49.0, 'created_at' => now()->subDays(3)]);
+        Humidity::create(['hardware_device_id' => $new->id, 'value' => 20.0, 'created_at' => now()]);
     }
 
     /**
@@ -233,7 +233,7 @@ class ZoneReadingsTest extends TestCase
      *
      * @return array<string, string>
      */
-    private function lectura(): array
+    private function readerHeaders(): array
     {
         // La factory de usuarios apunta al rol 3, que aquí no existe: este test
         // no hereda de `ApiTestCase` y nadie ha sembrado `user_roles`.

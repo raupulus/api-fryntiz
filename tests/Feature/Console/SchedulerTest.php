@@ -29,15 +29,15 @@ class SchedulerTest extends TestCase
     public function every_scheduled_task_calls_a_command_that_exists(): void
     {
         $registered = array_keys(Artisan::all());
-        $programados = $this->scheduledCommands();
+        $scheduledTasks = $this->scheduledCommands();
 
-        $this->assertNotEmpty($programados, 'No hay ninguna tarea programada; el planificador está vacío.');
+        $this->assertNotEmpty($scheduledTasks, 'No hay ninguna tarea programada; el planificador está vacío.');
 
-        foreach ($programados as $comando) {
+        foreach ($scheduledTasks as $command) {
             $this->assertContains(
-                $comando,
+                $command,
                 $registered,
-                "El planificador llama a «{$comando}» y ese comando no existe."
+                "El planificador llama a «{$command}» y ese comando no existe."
             );
         }
     }
