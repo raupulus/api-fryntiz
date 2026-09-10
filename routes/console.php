@@ -147,12 +147,29 @@ Schedule::command('keycounter:generate_duration')
     ->withoutOverlapping()
     ->onFailure($warnOnFailure('keycounter:generate_duration'));
 
+// Lo vivo de la web —mes en curso y anterior, resúmenes, widgets y total del
+// año— se reescribe cada hora. Es lo que hace que la ventana de una hora salga
+// gratis: cuando alguien entra, ya está calculado. Sin esta pasada la caché es
+// perezosa y el primer visitante de cada hora se come el cálculo entero.
+//
+// La hora es además el retardo de privacidad: la web no refleja la actividad en
+// tiempo real, y por eso la ingesta (`KeyCounterService`) ya no invalida nada.
+Schedule::command('keycounter:warm_cache', ['--live'])
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('keycounter:warm_cache --live'));
+
 // Las gráficas de un mes cerrado se cachean para siempre, pero el cálculo lo
 // paga quien entra primero. Con trece años de datos son unos 150 meses
 // esperando a que alguien los estrene. Esto los deja hechos de madrugada, y va
 // después de las dos tareas de arriba porque las dos pueden mover rachas.
+//
+// Diario, no semanal: el mes que acaba de cerrarse tiene que entrar en la caja
+// fuerte cuanto antes. En semanal se quedaba hasta seis días fuera, y ese
+// cálculo lo pagaba el visitante.
 Schedule::command('keycounter:warm_cache')
-    ->weeklyOn(1, '04:00')
+    ->dailyAt('04:00')
     ->timezone('Europe/Madrid')
     ->withoutOverlapping()
     ->runInBackground()
