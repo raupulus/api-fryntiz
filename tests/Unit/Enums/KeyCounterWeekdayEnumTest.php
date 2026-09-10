@@ -17,7 +17,7 @@ use Tests\TestCase;
 class KeyCounterWeekdayEnumTest extends TestCase
 {
     #[Test]
-    public function el_cero_es_lunes_y_el_seis_domingo(): void
+    public function zero_is_monday_and_six_is_sunday(): void
     {
         $this->assertSame('Lunes', KeyCounterWeekdayEnum::from(0)->label());
         $this->assertSame('Domingo', KeyCounterWeekdayEnum::from(6)->label());
@@ -33,26 +33,26 @@ class KeyCounterWeekdayEnumTest extends TestCase
      * él se sembraban los datos de depuración.
      */
     #[Test]
-    public function se_calcula_con_el_dia_iso_y_no_con_day_of_week(): void
+    public function it_is_calculated_with_the_iso_day_and_not_with_day_of_week(): void
     {
         // 2026-09-07 es lunes.
-        $lunes = Carbon::parse('2026-09-07');
+        $monday = Carbon::parse('2026-09-07');
 
-        $this->assertSame(0, KeyCounterWeekdayEnum::deLaFecha($lunes)->value);
-        $this->assertSame(KeyCounterWeekdayEnum::Lunes, KeyCounterWeekdayEnum::deLaFecha($lunes));
+        $this->assertSame(0, KeyCounterWeekdayEnum::fromDate($monday)->value);
+        $this->assertSame(KeyCounterWeekdayEnum::Monday, KeyCounterWeekdayEnum::fromDate($monday));
 
         // Y con la convención vieja habría dado 1, que es el fallo de origen.
-        $this->assertNotSame($lunes->dayOfWeek, KeyCounterWeekdayEnum::deLaFecha($lunes)->value);
+        $this->assertNotSame($monday->dayOfWeek, KeyCounterWeekdayEnum::fromDate($monday)->value);
 
-        $domingo = Carbon::parse('2026-09-13');
+        $sunday = Carbon::parse('2026-09-13');
 
-        $this->assertSame(6, KeyCounterWeekdayEnum::deLaFecha($domingo)->value);
+        $this->assertSame(6, KeyCounterWeekdayEnum::fromDate($sunday)->value);
     }
 
     #[Test]
-    public function la_semana_entera_cuadra(): void
+    public function the_whole_week_matches(): void
     {
-        $esperado = [
+        $expected = [
             '2026-09-07' => 'Lunes',
             '2026-09-08' => 'Martes',
             '2026-09-09' => 'Miércoles',
@@ -62,11 +62,11 @@ class KeyCounterWeekdayEnumTest extends TestCase
             '2026-09-13' => 'Domingo',
         ];
 
-        foreach ($esperado as $fecha => $dia) {
+        foreach ($expected as $date => $day) {
             $this->assertSame(
-                $dia,
-                KeyCounterWeekdayEnum::deLaFecha(Carbon::parse($fecha))->label(),
-                "El {$fecha} debería ser {$dia}.",
+                $day,
+                KeyCounterWeekdayEnum::fromDate(Carbon::parse($date))->label(),
+                "El {$date} debería ser {$day}.",
             );
         }
     }
@@ -76,10 +76,10 @@ class KeyCounterWeekdayEnumTest extends TestCase
      * error: la etiqueta de un valor fuera de rango es el valor.
      */
     #[Test]
-    public function un_valor_fuera_de_rango_se_ensena_tal_cual(): void
+    public function an_out_of_range_value_is_shown_as_is(): void
     {
-        $this->assertSame('9', KeyCounterWeekdayEnum::etiquetaDe(9));
-        $this->assertNull(KeyCounterWeekdayEnum::etiquetaDe(null));
-        $this->assertSame('Jueves', KeyCounterWeekdayEnum::etiquetaDe('3'));
+        $this->assertSame('9', KeyCounterWeekdayEnum::labelFor(9));
+        $this->assertNull(KeyCounterWeekdayEnum::labelFor(null));
+        $this->assertSame('Jueves', KeyCounterWeekdayEnum::labelFor('3'));
     }
 }

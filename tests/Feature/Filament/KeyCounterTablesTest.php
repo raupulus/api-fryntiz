@@ -54,7 +54,7 @@ class KeyCounterTablesTest extends TestCase
     }
 
     #[Test]
-    public function la_tabla_de_teclados_ensena_el_nombre_y_el_dia_en_espanol(): void
+    public function the_keyboard_table_shows_the_name_and_the_day_in_spanish(): void
     {
         Keyboard::create([
             'user_id' => $this->user->id,
@@ -79,7 +79,7 @@ class KeyCounterTablesTest extends TestCase
     }
 
     #[Test]
-    public function la_tabla_de_ratones_ensena_el_nombre_y_el_dia_en_espanol(): void
+    public function the_mouse_table_shows_the_name_and_the_day_in_spanish(): void
     {
         Mouse::create([
             'user_id' => $this->user->id,
@@ -108,19 +108,19 @@ class KeyCounterTablesTest extends TestCase
      * consultas no puede crecer con el número de filas.
      */
     #[Test]
-    public function la_columna_de_dispositivo_no_mete_una_consulta_por_fila(): void
+    public function the_device_column_does_not_add_a_query_per_row(): void
     {
-        $dispositivos = collect(range(1, 5))->map(fn (int $i) => HardwareDevice::create([
+        $devices = collect(range(1, 5))->map(fn (int $i) => HardwareDevice::create([
             'user_id' => $this->user->id,
             'name' => "cacharro-{$i}",
             'name_friendly' => "Cacharro {$i}",
         ]));
 
-        $rachas = function (int $cuantas) use ($dispositivos): void {
-            foreach (range(1, $cuantas) as $i) {
+        $createStreaks = function (int $howMany) use ($devices): void {
+            foreach (range(1, $howMany) as $i) {
                 Keyboard::create([
                     'user_id' => $this->user->id,
-                    'hardware_device_id' => $dispositivos[$i % 5]->id,
+                    'hardware_device_id' => $devices[$i % 5]->id,
                     'start_at' => now()->subMinutes($i),
                     'end_at' => now()->subMinutes($i),
                     'duration' => 60,
@@ -133,9 +133,9 @@ class KeyCounterTablesTest extends TestCase
             }
         };
 
-        $consultasCon = function (int $filas) use ($rachas): int {
+        $queriesWith = function (int $rows) use ($createStreaks): int {
             Keyboard::query()->delete();
-            $rachas($filas);
+            $createStreaks($rows);
 
             DB::flushQueryLog();
             DB::enableQueryLog();
@@ -148,13 +148,13 @@ class KeyCounterTablesTest extends TestCase
             return $total;
         };
 
-        $conCinco = $consultasCon(5);
-        $conTreinta = $consultasCon(30);
+        $withFive = $queriesWith(5);
+        $withThirty = $queriesWith(30);
 
         $this->assertSame(
-            $conCinco,
-            $conTreinta,
-            "Con 5 filas hace {$conCinco} consultas y con 30 hace {$conTreinta}: "
+            $withFive,
+            $withThirty,
+            "Con 5 filas hace {$withFive} consultas y con 30 hace {$withThirty}: "
             .'la columna «Dispositivo» está resolviendo la relación fila a fila.',
         );
     }
@@ -164,16 +164,16 @@ class KeyCounterTablesTest extends TestCase
      * `display_name`. Sin esto la columna saldría vacía.
      */
     #[Test]
-    public function sin_nombre_amigable_se_ensena_el_nombre_a_secas(): void
+    public function without_a_friendly_name_it_shows_the_plain_name(): void
     {
-        $pelado = HardwareDevice::create([
+        $bareDevice = HardwareDevice::create([
             'user_id' => $this->user->id,
             'name' => 'raspberry-pico-w',
         ]);
 
         Keyboard::create([
             'user_id' => $this->user->id,
-            'hardware_device_id' => $pelado->id,
+            'hardware_device_id' => $bareDevice->id,
             'start_at' => '2026-09-07 10:00:00',
             'end_at' => '2026-09-07 10:05:00',
             'duration' => 300,

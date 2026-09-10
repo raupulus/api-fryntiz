@@ -15,15 +15,20 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * La caché de las gráficas de KeyCounter.
+ * La caché de las estadísticas de KeyCounter.
  *
  * `getStatisticsPreparedToGraphics()` era lo único caro de la página que no
  * estaba cacheado: agrega todas las rachas del mes por día y por dispositivo.
  * Sobre el volcado real tarda más de un segundo.
  *
- * El fallo más fácil de cometer aquí —y el más difícil de ver, porque la página
- * sigue funcionando— es que la clave no distinga el mes, y navegar entre meses
- * enseñe los datos de otro. Eso tiene su propio test.
+ * Aquí se prueban tres cosas distintas, y conviene no confundirlas:
+ *
+ *  1. Que cada mes tenga su entrada (el fallo más fácil de cometer y el más
+ *     difícil de ver: la página funciona, sólo que enseña otro mes).
+ *  2. Que el visitante **no** pague el cálculo: lo escribe el planificador.
+ *  3. Que una racha recién subida **no** se vea hasta el siguiente refresco.
+ *     Eso es privacidad, no rendimiento, y es la razón de que la ingesta ya no
+ *     invalide nada.
  */
 class KeyCounterCacheTest extends TestCase
 {
@@ -40,14 +45,14 @@ class KeyCounterCacheTest extends TestCase
         $this->device = HardwareDevice::create(['name' => 'Thinkpad']);
     }
 
-    private function racha(string $cuando, int $pulsaciones): void
+    private function streak(string $when, int $pulsations): void
     {
-        $racha = Keyboard::create([
+        $streak = Keyboard::create([
             'hardware_device_id' => $this->device->id,
-            'start_at' => $cuando,
-            'end_at' => $cuando,
+            'start_at' => $when,
+            'end_at' => $when,
             'duration' => 300,
-            'pulsations' => $pulsaciones,
+            'pulsations' => $pulsations,
             'pulsations_special_keys' => 1,
             'pulsation_average' => 2.0,
             'score' => 10,
@@ -55,42 +60,55 @@ class KeyCounterCacheTest extends TestCase
         ]);
 
         // El resumen agrupa por `created_at`, que no está en `$fillable`.
-        $racha->forceFill(['created_at' => $cuando])->save();
+        $streak->forceFill(['created_at' => $when])->save();
     }
 
     /**
      * @return array{int, mixed}
      */
-    private function conConsultas(callable $accion): array
+    private function withQueryCount(callable $action): array
     {
         DB::flushQueryLog();
         DB::enableQueryLog();
 
-        $resultado = $accion();
-        $consultas = count(DB::getQueryLog());
+        $result = $action();
+        $queries = count(DB::getQueryLog());
 
         DB::disableQueryLog();
 
-        return [$consultas, $resultado];
+        return [$queries, $result];
+    }
+
+    /**
+     * Pulsaciones que enseña la página para el mes que se le pida.
+     */
+    private function shownTotal(?int $month = null, ?int $year = null): int
+    {
+        $month ??= (int) date('n');
+        $year ??= (int) date('Y');
+
+        $response = $this->get("/keycounter?month={$month}&year={$year}")->assertOk();
+
+        return (int) $response->viewData('keyboard_statistics')['period_total_pulsations'];
     }
 
     #[Test]
-    public function la_segunda_visita_a_un_mes_cerrado_no_consulta_nada(): void
+    public function the_second_visit_to_a_closed_month_queries_nothing(): void
     {
-        $this->racha('2025-03-15 10:00:00', 500);
+        $this->streak('2025-03-15 10:00:00', 500);
 
-        [$primera] = $this->conConsultas(
+        [$first] = $this->withQueryCount(
             fn () => $this->get('/keycounter?month=3&year=2025')->assertOk()
         );
 
-        [$segunda] = $this->conConsultas(
+        [$second] = $this->withQueryCount(
             fn () => $this->get('/keycounter?month=3&year=2025')->assertOk()
         );
 
-        $this->assertGreaterThan(0, $primera);
+        $this->assertGreaterThan(0, $first);
         $this->assertLessThan(
-            $primera,
-            $segunda,
+            $first,
+            $second,
             'La segunda visita debería salir de la caché y consultar menos.'
         );
     }
@@ -100,56 +118,50 @@ class KeyCounterCacheTest extends TestCase
      * otro porque la clave no los distingue.
      */
     #[Test]
-    public function cada_mes_tiene_su_propia_entrada(): void
+    public function each_month_has_its_own_entry(): void
     {
-        $this->racha('2025-03-15 10:00:00', 500);
-        $this->racha('2025-04-15 10:00:00', 900);
-        $this->racha('2024-03-15 10:00:00', 111);
+        $this->streak('2025-03-15 10:00:00', 500);
+        $this->streak('2025-04-15 10:00:00', 900);
+        $this->streak('2024-03-15 10:00:00', 111);
 
-        $marzo25 = $this->get('/keycounter?month=3&year=2025')->assertOk();
-        $abril25 = $this->get('/keycounter?month=4&year=2025')->assertOk();
-        $marzo24 = $this->get('/keycounter?month=3&year=2024')->assertOk();
-
-        $total = fn ($r) => $r->viewData('keyboard_statistics')['period_total_pulsations'];
-
-        $this->assertSame(500, (int) $total($marzo25));
-        $this->assertSame(900, (int) $total($abril25));
-        $this->assertSame(111, (int) $total($marzo24));
+        $this->assertSame(500, $this->shownTotal(3, 2025));
+        $this->assertSame(900, $this->shownTotal(4, 2025));
+        $this->assertSame(111, $this->shownTotal(3, 2024));
 
         // Y las tres claves existen por separado.
-        $this->assertTrue(Cache::has(KeyCounterCache::claveGrafica(2025, 3)));
-        $this->assertTrue(Cache::has(KeyCounterCache::claveGrafica(2025, 4)));
-        $this->assertTrue(Cache::has(KeyCounterCache::claveGrafica(2024, 3)));
+        $this->assertTrue(Cache::has(KeyCounterCache::graphCacheKey(2025, 3)));
+        $this->assertTrue(Cache::has(KeyCounterCache::graphCacheKey(2025, 4)));
+        $this->assertTrue(Cache::has(KeyCounterCache::graphCacheKey(2024, 3)));
     }
 
     #[Test]
-    public function el_mes_en_curso_y_el_anterior_no_se_guardan_para_siempre(): void
+    public function the_current_and_previous_month_are_not_stored_forever(): void
     {
-        $ahora = now();
-        $anterior = $ahora->copy()->subMonthNoOverflow();
+        $now = now();
+        $previous = $now->copy()->subMonthNoOverflow();
 
-        $this->assertFalse(KeyCounterCache::esPeriodoCerrado($ahora->year, $ahora->month));
-        $this->assertFalse(KeyCounterCache::esPeriodoCerrado($anterior->year, $anterior->month));
+        $this->assertFalse(KeyCounterCache::isPeriodClosed($now->year, $now->month));
+        $this->assertFalse(KeyCounterCache::isPeriodClosed($previous->year, $previous->month));
 
         // Y uno de hace tres meses sí.
-        $viejo = $ahora->copy()->subMonthsNoOverflow(3);
+        $old = $now->copy()->subMonthsNoOverflow(3);
 
-        $this->assertTrue(KeyCounterCache::esPeriodoCerrado($viejo->year, $viejo->month));
+        $this->assertTrue(KeyCounterCache::isPeriodClosed($old->year, $old->month));
     }
 
     /**
-     * Una racha nueva tiene que verse: si no, el contador sube y la web no.
+     * Privacidad: la web no refleja la actividad en tiempo real.
+     *
+     * Hasta el 2026-09-10 la ingesta invalidaba la caché, así que la primera
+     * visita después de cada subida enseñaba la racha recién llegada y la
+     * ventana no existía en la práctica.
      */
     #[Test]
-    public function una_racha_nueva_invalida_el_mes_en_curso(): void
+    public function a_new_streak_is_not_visible_until_the_next_refresh(): void
     {
-        $this->racha(now()->format('Y-m-d H:i:s'), 100);
+        $this->streak(now()->format('Y-m-d H:i:s'), 100);
 
-        $this->get('/keycounter')->assertOk();
-
-        $clave = KeyCounterCache::claveGrafica((int) date('Y'), (int) date('n'));
-
-        $this->assertTrue(Cache::has($clave));
+        $this->assertSame(100, $this->shownTotal());
 
         app(KeyCounterService::class)->storeKeyboard([
             'hardware_device_id' => $this->device->id,
@@ -163,49 +175,150 @@ class KeyCounterCacheTest extends TestCase
             'weekday' => 0,
         ]);
 
-        $this->assertFalse(
-            Cache::has($clave),
-            'Al guardar una racha hay que olvidar la gráfica del mes en curso.'
+        $this->assertSame(
+            100,
+            $this->shownTotal(),
+            'Una racha recién subida no puede verse hasta el siguiente refresco.'
+        );
+
+        // Y en cuanto pasa el refresco horario, sí.
+        $this->artisan('keycounter:warm_cache', ['--live' => true])->assertSuccessful();
+
+        $this->assertSame(500, $this->shownTotal());
+    }
+
+    /**
+     * El refresco escribe el mes en curso sin que nadie haya entrado: eso es lo
+     * que hace que la ventana de una hora no la pague el visitante.
+     */
+    #[Test]
+    public function the_live_warm_up_writes_the_open_months_with_no_visit(): void
+    {
+        $this->streak(now()->format('Y-m-d H:i:s'), 250);
+        $this->streak(now()->subMonthNoOverflow()->format('Y-m-d H:i:s'), 700);
+
+        $current = KeyCounterCache::graphCacheKey((int) date('Y'), (int) date('n'));
+        $previous = now()->subMonthNoOverflow();
+
+        $this->assertFalse(Cache::has($current));
+
+        $this->artisan('keycounter:warm_cache', ['--live' => true])->assertSuccessful();
+
+        $this->assertTrue(Cache::has($current));
+        $this->assertTrue(Cache::has(KeyCounterCache::graphCacheKey($previous->year, $previous->month)));
+        $this->assertTrue(Cache::has(KeyCounterCache::KEYBOARD_SUMMARY_KEY));
+        $this->assertTrue(Cache::has(KeyCounterCache::MOUSE_SUMMARY_KEY));
+        $this->assertTrue(Cache::has(KeyCounterCache::WIDGETS_KEY));
+        $this->assertTrue(Cache::has(KeyCounterCache::yearTotalCacheKey((int) date('Y'))));
+    }
+
+    /**
+     * Y con eso hecho, la visita no calcula: sólo lee.
+     */
+    #[Test]
+    public function a_visit_after_the_live_warm_up_is_cheaper(): void
+    {
+        $this->streak(now()->format('Y-m-d H:i:s'), 250);
+
+        [$cold] = $this->withQueryCount(fn () => $this->get('/keycounter')->assertOk());
+
+        Cache::flush();
+        $this->artisan('keycounter:warm_cache', ['--live' => true])->assertSuccessful();
+
+        [$warm] = $this->withQueryCount(fn () => $this->get('/keycounter')->assertOk());
+
+        $this->assertLessThan(
+            $cold,
+            $warm,
+            'Con la caché ya escrita, la visita tiene que consultar menos.'
         );
     }
 
     /**
-     * Una racha puede llegar tarde —un cacharro que estuvo sin red— y el día 1
-     * eso cae en el mes pasado.
+     * El pase diario deja hechos los meses cerrados y no toca los abiertos, que
+     * son cosa del refresco horario.
      */
     #[Test]
-    public function una_racha_nueva_invalida_tambien_el_mes_anterior(): void
+    public function warming_up_only_touches_closed_months(): void
     {
-        $anterior = now()->subMonthNoOverflow();
-        $clave = KeyCounterCache::claveGrafica($anterior->year, $anterior->month);
-
-        Cache::put($clave, 'lo que fuera', 900);
-
-        KeyCounterCache::olvidarLoAfectadoPorUnaRachaNueva();
-
-        $this->assertFalse(Cache::has($clave));
-    }
-
-    /**
-     * El comando de precalentado deja hechos los meses cerrados y no toca los
-     * abiertos, que caducan en un cuarto de hora.
-     */
-    #[Test]
-    public function el_precalentado_solo_toca_los_meses_cerrados(): void
-    {
-        $this->racha('2025-03-15 10:00:00', 500);
-        $this->racha(now()->format('Y-m-d H:i:s'), 100);
+        $this->streak('2025-03-15 10:00:00', 500);
+        $this->streak(now()->format('Y-m-d H:i:s'), 100);
 
         $this->artisan('keycounter:warm_cache')->assertSuccessful();
 
-        $this->assertTrue(Cache::has(KeyCounterCache::claveGrafica(2025, 3)));
+        $this->assertTrue(Cache::has(KeyCounterCache::graphCacheKey(2025, 3)));
         $this->assertFalse(
-            Cache::has(KeyCounterCache::claveGrafica((int) date('Y'), (int) date('n'))),
+            Cache::has(KeyCounterCache::graphCacheKey((int) date('Y'), (int) date('n'))),
         );
     }
 
+    /**
+     * `--force` es para después de tocar rachas históricas: lo que ya estaba
+     * guardado «para siempre» hay que reescribirlo, no respetarlo.
+     */
     #[Test]
-    public function el_precalentado_sin_datos_no_revienta(): void
+    public function forcing_the_warm_up_rewrites_a_closed_month_already_cached(): void
+    {
+        $key = KeyCounterCache::graphCacheKey(2025, 3);
+
+        $this->streak('2025-03-15 10:00:00', 500);
+        Cache::forever($key, 'lo que fuera');
+
+        $this->artisan('keycounter:warm_cache')->assertSuccessful();
+        $this->assertSame('lo que fuera', Cache::get($key));
+
+        $this->artisan('keycounter:warm_cache', ['--force' => true])->assertSuccessful();
+        $this->assertIsArray(Cache::get($key));
+    }
+
+    /**
+     * Un borrado de duplicados toca meses **cerrados**, y esos están guardados
+     * para siempre: si no se invalidan, la gráfica mala se queda puesta.
+     */
+    #[Test]
+    public function removing_duplicates_forgets_the_affected_months(): void
+    {
+        // Dos rachas idénticas en un mes cerrado: la segunda es el duplicado.
+        $this->streak('2025-03-15 10:00:00', 500);
+        $this->streak('2025-03-15 10:00:00', 500);
+
+        $key = KeyCounterCache::graphCacheKey(2025, 3);
+
+        $this->get('/keycounter?month=3&year=2025')->assertOk();
+        $this->assertTrue(Cache::has($key));
+
+        $this->artisan('keycounter:remove_duplicate', ['--force' => true, '--full' => true])
+            ->assertSuccessful();
+
+        $this->assertFalse(
+            Cache::has($key),
+            'Al borrar un duplicado de un mes cerrado hay que olvidar su gráfica.'
+        );
+        $this->assertFalse(Cache::has(KeyCounterCache::WIDGETS_KEY));
+    }
+
+    #[Test]
+    public function forgetting_the_open_periods_drops_the_current_and_previous_month(): void
+    {
+        $previous = now()->subMonthNoOverflow();
+        $keys = [
+            KeyCounterCache::graphCacheKey((int) date('Y'), (int) date('n')),
+            KeyCounterCache::graphCacheKey($previous->year, $previous->month),
+        ];
+
+        foreach ($keys as $key) {
+            Cache::put($key, 'lo que fuera', KeyCounterCache::STORAGE_WINDOW);
+        }
+
+        KeyCounterCache::forgetOpenPeriods();
+
+        foreach ($keys as $key) {
+            $this->assertFalse(Cache::has($key));
+        }
+    }
+
+    #[Test]
+    public function warming_up_without_data_does_not_blow_up(): void
     {
         $this->artisan('keycounter:warm_cache')
             ->expectsOutputToContain('No hay rachas registradas')

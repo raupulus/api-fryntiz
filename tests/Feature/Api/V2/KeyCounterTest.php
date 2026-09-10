@@ -84,10 +84,10 @@ class KeyCounterTest extends ApiTestCase
         // La colección filtra por user_id: el listado de otro no debe asomar
         // aunque se pregunte con un token válido.
         $user = $this->createAuthenticatedUser();
-        $otro = $this->createAuthenticatedUser();
+        $other = $this->createAuthenticatedUser();
 
         Keyboard::create([
-            'user_id' => $otro->id,
+            'user_id' => $other->id,
             'pulsations' => 1234,
             'pulsations_special_keys' => 12,
             'pulsation_average' => 0.34,
@@ -117,7 +117,7 @@ class KeyCounterTest extends ApiTestCase
     }
 
     #[Test]
-    public function un_token_de_escritura_no_puede_leer(): void
+    public function a_write_token_cannot_read(): void
     {
         // AR-S02. Antes las GET se protegían con la ability de ESCRITURA, así
         // que el token que se graba en un teclado —cuyo único trabajo es subir
@@ -129,7 +129,7 @@ class KeyCounterTest extends ApiTestCase
     }
 
     #[Test]
-    public function un_token_de_lectura_no_puede_escribir(): void
+    public function a_read_token_cannot_write(): void
     {
         $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::KEYCOUNTER_READ);
 

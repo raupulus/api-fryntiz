@@ -8,6 +8,7 @@ use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareType;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\User;
+use App\Support\KeyCounter\KeyCounterCache;
 use Illuminate\Support\Facades\Cache;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -85,7 +86,7 @@ class KeyCounterWebTest extends ApiTestCase
             'created_at' => now(),
         ]);
 
-        Cache::forget('keycounter:widgets');
+        Cache::forget(KeyCounterCache::WIDGETS_KEY);
 
         $tarjeta = $this->tarjetaDestacada();
         $this->assertStringContainsString($nuevo->name_friendly, $tarjeta);
