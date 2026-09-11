@@ -40,14 +40,22 @@ class SmartPlantRegisterPolicy
         return $this->isAdmin($user);
     }
 
+    /**
+     * Los registros los sube el propio dispositivo IoT; no tiene sentido que
+     * alguien cree uno a mano desde el panel, ni admin ni superadmin.
+     */
     public function create(User $user): bool
     {
-        return $this->isAdmin($user);
+        return false;
     }
 
+    /**
+     * Son lecturas de sensores, no datos que se corrijan a mano: editar un
+     * registro falsearía el histórico sin dejar rastro de que se tocó.
+     */
     public function update(User $user, SmartPlantRegister $register): bool
     {
-        return $this->isAdmin($user);
+        return false;
     }
 
     public function delete(User $user, SmartPlantRegister $register): bool

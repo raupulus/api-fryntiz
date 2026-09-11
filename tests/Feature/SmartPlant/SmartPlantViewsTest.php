@@ -7,6 +7,9 @@ namespace Tests\Feature\SmartPlant;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -26,13 +29,13 @@ class SmartPlantViewsTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function plant(string $description = 'Un bonsái'): SmartPlantPlant
+    private function plant(string $description = 'Un bonsái', string $details = 'Detalles de la planta.'): SmartPlantPlant
     {
         return SmartPlantPlant::create([
             'name' => 'Olmo chino',
             'name_scientific' => 'Ulmus parvifolia',
             'description' => $description,
-            'details' => 'Detalles de la planta.',
+            'details' => $details,
             'image' => 'smartplant/default.jpg',
             'start_at' => now()->subYear(),
         ]);
@@ -50,6 +53,28 @@ class SmartPlantViewsTest extends TestCase
             'waterpump_enabled' => $watering,
             'vaporizer_enabled' => false,
         ]);
+    }
+
+    /**
+     * Crea una lectura con la humedad de tierra indicada, en el instante
+     * dado. `soil_humidity` no admite null en la tabla, así que sirve para
+     * comprobar los mínimos/máximos sin ambigüedad de tipos (a diferencia de
+     * las columnas `decimal`, que vuelven de la agregación como cadena).
+     */
+    private function readingAt(SmartPlantPlant $plant, int $soilHumidity, Carbon $createdAt): void
+    {
+        $register = SmartPlantRegister::create([
+            'plant_id' => $plant->id,
+            'soil_humidity' => $soilHumidity,
+        ]);
+
+        // `save()` no sirve para pisar `created_at` aquí: la tabla no tiene
+        // `updated_at`, y `SmartPlantRegister::setUpdatedAt()` está anulado a
+        // propósito para no escribirlo — pero `Eloquent\Builder::update()`
+        // lo vuelve a añadir por su cuenta en cuanto el modelo usa
+        // timestamps, sin pasar por ese método. Una query directa a la tabla
+        // no tiene ese problema.
+        DB::table('smartplant_registers')->where('id', $register->id)->update(['created_at' => $createdAt]);
     }
 
     #[Test]
@@ -84,6 +109,89 @@ class SmartPlantViewsTest extends TestCase
         $this->get(route('smartplant.show', $plant))
             ->assertOk()
             ->assertSee('<em>olmo</em>', escape: false);
+    }
+
+    /**
+     * `details` es donde de verdad se escribe con marcado (secciones «Origen»,
+     * «Ecología»... envueltas en `<p>`/`<strong>`/`<br>`). Antes se partía a
+     * mano por líneas en blanco con `{{ }}`, así que las etiquetas salían
+     * escapadas y se leían tal cual: «&lt;p&gt;».
+     */
+    #[Test]
+    public function the_details_field_also_allows_basic_html(): void
+    {
+        $plant = $this->plant(details: '<p><strong>Origen</strong>: de Asia.<br>Crece rápido.</p>');
+
+        $this->get(route('smartplant.show', $plant))
+            ->assertOk()
+            ->assertSee('<strong>Origen</strong>', escape: false)
+            ->assertDontSee('&lt;strong&gt;');
+    }
+
+    #[Test]
+    public function the_details_field_does_not_let_a_script_through(): void
+    {
+        $plant = $this->plant(details: '<p>Hola</p><script>alert(1)</script>');
+
+        $this->get(route('smartplant.show', $plant))
+            ->assertOk()
+            ->assertDontSee('<script>alert(1)</script>', escape: false);
+    }
+
+    /**
+     * Las tarjetas de mínimo/máximo se calculan con agregados sobre toda la
+     * tabla, no sobre las últimas 50 lecturas, así que hace falta fijar
+     * `now()` para poder situar cada lectura en su ventana (hoy/semana/mes)
+     * sin que dependa del día en que se ejecute el test.
+     *
+     * 2026-09-16 es miércoles: la semana (lunes) empieza el 14, el mes el 1.
+     */
+    #[Test]
+    public function the_summary_cards_show_min_and_max_per_window(): void
+    {
+        $this->travelTo(Carbon::parse('2026-09-16 12:00:00'));
+
+        $plant = $this->plant();
+
+        $this->readingAt($plant, 30, now());                          // hoy
+        $this->readingAt($plant, 10, Carbon::parse('2026-09-15 08:00')); // esta semana, no hoy
+        $this->readingAt($plant, 50, Carbon::parse('2026-09-05 08:00')); // este mes, no esta semana
+        $this->readingAt($plant, 1000, Carbon::parse('2026-08-20 08:00')); // fuera de las tres ventanas
+
+        $html = $this->get(route('smartplant.show', $plant))->assertOk()->getContent();
+
+        // La lectura de hace un mes (1000%) sigue saliendo en la tabla de
+        // últimas lecturas —eso no cambia—, así que la comprobación de que no
+        // se cuela en ningún mínimo/máximo se hace sólo sobre esta sección.
+        $statsSection = Str::between($html, 'Mínimos y máximos', '<table');
+
+        $this->assertStringContainsString('Humedad Tierra', $statsSection);
+        $this->assertStringContainsString('30% / 30%', $statsSection); // hoy
+        $this->assertStringContainsString('10% / 30%', $statsSection); // semana
+        $this->assertStringContainsString('10% / 50%', $statsSection); // mes
+        $this->assertStringNotContainsString('1000', $statsSection);
+    }
+
+    /**
+     * `soil_humidity` es el único sensor obligatorio en el hardware; el resto
+     * depende del kit instalado. Una planta sin datos de presión no debe
+     * enseñar una tarjeta de presión vacía.
+     *
+     * "Presión" y "Radiación UV" ya aparecen en la página por otro lado (la
+     * cabecera de la tabla y el bloque de «Última lectura»), así que hace
+     * falta comprobar la cabecera exacta de la tarjeta y no sólo el texto.
+     */
+    #[Test]
+    public function a_sensor_without_any_data_gets_no_card(): void
+    {
+        $plant = $this->plant();
+        $this->readingAt($plant, 40, now());
+
+        $html = $this->get(route('smartplant.show', $plant))->assertOk()->getContent();
+
+        $this->assertStringContainsString('<h4 class="text-on-surface font-bold mb-3">Humedad Tierra</h4>', $html);
+        $this->assertStringNotContainsString('<h4 class="text-on-surface font-bold mb-3">Presión</h4>', $html);
+        $this->assertStringNotContainsString('<h4 class="text-on-surface font-bold mb-3">Radiación UV</h4>', $html);
     }
 
     /**

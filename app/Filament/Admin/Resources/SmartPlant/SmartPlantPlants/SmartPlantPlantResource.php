@@ -63,8 +63,14 @@ class SmartPlantPlantResource extends Resource
                     ->maxLength(255)
                     ->helperText('Admite HTML básico: <p>, <br>, <strong>, <em>, <ul>/<li>, <a href>. El resto se descarta al mostrarla.')
                     ->columnSpanFull(),
+                // Igual que `description`: se pinta con `@safeHtml`, así que
+                // admite el mismo HTML básico. Este campo es donde de verdad
+                // se escribe con marcado (secciones «Origen», «Ecología»...
+                // envueltas en `<p>`/`<strong>`/`<br>`).
                 Textarea::make('details')
                     ->required()
+                    ->rows(8)
+                    ->helperText('Admite HTML básico: <p>, <br>, <strong>, <em>, <ul>/<li>, <a href>. El resto se descarta al mostrarla.')
                     ->columnSpanFull(),
                 Textarea::make('image')
                     ->default('smartplant/default.jpg')

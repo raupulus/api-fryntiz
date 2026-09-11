@@ -66,20 +66,20 @@
                         @endif
                     </div>
 
-                    @if($plant->details)
-                        @php
-                            $detailsParagraphs = collect(preg_split('/\n\s*\n/', trim($plant->details)))->filter();
-                        @endphp
-                        <div class="prose-plant">
-                            @foreach($detailsParagraphs as $paragraph)
-                                <p class="text-on-surface-variant mb-4 leading-relaxed">
-                                    @if(preg_match('/^([^:]{1,30}):\s*(.+)$/s', trim($paragraph), $m))
-                                        <strong class="text-on-surface">{{ $m[1] }}:</strong> {{ $m[2] }}
-                                    @else
-                                        {{ $paragraph }}
-                                    @endif
-                                </p>
-                            @endforeach
+                    {{--
+                        Igual que la descripción: se escribe desde la intranet
+                        con HTML básico ya incluido (`<p>`, `<strong>`, `<br>`
+                        por sección), y `safeBasic()` es lo que lo deja pasar
+                        sin abrir la puerta a un `<script>`. Antes se partía a
+                        mano por líneas en blanco y se negrita la primera
+                        palabra antes de «:», una convención de cuando el
+                        campo era texto plano; con HTML de verdad ya en el
+                        campo, ese partido a mano sólo conseguía escapar las
+                        propias etiquetas y enseñarlas tal cual.
+                    --}}
+                    @if(filled($plant->details))
+                        <div class="text-on-surface-variant prose-basica">
+                            @safeHtml($plant->details)
                         </div>
                     @endif
                 </div>
@@ -130,6 +130,33 @@
                         <div class="rounded-lg p-3 text-center shadow-lg {{ $estado['on'] ? 'bg-success-container' : 'bg-surface-container-lowest' }}">
                             <span class="material-symbols-outlined block {{ $estado['on'] ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $estado['icon'] }}</span>
                             <span class="text-xs {{ $estado['on'] ? 'text-on-success-container font-semibold' : 'text-on-surface-variant' }}">{{ $estado['label'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- Mínimos/máximos por sensor: hoy, esta semana y este mes --}}
+    @if(count($statCards) > 0)
+        <section class="pb-12 bg-surface">
+            <div class="max-w-7xl mx-auto px-6">
+                <h3 class="text-2xl text-on-surface font-bold leading-none mb-4">Mínimos y máximos</h3>
+                <div class="grid gap-4 md:grid-cols-2">
+                    @foreach($statCards as $card)
+                        <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6">
+                            <h4 class="text-on-surface font-bold mb-3">{{ $card['label'] }}</h4>
+                            <div class="grid grid-cols-3 gap-3 text-sm">
+                                @foreach($card['stats'] as $stat)
+                                    <div class="text-center">
+                                        <span class="text-on-surface-variant text-xs">{{ $stat['label'] }}</span>
+                                        <p class="text-on-surface font-bold">
+                                            {{ $stat['min'] ?? '-' }}{{ $card['unit'] }} / {{ $stat['max'] ?? '-' }}{{ $card['unit'] }}
+                                        </p>
+                                        <span class="text-on-surface-variant text-xs">mín / máx</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endforeach
                 </div>

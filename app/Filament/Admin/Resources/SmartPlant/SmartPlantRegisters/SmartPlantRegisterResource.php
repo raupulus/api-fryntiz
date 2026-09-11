@@ -5,24 +5,25 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\SmartPlant\SmartPlantRegisters;
 
 use App\Filament\Admin\Clusters\SmartPlant;
-use App\Filament\Admin\Resources\SmartPlant\SmartPlantRegisters\Pages\CreateSmartPlantRegister;
-use App\Filament\Admin\Resources\SmartPlant\SmartPlantRegisters\Pages\EditSmartPlantRegister;
 use App\Filament\Admin\Resources\SmartPlant\SmartPlantRegisters\Pages\ListSmartPlantRegisters;
 use App\Models\SmartPlant\SmartPlantRegister;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
+/**
+ * Sólo lectura: los registros los sube el dispositivo IoT, no se crean ni se
+ * editan a mano desde el panel (ver `SmartPlantRegisterPolicy`). Lo único que
+ * puede hacer un admin o superadmin aquí es mirar, filtrar y borrar —por
+ * ejemplo, limpiar las lecturas de una prueba con un dispositivo.
+ */
 class SmartPlantRegisterResource extends Resource
 {
     protected static ?string $model = SmartPlantRegister::class;
@@ -36,48 +37,6 @@ class SmartPlantRegisterResource extends Resource
     protected static ?string $modelLabel = 'Lectura SmartPlant';
 
     protected static ?string $pluralModelLabel = 'Lecturas SmartPlant';
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                Select::make('plant_id')
-                    ->relationship('plant', 'name')
-                    ->label('Planta')
-                    ->required(),
-                Select::make('hardware_device_id')
-                    ->relationship('hardwareDevice', 'name')
-                    ->label('Dispositivo Hardware'),
-                TextInput::make('uv')
-                    ->label('UV')
-                    ->numeric(),
-                TextInput::make('temperature')
-                    ->label('Temperatura')
-                    ->numeric(),
-                TextInput::make('pressure')
-                    ->label('Presión')
-                    ->numeric(),
-                TextInput::make('humidity')
-                    ->label('Humedad')
-                    ->numeric(),
-                TextInput::make('soil_humidity')
-                    ->label('Humedad suelo')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('soil_humidity_raw')
-                    ->label('Humedad suelo bruto')
-                    ->numeric(),
-                Toggle::make('full_water_tank')
-                    ->label('Depósito Lleno')
-                    ->required(),
-                Toggle::make('waterpump_enabled')
-                    ->label('Bomba de agua')
-                    ->required(),
-                Toggle::make('vaporizer_enabled')
-                    ->label('Vaporizador')
-                    ->required(),
-            ]);
-    }
 
     public static function table(Table $table): Table
     {
@@ -130,10 +89,18 @@ class SmartPlantRegisterResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Para acotar a la planta o al dispositivo de la prueba que
+                // se está revisando, no para depurar un valor concreto: eso
+                // ya lo hace el orden por columna.
+                SelectFilter::make('plant_id')
+                    ->relationship('plant', 'name')
+                    ->label('Planta'),
+                SelectFilter::make('hardware_device_id')
+                    ->relationship('hardwareDevice', 'name')
+                    ->label('Dispositivo'),
             ])
             ->recordActions([
-                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -153,8 +120,6 @@ class SmartPlantRegisterResource extends Resource
     {
         return [
             'index' => ListSmartPlantRegisters::route('/'),
-            'create' => CreateSmartPlantRegister::route('/create'),
-            'edit' => EditSmartPlantRegister::route('/{record}/edit'),
         ];
     }
 }

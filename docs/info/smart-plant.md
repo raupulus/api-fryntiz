@@ -38,6 +38,17 @@ Módulo IoT para monitorizar plantas mediante sensores de humedad del suelo, luz
 | `app/Policies/SmartPlantRegisterPolicy.php` | Política de autorización registro |
 | `app/Filament/Concerns/ScopesToOwner.php` | Usado por `SmartPlantPlantResource`: la tabla sólo muestra las plantas propias; el administrador las ve todas |
 
+### `SmartPlantRegisterResource` es de sólo lectura (2026-09-11)
+
+Los registros los sube el propio dispositivo IoT: no tiene sentido crearlos ni
+editarlos a mano desde el panel, ni siquiera como admin o superadmin —editar
+una lectura falsearía el histórico sin dejar rastro. `SmartPlantRegisterPolicy`
+deniega `create()`/`update()` incondicionalmente (no según el rol), y el
+recurso no declara páginas `create`/`edit` en `getPages()`. Lo único que se
+puede hacer desde el panel es **ver, filtrar** (por planta y por dispositivo)
+y **borrar** —para limpiar las lecturas de una prueba con un dispositivo—,
+esto último restringido a admin y superadmin como el resto del módulo.
+
 ## Campos del modelo SmartPlantPlant
 
 | Campo | Tipo | Descripción |
@@ -113,6 +124,34 @@ que `/energy/readings` y `/energy/solar-readings` (mismo trait
 - **Eager loading:** El controlador web carga las plantas con `with(['registers' => fn($q) => $q->latest()->take(10)])` para limitar a las 10 últimas lecturas por planta.
 - **Tarjetas de planta:** Cada planta muestra nombre, descripción y última lectura (humedad tierra, temperatura, humedad aire, luz).
 
+### Perfil de planta: `description` y `details` admiten HTML básico
+
+Los dos campos se escriben desde la intranet como texto con marcado (`<p>`,
+`<strong>`, `<br>`...) y se pintan con `@safeHtml()`
+(`App\Helpers\HtmlHelper::safeBasic()`), que sanea con `symfony/html-sanitizer`
+y deja pasar sólo una lista blanca de etiquetas de formato — nunca `{!! !!}`
+a secas sobre un campo que rellena alguien con acceso al panel. Ver
+`docs/info/files.md` para el detalle del saneador (es el mismo que usa
+`SmartPlantPlant::description`).
+
+`details` es donde de verdad se usa el marcado (secciones «Origen»,
+«Ecología»... cada una en su `<p>` con un `<strong>` de cabecera). Hasta el
+2026-09-11 se partía a mano por líneas en blanco con `{{ }}` —una convención
+de cuando el campo era texto plano—, así que en cuanto alguien empezó a
+escribir HTML de verdad, las etiquetas salían escapadas y se leían tal cual:
+«&lt;p&gt;».
+
+### Perfil de planta: mínimos/máximos por sensor
+
+`SmartPlantController::buildStatCards()` calcula, para cada sensor que la
+planta tenga con algún dato (`soil_humidity` es el único obligatorio en el
+hardware; `temperature`, `humidity`, `pressure` y `uv` dependen del kit
+instalado), el mínimo y el máximo de **hoy**, **esta semana** (desde el lunes)
+y **este mes** (desde el día 1). Se calcula con `MIN()`/`MAX()` agregados sobre
+toda la tabla —filtrados por `created_at >=` el inicio de cada ventana—, no
+sobre las últimas 50 lecturas que ya carga la vista: no bastarían para cubrir
+un mes según la cadencia de subida del dispositivo.
+
 ### Comando de debug
 
 ```bash
@@ -121,4 +160,4 @@ php artisan debug:seed-smartplant --plants=5 --registers=50
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-09-11
