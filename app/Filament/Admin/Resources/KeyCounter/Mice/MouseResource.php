@@ -65,9 +65,8 @@ class MouseResource extends Resource
                         ->rule('after_or_equal:start_at'),
                     TextInput::make('duration')
                         ->required()->numeric()->minValue(0)->suffix('s')->label('Duración'),
-                    // `0` es lunes: es lo que manda el cliente
-                    // (`datetime.weekday()` de Python). Un `Select` en vez de
-                    // un número suelto para que no haya que acordarse.
+                    // `0` es domingo (convención de Carbon). Un `Select` en
+                    // vez de un número suelto para que no haya que acordarse.
                     Select::make('weekday')
                         ->options(KeyCounterWeekdayEnum::options())
                         ->native(false)

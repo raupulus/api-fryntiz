@@ -11,15 +11,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * `keycounter:fix_weekday` normaliza las rachas anteriores a 2020.
- *
- * Hasta diciembre de 2019 la columna `weekday` sigue la convención de Carbon
- * (0 = domingo); desde febrero de 2020, la del cliente (0 = lunes). El cliente
- * cambió y la plataforma no se enteró, así que las dos poblaciones conviven en
- * la misma columna.
- *
- * Esto reescribe datos históricos, así que lo que más importa aquí es lo que
- * el comando **no** toca.
+ * `keycounter:fix_weekday` recalcula `weekday` desde `start_at`: `0` es
+ * siempre domingo (`Carbon::dayOfWeek`), sin distinguir épocas ni fecha de
+ * corte — cualquier fila que no cuadre con el día real se corrige.
  */
 class KeyCounterFixWeekdayCommandTest extends TestCase
 {
@@ -56,69 +50,50 @@ class KeyCounterFixWeekdayCommandTest extends TestCase
     #[Test]
     public function dry_run_writes_nothing(): void
     {
-        // 2019-12-28 fue sábado: con 0=domingo se guardaba como 6.
-        $streak = $this->streak('2019-12-28 14:00:00', 6);
+        // 2026-09-07 es lunes (1), guardado como si fuera domingo/lunes de
+        // la convención vieja (0).
+        $streak = $this->streak('2026-09-07 14:00:00', 0);
 
         $this->artisan('keycounter:fix_weekday')
             ->expectsOutputToContain('Modo seco')
             ->assertSuccessful();
 
-        $this->assertSame(6, (int) $streak->refresh()->weekday);
+        $this->assertSame(0, (int) $streak->refresh()->weekday);
     }
 
     #[Test]
-    public function with_write_normalizes_old_streaks(): void
+    public function with_write_recalculates_mismatched_streaks(): void
     {
-        // Sábado guardado como 6 (domingo en la convención nueva) → 5.
-        $streak = $this->streak('2019-12-28 14:00:00', 6);
+        // 2026-09-07 es lunes → 1, no 0.
+        $streak = $this->streak('2026-09-07 14:00:00', 0);
 
         $this->artisan('keycounter:fix_weekday --write')->assertSuccessful();
 
-        $this->assertSame(5, (int) $streak->refresh()->weekday);
+        $this->assertSame(1, (int) $streak->refresh()->weekday);
     }
 
     #[Test]
-    public function it_does_not_touch_anything_after_the_convention_change(): void
+    public function it_does_not_touch_streaks_that_already_match(): void
     {
-        // 2020-03-04 fue miércoles. Con 0=lunes es 2, que es lo correcto.
-        $modern = $this->streak('2020-03-04 10:00:00', 2);
+        // 2026-09-06 es domingo → 0, que ya es correcto.
+        $streak = $this->streak('2026-09-06 10:00:00', 0);
 
         $this->artisan('keycounter:fix_weekday --write')->assertSuccessful();
 
-        $this->assertSame(2, (int) $modern->refresh()->weekday);
+        $this->assertSame(0, (int) $streak->refresh()->weekday);
     }
 
     /**
-     * Lo que de verdad no puede romper: una racha antigua que ya estaba en la
-     * convención buena, o que no cuadra con ninguna de las dos porque cruzaba
-     * la medianoche. Convertir a ciegas todo lo anterior a 2020 las estropearía.
+     * No hay fecha de corte: una racha de 2019 con el valor equivocado se
+     * corrige igual que una reciente.
      */
     #[Test]
-    public function it_respects_streaks_that_do_not_follow_the_old_convention(): void
+    public function it_fixes_old_streaks_too_with_no_cutoff_date(): void
     {
-        // 2019-12-28, sábado. Guardado como 5, que ya es lo correcto con
-        // 0=lunes y no coincide con la convención vieja: no se toca.
-        $alreadyCorrect = $this->streak('2019-12-28 14:00:00', 5);
-
-        // Y una que no cuadra con ninguna de las dos: racha de madrugada cuyo
-        // día local es el siguiente, así que el cliente grabó el lunes (0). El
-        // dato del cliente manda.
-        $midnight = $this->streak('2019-12-28 23:50:00', 0);
+        // 2019-12-28 fue sábado → 6, guardado como 1 (equivocado).
+        $streak = $this->streak('2019-12-28 14:00:00', 1);
 
         $this->artisan('keycounter:fix_weekday --write')->assertSuccessful();
-
-        $this->assertSame(5, (int) $alreadyCorrect->refresh()->weekday);
-        $this->assertSame(0, (int) $midnight->refresh()->weekday);
-    }
-
-    #[Test]
-    public function the_date_limit_can_be_moved(): void
-    {
-        $streak = $this->streak('2019-12-28 14:00:00', 6);
-
-        // Con un límite anterior a la racha, queda fuera del alcance.
-        $this->artisan('keycounter:fix_weekday --write --until=2015-01-01')
-            ->assertSuccessful();
 
         $this->assertSame(6, (int) $streak->refresh()->weekday);
     }

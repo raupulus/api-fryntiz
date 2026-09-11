@@ -10,23 +10,13 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Pasa a «0 = lunes» las rachas antiguas, que están en la convención contraria.
+ * Recalcula `weekday` desde `start_at`: **0 siempre es domingo**
+ * (`Carbon::dayOfWeek`).
  *
- * **El hallazgo.** Comprobado sobre 1,3 millones de filas reales de teclado:
- *
- * | Periodo | `weekday` sigue |
- * |---|---|
- * | 2013-01 … 2019-12 | la convención de Carbon: **0 = domingo**, al 100 % |
- * | 2020-02 … hoy | la del cliente: **0 = lunes**, en el ~95 % |
- *
- * El 5 % que no cuadra en el tramo moderno son las rachas que cruzan la
- * medianoche: `start_at` se guarda en UTC y el cliente calcula el día en hora
- * local, así que una racha de la madrugada aparece en UTC como del día
- * anterior. Ese dato **no está mal**, y por eso el comando no lo toca.
- *
- * O sea: el cliente cambió de convención y la plataforma nunca se enteró. Las
- * dos poblaciones conviven en la misma columna, y cualquier gráfica o filtro
- * por día de la semana que abarque ambas épocas mezcla peras con manzanas.
+ * No hay dos convenciones que convivir ni una fecha de corte que respetar:
+ * cualquier fila cuyo `weekday` no coincida con el día real de `start_at` se
+ * corrige, sea de cuando sea. El valor nuevo sale siempre de la propia fecha,
+ * nunca del que trajera la fila.
  *
  * **Sale en seco por defecto.** Esto reescribe datos históricos que no se
  * pueden reconstruir si se hace mal, así que hay que pedir la escritura
@@ -34,15 +24,13 @@ use Illuminate\Support\Facades\DB;
  *
  *     php artisan keycounter:fix_weekday                  # sólo mira
  *     php artisan keycounter:fix_weekday --write          # escribe
- *     php artisan keycounter:fix_weekday --until=2020-01-01
  */
 class KeyCounterFixWeekdayCommand extends Command
 {
     protected $signature = 'keycounter:fix_weekday
-        {--write : Escribir de verdad. Sin esto sólo cuenta lo que cambiaría}
-        {--until= : Sólo las rachas anteriores a esta fecha (por defecto, el cambio de convención)}';
+        {--write : Escribir de verdad. Sin esto sólo cuenta lo que cambiaría}';
 
-    protected $description = 'Normaliza `weekday` a 0=lunes en las rachas anteriores al cambio de convención del cliente';
+    protected $description = 'Recalcula `weekday` desde `start_at` para que 0 sea siempre domingo';
 
     /**
      * Las dos tablas, con el modelo que las representa.
@@ -56,10 +44,7 @@ class KeyCounterFixWeekdayCommand extends Command
 
     public function handle(): int
     {
-        $limit = (string) ($this->option('until') ?: KeyCounterWeekdayEnum::CONVENTION_CHANGE_DATE);
         $write = (bool) $this->option('write');
-
-        $this->line("▶ Rachas con `start_at` anterior a {$limit}.");
 
         if (! $write) {
             $this->warn('Modo seco: no se escribe nada. Añade --write para aplicarlo.');
@@ -68,7 +53,7 @@ class KeyCounterFixWeekdayCommand extends Command
         $total = 0;
 
         foreach (self::TABLES as $table => $label) {
-            $total += $this->process($table, $label, $limit, $write);
+            $total += $this->process($table, $label, $write);
         }
 
         if ($total === 0) {
@@ -89,20 +74,11 @@ class KeyCounterFixWeekdayCommand extends Command
     /**
      * @return int Rachas afectadas.
      */
-    private function process(string $table, string $label, string $limit, bool $write): int
+    private function process(string $table, string $label, bool $write): int
     {
-        // Sólo las que hoy cuadran con la convención de Carbon: si una fila ya
-        // está en la buena, o no cuadra con ninguna de las dos —el caso de las
-        // rachas que cruzan la medianoche—, se deja como está. Convertir a
-        // ciegas todo lo anterior a la fecha estropearía justamente esas.
-        $condition = 'start_at IS NOT NULL
-            AND start_at < ?
-            AND weekday = EXTRACT(DOW FROM start_at)::int
-            AND weekday <> EXTRACT(ISODOW FROM start_at)::int - 1';
+        $condition = 'start_at IS NOT NULL AND weekday <> EXTRACT(DOW FROM start_at)::int';
 
-        $count = (int) DB::table($table)
-            ->whereRaw($condition, [$limit])
-            ->count();
+        $count = (int) DB::table($table)->whereRaw($condition)->count();
 
         $this->line("  · {$label} ({$table}): {$count}");
 
@@ -111,22 +87,22 @@ class KeyCounterFixWeekdayCommand extends Command
         }
 
         if (! $write) {
-            $this->showSample($table, $condition, $limit);
+            $this->showSample($table, $condition);
 
             return $count;
         }
 
         // Qué meses se tocan, **antes** de tocarlos: después la condición ya no
         // los encuentra.
-        $periods = $this->affectedPeriods($table, $condition, $limit);
+        $periods = $this->affectedPeriods($table, $condition);
 
         // Una sola sentencia: son cientos de miles de filas y recorrerlas con
         // Eloquent sería tan lento como innecesario. El valor nuevo sale de la
         // propia fecha, así que no hace falta traerse nada.
         DB::table($table)
-            ->whereRaw($condition, [$limit])
+            ->whereRaw($condition)
             ->update([
-                'weekday' => DB::raw('EXTRACT(ISODOW FROM start_at)::int - 1'),
+                'weekday' => DB::raw('EXTRACT(DOW FROM start_at)::int'),
             ]);
 
         // Esto reescribe rachas de meses **cerrados**, y esos están cacheados
@@ -155,11 +131,11 @@ class KeyCounterFixWeekdayCommand extends Command
      *
      * @return list<array{int, int}>
      */
-    private function affectedPeriods(string $table, string $condition, string $limit): array
+    private function affectedPeriods(string $table, string $condition): array
     {
         $rows = DB::table($table)
             ->selectRaw('DISTINCT EXTRACT(YEAR FROM created_at)::int AS year, EXTRACT(MONTH FROM created_at)::int AS month')
-            ->whereRaw($condition, [$limit])
+            ->whereRaw($condition)
             ->whereNotNull('created_at')
             ->get();
 
@@ -171,11 +147,11 @@ class KeyCounterFixWeekdayCommand extends Command
     /**
      * Cinco filas de ejemplo, para poder comprobar el cambio antes de hacerlo.
      */
-    private function showSample(string $table, string $condition, string $limit): void
+    private function showSample(string $table, string $condition): void
     {
         $rows = DB::table($table)
-            ->selectRaw("id, start_at, weekday AS current_value, EXTRACT(ISODOW FROM start_at)::int - 1 AS new_value, to_char(start_at, 'Dy') AS weekday_name")
-            ->whereRaw($condition, [$limit])
+            ->selectRaw("id, start_at, weekday AS current_value, EXTRACT(DOW FROM start_at)::int AS new_value, to_char(start_at, 'Dy') AS weekday_name")
+            ->whereRaw($condition)
             ->limit(5)
             ->get();
 

@@ -22,9 +22,13 @@ use Tests\TestCase;
  * Las tablas de KeyCounter enseñan nombres, no números.
  *
  * La columna «Dispositivo» pintaba `hardware_device_id` en crudo —un id— y la
- * columna «Día», el valor de `weekday`, también en crudo. Y encima el filtro de
- * día usaba la convención contraria a la de los datos: decía que el 0 era
- * domingo cuando el cliente manda 0 = lunes.
+ * columna «Día», el valor de `weekday`, también en crudo.
+ *
+ * Las dos primeras pruebas usan `assertTableColumnFormattedStateSet()` en vez
+ * de `assertSee()`: la etiqueta de cada día también aparece siempre en las
+ * opciones del filtro de la columna, así que `assertSee('Lunes')` pasaría
+ * igual aunque la fila mostrase el día equivocado — no sirve de
+ * contraprueba real de la convención (0 = domingo).
  */
 class KeyCounterTablesTest extends TestCase
 {
@@ -56,7 +60,7 @@ class KeyCounterTablesTest extends TestCase
     #[Test]
     public function the_keyboard_table_shows_the_name_and_the_day_in_spanish(): void
     {
-        Keyboard::create([
+        $keyboard = Keyboard::create([
             'user_id' => $this->user->id,
             'hardware_device_id' => $this->device->id,
             'start_at' => '2026-09-07 10:00:00',
@@ -66,22 +70,20 @@ class KeyCounterTablesTest extends TestCase
             'pulsations_special_keys' => 40,
             'pulsation_average' => 4.0,
             'score' => 80,
-            // 2026-09-07 es lunes, y el cliente manda 0 para el lunes.
-            'weekday' => 0,
+            // 2026-09-07 es lunes: 1 con esta convención (0 = domingo).
+            'weekday' => 1,
         ]);
 
         Livewire::test(ListKeyboards::class)
             ->assertCanSeeTableRecords(Keyboard::all())
             ->assertSee('Thinkpad de la mesa')
-            // «Domingo» también aparece, pero en las opciones del filtro de
-            // día, así que no sirve de contraprueba.
-            ->assertSee('Lunes');
+            ->assertTableColumnFormattedStateSet('weekday', 'Lunes', $keyboard);
     }
 
     #[Test]
     public function the_mouse_table_shows_the_name_and_the_day_in_spanish(): void
     {
-        Mouse::create([
+        $mouse = Mouse::create([
             'user_id' => $this->user->id,
             'hardware_device_id' => $this->device->id,
             'start_at' => '2026-09-13 10:00:00',
@@ -92,13 +94,13 @@ class KeyCounterTablesTest extends TestCase
             'clicks_middle' => 10,
             'total_clicks' => 250,
             'clicks_average' => 0.8,
-            // 2026-09-13 es domingo: 6 con esta convención.
-            'weekday' => 6,
+            // 2026-09-13 es domingo: 0 con esta convención.
+            'weekday' => 0,
         ]);
 
         Livewire::test(ListMice::class)
             ->assertSee('Thinkpad de la mesa')
-            ->assertSee('Domingo');
+            ->assertTableColumnFormattedStateSet('weekday', 'Domingo', $mouse);
     }
 
     /**

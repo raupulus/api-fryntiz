@@ -22,9 +22,9 @@ use Illuminate\Support\Carbon;
  * @property int $pulsations_special_keys Cantidad de pulsaciones para teclas especiales total de la racha
  * @property numeric $pulsation_average Velocidad media de pulsaciones para la racha
  * @property int $score Puntuación conseguida en esta racha
- * @property int $weekday Día de la semana. **0 es lunes**: es lo que manda el
- *                        cliente (`datetime.weekday()` de Python), no la convención de
- *                        Carbon. Ver {@see KeyCounterWeekdayEnum}.
+ * @property int $weekday Día de la semana. **0 es domingo** (convención de
+ *                        Carbon), no la de `datetime.weekday()` de Python.
+ *                        Ver {@see KeyCounterWeekdayEnum}.
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read HardwareDevice|null $device

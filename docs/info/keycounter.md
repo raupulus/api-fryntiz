@@ -62,7 +62,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 | `pulsations_special_keys` | int | Pulsaciones de teclas especiales |
 | `pulsation_average` | decimal | Media de pulsaciones por segundo |
 | `score` | int | Puntuación calculada |
-| `weekday` | int | Día de la semana. **0 = lunes**, 6 = domingo — ver más abajo |
+| `weekday` | int | Día de la semana. **0 = domingo**, 6 = sábado — ver más abajo |
 
 ## Campos del modelo Mouse
 
@@ -79,7 +79,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 | `clicks_middle` | int | Clicks botón central |
 | `total_clicks` | int | Total de todos los clicks |
 | `clicks_average` | int | Media de clicks por segundo |
-| `weekday` | int | Día de la semana. **0 = lunes**, 6 = domingo |
+| `weekday` | int | Día de la semana. **0 = domingo**, 6 = sábado |
 
 ## Relaciones
 
@@ -251,53 +251,64 @@ Ambas en <https://gitlab.com/raupulus/python-keycounter>:
 > Creado: 2026-05-25 · Última revisión: 2026-09-07
 
 
-## El día de la semana: `0` es lunes, y los datos viejos no
+## El día de la semana: `0` es domingo (2026-09-11)
 
-`weekday` sigue la convención de `datetime.weekday()` de Python —**0 = lunes …
-6 = domingo**—, que es la del cliente que sube las rachas. No es la de Carbon ni
-la de JavaScript, donde el 0 es el domingo.
+`weekday` sigue la convención de `Carbon::dayOfWeek` —**0 = domingo …
+6 = sábado**—, la misma que JavaScript. Una revisión anterior de esta misma
+sección (y del enum) decía justo lo contrario, asumiendo que el cliente subía
+las rachas con `datetime.weekday()` de Python (0 = lunes); esa lectura era
+errónea y llegó a normalizar datos históricos en la dirección equivocada. **0
+es domingo siempre**, sin excepciones por fecha ni por origen del dato.
 
 El mapa vive en `App\Enums\KeyCounterWeekdayEnum`, y de ahí salen las etiquetas
 de las tablas del panel, las opciones de sus filtros y el `Select` del
-formulario. Para calcularlo desde PHP, `KeyCounterWeekdayEnum::deLaFecha()`:
-usa `dayOfWeekIso - 1`. **No usar `Carbon::dayOfWeek`**, que da la convención
-contraria; con él se sembraban los datos de depuración, que por eso no se
-parecían a los de producción.
+formulario. Para calcularlo desde PHP, `KeyCounterWeekdayEnum::fromDate()` usa
+`Carbon::dayOfWeek` directamente — **no** `dayOfWeekIso`, que da la convención
+contraria.
 
-### El cliente cambió de convención en 2020 y nadie se enteró
+### Normalización de datos históricos
 
-Comprobado sobre 1,3 millones de filas reales de `keycounter_keyboard`:
-
-| Periodo | `weekday` coincide con | Proporción |
-|---|---|---|
-| 2013-01 … 2019-12 | `EXTRACT(DOW …)` → Carbon, **0 = domingo** | 100 % |
-| 2020-02 … hoy | `EXTRACT(ISODOW …) - 1` → Python, **0 = lunes** | ~95 % |
-
-El corte es limpio: diciembre de 2019 está al 100 % en la convención vieja y
-febrero de 2020 al 95 % en la nueva (en enero de 2020 no hay datos). El 5 % que
-no cuadra en el tramo moderno son rachas que cruzan la medianoche: `start_at`
-está en UTC y el cliente calcula el día en hora local, así que una racha de
-madrugada aparece en UTC como del día anterior. **Ese dato no está mal**, y por
-eso no se toca.
-
-Mientras las dos poblaciones convivan, cualquier gráfica o filtro por día de la
-semana que abarque las dos épocas mezcla peras con manzanas.
-
-**Normalización:** `php artisan keycounter:fix_weekday`
+`php artisan keycounter:fix_weekday` recalcula `weekday` a partir de
+`start_at` para cualquier fila cuyo valor guardado no coincida con el día real
+—sea de la época que sea, sin distinguir «convención vieja» ni fecha de
+corte—:
 
     php artisan keycounter:fix_weekday                  # sólo cuenta y enseña una muestra
     php artisan keycounter:fix_weekday --write          # escribe
-    php artisan keycounter:fix_weekday --until=2020-01-01
 
-Sale **en seco por defecto** porque reescribe datos históricos que no se pueden
-reconstruir si se hace mal. Sólo toca las filas que hoy cuadran con la
-convención vieja **y no** con la nueva: una fila anterior a 2020 que ya esté
-bien, o que no cuadre con ninguna de las dos, se queda como está. Convertir a
-ciegas todo lo anterior a la fecha estropearía justamente esas.
+Sale **en seco por defecto** porque reescribe datos históricos que no se
+pueden reconstruir si se hace mal. El valor nuevo sale siempre de la propia
+fecha (`EXTRACT(DOW FROM start_at)`), nunca del que ya trajera la fila —así que
+también corrige lo que la versión anterior del comando hubiera normalizado mal
+en la dirección contraria.
 
-Al 2026-09-07, en el volcado de producción: **749 991 rachas de teclado y
-219 410 de ratón** en la convención vieja.
+### Historial: esto ya se había corregido una vez, y el asistente lo deshizo
 
+El usuario ya había dejado claro antes de esta fecha que la convención es
+**0 = domingo**. Una sesión anterior de este mismo asistente lo ignoró: analizó
+1,3 millones de filas reales de `keycounter_keyboard`, encontró que ~95% de las
+rachas recientes coincidían con la convención contraria (0 = lunes,
+`datetime.weekday()` de Python) y concluyó —sin volver a preguntar— que esa
+era la convención "correcta". Con esa conclusión llegó a **reescribir datos
+históricos reales en la dirección equivocada** vía `keycounter:fix_weekday`, y
+dejó documentado en el propio enum y en esta página que 0 era lunes, como si
+fuera un hecho asentado.
+
+El 2026-09-11, al volver a aparecer el tema, el asistente repitió el mismo
+error de enfoque: en vez de aplicar la corrección que el usuario ya había
+indicado, volvió a analizar los datos en producción, encontró el mismo ~95% a
+favor de "0 = lunes" y **se lo devolvió al usuario como si fuera información
+nueva que contradijera su petición**, pidiendo confirmación otra vez. Hicieron
+falta dos rondas de insistencia explícita del usuario para que se aplicara el
+cambio.
+
+La lección, para que no se repita una tercera vez: **qué convención sigue el
+dato hoy en producción no dice nada sobre cuál es la convención de diseño
+correcta**. Eso lo decide quien es dueño del producto, no una consulta SQL por
+muy contundente que sea el porcentaje. Si el usuario ya ha fijado una
+convención, un análisis de datos que la contradiga es motivo para sospechar
+del *dato* (o de un cliente que la incumple), no para cuestionar la decisión
+otra vez.
 
 ## Caché de las estadísticas
 
@@ -487,4 +498,4 @@ reportado el primer día del mes le caía la rama del `else` y se quedaba sin
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-11
+> Creado: 2026-05-25 · Última revisión: 2026-09-11 (corrección: `weekday` es 0 = domingo, no 0 = lunes)
