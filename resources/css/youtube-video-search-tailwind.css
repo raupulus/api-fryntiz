@@ -384,6 +384,54 @@
   border: 1px solid #d1d5db;
 }
 
+/* Miniatura estática (i.ytimg.com, siempre la misma resolución) con botón
+   de play. El iframe real sólo se monta al pulsar: cargarlo de entrada
+   dejaba que el navegador intentara reproducir en cuanto la página
+   terminaba de cargar, a la calidad más baja mientras bufferizaba, y esa
+   imagen de vídeo (no una miniatura) se estiraba a toda la caja —de ahí
+   el pixelado al recargar la página que no se veía al elegir el vídeo. */
+.field-preview-thumb-youtube-video-search {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #000;
+  box-sizing: border-box;
+}
+
+.field-preview-thumb-img-youtube-video-search {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.field-preview-play-youtube-video-search {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4rem;
+  height: 4rem;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, .7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  pointer-events: none;
+}
+
+.field-preview-play-youtube-video-search svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-left: 0.25rem;
+}
+
 /* Diálogo de confirmación para quitar el vídeo, también con CSS llano por
    el mismo motivo: nada de utilidades de Tailwind en las que no se puede
    confiar en este navegador. */

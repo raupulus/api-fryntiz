@@ -58,12 +58,41 @@
                 />
             </div>
 
-            {{-- Vista previa: a la derecha y más grande que los controles. --}}
+            {{--
+                Vista previa: a la derecha y más grande que los controles.
+
+                Miniatura estática + play en vez de cargar el iframe de
+                golpe: recién elegido el vídeo se veía nítido, pero al
+                recargar la página el embed arrancaba a intentar reproducir
+                (autoplay del navegador) a la calidad más baja mientras
+                cargaba, estirada a toda la caja — de ahí el pixelado. La
+                miniatura de i.ytimg.com es una imagen fija y siempre a la
+                misma resolución; el iframe real sólo se monta al pulsar.
+            --}}
             <div x-show="state" class="field-preview-youtube-video-search">
+                <div
+                    x-show="!videoPlaying"
+                    @click="videoPlaying = true"
+                    class="field-preview-thumb-youtube-video-search"
+                >
+                    <img
+                        :src="state ? ('https://i.ytimg.com/vi/' + state + '/hqdefault.jpg') : ''"
+                        alt="Miniatura del vídeo"
+                        class="field-preview-thumb-img-youtube-video-search"
+                    />
+                    <span class="field-preview-play-youtube-video-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
+                            <path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.2 40.6 61.9 72.4 43.3l352-208.1c31.4-18.5 31.5-64.4 0-83.5z"/>
+                        </svg>
+                    </span>
+                </div>
+
                 <iframe
-                    :src="state ? ('https://www.youtube.com/embed/' + state) : ''"
+                    x-show="videoPlaying"
+                    :src="videoPlaying && state ? ('https://www.youtube.com/embed/' + state + '?autoplay=1') : ''"
                     class="field-preview-iframe-youtube-video-search"
                     frameborder="0"
+                    allow="autoplay; encrypted-media; picture-in-picture"
                     allowfullscreen
                 ></iframe>
             </div>
@@ -133,6 +162,7 @@
                     uid: uid,
                     searcher: null,
                     confirmRemoveOpen: false,
+                    videoPlaying: false,
 
                     init() {
                         // Livewire puede volver a montar este elemento (wire:ignore
@@ -160,6 +190,7 @@
                         const callback = (e, video) => {
                             if (video && video.id) {
                                 this.state = video.id;
+                                this.videoPlaying = false;
                             }
                             this.searcher.closeModal();
                         };

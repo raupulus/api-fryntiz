@@ -50,12 +50,12 @@
     "src": "resources/js/vue/Components/assets/chipiona.webp"
   },
   "resources/js/youtube-video-search.js": {
-    "file": "assets/youtube-video-search-CbGW2kIx.js",
+    "file": "assets/youtube-video-search-BY2VrRlm.js",
     "name": "youtube-video-search",
     "src": "resources/js/youtube-video-search.js",
     "isEntry": true,
     "css": [
-      "assets/youtube-video-search-ByWMcFWn.css"
+      "assets/youtube-video-search-DgfvrboV.css"
     ]
   }
 }

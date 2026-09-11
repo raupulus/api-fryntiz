@@ -184,20 +184,120 @@ php artisan debug:seed-content --count=10
   `2026_05_28_000001_add_cascade_delete_to_content_daily_views`): al hacer
   `forceDelete` de un contenido se eliminan sus vistas; el soft delete las conserva.
 
-## Buscador de vídeos de YouTube (fix_11)
+## Buscador de vídeos de YouTube
 
-Recupera el plugin JS original (`public/js/youtube_video_search.js` +
-`public/css/youtube_video_search.css`) en el panel Filament v2.
+Recupera el plugin JS original (`resources/js/dashboard/youtube_video_search.js`
+en `main`) para el panel Filament v2, y a lo largo de la migración se fueron
+encontrando y arreglando varios problemas de raíz distinta. Queda documentado
+aquí porque ninguno era obvio y todos volvieron a aparecer en revisiones
+posteriores.
 
-- Componente `app/Filament/Components/YoutubeVideoField.php` + vista
-  `resources/views/filament/components/youtube-video-field.blade.php`.
+### Archivos
+
+| Archivo | Descripción |
+|---------|-------------|
+| `app/Filament/Components/YoutubeVideoField.php` | Componente Filament: `apiKey()`, `channels()`, `platformNames()`, `platformStatePath()` |
+| `resources/views/filament/components/youtube-video-field.blade.php` | Vista + componente Alpine (`youtubeVideoField`) |
+| `resources/js/youtube-video-search.js` | Clase `YoutubeVideoSearch` (modal de búsqueda vanilla JS, sin Alpine) |
+| `resources/css/youtube-video-search-tailwind.css` | CSS del modal **y** del layout del campo (ver «Por qué CSS llano» abajo) |
+| `resources/css/youtube-video-search.css` | Copia intacta del CSS original de `main` (Bootstrap/AdminLTE), sin usar — se deja como referencia histórica, no la importa nada |
+
 - Integrado en `ContentResource`, pestaña **«Vídeo y enlaces»**, dentro de un
   `Group->relationship('metadata')` (tabla `content_metadata`).
 - El estado del campo es `youtube_video_id`. La URL `youtube_video` se deriva
   automáticamente al guardar (hook `saving` en `ContentMetadata`).
 - El canal de búsqueda se resuelve según la plataforma seleccionada
-  (`Platform.youtube_channel_id`); la API key se toma de `config('google.google_api_key')`.
-- Los scripts/estilos se inyectan vía el render hook `SCRIPTS_AFTER` (igual que Editor.js).
+  (`Platform.youtube_channel_id`); `platformNames()` mapea `platform_id => title`
+  (columna real de `platforms`, no `name`) para la insignia del canal.
+- La API key se toma de `config('google.api_key')` — en `local`/`testing` cae a
+  `GOOGLE_DEV_API_KEY` si existe (ver `config/google.php`).
+- El JS/CSS se inyectan por `@vite('resources/js/youtube-video-search.js')`
+  dentro de un `@push('scripts')` en la propia vista del campo, no por un
+  render hook de Filament.
+
+### Bugs de la migración a Filament (todos verificados con Alpine.js/Chrome
+### headless real antes de darlos por corregidos, no solo leyendo el código)
+
+- **Input de búsqueda invisible**: el CSS nunca declaraba `border`/
+  `background-color` propios para el `<input>` del modal —confiaba en el
+  estilo por defecto del navegador—, y el Preflight de Tailwind 4 los deja
+  transparentes para cualquier `<input>` sin excepción. Se podía escribir a
+  ciegas sin ver nada. Corregido añadiéndolos explícitos.
+- **El modal se abría solo**: en `main` el contenedor del modal llevaba
+  `class="modal-youtube-video-search-hidden"` directamente en el HTML; se
+  perdió al migrar. El modal quedaba visible en cuanto se instanciaba
+  `YoutubeVideoSearch` (al montar el campo), y como la pestaña «Vídeo y
+  enlaces» está oculta hasta seleccionarla, el efecto era que el buscador se
+  abría solo al entrar en la pestaña.
+- **Enter enviaba el formulario**: en `main` el input nunca vivía dentro de
+  un `<form>`; en Filament todo el recurso es un único
+  `<form wire:submit="save">`. `preventDefault()` solo frena la acción nativa
+  del navegador —Filament escucha Enter a nivel de formulario para saltar de
+  campo (evita envíos accidentales) y ese listener reacciona al evento
+  burbujeado igualmente—, hace falta también `stopPropagation()`.
+- **Doble montaje / búsqueda muda**: Livewire puede volver a llamar a
+  `x-init` sobre el mismo nodo (`wire:ignore` protege a sus hijos de un
+  morph, pero no siempre evita esto). Sin guard, la segunda instancia de
+  `YoutubeVideoSearch` resolvía su input con `document.querySelector` por id
+  global, que siempre devuelve el PRIMER elemento con ese id —el de la
+  instancia vieja, invisible debajo—, así que la instancia nueva (la
+  visible) enganchaba sus eventos al input equivocado: se podía escribir sin
+  que nada reaccionara, con la consola y la pestaña Red completamente
+  limpias. Arreglado con un guard de idempotencia
+  (`$el.dataset.ytInitialized`) y resolviendo el botón/contenedor dentro de
+  `this.$el` en vez de por id global.
+- **`domModalGenerate()` llamaba dos veces a `domModalFooterGenerate()`**
+  (código muerto ya presente en `main`, inofensivo allí). Al añadir la
+  paginación por número, la segunda llamada sobreescribía la referencia real
+  al contenedor de números de página con uno huérfano nunca insertado en el
+  DOM: los números quedaban invisibles pese a que la lógica interna
+  (`currentPage`, `maxKnownPage`, tokens) funcionaba bien. Se quitó la
+  llamada duplicada.
+- **Layout del campo (no del modal) con `display: block` en vez de
+  `flex`**: los botones "Buscar"/"Quitar" y la vista previa usaban
+  utilidades de Tailwind (`grid grid-cols-5`, `md:col-span-2`, `flex
+  flex-col`) directamente en el blade. En el navegador real con el que se
+  probó, `getComputedStyle` confirmaba `display: block` para el contenedor
+  pese a que el HTML servido era exactamente el esperado (mismas clases,
+  verificado carácter a carácter). Tailwind 4 compila los prefijos
+  responsive (`md:`) con sintaxis de rango de Media Queries nivel 4
+  (`@media (width >= 48rem)`) en vez del `@media (min-width: 48rem)`
+  clásico; no se pudo aislar si era exactamente eso lo que fallaba. En vez
+  de seguir dependiendo del pipeline de utilidades de Tailwind para este
+  layout concreto, se reescribió con **CSS llano** en
+  `youtube-video-search-tailwind.css` (clases `field-*-youtube-video-search`):
+  flexbox con `flex-wrap` en vez de grid, `@media (min-width)` y
+  `prefers-color-scheme` clásicos — nada que no soporte cualquier navegador
+  desde hace más de una década. El resto del panel (Filament/Tailwind del
+  vendor) no se toca; esto es solo para el layout propio de este campo.
+- **Miniatura pixelada al recargar la página**: el `<iframe
+  src="https://www.youtube.com/embed/{id}">` se montaba directamente. Recién
+  elegido el vídeo se veía nítido, pero al recargar la página el embed
+  arrancaba a intentar reproducir (autoplay del navegador) a la calidad más
+  baja mientras bufferizaba, estirada a toda la caja del `aspect-video` —de
+  ahí el pixelado, que no aparecía nada más elegir el vídeo porque en ese
+  momento no había recarga de por medio. Se sustituyó por el patrón
+  "lite embed": una `<img>` estática de `i.ytimg.com/vi/{id}/hqdefault.jpg`
+  (resolución fija, siempre disponible) con botón de play superpuesto; el
+  `<iframe>` real (con `?autoplay=1`) solo se monta al pulsar.
+
+### Funciones añadidas sobre el original de `main`
+
+- Insignia con el nombre del canal/plataforma (arriba a la izquierda del
+  modal), enlaza al canal real de YouTube en pestaña nueva
+  (`target="_blank" rel="noopener noreferrer"`).
+- Botón de limpiar búsqueda (cuadrado rojo, icono, a la izquierda del
+  input) que también vacía la lista de resultados — antes, borrar el texto
+  dejaba la lista de la búsqueda anterior a la vista.
+- Paginación por número encima de "Página Anterior"/"Página Siguiente",
+  reutilizando los `pageToken` ya descubiertos (la API de YouTube solo da
+  "siguiente"/"anterior", no salto directo a página N, así que solo se
+  listan páginas ya alcanzadas).
+- Botón "Quitar vídeo asociado" (rojo, debajo de "Buscar") con modal de
+  confirmación propio — antes no había forma de desasociar un vídeo sin
+  elegir otro.
+- Layout en dos columnas: controles (botones + ID) a la izquierda, vista
+  previa más grande a la derecha (antes vídeo debajo, a todo lo ancho).
 
 ## Editor.js en Filament (fix_11)
 
