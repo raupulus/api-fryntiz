@@ -26,6 +26,8 @@ class YoutubeVideoField extends Field
 
     protected array|Closure $channels = [];
 
+    protected array|Closure $platformNames = [];
+
     protected string|Closure $platformStatePath = 'data.platform_id';
 
     /**
@@ -50,6 +52,17 @@ class YoutubeVideoField extends Field
     }
 
     /**
+     * Mapa [platform_id => nombre] para la insignia de canal/plataforma que
+     * se muestra dentro del buscador y enlaza al canal real de YouTube.
+     */
+    public function platformNames(array|Closure $platformNames): static
+    {
+        $this->platformNames = $platformNames;
+
+        return $this;
+    }
+
+    /**
      * Ruta de estado Livewire del campo de plataforma del formulario.
      */
     public function platformStatePath(string|Closure $path): static
@@ -67,6 +80,11 @@ class YoutubeVideoField extends Field
     public function getChannels(): array
     {
         return $this->evaluate($this->channels);
+    }
+
+    public function getPlatformNames(): array
+    {
+        return $this->evaluate($this->platformNames);
     }
 
     public function getPlatformStatePath(): string

@@ -136,6 +136,10 @@ class ContentResource extends Resource
                                     ->whereNotNull('youtube_channel_id')
                                     ->pluck('youtube_channel_id', 'id')
                                     ->toArray())
+                                ->platformNames(fn () => Platform::query()
+                                    ->whereNotNull('youtube_channel_id')
+                                    ->pluck('title', 'id')
+                                    ->toArray())
                                 ->columnSpanFull(),
                             Grid::make(2)->schema([
                                 TextInput::make('web')->url()->maxLength(255)->label('Web'),

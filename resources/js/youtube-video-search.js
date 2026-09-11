@@ -10,7 +10,7 @@
 // vuelve a su sitio. La clase se sigue exponiendo en `window` porque la vista
 // del campo la busca ahí (`typeof YoutubeVideoSearch === 'undefined'`).
 
-import '../css/youtube-video-search.css';
+import '../css/youtube-video-search-tailwind.css';
 
 if (typeof window.YoutubeVideoSearch === 'undefined') {
 window.YoutubeVideoSearch = class YoutubeVideoSearch {
@@ -26,22 +26,34 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
 
     search = null;
 
+    // Caché de tokens de página ya visitados: pageTokens[k] guarda el token
+    // para llegar a la página k+1 (la API de YouTube sólo da "siguiente" y
+    // "anterior", no salto directo a página N; esto permite volver a una
+    // página ya vista sin repetir toda la cadena de peticiones).
+    pageTokens = [];
+    currentPage = 1;
+    maxKnownPage = 1;
+
     /**
      * Constructor para preparar el buscador.
      *
      * @param apiKey Clave api de youtube.
      * @param channelId Id del canal sobre el que buscar.
-     * @param boxSelector Selector CSS para la caja dónde se pondrá el modal.
+     * @param boxTarget Elemento donde se pondrá el modal, o selector CSS
+     *   para buscarlo en todo el documento. Se admite el elemento directo
+     *   para no depender de un id global: si el campo llegara a existir dos
+     *   veces en la página, un querySelector por id siempre devuelve el
+     *   primero, mezclando instancias.
      * @param callback Función que se llamará una vez cambiado el vídeo.
-     * @param btnSelector Selector CSS para el botón dónde se pondrá el modal.
+     * @param btnTarget Elemento o selector CSS para el botón que abre el modal.
      */
-    constructor(apiKey, channelId, boxSelector, callback, btnSelector = null) {
+    constructor(apiKey, channelId, boxTarget, callback, btnTarget = null) {
         this.apiKey = apiKey;
         this.channelId = channelId;
         this.callback = callback;
 
-        const box = document.querySelector(boxSelector);
-        const btn = document.querySelector(btnSelector);
+        const box = boxTarget instanceof Element ? boxTarget : document.querySelector(boxTarget);
+        const btn = btnTarget instanceof Element ? btnTarget : document.querySelector(btnTarget);
 
         this.box = box;
 
@@ -65,6 +77,25 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
 
         // Preparo evento al buscar
         this.inputSearch.addEventListener('keyup', e => this.searchInputChangeHandler(e));
+
+        // En `main` este input nunca vivía dentro de un <form>. Aquí sí: todo
+        // el recurso de Filament es un único <form wire:submit="save">, así
+        // que sin esto el Enter dispara el envío implícito del formulario
+        // (guarda y navega) en vez de quedarse buscando. El valor ya se
+        // procesa por el keyup normal, aquí solo se evita el submit.
+        //
+        // `preventDefault()` sólo frena la acción nativa del navegador; el
+        // propio Filament escucha Enter a nivel de formulario para saltar al
+        // siguiente campo (evita envíos accidentales) y ese listener sí
+        // reacciona al evento burbujeado. Hace falta `stopPropagation()`
+        // para que no le llegue.
+        this.inputSearch.addEventListener('keydown', e => {
+            const key = e.keyCode || e.charCode;
+            if (key === 13) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
 
 
         // Preparo eventos para botones de avanzar/retroceder en el listado
@@ -117,8 +148,6 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         box.append(container);
 
         this.box.append(box);
-
-        this.domModalFooterGenerate()
     }
 
     /**
@@ -130,6 +159,16 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
 
         const boxHeader = document.createElement('div');
         boxHeader.classList.add('header-modal-youtube-video-search');
+
+        // Insignia con el nombre del canal/plataforma sobre el que se busca.
+        // La rellena `setChannelBadge()` en cuanto se conoce la plataforma
+        // seleccionada; hasta entonces queda oculta.
+        const channelBadge = document.createElement('a');
+        channelBadge.classList.add('badge-channel-modal-youtube-video-search');
+        channelBadge.target = '_blank';
+        channelBadge.rel = 'noopener noreferrer';
+        channelBadge.style.display = 'none';
+        this.channelBadge = channelBadge;
 
         const boxClose = document.createElement('span');
         boxClose.classList.add('box-close-modal-youtube-video-search');
@@ -143,17 +182,54 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         title.classList.add('title-modal-youtube-video-search');
         title.textContent = 'Busca un vídeo en tu canal';
 
+        const searchRow = document.createElement('div');
+        searchRow.classList.add('row-search-modal-youtube-video-search');
+
+        const clearBtn = document.createElement('span');
+        clearBtn.classList.add('btn-clear-modal-youtube-video-search');
+        clearBtn.title = 'Limpiar búsqueda';
+        clearBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416L394.8 467c-1.6 25.3-22.6 45-47.9 45H101.1c-25.3 0-46.3-19.7-47.9-45L32 128z"/></svg>';
+        clearBtn.addEventListener('click', () => this.clearSearch());
+
         const input = document.createElement('input');
         input.type = 'text';
         input.classList.add('input-modal-youtube-video-search');
 
-        boxTitle.append(title);
-        boxTitle.append(input);
+        searchRow.append(clearBtn);
+        searchRow.append(input);
 
+        boxTitle.append(title);
+        boxTitle.append(searchRow);
+
+        boxHeader.append(channelBadge);
         boxHeader.append(boxClose);
         boxHeader.append(boxTitle);
 
         return boxHeader;
+    }
+
+    /**
+     * Muestra/actualiza la insignia con el canal o plataforma sobre el que
+     * se está buscando, enlazando al canal real de YouTube en una pestaña
+     * nueva. Se oculta si no hay canal resuelto todavía.
+     *
+     * @param name Nombre a mostrar (plataforma o canal). Puede ser null.
+     * @param channelId Id del canal de YouTube sobre el que se busca.
+     */
+    setChannelBadge(name, channelId) {
+        if (!this.channelBadge) {
+            return;
+        }
+
+        if (!channelId) {
+            this.channelBadge.style.display = 'none';
+
+            return;
+        }
+
+        this.channelBadge.textContent = name || 'Ver canal';
+        this.channelBadge.href = 'https://www.youtube.com/channel/' + channelId;
+        this.channelBadge.style.display = '';
     }
 
     /**
@@ -165,6 +241,14 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         const boxFooter = document.createElement('div');
         boxFooter.classList.add('footer-modal-youtube-video-search');
 
+        // Números de página ya visitados/alcanzables, para saltar directo
+        // en vez de ir pulsando "Siguiente" una a una. La API de YouTube no
+        // da salto a página N, así que sólo se listan las que ya tienen un
+        // token conocido (ver `pageTokens`).
+        const pageNumbers = document.createElement('div');
+        pageNumbers.classList.add('modal-youtube-video-search-text-center', 'pages-modal-youtube-video-search');
+        this.pageNumbersRow = pageNumbers;
+        boxFooter.append(pageNumbers);
 
         const div =  document.createElement('div');
         div.classList.add('modal-youtube-video-search-text-center');
@@ -185,6 +269,35 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         boxFooter.append(div);
 
         return boxFooter;
+    }
+
+    /**
+     * Pinta los números de página ya alcanzables (con token conocido).
+     */
+    renderPageNumbers() {
+        if (!this.pageNumbersRow) {
+            return;
+        }
+
+        this.pageNumbersRow.innerHTML = '';
+
+        if (this.maxKnownPage <= 1) {
+            return;
+        }
+
+        for (let page = 1; page <= this.maxKnownPage; page++) {
+            const btn = document.createElement('span');
+            btn.classList.add('btn-page-modal-youtube-video-search');
+
+            if (page === this.currentPage) {
+                btn.classList.add('btn-page-modal-youtube-video-search-active');
+            }
+
+            btn.textContent = String(page);
+            btn.addEventListener('click', () => this.goToPageNumber(page));
+
+            this.pageNumbersRow.append(btn);
+        }
     }
 
     /**
@@ -217,30 +330,48 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         if (search.length >= 3) {
             this.timeoutSearch = setTimeout(() => this.queryYoutubeApi(), 400);
         } else {
-            //console.log('Introduce mínimo 3 carácteres');
+            // Menos de 3 carácteres (incluido vacío): no hay búsqueda válida,
+            // así que no se deja la lista de resultados de la búsqueda
+            // anterior a la vista.
+            this.search = null;
+            this.resetResults();
         }
     }
 
     /**
-     * Lleva a la siguiente página de resultados.
+     * Lleva a la siguiente página de resultados, reutilizando el token ya
+     * conocido en vez de depender sólo del último guardado.
      */
-    async goToNextPage(e) {
-        const nextPage = this.nextPageToken
-
-        if (nextPage) {
-            return this.queryYoutubeApi(nextPage);
-        }
+    async goToNextPage() {
+        return this.goToPageNumber(this.currentPage + 1);
     }
 
     /**
      * Lleva a la página anterior de resultados.
      */
-    async goToPrevPage(e) {
-        const prevPage = this.prevPageToken
+    async goToPrevPage() {
+        return this.goToPageNumber(this.currentPage - 1);
+    }
 
-        if (prevPage) {
-            return this.queryYoutubeApi(prevPage);
+    /**
+     * Salta directamente a una página ya alcanzada (con token conocido).
+     * La API de YouTube no admite saltar a una página no visitada todavía.
+     *
+     * @param page Número de página (1-indexado) al que saltar.
+     */
+    async goToPageNumber(page) {
+        if (page < 1 || page === this.currentPage) {
+            return;
         }
+
+        const token = page === 1 ? null : this.pageTokens[page - 1];
+
+        if (page > 1 && !token) {
+            // Página aún no descubierta: no hay token para llegar a ella.
+            return;
+        }
+
+        return this.queryYoutubeApi(token, page);
     }
 
     /**
@@ -250,10 +381,17 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
      *
      * @returns {Promise<void>}
      */
-    async queryYoutubeApi(pageToken = null) {
+    async queryYoutubeApi(pageToken = null, pageNumber = 1) {
         const search = this.inputSearch.value.trim().replace(/ +/g,' ');
 
         this.search = search;
+
+        if (pageNumber === 1) {
+            // Búsqueda nueva: los tokens de páginas de la búsqueda anterior
+            // ya no valen para ésta.
+            this.pageTokens = [];
+            this.maxKnownPage = 1;
+        }
 
         //console.log('Realiza petición a la api de google con el valor: ', search);
 
@@ -280,6 +418,12 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         })
             .then(response => response.json())
             .then(data => {
+                if (data.error) {
+                    this.showError(data.error.message || 'Error desconocido al consultar la API de YouTube.');
+
+                    return;
+                }
+
                 const results = {
                     totalResults: data.pageInfo.totalResults,
                     resultsPerPage: data.pageInfo.resultsPerPage,
@@ -292,6 +436,16 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
                 this.resultsPerPage = results.resultsPerPage;
                 this.nextPageToken = results.nextPageToken;
                 this.prevPageToken = results.prevPageToken;
+
+                this.currentPage = pageNumber;
+                this.maxKnownPage = Math.max(this.maxKnownPage, pageNumber);
+
+                if (results.nextPageToken) {
+                    // Token para llegar a la página siguiente, cacheado para
+                    // poder volver a ella sin repetir toda la cadena.
+                    this.pageTokens[pageNumber] = results.nextPageToken;
+                    this.maxKnownPage = Math.max(this.maxKnownPage, pageNumber + 1);
+                }
 
                 this.cleanBody();
 
@@ -349,9 +503,26 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
                 } else {
                     nextButton.forEach(ele => ele.classList.add('btn-modal-youtube-video-search-disable'));
                 }
-            })
 
+                this.renderPageNumbers();
+            })
+            .catch(() => this.showError('No se ha podido contactar con la API de YouTube.'))
         ;
+    }
+
+    /**
+     * Muestra un error en el cuerpo del modal en lugar de dejarlo congelado
+     * en «Introduce un patrón de búsqueda» sin ninguna pista de qué ha fallado.
+     *
+     * @param message Mensaje de error a mostrar.
+     */
+    showError(message) {
+        console.error('YoutubeVideoSearch:', message);
+
+        this.cleanBody();
+
+        const body = this.box.querySelector('.body-modal-youtube-video-search');
+        body.textContent = 'Error al buscar vídeos: ' + message;
     }
 
     /**
@@ -402,6 +573,49 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
         while (body.firstChild) {
             body.removeChild(body.lastChild);
         }
+    }
+
+    /**
+     * Vacía el input de búsqueda y limpia el resultado que hubiera, en vez
+     * de dejar la lista de la búsqueda anterior a la vista.
+     */
+    clearSearch() {
+        this.inputSearch.value = '';
+        this.search = null;
+
+        if (this.timeoutSearch) {
+            clearTimeout(this.timeoutSearch);
+        }
+
+        this.resetResults();
+        this.inputSearch.focus();
+    }
+
+    /**
+     * Vuelve el modal a su estado inicial: sin vídeos, sin paginación y con
+     * el texto de partida en el cuerpo.
+     */
+    resetResults() {
+        this.videos = [];
+        this.totalResults = 0;
+        this.resultsPerPage = 0;
+        this.nextPageToken = null;
+        this.prevPageToken = null;
+        this.pageTokens = [];
+        this.currentPage = 1;
+        this.maxKnownPage = 1;
+
+        this.cleanBody();
+
+        const body = this.box.querySelector('.body-modal-youtube-video-search');
+        body.textContent = 'Introduce un patrón de búsqueda';
+
+        const prevButton = this.box.querySelectorAll('[data-modal_youtube_prev]');
+        const nextButton = this.box.querySelectorAll('[data-modal_youtube_next]');
+        prevButton.forEach(ele => ele.classList.add('btn-modal-youtube-video-search-disable'));
+        nextButton.forEach(ele => ele.classList.add('btn-modal-youtube-video-search-disable'));
+
+        this.renderPageNumbers();
     }
 
     /**

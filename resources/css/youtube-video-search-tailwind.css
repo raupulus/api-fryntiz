@@ -1,0 +1,276 @@
+/*
+ * Copia de `youtube-video-search.css` (el original de `main`, escrito para
+ * AdminLTE/Bootstrap) adaptada para convivir con el Preflight de Tailwind 4
+ * que carga el panel Filament.
+ *
+ * Bootstrap/Reboot deja casi todos los elementos con su aspecto por defecto
+ * del navegador salvo que se le diga lo contrario. El Preflight de Tailwind
+ * hace lo opuesto: resetea agresivamente TODO elemento, con reglas más
+ * específicas que las de aquí en algunos casos:
+ *
+ *   *, ::before, ::after, ::backdrop { border: 0 solid; margin: 0; padding: 0; }
+ *   input, select, optgroup, textarea { background-color: transparent; border-radius: 0; color: inherit; }
+ *
+ * La primera es un reset universal por selector de tipo/comodín: cualquier
+ * `margin`/`padding`/`border-radius` que este fichero declare por clase la
+ * gana sin problema (mayor especificidad), así que no hace falta tocar nada
+ * por ese lado. La segunda SÍ es un problema real: pone fondo transparente en
+ * cualquier `<input>` sin excepción, y como el input de búsqueda del modal
+ * nunca declaraba `border` ni `background-color` propios —confiaba en el
+ * estilo por defecto del navegador, que Tailwind quita—, quedaba invisible
+ * sobre el fondo del modal aunque siguiera funcionando (se podía escribir a
+ * ciegas). Es el único punto de esta hoja que dependía de un valor por
+ * defecto del navegador; el resto de elementos (botones-`<span>`, tarjetas,
+ * cierre) ya declaraban explícitamente cada `border`/`background-color` que
+ * necesitaban, así que sobreviven al Preflight sin cambios.
+ *
+ * Verificado renderizando el modal completo (cabecera, buscador, dos
+ * tarjetas de resultado y paginación) con el `theme.css` real compilado del
+ * panel Admin antes de sustituir el fichero que consume la vista.
+ */
+
+.box-modal-youtube-video-search {
+  display: grid;
+  position: fixed;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%,-50%);
+  width: 90vw;
+  max-width: 1400px;
+  align-items: center;
+  height: 90vh;
+  background-color: #f8f8f8;
+  z-index: 1040;
+  border: 2px solid #ada2a2;
+  color: #5d5d5d;
+}
+
+.container-modal-youtube-video-search {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  margin:auto;
+  padding: 1.3rem;
+  grid-template-rows: 200px auto 150px;
+  /* Era `overflow-x: scroll`, heredado del original: fuerza una barra de
+     desplazamiento horizontal permanente aunque nunca haya nada que
+     desbordar a los lados, y se veía como una franja blanca fea justo
+     encima de "Página Anterior/Siguiente". El contenido que sí puede crecer
+     (la lista de vídeos) ya tiene su propio scroll vertical más abajo. */
+  overflow: hidden;
+}
+
+.header-modal-youtube-video-search {
+}
+
+/* Caja para la X de cerrar modal */
+.box-close-modal-youtube-video-search {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
+/* Insignia con el canal/plataforma sobre el que se busca, arriba a la
+   izquierda (simétrica a la X de cerrar). Enlaza al canal real de YouTube. */
+.badge-channel-modal-youtube-video-search {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(50% - 3rem);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background-color: #e8ecf6;
+  border: 1px solid #ada2a2;
+  color: #3272b8;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.badge-channel-modal-youtube-video-search:hover {
+  background-color: #d7deef;
+}
+
+.title-modal-youtube-video-search {
+  font-size: 2.4rem;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+}
+
+.row-search-modal-youtube-video-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 90%;
+  margin: 1.3rem auto;
+}
+
+.input-modal-youtube-video-search {
+  display: block;
+  flex: 1;
+  margin: 0;
+  padding: 0.3rem;
+  border-radius: 7px;
+  text-align: center;
+  font-size: 1rem;
+  /* Preflight de Tailwind: sin esto el input queda con fondo transparente
+     y sin borde, invisible sobre el fondo del modal (ver cabecera del
+     fichero). Bootstrap nunca lo pedía porque no tocaba estos valores. */
+  border: 1px solid #ada2a2;
+  background-color: #fff;
+  color: #5d5d5d;
+}
+
+.input-modal-youtube-video-search:focus {
+  outline: 2px solid #3272b8;
+  outline-offset: 1px;
+}
+
+/* Botón de limpiar búsqueda: cuadrado rojo, sólo icono, a la izquierda del input. */
+.btn-clear-modal-youtube-video-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 8px;
+  background-color: #d9534f;
+  border: 1px solid #b52b27;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-clear-modal-youtube-video-search svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.btn-clear-modal-youtube-video-search:hover {
+  background-color: #c9302c;
+}
+
+.body-modal-youtube-video-search {
+  overflow-y: auto;
+  padding: 0.3rem;
+}
+
+.footer-modal-youtube-video-search {
+  display: grid;
+  align-content: center;
+}
+
+.btn-modal-youtube-video-search {
+  display: inline-block;
+  margin: 0.2rem;
+  padding: 0.3rem 1rem;
+  cursor:pointer;
+  border: 1px groove #22558e;
+  border-radius: 7px;
+  box-shadow: 1px 1px 1px #201f1f;
+}
+
+.btn-modal-youtube-video-search-primary {
+  color: #f8f8f8;
+  background-color: #3272b8;
+}
+
+.btn-modal-youtube-video-search-secondary {
+  color: #f8f8f8;
+  background-color: #5d5d5d;
+}
+
+.btn-modal-youtube-video-search-disable {
+  cursor: not-allowed;
+  color: #a4a4a4;
+  background-color: #5d5d5d;
+}
+
+/* Números de página, encima de "Página Anterior"/"Página Siguiente". Sólo
+   se listan páginas ya alcanzadas (con token conocido): la API de YouTube
+   no permite saltar a una página no visitada todavía. */
+.pages-modal-youtube-video-search {
+  margin-bottom: 0.3rem;
+}
+
+.btn-page-modal-youtube-video-search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.8rem;
+  height: 1.8rem;
+  margin: 0.15rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  border: 1px solid #ada2a2;
+  background-color: #fff;
+  color: #3272b8;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-page-modal-youtube-video-search:hover {
+  background-color: #e8ecf6;
+}
+
+.btn-page-modal-youtube-video-search-active {
+  background-color: #3272b8;
+  border-color: #22558e;
+  color: #f8f8f8;
+  cursor: default;
+}
+
+/* Tarjetas para cada vídeo de youtube */
+
+.modal-youtube-video-search-card-container {
+  display: grid;
+  margin: 0.3rem 0;
+  padding: 0.3rem;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  background-color: #c9d0e647;
+  border: 2px solid #ada2a2;
+  align-items: center;
+  border-radius: 7px;
+  box-shadow: 1px 1px 1px #ada2a2;
+}
+
+.modal-youtube-video-search-card-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #3272b8;
+  text-align: center;
+}
+
+
+
+
+/* AUXILIARES */
+
+.modal-youtube-video-search-text-center {
+  text-align: center;
+}
+
+.modal-youtube-video-search-text-right {
+  text-align: right;
+}
+
+.modal-youtube-video-search-block {
+  display: block;
+}
+
+.modal-youtube-video-search-hidden {
+  display: none;
+}

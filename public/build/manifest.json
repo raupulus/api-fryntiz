@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-DKWJX_Ib.css",
+    "file": "assets/theme-DVdpY8_U.css",
     "name": "theme",
     "names": [
       "theme.css"
@@ -50,12 +50,12 @@
     "src": "resources/js/vue/Components/assets/chipiona.webp"
   },
   "resources/js/youtube-video-search.js": {
-    "file": "assets/youtube-video-search-CkX_dFTF.js",
+    "file": "assets/youtube-video-search-lgWu2rZa.js",
     "name": "youtube-video-search",
     "src": "resources/js/youtube-video-search.js",
     "isEntry": true,
     "css": [
-      "assets/youtube-video-search-BX4RpVJF.css"
+      "assets/youtube-video-search-BO8tyYN3.css"
     ]
   }
 }
