@@ -2,7 +2,18 @@
 <a href="{{ $section['url'] }}" class="cursor-pointer bg-surface-container-lowest rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow group">
     <div class="flex items-center justify-between mb-4">
         <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-tertiary-container">{{ $section['icon'] }}</span>
+            @if(($section['rotate'] ?? null) !== null)
+                {{-- "navigation" es una flecha que por defecto apunta al Norte (0º);
+                     se rota en sentido horario con los mismos grados de brújula
+                     que devuelve el sensor (0 = N, 90 = E, 180 = S, 270 = O). --}}
+                <span
+                    class="material-symbols-outlined text-on-tertiary-container inline-block"
+                    style="transform: rotate({{ $section['rotate'] }}deg)"
+                    title="{{ $section['rotate'] }}º"
+                >navigation</span>
+            @else
+                <span class="material-symbols-outlined text-on-tertiary-container">{{ $section['icon'] }}</span>
+            @endif
         </div>
         @if($section['primary'])
             <div class="text-right">

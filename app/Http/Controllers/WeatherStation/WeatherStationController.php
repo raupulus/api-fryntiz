@@ -89,6 +89,9 @@ class WeatherStationController extends Controller
             'title' => 'Dirección del Viento', 'model' => WindDirection::class, 'icon' => 'explore',
             'primary' => ['field' => 'direction', 'unit' => ''],
             'secondary' => ['field' => 'grades', 'unit' => 'º'],
+            // Grados de la brújula (0 = Norte, 90 = Este...) para rotar la
+            // flecha de la tarjeta resumen. Sólo lo declara este sensor.
+            'rotate' => ['field' => 'grades'],
         ],
         'rain' => [
             'title' => 'Lluvia', 'model' => Rain::class, 'icon' => 'water_drop',
@@ -271,6 +274,9 @@ class WeatherStationController extends Controller
                 'primary' => $this->formatSensorValue($latest, $config['primary']),
                 'secondary' => isset($config['secondary'])
                     ? $this->formatSensorValue($latest, $config['secondary'])
+                    : null,
+                'rotate' => isset($config['rotate'])
+                    ? (int) $latest->{$config['rotate']['field']}
                     : null,
             ];
         }
