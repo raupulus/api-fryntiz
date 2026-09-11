@@ -14,16 +14,25 @@
             uid: @js($uid),
         })"
         x-init="init()"
-        class="space-y-3"
+        class="field-wrapper-youtube-video-search"
     >
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-start">
-            <div class="md:col-span-2 flex flex-col gap-2">
+        {{--
+            Layout con CSS propio (field-layout-youtube-video-search y
+            compañía, en youtube-video-search-tailwind.css), no con
+            utilidades de Tailwind (`grid grid-cols-5`, `md:col-span-2`...).
+            Verificado que el navegador real con el que se probó no las
+            aplicaba —el contenedor calculaba `display: block` en vez de
+            `flex`—, así que se escribe con flexbox y `@media (min-width)`
+            clásicos, soportados en cualquier navegador desde hace años.
+        --}}
+        <div class="field-layout-youtube-video-search">
+            <div class="field-controls-youtube-video-search">
                 <button
                     type="button"
                     id="btn-{{ $uid }}"
-                    class="fi-btn fi-btn-size-md inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-primary-500"
+                    class="field-btn-youtube-video-search field-btn-primary-youtube-video-search"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" class="w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor">
                         <path d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6C14.9 167 14.9 256.4 14.9 256.4s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.1 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232 337.6V175.2l142.7 81.2L232 337.6z"/>
                     </svg>
                     Buscar vídeo en YouTube
@@ -32,11 +41,10 @@
                 <button
                     type="button"
                     x-show="state"
-                    x-cloak
                     @click="confirmRemoveOpen = true"
-                    class="fi-btn fi-btn-size-md inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-red-500"
+                    class="field-btn-youtube-video-search field-btn-danger-youtube-video-search"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" class="w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
                         <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416L394.8 467c-1.6 25.3-22.6 45-47.9 45H101.1c-25.3 0-46.3-19.7-47.9-45L32 128z"/>
                     </svg>
                     Quitar vídeo asociado
@@ -46,15 +54,15 @@
                     type="text"
                     x-model="state"
                     placeholder="ID del vídeo de YouTube"
-                    class="fi-input block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                    class="field-input-youtube-video-search"
                 />
             </div>
 
             {{-- Vista previa: a la derecha y más grande que los controles. --}}
-            <div x-show="state" x-cloak class="md:col-span-3">
+            <div x-show="state" class="field-preview-youtube-video-search">
                 <iframe
                     :src="state ? ('https://www.youtube.com/embed/' + state) : ''"
-                    class="w-full aspect-video rounded-lg border border-gray-200 dark:border-gray-700"
+                    class="field-preview-iframe-youtube-video-search"
                     frameborder="0"
                     allowfullscreen
                 ></iframe>
@@ -75,31 +83,30 @@
         {{-- Confirmación para quitar el vídeo asociado. --}}
         <div
             x-show="confirmRemoveOpen"
-            x-cloak
-            class="fixed inset-0 z-[1050] flex items-center justify-center bg-black/60 p-4"
+            class="confirm-dialog-youtube-video-search"
             @keydown.escape.window="confirmRemoveOpen = false"
             @click="confirmRemoveOpen = false"
         >
             <div
-                class="w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl p-6"
+                class="confirm-dialog-box-youtube-video-search"
                 @click.stop
             >
-                <h3 class="text-base font-semibold text-gray-950 dark:text-white mb-2">Quitar vídeo asociado</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                <span class="confirm-dialog-title-youtube-video-search">Quitar vídeo asociado</span>
+                <span class="confirm-dialog-text-youtube-video-search">
                     Se quitará el vídeo de YouTube asociado a este contenido. Podrás buscar y asociar otro después. Los cambios se guardan al guardar el formulario.
-                </p>
-                <div class="flex justify-end gap-2">
+                </span>
+                <div class="confirm-dialog-actions-youtube-video-search">
                     <button
                         type="button"
                         @click="confirmRemoveOpen = false"
-                        class="fi-btn fi-btn-size-md rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        class="field-btn-youtube-video-search field-btn-secondary-youtube-video-search"
                     >
                         Cancelar
                     </button>
                     <button
                         type="button"
                         @click="state = ''; confirmRemoveOpen = false;"
-                        class="fi-btn fi-btn-size-md rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500"
+                        class="field-btn-youtube-video-search field-btn-danger-youtube-video-search"
                     >
                         Quitar vídeo
                     </button>

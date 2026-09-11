@@ -274,3 +274,191 @@
 .modal-youtube-video-search-hidden {
   display: none;
 }
+
+/*
+ * Layout del CAMPO (botones + input + vista previa), fuera del modal.
+ *
+ * Esto iba con clases de utilidad de Tailwind (`flex`, `grid-cols-5`,
+ * `md:col-span-2`...) directamente en el blade. En el navegador de
+ * producción real con el que se probó, esas clases no se aplicaban: el
+ * contenedor calculaba `display: block` en vez de `flex`, así que los
+ * botones "Buscar" y "Quitar" salían uno junto al otro en vez de apilados
+ * y el vídeo debajo en vez de a la derecha. La v4 de Tailwind compila los
+ * prefijos responsive (`md:`) con la sintaxis de rango de Media Queries
+ * nivel 4 (`@media (width >= 48rem)`) en vez del clásico
+ * `@media (min-width: 48rem)`; no se pudo confirmar si eso era lo que
+ * fallaba exactamente, así que en vez de seguir dependiendo del pipeline
+ * de utilidades de Tailwind para ESTE layout se escribe aquí con CSS
+ * llano —flexbox con `flex-wrap` en vez de grid, `@media (min-width)`
+ * clásico—, soportado por cualquier navegador desde hace más de una
+ * década.
+ */
+
+.field-wrapper-youtube-video-search > * + * {
+  margin-top: 0.75rem;
+}
+
+.field-layout-youtube-video-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.field-controls-youtube-video-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1 1 280px;
+  min-width: 280px;
+}
+
+.field-preview-youtube-video-search {
+  flex: 2 1 400px;
+  min-width: 300px;
+}
+
+.field-input-youtube-video-search {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-input-youtube-video-search {
+    border-color: #374151;
+    background-color: #111827;
+    color: #f9fafb;
+  }
+}
+
+.field-btn-youtube-video-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+
+.field-btn-youtube-video-search svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.field-btn-primary-youtube-video-search {
+  background-color: #3272b8;
+  color: #fff;
+}
+
+.field-btn-primary-youtube-video-search:hover {
+  background-color: #2a5f9c;
+}
+
+.field-btn-danger-youtube-video-search {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+.field-btn-danger-youtube-video-search:hover {
+  background-color: #b91c1c;
+}
+
+.field-preview-iframe-youtube-video-search {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+}
+
+/* Diálogo de confirmación para quitar el vídeo, también con CSS llano por
+   el mismo motivo: nada de utilidades de Tailwind en las que no se puede
+   confiar en este navegador. */
+.confirm-dialog-youtube-video-search {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, .6);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.confirm-dialog-box-youtube-video-search {
+  width: 100%;
+  max-width: 24rem;
+  border-radius: 1rem;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .3);
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .confirm-dialog-box-youtube-video-search {
+    background-color: #111827;
+    border-color: #374151;
+  }
+}
+
+.confirm-dialog-title-youtube-video-search {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #030712;
+  margin-bottom: 0.5rem;
+}
+
+.confirm-dialog-text-youtube-video-search {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .confirm-dialog-title-youtube-video-search { color: #f9fafb; }
+  .confirm-dialog-text-youtube-video-search { color: #9ca3af; }
+}
+
+.confirm-dialog-actions-youtube-video-search {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.field-btn-secondary-youtube-video-search {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.field-btn-secondary-youtube-video-search:hover {
+  background-color: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-btn-secondary-youtube-video-search {
+    background-color: #1f2937;
+    color: #e5e7eb;
+  }
+
+  .field-btn-secondary-youtube-video-search:hover {
+    background-color: #374151;
+  }
+}
