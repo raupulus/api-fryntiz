@@ -57,7 +57,7 @@ class EnergyRelationManager extends RelationManager
                 .'tener varios a la vez: un controlador solar mide lo que entra '
                 .'del panel, lo que sale hacia la carga y lo que hay en la batería.'
             )
-            ->modifyQueryUsing(fn ($query) => $query->with(['monitorized', 'system', 'sourceType']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['monitorized', 'sourceType']))
             ->columns([
                 TextColumn::make('role')
                     ->label('Papel')
@@ -79,10 +79,10 @@ class EnergyRelationManager extends RelationManager
                     ->label('V nominal')
                     ->suffix(' V')
                     ->placeholder('la que reporte'),
-                TextColumn::make('system.name')
-                    ->label('Instalación')
-                    ->placeholder('sin asignar')
-                    ->toggleable(),
+                TextColumn::make('capacity_ah')
+                    ->label('Capacidad')
+                    ->suffix(' Ah')
+                    ->placeholder('—'),
                 IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),

@@ -321,6 +321,24 @@ distinto de cero significa ahora que ha fallado el comando de verdad.
 
 ---
 
+## 6-ter. Energía — Consolidación y migración
+
+| Comando | Opciones | Descripción |
+|---------|----------|-------------|
+| `energy:aggregate-daily` | `--date=YYYY-MM-DD`, `--today`, `--element=ID`, `--all` | Consolida y recalcula resúmenes diarios (`hardware_energy_today`) e históricos (`hardware_energy_historical`) para elementos con recálculo automático (`auto_calculate_history = true`). Programado a diario a las 00:05. |
+| `iot:migrate-legacy-energy-data` | `--dry-run`, `--force`, `--chunk=5000` | Migración inicial segura (backfill) de tablas segregadas antiguas hacia el esquema unificado. |
+
+```bash
+# Consolidación habitual (cierra el día de ayer)
+php artisan energy:aggregate-daily
+
+# Consolidar fecha concreta o forzar elementos con auto_calculate_history=false
+php artisan energy:aggregate-daily --date=2026-09-11
+php artisan energy:aggregate-daily --all
+```
+
+---
+
 ## 7. Debug — Datos de prueba
 
 > ⚠️ Solo para entornos de desarrollo. **No ejecutar en producción.**
@@ -455,4 +473,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-06
+> Creado: 2026-05-26 · Última revisión: 2026-09-12

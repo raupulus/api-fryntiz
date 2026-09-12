@@ -44,7 +44,6 @@ use function is_finite;
  * @property int $id
  * @property int|null $hardware_device_id Dispositivo que mide
  * @property int|null $hardware_device_monitorized_id Dispositivo medido
- * @property int|null $energy_system_id
  * @property int|null $energy_source_type_id
  * @property string $role generator | load | battery
  * @property int $sensor_position Canal del monitor. 0 si sólo tiene uno
@@ -52,16 +51,19 @@ use function is_finite;
  * @property float|null $voltage_min
  * @property float|null $voltage_max
  * @property float|null $rated_power_w
- * @property float|null $capacity_mah
- * @property float|null $capacity_wh
+ * @property float|null $capacity_ah Capacidad nominal de batería en Ah (resolución 1 mAh)
+ * @property bool $auto_calculate_history true si el cron nocturno consolida/recalcula históricos
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read float|null $capacity_wh Capacidad calculada dinámicamente en Wh (nominal_voltage * capacity_ah)
  * @property-read HardwareDevice|null $hardwareDevice
  * @property-read HardwareDevice|null $monitorized
- * @property-read EnergySystem|null $system
  * @property-read EnergySourceType|null $sourceType
+ * @property-read Collection<int, HardwareEnergyReading> $readings
+ * @property-read Collection<int, HardwareEnergyToday> $today
+ * @property-read Collection<int, HardwareEnergyHistorical> $historical
  * @property-read Collection<int, HardwarePowerGenerator> $powerGenerators
  * @property-read Collection<int, HardwarePowerLoad> $powerLoads
  *
@@ -69,6 +71,9 @@ use function is_finite;
  * @method static Builder<static>|HardwareEnergy newQuery()
  * @method static Builder<static>|HardwareEnergy query()
  * @method static Builder<static>|HardwareEnergy forDevice(int $deviceId)
+ * @method static Builder<static>|HardwareEnergy generators()
+ * @method static Builder<static>|HardwareEnergy loads()
+ * @method static Builder<static>|HardwareEnergy batteries()
  *
  * @mixin \Eloquent
  */
@@ -138,16 +143,15 @@ class HardwareEnergy extends BaseModel
 
     protected $fillable = [
         'hardware_device_id', 'hardware_device_monitorized_id',
-        'energy_system_id', 'energy_source_type_id',
+        'energy_source_type_id',
         'role', 'sensor_position',
         'nominal_voltage', 'voltage_min', 'voltage_max',
-        'rated_power_w', 'capacity_mah', 'capacity_wh', 'is_active',
+        'rated_power_w', 'capacity_ah', 'auto_calculate_history', 'is_active',
     ];
 
     protected $casts = [
         'hardware_device_id' => 'integer',
         'hardware_device_monitorized_id' => 'integer',
-        'energy_system_id' => 'integer',
         'energy_source_type_id' => 'integer',
         'sensor_position' => 'integer',
         'is_active' => 'boolean',
@@ -155,8 +159,8 @@ class HardwareEnergy extends BaseModel
         'voltage_min' => 'float',
         'voltage_max' => 'float',
         'rated_power_w' => 'float',
-        'capacity_mah' => 'float',
-        'capacity_wh' => 'float',
+        'capacity_ah' => 'float',
+        'auto_calculate_history' => 'boolean',
     ];
 
     // ─────────────────────────── Relaciones ────────────────────────────
@@ -229,6 +233,36 @@ class HardwareEnergy extends BaseModel
         return $this->hasMany(HardwarePowerGeneratorSolar::class, 'hardware_energy_id');
     }
 
+    /**
+     * Lecturas unificadas de energía de este elemento.
+     *
+     * @return HasMany<HardwareEnergyReading, $this>
+     */
+    public function readings(): HasMany
+    {
+        return $this->hasMany(HardwareEnergyReading::class, 'hardware_energy_id');
+    }
+
+    /**
+     * Resúmenes diarios de energía de este elemento.
+     *
+     * @return HasMany<HardwareEnergyToday, $this>
+     */
+    public function today(): HasMany
+    {
+        return $this->hasMany(HardwareEnergyToday::class, 'hardware_energy_id');
+    }
+
+    /**
+     * Acumulados históricos de energía por sesión de este elemento.
+     *
+     * @return HasMany<HardwareEnergyHistorical, $this>
+     */
+    public function historical(): HasMany
+    {
+        return $this->hasMany(HardwareEnergyHistorical::class, 'hardware_energy_id');
+    }
+
     // ───────────────────────────── Scopes ──────────────────────────────
 
     /**
@@ -265,6 +299,15 @@ class HardwareEnergy extends BaseModel
     public function scopeLoads(Builder $query): Builder
     {
         return $query->where('role', self::ROLE_LOAD);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeBatteries(Builder $query): Builder
+    {
+        return $query->where('role', self::ROLE_BATTERY);
     }
 
     /**
@@ -435,5 +478,20 @@ class HardwareEnergy extends BaseModel
         $amperiosHora = $this->computeAmpHours($amperage, $seconds);
 
         return $amperiosHora === null ? null : $amperiosHora * $voltage;
+    }
+
+    /**
+     * Capacidad de almacenamiento nominal en Vatios-hora (Wh).
+     *
+     * Se calcula dinámicamente a partir de la capacidad en Ah y la tensión
+     * nominal (Wh = Ah · V_nom).
+     */
+    public function getCapacityWhAttribute(): ?float
+    {
+        if ($this->capacity_ah !== null && $this->nominal_voltage !== null) {
+            return round((float) $this->capacity_ah * (float) $this->nominal_voltage, 2);
+        }
+
+        return null;
     }
 }

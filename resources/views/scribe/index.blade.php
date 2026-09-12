@@ -147,7 +147,7 @@
                                 <a href="#endpoints-POSTapi-v2-airflight-aircrafts-batch">Registra un lote de aviones detectados.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-energy-readings">
-                                <a href="#endpoints-GETapi-v2-energy-readings">Lecturas de energía, paginadas.</a>
+                                <a href="#endpoints-GETapi-v2-energy-readings">Consulta paginada de lecturas de energía unificadas.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-energy-solar-readings">
                                 <a href="#endpoints-GETapi-v2-energy-solar-readings">Lecturas del controlador solar, paginadas.</a>
@@ -235,7 +235,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: September 7, 2026</li>
+        <li>Last updated: September 12, 2026</li>
     </ul>
 </div>
 
@@ -561,10 +561,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"weatherstation:read\"
+        \"weatherstation:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-09-30\"
+    \"expires_at\": \"2052-10-06\"
 }"
 </code></pre></div>
 
@@ -582,10 +582,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "weatherstation:read"
+        "weatherstation:write"
     ],
     "name": "n",
-    "expires_at": "2052-09-30"
+    "expires_at": "2052-10-06"
 };
 
 fetch(url, {
@@ -717,10 +717,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-09-30"
+               value="2052-10-06"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-09-30</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-06</code></p>
         </div>
         </form>
 
@@ -1113,8 +1113,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": false,
-    \"contactme\": true,
+    \"privacity\": true,
+    \"contactme\": false,
     \"attributes\": [
         \"v\"
     ],
@@ -1138,8 +1138,8 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": false,
-    "contactme": true,
+    "privacity": true,
+    "contactme": false,
     "attributes": [
         "v"
     ],
@@ -1296,7 +1296,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -1318,7 +1318,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>attributes</code></b>&nbsp;&nbsp;
@@ -3759,9 +3759,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"altitude\": 10,
     \"speed\": 20,
     \"track\": 1,
+    \"vert_rate\": -100,
     \"seen\": 4326.41688,
     \"seen_pos\": 4326.41688,
-    \"messages\": 77
+    \"messages\": 77,
+    \"rssi\": -100,
+    \"emergency\": \"yvdljnikhwaykcmy\"
 }"
 </code></pre></div>
 
@@ -3786,9 +3789,12 @@ let body = {
     "altitude": 10,
     "speed": 20,
     "track": 1,
+    "vert_rate": -100,
     "seen": 4326.41688,
     "seen_pos": 4326.41688,
-    "messages": 77
+    "messages": 77,
+    "rssi": -100,
+    "emergency": "yvdljnikhwaykcmy"
 };
 
 fetch(url, {
@@ -3994,6 +4000,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be between 0 and 360. Example: <code>1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>vert_rate</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="vert_rate"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="-100"
+               data-component="body">
+    <br>
+<p>Must be between -100 and 100. Example: <code>-100</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>seen</code></b>&nbsp;&nbsp;
 <small>number</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -4029,6 +4047,30 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Must be at least 0. Example: <code>77</code></p>
         </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>rssi</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="rssi"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="-100"
+               data-component="body">
+    <br>
+<p>Must be between -100 and 0. Example: <code>-100</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>emergency</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="emergency"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="yvdljnikhwaykcmy"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>yvdljnikhwaykcmy</code></p>
+        </div>
         </form>
 
                     <h2 id="endpoints-POSTapi-v2-airflight-aircrafts-batch">Registra un lote de aviones detectados.</h2>
@@ -4059,9 +4101,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
             \"altitude\": 5,
             \"speed\": 10,
             \"track\": 0,
+            \"vert_rate\": -99,
             \"seen\": 4326.41688,
             \"seen_pos\": 4326.41688,
-            \"messages\": 77
+            \"messages\": 77,
+            \"rssi\": -100,
+            \"emergency\": \"yvdljnikhwaykcmy\"
         }
     ]
 }"
@@ -4090,9 +4135,12 @@ let body = {
             "altitude": 5,
             "speed": 10,
             "track": 0,
+            "vert_rate": -99,
             "seen": 4326.41688,
             "seen_pos": 4326.41688,
-            "messages": 77
+            "messages": 77,
+            "rssi": -100,
+            "emergency": "yvdljnikhwaykcmy"
         }
     ]
 };
@@ -4310,6 +4358,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be between 0 and 360. Example: <code>0</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>vert_rate</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="data.0.vert_rate"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="-99"
+               data-component="body">
+    <br>
+<p>Must be between -100 and 100. Example: <code>-99</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>seen</code></b>&nbsp;&nbsp;
 <small>number</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -4345,21 +4405,40 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Must be at least 0. Example: <code>77</code></p>
                     </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>rssi</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="data.0.rssi"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="-100"
+               data-component="body">
+    <br>
+<p>Must be between -100 and 0. Example: <code>-100</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>emergency</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="data.0.emergency"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="yvdljnikhwaykcmy"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>yvdljnikhwaykcmy</code></p>
+                    </div>
                                     </details>
         </div>
         </form>
 
-                    <h2 id="endpoints-GETapi-v2-energy-readings">Lecturas de energía, paginadas.</h2>
+                    <h2 id="endpoints-GETapi-v2-energy-readings">Consulta paginada de lecturas de energía unificadas.</h2>
 
 <p>
 </p>
 
-<p>Exige <code>energy:read</code>. Consumo y generación viven en dos tablas
-distintas —comparten columnas por el trait <code>IsEnergyReading</code>, no la
-tabla—, así que se elige con <code>?type=load|generator</code>; por defecto,
-consumo.</p>
-<p>Sólo devuelve lecturas de dispositivos del usuario y, si el token está
-ligado a dispositivos concretos (<code>device:{id}</code>), sólo las de ésos.</p>
+<p>Requiere ability <code>energy:read</code>. Filtra por dispositivo, elemento o rango temporal.</p>
 
 <span id="example-requests-GETapi-v2-energy-readings">
 <blockquote>Example request:</blockquote>
@@ -4628,9 +4707,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>
 </p>
 
-<p>La respuesta lleva <code>warnings</code> cuando algo es raro pero se ha guardado:
-una corriente negativa, un elemento sin tensión, un canal sin dar de
-alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
+<p>Soporta tanto el contrato universal <code>energy</code> (D115) como el contrato legacy <code>readings</code>.</p>
 
 <span id="example-requests-POSTapi-v2-energy-readings">
 <blockquote>Example request:</blockquote>
@@ -4640,30 +4717,7 @@ alta. Sin eso, un montaje mal configurado responde 201 durante meses.</p>
     <pre><code class="language-bash">curl --request POST \
     "https://api.raupulus.dev/api/v2/energy/readings" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --data "{
-    \"hardware_device_id\": 16,
-    \"duration\": 22,
-    \"read_at\": \"2026-09-07T10:04:02\",
-    \"temperature\": 4326.41688,
-    \"battery_voltage\": 77,
-    \"battery_percentage\": 15,
-    \"readings\": [
-        {
-            \"pos\": 27,
-            \"amperage\": 4326.41688,
-            \"voltage\": 4326.41688,
-            \"duration\": 27,
-            \"energy_wh\": 4326.41688,
-            \"temperature\": 4326.41688,
-            \"fan\": 77,
-            \"read_at\": \"2026-09-07T10:04:02\",
-            \"battery_voltage\": 8,
-            \"battery_percentage\": 8
-        }
-    ]
-}"
-</code></pre></div>
+    --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
@@ -4676,33 +4730,10 @@ const headers = {
     "Accept": "application/json",
 };
 
-let body = {
-    "hardware_device_id": 16,
-    "duration": 22,
-    "read_at": "2026-09-07T10:04:02",
-    "temperature": 4326.41688,
-    "battery_voltage": 77,
-    "battery_percentage": 15,
-    "readings": [
-        {
-            "pos": 27,
-            "amperage": 4326.41688,
-            "voltage": 4326.41688,
-            "duration": 27,
-            "energy_wh": 4326.41688,
-            "temperature": 4326.41688,
-            "fan": 77,
-            "read_at": "2026-09-07T10:04:02",
-            "battery_voltage": 8,
-            "battery_percentage": 8
-        }
-    ]
-};
 
 fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
@@ -4780,224 +4811,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Example: <code>application/json</code></p>
             </div>
-                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-        <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="hardware_device_info"                data-endpoint="POSTapi-v2-energy-readings"
-               value=""
-               data-component="body">
-    <br>
-
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-energy-readings"
-               value="16"
-               data-component="body">
-    <br>
-<p>Must match an existing stored value. Example: <code>16</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="duration"                data-endpoint="POSTapi-v2-energy-readings"
-               value="22"
-               data-component="body">
-    <br>
-<p>Must be at least 1. Example: <code>22</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2026-09-07T10:04:02"
-               data-component="body">
-    <br>
-<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="temperature"                data-endpoint="POSTapi-v2-energy-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_voltage"                data-endpoint="POSTapi-v2-energy-readings"
-               value="77"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>77</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_percentage</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_percentage"                data-endpoint="POSTapi-v2-energy-readings"
-               value="15"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Must not be greater than 100. Example: <code>15</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-        <details>
-            <summary style="padding-bottom: 10px;">
-                <b style="line-height: 2;"><code>readings</code></b>&nbsp;&nbsp;
-<small>object[]</small>&nbsp;
- &nbsp;
- &nbsp;
-<br>
-
-            </summary>
-                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>pos</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.pos"                data-endpoint="POSTapi-v2-energy-readings"
-               value="27"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>27</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>amperage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.amperage"                data-endpoint="POSTapi-v2-energy-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.voltage"                data-endpoint="POSTapi-v2-energy-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.duration"                data-endpoint="POSTapi-v2-energy-readings"
-               value="27"
-               data-component="body">
-    <br>
-<p>Must be at least 1. Example: <code>27</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>energy_wh</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.energy_wh"                data-endpoint="POSTapi-v2-energy-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.temperature"                data-endpoint="POSTapi-v2-energy-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>fan</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.fan"                data-endpoint="POSTapi-v2-energy-readings"
-               value="77"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>77</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="readings.0.read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2026-09-07T10:04:02"
-               data-component="body">
-    <br>
-<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.battery_voltage"                data-endpoint="POSTapi-v2-energy-readings"
-               value="8"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>8</code></p>
-                    </div>
-                                                                <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>battery_percentage</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="readings.0.battery_percentage"                data-endpoint="POSTapi-v2-energy-readings"
-               value="8"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Must not be greater than 100. Example: <code>8</code></p>
-                    </div>
-                                    </details>
-        </div>
-        </form>
+                        </form>
 
                     <h2 id="endpoints-POSTapi-v2-energy-solar-readings">Almacena una lectura del controlador solar.</h2>
 
@@ -5017,8 +4831,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
-    \"date\": \"2026-09-07T10:04:02\",
-    \"read_at\": \"2026-09-07T10:04:02\",
+    \"date\": \"2026-09-12T15:22:24\",
+    \"read_at\": \"2026-09-12T15:22:24\",
     \"hardware\": \"n\",
     \"version\": \"g\",
     \"serial_number\": \"z\",
@@ -5077,8 +4891,8 @@ const headers = {
 
 let body = {
     "hardware_device_id": 16,
-    "date": "2026-09-07T10:04:02",
-    "read_at": "2026-09-07T10:04:02",
+    "date": "2026-09-12T15:22:24",
+    "read_at": "2026-09-12T15:22:24",
     "hardware": "n",
     "version": "g",
     "serial_number": "z",
@@ -5236,10 +5050,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="2026-09-07T10:04:02"
+               value="2026-09-12T15:22:24"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
+<p>Must be a valid date. Example: <code>2026-09-12T15:22:24</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
@@ -5248,10 +5062,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="2026-09-07T10:04:02"
+               value="2026-09-12T15:22:24"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-09-07T10:04:02</code></p>
+<p>Must be a valid date. Example: <code>2026-09-12T15:22:24</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware</code></b>&nbsp;&nbsp;
@@ -6826,8 +6640,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-07 10:04:02\",
-    \"end_at\": \"2026-09-07 10:04:02\",
+    \"start_at\": \"2026-09-12 15:22:24\",
+    \"end_at\": \"2026-09-12 15:22:24\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6851,8 +6665,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-07 10:04:02",
-    "end_at": "2026-09-07 10:04:02",
+    "start_at": "2026-09-12 15:22:24",
+    "end_at": "2026-09-12 15:22:24",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6986,10 +6800,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-07 10:04:02"
+               value="2026-09-12 15:22:24"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6998,10 +6812,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-07 10:04:02"
+               value="2026-09-12 15:22:24"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7096,8 +6910,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-07 10:04:02\",
-    \"end_at\": \"2026-09-07 10:04:02\",
+    \"start_at\": \"2026-09-12 15:22:24\",
+    \"end_at\": \"2026-09-12 15:22:24\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -7122,8 +6936,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-07 10:04:02",
-    "end_at": "2026-09-07 10:04:02",
+    "start_at": "2026-09-12 15:22:24",
+    "end_at": "2026-09-12 15:22:24",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -7258,10 +7072,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-07 10:04:02"
+               value="2026-09-12 15:22:24"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7270,10 +7084,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-07 10:04:02"
+               value="2026-09-12 15:22:24"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-07 10:04:02</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7667,7 +7481,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
-    \"full_water_tank\": true,
+    \"full_water_tank\": false,
     \"waterpump_enabled\": true,
     \"vaporizer_enabled\": true
 }"
@@ -7693,7 +7507,7 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
-    "full_water_tank": true,
+    "full_water_tank": false,
     "waterpump_enabled": true,
     "vaporizer_enabled": true
 };
@@ -7921,7 +7735,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -7988,9 +7802,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"air_quality\"
+        \"humidity\"
     ],
-    \"location_type\": \"indoor\"
+    \"location_type\": \"outdoor\"
 }"
 </code></pre></div>
 
@@ -8007,9 +7821,9 @@ const headers = {
 
 let body = {
     "sensors": [
-        "air_quality"
+        "humidity"
     ],
-    "location_type": "indoor"
+    "location_type": "outdoor"
 };
 
 fetch(url, {
@@ -8139,10 +7953,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="location_type"                data-endpoint="GETapi-v2-weather-stations"
-               value="indoor"
+               value="outdoor"
                data-component="body">
     <br>
-<p>Example: <code>indoor</code></p>
+<p>Example: <code>outdoor</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>indoor</code></li> <li><code>outdoor</code></li></ul>
         </div>
@@ -8166,7 +7980,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"wind\"
+        \"lightning\"
     ]
 }"
 </code></pre></div>
@@ -8184,7 +7998,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "wind"
+        "lightning"
     ]
 };
 

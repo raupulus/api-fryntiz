@@ -2,7 +2,7 @@
 
 Lo que un dispositivo **mide** de energía: un controlador solar (Renogy Rover y
 compatibles) o un monitor de consumo de varios canales, con sus resúmenes
-diarios e históricos.
+diarios e históricos unificados.
 
 Es un módulo al mismo nivel que la estación meteorológica, KeyCounter,
 SmartPlant o AirFlight, y como todos ellos sus lecturas cuelgan de un
@@ -10,525 +10,215 @@ SmartPlant o AirFlight, y como todos ellos sus lecturas cuelgan de un
 RAM, discos, temperatura— es del módulo [hardware.md](hardware.md).
 
 > Estuvo dentro de Hardware hasta el **2026-09-06**, en rutas `/hardware/*` y con
-> la ability `hardware:write`. Era una excepción sin motivo: ningún otro módulo
-> vivía ahí, y además metía dos permisos en la misma casilla —el token de un
-> contador de consumo podía reescribir la salud del aparato—.
+> la ability `hardware:write`.
+>
+> En el **Plan 1 (2026-09-12, D115)** se completó la refactorización profunda de
+> arquitectura: unificación de tablas segregadas (`hardware_power_generators*` y
+> `hardware_power_loads*`) en un esquema limpio de 3 niveles (`_readings`, `_today`,
+> `_historical`), backfill de datos con 0% de pérdida, soporte multisensión para
+> reinicios de odómetro de hardware y payload universal de telemetría `energy`.
 
 **Contrato HTTP para clientes:** [docs/info/api/v2/energy.md](api/v2/energy.md).
 
-## Archivos principales
+---
 
-### Modelos
-| Archivo | Tabla | Descripción |
-|---------|-------|-------------|
-| `app/Models/Hardware/EnergySourceType.php` | `energy_source_types` | Catálogo de fuentes: solar, eólica, autoabastecido, batería, red |
-| `app/Models/Hardware/EnergySystem.php` | `energy_systems` | La instalación: agrupa elementos que comparten batería y tensión |
-| `app/Models/Hardware/HardwareEnergy.php` | `hardware_energy` | **El elemento energético**: un panel, un router, una batería |
-| `app/Models/Hardware/HardwarePowerGenerator.php` | `hardware_power_generators` | Lectura de generación |
-| `app/Models/Hardware/HardwarePowerGeneratorToday.php` | `hardware_power_generators_today` | Resumen diario del generador |
-| `app/Models/Hardware/HardwarePowerGeneratorHistorical.php` | `hardware_power_generators_historical` | Histórico del generador |
-| `app/Models/Hardware/HardwarePowerLoad.php` | `hardware_power_loads` | Lectura de consumo |
-| `app/Models/Hardware/HardwarePowerLoadToday.php` | `hardware_power_loads_today` | Resumen diario de consumos |
-| `app/Models/Hardware/HardwarePowerLoadHistorical.php` | `hardware_power_loads_historical` | Histórico de consumos |
-| `app/Models/Hardware/HardwarePowerGeneratorSolar.php` | `hardware_power_generators_solar` | Lectura de controlador solar. `extends HardwarePowerGenerator` |
+## 1. Arquitectura de Base de Datos y Modelos (D115)
 
-### Controladores, requests y resources (API V2)
-| Archivo | Descripción |
-|---------|-------------|
-| `app/Http/Controllers/Api/Energy/V2/EnergyMonitorController.php` | Índice y subida de lecturas de energía |
-| `app/Http/Controllers/Api/Energy/V2/SolarReadingController.php` | Índice y subida de lecturas del controlador solar |
-| `app/Http/Requests/Api/Energy/V2/StoreEnergyRequest.php` | Validación de la subida de energía |
-| `app/Http/Requests/Api/Energy/V2/StoreSolarReadingRequest.php` | Validación de la lectura solar. **Único sitio donde se traduce el vocabulario del Renogy Rover** |
-| `app/Http/Resources/V2/Energy/EnergyMonitorResource.php` | Una lectura de energía, ya asignada a su elemento |
-| `app/Http/Resources/V2/Energy/SolarReadingResource.php` | Una lectura del controlador solar |
-| `routes/energy/v2.php` | Las cuatro rutas del módulo |
+El subsistema de energía se estructura en cuatro tablas principales:
 
-### Otros
-| Archivo | Descripción |
-|---------|-------------|
-| `app/Services/Hardware/HardwareService.php` | `storeEnergyData()` y `storeSolarReading()`: el reparto en tablas y los avisos |
-| `app/Policies/EnergySystemPolicy.php` | Instalaciones energéticas, sobre `OwnedResourcePolicy` |
-| `app/Policies/HardwareEnergyPolicy.php` | Elementos de energía; el dueño se resuelve por el sistema del que cuelgan |
-| `app/Traits/IsEnergyReading.php` | Lo común a las tablas de lecturas: elemento, scopes y marca de sospecha |
-| `app/Traits/SummarisesEnergyDay.php` | Resumen del día: una fila por elemento y día |
-| `app/Traits/AccumulatesEnergyHistory.php` | Acumulado, recalculado desde los resúmenes diarios |
-| `database/seeders/EnergySystemsSeeder.php` | Las cuatro instalaciones reales |
+| Modelo Eloquent | Tabla | Descripción |
+|---|---|---|
+| `App\Models\Hardware\HardwareEnergy` | `hardware_energy` | **Catálogo de elementos energéticos**: generador, batería o canal de consumo |
+| `App\Models\Hardware\HardwareEnergyReading` | `hardware_energy_readings` | **Telemetría granular unificada**: lecturas periódicas con tensión, corriente, potencia y $\Delta Wh$ |
+| `App\Models\Hardware\HardwareEnergyToday` | `hardware_energy_today` | **Agregado diario**: una fila por elemento y fecha con acumulados del día y extremos |
+| `App\Models\Hardware\HardwareEnergyHistorical` | `hardware_energy_historical` | **Serie histórica multisensión**: acumulados totales y extremos por sesión de odómetro |
 
-## Rutas API V2
+> ℹ️ Las tablas antiguas (`hardware_power_generators*`, `hardware_power_loads*`)
+> quedan en la base de datos como respaldo histórico frío. Todos sus datos
+> (1.750.515 lecturas, 1.833 agregados diarios, 10 históricos y 1.401 lecturas
+> de batería huérfanas) fueron migrados íntegramente mediante el comando
+> `php artisan iot:migrate-legacy-energy-data`.
 
-| Método | Ruta | Auth | Throttle | Descripción |
-|--------|------|------|----------|-------------|
-| GET | `/api/v2/energy/readings` | `ability:energy:read` | api | Lecturas de energía paginadas (`?type=load\|generator`) |
-| GET | `/api/v2/energy/solar-readings` | `ability:energy:read` | api | Lecturas del controlador solar, paginadas |
-| POST | `/api/v2/energy/readings` | `ability:energy:write` | api-store | Subida del monitor de energía |
-| POST | `/api/v2/energy/solar-readings` | `ability:energy:write` | api-store | Subida del controlador solar |
+---
 
-Las dos subidas devuelven `warnings` en el cuerpo cuando algo es raro pero se ha
-guardado. Un `warnings` no vacío significa que hay algo que revisar en el montaje
-o en la configuración de los elementos.
+## 2. El Elemento Energético (`HardwareEnergy`)
 
-Las dos admiten además `hardware_device_info` para mandar la salud del propio
-aparato en la misma petición, sin necesidad de `hardware:write` ni de una segunda
-llamada.
+Una fila de `hardware_energy` representa **un rol funcional** dentro de un dispositivo.
+Un mismo aparato físico puede cumplir varios roles simultáneos mediante filas distintas:
 
-### Token de un cacharro de energía
+| `role` | Magnitud / Función | Ejemplos | Límite por medidor |
+|---|---|---|---|
+| `generator` | Generación de energía | Panel fotovoltaico, generador eólico, dinamo | **1** por medidor |
+| `battery` | Almacenamiento de energía | Banco de baterías LiFePO4, AGM, GEL, 18650 | **1** por medidor |
+| `load` | Consumo de energía | Router, servidor, Raspberry Pi, farola, salida de carga | **Múltiples** (por canal `sensor_position`) |
 
-```bash
-php artisan iot:device-token <id-del-dispositivo> --abilities=energy:write
-```
+### Campos Principales de `HardwareEnergy`:
+- `hardware_device_id`: Dispositivo físico que realiza la medición (medidor/sensor).
+- `hardware_device_monitorized_id`: Dispositivo físico medido (ej. el router conectado al sensor).
+- `role`: Rol del elemento (`generator`, `battery`, `load`).
+- `sensor_position`: Canal físico del sensor (0, 1, 2...). En generador y batería es 0.
+- `nominal_voltage`: Tensión nominal de diseño (ej. 24.0 V para paneles, 12.8 V para baterías, 12.0 V para routers).
+- `voltage_min` y `voltage_max`: Umbrales de plausibilidad y calibración de SOC para baterías.
+- `capacity_ah`: Capacidad nominal en Amperios-hora (Ah) para baterías.
+- `capacity_wh`: Accesor dinámico calculado como `capacity_ah * nominal_voltage`.
+- `auto_calculate_history`: Booleano que indica si los acumulados se recalculan automáticamente desde lecturas.
+- `is_active`: Indica si el elemento está activo y debe seguir procesando telemetría.
 
-Se le añade sola la ability `device:{id}`, que lo ata a ese aparato: aunque el
-token se filtre, sólo puede escribir lecturas de ése.
+---
 
-## Qué escribe una subida del controlador solar
+## 3. Telemetría y Contrato Universal `energy`
 
-Una sola petición a `POST /energy/solar-readings` toca **seis tablas**, igual que
-en la V1:
+Los dispositivos IoT pueden subir su telemetría mediante un payload unificado que agrupa
+los tres subsistemas en un único bloque semántico `energy`:
 
-| Tabla | Qué se guarda |
-|---|---|
-| `hardware_power_generators_solar` | La lectura cruda completa del controlador |
-| `hardware_power_generators_today` | Resumen del día del elemento generador |
-| `hardware_power_generators_historical` | Acumulado del elemento generador |
-| `hardware_power_loads` | La salida de carga del controlador, como consumo |
-| `hardware_power_loads_today` | Resumen del día del elemento de consumo |
-| `hardware_power_loads_historical` | Acumulado del elemento de consumo |
-
-Las cinco últimas **no se escribían** desde la V2: `storeSolarReading()` guardaba
-sólo la fila cruda. El panel de energía y sus gráficas leen de los resúmenes, así
-que se quedaron sin datos nuevos mientras la tabla de lecturas crecía. Corregido
-el 2026-09-06.
-
-### Tres reglas
-
-1. **Si lo manda el aparato, se toma; si no, se calcula.** Vale para la potencia
-   de la lectura y para los acumulados del día y del total. Un controlador solar
-   lleva sus propias cuentas (`day_power_generation_wh`, `total_*`…) y las manda
-   en cada lectura: sumar las nuestras encima daría el doble.
-2. **El acumulado nunca baja.** Un controlador se resetea y vuelve a contar desde
-   cero; ese día su «total» es menor que lo guardado. Se conserva el mayor entre
-   lo que había, lo que suman los resúmenes diarios y lo que dice el aparato. Es
-   la regla que ya tenía la V1, y por eso el Rover de producción conserva 66.388
-   Wh acumulados mientras el aparato dice 36.087.
-3. **La salida de carga es consumo.** `load_voltage`, `load_current` y
-   `load_power` van a las tablas de consumo. Necesitan un elemento de rol `load`
-   dado de alta en el mismo dispositivo; si no lo hay, la respuesta lo avisa en
-   `warnings` en vez de tirar el dato en silencio.
-
-### Qué sale de dónde en cada columna
-
-Los mínimos y máximos del día (`*_min`, `*_max` de las tablas `*_today` y
-`*_historical`) se calculan de las lecturas guardadas, como en la V1. Lo que
-manda el aparato ocupa estas columnas:
-
-| Columna | Sale de |
-|---|---|
-| `*_today.energy_wh` | `day_power_generation_wh` / `day_power_consumption_wh` |
-| `*_today.energy_ah` | `day_charging_amp_hours` / `day_discharging_amp_hours` |
-| `*_historical.energy_wh` | `total_power_generation_wh` / `total_power_consumption_wh` |
-| `*_historical.energy_ah` | `total_charging_amp_hours` / `total_discharging_amp_hours` |
-| `*_historical.days_operating` | `total_operating_days` |
-| `generators_historical.number_battery_over_discharges` | `total_battery_over_discharges` |
-| `generators_historical.number_battery_full_charges` | `total_battery_full_charges` |
-
-Los dos contadores de ciclos **sólo** los cuenta el controlador: no se pueden
-derivar de nuestras lecturas. Tienen columna desde la V1 y estuvieron vacíos
-toda la V2.
-
-### Lo que sigue vacío, y por qué
-
-En las tablas de **lecturas** (`hardware_power_generators_solar` y
-`hardware_power_loads`), estas columnas quedan a null en las subidas del
-controlador solar:
-
-- `delta_seconds`, `energy_wh`, `energy_ah`: son la energía **de ese intervalo**.
-  El controlador no manda el intervalo, y sus acumulados del día y del total ya
-  van a las tablas de resumen, que es de donde leen el panel y las gráficas.
-- `battery_current` y `battery_power` (sólo en la tabla solar): el contrato los
-  acepta, pero el Rover no los manda. Tampoco los recibía la V1.
-
-## Modelo de energía (D115)
-
-Tres problemas que arrastraba el módulo y que este modelo resuelve:
-
-1. **No existía la entidad «elemento energético».** Las lecturas se indexaban
-   sólo por dispositivo. Un monitor mide un panel y un router a la vez, y el
-   panel no existía como fila en ningún sitio: no había dónde guardar su tensión
-   ni su tipo. `hardware_energy` **ya era esa entidad** desde 2022, sólo que sin
-   los campos que la hacen útil.
-2. **Sin tensión por elemento, los vatios estaban mal.** Se multiplicaba la
-   corriente de cada canal por *el único voltaje de la petición*: un panel de
-   24 V y una Pico de 3,7 V en la misma petición daban números sin sentido.
-3. **Sólo se guardaba potencia instantánea.** `SUM(power)` no son vatios-hora:
-   da un número que sube si el sensor mide más veces.
-
-### Lo que manda un dispositivo
-
-`POST /api/v2/energy/readings`
-
-```jsonc
+```json
 {
-  "hardware_device_id": 7,        // quién mide
-  "duration": 300,                // segundos que cubre la medición
-  "temperature": 41.5,            // opcional, del propio monitor
-  "readings": [
-    {
-      "pos": 0,                   // canal -> hardware_energy.sensor_position
-      "amperage": 1.42,           // corriente MEDIA del periodo (A)
-      "voltage": 12.4,            // tensión del periodo (V)
-      "energy_wh": null,          // opcional: sólo si el aparato lo calcula mejor
-      "duration": null            // opcional: si este canal mide a otra cadencia
-    }
-  ],
-  "battery_voltage": 3.92,        // opcional, del PROPIO dispositivo (D108)
-  "battery_percentage": 78        // opcional
+  "hardware_device_id": 15,
+  "duration": 60,
+  "energy": {
+    "generator": {
+      "voltage": 34.5,
+      "amperage": 4.2,
+      "power": 144.9,
+      "charging_status": 3,
+      "charging_status_label": "mppt",
+      "light_status": false,
+      "today_energy_wh": 1250.0,
+      "historical_energy_wh": 45000.0
+    },
+    "battery": {
+      "voltage": 13.4,
+      "soc": 92,
+      "temperature": 24.5,
+      "charging_status": 3,
+      "today_energy_ah": 40.0,
+      "historical_energy_ah": 1500.0,
+      "battery_full_charges": 25,
+      "battery_over_discharges": 1
+    },
+    "loads": [
+      {
+        "channel": 0,
+        "voltage": 12.1,
+        "amperage": 2.5,
+        "power": 30.25,
+        "today_energy_wh": 310.0,
+        "historical_energy_wh": 12500.0
+      }
+    ]
+  }
 }
 ```
 
-`amperage` es la corriente **media del periodo**, no una instantánea. Si falla
-internet, el aparato sigue promediando y `duration` crece: una media de 20
-minutos y una de 5 son igual de válidas, porque `A · s` da lo mismo.
-
-**No hay traducción de nombres antiguos.** Éste es el vocabulario; el firmware
-se ajusta a él. La única excepción del proyecto es el Renogy Rover, que es un
-aparato comercial cuyo protocolo no se puede cambiar.
-
-### Lo que deriva el backend
-
-```
-W  = V · A
-Ah = A · s / 3600
-Wh = V · A · s / 3600
-```
-
-Si `energy_wh` viene del aparato, **gana** al calculado. Los tres crudos
-(`amperage`, `voltage`, `delta_seconds`) **no se tiran nunca**: si un día se
-descubre que un elemento tenía la tensión mal puesta, con ellos se recalcula el
-histórico entero.
-
-De cada número se guarda de dónde salió:
-
-| Columna | Valores | Qué dice |
-|---|---|---|
-| `energy_source` | `device` / `derived` | Si los Wh los dio el aparato o los calculamos |
-| `voltage_source` | `measured` / `nominal` | Si la tensión es la medida o la nominal del elemento |
-
-### Lecturas sospechosas
-
-Una lectura rara **se marca, nunca se descarta** (D72): queda fuera de los
-agregados del día, pero sigue en su tabla para poder mirarla, y la respuesta
-lleva un `warnings` explicando qué pasó.
-
-| Situación | Qué se hace |
-|---|---|
-| Corriente negativa | Se marca. Es una avería de cableado, no un dato (D110) |
-| Tensión medida fuera de rango | Se usa `nominal_voltage` del elemento y se anota `voltage_source: nominal` |
-| Ni tensión medida ni nominal | Se marca: sin tensión no hay vatios. **No se inventa un 0** |
-| Sin `duration` | Se guarda la potencia, no los vatios-hora. Sólo aviso |
-
-**Nada de corrientes con signo** (D110). El estado de carga es un campo propio,
-`charging_status`, que el Rover ya manda.
-
-### Los tres perfiles de subida (D108)
-
-| Perfil | Qué sube | Qué se escribe |
-|---|---|---|
-| IoT modesto | A + V + segundos | Lectura. Sin histórico |
-| Consumo puro (routers a 12,4 V) | Igual. No hay generación | Lectura, elemento con `role = load` |
-| Controlador solar | Lo anterior **+** acumulados desde el reinicio | Lectura en `…_generators_solar`, con detección de reinicio |
-
-### El reparto en tablas
-
-```
-readings[].pos --(== hardware_energy.sensor_position)--> elemento
-                              |
-             role: generator  |  role: load | storage
-                   v          |          v
-   hardware_power_generators  |  hardware_power_loads
-                   +----------+----------+
-                              v
-                 ..._today       (una fila por elemento y día)
-                 ..._historical  (acumulado, recalculado desde los diarios)
-```
-
-Un elemento con `role = storage` es la batería: su corriente se registra en la
-tabla de consumos, porque los agregados de generación de una instalación cuentan
-**sólo** los elementos con `role = generator`. Así una batería cargándose no se
-cuenta como energía producida.
-
-La lectura se atribuye al dispositivo **monitorizado**, no al monitor.
-
-### Los resúmenes
-
-En `…_today` y `…_historical` lo que se acumula es `energy_wh` y `energy_ah`.
-Las columnas sueltas `power` y `amperage` de esas cuatro tablas **ya no existen**:
-eran acumuladores de potencia instantánea, y el nombre era el que estaba mal. Los
-`*_min` y `*_max` sí se quedan, porque un extremo de la magnitud instantánea sí
-significa algo.
-
-`days_operating` es el número de días **distintos** con lecturas. Antes era
-`count(id)` sobre una tabla que, por buscar la última fila del dispositivo sin
-filtrar por fecha, sólo llegó a tener una fila por dispositivo: valía 1 desde
-2022.
-
-### La batería del propio dispositivo (D108)
-
-`hardware_devices.battery_voltage`, `battery_percentage` y `battery_read_at`. La
-puede mandar **cualquier** endpoint IoT —estación, keycounter, smartplant,
-energía— y siempre es opcional. `battery_read_at` existe para distinguir un dato
-de ahora de uno de hace tres semanas.
-
-Meterla en las tablas de energía era exactamente lo que hacía el caso especial
-del dispositivo 14 en V1.
-
-### El controlador solar (D109)
-
-> El **mapa de registros Modbus** del Rover —qué da el aparato, en qué unidades y
-> a qué columna va cada registro— está en
-> [`hardware/renogy-rover.md`](hardware/renogy-rover.md). No está en ningún otro
-> sitio del repositorio.
-
-`hardware_power_generators_solar` es un **superconjunto** de la tabla de
-generadores, y su modelo hereda de `HardwarePowerGenerator`. Añade lo que un
-generador genérico no tiene: el bloque `day_*` de estadísticas del día y el
-`total_*` de acumulado histórico del mapa Modbus.
-
-`total_operating_days` sólo puede subir. Si en una lectura **baja**, el
-controlador se ha reseteado: esa lectura abre **fila nueva** y no machaca la
-anterior. Sin eso, un reset borra el acumulado de años.
-
-### Las cuatro instalaciones
-
-| Instalación (`slug`) | Tensión | Batería | Qué alimenta |
-|---|---|---|---|
-| `casa` | 24 V placas / 12 V batería | 500 Ah | Portátil, servidor, pantallas. Es el Renogy Rover |
-| `autonomo-grande` | 12 V | 100 Ah | IoT y routers |
-| `banco-routers` | 12,4 V estabilizado | — | Routers, switches, modems. Sólo consumo |
-| `nodos-iot` | 3,7-6 V | 500-2000 mAh | Uno por cacharro, `is_standalone` |
-
-Las crea `EnergySystemsSeeder`. Sus **elementos** se asignan desde el panel
-poniéndole a cada fila de `hardware_energy` su `energy_system_id`, su `role` y su
-`nominal_voltage` — esta última es la que arregla el cálculo de los vatios.
-
-## Campos del modelo HardwareEnergy (el elemento)
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `hardware_device_id` | int | Dispositivo que **mide** |
-| `hardware_device_monitorized_id` | int | Dispositivo **medido** |
-| `energy_system_id` | int | Instalación a la que pertenece |
-| `energy_source_type_id` | int | Tipo de fuente |
-| `name` | string | «Panel sur», «Router principal» |
-| `role` | string | `generator` \| `load` \| `storage` |
-| `is_generator` | bool | Se conserva hasta migrar del todo a `role` (D70) |
-| `sensor_position` | int | Canal del monitor: casa con `readings[].pos` |
-| `nominal_voltage` | decimal | Tensión nominal. **La que arregla el cálculo de los vatios** |
-| `voltage_min` / `voltage_max` | decimal | Fuera de este rango, la tensión medida no se cree |
-| `rated_power_w` | decimal | Potencia nominal (W) |
-| `capacity_mah` / `capacity_wh` | decimal | Capacidad de la batería del elemento |
-| `is_active` | bool | Un elemento retirado deja de aceptar lecturas nuevas |
-
-## Campos de una lectura (`HardwarePowerGenerator` / `HardwarePowerLoad`)
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `hardware_device_id` | int | Dispositivo **medido** |
-| `hardware_energy_id` | int | Elemento al que corresponde la lectura |
-| `amperage` | decimal(10,3) | **Crudo**: corriente media del periodo (A) |
-| `voltage` | decimal(10,3) | **Crudo**: tensión del periodo (V) |
-| `delta_seconds` | int | **Crudo**: segundos que cubre la media |
-| `power` | decimal(12,3) | `V·A`. Potencia **media** del periodo, no instantánea |
-| `energy_wh` | decimal(14,4) | `V·A·s/3600`. Esto sí se suma |
-| `energy_ah` | decimal(14,4) | `A·s/3600`. Esto sí se suma |
-| `energy_source` | string | `device` \| `derived` |
-| `voltage_source` | string | `measured` \| `nominal` |
-| `is_suspicious` | bool | Queda fuera de los agregados, pero se conserva |
-| `suspicious_reason` | string | Por qué |
-| `temperature` | decimal | Temperatura del aparato |
-| `battery_voltage` / `battery_percentage` | | Batería del elemento medido |
-| `read_at` | timestamp | Cuándo se **midió**, no cuándo llegó |
-
-Sólo en generadores: `charging_status`, `charging_status_label`,
-`battery_temperature`, `light_status`, `light_brightness`.
-Sólo en consumos: `fan`.
+### Principios de Cálculo e Integración:
+1. **Sin campos `read_at` en base de datos ni contrato:** La fecha y momento de la lectura se rigen exclusivamente por `created_at` del servidor o momento de recepción, eliminando redundancias y desfases horarios en clientes IoT sin RTC.
+2. **Derivación de Magnitudes:**
+   - Potencia: $P = V \cdot I$ (W)
+   - Energía incremental: $\Delta Wh = \frac{P \cdot \text{duration}}{3600}$
+   - Amperios-hora incrementales: $\Delta Ah = \frac{I \cdot \text{duration}}{3600}$
+   - Si el dispositivo reporta acumulados nativos (`today_energy_wh`, `historical_energy_wh`), se toma el valor del hardware (`energy_source: device`). De lo contrario, se integran los calculados (`energy_source: derived`).
+3. **Respaldo de Tensión Nominal (`nominal_voltage`):** Si un canal de consumo o sensor de corriente simple (ej. INA219 montado en la línea de un router) no mide tensión, el backend recurre a `nominal_voltage` del elemento con `voltage_source: nominal` y emite un warning informativo sin descartar la muestra.
+4. **Cálculo Automático de SOC de Batería:** Si el payload incluye tensión de batería pero omite el porcentaje (`soc`), el backend lo calcula de forma proporcional entre `voltage_min` y `voltage_max`.
 
 ---
 
-> Creado: 2026-09-06 (separado de `hardware.md`) · Última revisión: 2026-09-06
+## 4. Gestión Multisensión y Reseteo de Odómetro
 
+Los microcontroladores y controladores de carga pueden reiniciar sus contadores internos
+(ej. tras apagado prolongado, corte de suministro o desborde numérico).
+Para evitar la pérdida de años de históricos acumulados:
 
-## Las tensiones: por qué los amperios de los dos lados no se comparan
-
-**Diagnóstico sobre los datos reales (2026-09-07, últimos 90 días de la
-instalación del Renogy):**
-
-| | elemento | tensión media | mín | máx | corriente media | `voltage_source` |
-|---|---|---|---|---|---|---|
-| Generación | `hardware_energy` #4 | **18,19 V** | 0,4 | 39,5 | 1,10 A | `measured` |
-| Consumo | `hardware_energy` #7 | **12,69 V** | 11,8 | 14,1 | 2,40 A | `measured` |
-
-Los dos son del mismo controlador (dispositivo 6). La generación se mide en el
-**lado del panel** —tensión variable, hasta 39,5 V, o sea panel de 24 V
-nominales— y el consumo en el **lado de la batería**, a 12 V.
-
-Una lectura concreta del 5 de septiembre de 2026:
-
-    Generando:   1,85 A a 33,7 V  =  64 W
-    Consumiendo: 2,16 A a 13,2 V  =  28 W
-
-**En amperios parece que se consume más de lo que se genera. En vatios se genera
-más del doble.** La página tenía las dos tarjetas enfrentadas, «Generando 1,85 A»
-y «Consumiendo 2,16 A», invitando justo a esa lectura equivocada.
-
-### Lo que SÍ está bien
-
-- **Los vatios.** Cada lado usa su tensión medida y `power = V · A`. Verificado
-  sobre 5 000 lecturas de cada tabla: los desvíos que aparecen son de **±1 W** y
-  vienen de que el controlador manda `power` como entero (28, 29, 64…) mientras
-  que `V × A` da decimales. No es un error de cálculo.
-- **Los `energy_wh` y `energy_ah` del día.** En una lectura de controlador solar
-  no se calculan: vienen del propio aparato (`total_power_generation_wh`,
-  `total_charging_amp_hours`). Comprobado el 2026-09-03: 68 Ah / 878 Wh en
-  generación son 12,9 V, y 59 Ah / 732 Wh en consumo son 12,4 V. Los dos
-  acumulados están referidos a la batería, que es lo correcto.
-
-### Lo que se ha corregido
-
-En `/hardware/energy` ya no hay dos tarjetas de amperios enfrentadas. En su
-lugar van el **balance en vatios** —que es la pregunta de verdad: ¿entra más de
-lo que sale?— y las **dos tensiones**, para que se vea que no son la misma. Los
-Ah del día llevan el lado en el título: «Generado (panel)» y «Consumido
-(batería)».
-
-**Regla al tocar esta página: los vatios y los vatios-hora se comparan; los
-amperios y los amperios-hora, sólo dentro del mismo lado.**
-
-## Los roles: una fila por papel, no por dispositivo
-
-Una fila de `hardware_energy` es **un papel de un dispositivo**, no el
-dispositivo. Un mismo aparato puede cumplir varios a la vez, y entonces tiene
-**una fila por cada uno**:
-
-| `role` | Qué mide | Escribe en |
-|---|---|---|
-| `generator` | lo que **produce**: el panel solar, el alternador | `hardware_power_generators` |
-| `load` | lo que **consume**: la salida de carga, un router, una Raspberry | `hardware_power_loads` |
-| `battery` | lo que **almacena**: el banco de baterías | — |
-
-El valor guardado del tercero es **`battery`**: se llamaba `storage` mientras la
-etiqueta del panel ya decía «Batería», o sea que la base de datos y la interfaz
-decían cosas distintas. Renombrado el 2026-09-07.
-
-**Por qué una fila por papel y no una por dispositivo:** así se agrupa, se filtra
-y se asocia por rol. Los totales de generación de una instalación cuentan sólo
-sus `generator`, y el consumo sólo sus `load`, sin tener que mirar de qué
-aparato viene cada lectura.
-
-Un controlador solar es el caso completo: mide lo que entra del panel
-(`generator`), lo que sale por la carga (`load`) y lo que hay en la batería
-(`battery`). Tres filas, mismo `hardware_device_id`.
-
-### `is_generator` ya no existe
-
-Duplicaba a `role` —dos columnas para lo mismo acaban discrepando— y, con el
-tercer papel, se quedó coja: una batería no genera ni consume, así que la
-booleana la dejaba en `false`, **indistinguible de una carga**. Eliminada el
-2026-09-07. Manda `role`.
-
-### Cuántas filas admite cada papel
-
-| Papel | Cuántas | Por qué |
-|---|---|---|
-| `generator` | **1** por monitor | Un montaje tiene un campo solar |
-| `battery` | **1** por monitor | Un banco de baterías |
-| `load` | **las que hagan falta** | Un monitor mide varias cargas, cada una por su canal |
-
-El límite vive en `HardwareEnergy::LIMITE_POR_ROL` y lo aplica la interfaz: los
-botones de generador y batería desaparecen cuando ya existe el suyo.
-
-Debajo hay un índice único sobre
-**`hardware_device_id` + `hardware_device_monitorized_id` + `role` + `sensor_position`**,
-que es la red de seguridad contra un duplicado exacto, no la regla de negocio.
-
-> `sensor_position` es `NOT NULL` con `0` por defecto **porque el índice lo
-> necesita**: en PostgreSQL dos `NULL` no chocan entre sí, así que con la columna
-> nullable dos filas idénticas con el canal vacío pasarían la restricción y ésta
-> no serviría de nada.
-
-### Lo único común entre las filas de un mismo medidor es el medidor
-
-El aparato medido, la instalación, la fuente y el `is_active` son **de cada
-canal**. Una Raspberry con un INA puede llevar la batería de 12 V a un
-ventilador, la de litio a una lámpara y el cargador de red a un
-microcontrolador: tres canales, tres cosas medidas, tres fuentes distintas. Y se
-apaga la monitorización de una carga averiada sin tocar las otras dos.
-
-### El nombre: `display_name`, no una columna
-
-La columna `name` era un campo más que rellenar a mano para escribir lo que ya
-se sabe. Se quitó el 2026-09-07; `HardwareEnergy::display_name` lo compone del
-aparato medido y su papel: «Renogy Rover · generador», con el canal detrás
-cuando el medidor tiene más de uno.
-
-⚠️ **No carga relaciones por su cuenta**, a propósito: se pinta en listados y en
-el aviso de cada lectura, así que tirar de la relación sería una consulta por
-fila —y con el lazy loading desactivado, un error. Quien lo necesite con nombre,
-que cargue `monitorized`; sin eso sale el id, que sigue identificando la fila.
-
-### La tensión: manda la reportada, la nominal es el respaldo
-
-**Para calcular se toma siempre la tensión que reporta el aparato en la lectura.**
-`nominal_voltage` es el **fallback**, y sólo entra cuando esa tensión falta o no
-es creíble. Ver más abajo por qué eso importa y por qué hoy está a `NULL`.
-
-Y la tensión **es de cada rol**, no del dispositivo: en el Renogy, el
-`generator` mide el panel y el `load` mide la batería, que no están a la misma
-tensión. Las estadísticas tienen que tener en cuenta el rol de cada elemento
-para no comparar magnitudes de lados distintos — es lo que se corrigió en
-`/hardware/energy` (ver «Las tensiones» más abajo).
+1. `HardwareEnergyHistorical` organiza los datos en sesiones (`session_index`).
+2. Cuando se detecta una caída drástica en el acumulado reportado ($< 50\%$ del valor previamente alcanzado habiendo acumulado $> 50\text{ Wh}$ o $50\text{ Ah}$):
+   - La sesión previa se cierra y preserva con su valor íntegro alcanzado.
+   - Se crea automáticamente una nueva fila con `session_index = anterior + 1`.
+   - El nuevo valor del odómetro reiniciado comienza a contar en la nueva sesión.
+3. El acumulado total absoluto de un elemento corresponde a la suma de `energy_wh` y `energy_ah` de todas sus sesiones históricas.
 
 ---
 
-### `nominal_voltage` está a `NULL` en los ocho elementos, y así se queda
+## 5. Controladores y Rutas API V2
 
-**No es un descuido: es lo correcto para esta plataforma.** Se planteó rellenarlo
-y la conclusión, tras mirarlo, fue que no hay que tocarlo.
+- `POST /api/v2/energy/readings`: Endpoint universal de ingesta (ability `energy:write`).
+- `GET /api/v2/energy/readings`: Consulta de lecturas paginadas filtrables por dispositivo, elemento, fecha y ordenación (ability `energy:read`).
+- `POST /api/v2/energy/solar-readings`: Endpoint de compatibilidad transitoria para controladores Renogy Rover (con dual-write al esquema unificado).
+- `GET /api/v2/energy/solar-readings`: Endpoint legacy de consulta solar.
 
-**El cliente manda la tensión en cada lectura.** El `voltage_source` es
-`measured` en el **100 %** de las lecturas de los últimos 90 días. Con eso,
-`nominal_voltage` no participa en ningún cálculo: `resolveVoltage()` usa la
-medida y punto.
+---
 
-**Y rellenarlo no sería neutro: activaría un filtro que hoy está apagado.**
-`voltageIsPlausible()` deduce el margen creíble de la nominal cuando no hay
-`voltage_min`/`voltage_max` explícitos, con un factor de ×0,5 a ×2,0. Poner 24 V
-en el elemento de generación del Renogy daría un margen de 12-48 V, y **el 44,7 %
-de sus lecturas están por debajo de 12 V** —de noche el panel no da nada, y esa
-lectura es correcta—: pasarían a considerarse no plausibles y se sustituirían por
-los 24 V nominales. Se cambiaría un dato bueno por uno inventado.
+## 6. Seguridad y Aislamiento
 
-Con los tres campos a `NULL` no hay con qué juzgar, **y entonces cualquier
-tensión positiva se acepta tal cual**. Es exactamente el comportamiento que se
-quiere cuando el aparato es la fuente de verdad, y está escrito así en el propio
-`voltageIsPlausible()`:
+- **Abilities Sanctum:**
+  - `energy:write`: Exclusiva para subida de telemetría desde dispositivos medidores.
+  - `energy:read`: Para paneles y aplicaciones consumidoras de datos.
+- **Aislamiento por Dispositivo (`device:{id}`):** Un token asignado a un dispositivo no puede reportar ni consultar datos de dispositivos ajenos.
+- **Aislamiento Multiusuario:** Las policies y reglas (`OwnedHardwareDevice`) impiden cualquier acceso cruzado entre cuentas de usuario.
 
-> Si el elemento no tiene ni nominal ni márgenes no hay con qué juzgar, y
-> entonces cualquier tensión positiva pasa: inventarse un criterio marcaría como
-> sospechosas lecturas correctas.
+---
 
-**Lo único que se pierde** es el caso de que un aparato deje de mandar la
-tensión: ahí `resolveVoltage()` devuelve `null` y esa lectura se queda sin
-vatios, con su aviso en el log. Es el comportamiento honesto —un hueco en vez de
-un número inventado— y hasta hoy no ha ocurrido nunca.
+## 7. Panel de Administración Filament (Admin Back-Office)
 
-**Si algún día hiciera falta**, el criterio sería la tensión del lado que mide
-cada elemento, que no es la misma en las dos instalaciones:
+El panel de administración centraliza la gestión y visualización del módulo de energía bajo el cluster `App\Filament\Admin\Clusters\Energy`:
 
-| Instalación | Panel (`is_generator = true`) | Batería (`is_generator = false`) |
-|---|---|---|
-| Renogy Rover 20 LI | 24 V (en vacío hasta 43,9 medidos) | 12 V (11,0-14,3) |
-| Sunix 20A | 12 V (llega a 18-20) | 12 V (hasta 13,8) |
+### 7.1. Recurso Unificado `HardwareEnergyResource`
+- **Gestión centralizada:** Administra todos los elementos energéticos del usuario (tanto controladores solares como monitores de consumo) sin segregación artificial en recursos separados.
+- **Agrupación en tabla:** Los elementos se presentan agrupados por el dispositivo medidor (`hardwareDevice.name`), permitiendo identificar rápidamente todos los canales y roles que cuelgan de cada microcontrolador.
+- **Formulario especializado:** `HardwareEnergyForm` configura la tensión nominal (`nominal_voltage`), umbrales de tensión (`voltage_min`, `voltage_max`), capacidad en Ah (`capacity_ah`) y flags de recálculo de históricos.
 
-Y haría falta poner también `voltage_min`/`voltage_max` a mano en los
-generadores, por lo del 44,7 % de arriba. Pero **mientras el cliente siga
-mandando la tensión, no hace falta nada de esto**.
+### 7.2. Relation Managers de Telemetría (Ficha del Elemento)
+En la pantalla de edición de cada elemento energético (`EditHardwareEnergy`) se montan cuatro relation managers:
+1. `RolesRelationManager`: Permite inspeccionar y dar de alta de forma contextual los roles complementarios en el mismo dispositivo físico (`create_generator`, `create_battery`, `create_load`) sin abandonar la ficha.
+2. `ReadingsRelationManager`: Tabla paginada de telemetría granular (`hardware_energy_readings`) con tensión, corriente, potencia, $\Delta Wh$, $\Delta Ah$, estado de carga y marcas de sospecha (`is_suspicious` y `suspicious_reason`).
+3. `TodayRelationManager`: Visualización de agregados diarios (`hardware_energy_today`) con Wh y Ah del día, número de lecturas registradas y extremos (mínimos, máximos y medias de tensión, corriente y potencia).
+4. `HistoricalRelationManager`: Desglose de sesiones de odómetro (`hardware_energy_historical`) mostrando el índice de sesión, días en operación, total de Wh/Ah acumulados y ciclos de batería.
+
+### 7.3. Dashboard y Widgets Analíticos
+- **`EnergyDashboard` (`/admin/energy/energy-dashboard`):** Página principal del cluster de energía, accesible para administradores.
+- **`EnergyStatsWidget`:** Cuadrícula de tarjetas con métricas en tiempo real (consumo actual en W, generación actual en W, balance neto con indicador de superávit/déficit, nivel medio de batería), agregados de hoy (Wh consumidos, Wh generados, pico de consumo) y acumulados de los últimos 30 días junto a métricas de odómetro.
+- **`EnergyHistoricalChart`:** Gráfico lineal temporal de los últimos 30 días que enfrenta la curva de generación total contra la curva de consumo total en vatios-hora (Wh) consultando `hardware_energy_today`.
+
+---
+
+## 8. Frontend Web Público (`/hardware/energy`)
+
+La plataforma expone una interfaz web pública para la monitorización en tiempo real e histórica de generación y consumos:
+
+- **Ruta:** `GET /hardware/energy` (`route('hardware.energy.index')`).
+- **Controlador:** `App\Http\Controllers\Hardware\EnergyController`.
+- **Vista:** `resources/views/hardware/energy/index.blade.php`.
+
+### 8.1. Métricas Agregadas
+La interfaz presenta tres bloques de tarjetas analíticas agregadas:
+1. **Ahora Mismo:** Potencia de generación actual (W), potencia de consumo actual (W), balance neto instantáneo (W), tensiones de panel y batería (V), porcentajes de carga de batería, intensidad solar (%) y temperatura máxima registrada (°C).
+2. **Hoy:** Energía generada hoy (Wh), energía consumida hoy (Wh) y balance de amperios-hora (Ah).
+3. **Histórico:** Energía total generada (kWh), total consumida (kWh), días acumulados en operación y ciclos completos de carga de batería.
+
+### 8.2. Tarjetas de Dispositivos y Ordenación en Cascada
+Cada dispositivo físico medidor se renderiza en una tarjeta individual con su miniatura, versión de software, resumen de kWh históricos, porcentaje de batería y barras comparativas de potencia instantánea y energía diaria.
+
+Para ofrecer una visualización priorizada y relevante, las tarjetas se ordenan mediante un algoritmo en cascada:
+1. **Activos en la última hora:** Dispositivos reportando potencia instantánea (`generated_now > 0 || consumed_now > 0`) aparecen en primer lugar.
+2. **Mayor actividad hoy:** En caso de empate, se prioriza el dispositivo que más energía haya movido en el día (`generated_today + consumed_today`).
+3. **Mayor acumulado histórico:** Si no hay actividad hoy, se ordenan por su acumulado histórico total (`generated_historical_kwh + consumed_historical_kwh`).
+
+### 8.3. Tokens de Diseño y Accesibilidad
+La interfaz respeta estrictamente la paleta del sistema de diseño («Obsidian Flux / Raupulus Slate») mediante tokens semánticos `@theme` de Tailwind v4 (`bg-surface`, `bg-surface-container-*`, `text-on-surface*`), asegurando un ratio de contraste WCAG AA en modos claro y oscuro verificado por `tests/Unit/Design/ContrastTest.php`.
+
+---
+
+## 9. Tareas Programadas y Mantenimiento Nocturno
+
+Para garantizar la integridad y coherencia matemática de las agregaciones a largo plazo:
+
+- **Comando:** `php artisan energy:aggregate-daily` (`App\Console\Commands\Energy\AggregateDailyEnergyCommand`).
+- **Planificación:** Diario a las **00:05** (`Europe/Madrid`) en `routes/console.php`.
+- **Comportamiento:**
+  1. Cierra y consolida el día anterior (todas las muestras entre 00:00:00 y 23:59:59) en `hardware_energy_today`.
+  2. Filtra automáticamente por elementos con `auto_calculate_history = true` e `is_active = true` (los elementos con odómetro propio de hardware como el Renogy Rover se gestionan nativamente).
+  3. Reconcilia la serie histórica en `hardware_energy_historical` asegurando que `days_operating`, `readings_count`, `energy_wh` y `energy_ah` correspondan fielmente a la suma consolidada de sus resúmenes diarios.
+  4. Excluye lecturas anómalas o sospechosas (`is_suspicious = true`).
+  5. Soporta ejecución manual retroactiva mediante opciones: `--date=YYYY-MM-DD`, `--today`, `--element=ID`, `--all`.
+
+---
+
+> Creado: 2026-09-06 · Última revisión: 2026-09-12

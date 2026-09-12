@@ -42,7 +42,6 @@ class HardwareEnergyForm
                 ->columnSpanFull()
                 ->schema([
                     self::channel(),
-                    self::installation(),
                     self::source(),
                     self::active(),
                 ]),
@@ -86,11 +85,10 @@ class HardwareEnergyForm
                     self::active(),
                 ]),
 
-            Section::make('Instalación')
+            Section::make('Fuente de energía')
                 ->columns(2)
                 ->columnSpanFull()
                 ->schema([
-                    self::installation(),
                     self::source(),
                 ]),
 
@@ -115,15 +113,15 @@ class HardwareEnergyForm
                         ->required()->searchable()->preload()
                         ->label('Dispositivo monitorizado')
                         ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
+                    self::role(),
                     self::channel(),
                     self::active(),
                 ]),
 
-            Section::make('Instalación')
+            Section::make('Fuente de energía')
                 ->columns(2)
                 ->columnSpanFull()
                 ->schema([
-                    self::installation(),
                     self::source(),
                 ]),
 
@@ -148,15 +146,6 @@ class HardwareEnergyForm
             ->numeric()->minValue(0)->default(0)->required()
             ->label('Canal del monitor')
             ->helperText('Tiene que coincidir con el «pos» que manda el dispositivo en cada lectura. 0 si sólo tiene uno.');
-    }
-
-    private static function installation(): Select
-    {
-        return Select::make('energy_system_id')
-            ->relationship('system', 'name')
-            ->searchable()->preload()
-            ->label('Instalación')
-            ->helperText('Lo que permite preguntar «cuánto ha generado la casa hoy».');
     }
 
     private static function source(): Select
@@ -194,7 +183,8 @@ class HardwareEnergyForm
                     ->helperText('La de ESTE lado: en un controlador solar, el panel y la batería no están a la misma.'),
                 TextInput::make('rated_power_w')
                     ->numeric()->step(0.01)->suffix(' W')
-                    ->label('Potencia nominal'),
+                    ->label('Potencia nominal')
+                    ->helperText('Potencia de diseño/catálogo (W).'),
                 TextInput::make('voltage_min')
                     ->numeric()->step(0.01)->suffix(' V')
                     ->label('Tensión mínima creíble')
@@ -204,14 +194,15 @@ class HardwareEnergyForm
                     ->label('Tensión máxima creíble'),
 
                 // Sólo tienen sentido en una batería.
-                TextInput::make('capacity_mah')
-                    ->numeric()->step(0.01)->suffix(' mAh')
-                    ->label('Capacidad')
+                TextInput::make('capacity_ah')
+                    ->numeric()->step(0.001)->suffix(' Ah')
+                    ->label('Capacidad nominal (Ah)')
+                    ->helperText('Capacidad nominal en amperios-hora (resolución hasta 1 mAh).')
                     ->visible(fn (Get $get): bool => self::isBattery($get)),
-                TextInput::make('capacity_wh')
-                    ->numeric()->step(0.01)->suffix(' Wh')
-                    ->label('Capacidad')
-                    ->visible(fn (Get $get): bool => self::isBattery($get)),
+                Toggle::make('auto_calculate_history')
+                    ->label('Consolidación histórica nocturna')
+                    ->helperText('Si está activo, el cron nocturno consolida/recalcula acumulados históricos.')
+                    ->default(true),
             ]);
     }
 

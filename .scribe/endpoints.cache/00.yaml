@@ -148,7 +148,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'weatherstation:read'
+          - 'weatherstation:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -182,7 +182,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-09-30'
+        example: '2052-10-06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -191,9 +191,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'weatherstation:read'
+        - 'weatherstation:write'
       name: 'n'
-      expires_at: '2052-09-30'
+      expires_at: '2052-10-06'
     fileParameters: []
     responses: []
     responseFields: []
@@ -392,7 +392,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -403,7 +403,7 @@ endpoints:
         name: contactme
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -437,8 +437,8 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: false
-      contactme: true
+      privacity: true
+      contactme: false
       attributes:
         - v
       g-recaptcha-response: architecto
@@ -1507,6 +1507,17 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      vert_rate:
+        custom: []
+        name: vert_rate
+        description: 'Must be between -100 and 100.'
+        required: false
+        example: -100
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       seen:
         custom: []
         name: seen
@@ -1540,6 +1551,28 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      rssi:
+        custom: []
+        name: rssi
+        description: 'Must be between -100 and 0.'
+        required: false
+        example: -100
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      emergency:
+        custom: []
+        name: emergency
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: yvdljnikhwaykcmy
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
       icao: ngzmiy
@@ -1550,9 +1583,12 @@ endpoints:
       altitude: 10
       speed: 20
       track: 1
+      vert_rate: -100
       seen: 4326.41688
       seen_pos: 4326.41688
       messages: 77
+      rssi: -100
+      emergency: yvdljnikhwaykcmy
     fileParameters: []
     responses: []
     responseFields: []
@@ -1705,6 +1741,17 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      'data[].vert_rate':
+        custom: []
+        name: 'data[].vert_rate'
+        description: 'Must be between -100 and 100.'
+        required: false
+        example: -99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       'data[].seen':
         custom: []
         name: 'data[].seen'
@@ -1738,6 +1785,28 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      'data[].rssi':
+        custom: []
+        name: 'data[].rssi'
+        description: 'Must be between -100 and 0.'
+        required: false
+        example: -100
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'data[].emergency':
+        custom: []
+        name: 'data[].emergency'
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: yvdljnikhwaykcmy
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
       data:
@@ -1750,9 +1819,12 @@ endpoints:
           altitude: 5
           speed: 10
           track: 0
+          vert_rate: -99
           seen: 4326.41688
           seen_pos: 4326.41688
           messages: 77
+          rssi: -100
+          emergency: yvdljnikhwaykcmy
     fileParameters: []
     responses: []
     responseFields: []
@@ -1771,15 +1843,8 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Lecturas de energía, paginadas.'
-      description: |-
-        Exige `energy:read`. Consumo y generación viven en dos tablas
-        distintas —comparten columnas por el trait `IsEnergyReading`, no la
-        tabla—, así que se elige con `?type=load|generator`; por defecto,
-        consumo.
-
-        Sólo devuelve lecturas de dispositivos del usuario y, si el token está
-        ligado a dispositivos concretos (`device:{id}`), sólo las de ésos.
+      title: 'Consulta paginada de lecturas de energía unificadas.'
+      description: 'Requiere ability `energy:read`. Filtra por dispositivo, elemento o rango temporal.'
       authenticated: false
       deprecated: false
     headers:
@@ -1873,10 +1938,7 @@ endpoints:
       subgroup: ''
       subgroupDescription: ''
       title: 'Almacena las lecturas de un monitor de energía.'
-      description: |-
-        La respuesta lleva `warnings` cuando algo es raro pero se ha guardado:
-        una corriente negativa, un elemento sin tensión, un canal sin dar de
-        alta. Sin eso, un montaje mal configurado responde 201 durante meses.
+      description: 'Soporta tanto el contrato universal `energy` (D115) como el contrato legacy `readings`.'
       authenticated: false
       deprecated: false
     headers:
@@ -1886,225 +1948,8 @@ endpoints:
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      hardware_device_info:
-        custom: []
-        name: hardware_device_info
-        description: ''
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      hardware_device_id:
-        custom: []
-        name: hardware_device_id
-        description: 'Must match an existing stored value.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      duration:
-        custom: []
-        name: duration
-        description: 'Must be at least 1.'
-        required: false
-        example: 22
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      read_at:
-        custom: []
-        name: read_at
-        description: 'Must be a valid date.'
-        required: false
-        example: '2026-09-07T10:04:02'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      temperature:
-        custom: []
-        name: temperature
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_voltage:
-        custom: []
-        name: battery_voltage
-        description: 'Must be at least 0.'
-        required: false
-        example: 77
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_percentage:
-        custom: []
-        name: battery_percentage
-        description: 'Must be at least 0. Must not be greater than 100.'
-        required: false
-        example: 15
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      readings:
-        custom: []
-        name: readings
-        description: ''
-        required: true
-        example:
-          - []
-        type: 'object[]'
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'readings[].pos':
-        custom: []
-        name: 'readings[].pos'
-        description: 'Must be at least 0.'
-        required: true
-        example: 27
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'readings[].amperage':
-        custom: []
-        name: 'readings[].amperage'
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].voltage':
-        custom: []
-        name: 'readings[].voltage'
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].duration':
-        custom: []
-        name: 'readings[].duration'
-        description: 'Must be at least 1.'
-        required: false
-        example: 27
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].energy_wh':
-        custom: []
-        name: 'readings[].energy_wh'
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].temperature':
-        custom: []
-        name: 'readings[].temperature'
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].fan':
-        custom: []
-        name: 'readings[].fan'
-        description: 'Must be at least 0.'
-        required: false
-        example: 77
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].read_at':
-        custom: []
-        name: 'readings[].read_at'
-        description: 'Must be a valid date.'
-        required: false
-        example: '2026-09-07T10:04:02'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].battery_voltage':
-        custom: []
-        name: 'readings[].battery_voltage'
-        description: 'Must be at least 0.'
-        required: false
-        example: 8
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      'readings[].battery_percentage':
-        custom: []
-        name: 'readings[].battery_percentage'
-        description: 'Must be at least 0. Must not be greater than 100.'
-        required: false
-        example: 8
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      hardware_device_id: 16
-      duration: 22
-      read_at: '2026-09-07T10:04:02'
-      temperature: 4326.41688
-      battery_voltage: 77
-      battery_percentage: 15
-      readings:
-        -
-          pos: 27
-          amperage: 4326.41688
-          voltage: 4326.41688
-          duration: 27
-          energy_wh: 4326.41688
-          temperature: 4326.41688
-          fan: 77
-          read_at: '2026-09-07T10:04:02'
-          battery_voltage: 8
-          battery_percentage: 8
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses: []
     responseFields: []
@@ -2162,7 +2007,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-07T10:04:02'
+        example: '2026-09-12T15:22:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2173,7 +2018,7 @@ endpoints:
         name: read_at
         description: 'Must be a valid date.'
         required: true
-        example: '2026-09-07T10:04:02'
+        example: '2026-09-12T15:22:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2643,8 +2488,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-07T10:04:02'
-      read_at: '2026-09-07T10:04:02'
+      date: '2026-09-12T15:22:24'
+      read_at: '2026-09-12T15:22:24'
       hardware: 'n'
       version: g
       serial_number: z
@@ -3220,7 +3065,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 10:04:02'
+        example: '2026-09-12 15:22:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3231,7 +3076,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 10:04:02'
+        example: '2026-09-12 15:22:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3306,8 +3151,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-07 10:04:02'
-      end_at: '2026-09-07 10:04:02'
+      start_at: '2026-09-12 15:22:24'
+      end_at: '2026-09-12 15:22:24'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3382,7 +3227,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 10:04:02'
+        example: '2026-09-12 15:22:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3393,7 +3238,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-07 10:04:02'
+        example: '2026-09-12 15:22:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3479,8 +3324,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-07 10:04:02'
-      end_at: '2026-09-07 10:04:02'
+      start_at: '2026-09-12 15:22:24'
+      end_at: '2026-09-12 15:22:24'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3738,7 +3583,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3775,7 +3620,7 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: true
+      full_water_tank: false
       waterpump_enabled: true
       vaporizer_enabled: true
     fileParameters: []
@@ -3816,7 +3661,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - air_quality
+          - humidity
         type: 'string[]'
         enumValues:
           - temperature
@@ -3835,7 +3680,7 @@ endpoints:
         name: location_type
         description: ''
         required: false
-        example: indoor
+        example: outdoor
         type: string
         enumValues:
           - indoor
@@ -3845,8 +3690,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - air_quality
-      location_type: indoor
+        - humidity
+      location_type: outdoor
     fileParameters: []
     responses:
       -
@@ -3909,7 +3754,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - wind
+          - lightning
         type: 'string[]'
         enumValues:
           - temperature
@@ -3925,7 +3770,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - wind
+        - lightning
     fileParameters: []
     responses:
       -

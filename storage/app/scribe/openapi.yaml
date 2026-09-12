@@ -97,7 +97,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'weatherstation:read'
+                    - 'weatherstation:write'
                   items:
                     type: string
                     enum:
@@ -121,7 +121,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-09-30'
+                  example: '2052-10-06'
                   nullable: true
               required:
                 - device_id
@@ -216,11 +216,11 @@ paths:
                 privacity:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 contactme:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                 attributes:
                   type: array
                   description: 'Must not be greater than 255 characters.'
@@ -940,6 +940,11 @@ paths:
                   description: 'Must be between 0 and 360.'
                   example: 1
                   nullable: true
+                vert_rate:
+                  type: number
+                  description: 'Must be between -100 and 100.'
+                  example: -100
+                  nullable: true
                 seen:
                   type: number
                   description: ''
@@ -954,6 +959,16 @@ paths:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 77
+                  nullable: true
+                rssi:
+                  type: number
+                  description: 'Must be between -100 and 0.'
+                  example: -100
+                  nullable: true
+                emergency:
+                  type: string
+                  description: 'Must not be greater than 20 characters.'
+                  example: yvdljnikhwaykcmy
                   nullable: true
               required:
                 - icao
@@ -1057,6 +1072,11 @@ paths:
                         description: 'Must be between 0 and 360.'
                         example: 0
                         nullable: true
+                      vert_rate:
+                        type: number
+                        description: 'Must be between -100 and 100.'
+                        example: -99
+                        nullable: true
                       seen:
                         type: number
                         description: ''
@@ -1072,6 +1092,16 @@ paths:
                         description: 'Must be at least 0.'
                         example: 77
                         nullable: true
+                      rssi:
+                        type: number
+                        description: 'Must be between -100 and 0.'
+                        example: -100
+                        nullable: true
+                      emergency:
+                        type: string
+                        description: 'Must not be greater than 20 characters.'
+                        example: yvdljnikhwaykcmy
+                        nullable: true
                     required:
                       - icao
               required:
@@ -1079,9 +1109,9 @@ paths:
       security: []
   /api/v2/energy/readings:
     get:
-      summary: 'Lecturas de energía, paginadas.'
-      operationId: lecturasDeEnergaPaginadas
-      description: "Exige `energy:read`. Consumo y generación viven en dos tablas\ndistintas —comparten columnas por el trait `IsEnergyReading`, no la\ntabla—, así que se elige con `?type=load|generator`; por defecto,\nconsumo.\n\nSólo devuelve lecturas de dispositivos del usuario y, si el token está\nligado a dispositivos concretos (`device:{id}`), sólo las de ésos."
+      summary: 'Consulta paginada de lecturas de energía unificadas.'
+      operationId: consultaPaginadaDeLecturasDeEnergaUnificadas
+      description: 'Requiere ability `energy:read`. Filtra por dispositivo, elemento o rango temporal.'
       parameters: []
       responses:
         401:
@@ -1106,114 +1136,11 @@ paths:
     post:
       summary: 'Almacena las lecturas de un monitor de energía.'
       operationId: almacenaLasLecturasDeUnMonitorDeEnerga
-      description: "La respuesta lleva `warnings` cuando algo es raro pero se ha guardado:\nuna corriente negativa, un elemento sin tensión, un canal sin dar de\nalta. Sin eso, un montaje mal configurado responde 201 durante meses."
+      description: 'Soporta tanto el contrato universal `energy` (D115) como el contrato legacy `readings`.'
       parameters: []
       responses: {}
       tags:
         - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                hardware_device_info:
-                  type: string
-                  description: ''
-                  example: null
-                  nullable: true
-                hardware_device_id:
-                  type: integer
-                  description: 'Must match an existing stored value.'
-                  example: 16
-                duration:
-                  type: integer
-                  description: 'Must be at least 1.'
-                  example: 22
-                  nullable: true
-                read_at:
-                  type: string
-                  description: 'Must be a valid date.'
-                  example: '2026-09-07T10:04:02'
-                  nullable: true
-                temperature:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                battery_voltage:
-                  type: number
-                  description: 'Must be at least 0.'
-                  example: 77
-                  nullable: true
-                battery_percentage:
-                  type: integer
-                  description: 'Must be at least 0. Must not be greater than 100.'
-                  example: 15
-                  nullable: true
-                readings:
-                  type: array
-                  description: ''
-                  example:
-                    - []
-                  items:
-                    type: object
-                    properties:
-                      pos:
-                        type: integer
-                        description: 'Must be at least 0.'
-                        example: 27
-                      amperage:
-                        type: number
-                        description: ''
-                        example: 4326.41688
-                        nullable: true
-                      voltage:
-                        type: number
-                        description: ''
-                        example: 4326.41688
-                        nullable: true
-                      duration:
-                        type: integer
-                        description: 'Must be at least 1.'
-                        example: 27
-                        nullable: true
-                      energy_wh:
-                        type: number
-                        description: ''
-                        example: 4326.41688
-                        nullable: true
-                      temperature:
-                        type: number
-                        description: ''
-                        example: 4326.41688
-                        nullable: true
-                      fan:
-                        type: integer
-                        description: 'Must be at least 0.'
-                        example: 77
-                        nullable: true
-                      read_at:
-                        type: string
-                        description: 'Must be a valid date.'
-                        example: '2026-09-07T10:04:02'
-                        nullable: true
-                      battery_voltage:
-                        type: number
-                        description: 'Must be at least 0.'
-                        example: 8
-                        nullable: true
-                      battery_percentage:
-                        type: integer
-                        description: 'Must be at least 0. Must not be greater than 100.'
-                        example: 8
-                        nullable: true
-                    required:
-                      - pos
-              required:
-                - hardware_device_id
-                - readings
       security: []
   /api/v2/energy/solar-readings:
     get:
@@ -1268,11 +1195,11 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-07T10:04:02'
+                  example: '2026-09-12T15:22:24'
                 read_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-09-07T10:04:02'
+                  example: '2026-09-12T15:22:24'
                 hardware:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -1706,11 +1633,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 10:04:02'
+                  example: '2026-09-12 15:22:24'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 10:04:02'
+                  example: '2026-09-12 15:22:24'
                 duration:
                   type: integer
                   description: ''
@@ -1804,11 +1731,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 10:04:02'
+                  example: '2026-09-12 15:22:24'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-07 10:04:02'
+                  example: '2026-09-12 15:22:24'
                 duration:
                   type: integer
                   description: ''
@@ -2006,7 +1933,7 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 waterpump_enabled:
                   type: boolean
@@ -2068,7 +1995,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - air_quality
+                    - humidity
                   items:
                     type: string
                     enum:
@@ -2083,7 +2010,7 @@ paths:
                 location_type:
                   type: string
                   description: ''
-                  example: indoor
+                  example: outdoor
                   enum:
                     - indoor
                     - outdoor
@@ -2125,7 +2052,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - wind
+                    - lightning
                   items:
                     type: string
                     enum:

@@ -15,7 +15,6 @@ use App\Models\Email;
 use App\Models\FileType;
 use App\Models\Gallery;
 use App\Models\GalleryImage;
-use App\Models\Hardware\EnergySystem;
 use App\Models\Hardware\HardwareAvailableComponent;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
@@ -51,7 +50,6 @@ use App\Policies\CategoryPolicy;
 use App\Policies\ContentPolicy;
 use App\Policies\CurriculumPolicy;
 use App\Policies\EmailPolicy;
-use App\Policies\EnergySystemPolicy;
 use App\Policies\GalleryPolicy;
 use App\Policies\HardwareEnergyPolicy;
 use App\Policies\HardwarePolicy;
@@ -98,7 +96,6 @@ class AuthServiceProvider extends ServiceProvider
         Content::class => ContentPolicy::class,
         Curriculum::class => CurriculumPolicy::class,
         Email::class => EmailPolicy::class,
-        EnergySystem::class => EnergySystemPolicy::class,
         Gallery::class => GalleryPolicy::class,
         GalleryImage::class => GalleryPolicy::class,
         HardwareDevice::class => HardwarePolicy::class,

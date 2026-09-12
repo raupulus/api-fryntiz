@@ -4,27 +4,19 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\Hardware\HardwarePowerGeneratorToday;
-use App\Models\Hardware\HardwarePowerLoadToday;
+use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwareEnergyToday;
 use Carbon\CarbonPeriod;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Generación contra consumo de los últimos 30 días, en vatios-hora.
  *
- * Dos cosas que estaban mal y no se veían porque la gráfica pintaba algo:
- *
- *  - **Leía las tablas de acumulado**, que tienen una fila por elemento
- *    recalculada entera, no una por día. Pintaba el acumulado como si fuera una
- *    serie temporal.
- *  - **Pintaba `power`**, potencia instantánea, con etiqueta de vatios. Lo que
- *    tiene sentido acumular por día son vatios-hora.
- *
- * Y el eje de fechas se construye a partir del periodo, no de las filas: si un
- * día no hay generación pero sí consumo, las dos series tienen que seguir
- * cuadrando con la misma etiqueta.
+ * Agrupa las sumas diarias de `HardwareEnergyToday` según el rol
+ * (`generator` vs `load`), garantizando series temporales completas.
  */
 class EnergyHistoricalChart extends ChartWidget
 {
@@ -50,8 +42,8 @@ class EnergyHistoricalChart extends ChartWidget
         $days = collect(CarbonPeriod::create($from, now()->startOfDay()))
             ->map(static fn ($day) => $day->format('Y-m-d'));
 
-        $generation = $this->byDay(HardwarePowerGeneratorToday::class, $from->toDateString());
-        $consumption = $this->byDay(HardwarePowerLoadToday::class, $from->toDateString());
+        $generation = $this->byDay(HardwareEnergy::ROLE_GENERATOR, $from->toDateString());
+        $consumption = $this->byDay(HardwareEnergy::ROLE_LOAD, $from->toDateString());
 
         return [
             'datasets' => [
@@ -73,15 +65,15 @@ class EnergyHistoricalChart extends ChartWidget
     }
 
     /**
-     * Vatios-hora por día, sumando todos los elementos.
+     * Vatios-hora por día para un rol energético, sumando todos los elementos.
      *
-     * @param  class-string  $model
      * @return Collection<string, float>
      */
-    private function byDay(string $model, string $from): Collection
+    private function byDay(string $role, string $from): Collection
     {
-        return $model::query()
+        return HardwareEnergyToday::query()
             ->where('date', '>=', $from)
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', $role))
             ->groupBy('date')
             ->select(['date', DB::raw('sum(energy_wh) as total')])
             ->pluck('total', 'date')

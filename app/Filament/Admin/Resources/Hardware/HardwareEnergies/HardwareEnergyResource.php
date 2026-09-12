@@ -39,15 +39,14 @@ class HardwareEnergyResource extends Resource
     use ScopesToOwner;
 
     /**
-     * `hardware_energy` no tiene `user_id`: el dueño es el de la instalación
-     * de la que cuelga el módulo, igual que hace {@see HardwareEnergy::scopeForUser()}.
+     * Resuelve la pertenencia a través del dispositivo medidor (hardwareDevice).
      *
      * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
     protected static function scopeOwnerQuery(Builder $query, int $userId): Builder
     {
-        return $query->whereHas('system', static fn (Builder $q) => $q->where('user_id', $userId));
+        return $query->whereHas('hardwareDevice', static fn (Builder $q) => $q->where('user_id', $userId));
     }
 
     protected static ?string $model = HardwareEnergy::class;
@@ -56,7 +55,7 @@ class HardwareEnergyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBattery100;
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $modelLabel = 'Elemento energético';
 
@@ -67,47 +66,11 @@ class HardwareEnergyResource extends Resource
         return HardwareEnergyForm::full($schema);
     }
 
-    /**
-     * Fuera los elementos de los controladores solares.
-     *
-     * Ésos se gestionan desde la instalación a la que pertenecen: aquí saldrían
-     * mezclados con las cargas que cuelgan de ella y no se distinguiría una cosa
-     * de la otra. El criterio es el tipo del aparato que mide.
-     *
-     * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
-     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
-     */
-    private static function sinControladoresSolares(Builder $query): Builder
-    {
-        return $query->whereDoesntHave(
-            'hardwareDevice',
-            fn (Builder $q) => $q->whereHas(
-                'type',
-                fn (Builder $t) => $t->where('slug', 'controlador-solar'),
-            ),
-        );
-    }
-
-    /**
-     * El alcance del listado, encima del filtro por propietario del trait.
-     *
-     * `scopeOwnerQuery()` no vale para esto: el trait se lo salta cuando quien
-     * mira es administrador, y este filtro no es de propiedad —es de qué
-     * pantalla gestiona cada elemento.
-     *
-     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
-     */
-    public static function getEloquentQuery(): Builder
-    {
-        return self::sinControladoresSolares(parent::getEloquentQuery());
-    }
-
     public static function table(Table $table): Table
     {
         return $table
             // Agrupado por el aparato que mide, que es lo único que no cambia
-            // entre las filas de un mismo medidor: el aparato medido, la
-            // instalación, la fuente y el activo son de cada canal.
+            // entre las filas de un mismo medidor.
             ->defaultGroup('hardwareDevice.name')
             ->groups([
                 Group::make('hardwareDevice.name')
@@ -115,25 +78,17 @@ class HardwareEnergyResource extends Resource
                     ->collapsible(),
             ])
             ->modifyQueryUsing(fn (Builder $query) => $query->with([
-                'monitorized', 'hardwareDevice', 'system', 'sourceType',
+                'monitorized', 'hardwareDevice', 'sourceType',
             ]))
             ->defaultSort('sensor_position')
             ->columns([
-                // `name` era un campo que había que rellenar a mano para
-                // escribir lo que ya se sabe. `display_name` lo compone.
                 TextColumn::make('display_name')
                     ->label('Elemento')
-                    // La clave foránea es nullable, así que la relación puede
-                    // venir vacía por mucho que PHPStan crea que no.
                     ->description(fn (HardwareEnergy $record): string => $record->hardware_device_id === null
                         ? ''
                         : (string) $record->getRelationValue('hardwareDevice')?->display_name)
                     ->searchable(['sensor_position'])
                     ->sortable(false),
-                TextColumn::make('system.name')
-                    ->label('Instalación')
-                    ->badge()
-                    ->sortable(),
                 TextColumn::make('role')
                     ->label('Papel')
                     ->badge()
@@ -158,14 +113,25 @@ class HardwareEnergyResource extends Resource
                     ->label('Canal')
                     ->numeric()
                     ->sortable(),
-                // Sin tensión nominal los vatios de este elemento dependen del
-                // voltaje que traiga la petición, que puede no ser el suyo.
                 TextColumn::make('nominal_voltage')
                     ->label('V nominal')
                     ->suffix(' V')
                     ->placeholder('sin definir')
                     ->color(fn ($state): string => $state === null ? 'danger' : 'gray')
                     ->sortable(),
+                TextColumn::make('capacity_ah')
+                    ->label('Capacidad')
+                    ->suffix(' Ah')
+                    ->placeholder('—')
+                    ->sortable(),
+                TextColumn::make('capacity_wh')
+                    ->label('Capacidad Wh')
+                    ->suffix(' Wh')
+                    ->placeholder('—'),
+                IconColumn::make('auto_calculate_history')
+                    ->label('Auto Hist.')
+                    ->boolean()
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
@@ -179,9 +145,6 @@ class HardwareEnergyResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('energy_system_id')
-                    ->relationship('system', 'name')
-                    ->label('Instalación'),
                 SelectFilter::make('role')
                     ->options(HardwareEnergy::ROLE_LABELS)
                     ->label('Papel'),
@@ -196,6 +159,8 @@ class HardwareEnergyResource extends Resource
                         false: fn ($query) => $query->whereNull('nominal_voltage'),
                         blank: fn ($query) => $query,
                     ),
+                TernaryFilter::make('auto_calculate_history')
+                    ->label('Auto Histórico'),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -209,12 +174,13 @@ class HardwareEnergyResource extends Resource
 
     public static function getRelations(): array
     {
-        // Los papeles primero: es lo que se viene a hacer aquí. Las otras dos
-        // son las lecturas que ha mandado el aparato.
+        // Los papeles primero: es lo que se viene a hacer aquí. Las otras tres
+        // son las lecturas, agregados diarios e históricos que ha mandado el aparato.
         return [
             RelationManagers\RolesRelationManager::class,
-            RelationManagers\PowerLoadsRelationManager::class,
-            RelationManagers\PowerGeneratorsRelationManager::class,
+            RelationManagers\ReadingsRelationManager::class,
+            RelationManagers\TodayRelationManager::class,
+            RelationManagers\HistoricalRelationManager::class,
         ];
     }
 

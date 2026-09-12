@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\Hardware\HardwarePowerGenerator;
-use App\Models\Hardware\HardwarePowerGeneratorHistorical;
-use App\Models\Hardware\HardwarePowerGeneratorToday;
-use App\Models\Hardware\HardwarePowerLoad;
-use App\Models\Hardware\HardwarePowerLoadHistorical;
-use App\Models\Hardware\HardwarePowerLoadToday;
+use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwareEnergyHistorical;
+use App\Models\Hardware\HardwareEnergyReading;
+use App\Models\Hardware\HardwareEnergyToday;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Resumen completo de energía: estado actual, totales de hoy y acumulados
@@ -44,24 +43,40 @@ class EnergyStatsWidget extends BaseWidget
 
     protected function getCurrentStats(): array
     {
-        $latestLoads = HardwarePowerLoad::query()
-            ->whereIn('id', HardwarePowerLoad::query()
+        // Última lectura de cada elemento con rol de carga (consumo)
+        $latestLoads = HardwareEnergyReading::query()
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_LOAD)->where('is_active', true))
+            ->whereIn('id', HardwareEnergyReading::query()
                 ->selectRaw('MAX(id)')
-                ->whereNotNull('hardware_device_id')
-                ->groupBy('hardware_device_id'))
+                ->whereNotNull('hardware_energy_id')
+                ->groupBy('hardware_energy_id'))
             ->get();
 
-        $latestGenerators = HardwarePowerGenerator::query()
-            ->whereIn('id', HardwarePowerGenerator::query()
+        // Última lectura de cada elemento con rol de generación (producción)
+        $latestGenerators = HardwareEnergyReading::query()
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR)->where('is_active', true))
+            ->whereIn('id', HardwareEnergyReading::query()
                 ->selectRaw('MAX(id)')
-                ->whereNotNull('hardware_device_id')
-                ->groupBy('hardware_device_id'))
+                ->whereNotNull('hardware_energy_id')
+                ->groupBy('hardware_energy_id'))
             ->get();
 
         $currentConsumption = (float) $latestLoads->sum('power');
         $currentGeneration = (float) $latestGenerators->sum('power');
         $balance = $currentGeneration - $currentConsumption;
-        $batteryAvg = (float) ($latestGenerators->avg('battery_percentage') ?? 0);
+
+        // Baterías: porcentaje medio de los elementos activos que reportan porcentaje
+        $latestBatteries = HardwareEnergyReading::query()
+            ->whereNotNull('battery_percentage')
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('is_active', true))
+            ->whereIn('id', HardwareEnergyReading::query()
+                ->selectRaw('MAX(id)')
+                ->whereNotNull('hardware_energy_id')
+                ->whereNotNull('battery_percentage')
+                ->groupBy('hardware_energy_id'))
+            ->get();
+
+        $batteryAvg = (float) ($latestBatteries->avg('battery_percentage') ?? 0);
 
         return [
             Stat::make('Consumo (ahora)', number_format($currentConsumption, 2).' W')
@@ -90,15 +105,25 @@ class EnergyStatsWidget extends BaseWidget
     {
         $today = now()->toDateString();
 
-        $loadsToday = HardwarePowerLoadToday::query()->where('date', $today)->get();
-        $generatorsToday = HardwarePowerGeneratorToday::query()->where('date', $today)->get();
+        $loadsToday = HardwareEnergyToday::query()
+            ->where('date', $today)
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_LOAD))
+            ->get();
 
-        // Vatios-hora, no vatios: `SUM(power)` sumaba potencias instantáneas y
-        // daba un número que subía si el sensor medía más veces.
+        $generatorsToday = HardwareEnergyToday::query()
+            ->where('date', $today)
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR))
+            ->get();
+
+        // Vatios-hora, no vatios: suma acumulada del día
         $consumptionToday = (float) $loadsToday->sum('energy_wh');
         $generationToday = (float) $generatorsToday->sum('energy_wh');
         $peakConsumptionToday = (float) ($loadsToday->max('power_max') ?? 0);
-        $batteryMinToday = (float) ($generatorsToday->min('battery_percentage_min') ?? 0);
+
+        $batteryMinToday = (float) (HardwareEnergyToday::query()
+            ->where('date', $today)
+            ->whereNotNull('battery_percentage_min')
+            ->min('battery_percentage_min') ?? 0);
 
         return [
             Stat::make('Consumo (hoy)', number_format($consumptionToday, 2).' Wh')
@@ -127,14 +152,28 @@ class EnergyStatsWidget extends BaseWidget
     {
         $since = now()->subDays(30)->toDateString();
 
-        $loadsHistorical = HardwarePowerLoadHistorical::query()->where('read_at', '>=', $since)->get();
-        $generatorsHistorical = HardwarePowerGeneratorHistorical::query()->where('read_at', '>=', $since)->get();
+        // Acumulado de los últimos 30 días sumando los agregados diarios
+        $totalConsumption = (float) HardwareEnergyToday::query()
+            ->where('date', '>=', $since)
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_LOAD))
+            ->sum('energy_wh');
 
-        $totalConsumption = (float) $loadsHistorical->sum('energy_wh');
-        $totalGeneration = (float) $generatorsHistorical->sum('energy_wh');
-        $daysOperating = (int) ($generatorsHistorical->max('days_operating') ?? 0);
-        $fullCharges = (int) $generatorsHistorical->sum('number_battery_full_charges');
-        $overDischarges = (int) $generatorsHistorical->sum('number_battery_over_discharges');
+        $totalGeneration = (float) HardwareEnergyToday::query()
+            ->where('date', '>=', $since)
+            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR))
+            ->sum('energy_wh');
+
+        // Métricas de odómetro histórico: última sesión registrada por elemento
+        $latestHistorical = HardwareEnergyHistorical::query()
+            ->whereIn('id', HardwareEnergyHistorical::query()
+                ->selectRaw('MAX(id)')
+                ->whereNotNull('hardware_energy_id')
+                ->groupBy('hardware_energy_id'))
+            ->get();
+
+        $daysOperating = (int) ($latestHistorical->max('days_operating') ?? 0);
+        $fullCharges = (int) $latestHistorical->sum('number_battery_full_charges');
+        $overDischarges = (int) $latestHistorical->sum('number_battery_over_discharges');
 
         return [
             Stat::make('Consumo acumulado (30d)', number_format($totalConsumption / 1000, 2).' kWh')

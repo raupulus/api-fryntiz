@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Hardware;
 
 use App\Models\Hardware\HardwareDevice;
-use App\Models\Hardware\HardwarePowerGenerator;
-use App\Models\Hardware\HardwarePowerGeneratorHistorical;
-use App\Models\Hardware\HardwarePowerGeneratorToday;
-use App\Models\Hardware\HardwarePowerLoad;
+use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwareEnergyHistorical;
+use App\Models\Hardware\HardwareEnergyReading;
+use App\Models\Hardware\HardwareEnergyToday;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -29,35 +29,110 @@ class EnergyCardOrderTest extends TestCase
         return HardwareDevice::create(['name' => $name]);
     }
 
+    private function generatorEnergy(HardwareDevice $device): HardwareEnergy
+    {
+        return HardwareEnergy::firstOrCreate([
+            'hardware_device_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+        ], [
+            'sensor_position' => 0,
+            'is_active' => true,
+        ]);
+    }
+
+    private function loadEnergy(HardwareDevice $device): HardwareEnergy
+    {
+        return HardwareEnergy::firstOrCreate([
+            'hardware_device_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_LOAD,
+        ], [
+            'sensor_position' => 1,
+            'is_active' => true,
+        ]);
+    }
+
     /**
      * Una lectura de hace un rato, para que cuente como «ahora mismo».
      */
     private function generatingNow(HardwareDevice $device, float $watts): void
     {
-        HardwarePowerGenerator::create([
+        $energy = $this->generatorEnergy($device);
+
+        HardwareEnergyReading::create([
             'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $energy->id,
             'voltage' => 12.0,
             'amperage' => $watts / 12.0,
             'power' => $watts,
-            'read_at' => now()->subMinutes(5),
+            'created_at' => now()->subMinutes(5),
         ]);
     }
 
     private function generatedToday(HardwareDevice $device, float $wh): void
     {
-        HardwarePowerGeneratorToday::create([
+        $energy = $this->generatorEnergy($device);
+
+        HardwareEnergyToday::create([
             'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $energy->id,
             'energy_wh' => $wh,
+            'energy_ah' => $wh / 12.0,
             'date' => today(),
         ]);
     }
 
     private function generatedAllTime(HardwareDevice $device, float $wh): void
     {
-        HardwarePowerGeneratorHistorical::create([
+        $energy = $this->generatorEnergy($device);
+
+        HardwareEnergyHistorical::create([
             'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $energy->id,
             'energy_wh' => $wh,
+            'energy_ah' => $wh / 12.0,
             'days_operating' => 100,
+            'session_index' => 1,
+        ]);
+    }
+
+    private function consumingNow(HardwareDevice $device, float $watts): void
+    {
+        $energy = $this->loadEnergy($device);
+
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $energy->id,
+            'voltage' => 12.0,
+            'amperage' => $watts / 12.0,
+            'power' => $watts,
+            'created_at' => now()->subMinutes(5),
+        ]);
+    }
+
+    private function consumedToday(HardwareDevice $device, float $wh): void
+    {
+        $energy = $this->loadEnergy($device);
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $energy->id,
+            'energy_wh' => $wh,
+            'energy_ah' => $wh / 12.0,
+            'date' => today(),
+        ]);
+    }
+
+    private function consumedAllTime(HardwareDevice $device, float $wh): void
+    {
+        $energy = $this->loadEnergy($device);
+
+        HardwareEnergyHistorical::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $energy->id,
+            'energy_wh' => $wh,
+            'energy_ah' => $wh / 12.0,
+            'days_operating' => 100,
+            'session_index' => 1,
         ]);
     }
 
@@ -144,21 +219,25 @@ class EnergyCardOrderTest extends TestCase
         $this->generatedAllTime($device, 1_000);
 
         // Generando en el lado del panel: mucha tensión, poca corriente.
-        HardwarePowerGenerator::create([
+        $genEnergy = $this->generatorEnergy($device);
+        HardwareEnergyReading::create([
             'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $genEnergy->id,
             'voltage' => 33.7,
             'amperage' => 1.85,
             'power' => 64,
-            'read_at' => now()->subMinutes(5),
+            'created_at' => now()->subMinutes(5),
         ]);
 
         // Consumiendo en el lado de la batería: poca tensión, más corriente.
-        HardwarePowerLoad::create([
+        $loadEnergy = $this->loadEnergy($device);
+        HardwareEnergyReading::create([
             'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $loadEnergy->id,
             'voltage' => 13.2,
             'amperage' => 2.16,
             'power' => 28,
-            'read_at' => now()->subMinutes(5),
+            'created_at' => now()->subMinutes(5),
         ]);
 
         $response = $this->get(route('hardware.energy.index'))->assertOk();
@@ -204,5 +283,34 @@ class EnergyCardOrderTest extends TestCase
         $this->assertSame(100.0, (float) $generator->current);
         $this->assertSame(1000.0, (float) $generator->today);
         $this->assertSame('3.0', $generator->historical);
+    }
+
+    #[Test]
+    public function consuming_devices_currently_reporting_come_first(): void
+    {
+        $stopped = $this->device('Consumo Parado');
+        $this->consumedAllTime($stopped, 50_000);
+
+        $active = $this->device('Consumo Activo');
+        $this->consumingNow($active, 80);
+        $this->consumedToday($active, 200);
+        $this->consumedAllTime($active, 10);
+
+        $this->assertSame([$active->id, $stopped->id], $this->cardOrder());
+    }
+
+    #[Test]
+    public function mixed_devices_order_by_combined_activity(): void
+    {
+        $genDevice = $this->device('Generador Fuerte');
+        $this->generatingNow($genDevice, 50);
+        $this->generatedToday($genDevice, 500);
+
+        $loadDevice = $this->device('Carga Fuerte');
+        $this->consumingNow($loadDevice, 50);
+        $this->consumedToday($loadDevice, 800);
+
+        // Ambos están activos (reporting now), pero la carga movió 800 Wh hoy vs 500 Wh del generador
+        $this->assertSame([$loadDevice->id, $genDevice->id], $this->cardOrder());
     }
 }

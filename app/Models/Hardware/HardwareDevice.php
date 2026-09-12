@@ -254,6 +254,21 @@ class HardwareDevice extends BaseModel
         return $this->hasMany(HardwarePowerLoadHistorical::class, 'hardware_device_id', 'id');
     }
 
+    public function energyReadings(): HasMany
+    {
+        return $this->hasMany(HardwareEnergyReading::class, 'hardware_device_id', 'id');
+    }
+
+    public function energyToday(): HasMany
+    {
+        return $this->hasMany(HardwareEnergyToday::class, 'hardware_device_id', 'id');
+    }
+
+    public function energyHistorical(): HasMany
+    {
+        return $this->hasMany(HardwareEnergyHistorical::class, 'hardware_device_id', 'id');
+    }
+
     /**
      * Devuelve todos los dispositivos de energía asociados al dispositivo.
      * Sin distinguir entre generador y carga (consumo de energía)

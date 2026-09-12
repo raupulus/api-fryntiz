@@ -1,6 +1,6 @@
 # AGENTS.md — Api Raupulus
 
-> **Última revisión:** 2026-08-30 · Verificado contra la rama `v2`.
+> **Última revisión:** 2026-09-12 · Verificado contra la rama `v2`.
 > Todo lo que hay aquí se ha comprobado contra el código. Si encuentras una discrepancia,
 > **corrige este fichero en el mismo commit** en el que la detectes.
 
@@ -231,12 +231,12 @@ PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PH
 api-fryntiz/
 ├── app/                      # Lógica principal de la aplicación (arquitectura MVC + Service Layer)
 │   ├── Actions/              # Operaciones atómicas reutilizables (Fortify, PublishContent, StoreSensorData)
-│   ├── Console/Commands/     # 36 comandos Artisan propios (AEMET/, Debug/, IoT/, Mcp/, CV/, Project...)
+│   ├── Console/Commands/     # 40 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
 │   ├── Enums/                # Backed Enums tipados en PHP 8.4 (sufijo Enum)
 │   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
 │   ├── Filament/             # Configuración de los paneles de Filament
-│   │   ├── Admin/            # Panel Admin: 24 Resources, 29 RelationManagers, 4 Clusters, 7 Widgets, 5 Pages
+│   │   ├── Admin/            # Panel Admin: 23 Resources, 31 RelationManagers, 4 Clusters, 7 Widgets, 5 Pages
 │   │   ├── Tenant/           # Panel Tenant/Usuario: Pages/Dashboard.php
 │   │   ├── Components/       # Componentes Filament (EditorJsField, ImageCropperUpload, YoutubeVideoField)
 │   │   └── Concerns/         # Traits de Filament (HasImageFileUpload)
@@ -251,7 +251,7 @@ api-fryntiz/
 │   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
-│   ├── Models/               # 107 Modelos Eloquent con PHPDoc completo
+│   ├── Models/               # 105 Modelos Eloquent con PHPDoc completo
 │   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
 │   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
 │   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
@@ -332,7 +332,7 @@ La plataforma expone sus servicios a través de cuatro capas de enrutamiento pri
 - **Panel Admin (`/admin`):** SuperAdmin, Admin y Editor (`AdminPanelProvider`,
   `User::canAccessPanel()`).
   - Login dedicado en `/admin/login` y perfil en `/admin/profile`.
-  - 24 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags, Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Sistemas de Energía, Energías, Estación Meteorológica, Plantas Inteligentes (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV, Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter).
+  - 23 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags, Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Energías, Estación Meteorológica, Plantas Inteligentes (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV, Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter).
 - **Panel Tenant / Usuario (`/panel`):** Panel para usuarios autenticados (`TenantPanelProvider`).
   - Dashboard de cliente y visualización de recursos propios.
 

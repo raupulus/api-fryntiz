@@ -22,7 +22,7 @@ class HardwareEnergyPolicy extends OwnedResourcePolicy
             return null;
         }
 
-        $userId = $model->system?->user_id;
+        $userId = $model->hardwareDevice?->user_id;
 
         return $userId === null ? null : (int) $userId;
     }

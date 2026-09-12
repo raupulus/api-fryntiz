@@ -6,6 +6,9 @@ namespace App\Services\Hardware;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwareEnergyHistorical;
+use App\Models\Hardware\HardwareEnergyReading;
+use App\Models\Hardware\HardwareEnergyToday;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerGeneratorHistorical;
 use App\Models\Hardware\HardwarePowerGeneratorSolar;
@@ -403,6 +406,42 @@ class HardwareService
 
         $warnings = array_merge($warnings, $this->summariseSolarReading($reading, $element));
 
+        // Dual-write de transición hacia la arquitectura unificada (D115)
+        $this->storeEnergyTelemetry($deviceId, [
+            'generator' => [
+                'voltage' => $reading->panel_voltage ?? $reading->voltage,
+                'amperage' => $reading->panel_current ?? $reading->amperage,
+                'power' => $reading->panel_power ?? $reading->power,
+                'temperature' => $reading->controller_temperature ?? $reading->temperature,
+                'charging_status' => $reading->charging_status,
+                'charging_status_label' => $reading->charging_status_label,
+                'light_status' => $reading->light_status,
+                'light_brightness' => $reading->light_brightness,
+                'today_energy_wh' => $data['day_power_generation_wh'] ?? null,
+                'historical_energy_wh' => $data['total_power_generation_wh'] ?? null,
+            ],
+            'battery' => [
+                'voltage' => $reading->battery_voltage,
+                'amperage' => $reading->battery_current,
+                'power' => $reading->battery_power,
+                'soc' => $reading->battery_percentage,
+                'temperature' => $reading->battery_temperature,
+                'charging_status' => $reading->charging_status,
+                'today_energy_ah' => $data['day_charging_amp_hours'] ?? null,
+                'historical_energy_ah' => $data['total_charging_amp_hours'] ?? null,
+                'battery_full_charges' => $data['battery_full_charges_count'] ?? null,
+                'battery_over_discharges' => $data['battery_over_discharges_count'] ?? null,
+            ],
+            'loads' => [
+                [
+                    'channel' => 0,
+                    'voltage' => $data['load_voltage'] ?? null,
+                    'amperage' => $reading->load_current,
+                    'power' => $reading->load_power,
+                ],
+            ],
+        ]);
+
         return ['reading' => $reading, 'warnings' => $warnings];
     }
 
@@ -588,5 +627,302 @@ class HardwareService
         $device->fill($status)->save();
 
         return $device;
+    }
+
+    /**
+     * Guarda la telemetría de energía universal en la arquitectura unificada (D115, Fase 5).
+     *
+     * Persiste en hardware_energy_readings, actualiza agregados diarios en hardware_energy_today
+     * y series acumuladas en hardware_energy_historical con gestión de sesiones.
+     *
+     * @param  int  $deviceId  Dispositivo medidor o al que pertenece la telemetría.
+     * @param  array<string, mixed>  $energy  Estructura validada de telemetría.
+     * @return array{readings: list<HardwareEnergyReading>, warnings: list<string>}
+     */
+    public function storeEnergyTelemetry(int $deviceId, array $energy): array
+    {
+        $device = HardwareDevice::query()
+            ->with([
+                'hardwareEnergy' => static fn ($q) => $q->where('is_active', true),
+                'hardwareEnergy.monitorized',
+            ])
+            ->find($deviceId);
+
+        if (! $device) {
+            return ['readings' => [], 'warnings' => ['El dispositivo no existe.']];
+        }
+
+        $duration = isset($energy['duration']) ? (int) $energy['duration'] : null;
+        /** @var list<HardwareEnergyReading> $readings */
+        $readings = [];
+        /** @var list<string> $warnings */
+        $warnings = [];
+
+        // 1. GENERADOR
+        if (isset($energy['generator']) && is_array($energy['generator']) && $energy['generator'] !== []) {
+            $genData = $energy['generator'];
+            $element = $device->hardwareEnergy->firstWhere('role', HardwareEnergy::ROLE_GENERATOR);
+
+            if (! $element) {
+                $element = HardwareEnergy::create([
+                    'hardware_device_id' => $device->id,
+                    'hardware_device_monitorized_id' => $device->id,
+                    'role' => HardwareEnergy::ROLE_GENERATOR,
+                    'sensor_position' => 0,
+                    'is_active' => true,
+                ]);
+            }
+
+            $amperage = isset($genData['amperage']) ? (float) $genData['amperage'] : null;
+            $measure = isset($genData['voltage']) ? (float) $genData['voltage'] : null;
+            [$voltage, $voltageSource] = $element->resolveVoltage($measure);
+
+            $deviceWh = isset($genData['today_energy_wh']) ? (float) $genData['today_energy_wh'] : null;
+            $intervalWh = isset($genData['energy_wh'])
+                ? (float) $genData['energy_wh']
+                : $element->computeWattHours($amperage, $voltage, $duration);
+            $intervalAh = isset($genData['energy_ah'])
+                ? (float) $genData['energy_ah']
+                : $element->computeAmpHours($amperage, $duration);
+
+            $power = isset($genData['power']) ? (float) $genData['power'] : $element->computePower($amperage, $voltage);
+            $energySource = isset($genData['energy_wh']) ? 'device' : 'derived';
+
+            $reading = new HardwareEnergyReading([
+                'hardware_device_id' => $device->id,
+                'hardware_energy_id' => $element->id,
+                'voltage' => $voltage,
+                'amperage' => $amperage,
+                'power' => $power,
+                'delta_seconds' => $duration,
+                'energy_wh' => $intervalWh,
+                'energy_ah' => $intervalAh,
+                'energy_source' => $energySource,
+                'voltage_source' => $voltageSource,
+                'temperature' => isset($genData['temperature']) ? (float) $genData['temperature'] : null,
+                'fan' => isset($genData['fan']) ? (int) $genData['fan'] : null,
+                'charging_status' => isset($genData['charging_status']) ? (int) $genData['charging_status'] : null,
+                'charging_status_label' => $genData['charging_status_label'] ?? null,
+                'light_status' => isset($genData['light_status']) ? (bool) $genData['light_status'] : null,
+                'light_brightness' => isset($genData['light_brightness']) ? (int) $genData['light_brightness'] : null,
+            ]);
+
+            if ($amperage !== null && $amperage < 0) {
+                $reading->markSuspicious('corriente negativa');
+                $warnings[] = "Generador: corriente negativa ({$amperage} A).";
+            }
+
+            if ($voltage === null) {
+                $reading->markSuspicious('sin tensión: ni medida ni nominal');
+                $warnings[] = 'Generador: sin tensión ni medida ni nominal.';
+            }
+
+            $reading->save();
+            $readings[] = $reading;
+
+            if (! $reading->is_suspicious) {
+                HardwareEnergyToday::recalculateForElement($device->id, $element->id, [
+                    'voltage' => $voltage,
+                    'amperage' => $amperage,
+                    'power' => $power,
+                    'energy_wh' => $intervalWh,
+                    'energy_ah' => $intervalAh,
+                    'temperature' => $reading->temperature,
+                    'fan' => $reading->fan,
+                    'today_energy_wh' => $deviceWh,
+                ]);
+
+                HardwareEnergyHistorical::accumulateForElement($device->id, $element->id, [
+                    'voltage' => $voltage,
+                    'amperage' => $amperage,
+                    'power' => $power,
+                    'energy_wh' => $intervalWh,
+                    'energy_ah' => $intervalAh,
+                    'temperature' => $reading->temperature,
+                    'fan' => $reading->fan,
+                    'historical_energy_wh' => isset($genData['historical_energy_wh']) ? (float) $genData['historical_energy_wh'] : null,
+                ]);
+            }
+        }
+
+        // 2. BATERÍA
+        if (isset($energy['battery']) && is_array($energy['battery']) && $energy['battery'] !== []) {
+            $batData = $energy['battery'];
+            $element = $device->hardwareEnergy->firstWhere('role', HardwareEnergy::ROLE_BATTERY);
+
+            if (! $element) {
+                $element = HardwareEnergy::create([
+                    'hardware_device_id' => $device->id,
+                    'hardware_device_monitorized_id' => $device->id,
+                    'role' => HardwareEnergy::ROLE_BATTERY,
+                    'sensor_position' => 0,
+                    'is_active' => true,
+                ]);
+            }
+
+            $measure = isset($batData['voltage']) ? (float) $batData['voltage'] : null;
+            [$voltage, $voltageSource] = $element->resolveVoltage($measure);
+            $amperage = isset($batData['amperage']) ? (float) $batData['amperage'] : null;
+            $power = isset($batData['power']) ? (float) $batData['power'] : $element->computePower($amperage, $voltage);
+
+            $intervalWh = isset($batData['energy_wh'])
+                ? (float) $batData['energy_wh']
+                : $element->computeWattHours($amperage, $voltage, $duration);
+            $intervalAh = isset($batData['energy_ah'])
+                ? (float) $batData['energy_ah']
+                : $element->computeAmpHours($amperage, $duration);
+
+            $soc = isset($batData['soc']) ? (int) $batData['soc'] : (isset($batData['battery_percentage']) ? (int) $batData['battery_percentage'] : null);
+
+            // Fallback de cálculo de SOC si sólo viene tensión y no porcentaje
+            if ($soc === null && $voltage !== null && $element->voltage_min !== null && $element->voltage_max !== null && $element->voltage_max > $element->voltage_min) {
+                $calculatedSoc = (($voltage - $element->voltage_min) / ($element->voltage_max - $element->voltage_min)) * 100.0;
+                $soc = (int) round(max(0, min(100, $calculatedSoc)));
+            }
+
+            $reading = new HardwareEnergyReading([
+                'hardware_device_id' => $device->id,
+                'hardware_energy_id' => $element->id,
+                'voltage' => $voltage,
+                'amperage' => $amperage,
+                'power' => $power,
+                'delta_seconds' => $duration,
+                'energy_wh' => $intervalWh,
+                'energy_ah' => $intervalAh,
+                'energy_source' => isset($batData['energy_wh']) ? 'device' : 'derived',
+                'voltage_source' => $voltageSource,
+                'battery_voltage' => $voltage,
+                'battery_percentage' => $soc,
+                'temperature' => isset($batData['temperature']) ? (float) $batData['temperature'] : null,
+                'charging_status' => isset($batData['charging_status']) ? (int) $batData['charging_status'] : null,
+                'charging_status_label' => $batData['charging_status_label'] ?? null,
+            ]);
+
+            if ($voltage === null) {
+                $reading->markSuspicious('sin tensión de batería');
+                $warnings[] = 'Batería: sin tensión ni medida ni nominal.';
+            }
+
+            $reading->save();
+            $readings[] = $reading;
+
+            if (! $reading->is_suspicious) {
+                HardwareEnergyToday::recalculateForElement($device->id, $element->id, [
+                    'voltage' => $voltage,
+                    'amperage' => $amperage,
+                    'power' => $power,
+                    'energy_wh' => $intervalWh,
+                    'energy_ah' => $intervalAh,
+                    'battery_voltage' => $voltage,
+                    'battery_percentage' => $soc,
+                    'temperature' => $reading->temperature,
+                    'today_energy_ah' => isset($batData['today_energy_ah']) ? (float) $batData['today_energy_ah'] : null,
+                ]);
+
+                HardwareEnergyHistorical::accumulateForElement($device->id, $element->id, [
+                    'voltage' => $voltage,
+                    'amperage' => $amperage,
+                    'power' => $power,
+                    'energy_wh' => $intervalWh,
+                    'energy_ah' => $intervalAh,
+                    'battery_voltage' => $voltage,
+                    'temperature' => $reading->temperature,
+                    'historical_energy_ah' => isset($batData['historical_energy_ah']) ? (float) $batData['historical_energy_ah'] : null,
+                    'battery_full_charges' => isset($batData['battery_full_charges']) ? (int) $batData['battery_full_charges'] : null,
+                    'battery_over_discharges' => isset($batData['battery_over_discharges']) ? (int) $batData['battery_over_discharges'] : null,
+                ]);
+            }
+        }
+
+        // 3. CONSUMOS (LOADS)
+        if (isset($energy['loads']) && is_array($energy['loads'])) {
+            $loadsKeyed = $device->hardwareEnergy->where('role', HardwareEnergy::ROLE_LOAD)->keyBy('sensor_position');
+
+            foreach ($energy['loads'] as $loadData) {
+                if (! is_array($loadData)) {
+                    continue;
+                }
+
+                $channel = (int) ($loadData['channel'] ?? $loadData['sensor_position'] ?? 0);
+                $element = $loadsKeyed->get($channel);
+
+                if (! $element) {
+                    $element = HardwareEnergy::create([
+                        'hardware_device_id' => $device->id,
+                        'hardware_device_monitorized_id' => $device->id,
+                        'role' => HardwareEnergy::ROLE_LOAD,
+                        'sensor_position' => $channel,
+                        'is_active' => true,
+                    ]);
+                    $loadsKeyed->put($channel, $element);
+                }
+
+                $amperage = isset($loadData['amperage']) ? (float) $loadData['amperage'] : null;
+                $measure = isset($loadData['voltage']) ? (float) $loadData['voltage'] : null;
+                [$voltage, $voltageSource] = $element->resolveVoltage($measure);
+
+                $intervalWh = isset($loadData['energy_wh'])
+                    ? (float) $loadData['energy_wh']
+                    : $element->computeWattHours($amperage, $voltage, $duration);
+                $intervalAh = isset($loadData['energy_ah'])
+                    ? (float) $loadData['energy_ah']
+                    : $element->computeAmpHours($amperage, $duration);
+                $power = isset($loadData['power']) ? (float) $loadData['power'] : $element->computePower($amperage, $voltage);
+
+                $reading = new HardwareEnergyReading([
+                    'hardware_device_id' => $device->id,
+                    'hardware_energy_id' => $element->id,
+                    'voltage' => $voltage,
+                    'amperage' => $amperage,
+                    'power' => $power,
+                    'delta_seconds' => $duration,
+                    'energy_wh' => $intervalWh,
+                    'energy_ah' => $intervalAh,
+                    'energy_source' => isset($loadData['energy_wh']) ? 'device' : 'derived',
+                    'voltage_source' => $voltageSource,
+                    'temperature' => isset($loadData['temperature']) ? (float) $loadData['temperature'] : null,
+                    'fan' => isset($loadData['fan']) ? (int) $loadData['fan'] : null,
+                ]);
+
+                if ($amperage !== null && $amperage < 0) {
+                    $reading->markSuspicious('corriente negativa');
+                    $warnings[] = "Consumo canal {$channel}: corriente negativa ({$amperage} A).";
+                }
+
+                if ($voltage === null) {
+                    $reading->markSuspicious('sin tensión: ni medida ni nominal');
+                    $warnings[] = "Consumo canal {$channel}: sin tensión ni medida ni nominal.";
+                }
+
+                $reading->save();
+                $readings[] = $reading;
+
+                if (! $reading->is_suspicious) {
+                    HardwareEnergyToday::recalculateForElement($device->id, $element->id, [
+                        'voltage' => $voltage,
+                        'amperage' => $amperage,
+                        'power' => $power,
+                        'energy_wh' => $intervalWh,
+                        'energy_ah' => $intervalAh,
+                        'temperature' => $reading->temperature,
+                        'fan' => $reading->fan,
+                        'today_energy_wh' => isset($loadData['today_energy_wh']) ? (float) $loadData['today_energy_wh'] : null,
+                    ]);
+
+                    HardwareEnergyHistorical::accumulateForElement($device->id, $element->id, [
+                        'voltage' => $voltage,
+                        'amperage' => $amperage,
+                        'power' => $power,
+                        'energy_wh' => $intervalWh,
+                        'energy_ah' => $intervalAh,
+                        'temperature' => $reading->temperature,
+                        'fan' => $reading->fan,
+                        'historical_energy_wh' => isset($loadData['historical_energy_wh']) ? (float) $loadData['historical_energy_wh'] : null,
+                    ]);
+                }
+            }
+        }
+
+        return ['readings' => $readings, 'warnings' => $warnings];
     }
 }

@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament;
 
-use App\Filament\Admin\Resources\Hardware\EnergySystems\EnergySystemResource;
-use App\Filament\Admin\Resources\Hardware\EnergySystems\RelationManagers\ElementsRelationManager;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\HardwareEnergyResource;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\ListHardwareEnergies;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers\RolesRelationManager;
-use App\Models\Hardware\EnergySystem;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareType;
@@ -17,17 +14,15 @@ use App\Models\User;
 use Database\Seeders\RolesTableSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * Cada elemento en su pantalla, y sólo en una.
+ * Pruebas de listado y gestión de roles unificados en Filament Admin para HardwareEnergy.
  *
- * Los de un controlador solar se gestionan desde su instalación; los demás, en
- * «Elementos de Energía». Si un elemento saliera en las dos, editarlo en una y
- * mirarlo en la otra daría respuestas distintas.
+ * Todos los elementos de energía (tanto monitores normales como controladores solares)
+ * se gestionan en una única lista unificada agrupada por dispositivo medidor.
  */
 class EnergyListsTest extends TestCase
 {
@@ -38,8 +33,6 @@ class EnergyListsTest extends TestCase
     private HardwareDevice $controller;
 
     private HardwareDevice $monitor;
-
-    private EnergySystem $installation;
 
     protected function setUp(): void
     {
@@ -61,12 +54,6 @@ class EnergyListsTest extends TestCase
             ['name' => 'Monitor de Energía'],
         );
 
-        $this->installation = EnergySystem::create([
-            'user_id' => $this->user->id,
-            'name' => 'Renogy Rover',
-            'slug' => Str::slug('Renogy Rover'),
-        ]);
-
         $this->controller = HardwareDevice::create([
             'user_id' => $this->user->id,
             'name' => 'Renogy Rover 20 LI',
@@ -85,65 +72,44 @@ class EnergyListsTest extends TestCase
         return HardwareEnergy::create([
             'hardware_device_id' => $meter->id,
             'hardware_device_monitorized_id' => $meter->id,
-            'energy_system_id' => $this->installation->id,
             'role' => $role,
             'sensor_position' => $channel,
         ]);
     }
 
     #[Test]
-    public function energy_elements_excludes_solar_controllers(): void
+    public function all_energy_elements_are_listed_including_solar_controllers(): void
     {
         $controllerElement = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
         $monitorElement = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
 
         Livewire::test(ListHardwareEnergies::class)
-            ->assertCanSeeTableRecords([$monitorElement])
-            ->assertCanNotSeeTableRecords([$controllerElement]);
+            ->assertCanSeeTableRecords([$monitorElement, $controllerElement]);
     }
 
     #[Test]
-    public function the_installation_only_shows_the_controllers_elements(): void
+    public function elements_of_other_users_are_scoped_out(): void
     {
-        $controllerElement = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-        $monitorElement = $this->element($this->monitor, HardwareEnergy::ROLE_LOAD);
-
-        Livewire::test(ElementsRelationManager::class, [
-            'ownerRecord' => $this->installation,
-            'pageClass' => EnergySystemResource\Pages\EditEnergySystem::class,
-        ])
-            ->assertCanSeeTableRecords([$controllerElement])
-            ->assertCanNotSeeTableRecords([$monitorElement]);
-    }
-
-    /**
-     * Ningún elemento puede quedarse sin pantalla ni salir en las dos.
-     */
-    #[Test]
-    public function the_two_lists_do_not_overlap_and_leave_nothing_out(): void
-    {
-        $all = collect([
-            $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR),
-            $this->element($this->controller, HardwareEnergy::ROLE_LOAD),
-            $this->element($this->controller, HardwareEnergy::ROLE_BATTERY),
-            $this->element($this->monitor, HardwareEnergy::ROLE_LOAD, channel: 1),
-            $this->element($this->monitor, HardwareEnergy::ROLE_BATTERY, channel: 2),
+        $otherUser = User::factory()->create(['role_id' => 3, 'is_active' => true]);
+        $otherDevice = HardwareDevice::create([
+            'user_id' => $otherUser->id,
+            'name' => 'Dispositivo Ajeno',
         ]);
+        $otherElement = $this->element($otherDevice, HardwareEnergy::ROLE_LOAD);
 
-        $inElements = HardwareEnergy::query()
-            ->whereDoesntHave('hardwareDevice', fn ($q) => $q->whereHas('type', fn ($t) => $t->where('slug', 'controlador-solar')))
-            ->pluck('id');
+        // Como SuperAdmin ve todo; cambiamos a usuario normal para verificar ScopesToOwner
+        $normalUser = User::factory()->create(['role_id' => 3, 'is_active' => true]);
+        $myDevice = HardwareDevice::create([
+            'user_id' => $normalUser->id,
+            'name' => 'Mi Dispositivo',
+        ]);
+        $normalElement = $this->element($myDevice, HardwareEnergy::ROLE_LOAD);
 
-        $inInstallation = HardwareEnergy::query()
-            ->whereHas('hardwareDevice', fn ($q) => $q->whereHas('type', fn ($t) => $t->where('slug', 'controlador-solar')))
-            ->pluck('id');
+        $this->actingAs($normalUser);
 
-        $this->assertCount(0, $inElements->intersect($inInstallation), 'Ningún elemento debe salir en las dos pantallas.');
-        $this->assertSame(
-            $all->pluck('id')->sort()->values()->all(),
-            $inElements->merge($inInstallation)->sort()->values()->all(),
-            'Ningún elemento debe quedarse sin pantalla.',
-        );
+        Livewire::test(ListHardwareEnergies::class)
+            ->assertCanSeeTableRecords([$normalElement])
+            ->assertCanNotSeeTableRecords([$otherElement]);
     }
 
     /**
@@ -171,10 +137,8 @@ class EnergyListsTest extends TestCase
     }
 
     /**
-     * Lo que se reportó: estando en «Editar Elemento Energético» no había forma
-     * de crear el papel que falta —la batería de un controlador, por ejemplo—.
-     * Las dos pestañas de abajo son las **lecturas**, no los papeles, y eso
-     * hacía pensar que la batería no se podía crear.
+     * Estando en «Editar Elemento Energético», RolesRelationManager permite
+     * crear los roles restantes que aún no están asignados en el mismo medidor.
      */
     #[Test]
     public function missing_roles_can_be_created_from_an_element(): void
@@ -189,7 +153,7 @@ class EnergyListsTest extends TestCase
         $panel->assertSuccessful()
             ->assertSee('create_battery')
             ->assertSee('create_generator')
-            // De consumo caben más, así que el botón se queda.
+            // De consumo caben más, así que el botón se mantiene.
             ->assertSee('create_load');
     }
 
@@ -206,7 +170,7 @@ class EnergyListsTest extends TestCase
     }
 
     /**
-     * Y lo que se crea desde ahí cuelga del mismo medidor, sin preguntarlo.
+     * El nuevo rol creado desde el relation manager cuelga automáticamente del mismo medidor.
      */
     #[Test]
     public function the_new_role_hangs_off_the_same_meter(): void

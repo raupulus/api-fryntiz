@@ -219,3 +219,14 @@ Schedule::command('queue:prune-failed', ['--hours=336'])
 Schedule::command('sanctum:prune-expired', ['--hours=720'])
     ->daily()
     ->onFailure($warnOnFailure('sanctum:prune-expired'));
+
+// ── Energía ──────────────────────────────────────────────────────────────────
+
+// Cierra y consolida los resúmenes del día anterior y actualiza históricos para
+// los elementos con recálculo automático (`auto_calculate_history = true`).
+// Corre a las 00:05 para asegurar que todas las muestras de las 23:59 han entrado.
+Schedule::command('energy:aggregate-daily')
+    ->dailyAt('00:05')
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->onFailure($warnOnFailure('energy:aggregate-daily'));

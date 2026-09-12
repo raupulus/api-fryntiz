@@ -8,6 +8,7 @@ use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Energy\V2\StoreEnergyRequest;
+use App\Http\Requests\Api\Energy\V2\StoreEnergyTelemetryRequest;
 use App\Http\Resources\V2\Energy\EnergyMonitorResource;
 use App\Models\Hardware\HardwarePowerGenerator;
 use App\Models\Hardware\HardwarePowerLoad;
@@ -39,6 +40,10 @@ class EnergyMonitorController extends BaseApiController
      */
     public function index(Request $request): JsonResponse
     {
+        if ($request->has('role') || $request->boolean('unified')) {
+            return app(EnergyReadingController::class)->index($request);
+        }
+
         $type = $request->query('type', 'load');
 
         if (! in_array($type, ['load', 'generator'], true)) {
@@ -83,13 +88,18 @@ class EnergyMonitorController extends BaseApiController
     /**
      * Almacena las lecturas de un monitor de energía.
      *
-     * La respuesta lleva `warnings` cuando algo es raro pero se ha guardado:
-     * una corriente negativa, un elemento sin tensión, un canal sin dar de
-     * alta. Sin eso, un montaje mal configurado responde 201 durante meses.
+     * Soporta tanto el contrato universal `energy` (D115) como el contrato legacy `readings`.
      */
-    public function store(StoreEnergyRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        $data = $request->validated();
+        if ($request->has('energy')) {
+            $telemetryRequest = app(StoreEnergyTelemetryRequest::class);
+
+            return app(EnergyReadingController::class)->store($telemetryRequest);
+        }
+
+        $storeRequest = app(StoreEnergyRequest::class);
+        $data = $storeRequest->validated();
 
         ['readings' => $readings, 'warnings' => $warnings] = $this->service->storeEnergyData($data);
 
