@@ -175,4 +175,31 @@ class HardwareEnergyModelTest extends TestCase
         $this->assertSame($element->id, $hist->hardwareEnergy->id);
         $this->assertSame($element->id, $hist->energy->id);
     }
+
+    #[Test]
+    public function it_scopes_elements_for_user(): void
+    {
+        $otherUser = User::factory()->create(['role_id' => 1, 'is_active' => true]);
+        $otherDevice = HardwareDevice::create([
+            'user_id' => $otherUser->id,
+            'name' => 'Other Monitor',
+        ]);
+
+        $myElement = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'hardware_device_monitorized_id' => $this->device->id,
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'sensor_position' => 0,
+        ]);
+
+        $otherElement = HardwareEnergy::create([
+            'hardware_device_id' => $otherDevice->id,
+            'hardware_device_monitorized_id' => $otherDevice->id,
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'sensor_position' => 0,
+        ]);
+
+        $this->assertTrue(HardwareEnergy::forUser($this->user->id)->where('id', $myElement->id)->exists());
+        $this->assertFalse(HardwareEnergy::forUser($this->user->id)->where('id', $otherElement->id)->exists());
+    }
 }

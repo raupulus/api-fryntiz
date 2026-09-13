@@ -11,6 +11,19 @@ use Illuminate\Support\Facades\Validator;
 /**
  * Valida el bloque de telemetría de energía `energy` en peticiones IoT (D115, Fase 4).
  *
+ * **Todo campo que `HardwareService::storeEnergyTelemetry()` lea tiene que estar
+ * aquí, y todo lo que esté aquí tiene que leerlo el servicio.** Los que no se
+ * declaran entran igual —Laravel no rechaza lo que no conoce— y el servicio los
+ * castea en silencio: un `"hola"` en `total_operating_days` se convertía en un 0
+ * y un acumulado negativo pasaba sin más. Los que están declarados y nadie lee
+ * son peor: prometen al firmware que el dato se guarda cuando no se guarda, que
+ * es exactamente como se perdieron los amperios-hora del Renogy Rover.
+ *
+ * La correspondencia en los dos sentidos la comprueba
+ * `tests/Unit/Rules/EnergyContractSurfaceTest.php`; los tres bloques declaran
+ * los mismos acumuladores a propósito, porque un generador, una batería y un
+ * consumo describen lo mismo de distinta manera.
+ *
  * Estructura esperada:
  * {
  *   "duration": 60, // Opcional, segundos del intervalo
@@ -41,8 +54,20 @@ class EnergyTelemetryPayload implements ValidationRule
             'generator.charging_status_label' => ['nullable', 'string', 'max:255'],
             'generator.light_status' => ['nullable', 'boolean'],
             'generator.light_brightness' => ['nullable', 'integer', 'between:0,100'],
+            'generator.energy_wh' => ['nullable', 'numeric', 'min:0'],
+            'generator.energy_ah' => ['nullable', 'numeric', 'min:0'],
             'generator.today_energy_wh' => ['nullable', 'numeric', 'min:0'],
+            'generator.today_energy_ah' => ['nullable', 'numeric', 'min:0'],
+            'generator.today_voltage_min' => ['nullable', 'numeric'],
+            'generator.today_voltage_max' => ['nullable', 'numeric'],
+            'generator.today_amperage_max' => ['nullable', 'numeric'],
+            'generator.today_power_max' => ['nullable', 'numeric'],
             'generator.historical_energy_wh' => ['nullable', 'numeric', 'min:0'],
+            'generator.historical_energy_ah' => ['nullable', 'numeric', 'min:0'],
+            'generator.battery_full_charges' => ['nullable', 'integer', 'min:0'],
+            'generator.battery_over_discharges' => ['nullable', 'integer', 'min:0'],
+            'generator.total_operating_days' => ['nullable', 'integer', 'min:0'],
+            'generator.days_operating' => ['nullable', 'integer', 'min:0'],
 
             'battery' => ['nullable', 'array'],
             'battery.voltage' => ['nullable', 'numeric'],
@@ -53,10 +78,20 @@ class EnergyTelemetryPayload implements ValidationRule
             'battery.temperature' => ['nullable', 'numeric'],
             'battery.charging_status' => ['nullable', 'integer'],
             'battery.charging_status_label' => ['nullable', 'string', 'max:255'],
-            'battery.today_energy_ah' => ['nullable', 'numeric', 'min:0'],
+            'battery.energy_wh' => ['nullable', 'numeric'],
+            'battery.energy_ah' => ['nullable', 'numeric'],
+            'battery.today_energy_wh' => ['nullable', 'numeric'],
+            'battery.today_energy_ah' => ['nullable', 'numeric'],
+            'battery.today_voltage_min' => ['nullable', 'numeric'],
+            'battery.today_voltage_max' => ['nullable', 'numeric'],
+            'battery.today_amperage_max' => ['nullable', 'numeric'],
+            'battery.today_power_max' => ['nullable', 'numeric'],
+            'battery.historical_energy_wh' => ['nullable', 'numeric', 'min:0'],
             'battery.historical_energy_ah' => ['nullable', 'numeric', 'min:0'],
             'battery.battery_full_charges' => ['nullable', 'integer', 'min:0'],
             'battery.battery_over_discharges' => ['nullable', 'integer', 'min:0'],
+            'battery.total_operating_days' => ['nullable', 'integer', 'min:0'],
+            'battery.days_operating' => ['nullable', 'integer', 'min:0'],
 
             'loads' => ['nullable', 'array'],
             'loads.*' => ['required', 'array'],
@@ -67,8 +102,20 @@ class EnergyTelemetryPayload implements ValidationRule
             'loads.*.power' => ['nullable', 'numeric'],
             'loads.*.temperature' => ['nullable', 'numeric'],
             'loads.*.fan' => ['nullable', 'integer', 'min:0'],
+            'loads.*.energy_wh' => ['nullable', 'numeric', 'min:0'],
+            'loads.*.energy_ah' => ['nullable', 'numeric', 'min:0'],
             'loads.*.today_energy_wh' => ['nullable', 'numeric', 'min:0'],
+            'loads.*.today_energy_ah' => ['nullable', 'numeric', 'min:0'],
+            'loads.*.today_voltage_min' => ['nullable', 'numeric'],
+            'loads.*.today_voltage_max' => ['nullable', 'numeric'],
+            'loads.*.today_amperage_max' => ['nullable', 'numeric'],
+            'loads.*.today_power_max' => ['nullable', 'numeric'],
             'loads.*.historical_energy_wh' => ['nullable', 'numeric', 'min:0'],
+            'loads.*.historical_energy_ah' => ['nullable', 'numeric', 'min:0'],
+            'loads.*.battery_full_charges' => ['nullable', 'integer', 'min:0'],
+            'loads.*.battery_over_discharges' => ['nullable', 'integer', 'min:0'],
+            'loads.*.total_operating_days' => ['nullable', 'integer', 'min:0'],
+            'loads.*.days_operating' => ['nullable', 'integer', 'min:0'],
         ];
     }
 

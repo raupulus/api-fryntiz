@@ -165,7 +165,7 @@ Todos los sensores heredan estos campos:
 Las escrituras usan `throttle:api-store` y un token IoT ligado a su estación
 (`device:{id}`). Admiten la clave opcional `hardware_device_info` con el estado
 del propio dispositivo (batería, temperatura, uptime, RAM…), igual que
-`/energy/readings` y `/energy/solar-readings`.
+`/energy/readings`.
 
 > **Las lecturas eran públicas hasta el 2026-09-06.** Lo eran porque el widget
 > del clima de esta misma web las llamaba desde el navegador, y eso dejaba la
@@ -368,4 +368,4 @@ como `HasOneThrough` a través del dispositivo.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-06
+> Creado: 2026-05-25 · Última revisión: 2026-09-13

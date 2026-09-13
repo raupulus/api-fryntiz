@@ -191,4 +191,81 @@ class EnergySolarIngestionTest extends ApiTestCase
         $this->assertNotNull($batReading);
         $this->assertSame(50, $batReading->battery_percentage);
     }
+
+    #[Test]
+    public function it_accepts_root_duration_and_device_alias(): void
+    {
+        $payload = [
+            'hardware_device_id' => $this->device->id,
+            'duration' => 120,
+            'device' => [
+                'temp' => 45.2,
+                'uptime' => 3600,
+            ],
+            'energy' => [
+                'battery' => [
+                    'voltage' => 13.2,
+                    'amperage' => 1.5,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson(
+            $this->apiUrl('energy/readings'),
+            $payload,
+            $this->moduleHeaders($this->user, TokenAbilities::ENERGY_WRITE)
+        );
+
+        $response->assertStatus(201);
+
+        $batReading = HardwareEnergyReading::query()
+            ->where('hardware_energy_id', $this->batteryElement->id)
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($batReading);
+        $this->assertSame(120, $batReading->delta_seconds);
+        $this->assertNotNull($batReading->energy_wh);
+
+        $this->device->refresh();
+        $this->assertSame(45.2, (float) $this->device->temp);
+        $this->assertSame(3600, $this->device->uptime);
+    }
+
+    #[Test]
+    public function it_skips_inactive_elements_without_throwing_duplicate_key_error(): void
+    {
+        $this->generatorElement->update(['is_active' => false]);
+
+        $payload = [
+            'hardware_device_id' => $this->device->id,
+            'energy' => [
+                'generator' => [
+                    'voltage' => 30.0,
+                    'amperage' => 2.0,
+                ],
+                'battery' => [
+                    'voltage' => 13.0,
+                    'soc' => 80,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson(
+            $this->apiUrl('energy/readings'),
+            $payload,
+            $this->moduleHeaders($this->user, TokenAbilities::ENERGY_WRITE)
+        );
+
+        $response->assertStatus(201);
+        $response->assertJsonPath('warnings.0', 'Generador: el elemento está desactivado; lectura ignorada.');
+
+        // Se persiste la lectura de la batería activa, pero no la del generador inactivo
+        $this->assertFalse(
+            HardwareEnergyReading::query()->where('hardware_energy_id', $this->generatorElement->id)->exists()
+        );
+        $this->assertTrue(
+            HardwareEnergyReading::query()->where('hardware_energy_id', $this->batteryElement->id)->exists()
+        );
+    }
 }

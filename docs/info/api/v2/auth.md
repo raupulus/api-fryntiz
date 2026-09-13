@@ -177,8 +177,8 @@ de adorno: cada una la exige alguna ruta.**
 |---|---|
 | `hardware:read` | Listar dispositivos y ver su ficha (`GET /hardware/devices*`) |
 | `hardware:write` | Último estado conocido del aparato (`PUT /hardware/devices/{id}/status`) |
-| `energy:read` | Consultar lecturas de energía y solares (`GET /energy/readings`, `GET /energy/solar-readings`) |
-| `energy:write` | Subirlas (`POST` de esas dos rutas). Es la de un controlador solar o un contador de consumo |
+| `energy:read` | Consultar lecturas de energía (`GET /energy/readings`) |
+| `energy:write` | Subirlas (`POST /energy/readings`). Es la de un controlador solar o un contador de consumo |
 | `weatherstation:read` | Estaciones y el histórico de sus sensores (`GET /weather-stations*`) |
 | `weatherstation:write` | Subir lecturas de sensores (`POST /weather-stations/{id}/*`) |
 | `keycounter:read` | Sesiones de teclado y ratón (`GET /keycounter/*`) |
@@ -261,4 +261,4 @@ gestión de cuentas de otros usuarios se hace **solo** desde el panel Filament.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-13

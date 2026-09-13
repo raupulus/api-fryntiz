@@ -78,17 +78,28 @@ php artisan debug:seed-smartplant --plants=10 --registers=100
 
 ## Hardware/Energy
 
-Inserta dispositivos hardware y registros de energía solar (voltaje, corriente, potencia):
+Llena el esquema unificado de energía para poder mirar el panel con datos.
+Por cada dispositivo crea un elemento en `hardware_energy` —alternando
+`generator` y `load`— y, colgando de él:
+
+| Tabla | Qué mete |
+|---|---|
+| `hardware_energy_readings` | `--records` lecturas, una cada 15 min hacia atrás |
+| `hardware_energy_today` | **30 filas**, una por día, sin repetir el par (elemento, fecha) |
+| `hardware_energy_historical` | **1 fila**, sesión 1, con la suma de esos 30 días |
 
 ```bash
-# 5 dispositivos + 100 registros (por defecto)
+# 5 dispositivos + 100 lecturas (por defecto)
 php artisan debug:seed-energy
 
 # Personalizar
 php artisan debug:seed-energy --devices=10 --records=200
 ```
 
-**Archivo:** `app/Console/Commands/Debug/SeedEnergyDebugCommand.php`
+Es idempotente: relanzarlo no duplica ni elementos ni resúmenes.
+
+**Archivo:** `app/Console/Commands/Debug/SeedEnergyDebugCommand.php` ·
+**Tests:** `tests/Feature/Console/Energy/SeedEnergyDebugCommandTest.php`
 
 > **Eliminado en fix_11:** el comando `debug:seed-users` se ha retirado. Los 3
 > usuarios creados por `UsersTableSeeder` (superadmin, admin, user) son suficientes
@@ -190,6 +201,13 @@ php artisan debug:seed-all --small
   `meteorology_resume_today`, `meteorology_resume_historical`, `meteorology_uv_index`,
   `meteorology_uva` y `meteorology_uvb`.
 
+### Cambios 2026-09-12
+
+- `debug:seed-energy`: reescrito contra el esquema unificado. Escribía `read_at`
+  —columna que el esquema nuevo suprimió— y creaba 30 acumulados por elemento,
+  uno por día, cuando `hardware_energy_historical` guarda **uno por sesión**.
+  Reventaba con `column "read_at" does not exist` y ningún test lo ejecutaba.
+
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-06
+> Creado: 2026-05-26 · Última revisión: 2026-09-12

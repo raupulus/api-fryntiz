@@ -186,9 +186,8 @@ class JsonHelper
      * Gemela de `ApiResponseTrait::errorResponse()`.
      *
      * El bloque `errors` admite las dos formas que la API produce de verdad:
-     * el mapa `campo => [mensajes]` de la validación y la lista suelta de
-     * motivos que devuelve `EnergyMonitorController` cuando ninguna lectura
-     * casa con un canal dado de alta. Por eso el tipo no es `array<string,mixed>`.
+     * el mapa `campo => [mensajes]` de la validación y una lista suelta de
+     * motivos. Por eso el tipo no es `array<string,mixed>`.
      *
      * @param  array<array-key, mixed>  $errors
      */

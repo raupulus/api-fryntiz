@@ -34,6 +34,32 @@ class StoreEnergyTelemetryRequest extends BaseFormRequest
     }
 
     /**
+     * Normaliza alias para compatibilidad con microcontroladores y clientes IoT.
+     */
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+
+        // Alias simplificado "device" -> "hardware_device_info"
+        if ($this->has('device') && ! $this->has('hardware_device_info')) {
+            $merge['hardware_device_info'] = $this->input('device');
+        }
+
+        // Si "duration" viene en la raíz y "energy" es array sin duration, propagarlo
+        if ($this->has('duration') && $this->has('energy') && is_array($this->input('energy'))) {
+            $energy = (array) $this->input('energy');
+            if (! isset($energy['duration'])) {
+                $energy['duration'] = $this->input('duration');
+                $merge['energy'] = $energy;
+            }
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
+    }
+
+    /**
      * Reglas de validación para la telemetría energética.
      *
      * @return array<string, mixed>
@@ -47,9 +73,17 @@ class StoreEnergyTelemetryRequest extends BaseFormRequest
                 'exists:hardware_devices,id',
                 new OwnedHardwareDevice,
             ],
+            'device' => [
+                'nullable',
+            ],
             'hardware_device_info' => [
                 'nullable',
                 new DeviceStatusPayload,
+            ],
+            'duration' => [
+                'nullable',
+                'integer',
+                'min:1',
             ],
             'energy' => [
                 'required',
@@ -69,6 +103,8 @@ class StoreEnergyTelemetryRequest extends BaseFormRequest
         return [
             'hardware_device_id.required' => 'El identificador del dispositivo es obligatorio.',
             'hardware_device_id.exists' => 'El dispositivo especificado no existe.',
+            'duration.integer' => 'La duración del intervalo debe ser un número entero de segundos.',
+            'duration.min' => 'La duración del intervalo debe ser al menos de 1 segundo.',
             'energy.required' => 'El bloque de datos de energía (energy) es obligatorio.',
             'energy.array' => 'El bloque de energía debe ser un objeto JSON válido.',
         ];

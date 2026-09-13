@@ -7,12 +7,9 @@ namespace App\Console\Commands\Debug;
 use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
-use App\Models\Hardware\HardwarePowerGenerator;
-use App\Models\Hardware\HardwarePowerGeneratorHistorical;
-use App\Models\Hardware\HardwarePowerGeneratorToday;
-use App\Models\Hardware\HardwarePowerLoad;
-use App\Models\Hardware\HardwarePowerLoadHistorical;
-use App\Models\Hardware\HardwarePowerLoadToday;
+use App\Models\Hardware\HardwareEnergyHistorical;
+use App\Models\Hardware\HardwareEnergyReading;
+use App\Models\Hardware\HardwareEnergyToday;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -61,135 +58,12 @@ class SeedEnergyDebugCommand extends Command
             $devices[] = $device;
         }
 
-        $this->info("Insertando {$recordsCount} registros de generación y consumo por dispositivo...");
-
-        $bar = $this->output->createProgressBar($recordsCount * $devicesCount);
-        $bar->start();
-
-        foreach ($devices as $device) {
-            for ($i = 0; $i < $recordsCount; $i++) {
-                $readAt = $now->copy()->subMinutes(($recordsCount - $i) * 15);
-
-                // Generador
-                HardwarePowerGenerator::create([
-                    'hardware_device_id' => $device->id,
-                    'battery_voltage' => fake()->randomFloat(2, 11.5, 14.8),
-                    'battery_temperature' => fake()->randomFloat(1, 20, 55),
-                    'battery_percentage' => fake()->numberBetween(10, 100),
-                    'charging_status' => fake()->numberBetween(0, 3),
-                    'charging_status_label' => fake()->randomElement(['Charging', 'Float', 'Bulk', 'Off']),
-                    'amperage' => fake()->randomFloat(2, 0, 5),
-                    'voltage' => fake()->randomFloat(2, 12, 24),
-                    'power' => fake()->randomFloat(2, 0, 100),
-                    'light_status' => fake()->boolean(70),
-                    'light_brightness' => fake()->numberBetween(0, 100),
-                    'read_at' => $readAt,
-                    'created_at' => $readAt,
-                ]);
-
-                // Consumo
-                HardwarePowerLoad::create([
-                    'hardware_device_id' => $device->id,
-                    'fan' => fake()->boolean(30),
-                    'temperature' => fake()->randomFloat(1, 25, 50),
-                    'voltage' => fake()->randomFloat(2, 12, 24),
-                    'amperage' => fake()->randomFloat(2, 0, 3),
-                    'power' => fake()->randomFloat(2, 0, 60),
-                    'battery_voltage' => fake()->randomFloat(2, 11.5, 14.8),
-                    'battery_percentage' => fake()->numberBetween(10, 100),
-                    'read_at' => $readAt,
-                    'created_at' => $readAt,
-                ]);
-
-                $bar->advance();
-            }
-        }
-
-        $bar->finish();
-        $this->newLine();
-
-        // === Agregados *_today y *_historical (fix_10 / fase 02) ===
-        // Sin esto la vista /hardware/energy queda a 0.
-        $this->info('Generando agregados today + historical...');
-        $today = $now->copy()->startOfDay();
-        foreach ($devices as $device) {
-            HardwarePowerLoadToday::updateOrCreate(
-                ['hardware_device_id' => $device->id, 'date' => $today->toDateString()],
-                [
-                    'fan_min' => 0, 'fan_max' => 1,
-                    'temperature_min' => 25, 'temperature_max' => 48,
-                    'voltage_min' => 11.5, 'voltage_max' => 14.8,
-                    'battery_min' => 11.5, 'battery_max' => 14.8,
-                    'battery_percentage_min' => 20, 'battery_percentage_max' => 100,
-                    'amperage_min' => 0.2, 'amperage_max' => 2.8,
-                    'power_min' => 2.4, 'power_max' => 38.0,
-                    'energy_wh' => fake()->randomFloat(2, 200, 900),
-                    'energy_ah' => fake()->randomFloat(2, 15, 70),
-                    'readings_count' => 96,
-                    'read_at' => $now,
-                ]
-            );
-
-            HardwarePowerGeneratorToday::updateOrCreate(
-                ['hardware_device_id' => $device->id, 'date' => $today->toDateString()],
-                [
-                    'temperature_min' => 22, 'temperature_max' => 50,
-                    'voltage_min' => 12.0, 'voltage_max' => 24.0,
-                    'battery_min' => 11.5, 'battery_max' => 14.8,
-                    'battery_percentage_min' => 20, 'battery_percentage_max' => 100,
-                    'amperage_min' => 0.0, 'amperage_max' => 4.8,
-                    'power_min' => 0.0, 'power_max' => 95.0,
-                    'energy_wh' => fake()->randomFloat(2, 400, 1800),
-                    'energy_ah' => fake()->randomFloat(2, 30, 140),
-                    'readings_count' => 96,
-                    'read_at' => $now,
-                ]
-            );
-
-            for ($d = 0; $d < 30; $d++) {
-                $day = $now->copy()->subDays($d);
-                HardwarePowerLoadHistorical::updateOrCreate(
-                    ['hardware_device_id' => $device->id, 'read_at' => $day],
-                    [
-                        'fan_min' => 0, 'fan_max' => 1,
-                        'temperature_min' => fake()->randomFloat(2, 22, 28),
-                        'temperature_max' => fake()->randomFloat(2, 40, 50),
-                        'voltage_min' => fake()->randomFloat(2, 11, 12),
-                        'voltage_max' => fake()->randomFloat(2, 13, 15),
-                        'battery_min' => fake()->randomFloat(2, 11, 12),
-                        'battery_max' => fake()->randomFloat(2, 13, 15),
-                        'amperage_min' => fake()->randomFloat(2, 0, 0.5),
-                        'amperage_max' => fake()->randomFloat(2, 2, 3),
-                        'power_min' => fake()->randomFloat(2, 0, 5),
-                        'power_max' => fake()->randomFloat(2, 50, 60),
-                        'energy_wh' => fake()->randomFloat(2, 300, 1200),
-                        'energy_ah' => fake()->randomFloat(2, 25, 90),
-                        'readings_count' => 96 * ($d + 1),
-                        'days_operating' => $d + 1,
-                    ]
-                );
-
-                HardwarePowerGeneratorHistorical::updateOrCreate(
-                    ['hardware_device_id' => $device->id, 'read_at' => $day],
-                    [
-                        'days_operating' => $d + 1,
-                        'number_battery_over_discharges' => fake()->numberBetween(0, 3),
-                        'number_battery_full_charges' => fake()->numberBetween(0, 5),
-                        'energy_wh' => fake()->randomFloat(2, 500, 2500),
-                        'energy_ah' => fake()->randomFloat(2, 40, 190),
-                        'readings_count' => 96 * ($d + 1),
-                    ]
-                );
-            }
-        }
-
         // === Asociaciones en hardware_energy ===
-        // Define qué dispositivo monitoriza a cuál (necesario para las vistas de energía).
-        $this->info('Asociando dispositivos en hardware_energy...');
+        $this->info('Asociando elementos en hardware_energy...');
+        $elements = [];
 
         foreach ($devices as $index => $device) {
-            // Caso 1: Auto-monitorización — cada dispositivo se monitoriza a sí mismo.
-            HardwareEnergy::firstOrCreate(
+            $elements[] = HardwareEnergy::firstOrCreate(
                 [
                     'hardware_device_id' => $device->id,
                     'hardware_device_monitorized_id' => $device->id,
@@ -200,43 +74,111 @@ class SeedEnergyDebugCommand extends Command
                         ? HardwareEnergy::ROLE_GENERATOR
                         : HardwareEnergy::ROLE_LOAD,
                     'sensor_position' => 0,
+                    'is_active' => true,
+                    'nominal_voltage' => 12.0,
                 ]
             );
         }
 
-        // Caso 2: Monitorización cruzada — el primer dispositivo monitoriza a los demás.
-        if (count($devices) >= 2) {
-            $monitorDevice = $devices[0];
+        $this->info("Insertando {$recordsCount} lecturas unificadas de energía por dispositivo...");
 
-            for ($i = 1; $i < count($devices); $i++) {
-                HardwareEnergy::firstOrCreate(
+        $bar = $this->output->createProgressBar($recordsCount * count($elements));
+        $bar->start();
+
+        foreach ($elements as $element) {
+            for ($i = 0; $i < $recordsCount; $i++) {
+                $readAt = $now->copy()->subMinutes(($recordsCount - $i) * 15);
+                $isGenerator = $element->isGenerator();
+
+                HardwareEnergyReading::create([
+                    'hardware_device_id' => $element->hardware_device_id,
+                    'hardware_energy_id' => $element->id,
+                    'voltage' => fake()->randomFloat(2, 11.5, 14.8),
+                    'amperage' => fake()->randomFloat(2, 0.1, $isGenerator ? 5.0 : 3.0),
+                    'power' => fake()->randomFloat(2, 1.0, $isGenerator ? 100.0 : 50.0),
+                    'energy_wh' => fake()->randomFloat(2, 5.0, 25.0),
+                    'energy_ah' => fake()->randomFloat(2, 0.4, 2.0),
+                    'delta_seconds' => 900,
+                    'energy_source' => 'device',
+                    'voltage_source' => 'measured',
+                    'temperature' => fake()->randomFloat(1, 20.0, 50.0),
+                    'created_at' => $readAt,
+                    'updated_at' => $readAt,
+                ]);
+
+                $bar->advance();
+            }
+        }
+
+        $bar->finish();
+        $this->newLine();
+
+        // === Agregados today + historical ===
+        //
+        // Un resumen **por día** durante 30 días y **un solo acumulado por
+        // elemento**, que es la forma que tiene el esquema: `hardware_energy_today`
+        // es único por (elemento, fecha) y `hardware_energy_historical` por
+        // (elemento, sesión). Ninguna de las dos tiene `read_at`: la marca de
+        // tiempo del resumen es su `date` y la del acumulado su `updated_at`.
+        $this->info('Generando 30 días de resúmenes + un acumulado por elemento...');
+        $dias = 30;
+
+        foreach ($elements as $element) {
+            $isGen = $element->isGenerator();
+            $totalWh = 0.0;
+            $totalAh = 0.0;
+            $totalLecturas = 0;
+
+            for ($d = 0; $d < $dias; $d++) {
+                $fecha = $now->copy()->subDays($d)->format('Y-m-d');
+                $whDia = fake()->randomFloat(2, 200, 1500);
+                $ahDia = fake()->randomFloat(2, 15, 120);
+
+                $totalWh += $whDia;
+                $totalAh += $ahDia;
+                $totalLecturas += 96;
+
+                HardwareEnergyToday::updateOrCreate(
+                    ['hardware_energy_id' => $element->id, 'date' => $fecha],
                     [
-                        'hardware_device_id' => $monitorDevice->id,
-                        'hardware_device_monitorized_id' => $devices[$i]->id,
-                    ],
-                    [
-                        'role' => $i % 2 === 0
-                            ? HardwareEnergy::ROLE_GENERATOR
-                            : HardwareEnergy::ROLE_LOAD,
-                        'sensor_position' => $i,
+                        'hardware_device_id' => $element->hardware_device_id,
+                        'voltage_min' => 11.5,
+                        'voltage_max' => 14.8,
+                        'amperage_min' => 0.1,
+                        'amperage_max' => $isGen ? 5.0 : 3.0,
+                        'power_min' => 1.0,
+                        'power_max' => $isGen ? 100.0 : 50.0,
+                        'temperature_min' => 20.0,
+                        'temperature_max' => 50.0,
+                        'energy_wh' => $whDia,
+                        'energy_ah' => $ahDia,
+                        'readings_count' => 96,
                     ]
                 );
             }
 
-            // Caso 3: El segundo dispositivo también monitoriza al primero (bidireccional).
-            HardwareEnergy::firstOrCreate(
+            HardwareEnergyHistorical::updateOrCreate(
+                ['hardware_energy_id' => $element->id, 'session_index' => 1],
                 [
-                    'hardware_device_id' => $devices[1]->id,
-                    'hardware_device_monitorized_id' => $devices[0]->id,
-                ],
-                [
-                    'role' => HardwareEnergy::ROLE_GENERATOR,
-                    'sensor_position' => 0,
+                    'hardware_device_id' => $element->hardware_device_id,
+                    'days_operating' => $dias,
+                    'energy_wh' => round($totalWh, 4),
+                    'energy_ah' => round($totalAh, 4),
+                    'voltage_min' => 11.0,
+                    'voltage_max' => 15.0,
+                    'amperage_min' => 0.0,
+                    'amperage_max' => $isGen ? 5.0 : 3.0,
+                    'power_min' => 0.0,
+                    'power_max' => $isGen ? 100.0 : 50.0,
+                    'temperature_min' => 20.0,
+                    'temperature_max' => 50.0,
+                    'readings_count' => $totalLecturas,
+                    'energy_source' => HardwareEnergyHistorical::SOURCE_DERIVED,
                 ]
             );
         }
 
-        $this->info("✅ {$devicesCount} dispositivos con {$recordsCount} registros cada uno + agregados today/historical + asociaciones hardware_energy insertados.");
+        $this->info("✅ {$devicesCount} dispositivos con {$recordsCount} lecturas cada uno + {$dias} días de resúmenes + acumulado por elemento.");
 
         return self::SUCCESS;
     }

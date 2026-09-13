@@ -243,21 +243,31 @@ class EnergyCardOrderTest extends TestCase
         $response = $this->get(route('hardware.energy.index'))->assertOk();
 
         $titles = collect($response->viewData('currentStats'))->pluck('title');
-        $units = collect($response->viewData('currentStats'))
-            ->filter(fn (array $s) => $s['unit'] === 'A');
-
-        $this->assertTrue($units->isEmpty(), 'No debe quedar ninguna tarjeta en amperios.');
-        $this->assertTrue($titles->contains('Balance'));
 
         $generator = $response->viewData('generator');
         $load = $response->viewData('load');
 
-        // El balance, que es la pregunta de verdad: 64 - 28 = 36 W a favor.
+        // El balance en vatios es la pregunta de verdad y no depende de la
+        // tensión: 64 - 28 = 36 W a favor.
         $this->assertSame(36.0, round($generator->current - $load->current));
 
         // Y las dos tensiones, para que se vea que no son la misma.
         $this->assertSame('33.7', $generator->current_voltage);
         $this->assertSame('13.2', $load->current_voltage);
+
+        // **Los amperios que se pintan van referidos a la tensión del bus.**
+        // Sin elemento de batería configurado, la referencia es la nominal del
+        // consumo y, a falta de ella, los 12 V de la instalación real. Los
+        // 1,85 A medidos a 33,7 V son 64 W, que a 12 V son 5,3 A: sumar el
+        // 1,85 crudo contra los 2,16 del consumo daría un balance al revés.
+        $this->assertSame(5.3, round((float) $generator->current_amperage, 1));
+        $this->assertSame('2.3', $load->current_amperage);
+
+        // Y hay una tarjeta que lo dice explícitamente.
+        $this->assertTrue(
+            $titles->contains(fn (string $t): bool => str_starts_with($t, 'Balance a ')),
+            'Debe haber un balance en amperios referido a una tensión concreta.'
+        );
     }
 
     /**

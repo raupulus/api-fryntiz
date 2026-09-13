@@ -33,11 +33,21 @@ El subsistema de energía se estructura en cuatro tablas principales:
 | `App\Models\Hardware\HardwareEnergyToday` | `hardware_energy_today` | **Agregado diario**: una fila por elemento y fecha con acumulados del día y extremos |
 | `App\Models\Hardware\HardwareEnergyHistorical` | `hardware_energy_historical` | **Serie histórica multisensión**: acumulados totales y extremos por sesión de odómetro |
 
-> ℹ️ Las tablas antiguas (`hardware_power_generators*`, `hardware_power_loads*`)
-> quedan en la base de datos como respaldo histórico frío. Todos sus datos
-> (1.750.515 lecturas, 1.833 agregados diarios, 10 históricos y 1.401 lecturas
-> de batería huérfanas) fueron migrados íntegramente mediante el comando
-> `php artisan iot:migrate-legacy-energy-data`.
+> ℹ️ Las tablas antiguas (`hardware_power_generators*`, `hardware_power_loads*`,
+> `hardware_power_generators_solar`) **se quedan intactas en la base como
+> respaldo en frío**. Sus datos se traspasan con
+> `php artisan energy:migrate-legacy-data`, que:
+>
+> - toma el dispositivo de cada fila del **catálogo del elemento**, no de la fila
+>   vieja, porque el esquema antiguo guardaba a veces el aparato monitorizado en
+>   vez del que mide;
+> - **descarta las filas sin elemento asignado**, que en el esquema nuevo no se
+>   pueden sumar a nada y ensucian cualquier total que no filtre;
+> - descompone cada fila de `hardware_power_generators_solar` en tres lecturas
+>   —panel, salida de carga y batería—, que es el rango de fechas en el que la
+>   tabla dedicada del Rover fue la única que se llenó;
+> - empieza por un `TRUNCATE` de las tres tablas nuevas, así que **se lanza antes
+>   de que los aparatos empiecen a subir, no después**.
 
 ---
 
@@ -64,18 +74,76 @@ Un mismo aparato físico puede cumplir varios roles simultáneos mediante filas 
 - `auto_calculate_history`: Booleano que indica si los acumulados se recalculan automáticamente desde lecturas.
 - `is_active`: Indica si el elemento está activo y debe seguir procesando telemetría.
 
+### 2.1. A qué elemento va cada lectura
+
+`HardwareService::resolveTelemetryElement()` decide, para cada bloque de la
+telemetría, a qué fila de `hardware_energy` corresponde. El orden importa,
+porque el índice único
+`(hardware_device_id, hardware_device_monitorized_id, role, sensor_position)`
+no sabe nada de `is_active` ni de `deleted_at`:
+
+1. **Se prefiere el elemento activo y sin borrar.** Un mismo aparato puede tener
+   dos elementos del mismo rol midiendo cosas distintas —el índice único incluye
+   el dispositivo monitorizado—, así que coger «el primero» descartaba la lectura
+   si ese primero estaba desactivado habiendo otro perfectamente activo.
+2. **Si sólo hay uno borrado lógicamente, la lectura se descarta con un aviso.**
+   Ni se resucita el elemento ni se crea otro igual: lo segundo reventaba contra
+   el índice único y dejaba al dispositivo sin poder subir nada hasta que alguien
+   lo arreglara a mano. Restaurarlo es decisión de quien lo borró.
+3. **Si sólo hay uno desactivado, la lectura se descarta con un aviso.**
+4. **Si no hay ninguno, se crea**, para no perder el dato, pero **sin inventarle
+   `nominal_voltage`**: tomarla de la primera lectura que llegue dejaría fijado
+   como referencia permanente lo que igual era un pico de arranque, y a partir de
+   ahí todas las lecturas buenas saldrían con un aviso de fuera de rango. Se
+   avisa en `warnings` para que se configure.
+
+Todos esos casos se prueban en
+`tests/Feature/Api/V2/Energy/EnergyElementResolutionTest.php`.
+
+### 2.2. Qué identifica una fila de resumen
+
+`hardware_energy_today` y `hardware_energy_historical` llevan un
+`hardware_device_id`, pero **no forma parte de la identidad de la fila**: es una
+desnormalización de `hardware_energy.hardware_device_id` para poder filtrar y
+pintar sin unir tablas. Quien manda son los índices únicos:
+
+| Tabla | Clave |
+|---|---|
+| `hardware_energy_today` | (`hardware_energy_id`, `date`) |
+| `hardware_energy_historical` | (`hardware_energy_id`, `session_index`) |
+
+Toda búsqueda de «la fila de este elemento» —la ingesta, la sesión abierta del
+histórico y las dos del cron— usa **esa** clave y nada más. Buscar además por
+dispositivo dejaba invisible cualquier fila cuyo `hardware_device_id` no
+coincidiera: no se encontraba, se intentaba insertar otra, chocaba contra el
+índice único, la relectura volvía a no encontrar nada y el aparato se comía un
+**500 en cada subida**. Pasa de dos maneras: filas que la migración del esquema
+viejo atribuyó al dispositivo *monitorizado* en vez de al que mide, y reasignar
+un elemento a otro medidor desde Filament, que es un campo editable.
+
+Cuando la fila encontrada trae otro dispositivo, **se realinea con el del
+catálogo**, que es quien dice qué aparato mide ese elemento. Así una reasignación
+mueve la serie entera en vez de partirla en dos.
+
+Cubierto por `tests/Feature/Api/V2/Energy/EnergyRowIdentityTest.php`.
+
 ---
 
 ## 3. Telemetría y Contrato Universal `energy`
 
-Los dispositivos IoT pueden subir su telemetría mediante un payload unificado que agrupa
-los tres subsistemas en un único bloque semántico `energy`:
+Los dispositivos IoT suben su telemetría mediante un payload unificado que organiza
+las mediciones en **tres bloques normalizados** (`generator`, `battery`, `loads`):
 
 ```json
 {
   "hardware_device_id": 15,
   "duration": 60,
+  "device": {
+    "temp": 42.1,
+    "uptime": 86400
+  },
   "energy": {
+    "duration": 60,
     "generator": {
       "voltage": 34.5,
       "amperage": 4.2,
@@ -84,13 +152,19 @@ los tres subsistemas en un único bloque semántico `energy`:
       "charging_status_label": "mppt",
       "light_status": false,
       "today_energy_wh": 1250.0,
-      "historical_energy_wh": 45000.0
+      "today_energy_ah": 52.0,
+      "today_amperage_max": 6.1,
+      "today_power_max": 148.0,
+      "historical_energy_wh": 45000.0,
+      "historical_energy_ah": 1875.0
     },
     "battery": {
       "voltage": 13.4,
       "soc": 92,
       "temperature": 24.5,
       "charging_status": 3,
+      "today_voltage_min": 12.1,
+      "today_voltage_max": 14.3,
       "today_energy_ah": 40.0,
       "historical_energy_ah": 1500.0,
       "battery_full_charges": 25,
@@ -103,12 +177,23 @@ los tres subsistemas en un único bloque semántico `energy`:
         "amperage": 2.5,
         "power": 30.25,
         "today_energy_wh": 310.0,
-        "historical_energy_wh": 12500.0
+        "today_energy_ah": 25.6,
+        "today_amperage_max": 4.4,
+        "historical_energy_wh": 12500.0,
+        "historical_energy_ah": 1030.0
       }
     ]
   }
 }
 ```
+
+> **Flexibilidad de integración para microcontroladores:**
+> - `duration`: Puede enviarse en la raíz del objeto o dentro de `energy.duration` (si se omite, toma 60 segundos por defecto).
+> - `hardware_device_info`: Se acepta tanto con su clave canónica como con el alias abreviado `device`.
+> - **Todos los campos `today_*` e `historical_*` son opcionales en los tres
+>   bloques.** Un microcontrolador que sólo mide tensión y corriente manda eso y
+>   ya; un controlador que lleva sus propios contadores los manda y mandan ellos.
+>   Ver §4.2 para qué hace cada uno.
 
 ### Principios de Cálculo e Integración:
 1. **Sin campos `read_at` en base de datos ni contrato:** La fecha y momento de la lectura se rigen exclusivamente por `created_at` del servidor o momento de recepción, eliminando redundancias y desfases horarios en clientes IoT sin RTC.
@@ -116,8 +201,9 @@ los tres subsistemas en un único bloque semántico `energy`:
    - Potencia: $P = V \cdot I$ (W)
    - Energía incremental: $\Delta Wh = \frac{P \cdot \text{duration}}{3600}$
    - Amperios-hora incrementales: $\Delta Ah = \frac{I \cdot \text{duration}}{3600}$
-   - Si el dispositivo reporta acumulados nativos (`today_energy_wh`, `historical_energy_wh`), se toma el valor del hardware (`energy_source: device`). De lo contrario, se integran los calculados (`energy_source: derived`).
-3. **Respaldo de Tensión Nominal (`nominal_voltage`):** Si un canal de consumo o sensor de corriente simple (ej. INA219 montado en la línea de un router) no mide tensión, el backend recurre a `nominal_voltage` del elemento con `voltage_source: nominal` y emite un warning informativo sin descartar la muestra.
+   - `hardware_energy_readings.energy_source` describe el origen del **delta de esta lectura** (`energy_wh` / `energy_ah`), no el de los acumulados: vale `device` si el aparato manda ya el consumo del intervalo (`energy_wh` dentro del bloque) y `derived` si el servidor lo integra a partir de `power` y `duration`. No confundirlo con `energy_wh_source` / `energy_ah_source` de `hardware_energy_historical`, que son los de la sesión (§4.1).
+   - Los acumulados nativos (`today_energy_wh`, `today_energy_ah`, `historical_energy_wh`, `historical_energy_ah`) mandan siempre sobre lo calculado en sus tablas de resumen.
+3. **Respaldo de Tensión Nominal (`nominal_voltage`):** Si un canal de consumo o sensor de corriente simple (ej. INA219 montado en la línea de un router) no mide tensión, el backend recurre a `nominal_voltage` del elemento con `voltage_source: nominal` y emite un warning informativo sin descartar la muestra. **Sólo se usa cuando no hay medida**: una tensión medida se guarda tal cual aunque se salga del rango del elemento (§4.3).
 4. **Cálculo Automático de SOC de Batería:** Si el payload incluye tensión de batería pero omite el porcentaje (`soc`), el backend lo calcula de forma proporcional entre `voltage_min` y `voltage_max`.
 
 ---
@@ -135,14 +221,108 @@ Para evitar la pérdida de años de históricos acumulados:
    - El nuevo valor del odómetro reiniciado comienza a contar en la nueva sesión.
 3. El acumulado total absoluto de un elemento corresponde a la suma de `energy_wh` y `energy_ah` de todas sus sesiones históricas.
 
+**Ese criterio vale para todo el que lea esta tabla.** El panel público
+(`EnergyController`) y el widget del panel de administración
+(`EnergyStatsWidget`) suman las sesiones; quedarse con la última descarta todo
+lo anterior al último reinicio. La excepción son los **días**: ahí se coge el
+máximo, porque dos elementos que llevan 1.700 días cada uno no hacen 3.400 días
+de instalación. Lo fija `tests/Feature/Hardware/EnergyHistoricalReadingTest.php`.
+
+### 4.1. De dónde sale cada acumulado (`energy_wh_source` y `energy_ah_source`)
+
+**La regla del módulo entero: lo que el aparato manda se guarda tal cual; lo que
+no manda, se calcula.**
+
+Cada fila de `hardware_energy_historical` lo declara **por magnitud**, en dos
+columnas:
+
+| Valor | Qué significa |
+|---|---|
+| `device` | Lo lleva el odómetro del aparato. Se guarda el mayor entre lo que había y lo reportado, y **nunca se le suman nuestros deltas** |
+| `derived` | Lo llevamos nosotros sumando la energía de cada intervalo |
+
+**Las fija la primera lectura que trae odómetro de esa magnitud**, y desde
+entonces esa magnitud ignora los deltas. La otra sigue su propio camino.
+
+#### Por qué son dos columnas y no una
+
+Un aparato puede traer contador de una magnitud y no de la otra. El Renogy Rover
+es exactamente ese caso:
+
+| Elemento | Wh | Ah |
+|---|---|---|
+| Generador (panel) | del aparato | del aparato |
+| Consumo (salida de carga) | del aparato | del aparato |
+| Batería | **calculado** | del aparato |
+
+No hay registro Modbus de vatios-hora de batería. Con una sola marca por sesión,
+poner el elemento en `device` congelaba **también** los Wh de la batería y los
+dejaba clavados a 0 para siempre, mientras `hardware_energy_today` sí los
+calculaba: dos tablas dando respuestas distintas a la misma pregunta.
+
+#### Por qué no se usa `auto_calculate_history`
+
+Porque es una casilla que se puede quedar mal puesta —su `default(true)` marcó
+como auto-calculados a los controladores que traen odómetro propio—. Las dos
+columnas de origen son un **hecho observado** de la serie, no una intención
+declarada. `auto_calculate_history` sigue existiendo y gobierna si el cron
+nocturno se ocupa del elemento, pero no decide qué es odómetro y qué no.
+
+### 4.2. Qué declara el aparato y qué calculamos nosotros
+
+Todo campo `today_*` e `historical_*` del contrato es opcional y, cuando llega,
+gana. La tabla completa, con su efecto:
+
+| Campo del contrato | Dónde cae | Qué hace |
+|---|---|---|
+| `today_energy_wh` / `today_energy_ah` | `hardware_energy_today.energy_wh` / `.energy_ah` | **Sustituye** el total del día. Sumarlo lo contaría dos veces |
+| `today_voltage_min` / `today_voltage_max` | `.voltage_min` / `.voltage_max` | **Ensancha** el rango; nunca lo recorta |
+| `today_amperage_max` | `.amperage_max` | Ensancha |
+| `today_power_max` | `.power_max` | Ensancha |
+| `historical_energy_wh` / `historical_energy_ah` | `hardware_energy_historical.energy_wh` / `.energy_ah` | Fija la magnitud como `device` y guarda el mayor de los dos |
+| `battery_full_charges` / `battery_over_discharges` | `.number_battery_*` | Guarda el mayor |
+| `total_operating_days` (alias `days_operating`) | `.days_operating` | Guarda el mayor |
+
+«Ensancha» quiere decir que si nuestra propia lectura da un valor más extremo
+que el declarado, gana el nuestro: el máximo del controlador ve picos que un
+muestreo cada minuto se pierde, pero una medida concreta no se puede borrar.
+
+Lo que **no** llega se deriva de la lectura y de `duration`:
+
+- `power = voltage · amperage`
+- `energy_ah = amperage · duration / 3600`
+- `energy_wh = energy_ah · voltage`
+
+### 4.3. La tensión: se guarda lo medido
+
+`nominal_voltage` es **respaldo**, no corrección. Entra sólo cuando el aparato no
+manda `voltage`; entonces `voltage_source` queda en `nominal` y no en `measured`.
+
+Una tensión medida que se sale del rango del elemento **se guarda igual** y se
+avisa en `warnings`. Sustituirla, que es lo que se hacía antes, borraba justo lo
+que hay que ver:
+
+- el panel a 0 V de noche se guardaba a 24 V, y el mínimo del día del panel era
+  24 V todos los días;
+- una batería a 10,4 V con `voltage_min` a 11 se guardaba a 12 V con un 25 % de
+  carga, así que una sobredescarga real no aparecía en ninguna pantalla.
+
+En una batería, `voltage_min` y `voltage_max` son además las tensiones a 0 % y a
+100 % de carga: de ahí sale `battery_percentage` cuando el aparato no lo manda.
+Conviene que sean las del banco real y no un rango de tolerancia ancho.
+
 ---
 
 ## 5. Controladores y Rutas API V2
 
 - `POST /api/v2/energy/readings`: Endpoint universal de ingesta (ability `energy:write`).
 - `GET /api/v2/energy/readings`: Consulta de lecturas paginadas filtrables por dispositivo, elemento, fecha y ordenación (ability `energy:read`).
-- `POST /api/v2/energy/solar-readings`: Endpoint de compatibilidad transitoria para controladores Renogy Rover (con dual-write al esquema unificado).
-- `GET /api/v2/energy/solar-readings`: Endpoint legacy de consulta solar.
+
+**Son los dos únicos.** No hay endpoint específico para el controlador solar ni
+para ningún otro aparato: los tres bloques del contrato universal cubren desde
+un Renogy Rover que manda ocho acumuladores hasta un microcontrolador que manda
+tensión y corriente. La traducción de los registros Modbus del Rover la hace su
+firmware antes de enviar.
 
 ---
 
@@ -189,9 +369,33 @@ La plataforma expone una interfaz web pública para la monitorización en tiempo
 
 ### 8.1. Métricas Agregadas
 La interfaz presenta tres bloques de tarjetas analíticas agregadas:
-1. **Ahora Mismo:** Potencia de generación actual (W), potencia de consumo actual (W), balance neto instantáneo (W), tensiones de panel y batería (V), porcentajes de carga de batería, intensidad solar (%) y temperatura máxima registrada (°C).
-2. **Hoy:** Energía generada hoy (Wh), energía consumida hoy (Wh) y balance de amperios-hora (Ah).
+1. **Ahora Mismo:** Potencia de generación actual (W), potencia de consumo actual (W), balance neto instantáneo (W y A), tensiones de panel y batería (V), porcentajes de carga de batería, intensidad solar (%) y temperatura máxima registrada (°C).
+2. **Hoy:** Energía generada hoy (Wh), energía consumida hoy (Wh) y los mismos dos valores en amperios-hora referidos a la tensión del bus.
 3. **Histórico:** Energía total generada (kWh), total consumida (kWh), días acumulados en operación y ciclos completos de carga de batería.
+
+#### La tensión de referencia
+
+**Los vatios no dependen de la tensión y los amperios sí.** El balance en W
+—generado menos consumido— sale bien tal cual. El balance en amperios no: el
+panel del Renogy genera a 24 V y el consumo va a 12 V, así que generar 5 A no
+compensa consumir 5 A. Son 10 A referidos a 12 V frente a 5, o sea 5 A netos a
+favor, no 0.
+
+Por eso **todo lo que se pinta en amperios se lleva antes a una tensión común**,
+pasando por la potencia, que es la magnitud que no depende de ella:
+
+```
+A_ref = W / V_ref        Ah_ref = Wh / V_ref
+```
+
+`V_ref` es la `nominal_voltage` del elemento **batería** de la instalación, que
+es la tensión del bus —lo que el Renogy llama tensión de sistema—. Si no hay
+batería configurada se usa la del consumo y, a falta de las dos, 12 V. Las
+tarjetas llevan la tensión en el título (`Generado a 12 V`) para que no haya
+duda de contra qué se comparan.
+
+Las tarjetas por dispositivo van todas en W y Wh, así que no necesitan
+referencia.
 
 ### 8.2. Tarjetas de Dispositivos y Ordenación en Cascada
 Cada dispositivo físico medidor se renderiza en una tarjeta individual con su miniatura, versión de software, resumen de kWh históricos, porcentaje de batería y barras comparativas de potencia instantánea y energía diaria.
@@ -211,14 +415,94 @@ La interfaz respeta estrictamente la paleta del sistema de diseño («Obsidian F
 Para garantizar la integridad y coherencia matemática de las agregaciones a largo plazo:
 
 - **Comando:** `php artisan energy:aggregate-daily` (`App\Console\Commands\Energy\AggregateDailyEnergyCommand`).
-- **Planificación:** Diario a las **00:05** (`Europe/Madrid`) en `routes/console.php`.
+- **Planificación:** Diario a las **00:05 UTC** en `routes/console.php`.
 - **Comportamiento:**
-  1. Cierra y consolida el día anterior (todas las muestras entre 00:00:00 y 23:59:59) en `hardware_energy_today`.
+  1. Cierra y consolida el día anterior (todas las muestras entre 00:00:00 y 23:59:59 **UTC**) en `hardware_energy_today`.
   2. Filtra automáticamente por elementos con `auto_calculate_history = true` e `is_active = true` (los elementos con odómetro propio de hardware como el Renogy Rover se gestionan nativamente).
-  3. Reconcilia la serie histórica en `hardware_energy_historical` asegurando que `days_operating`, `readings_count`, `energy_wh` y `energy_ah` correspondan fielmente a la suma consolidada de sus resúmenes diarios.
+  3. Reconcilia la serie histórica en `hardware_energy_historical` **sesión a sesión**: cada fila de `session_index` se rehace con los resúmenes diarios comprendidos entre su apertura y la de la siguiente, de forma que el acumulado del elemento —que es la suma de sus sesiones— no se duplica al reiniciarse el odómetro.
   4. Excluye lecturas anómalas o sospechosas (`is_suspicious = true`).
-  5. Soporta ejecución manual retroactiva mediante opciones: `--date=YYYY-MM-DD`, `--today`, `--element=ID`, `--all`.
+  5. Soporta ejecución manual retroactiva mediante opciones: `--date=YYYY-MM-DD`, `--today`, `--element=ID`, `--all` y `--rebuild`.
+
+### 9.1. Cuándo un acumulado puede bajar
+
+La reconciliación **sólo sustituye un acumulado si los resúmenes diarios cubren
+toda la historia de esa sesión**, es decir si los días distintos encontrados en
+`hardware_energy_today` son al menos los que la sesión ya declaraba en
+`days_operating`.
+
+Los históricos que llegaron del esquema antiguo arrastran años sin un
+`hardware_energy_today` por día: sobrescribirlos con la suma de los días que sí
+existen borraba el resto. Cuando no se cubre toda la historia, el comando lo
+avisa por consola y se limita a ampliar el acumulado, nunca a reducirlo.
+
+`--rebuild` fuerza la sustitución de todas formas. Es destructivo y está para
+cuando se quiere rehacer un histórico a conciencia, no para el uso diario.
+
+### 9.2. Qué sesiones toca y cuáles no
+
+El comando **nunca toca una magnitud marcada como `device`**: su total es el del
+odómetro del aparato y cubre tiempo que nosotros no hemos medido. Ni la rehace ni
+la amplía, porque ampliarla con la suma de nuestros deltas sería mezclar las dos
+fuentes. Ver §4.1.
+
+Las magnitudes `derived` sí se rehacen, con el límite de cobertura de §9.1, y se
+decide **una por una**: en un elemento con los Wh del aparato y los Ah
+calculados, el cron rehace los Ah y no roza los Wh.
+
+`days_operating` y `readings_count` describen la sesión entera, no una magnitud.
+En cuanto **alguna** de las dos viene del odómetro, la sesión cubre tiempo que no
+hemos medido y esos dos campos sólo se amplían, nunca se sustituyen.
 
 ---
 
-> Creado: 2026-09-06 · Última revisión: 2026-09-12
+## 10. Cobertura de pruebas
+
+Este módulo se rompió en silencio varias veces —respondiendo 201 mientras los
+resúmenes se quedaban vacíos—, así que la cobertura está pensada para que eso
+haga ruido. Qué prueba cada archivo:
+
+### Contrato HTTP
+
+| Archivo | Qué sujeta |
+|---|---|
+| `Api/V2/Energy/EnergyContractTest.php` | **La forma exacta de cada respuesta**, clave por clave, más alias, precisión, errores, abilities, filtros y paginación. Es la red que sujeta a `docs/info/api/v2/energy.md` |
+| `Api/V2/Energy/EnergyInstallationScenarioTest.php` | Los dos montajes reales: un controlador solar con sus tres roles y un monitor de tres canales midiendo tres aparatos distintos. Incluye que no se mezclen entre sí |
+| `Api/V2/Energy/EnergySolarIngestionTest.php` | Ingesta completa del Renogy por el bloque `energy` e inferencia de SOC |
+| `Api/V2/Energy/EnergySecurityTest.php` | Aislamiento entre usuarios y entre dispositivos |
+
+### Reparto y acumulación
+
+| Archivo | Qué sujeta |
+|---|---|
+| `Api/V2/Energy/EnergyElementResolutionTest.php` | A qué elemento va cada lectura: elemento borrado, desactivado, auto-creado, y de dónde sale el acumulado de la sesión |
+| `Api/V2/Energy/EnergyRowIdentityTest.php` | Que la fila de resumen la identifique **el elemento**, no el dispositivo: una fila mal atribuida no puede devolver un 500 ni abrir otra en paralelo |
+| `Api/V2/Energy/EnergyDeclaredValuesTest.php` | **Que todo lo que el aparato manda se guarde y lo que no manda se calcule.** Los ocho acumuladores del Rover, los máximos del día, el origen por magnitud, la tensión medida fuera de rango y el signo de la batería |
+| `Api/V2/Energy/EnergyHistoricalResetTest.php` | Que un reinicio de odómetro abra sesión nueva sin tocar la anterior |
+| `Api/V2/Energy/EnergyMonitorSimpleTest.php` | Derivación de potencia, Wh y Ah, y respaldo de tensión nominal |
+
+### Cierre diario e históricos
+
+| Archivo | Qué sujeta |
+|---|---|
+| `Api/V2/Energy/EnergyDailyCycleTest.php` | El ciclo entero: subidas repartidas por el día, cierre nocturno, totales, idempotencia, lecturas sospechosas y corte del día en UTC |
+| `Console/Energy/AggregateDailyHistoricalTest.php` | Que el cron no borre acumulados que los resúmenes no cubren, que `--rebuild` sí lo haga, y que cada sesión se reconcilie sólo con sus días |
+| `Console/Energy/AggregateDailyEnergyCommandTest.php` | Opciones del comando y filtrado por `auto_calculate_history` |
+| `Console/Energy/MigrateLegacyEnergyDataCommandTest.php` | El traspaso del esquema viejo: `--dry-run` no escribe, las filas sin elemento no pasan, relanzarlo deja lo mismo y su `TRUNCATE` se lleva lo que hubiera entrado en vivo |
+| `Console/Energy/SeedEnergyDebugCommandTest.php` | Que `debug:seed-energy` escriba en la forma del esquema: un resumen por día y **un** acumulado por elemento |
+
+### Lectura y pantallas
+
+| Archivo | Qué sujeta |
+|---|---|
+| `Hardware/EnergyHistoricalReadingTest.php` | Que el panel público y el widget de administración lean el histórico con el mismo criterio, y que la batería salga del rol `battery` |
+| `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy` y **el escalado de los amperios a la tensión de referencia** |
+| `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
+| `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
+| `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |
+| `Unit/Rules/EnergyTelemetryPayloadTest.php` | La validación del bloque `energy` |
+| `Unit/Rules/EnergyContractSurfaceTest.php` | **Que el contrato no se descuelgue del código**: que todo campo que lee el servicio esté validado, que todo campo validado lo lea el servicio, que los tres bloques ofrezcan lo mismo y que la documentación los liste todos |
+| `Api/V2/Energy/EnergyDocumentedExamplesTest.php` | Que los ejemplos JSON de `docs/info/api/v2/energy.md` se suban de verdad, den 201 y no levanten un solo aviso |
+
+---
+
+> Creado: 2026-09-06 · Última revisión: 2026-09-13

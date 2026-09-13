@@ -60,12 +60,9 @@ use function is_finite;
  * @property-read float|null $capacity_wh Capacidad calculada dinámicamente en Wh (nominal_voltage * capacity_ah)
  * @property-read HardwareDevice|null $hardwareDevice
  * @property-read HardwareDevice|null $monitorized
- * @property-read EnergySourceType|null $sourceType
  * @property-read Collection<int, HardwareEnergyReading> $readings
  * @property-read Collection<int, HardwareEnergyToday> $today
  * @property-read Collection<int, HardwareEnergyHistorical> $historical
- * @property-read Collection<int, HardwarePowerGenerator> $powerGenerators
- * @property-read Collection<int, HardwarePowerLoad> $powerLoads
  *
  * @method static Builder<static>|HardwareEnergy newModelQuery()
  * @method static Builder<static>|HardwareEnergy newQuery()
@@ -190,47 +187,11 @@ class HardwareEnergy extends BaseModel
     }
 
     /**
-     * Instalación a la que pertenece el elemento.
-     */
-    public function system(): BelongsTo
-    {
-        return $this->belongsTo(EnergySystem::class, 'energy_system_id');
-    }
-
-    /**
      * Tipo de fuente: solar, eólica, red…
      */
     public function sourceType(): BelongsTo
     {
         return $this->belongsTo(EnergySourceType::class, 'energy_source_type_id');
-    }
-
-    /**
-     * Lecturas de consumo **de este elemento**.
-     *
-     * Antes colgaban del dispositivo (`hardware_device_id` → `hardware_device_id`),
-     * con lo que un monitor de cuatro canales devolvía las cuatro corrientes
-     * mezcladas para cualquiera de sus elementos.
-     */
-    public function powerLoads(): HasMany
-    {
-        return $this->hasMany(HardwarePowerLoad::class, 'hardware_energy_id');
-    }
-
-    /**
-     * Lecturas de generación de este elemento.
-     */
-    public function powerGenerators(): HasMany
-    {
-        return $this->hasMany(HardwarePowerGenerator::class, 'hardware_energy_id');
-    }
-
-    /**
-     * Lecturas del controlador solar, si el elemento es uno.
-     */
-    public function solarReadings(): HasMany
-    {
-        return $this->hasMany(HardwarePowerGeneratorSolar::class, 'hardware_energy_id');
     }
 
     /**
@@ -322,25 +283,14 @@ class HardwareEnergy extends BaseModel
     }
 
     /**
-     * Filtra por el slug de la instalación: `?system=casa`.
-     *
-     * @param  Builder<static>  $query
-     * @return Builder<static>
-     */
-    public function scopeOfSystem(Builder $query, string $slug): Builder
-    {
-        return $query->whereHas('system', static fn (Builder $q) => $q->where('slug', $slug));
-    }
-
-    /**
-     * Elementos de un usuario, mirando el dueño de la instalación.
+     * Elementos de un usuario, a través del dispositivo medidor.
      *
      * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForUser(Builder $query, int $userId): Builder
     {
-        return $query->whereHas('system', static fn (Builder $q) => $q->where('user_id', $userId));
+        return $query->whereHas('hardwareDevice', static fn (Builder $q) => $q->where('user_id', $userId));
     }
 
     // ──────────────────────────── Cálculos ─────────────────────────────
@@ -348,6 +298,16 @@ class HardwareEnergy extends BaseModel
     public function isGenerator(): bool
     {
         return $this->role === self::ROLE_GENERATOR;
+    }
+
+    public function isLoad(): bool
+    {
+        return $this->role === self::ROLE_LOAD;
+    }
+
+    public function isBattery(): bool
+    {
+        return $this->role === self::ROLE_BATTERY;
     }
 
     /**
@@ -394,16 +354,26 @@ class HardwareEnergy extends BaseModel
     }
 
     /**
-     * ¿Es creíble esta tensión para este elemento?
+     * ¿Cae esta tensión dentro del rango esperado de este elemento?
      *
      * Se usan `voltage_min` / `voltage_max` si están puestos; si no, un margen
      * alrededor de la nominal. Si el elemento no tiene ni nominal ni márgenes no
-     * hay con qué juzgar, y entonces cualquier tensión positiva pasa: inventarse
-     * un criterio marcaría como sospechosas lecturas correctas.
+     * hay con qué juzgar y todo pasa: inventarse un criterio señalaría lecturas
+     * correctas.
+     *
+     * **Que devuelva `false` no descarta la lectura ni la sustituye.** Sólo
+     * levanta un aviso. La medida se guarda siempre tal cual, porque las
+     * tensiones fuera de rango son justo las que interesa ver: un panel a 0 V es
+     * de noche, y una batería por debajo de su mínimo es una sobredescarga. Lo
+     * único que se sigue considerando imposible es una tensión negativa.
+     *
+     * En una batería este rango es además el que calibra el porcentaje de carga
+     * cuando el aparato no lo manda, así que conviene que sea el de trabajo real
+     * del banco y no un rango de tolerancia ancho.
      */
     public function voltageIsPlausible(?float $voltage): bool
     {
-        if ($voltage === null || ! is_finite($voltage) || $voltage <= 0.0) {
+        if ($voltage === null || ! is_finite($voltage) || $voltage < 0.0) {
             return false;
         }
 
@@ -429,7 +399,19 @@ class HardwareEnergy extends BaseModel
      */
     public function resolveVoltage(?float $measure): array
     {
-        if ($this->voltageIsPlausible($measure)) {
+        // **Una medida es una medida.** Antes, cualquier tensión fuera del rango
+        // creíble se sustituía por la nominal, y eso borraba justo los datos que
+        // importan: el panel a 0 V de noche se guardaba como 24 V —dejando el
+        // mínimo del día en 24— y una batería a 10,4 V con `voltage_min` a 11
+        // se guardaba como 12 V con un 25 % de carga, así que una sobredescarga
+        // real no se veía en ninguna pantalla.
+        //
+        // La regla, que además es la que ya estaba escrita en la documentación
+        // del Rover: lo que el aparato mide se guarda tal cual; la nominal sólo
+        // entra cuando **no hay** medida. Si la medida no es creíble se guarda
+        // igual y se avisa, que de eso se encarga quien llama con
+        // {@see self::voltageIsPlausible()}.
+        if ($measure !== null && is_finite($measure)) {
             return [$measure, 'measured'];
         }
 
@@ -437,8 +419,8 @@ class HardwareEnergy extends BaseModel
             return [$this->nominal_voltage, 'nominal'];
         }
 
-        // Ni medida creíble ni nominal. No se inventa un 0: eso convertiría «no
-        // tengo dato» en una medición de cero vatios que baja todas las medias.
+        // Ni medida ni nominal. No se inventa un 0: eso convertiría «no tengo
+        // dato» en una medición de cero vatios que baja todas las medias.
         return [null, 'measured'];
     }
 

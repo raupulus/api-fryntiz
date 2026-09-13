@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Hardware\HardwareEnergies;
 
 use App\Models\Hardware\HardwareEnergy;
+use Closure;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -140,12 +141,75 @@ class HardwareEnergyForm
             ->helperText('Generador es lo que produce, consumo lo que gasta y batería lo que almacena.');
     }
 
+    /**
+     * El canal del sensor.
+     *
+     * **Sólo distingue consumos.** La ingesta busca el generador y la batería
+     * por su papel, sin mirar el canal —de cada uno hay uno—, así que ahí el
+     * campo no hace nada y preguntarlo sólo confunde: se fija a 0 y se explica.
+     * En los consumos sí manda: es lo que reparte los tres canales de un INA
+     * entre los tres aparatos que mide.
+     */
     private static function channel(): TextInput
     {
         return TextInput::make('sensor_position')
             ->numeric()->minValue(0)->default(0)->required()
             ->label('Canal del monitor')
-            ->helperText('Tiene que coincidir con el «pos» que manda el dispositivo en cada lectura. 0 si sólo tiene uno.');
+            ->helperText(fn (Get $get): string => self::isLoad($get)
+                ? 'El `channel` que manda el dispositivo en cada lectura de consumo. 0 si sólo tiene un canal.'
+                : 'De generador y de batería sólo hay uno por aparato, así que la ingesta no mira el canal. Déjalo en 0.')
+            ->disabled(fn (Get $get): bool => ! self::isLoad($get))
+            ->dehydrated()
+            // Sin esto, repetir medidor + medido + papel + canal chocaba contra
+            // `hardware_energy_device_monitorized_role_position_unique` y el
+            // panel devolvía una pantalla de error en vez de decir qué pasa.
+            ->rule(static fn (Get $get, ?HardwareEnergy $record): Closure => static function (string $atributo, mixed $valor, Closure $falla) use ($get, $record): void {
+                if (self::channelIsTaken($get, $record, $valor)) {
+                    $falla('Ya hay un elemento de este papel en ese canal para el mismo par monitor/monitorizado.');
+                }
+            });
+    }
+
+    /**
+     * ¿Hay ya otro elemento con esta misma combinación?
+     *
+     * Los cuatro campos del índice único se resuelven desde el formulario
+     * cuando están, y desde el registro que se está editando cuando el
+     * formulario no los pregunta —la ficha del dispositivo no pregunta ni el
+     * medidor ni el papel—.
+     */
+    private static function channelIsTaken(Get $get, ?HardwareEnergy $registro, mixed $canal): bool
+    {
+        $medidor = $get('hardware_device_id') ?? $registro?->hardware_device_id;
+        $medido = $get('hardware_device_monitorized_id') ?? $registro?->hardware_device_monitorized_id;
+        $papel = $get('role') ?? $registro?->role;
+
+        if ($medidor === null || $medido === null || $papel === null || $canal === null || $canal === '') {
+            return false;
+        }
+
+        return HardwareEnergy::query()
+            ->withTrashed()
+            ->where('hardware_device_id', $medidor)
+            ->where('hardware_device_monitorized_id', $medido)
+            ->where('role', $papel)
+            ->where('sensor_position', (int) $canal)
+            ->when($registro !== null, static fn ($q) => $q->whereKeyNot($registro->getKey()))
+            ->exists();
+    }
+
+    /**
+     * ¿Este elemento es un consumo?
+     *
+     * En la ficha del dispositivo el papel no está en el formulario —lo pone el
+     * botón que se ha pulsado—, así que ahí no hay `role` que mirar y se trata
+     * como consumo, que es el único papel con varios canales.
+     */
+    private static function isLoad(Get $get): bool
+    {
+        $role = $get('role');
+
+        return $role === null || $role === HardwareEnergy::ROLE_LOAD;
     }
 
     private static function source(): Select
@@ -187,11 +251,13 @@ class HardwareEnergyForm
                     ->helperText('Potencia de diseño/catálogo (W).'),
                 TextInput::make('voltage_min')
                     ->numeric()->step(0.01)->suffix(' V')
-                    ->label('Tensión mínima creíble')
-                    ->helperText('Por debajo de esto se descarta la medida y se usa la nominal. Vacío = se acepta lo que llegue.'),
+                    ->label(fn (Get $get): string => self::isBattery($get) ? 'Tensión a 0 % de carga' : 'Tensión mínima esperada')
+                    ->helperText(fn (Get $get): string => self::isBattery($get)
+                        ? 'Con ésta y la de 100 % se calcula el porcentaje de carga cuando el aparato no lo manda. Pon las del banco real, no un rango ancho.'
+                        : 'Sólo para avisar: una medida por debajo se guarda igual, con un aviso en la respuesta. Vacío = no se avisa nunca.'),
                 TextInput::make('voltage_max')
                     ->numeric()->step(0.01)->suffix(' V')
-                    ->label('Tensión máxima creíble'),
+                    ->label(fn (Get $get): string => self::isBattery($get) ? 'Tensión a 100 % de carga' : 'Tensión máxima esperada'),
 
                 // Sólo tienen sentido en una batería.
                 TextInput::make('capacity_ah')
@@ -200,16 +266,23 @@ class HardwareEnergyForm
                     ->helperText('Capacidad nominal en amperios-hora (resolución hasta 1 mAh).')
                     ->visible(fn (Get $get): bool => self::isBattery($get)),
                 Toggle::make('auto_calculate_history')
-                    ->label('Consolidación histórica nocturna')
-                    ->helperText('Si está activo, el cron nocturno consolida/recalcula acumulados históricos.')
+                    ->label('Rehacer el acumulado cada noche')
+                    ->helperText(
+                        'Actívalo si los totales de este elemento los calculamos nosotros sumando sus lecturas. '
+                        .'Apágalo si el aparato lleva su propio contador de por vida, como el Renogy Rover: '
+                        .'ahí el acumulado es suyo y el cron no debe tocarlo.'
+                    )
                     ->default(true),
             ]);
     }
 
     /**
+     * ¿Este elemento es una batería?
+     *
      * En la ficha del dispositivo el papel no está en el formulario —lo pone el
      * botón—, así que ahí no hay `role` que mirar y los campos de capacidad se
-     * enseñan igual.
+     * enseñan igual: es preferible enseñar un campo de más que esconder el de
+     * la capacidad justo al dar de alta el banco de baterías.
      */
     private static function isBattery(Get $get): bool
     {

@@ -295,7 +295,7 @@ por HTTP se escribirá entera, con su contrato y sus límites.
 
 ### Lo que queda pendiente
 
-Está en `docs/planning/todo.md`: `resizeAndGet()` no cachea
+`resizeAndGet()` no cachea
 el resultado —reprocesa la imagen en cada petición— y `File` no borra los
 metadatos EXIF de los ficheros privados, que es un asunto de privacidad: una foto
 privada puede llevar dentro la geolocalización.

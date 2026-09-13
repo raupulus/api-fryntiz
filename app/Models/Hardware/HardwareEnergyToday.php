@@ -9,7 +9,9 @@ use App\Traits\BelongsToHardwareDevice;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Resumen del día de energía para un elemento (D115, Fase 3).
@@ -156,6 +158,10 @@ class HardwareEnergyToday extends BaseModel
      * Si el dispositivo provee su propio total del día (device_energy_wh / today_energy_wh),
      * éste prevalece y sustituye. Si no, se incrementa acumulando delta Wh/Ah.
      *
+     * **La fecha del resumen es la del servidor en UTC**, igual que el
+     * `created_at` de la lectura de la que sale. Todo lo que se guarda va en
+     * UTC; a `Europe/Madrid` se traduce sólo al pintarlo.
+     *
      * @param  array<string, mixed>  $data
      */
     public static function recalculateForElement(
@@ -164,43 +170,34 @@ class HardwareEnergyToday extends BaseModel
         array $data,
         ?string $date = null
     ): static {
-        $date = $date ?? Carbon::now()->format('Y-m-d');
+        $date = $date ?? Carbon::now('UTC')->format('Y-m-d');
 
-        /** @var static $record */
-        $record = static::query()
-            ->where('hardware_device_id', $deviceId)
-            ->when(
-                $elementId !== null,
-                static fn (Builder $q) => $q->where('hardware_energy_id', $elementId),
-                static fn (Builder $q) => $q->whereNull('hardware_energy_id')
-            )
-            ->where('date', $date)
-            ->first() ?? static::query()->make([
-                'hardware_device_id' => $deviceId,
-                'hardware_energy_id' => $elementId,
-                'date' => $date,
-                'readings_count' => 0,
-                'energy_wh' => 0.0,
-                'energy_ah' => 0.0,
-            ]);
+        $record = self::lockDaily($deviceId, $elementId, $date);
 
-        // Actualizar extremos
+        // Extremos calculados de esta lectura…
         $record->updateExtremes($data);
 
-        // Actualizar energía Wh
+        // …y los que declara el aparato, que mandan sobre los nuestros.
+        //
+        // Un controlador que lleva sus propios máximos del día ve los picos que
+        // un muestreo cada minuto se pierde, así que su valor es mejor que
+        // cualquier máximo que saquemos de las lecturas que nos han llegado.
+        // Sólo ensanchan el rango: nunca recortan lo que ya se había medido.
+        $record->widenWith('voltage_min', $data['today_voltage_min'] ?? null, menor: true);
+        $record->widenWith('voltage_max', $data['today_voltage_max'] ?? null, menor: false);
+        $record->widenWith('amperage_max', $data['today_amperage_max'] ?? null, menor: false);
+        $record->widenWith('power_max', $data['today_power_max'] ?? null, menor: false);
+
+        // Energía del día: lo que declara el aparato sustituye —es su contador,
+        // no un delta—; si no lo declara, se suma lo del intervalo.
         if (isset($data['today_energy_wh'])) {
             $record->energy_wh = (float) $data['today_energy_wh'];
-        } elseif (isset($data['device_energy_wh'])) {
-            $record->energy_wh = (float) $data['device_energy_wh'];
         } elseif (isset($data['energy_wh'])) {
             $record->energy_wh = (float) $record->energy_wh + (float) $data['energy_wh'];
         }
 
-        // Actualizar energía Ah
         if (isset($data['today_energy_ah'])) {
             $record->energy_ah = (float) $data['today_energy_ah'];
-        } elseif (isset($data['device_energy_ah'])) {
-            $record->energy_ah = (float) $data['device_energy_ah'];
         } elseif (isset($data['energy_ah'])) {
             $record->energy_ah = (float) $record->energy_ah + (float) $data['energy_ah'];
         }
@@ -209,6 +206,94 @@ class HardwareEnergyToday extends BaseModel
         $record->save();
 
         return $record;
+    }
+
+    /**
+     * La fila del día del elemento, bloqueada para escritura, creándola si no
+     * existe.
+     *
+     * Dos subidas simultáneas del mismo aparato —un reintento del firmware, dos
+     * peticiones solapadas— leían las dos que no había fila y las dos la
+     * insertaban: la segunda chocaba contra
+     * `hardware_energy_today_energy_date_unique` y el dispositivo se comía un
+     * 500. Aquí la creación va en su propia transacción anidada, que en
+     * PostgreSQL es un SAVEPOINT: si otra petición se adelanta, se revierte sólo
+     * ese punto —la transacción de fuera sigue viva— y se relee la fila que
+     * acaba de crear la otra.
+     *
+     * El `lockForUpdate()` serializa a partir de ahí a quien vaya a sumar sobre
+     * la misma fila.
+     *
+     * **La búsqueda usa la misma clave que el índice único.** Cuando hay
+     * elemento, la fila la determinan `hardware_energy_id` y `date` y nada más:
+     * `hardware_device_id` es una desnormalización de
+     * `hardware_energy.hardware_device_id`, no parte de la identidad. Buscar
+     * también por él dejaba fuera cualquier fila que lo tuviera distinto —la
+     * migración de datos antiguos atribuyó las de un elemento al dispositivo
+     * monitorizado, y basta con reasignar un elemento a otro medidor en el
+     * panel para provocarlo—, y entonces la inserción chocaba contra el índice
+     * único, la relectura volvía a no encontrar nada y el aparato se comía un
+     * 500 en cada subida.
+     *
+     * Si la fila venía con otro dispositivo se realinea con el que reporta, que
+     * es el que el catálogo dice que mide ese elemento.
+     */
+    private static function lockDaily(int $deviceId, ?int $elementId, string $date): static
+    {
+        $buscar = static fn (): ?static => static::query()
+            ->when(
+                $elementId !== null,
+                static fn (Builder $q) => $q->where('hardware_energy_id', $elementId),
+                // Sin elemento no hay índice único que valga —en PostgreSQL los
+                // NULL no chocan—, así que la fila la identifica el dispositivo.
+                static fn (Builder $q) => $q->whereNull('hardware_energy_id')
+                    ->where('hardware_device_id', $deviceId)
+            )
+            ->where('date', $date)
+            ->lockForUpdate()
+            ->first();
+
+        if ($record = $buscar()) {
+            $record->hardware_device_id = $deviceId;
+
+            return $record;
+        }
+
+        try {
+            return DB::transaction(static fn (): static => static::query()->create([
+                'hardware_device_id' => $deviceId,
+                'hardware_energy_id' => $elementId,
+                'date' => $date,
+                'readings_count' => 0,
+                'energy_wh' => 0.0,
+                'energy_ah' => 0.0,
+            ]));
+        } catch (UniqueConstraintViolationException $e) {
+            return $buscar() ?? throw $e;
+        }
+    }
+
+    /**
+     * Ensancha un extremo con el valor que declara el aparato.
+     *
+     * Nunca lo estrecha: si el controlador dice que el máximo del día fueron
+     * 90 W pero nosotros ya hemos medido 104 W, el bueno es el 104. Sólo suma
+     * información, nunca la quita.
+     *
+     * @param  bool  $menor  `true` para un mínimo, `false` para un máximo.
+     */
+    protected function widenWith(string $columna, mixed $valor, bool $menor): void
+    {
+        if ($valor === null || $valor === '') {
+            return;
+        }
+
+        $valor = (float) $valor;
+        $actual = $this->{$columna};
+
+        if ($actual === null || ($menor ? $valor < (float) $actual : $valor > (float) $actual)) {
+            $this->{$columna} = $valor;
+        }
     }
 
     /**

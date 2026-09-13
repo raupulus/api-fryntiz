@@ -44,7 +44,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 | `app/Filament/Concerns/ScopesToOwner.php` | Usado por `KeyboardResource` y `MouseResource`: la tabla del panel sólo muestra las sesiones propias. Sin él, un `Editor` veía las pulsaciones y los horarios de actividad de todos (AR-SEC-02) |
 | `app/Console/Commands/KeyCounterGenerateDuration.php` | Comando para recalcular duraciones |
 | `app/Console/Commands/KeyCounterRemoveDuplicate.php` | Comando para eliminar duplicados |
-| `app/Console/Commands/KeyCounterFixWeekdayCommand.php` | Normaliza `weekday` a 0=lunes en las rachas anteriores a 2020 |
+| `app/Console/Commands/KeyCounterFixWeekdayCommand.php` | Recalcula `weekday` desde `start_at` para que 0 sea siempre domingo, sea de la época que sea |
 | `app/Console/Commands/KeyCounterWarmCacheCommand.php` | Precalienta la caché: `--live` cada hora, sin opciones cada día |
 | `app/Support/KeyCounter/KeyCounterCache.php` | Claves y ventanas de caché, en un único sitio |
 
@@ -125,7 +125,7 @@ Los dos `POST` admiten, además, una clave opcional `hardware_device_info` con
 el último estado del propio dispositivo (batería, temperatura, uptime...). Se
 aplica sobre `hardware_device_id` en la misma petición mediante el trait
 `App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo`
-(mismo mecanismo que `/energy/readings` y `/energy/solar-readings`). Contrato de
+(mismo mecanismo que `/energy/readings`). Contrato de
 campos en [`docs/info/hardware.md`](hardware.md).
 
 ### `GET /keycounter/summary` — para reanudar tras un reinicio
@@ -248,7 +248,7 @@ Ambas en <https://gitlab.com/raupulus/python-keycounter>:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-07
+> Creado: 2026-05-25 · Última revisión: 2026-09-13
 
 
 ## El día de la semana: `0` es domingo (2026-09-11)
@@ -498,4 +498,4 @@ reportado el primer día del mes le caía la rama del `else` y se quedaba sin
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-11 (corrección: `weekday` es 0 = domingo, no 0 = lunes)
+> Creado: 2026-05-25 · Última revisión: 2026-09-13 (corrección: `weekday` es 0 = domingo, no 0 = lunes)

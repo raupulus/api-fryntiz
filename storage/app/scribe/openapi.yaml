@@ -97,7 +97,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'weatherstation:write'
+                    - 'energy:write'
                   items:
                     type: string
                     enum:
@@ -216,7 +216,7 @@ paths:
                 privacity:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                 contactme:
                   type: boolean
                   description: ''
@@ -1134,44 +1134,9 @@ paths:
         - Endpoints
       security: []
     post:
-      summary: 'Almacena las lecturas de un monitor de energía.'
-      operationId: almacenaLasLecturasDeUnMonitorDeEnerga
-      description: 'Soporta tanto el contrato universal `energy` (D115) como el contrato legacy `readings`.'
-      parameters: []
-      responses: {}
-      tags:
-        - Endpoints
-      security: []
-  /api/v2/energy/solar-readings:
-    get:
-      summary: 'Lecturas del controlador solar, paginadas.'
-      operationId: lecturasDelControladorSolarPaginadas
-      description: "Exige `energy:read`. Sólo devuelve lecturas de dispositivos del\nusuario y, si el token está ligado a dispositivos concretos\n(`device:{id}`), sólo las de ésos: un token de cacharro no lee el resto\ndel parque de su dueño."
-      parameters: []
-      responses:
-        401:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: false
-                  message: Unauthenticated
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: Unauthenticated
-      tags:
-        - Endpoints
-      security: []
-    post:
-      summary: 'Almacena una lectura del controlador solar.'
-      operationId: almacenaUnaLecturaDelControladorSolar
-      description: ''
+      summary: 'Ingesta universal de telemetría de energía.'
+      operationId: ingestaUniversalDeTelemetraDeEnerga
+      description: 'Requiere ability `energy:write`. Procesa subsistemas de generador, batería y consumos.'
       parameters: []
       responses: {}
       tags:
@@ -1183,237 +1148,33 @@ paths:
             schema:
               type: object
               properties:
+                hardware_device_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                device:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
                 hardware_device_info:
                   type: string
                   description: ''
                   example: null
                   nullable: true
-                hardware_device_id:
-                  type: integer
-                  description: 'Must match an existing stored value.'
-                  example: 16
-                date:
-                  type: string
-                  description: 'Must be a valid date.'
-                  example: '2026-09-12T15:22:24'
-                read_at:
-                  type: string
-                  description: 'Must be a valid date.'
-                  example: '2026-09-12T15:22:24'
-                hardware:
-                  type: string
-                  description: 'Must not be greater than 255 characters.'
-                  example: 'n'
-                  nullable: true
-                version:
-                  type: string
-                  description: 'Must not be greater than 255 characters.'
-                  example: g
-                  nullable: true
-                serial_number:
-                  type: string
-                  description: 'Must not be greater than 255 characters.'
-                  example: z
-                  nullable: true
-                battery_type:
-                  type: string
-                  description: 'Must not be greater than 255 characters.'
-                  example: m
-                  nullable: true
-                battery_voltage:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                battery_current:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                battery_power:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                battery_percentage:
-                  type: integer
-                  description: 'Must be at least 0. Must not be greater than 100.'
-                  example: 17
-                  nullable: true
-                battery_temperature:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                temperature:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                voltage:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                amperage:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                power:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                delta_seconds:
+                duration:
                   type: integer
                   description: 'Must be at least 1.'
-                  example: 27
+                  example: 22
                   nullable: true
-                charging_status:
-                  type: integer
+                energy:
+                  type: object
                   description: ''
-                  example: 16
-                  nullable: true
-                charging_status_label:
-                  type: string
-                  description: 'Must not be greater than 255 characters.'
-                  example: 'n'
-                  nullable: true
-                light_status:
-                  type: boolean
-                  description: ''
-                  example: true
-                  nullable: true
-                light_brightness:
-                  type: integer
-                  description: 'Must be at least 0. Must not be greater than 100.'
-                  example: 7
-                  nullable: true
-                load_voltage:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                load_current:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                load_power:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                load_fan:
-                  type: integer
-                  description: 'Must be at least 0.'
-                  example: 77
-                  nullable: true
-                day_battery_voltage_min:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_battery_voltage_max:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_charging_current_max:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_discharging_current_max:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_charging_power_max:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_discharging_power_max:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_charging_amp_hours:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_discharging_amp_hours:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_power_generation_wh:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                day_power_consumption_wh:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                total_operating_days:
-                  type: integer
-                  description: 'Must be at least 0.'
-                  example: 77
-                  nullable: true
-                total_battery_over_discharges:
-                  type: integer
-                  description: 'Must be at least 0.'
-                  example: 8
-                  nullable: true
-                total_battery_full_charges:
-                  type: integer
-                  description: 'Must be at least 0.'
-                  example: 76
-                  nullable: true
-                total_charging_amp_hours:
-                  type: number
-                  description: 'Must be at least 0.'
-                  example: 60
-                  nullable: true
-                total_discharging_amp_hours:
-                  type: number
-                  description: 'Must be at least 0.'
-                  example: 42
-                  nullable: true
-                total_power_generation_wh:
-                  type: number
-                  description: 'Must be at least 0.'
-                  example: 37
-                  nullable: true
-                total_power_consumption_wh:
-                  type: number
-                  description: 'Must be at least 0.'
-                  example: 9
-                  nullable: true
-                system_voltage:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                system_intensity:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                nominal_battery_capacity:
-                  type: integer
-                  description: 'Must be at least 0.'
-                  example: 77
-                  nullable: true
+                  example: []
+                  properties: {}
               required:
                 - hardware_device_id
-                - date
-                - read_at
+                - energy
       security: []
   /api/v2/hardware/devices:
     get:
@@ -1633,11 +1394,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 15:22:24'
+                  example: '2026-09-12 21:18:06'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 15:22:24'
+                  example: '2026-09-12 21:18:06'
                 duration:
                   type: integer
                   description: ''
@@ -1731,11 +1492,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 15:22:24'
+                  example: '2026-09-12 21:18:06'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 15:22:24'
+                  example: '2026-09-12 21:18:06'
                 duration:
                   type: integer
                   description: ''
@@ -1938,12 +1699,12 @@ paths:
                 waterpump_enabled:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 vaporizer_enabled:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
               required:
                 - plant_id
@@ -2052,7 +1813,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - lightning
+                    - wind
                   items:
                     type: string
                     enum:

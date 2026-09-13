@@ -231,7 +231,7 @@ PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PH
 api-fryntiz/
 ├── app/                      # Lógica principal de la aplicación (arquitectura MVC + Service Layer)
 │   ├── Actions/              # Operaciones atómicas reutilizables (Fortify, PublishContent, StoreSensorData)
-│   ├── Console/Commands/     # 40 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
+│   ├── Console/Commands/     # 44 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
 │   ├── Enums/                # Backed Enums tipados en PHP 8.4 (sufijo Enum)
 │   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
@@ -246,12 +246,12 @@ api-fryntiz/
 │   │   ├── Controllers/Api/  # Controladores API V2 organizados por módulo
 │   │   ├── Controllers/      # Controladores web para vistas públicas y streaming de ficheros
 │   │   ├── Middleware/       # Vacío. Los 3 que había estaban muertos y se retiraron en la fase 8
-│   │   ├── Requests/         # 20 FormRequests con reglas estrictas de validación
-│   │   └── Resources/V2/     # 31 JsonResources para transformación de datos en API V2
+│   │   ├── Requests/         # 21 FormRequests con reglas estrictas de validación
+│   │   └── Resources/V2/     # 30 JsonResources para transformación de datos en API V2
 │   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
-│   ├── Models/               # 105 Modelos Eloquent con PHPDoc completo
+│   ├── Models/               # 98 Modelos Eloquent con PHPDoc completo
 │   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
 │   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
 │   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
@@ -268,8 +268,8 @@ api-fryntiz/
 ├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)
 ├── config/                   # Archivos de configuración de Laravel, Filament, Sanctum, CORS, AEMET y base de datos
 ├── database/                 # Base de datos PostgreSQL
-│   ├── factories/            # 105 Factories para generación de datos de prueba
-│   ├── migrations/           # 133 migraciones comentadas en todas sus tablas y columnas
+│   ├── factories/            # 94 Factories para generación de datos de prueba
+│   ├── migrations/           # 118 migraciones comentadas en todas sus tablas y columnas
 │   └── seeders/              # 18 Seeders ordenados para carga de catálogos y datos esenciales
 ├── docs/                     # Documentación técnica viva del proyecto (con fecha de revisión obligatoria)
 │   ├── apis/                 # Documentación técnica de referencia de APIs de terceros (AEMET OpenData)

@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManager
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -30,6 +31,24 @@ class HistoricalRelationManager extends RelationManager
     {
         return $schema->components([
             TextInput::make('session_index')->numeric()->minValue(1)->required()->label('Número de sesión (odómetro)'),
+            Select::make('energy_wh_source')
+                ->options([
+                    'device' => 'Aparato (odómetro de hardware)',
+                    'derived' => 'Derivado (suma de intervalos)',
+                ])
+                ->default('derived')
+                ->required()
+                ->label('Origen de los Wh')
+                ->helperText('«Aparato» congela el valor: ni la ingesta ni el cron lo recalculan.'),
+            Select::make('energy_ah_source')
+                ->options([
+                    'device' => 'Aparato (odómetro de hardware)',
+                    'derived' => 'Derivado (suma de intervalos)',
+                ])
+                ->default('derived')
+                ->required()
+                ->label('Origen de los Ah')
+                ->helperText('Se decide aparte de los Wh: el Renogy manda los Ah de la batería pero no sus Wh.'),
             TextInput::make('days_operating')->numeric()->minValue(0)->label('Días de operación'),
             TextInput::make('readings_count')->numeric()->minValue(0)->label('Conteo de lecturas'),
             TextInput::make('energy_wh')->numeric()->step(0.0001)->suffix(' Wh')->label('Energía acumulada (Wh)'),
@@ -56,10 +75,34 @@ class HistoricalRelationManager extends RelationManager
                     ->color('primary')
                     ->label('Sesión')
                     ->sortable(),
+                TextColumn::make('energy_wh_source')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'device' => 'info',
+                        'derived' => 'gray',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'device' => 'Aparato (odómetro)',
+                        'derived' => 'Derivado (suma)',
+                        default => (string) $state,
+                    })
+                    ->label('Origen Wh')
+                    ->sortable(),
                 TextColumn::make('energy_wh')
                     ->suffix(' Wh')
                     ->sortable()
                     ->label('Energía total (Wh)'),
+                TextColumn::make('energy_ah_source')
+                    ->badge()
+                    ->color(fn (?string $state): string => $state === 'device' ? 'info' : 'gray')
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'device' => 'Aparato (odómetro)',
+                        'derived' => 'Derivado (suma)',
+                        default => (string) $state,
+                    })
+                    ->label('Origen Ah')
+                    ->sortable(),
                 TextColumn::make('energy_ah')
                     ->suffix(' Ah')
                     ->sortable()

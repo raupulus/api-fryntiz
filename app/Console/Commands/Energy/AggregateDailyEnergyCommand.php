@@ -10,22 +10,30 @@ use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Consolida y recalcula los agregados diarios e históricos de energía para
  * elementos con recálculo automático (`auto_calculate_history = true`).
  *
- * Corre típicamente a las 00:05 para cerrar el día anterior con todas sus lecturas,
- * o bajo demanda para cualquier fecha/elemento específico.
+ * Corre a las 00:05 para cerrar el día anterior con todas sus lecturas, o bajo
+ * demanda para cualquier fecha o elemento.
+ *
+ * **Todo en UTC**, igual que `created_at` de las lecturas y `date` de los
+ * resúmenes: lo que se guarda va en UTC y a `Europe/Madrid` se traduce sólo al
+ * pintarlo. Cuando esto cortaba el día en hora de Madrid y la ingesta lo
+ * cortaba en UTC, las lecturas de las dos primeras horas del día local caían en
+ * la fila de un día y se contaban en la del otro.
  */
 class AggregateDailyEnergyCommand extends Command
 {
     protected $signature = 'energy:aggregate-daily
-        {--date= : Fecha específica a consolidar en formato YYYY-MM-DD. Por defecto, ayer}
+        {--date= : Fecha UTC a consolidar en formato YYYY-MM-DD. Por defecto, ayer}
         {--today : Consolidar la fecha de hoy en curso}
         {--element= : ID específico de HardwareEnergy a consolidar}
-        {--all : Forzar consolidación incluso en elementos con auto_calculate_history=false}';
+        {--all : Forzar consolidación incluso en elementos con auto_calculate_history=false}
+        {--rebuild : Reconstruir el acumulado aunque los resúmenes diarios no cubran toda su historia (DESTRUCTIVO)}';
 
     protected $description = 'Consolida y recalcula los agregados diarios e históricos de energía';
 
@@ -58,9 +66,10 @@ class AggregateDailyEnergyCommand extends Command
         }
 
         $this->info("Consolidando agregados de energía para la fecha {$date} ({$elements->count()} elementos)...");
+        $this->line('El día se corta en UTC, igual que se guardan las lecturas.');
 
-        $startOfDay = Carbon::parse($date)->startOfDay();
-        $endOfDay = Carbon::parse($date)->endOfDay();
+        $startOfDay = Carbon::parse($date, 'UTC')->startOfDay();
+        $endOfDay = Carbon::parse($date, 'UTC')->endOfDay();
         $processedCount = 0;
 
         foreach ($elements as $element) {
@@ -76,19 +85,19 @@ class AggregateDailyEnergyCommand extends Command
     private function resolveTargetDate(): ?string
     {
         if ($this->option('today')) {
-            return Carbon::today()->toDateString();
+            return Carbon::today('UTC')->toDateString();
         }
 
         $dateOption = $this->option('date');
         if (is_string($dateOption) && $dateOption !== '') {
             try {
-                return Carbon::createFromFormat('Y-m-d', $dateOption)?->toDateString();
+                return Carbon::createFromFormat('Y-m-d', $dateOption, 'UTC')?->toDateString();
             } catch (\Exception) {
                 return null;
             }
         }
 
-        return Carbon::yesterday()->toDateString();
+        return Carbon::yesterday('UTC')->toDateString();
     }
 
     private function aggregateElementForDate(
@@ -130,12 +139,18 @@ class AggregateDailyEnergyCommand extends Command
 
             // Si hay lecturas en ese día, actualizamos o creamos HardwareEnergyToday
             if ($agg !== null && $readingsCount > 0) {
+                // La fila del día la identifican el elemento y la fecha, que es
+                // la clave del índice único. Añadir el dispositivo hacía que una
+                // fila con otro `hardware_device_id` —la migración atribuyó
+                // algunas al aparato monitorizado— no se encontrara, y el
+                // `save()` posterior chocara contra el índice.
                 /** @var HardwareEnergyToday $todayRecord */
                 $todayRecord = HardwareEnergyToday::firstOrNew([
-                    'hardware_device_id' => $element->hardware_device_id,
                     'hardware_energy_id' => $element->id,
                     'date' => $date,
                 ]);
+
+                $todayRecord->hardware_device_id = $element->hardware_device_id;
 
                 $finalWh = max((float) ($todayRecord->energy_wh ?? 0), (float) $agg->sum_wh);
                 $finalAh = max((float) ($todayRecord->energy_ah ?? 0), (float) $agg->sum_ah);
@@ -162,10 +177,63 @@ class AggregateDailyEnergyCommand extends Command
                 $todayRecord->save();
             }
 
-            // 2. Reconciliación de HardwareEnergyHistorical para este elemento
-            /** @var \stdClass|null $historicalAgg */
-            $historicalAgg = HardwareEnergyToday::query()
+            // 2. Reconciliación del acumulado, sesión a sesión.
+            if ($element->auto_calculate_history) {
+                $this->reconcileHistorical($element);
+            }
+        });
+    }
+
+    /**
+     * Rehace el acumulado de un elemento a partir de sus resúmenes diarios,
+     * **una sesión cada vez**.
+     *
+     * Antes esto sumaba todos los días del elemento —de todas sus sesiones— y
+     * metía el total en la última, así que el acumulado real del elemento
+     * (la suma de sus sesiones) se duplicaba con cada reinicio del odómetro.
+     * El parche fue saltarse en silencio cualquier elemento con más de una
+     * sesión, que deja sin reconciliar justo el caso para el que existe la
+     * tabla. Aquí cada sesión se reconcilia con los días que le tocan: desde
+     * que se abrió hasta que se abrió la siguiente.
+     */
+    private function reconcileHistorical(HardwareEnergy $element): void
+    {
+        // Por elemento, no por elemento y dispositivo: el índice único es
+        // (hardware_energy_id, session_index) y una fila con el dispositivo
+        // desalineado quedaba invisible, así que se abría una sesión 1 nueva
+        // encima de la que ya existía.
+        /** @var Collection<int, HardwareEnergyHistorical> $sesiones */
+        $sesiones = HardwareEnergyHistorical::query()
+            ->where('hardware_energy_id', $element->id)
+            ->orderBy('session_index')
+            ->get();
+
+        if ($sesiones->isEmpty()) {
+            $sesiones = HardwareEnergyHistorical::query()->newModelInstance()->newCollection([
+                new HardwareEnergyHistorical([
+                    'hardware_device_id' => $element->hardware_device_id,
+                    'hardware_energy_id' => $element->id,
+                    'session_index' => 1,
+                ]),
+            ]);
+        }
+
+        foreach ($sesiones as $indice => $sesion) {
+            $siguiente = $sesiones->get($indice + 1);
+
+            $agregado = HardwareEnergyToday::query()
                 ->forElement($element->id)
+                // La primera sesión se queda con todo lo anterior a ella: son
+                // los días que venían del esquema viejo, que no tienen por qué
+                // ser posteriores a la fila que los resume.
+                ->when(
+                    $indice > 0 && $sesion->created_at !== null,
+                    static fn ($q) => $q->where('date', '>=', $sesion->created_at->toDateString())
+                )
+                ->when(
+                    $siguiente?->created_at !== null,
+                    static fn ($q) => $q->where('date', '<', $siguiente->created_at->toDateString())
+                )
                 ->toBase()
                 ->selectRaw('
                     COUNT(DISTINCT date) as days_operating,
@@ -187,92 +255,91 @@ class AggregateDailyEnergyCommand extends Command
                 ')
                 ->first();
 
-            $totalDays = (int) ($historicalAgg->days_operating ?? 0);
-            if ($historicalAgg !== null && $totalDays > 0) {
-                /** @var HardwareEnergyHistorical $historicalRecord */
-                $historicalRecord = HardwareEnergyHistorical::query()
-                    ->where('hardware_device_id', $element->hardware_device_id)
-                    ->where('hardware_energy_id', $element->id)
-                    ->orderByDesc('session_index')
-                    ->first() ?? new HardwareEnergyHistorical([
-                        'hardware_device_id' => $element->hardware_device_id,
-                        'hardware_energy_id' => $element->id,
-                        'session_index' => 1,
-                    ]);
+            $dias = (int) ($agregado->days_operating ?? 0);
 
-                $historicalRecord->days_operating = max((int) ($historicalRecord->days_operating ?? 0), $totalDays);
-                $historicalRecord->readings_count = max((int) ($historicalRecord->readings_count ?? 0), (int) ($historicalAgg->total_readings ?? 0));
-                $historicalRecord->energy_wh = max((float) ($historicalRecord->energy_wh ?? 0), (float) ($historicalAgg->sum_wh ?? 0));
-                $historicalRecord->energy_ah = max((float) ($historicalRecord->energy_ah ?? 0), (float) ($historicalAgg->sum_ah ?? 0));
-
-                if ($historicalAgg->min_voltage !== null) {
-                    $historicalRecord->voltage_min = $historicalRecord->voltage_min !== null
-                        ? min((float) $historicalRecord->voltage_min, (float) $historicalAgg->min_voltage)
-                        : (float) $historicalAgg->min_voltage;
-                }
-                if ($historicalAgg->max_voltage !== null) {
-                    $historicalRecord->voltage_max = $historicalRecord->voltage_max !== null
-                        ? max((float) $historicalRecord->voltage_max, (float) $historicalAgg->max_voltage)
-                        : (float) $historicalAgg->max_voltage;
-                }
-
-                if ($historicalAgg->min_amperage !== null) {
-                    $historicalRecord->amperage_min = $historicalRecord->amperage_min !== null
-                        ? min((float) $historicalRecord->amperage_min, (float) $historicalAgg->min_amperage)
-                        : (float) $historicalAgg->min_amperage;
-                }
-                if ($historicalAgg->max_amperage !== null) {
-                    $historicalRecord->amperage_max = $historicalRecord->amperage_max !== null
-                        ? max((float) $historicalRecord->amperage_max, (float) $historicalAgg->max_amperage)
-                        : (float) $historicalAgg->max_amperage;
-                }
-
-                if ($historicalAgg->min_power !== null) {
-                    $historicalRecord->power_min = $historicalRecord->power_min !== null
-                        ? min((float) $historicalRecord->power_min, (float) $historicalAgg->min_power)
-                        : (float) $historicalAgg->min_power;
-                }
-                if ($historicalAgg->max_power !== null) {
-                    $historicalRecord->power_max = $historicalRecord->power_max !== null
-                        ? max((float) $historicalRecord->power_max, (float) $historicalAgg->max_power)
-                        : (float) $historicalAgg->max_power;
-                }
-
-                if ($historicalAgg->min_temperature !== null) {
-                    $historicalRecord->temperature_min = $historicalRecord->temperature_min !== null
-                        ? min((float) $historicalRecord->temperature_min, (float) $historicalAgg->min_temperature)
-                        : (float) $historicalAgg->min_temperature;
-                }
-                if ($historicalAgg->max_temperature !== null) {
-                    $historicalRecord->temperature_max = $historicalRecord->temperature_max !== null
-                        ? max((float) $historicalRecord->temperature_max, (float) $historicalAgg->max_temperature)
-                        : (float) $historicalAgg->max_temperature;
-                }
-
-                if ($historicalAgg->min_battery_voltage !== null) {
-                    $historicalRecord->battery_min = $historicalRecord->battery_min !== null
-                        ? min((float) $historicalRecord->battery_min, (float) $historicalAgg->min_battery_voltage)
-                        : (float) $historicalAgg->min_battery_voltage;
-                }
-                if ($historicalAgg->max_battery_voltage !== null) {
-                    $historicalRecord->battery_max = $historicalRecord->battery_max !== null
-                        ? max((float) $historicalRecord->battery_max, (float) $historicalAgg->max_battery_voltage)
-                        : (float) $historicalAgg->max_battery_voltage;
-                }
-
-                if ($historicalAgg->min_fan !== null) {
-                    $historicalRecord->fan_min = $historicalRecord->fan_min !== null
-                        ? min((int) $historicalRecord->fan_min, (int) $historicalAgg->min_fan)
-                        : (int) $historicalAgg->min_fan;
-                }
-                if ($historicalAgg->max_fan !== null) {
-                    $historicalRecord->fan_max = $historicalRecord->fan_max !== null
-                        ? max((int) $historicalRecord->fan_max, (int) $historicalAgg->max_fan)
-                        : (int) $historicalAgg->max_fan;
-                }
-
-                $historicalRecord->save();
+            if ($agregado === null || $dias === 0) {
+                continue;
             }
-        });
+
+            // **Sólo se baja un acumulado si los resúmenes diarios cubren toda
+            // su historia.** El histórico arrastra años que llegaron del
+            // esquema viejo sin un `hardware_energy_today` por día: sobrescribir
+            // con la suma de los días que sí hay borraba lo demás. Un elemento
+            // con 762 días y 14.000 Wh acumulados se quedaba en 1 día y 36 Wh.
+            $cubreTodo = $dias >= (int) ($sesion->days_operating ?? 0);
+
+            // Una magnitud que lleva el odómetro del aparato no se recalcula
+            // desde nuestras lecturas: su total es el suyo y cubre tiempo que
+            // nosotros no hemos medido. Se mira **magnitud a magnitud** porque
+            // un aparato puede traer odómetro de una y no de la otra: el Renogy
+            // Rover manda los amperios-hora de la batería pero no sus
+            // vatios-hora, que sí hay que calcular.
+            $rehacerWh = $sesion->energy_wh_source !== HardwareEnergyHistorical::SOURCE_DEVICE
+                && ($cubreTodo || $this->option('rebuild'));
+            $rehacerAh = $sesion->energy_ah_source !== HardwareEnergyHistorical::SOURCE_DEVICE
+                && ($cubreTodo || $this->option('rebuild'));
+
+            $algoDelAparato = $sesion->energy_wh_source === HardwareEnergyHistorical::SOURCE_DEVICE
+                || $sesion->energy_ah_source === HardwareEnergyHistorical::SOURCE_DEVICE;
+
+            if (! $algoDelAparato && ! $cubreTodo && ! $this->option('rebuild')) {
+                $this->warn(sprintf(
+                    'Elemento %d (sesión %d): los resúmenes diarios cubren %d de %d días; '
+                    .'se conserva el acumulado y sólo se amplía. Usa --rebuild para rehacerlo igualmente.',
+                    $element->id,
+                    (int) $sesion->session_index,
+                    $dias,
+                    (int) $sesion->days_operating
+                ));
+            }
+
+            // Los días y el recuento de lecturas describen la sesión entera, no
+            // una magnitud. En cuanto **alguna** viene del odómetro del aparato,
+            // la sesión cubre tiempo que nosotros no hemos medido: ahí sólo se
+            // amplían, nunca se sustituyen por lo que digan nuestros resúmenes.
+            $rehacerMetadatos = ! $algoDelAparato && ($cubreTodo || $this->option('rebuild'));
+
+            $sesion->days_operating = $rehacerMetadatos
+                ? $dias
+                : max((int) $sesion->days_operating, $dias);
+            $sesion->readings_count = $rehacerMetadatos
+                ? (int) ($agregado->total_readings ?? 0)
+                : max((int) $sesion->readings_count, (int) ($agregado->total_readings ?? 0));
+            // Una magnitud de odómetro no se toca: ni se rehace ni se amplía.
+            // Ampliarla con la suma de nuestros deltas sería mezclar las dos
+            // fuentes, que es justo lo que estas columnas existen para impedir.
+            if ($sesion->energy_wh_source !== HardwareEnergyHistorical::SOURCE_DEVICE) {
+                $sesion->energy_wh = $rehacerWh
+                    ? (float) ($agregado->sum_wh ?? 0)
+                    : max((float) $sesion->energy_wh, (float) ($agregado->sum_wh ?? 0));
+            }
+
+            if ($sesion->energy_ah_source !== HardwareEnergyHistorical::SOURCE_DEVICE) {
+                $sesion->energy_ah = $rehacerAh
+                    ? (float) ($agregado->sum_ah ?? 0)
+                    : max((float) $sesion->energy_ah, (float) ($agregado->sum_ah ?? 0));
+            }
+
+            // Los extremos sí se rehacen siempre: salen enteros de los
+            // resúmenes del tramo y no acumulan nada de antes.
+            $sesion->voltage_min = $agregado->min_voltage !== null ? (float) $agregado->min_voltage : $sesion->voltage_min;
+            $sesion->voltage_max = $agregado->max_voltage !== null ? (float) $agregado->max_voltage : $sesion->voltage_max;
+            $sesion->amperage_min = $agregado->min_amperage !== null ? (float) $agregado->min_amperage : $sesion->amperage_min;
+            $sesion->amperage_max = $agregado->max_amperage !== null ? (float) $agregado->max_amperage : $sesion->amperage_max;
+            $sesion->power_min = $agregado->min_power !== null ? (float) $agregado->min_power : $sesion->power_min;
+            $sesion->power_max = $agregado->max_power !== null ? (float) $agregado->max_power : $sesion->power_max;
+            $sesion->temperature_min = $agregado->min_temperature !== null ? (float) $agregado->min_temperature : $sesion->temperature_min;
+            $sesion->temperature_max = $agregado->max_temperature !== null ? (float) $agregado->max_temperature : $sesion->temperature_max;
+            $sesion->battery_min = $agregado->min_battery_voltage !== null ? (float) $agregado->min_battery_voltage : $sesion->battery_min;
+            $sesion->battery_max = $agregado->max_battery_voltage !== null ? (float) $agregado->max_battery_voltage : $sesion->battery_max;
+            $sesion->fan_min = $agregado->min_fan !== null ? (int) $agregado->min_fan : $sesion->fan_min;
+            $sesion->fan_max = $agregado->max_fan !== null ? (int) $agregado->max_fan : $sesion->fan_max;
+
+            // El dispositivo de la fila es el que el catálogo dice que mide el
+            // elemento; si venía desalineado se corrige aquí.
+            $sesion->hardware_device_id = $element->hardware_device_id;
+
+            $sesion->save();
+        }
     }
 }

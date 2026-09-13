@@ -375,8 +375,7 @@ código el 2026-08-30.
 `User::$fillable` sigue incluyendo `role_id` y `email_verified_at`. Hoy no es
 explotable —no hay ningún endpoint que haga `User::create($request->all())`, y
 `RegisterController` fija el rol a mano— pero es una mina para el día en que
-alguien escriba ese endpoint sin pensarlo. Anotado en
-`docs/planning/` (local, fuera de git).
+alguien escriba ese endpoint sin pensarlo.
 
 ## 🔒 Decisión de diseño: no hay recuperación de contraseña
 

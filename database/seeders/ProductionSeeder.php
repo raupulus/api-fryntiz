@@ -41,6 +41,5 @@ class ProductionSeeder extends Seeder
         $this->call(TechnologiesSeeder::class);
         $this->call(PrinterAvailableTypesSeeder::class);
         $this->call(ReferredPlatformsSeeder::class);
-        $this->call(EnergySystemsSeeder::class);
     }
 }

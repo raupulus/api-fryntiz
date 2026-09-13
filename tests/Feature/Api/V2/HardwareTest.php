@@ -142,22 +142,6 @@ class HardwareTest extends ApiTestCase
     }
 
     #[Test]
-    public function cannot_store_solar_reading_unauthenticated(): void
-    {
-        $response = $this->postJson($this->apiUrl('energy/solar-readings'), [], $this->guestHeaders());
-        $this->assertErrorResponse($response, 401);
-    }
-
-    #[Test]
-    public function store_solar_reading_validates_required_fields(): void
-    {
-        $headers = $this->moduleHeaders($this->createAuthenticatedUser(), TokenAbilities::ENERGY_WRITE);
-        $response = $this->postJson($this->apiUrl('energy/solar-readings'), [], $headers);
-        $this->assertErrorResponse($response, 422);
-        $response->assertJsonValidationErrors(['hardware_device_id']);
-    }
-
-    #[Test]
     public function cannot_store_device_status_unauthenticated(): void
     {
         $response = $this->putJson($this->apiUrl('hardware/devices/1/status'), [], $this->guestHeaders());

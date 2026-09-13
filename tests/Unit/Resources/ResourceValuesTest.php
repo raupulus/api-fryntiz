@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Resources;
 
 use App\Http\Resources\V2\Content\ContentPageResource;
-use App\Http\Resources\V2\Energy\EnergyMonitorResource;
-use App\Http\Resources\V2\Energy\SolarReadingResource;
 use App\Http\Resources\V2\KeyCounter\MouseResource;
 use App\Http\Resources\V2\PlatformResource;
 use App\Http\Resources\V2\SmartPlant\SmartPlantRegisterResource;
@@ -71,42 +69,6 @@ class ResourceValuesTest extends ApiTestCase
     public static function resources(): array
     {
         return [
-            // Un dato, un nombre: la lectura del controlador solar ya no
-            // tiene `pv_*` junto a `energy_*` ni `device_id` junto a
-            // `hardware_device_id`. El Resource leía tres claves inexistentes y
-            // salían nulas en todas las respuestas (**R-4**).
-            'SolarReadingResource' => [
-                SolarReadingResource::class,
-                'hardware_power_generators_solar',
-                [
-                    'battery_voltage' => 12.8,
-                    'battery_percentage' => 87,
-                    'temperature' => 24.5,
-                    'load_voltage' => 12.7,
-                    'load_current' => 2.4,
-                    'load_power' => 31.0,
-                    'voltage' => 18.2,
-                    'amperage' => 3.4,
-                    'power' => 61.9,
-                    'total_operating_days' => 412,
-                ],
-                [],
-            ],
-
-            // Ya no envuelve `hardware_energy` (configuración) sino la lectura
-            // real de `hardware_power_loads` (**R-3** arreglado).
-            'EnergyMonitorResource' => [
-                EnergyMonitorResource::class,
-                'hardware_power_loads',
-                [
-                    'voltage' => 12.1,
-                    'amperage' => 1.4,
-                    'power' => 16.9,
-                    'temperature' => 41.5,
-                ],
-                [],
-            ],
-
             // `content_pages` guarda el texto en `content`, no en `body`; y tiene
             // `current_page_raw_id`, no `raw_type` (N219). Todas las páginas del
             // CMS salen con `body: null`.

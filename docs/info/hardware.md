@@ -22,39 +22,35 @@ consumos, con sus resúmenes diarios e históricos— está en
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Hardware/V2/HardwareDeviceController.php` | API V2 | Ver dispositivo, listar computadores |
-| `app/Http/Controllers/Api/Hardware/V2/EnergyMonitorController.php` | API V2 | Store datos de energía |
-| `app/Http/Controllers/Api/Hardware/V2/SolarReadingController.php` | API V2 | Store de lectura del controlador solar |
 | `app/Http/Controllers/Hardware/*.php` | Web | Controladores frontend (10 archivos) |
+
+> ℹ️ El controlador de monitorización y lecturas energéticas (`EnergyReadingController`) pertenece al módulo propio de energía y se documenta en [`energy.md`](energy.md).
 
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Services/Hardware/HardwareService.php` | Lógica: info dispositivo, store energía/solar, lista computadores |
+| `app/Services/Hardware/HardwareService.php` | Lógica: info dispositivo, telemetría unificada de energía, lista computadores |
 | `app/Services/Hardware/DeviceTokenService.php` | Emisión de tokens Sanctum ligados a un dispositivo (fuente única para el comando y Filament) |
 
 ### Resources API V2
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Http/Resources/V2/Hardware/HardwareDeviceResource.php` | Resource dispositivo |
-| `app/Http/Resources/V2/Hardware/EnergyMonitorResource.php` | Resource energía |
-| `app/Http/Resources/V2/Hardware/SolarReadingResource.php` | Resource de lectura solar |
 | `app/Http/Resources/V2/Hardware/DeviceStatusResource.php` | Resource último estado del dispositivo |
 
 ### FormRequests V2
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Http/Requests/Api/Hardware/V2/StoreEnergyRequest.php` | Validación store energía |
-| `app/Http/Requests/Api/Hardware/V2/StoreSolarReadingRequest.php` | Validación de la lectura solar. **Único sitio donde se traduce el vocabulario del Renogy Rover** |
 | `app/Http/Requests/Api/Hardware/V2/StoreDeviceStatusRequest.php` | Validación store estado del dispositivo (acepta `hardware_device_info` agrupado) |
 
 ### Otros
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Policies/HardwarePolicy.php` | Política de autorización de dispositivos. El administrador **con sesión** alcanza los ajenos; un token de cacharro sigue atado a su `device:{id}` |
-| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `HardwareDeviceResource`, `EnergySystemResource` y `HardwareEnergyResource` |
+| `app/Filament/Concerns/ScopesToOwner.php` | Usado por `HardwareDeviceResource` y `HardwareEnergyResource` |
 | `app/Enums/HardwareTypeEnum.php` | Enum tipos de hardware |
 | `app/Traits/BelongsToHardwareDevice.php` | Trait relación con dispositivo hardware |
-| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas IoT — lo usan Energía y Solar (este módulo) y también KeyCounter, SmartPlant, WeatherStation y AirFlight |
+| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas IoT — lo usan Energía y Solar (módulo Energía) y también KeyCounter, SmartPlant, WeatherStation y AirFlight |
 | `app/Rules/OwnedHardwareDevice.php` | Regla de validación: pertenencia del dispositivo (por usuario + ligado estricto por token) |
 | `app/Console/Commands/IoT/IssueDeviceTokenCommand.php` | Comando `iot:device-token` (usa `DeviceTokenService`) |
 
@@ -91,7 +87,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
 | `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
 
-> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía y carga solar (este módulo), y también KeyCounter, SmartPlant, WeatherStation y AirFlight — ver `docs/planning/PLAN-HARDWARE-DEVICE-INFO.md` para el histórico de por qué se generalizó.
+> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía y carga solar (este módulo), y también KeyCounter, SmartPlant, WeatherStation y AirFlight.
 | `battery_voltage` | decimal | Batería del **propio** dispositivo (V). D108 |
 | `battery_percentage` | int | Batería del propio dispositivo (%) |
 | `battery_read_at` | timestamp | Cuándo se midió esa batería |
@@ -324,4 +320,4 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-06
+> Creado: 2026-05-25 · Última revisión: 2026-09-12

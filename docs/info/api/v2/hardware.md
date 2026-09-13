@@ -42,9 +42,9 @@
   [`airflight.md`](./airflight.md).
 
   > ⚠️ **Cambio del 2026-09-06.** `POST /hardware/energy-readings` y
-  > `POST /hardware/solar-readings` **ya no existen aquí**: son
-  > `POST /energy/readings` y `POST /energy/solar-readings`, con ability
-  > `energy:write`. Ver [`energy.md`](./energy.md).
+  > `POST /hardware/solar-readings` **ya no existen aquí**: los sustituye
+  > `POST /energy/readings`, el contrato universal, con ability `energy:write`.
+  > Ver [`energy.md`](./energy.md).
 
   El token puede venir además ligado a un `HardwareDevice` concreto (ability
   `device:{id}`). Cuando lo está, sólo alcanza ese dispositivo: cualquier
@@ -325,4 +325,4 @@ veces deja el sistema igual (idempotente).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-13

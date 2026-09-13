@@ -11,7 +11,6 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\User;
 use App\Traits\BelongsToUser;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 use function array_filter;
 
@@ -49,7 +49,7 @@ use function array_filter;
  * @property string|null $url_company Enlace a la página de la empresa fabricante
  * @property string|null $description Descripción del dispositivo.
  * @property string|null $buy_at Fecha de compra del dispositivo
- * @property \Illuminate\Support\Carbon|null $last_seen_at Última vez que se vio el dispositivo
+ * @property Carbon|null $last_seen_at Última vez que se vio el dispositivo
  * @property string|null $ip_local Ip local del dispositivo
  * @property string|null $ip_public Ip pública del dispositivo
  * @property float|null $temp Última temperatura conocida del dispositivo en grados Celsius
@@ -57,19 +57,17 @@ use function array_filter;
  * @property int|null $battery_level Último nivel de batería conocido en porcentaje (0-100)
  * @property float|null $battery_voltage Última tensión de batería conocida en voltios
  * @property int|null $battery_percentage Último porcentaje de batería conocido (0-100)
- * @property \Illuminate\Support\Carbon|null $battery_read_at Cuándo se midió la batería
+ * @property Carbon|null $battery_read_at Cuándo se midió la batería
  * @property float|null $cpu Último uso de CPU conocido en porcentaje (0-100)
  * @property float|null $disk Último uso de disco conocido en porcentaje (0-100)
  * @property float|null $ram Último uso de memoria conocido en porcentaje (0-100)
  * @property int|null $uptime Último tiempo de actividad conocido en segundos
  * @property array<string, mixed>|null $extra Métricas de estado adicionales del dispositivo
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property-read Collection<int, HardwareComponent> $components
  * @property-read int|null $components_count
- * @property-read mixed $current_energy_statistics
- * @property-read mixed $energy_statistics
  * @property-read string $url_image
  * @property-read string $url_image_large
  * @property-read string $url_image_medium
@@ -84,19 +82,6 @@ use function array_filter;
  * @property-read int|null $hardware_energy_load_count
  * @property-read HardwareType|null $type
  * @property-read File|null $image
- * @property-read Collection<int, HardwarePowerGeneratorToday> $powerGeneratorToday
- * @property-read int|null $power_generator_today_count
- * @property-read Collection<int, HardwarePowerGenerator> $powerGenerators
- * @property-read int|null $power_generators_count
- * @property-read Collection<int, HardwarePowerGeneratorHistorical> $powerGeneratorsHistorical
- * @property-read int|null $power_generators_historical_count
- * @property-read Collection<int, HardwarePowerLoad> $powerLoads
- * @property-read int|null $power_loads_count
- * @property-read Collection<int, HardwarePowerLoadHistorical> $powerLoadsHistorical
- * @property-read int|null $power_loads_historical_count
- * @property-read Collection<int, HardwarePowerLoadToday> $powerLoadsToday
- * @property-read int|null $power_loads_today_count
- * @property-read HardwareType|null $type
  * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice forUser(int $userId)
@@ -224,36 +209,6 @@ class HardwareDevice extends BaseModel
         return $this->hasMany(HardwareComponent::class, 'hardware_device_id', 'id');
     }
 
-    public function powerGenerators(): HasMany
-    {
-        return $this->hasMany(HardwarePowerGenerator::class, 'hardware_device_id', 'id');
-    }
-
-    public function powerGeneratorToday(): HasMany
-    {
-        return $this->hasMany(HardwarePowerGeneratorToday::class, 'hardware_device_id', 'id');
-    }
-
-    public function powerGeneratorsHistorical(): HasMany
-    {
-        return $this->hasMany(HardwarePowerGeneratorHistorical::class, 'hardware_device_id', 'id');
-    }
-
-    public function powerLoads(): HasMany
-    {
-        return $this->hasMany(HardwarePowerLoad::class, 'hardware_device_id', 'id');
-    }
-
-    public function powerLoadsToday(): HasMany
-    {
-        return $this->hasMany(HardwarePowerLoadToday::class, 'hardware_device_id', 'id');
-    }
-
-    public function powerLoadsHistorical(): HasMany
-    {
-        return $this->hasMany(HardwarePowerLoadHistorical::class, 'hardware_device_id', 'id');
-    }
-
     public function energyReadings(): HasMany
     {
         return $this->hasMany(HardwareEnergyReading::class, 'hardware_device_id', 'id');
@@ -348,63 +303,5 @@ class HardwareDevice extends BaseModel
         $this->fill(array_filter($data, static fn ($v) => $v !== null && $v !== ''));
 
         return $this;
-    }
-
-    public function getEnergyStatisticsAttribute()
-    {
-        $powerGenerators = $this->powerGenerators()->get();
-        $powerLoads = $this->powerLoads()->get();
-
-        $powerGeneratorsToday = $this->powerGeneratorToday()->get();
-        $powerLoadsToday = $this->powerLoadsToday()->get();
-
-        $powerGeneratorsHistorical = $this->powerGeneratorsHistorical()->get();
-        $powerLoadsHistorical = $this->powerLoadsHistorical()->get();
-
-        return [
-            'powerGenerators' => $powerGenerators,
-            'powerLoads' => $powerLoads,
-            'powerGeneratorsToday' => $powerGeneratorsToday,
-            'powerLoadsToday' => $powerLoadsToday,
-            'powerGeneratorsHistorical' => $powerGeneratorsHistorical,
-            'powerLoadsHistorical' => $powerLoadsHistorical,
-        ];
-    }
-
-    public function getCurrentEnergyStatisticsAttribute()
-    {
-        $now = Carbon::now();
-        $lastHour = $now->copy()->subHour();
-        $day = $now->format('Y-m-d');
-
-        $generatorCurrent = $this->powerGenerators()
-            ->where('read_at', '>=', $lastHour)
-            ->orderByDesc('read_at')
-            ->first();
-        $loadCurrent = $this->powerLoads()
-            ->where('read_at', '>=', $lastHour)
-            ->orderByDesc('read_at')
-            ->first();
-
-        $generatorToday = $this->powerGeneratorToday()
-            ->where('read_at', '>=', $day)
-            ->orderByDesc('read_at')
-            ->first();
-        $loadToday = $this->powerLoadsToday()
-            ->where('read_at', '>=', $day)
-            ->orderByDesc('read_at')
-            ->first();
-
-        $generatorsHistorical = $this->powerGeneratorsHistorical()->get();
-        $loadsHistorical = $this->powerLoadsHistorical()->get();
-
-        return (object) [
-            'generatorCurrent' => $generatorCurrent,
-            'loadCurrent' => $loadCurrent,
-            'generatorToday' => $generatorToday,
-            'loadToday' => $loadToday,
-            'generatorsHistorical' => $generatorsHistorical,
-            'loadsHistorical' => $loadsHistorical,
-        ];
     }
 }

@@ -149,14 +149,8 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-energy-readings">
                                 <a href="#endpoints-GETapi-v2-energy-readings">Consulta paginada de lecturas de energía unificadas.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-energy-solar-readings">
-                                <a href="#endpoints-GETapi-v2-energy-solar-readings">Lecturas del controlador solar, paginadas.</a>
-                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-energy-readings">
-                                <a href="#endpoints-POSTapi-v2-energy-readings">Almacena las lecturas de un monitor de energía.</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-energy-solar-readings">
-                                <a href="#endpoints-POSTapi-v2-energy-solar-readings">Almacena una lectura del controlador solar.</a>
+                                <a href="#endpoints-POSTapi-v2-energy-readings">Ingesta universal de telemetría de energía.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-hardware-devices">
                                 <a href="#endpoints-GETapi-v2-hardware-devices">Dispositivos del usuario autenticado.</a>
@@ -561,7 +555,7 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"weatherstation:write\"
+        \"energy:write\"
     ],
     \"name\": \"n\",
     \"expires_at\": \"2052-10-06\"
@@ -582,7 +576,7 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "weatherstation:write"
+        "energy:write"
     ],
     "name": "n",
     "expires_at": "2052-10-06"
@@ -1113,7 +1107,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": true,
+    \"privacity\": false,
     \"contactme\": false,
     \"attributes\": [
         \"v\"
@@ -1138,7 +1132,7 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": true,
+    "privacity": false,
     "contactme": false,
     "attributes": [
         "v"
@@ -1296,7 +1290,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -4566,148 +4560,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="endpoints-GETapi-v2-energy-solar-readings">Lecturas del controlador solar, paginadas.</h2>
+                    <h2 id="endpoints-POSTapi-v2-energy-readings">Ingesta universal de telemetría de energía.</h2>
 
 <p>
 </p>
 
-<p>Exige <code>energy:read</code>. Sólo devuelve lecturas de dispositivos del
-usuario y, si el token está ligado a dispositivos concretos
-(<code>device:{id}</code>), sólo las de ésos: un token de cacharro no lee el resto
-del parque de su dueño.</p>
-
-<span id="example-requests-GETapi-v2-energy-solar-readings">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/energy/solar-readings" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/energy/solar-readings"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-v2-energy-solar-readings">
-            <blockquote>
-            <p>Example response (401):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-content-language: en
-vary: Accept-Language, Origin
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-referrer-policy: strict-origin-when-cross-origin
-permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Unauthenticated&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-v2-energy-solar-readings" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-v2-energy-solar-readings"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v2-energy-solar-readings"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-v2-energy-solar-readings" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v2-energy-solar-readings">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-v2-energy-solar-readings" data-method="GET"
-      data-path="api/v2/energy/solar-readings"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-energy-solar-readings', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v2-energy-solar-readings"
-                    onclick="tryItOut('GETapi-v2-energy-solar-readings');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v2-energy-solar-readings"
-                    onclick="cancelTryOut('GETapi-v2-energy-solar-readings');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v2-energy-solar-readings"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/v2/energy/solar-readings</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v2-energy-solar-readings"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v2-energy-solar-readings"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
-                    <h2 id="endpoints-POSTapi-v2-energy-readings">Almacena las lecturas de un monitor de energía.</h2>
-
-<p>
-</p>
-
-<p>Soporta tanto el contrato universal <code>energy</code> (D115) como el contrato legacy <code>readings</code>.</p>
+<p>Requiere ability <code>energy:write</code>. Procesa subsistemas de generador, batería y consumos.</p>
 
 <span id="example-requests-POSTapi-v2-energy-readings">
 <blockquote>Example request:</blockquote>
@@ -4717,7 +4575,13 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <pre><code class="language-bash">curl --request POST \
     "https://api.raupulus.dev/api/v2/energy/readings" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
+    --header "Accept: application/json" \
+    --data "{
+    \"hardware_device_id\": 16,
+    \"duration\": 22,
+    \"energy\": []
+}"
+</code></pre></div>
 
 
 <div class="javascript-example">
@@ -4730,10 +4594,16 @@ const headers = {
     "Accept": "application/json",
 };
 
+let body = {
+    "hardware_device_id": 16,
+    "duration": 22,
+    "energy": []
+};
 
 fetch(url, {
     method: "POST",
     headers,
+    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
@@ -4811,775 +4681,66 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Example: <code>application/json</code></p>
             </div>
-                        </form>
-
-                    <h2 id="endpoints-POSTapi-v2-energy-solar-readings">Almacena una lectura del controlador solar.</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-POSTapi-v2-energy-solar-readings">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request POST \
-    "https://api.raupulus.dev/api/v2/energy/solar-readings" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --data "{
-    \"hardware_device_id\": 16,
-    \"date\": \"2026-09-12T15:22:24\",
-    \"read_at\": \"2026-09-12T15:22:24\",
-    \"hardware\": \"n\",
-    \"version\": \"g\",
-    \"serial_number\": \"z\",
-    \"battery_type\": \"m\",
-    \"battery_voltage\": 4326.41688,
-    \"battery_current\": 4326.41688,
-    \"battery_power\": 4326.41688,
-    \"battery_percentage\": 17,
-    \"battery_temperature\": 4326.41688,
-    \"temperature\": 4326.41688,
-    \"voltage\": 4326.41688,
-    \"amperage\": 4326.41688,
-    \"power\": 4326.41688,
-    \"delta_seconds\": 27,
-    \"charging_status\": 16,
-    \"charging_status_label\": \"n\",
-    \"light_status\": true,
-    \"light_brightness\": 7,
-    \"load_voltage\": 4326.41688,
-    \"load_current\": 4326.41688,
-    \"load_power\": 4326.41688,
-    \"load_fan\": 77,
-    \"day_battery_voltage_min\": 4326.41688,
-    \"day_battery_voltage_max\": 4326.41688,
-    \"day_charging_current_max\": 4326.41688,
-    \"day_discharging_current_max\": 4326.41688,
-    \"day_charging_power_max\": 4326.41688,
-    \"day_discharging_power_max\": 4326.41688,
-    \"day_charging_amp_hours\": 4326.41688,
-    \"day_discharging_amp_hours\": 4326.41688,
-    \"day_power_generation_wh\": 4326.41688,
-    \"day_power_consumption_wh\": 4326.41688,
-    \"total_operating_days\": 77,
-    \"total_battery_over_discharges\": 8,
-    \"total_battery_full_charges\": 76,
-    \"total_charging_amp_hours\": 60,
-    \"total_discharging_amp_hours\": 42,
-    \"total_power_generation_wh\": 37,
-    \"total_power_consumption_wh\": 9,
-    \"system_voltage\": 4326.41688,
-    \"system_intensity\": 4326.41688,
-    \"nominal_battery_capacity\": 77
-}"
-</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/energy/solar-readings"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-let body = {
-    "hardware_device_id": 16,
-    "date": "2026-09-12T15:22:24",
-    "read_at": "2026-09-12T15:22:24",
-    "hardware": "n",
-    "version": "g",
-    "serial_number": "z",
-    "battery_type": "m",
-    "battery_voltage": 4326.41688,
-    "battery_current": 4326.41688,
-    "battery_power": 4326.41688,
-    "battery_percentage": 17,
-    "battery_temperature": 4326.41688,
-    "temperature": 4326.41688,
-    "voltage": 4326.41688,
-    "amperage": 4326.41688,
-    "power": 4326.41688,
-    "delta_seconds": 27,
-    "charging_status": 16,
-    "charging_status_label": "n",
-    "light_status": true,
-    "light_brightness": 7,
-    "load_voltage": 4326.41688,
-    "load_current": 4326.41688,
-    "load_power": 4326.41688,
-    "load_fan": 77,
-    "day_battery_voltage_min": 4326.41688,
-    "day_battery_voltage_max": 4326.41688,
-    "day_charging_current_max": 4326.41688,
-    "day_discharging_current_max": 4326.41688,
-    "day_charging_power_max": 4326.41688,
-    "day_discharging_power_max": 4326.41688,
-    "day_charging_amp_hours": 4326.41688,
-    "day_discharging_amp_hours": 4326.41688,
-    "day_power_generation_wh": 4326.41688,
-    "day_power_consumption_wh": 4326.41688,
-    "total_operating_days": 77,
-    "total_battery_over_discharges": 8,
-    "total_battery_full_charges": 76,
-    "total_charging_amp_hours": 60,
-    "total_discharging_amp_hours": 42,
-    "total_power_generation_wh": 37,
-    "total_power_consumption_wh": 9,
-    "system_voltage": 4326.41688,
-    "system_intensity": 4326.41688,
-    "nominal_battery_capacity": 77
-};
-
-fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-POSTapi-v2-energy-solar-readings">
-</span>
-<span id="execution-results-POSTapi-v2-energy-solar-readings" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-POSTapi-v2-energy-solar-readings"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-POSTapi-v2-energy-solar-readings"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-POSTapi-v2-energy-solar-readings" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-POSTapi-v2-energy-solar-readings">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-POSTapi-v2-energy-solar-readings" data-method="POST"
-      data-path="api/v2/energy/solar-readings"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v2-energy-solar-readings', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-POSTapi-v2-energy-solar-readings"
-                    onclick="tryItOut('POSTapi-v2-energy-solar-readings');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-POSTapi-v2-energy-solar-readings"
-                    onclick="cancelTryOut('POSTapi-v2-energy-solar-readings');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-POSTapi-v2-energy-solar-readings"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-black">POST</small>
-            <b><code>api/v2/energy/solar-readings</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="hardware_device_info"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value=""
-               data-component="body">
-    <br>
-
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-energy-solar-readings"
+               step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-energy-readings"
                value="16"
                data-component="body">
     <br>
 <p>Must match an existing stored value. Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>date</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="date"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="2026-09-12T15:22:24"
-               data-component="body">
-    <br>
-<p>Must be a valid date. Example: <code>2026-09-12T15:22:24</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="read_at"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="2026-09-12T15:22:24"
-               data-component="body">
-    <br>
-<p>Must be a valid date. Example: <code>2026-09-12T15:22:24</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>hardware</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>device</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="hardware"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="n"
+                              name="device"                data-endpoint="POSTapi-v2-energy-readings"
+               value=""
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>version</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="version"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="g"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-energy-readings"
+               value=""
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>g</code></p>
+
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>serial_number</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+            <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
 <i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="duration"                data-endpoint="POSTapi-v2-energy-readings"
+               value="22"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>22</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+ &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="serial_number"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="z"
+                              name="energy"                data-endpoint="POSTapi-v2-energy-readings"
+               value=""
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>z</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_type</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="battery_type"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="m"
-               data-component="body">
-    <br>
-<p>Must not be greater than 255 characters. Example: <code>m</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_voltage"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_current</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_current"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_power</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_power"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_percentage</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_percentage"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="17"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Must not be greater than 100. Example: <code>17</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>battery_temperature</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="battery_temperature"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="temperature"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="voltage"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>amperage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="amperage"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>power</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="power"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>delta_seconds</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="delta_seconds"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="27"
-               data-component="body">
-    <br>
-<p>Must be at least 1. Example: <code>27</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>charging_status</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="charging_status"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="16"
-               data-component="body">
-    <br>
-<p>Example: <code>16</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>charging_status_label</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="charging_status_label"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="n"
-               data-component="body">
-    <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>light_status</code></b>&nbsp;&nbsp;
-<small>boolean</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <label data-endpoint="POSTapi-v2-energy-solar-readings" style="display: none">
-            <input type="radio" name="light_status"
-                   value="true"
-                   data-endpoint="POSTapi-v2-energy-solar-readings"
-                   data-component="body"             >
-            <code>true</code>
-        </label>
-        <label data-endpoint="POSTapi-v2-energy-solar-readings" style="display: none">
-            <input type="radio" name="light_status"
-                   value="false"
-                   data-endpoint="POSTapi-v2-energy-solar-readings"
-                   data-component="body"             >
-            <code>false</code>
-        </label>
-    <br>
-<p>Example: <code>true</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>light_brightness</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="light_brightness"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="7"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Must not be greater than 100. Example: <code>7</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>load_voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="load_voltage"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>load_current</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="load_current"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>load_power</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="load_power"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>load_fan</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="load_fan"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="77"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>77</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_battery_voltage_min</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_battery_voltage_min"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_battery_voltage_max</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_battery_voltage_max"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_charging_current_max</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_charging_current_max"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_discharging_current_max</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_discharging_current_max"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_charging_power_max</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_charging_power_max"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_discharging_power_max</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_discharging_power_max"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_charging_amp_hours</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_charging_amp_hours"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_discharging_amp_hours</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_discharging_amp_hours"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_power_generation_wh</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_power_generation_wh"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>day_power_consumption_wh</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="day_power_consumption_wh"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_operating_days</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_operating_days"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="77"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>77</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_battery_over_discharges</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_battery_over_discharges"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="8"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>8</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_battery_full_charges</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_battery_full_charges"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="76"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>76</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_charging_amp_hours</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_charging_amp_hours"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="60"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>60</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_discharging_amp_hours</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_discharging_amp_hours"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="42"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>42</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_power_generation_wh</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_power_generation_wh"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="37"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>37</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>total_power_consumption_wh</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="total_power_consumption_wh"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="9"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>9</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>system_voltage</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="system_voltage"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>system_intensity</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="system_intensity"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>nominal_battery_capacity</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="nominal_battery_capacity"                data-endpoint="POSTapi-v2-energy-solar-readings"
-               value="77"
-               data-component="body">
-    <br>
-<p>Must be at least 0. Example: <code>77</code></p>
+
         </div>
         </form>
 
@@ -6640,8 +5801,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-12 15:22:24\",
-    \"end_at\": \"2026-09-12 15:22:24\",
+    \"start_at\": \"2026-09-12 21:18:06\",
+    \"end_at\": \"2026-09-12 21:18:06\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6665,8 +5826,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-12 15:22:24",
-    "end_at": "2026-09-12 15:22:24",
+    "start_at": "2026-09-12 21:18:06",
+    "end_at": "2026-09-12 21:18:06",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6800,10 +5961,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-12 15:22:24"
+               value="2026-09-12 21:18:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6812,10 +5973,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-12 15:22:24"
+               value="2026-09-12 21:18:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6910,8 +6071,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-12 15:22:24\",
-    \"end_at\": \"2026-09-12 15:22:24\",
+    \"start_at\": \"2026-09-12 21:18:06\",
+    \"end_at\": \"2026-09-12 21:18:06\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -6936,8 +6097,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-12 15:22:24",
-    "end_at": "2026-09-12 15:22:24",
+    "start_at": "2026-09-12 21:18:06",
+    "end_at": "2026-09-12 21:18:06",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -7072,10 +6233,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-12 15:22:24"
+               value="2026-09-12 21:18:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7084,10 +6245,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-12 15:22:24"
+               value="2026-09-12 21:18:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 15:22:24</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7482,8 +6643,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
     \"full_water_tank\": false,
-    \"waterpump_enabled\": true,
-    \"vaporizer_enabled\": true
+    \"waterpump_enabled\": false,
+    \"vaporizer_enabled\": false
 }"
 </code></pre></div>
 
@@ -7508,8 +6669,8 @@ let body = {
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
     "full_water_tank": false,
-    "waterpump_enabled": true,
-    "vaporizer_enabled": true
+    "waterpump_enabled": false,
+    "vaporizer_enabled": false
 };
 
 fetch(url, {
@@ -7757,7 +6918,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>vaporizer_enabled</code></b>&nbsp;&nbsp;
@@ -7779,7 +6940,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -7980,7 +7141,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"lightning\"
+        \"wind\"
     ]
 }"
 </code></pre></div>
@@ -7998,7 +7159,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "lightning"
+        "wind"
     ]
 };
 

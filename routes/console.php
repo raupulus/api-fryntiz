@@ -225,8 +225,12 @@ Schedule::command('sanctum:prune-expired', ['--hours=720'])
 // Cierra y consolida los resúmenes del día anterior y actualiza históricos para
 // los elementos con recálculo automático (`auto_calculate_history = true`).
 // Corre a las 00:05 para asegurar que todas las muestras de las 23:59 han entrado.
+//
+// **En UTC**, que es como se guardan `created_at` y `date`. Con la hora de
+// Madrid, a las 00:05 locales en UTC seguía siendo el día anterior: el comando
+// consolidaba anteayer y el día recién cerrado esperaba 24 horas de más.
 Schedule::command('energy:aggregate-daily')
     ->dailyAt('00:05')
-    ->timezone('Europe/Madrid')
+    ->timezone('UTC')
     ->withoutOverlapping()
     ->onFailure($warnOnFailure('energy:aggregate-daily'));

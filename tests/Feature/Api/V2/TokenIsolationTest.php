@@ -58,7 +58,7 @@ class TokenIsolationTest extends ApiTestCase
     public function the_solar_device_token_uploads_its_own_readings(): void
     {
         $response = $this->postJson(
-            $this->apiUrl('energy/solar-readings'),
+            $this->apiUrl('energy/readings'),
             $this->solarReading($this->solarDevice),
             $this->solarDeviceToken()
         );
@@ -70,7 +70,7 @@ class TokenIsolationTest extends ApiTestCase
     public function the_solar_device_token_cannot_write_readings_for_another_device(): void
     {
         $response = $this->postJson(
-            $this->apiUrl('energy/solar-readings'),
+            $this->apiUrl('energy/readings'),
             $this->solarReading($this->laptopDevice),
             $this->solarDeviceToken()
         );
@@ -100,7 +100,7 @@ class TokenIsolationTest extends ApiTestCase
     public function the_solar_device_token_reads_its_own_readings_but_not_the_others(): void
     {
         $this->postJson(
-            $this->apiUrl('energy/solar-readings'),
+            $this->apiUrl('energy/readings'),
             $this->solarReading($this->solarDevice),
             $this->solarDeviceToken()
         )->assertSuccessful();
@@ -112,7 +112,7 @@ class TokenIsolationTest extends ApiTestCase
             TokenAbilities::forDevice($this->solarDevice),
         ]);
 
-        $response = $this->getJson($this->apiUrl('energy/solar-readings'), $headers);
+        $response = $this->getJson($this->apiUrl('energy/readings'), $headers);
 
         $response->assertSuccessful();
 
@@ -194,7 +194,7 @@ class TokenIsolationTest extends ApiTestCase
         ]);
 
         $response = $this->postJson(
-            $this->apiUrl('energy/solar-readings'),
+            $this->apiUrl('energy/readings'),
             $this->solarReading($this->laptopDevice),
             $headers
         );
@@ -227,9 +227,13 @@ class TokenIsolationTest extends ApiTestCase
     {
         return [
             'hardware_device_id' => $device->id,
-            'date' => now()->toDateString(),
-            'read_at' => now()->format('Y-m-d H:i:s'),
-            'battery_voltage' => 13.2,
+            'energy' => [
+                'duration' => 60,
+                'generator' => [
+                    'voltage' => 18.2,
+                    'amperage' => 3.4,
+                ],
+            ],
         ];
     }
 

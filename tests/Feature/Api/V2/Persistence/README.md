@@ -37,8 +37,6 @@ Eso convierte «algo falla» en «este campo, por esta razón».
 
 | Fichero | Endpoint | Qué debería destapar |
 |---|---|---|
-| `SolarChargePersistenceTest` | `POST /hardware/solar-charge` | **7 de 17 campos del Renogy Rover se pierden** (H2, R-4): 6 los descarta el `$fillable` y `load_amperage` no es columna (es `load_current`) |
-| `EnergyMonitorPersistenceTest` | `POST /hardware/energy` | **El endpoint no guarda ningún dato de energía**: escribe en `hardware_energy`, que es la tabla de *configuración*, no de lecturas (R-3, N140) |
 | `KeyCounterPersistenceTest` | `POST /keycounter/keyboard` y `/mouse` | La sesión completa; que `MouseResource` no devuelva `score` (R-6); que un campo ausente no acabe en `0` por el `(int) null` |
 | `WeatherStationPersistenceTest` | Los 12 `POST /weatherstation/*/store` | Que cada sensor llegue a su tabla; que un `0` real (lluvia, noche) no se guarde como `NULL`; que el lote del genérico no pierda sensores |
 | `SmartPlantPersistenceTest` | `POST /smartplant/register` | Que la lectura quede ligada a la planta (**H5**) y que un sensor ausente deje `NULL`, no `0`. Además, que `user_id` no se evapore (**N288**) |

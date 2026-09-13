@@ -163,17 +163,20 @@ class EnergyStatsWidget extends BaseWidget
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR))
             ->sum('energy_wh');
 
-        // Métricas de odómetro histórico: última sesión registrada por elemento
-        $latestHistorical = HardwareEnergyHistorical::query()
-            ->whereIn('id', HardwareEnergyHistorical::query()
-                ->selectRaw('MAX(id)')
-                ->whereNotNull('hardware_energy_id')
-                ->groupBy('hardware_energy_id'))
+        // Métricas de odómetro histórico. **Todas las sesiones**, no sólo la
+        // última: el acumulado de un elemento es la suma de sus sesiones, y
+        // quedarse con la más reciente descartaba todo lo anterior al último
+        // reinicio del odómetro. El panel público (`EnergyController`) siempre
+        // lo leyó así; esto era la otra mitad de la contradicción.
+        $allHistorical = HardwareEnergyHistorical::query()
+            ->whereNotNull('hardware_energy_id')
             ->get();
 
-        $daysOperating = (int) ($latestHistorical->max('days_operating') ?? 0);
-        $fullCharges = (int) $latestHistorical->sum('number_battery_full_charges');
-        $overDischarges = (int) $latestHistorical->sum('number_battery_over_discharges');
+        // Los días sí son un máximo y no una suma: dos elementos que llevan
+        // 1.700 días cada uno no suman 3.400 días de instalación.
+        $daysOperating = (int) ($allHistorical->max('days_operating') ?? 0);
+        $fullCharges = (int) $allHistorical->sum('number_battery_full_charges');
+        $overDischarges = (int) $allHistorical->sum('number_battery_over_discharges');
 
         return [
             Stat::make('Consumo acumulado (30d)', number_format($totalConsumption / 1000, 2).' kWh')

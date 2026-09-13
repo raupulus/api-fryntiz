@@ -140,4 +140,57 @@ class EnergyTelemetryPayloadTest extends TestCase
             $validator->errors()->all()
         );
     }
+
+    #[Test]
+    public function it_validates_the_interval_energy_and_the_operating_days(): void
+    {
+        // Estos cuatro campos los lee el servicio pero no estaban declarados
+        // aquí: entraban sin validar y se casteaban en silencio.
+        //
+        // Ojo con la batería: ahí la energía del intervalo **sí** puede ser
+        // negativa, porque es el neto de carga menos descarga. Lo que no puede
+        // ser negativo es un acumulado de por vida.
+        $casos = [
+            ['generator' => ['voltage' => 24.0, 'energy_wh' => -5]],
+            ['generator' => ['voltage' => 24.0, 'total_operating_days' => 'muchos']],
+            ['battery' => ['voltage' => 13.0, 'historical_energy_ah' => -1]],
+            ['battery' => ['voltage' => 13.0, 'days_operating' => -3]],
+            ['loads' => [['channel' => 0, 'amperage' => 1.0, 'energy_wh' => -0.5]]],
+            ['loads' => [['channel' => 0, 'amperage' => 1.0, 'total_operating_days' => 1.5]]],
+        ];
+
+        foreach ($casos as $indice => $energy) {
+            $fallos = [];
+            (new EnergyTelemetryPayload)->validate(
+                'energy',
+                $energy,
+                static function (string $mensaje) use (&$fallos) {
+                    $fallos[] = $mensaje;
+                }
+            );
+
+            $this->assertNotEmpty($fallos, "El caso {$indice} tenía que fallar y ha pasado.");
+        }
+    }
+
+    #[Test]
+    public function it_accepts_the_interval_energy_and_the_operating_days_when_they_are_right(): void
+    {
+        $fallos = [];
+
+        (new EnergyTelemetryPayload)->validate(
+            'energy',
+            [
+                'duration' => 60,
+                'generator' => ['voltage' => 24.0, 'energy_wh' => 2.4, 'energy_ah' => 0.1, 'total_operating_days' => 1745],
+                'battery' => ['voltage' => 13.0, 'energy_ah' => 0.08, 'days_operating' => 900],
+                'loads' => [['channel' => 0, 'amperage' => 1.0, 'energy_wh' => 0.5, 'total_operating_days' => 30]],
+            ],
+            static function (string $mensaje) use (&$fallos) {
+                $fallos[] = $mensaje;
+            }
+        );
+
+        $this->assertSame([], $fallos);
+    }
 }

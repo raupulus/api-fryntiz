@@ -146,7 +146,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'weatherstation:write'
+          - 'energy:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -189,7 +189,7 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'weatherstation:write'
+        - 'energy:write'
       name: 'n'
       expires_at: '2052-10-06'
     fileParameters: []
@@ -390,7 +390,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -435,7 +435,7 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: true
+      privacity: false
       contactme: false
       attributes:
         - v
@@ -1878,55 +1878,6 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/v2/energy/solar-readings
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Lecturas del controlador solar, paginadas.'
-      description: |-
-        Exige `energy:read`. Sólo devuelve lecturas de dispositivos del
-        usuario y, si el token está ligado a dispositivos concretos
-        (`device:{id}`), sólo las de ésos: un token de cacharro no lee el resto
-        del parque de su dueño.
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"success":false,"message":"Unauthenticated"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          content-language: en
-          vary: 'Accept-Language, Origin'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
       - POST
     uri: api/v2/energy/readings
     metadata:
@@ -1935,39 +1886,8 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Almacena las lecturas de un monitor de energía.'
-      description: 'Soporta tanto el contrato universal `energy` (D115) como el contrato legacy `readings`.'
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v2/energy/solar-readings
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Almacena una lectura del controlador solar.'
-      description: ''
+      title: 'Ingesta universal de telemetría de energía.'
+      description: 'Requiere ability `energy:write`. Procesa subsistemas de generador, batería y consumos.'
       authenticated: false
       deprecated: false
     headers:
@@ -1978,17 +1898,6 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      hardware_device_info:
-        custom: []
-        name: hardware_device_info
-        description: ''
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
       hardware_device_id:
         custom: []
         name: hardware_device_id
@@ -2000,536 +1909,54 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      date:
+      device:
         custom: []
-        name: date
-        description: 'Must be a valid date.'
-        required: true
-        example: '2026-09-12T15:22:24'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      read_at:
-        custom: []
-        name: read_at
-        description: 'Must be a valid date.'
-        required: true
-        example: '2026-09-12T15:22:24'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      hardware:
-        custom: []
-        name: hardware
-        description: 'Must not be greater than 255 characters.'
+        name: device
+        description: ''
         required: false
-        example: 'n'
+        example: null
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      version:
+      hardware_device_info:
         custom: []
-        name: version
-        description: 'Must not be greater than 255 characters.'
+        name: hardware_device_info
+        description: ''
         required: false
-        example: g
+        example: null
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      serial_number:
+      duration:
         custom: []
-        name: serial_number
-        description: 'Must not be greater than 255 characters.'
-        required: false
-        example: z
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_type:
-        custom: []
-        name: battery_type
-        description: 'Must not be greater than 255 characters.'
-        required: false
-        example: m
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_voltage:
-        custom: []
-        name: battery_voltage
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_current:
-        custom: []
-        name: battery_current
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_power:
-        custom: []
-        name: battery_power
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_percentage:
-        custom: []
-        name: battery_percentage
-        description: 'Must be at least 0. Must not be greater than 100.'
-        required: false
-        example: 17
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      battery_temperature:
-        custom: []
-        name: battery_temperature
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      temperature:
-        custom: []
-        name: temperature
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      voltage:
-        custom: []
-        name: voltage
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      amperage:
-        custom: []
-        name: amperage
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      power:
-        custom: []
-        name: power
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      delta_seconds:
-        custom: []
-        name: delta_seconds
+        name: duration
         description: 'Must be at least 1.'
         required: false
-        example: 27
+        example: 22
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      charging_status:
+      energy:
         custom: []
-        name: charging_status
+        name: energy
         description: ''
-        required: false
-        example: 16
-        type: integer
+        required: true
+        example: []
+        type: object
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      charging_status_label:
-        custom: []
-        name: charging_status_label
-        description: 'Must not be greater than 255 characters.'
-        required: false
-        example: 'n'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      light_status:
-        custom: []
-        name: light_status
-        description: ''
-        required: false
-        example: true
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      light_brightness:
-        custom: []
-        name: light_brightness
-        description: 'Must be at least 0. Must not be greater than 100.'
-        required: false
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      load_voltage:
-        custom: []
-        name: load_voltage
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      load_current:
-        custom: []
-        name: load_current
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      load_power:
-        custom: []
-        name: load_power
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      load_fan:
-        custom: []
-        name: load_fan
-        description: 'Must be at least 0.'
-        required: false
-        example: 77
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_battery_voltage_min:
-        custom: []
-        name: day_battery_voltage_min
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_battery_voltage_max:
-        custom: []
-        name: day_battery_voltage_max
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_charging_current_max:
-        custom: []
-        name: day_charging_current_max
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_discharging_current_max:
-        custom: []
-        name: day_discharging_current_max
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_charging_power_max:
-        custom: []
-        name: day_charging_power_max
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_discharging_power_max:
-        custom: []
-        name: day_discharging_power_max
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_charging_amp_hours:
-        custom: []
-        name: day_charging_amp_hours
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_discharging_amp_hours:
-        custom: []
-        name: day_discharging_amp_hours
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_power_generation_wh:
-        custom: []
-        name: day_power_generation_wh
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      day_power_consumption_wh:
-        custom: []
-        name: day_power_consumption_wh
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_operating_days:
-        custom: []
-        name: total_operating_days
-        description: 'Must be at least 0.'
-        required: false
-        example: 77
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_battery_over_discharges:
-        custom: []
-        name: total_battery_over_discharges
-        description: 'Must be at least 0.'
-        required: false
-        example: 8
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_battery_full_charges:
-        custom: []
-        name: total_battery_full_charges
-        description: 'Must be at least 0.'
-        required: false
-        example: 76
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_charging_amp_hours:
-        custom: []
-        name: total_charging_amp_hours
-        description: 'Must be at least 0.'
-        required: false
-        example: 60
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_discharging_amp_hours:
-        custom: []
-        name: total_discharging_amp_hours
-        description: 'Must be at least 0.'
-        required: false
-        example: 42
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_power_generation_wh:
-        custom: []
-        name: total_power_generation_wh
-        description: 'Must be at least 0.'
-        required: false
-        example: 37
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      total_power_consumption_wh:
-        custom: []
-        name: total_power_consumption_wh
-        description: 'Must be at least 0.'
-        required: false
-        example: 9
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      system_voltage:
-        custom: []
-        name: system_voltage
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      system_intensity:
-        custom: []
-        name: system_intensity
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      nominal_battery_capacity:
-        custom: []
-        name: nominal_battery_capacity
-        description: 'Must be at least 0.'
-        required: false
-        example: 77
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      date: '2026-09-12T15:22:24'
-      read_at: '2026-09-12T15:22:24'
-      hardware: 'n'
-      version: g
-      serial_number: z
-      battery_type: m
-      battery_voltage: 4326.41688
-      battery_current: 4326.41688
-      battery_power: 4326.41688
-      battery_percentage: 17
-      battery_temperature: 4326.41688
-      temperature: 4326.41688
-      voltage: 4326.41688
-      amperage: 4326.41688
-      power: 4326.41688
-      delta_seconds: 27
-      charging_status: 16
-      charging_status_label: 'n'
-      light_status: true
-      light_brightness: 7
-      load_voltage: 4326.41688
-      load_current: 4326.41688
-      load_power: 4326.41688
-      load_fan: 77
-      day_battery_voltage_min: 4326.41688
-      day_battery_voltage_max: 4326.41688
-      day_charging_current_max: 4326.41688
-      day_discharging_current_max: 4326.41688
-      day_charging_power_max: 4326.41688
-      day_discharging_power_max: 4326.41688
-      day_charging_amp_hours: 4326.41688
-      day_discharging_amp_hours: 4326.41688
-      day_power_generation_wh: 4326.41688
-      day_power_consumption_wh: 4326.41688
-      total_operating_days: 77
-      total_battery_over_discharges: 8
-      total_battery_full_charges: 76
-      total_charging_amp_hours: 60
-      total_discharging_amp_hours: 42
-      total_power_generation_wh: 37
-      total_power_consumption_wh: 9
-      system_voltage: 4326.41688
-      system_intensity: 4326.41688
-      nominal_battery_capacity: 77
+      duration: 22
+      energy: []
     fileParameters: []
     responses: []
     responseFields: []
@@ -3063,7 +2490,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 15:22:24'
+        example: '2026-09-12 21:18:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3074,7 +2501,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 15:22:24'
+        example: '2026-09-12 21:18:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3149,8 +2576,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-12 15:22:24'
-      end_at: '2026-09-12 15:22:24'
+      start_at: '2026-09-12 21:18:06'
+      end_at: '2026-09-12 21:18:06'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3225,7 +2652,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 15:22:24'
+        example: '2026-09-12 21:18:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3236,7 +2663,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 15:22:24'
+        example: '2026-09-12 21:18:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3322,8 +2749,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-12 15:22:24'
-      end_at: '2026-09-12 15:22:24'
+      start_at: '2026-09-12 21:18:06'
+      end_at: '2026-09-12 21:18:06'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3592,7 +3019,7 @@ endpoints:
         name: waterpump_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3603,7 +3030,7 @@ endpoints:
         name: vaporizer_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3619,8 +3046,8 @@ endpoints:
       soil_humidity: 17
       soil_humidity_raw: 16
       full_water_tank: false
-      waterpump_enabled: true
-      vaporizer_enabled: true
+      waterpump_enabled: false
+      vaporizer_enabled: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -3752,7 +3179,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - lightning
+          - wind
         type: 'string[]'
         enumValues:
           - temperature
@@ -3768,7 +3195,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - lightning
+        - wind
     fileParameters: []
     responses:
       -
