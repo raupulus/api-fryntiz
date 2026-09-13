@@ -25,24 +25,23 @@ class FiguresTest extends TestCase
     }
 
     #[Test]
-    public function large_figures_are_rounded_to_thousands(): void
+    public function figures_at_a_million_or_above_get_an_explicit_scale_suffix(): void
     {
         // El caso de la portada: 75.884.812 pulsaciones acumuladas.
-        $this->assertSame('75.885', Figures::abbreviated(75884812));
-        $this->assertSame('24.124', Figures::abbreviated(24123936));
-        $this->assertSame('68', Figures::abbreviated(67673));
+        $this->assertSame('75,88 M', Figures::abbreviated(75884812));
+        $this->assertSame('24,12 M', Figures::abbreviated(24123936));
 
         // Las sumas de PostgreSQL llegan como cadena numérica.
-        $this->assertSame('75.885', Figures::abbreviated('75884812'));
+        $this->assertSame('75,88 M', Figures::abbreviated('75884812'));
     }
 
     #[Test]
-    public function below_a_thousand_the_figure_is_shown_as_is(): void
+    public function below_a_million_the_figure_is_shown_in_full(): void
     {
-        // Redondear a millares dejaría un «0» en la tarjeta.
+        // Sin sufijo de escala no puede haber ambigüedad: la cifra es la real.
+        $this->assertSame('67.673', Figures::abbreviated(67673));
         $this->assertSame('812', Figures::abbreviated(812));
-        $this->assertSame('999', Figures::abbreviated(999));
-        $this->assertSame('1', Figures::abbreviated(1000));
+        $this->assertSame('999.999', Figures::abbreviated(999999));
         $this->assertSame('0', Figures::abbreviated(null));
     }
 }

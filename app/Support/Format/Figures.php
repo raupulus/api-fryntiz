@@ -22,24 +22,24 @@ class Figures
     }
 
     /**
-     * Cifra grande redondeada a millares: `75884812` → «75.885».
+     * Cifra grande con sufijo de escala explícito: `75884812` → «75,88 M».
      *
-     * Las tarjetas de la portada de KeyCounter acumulan decenas de millones de
-     * pulsaciones. Los tres últimos dígitos no dicen nada, cambian a cada rato
-     * y hacen la tarjeta más larga, así que se recorta la escala.
+     * Versión anterior (2026-09-06) dividía entre 1000 sin ningún sufijo:
+     * `75884812` pulsaciones (75,9 millones) se mostraban como «75.885», una
+     * cifra indistinguible de setenta y cinco mil. Nunca se debe recortar la
+     * escala de un número sin dejar constancia de qué escala es.
      *
-     * Por debajo del millar se devuelve la cifra tal cual: redondear 812
-     * pulsaciones a millares deja un «0» en la tarjeta, que es peor que el
-     * cambio de escala.
+     * Por debajo del millón se devuelve la cifra íntegra (con separador de
+     * millar): a esa escala no hace falta abreviar nada.
      */
     public static function abbreviated(int|float|string|null $value): string
     {
         $number = (float) $value;
 
-        if (abs($number) < 1000) {
+        if (abs($number) < 1_000_000) {
             return self::asInteger($number);
         }
 
-        return self::asInteger($number / 1000);
+        return number_format($number / 1_000_000, 2, ',', '.').' M';
     }
 }

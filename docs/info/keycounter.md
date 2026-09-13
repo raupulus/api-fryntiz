@@ -177,25 +177,26 @@ arranque, no para sondear.
 
 ### Formato de las cifras
 
-Todas las cifras de la vista usan `App\Support\Format\Cifra` (importado en la
+Todas las cifras de la vista usan `App\Support\Format\Figures` (importado en la
 plantilla con `@use`), no `number_format()` directo:
 
 | Método | Uso | Ejemplo |
 |--------|-----|---------|
-| `Cifra::miles()` | Tarjetas de «Estadísticas Globales» | `75884812` → `75.885` |
-| `Cifra::entera()` | Resumen del mes y tarjetas de Keyboard/Mouse | `1234.56` → `1.235` |
+| `Figures::abbreviated()` | Tarjetas de «Estadísticas Globales» | `75884812` → `75,88 M`; `67673` → `67.673` |
+| `Figures::asInteger()` | Resumen del mes y tarjetas de Keyboard/Mouse | `1234.56` → `1.235` |
 
 Dos decisiones detrás:
 
 - **Punto de millar español y cero decimales.** Antes salía el separador inglés
   (`75,884,812`) y las medias con dos decimales (`2.0` pulsaciones/min), que a
   esta escala es precisión sin valor.
-- **Las cifras acumuladas se recortan a millares.** Los tres últimos dígitos de
-  un contador de decenas de millones cambian a cada subida y no dicen nada. Se
-  muestran **sin sufijo de escala**, por decisión explícita del 2026-09-06: una
-  tarjeta de `75.885` son 75,9 millones de pulsaciones, no setenta y cinco mil.
-  Por debajo del millar `Cifra::miles()` devuelve la cifra íntegra, porque
-  redondear 812 pulsaciones dejaría un «0» en la tarjeta.
+- **A partir del millón se abrevia con sufijo explícito `M`.** Entre el
+  2026-09-06 y el 2026-09-13 se recortaba a millares (`/ 1000`) **sin ningún
+  sufijo**: `75884812` (75,9 millones) se mostraba como `75.885`, indistinguible
+  de setenta y cinco mil. Un "mejor día" de 67.673 pulsaciones llegó a mostrarse
+  como `68`. Ahora `Figures::abbreviated()` solo abrevia a partir del millón y
+  siempre dejando la unidad a la vista (`75,88 M`); por debajo se devuelve la
+  cifra íntegra con separador de millar, sin tocar la escala.
 
 ### Paleta de iconos por widget
 
