@@ -241,7 +241,12 @@ class MigrateLegacyEnergyDataCommand extends Command
                     e.hardware_device_id, l.hardware_energy_id, 1, l.days_operating,
                     l.readings_count,
                     CASE WHEN e.hardware_device_id = 6 THEN 'device' ELSE 'derived' END,
-                    CASE WHEN e.hardware_device_id = 6 THEN 'device' ELSE 'derived' END,
+                    -- Los amperios-hora del esquema viejo son los **cargados a la
+                    -- batería**, que en el contrato nuevo son del elemento
+                    -- batería, no del generador. Aquí se conserva el valor para
+                    -- no perderlo, pero marcado como calculado: el Rover no mide
+                    -- los amperios-hora del panel.
+                    'derived',
                     l.energy_wh, l.energy_ah, l.number_battery_full_charges, l.number_battery_over_discharges,
                     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                     NULL, NULL, l.created_at, l.updated_at

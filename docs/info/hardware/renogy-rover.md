@@ -89,7 +89,7 @@ continuamente y nosotros sólo vemos una muestra cada minuto.
 | `010EH` | Corriente máxima de descarga | A (×0,01) | `loads[].today_amperage_max` | #7 |
 | `010FH` | Potencia máxima de carga | W | `generator.today_power_max` | #4 |
 | `0110H` | Potencia máxima de descarga | W | `loads[].today_power_max` | #7 |
-| `0111H` | Amperios-hora cargados hoy | Ah | `generator.today_energy_ah` | #4 |
+| `0111H` | Amperios-hora cargados hoy | Ah | `battery.today_energy_ah` | #11 |
 | `0112H` | Amperios-hora descargados hoy | Ah | `loads[].today_energy_ah` | #7 |
 | `0113H` | ⭐ **Generación de energía hoy** | kWh/10000 (= 0,1 Wh) | `generator.today_energy_wh` | #4 |
 | `0114H` | ⭐ **Consumo de energía hoy** | kWh/10000 (= 0,1 Wh) | `loads[].today_energy_wh` | #7 |
@@ -111,7 +111,7 @@ nuestra, porque es una medida concreta que existe.
 | `0115H` | Días totales de funcionamiento | días | `*.total_operating_days` | los tres |
 | `0116H` | Número de sobredescargas | conteo | `battery.battery_over_discharges` | #11 |
 | `0117H` | Número de cargas completas | conteo | `battery.battery_full_charges` | #11 |
-| `0118H`–`0119H` | Amperios-hora cargados totales | Ah | `generator.historical_energy_ah` | #4 |
+| `0118H`–`0119H` | Amperios-hora cargados totales | Ah | `battery.historical_energy_ah` | #11 |
 | `011AH`–`011BH` | Amperios-hora descargados totales | Ah | `loads[].historical_energy_ah` | #7 |
 | `011CH`–`011DH` | Generación acumulada de por vida | kWh/10000 | `generator.historical_energy_wh` | #4 |
 | `011EH`–`011FH` | Consumo acumulado de por vida | kWh/10000 | `loads[].historical_energy_wh` | #7 |
@@ -124,9 +124,19 @@ Esto es lo que decide si el servidor recalcula o respeta:
 
 | Elemento | Vatios-hora | Amperios-hora |
 |---|---|---|
-| Generador #4 | del aparato (`011CH`-`011DH`) | del aparato (`0118H`-`0119H`) |
+| Generador #4 | del aparato (`011CH`-`011DH`) | **calculado**: el Rover no mide los Ah del panel |
 | Consumo #7 | del aparato (`011EH`-`011FH`) | del aparato (`011AH`-`011BH`) |
-| Batería #11 | **calculado**: no hay registro | del aparato, si el firmware lo manda |
+| Batería #11 | **calculado**: no hay registro de Wh de batería | del aparato (`0118H`-`0119H`) |
+
+**Por qué los amperios-hora de carga van a la batería y no al panel.** El
+registro `0118H` cuenta lo que *entra en el banco*, no lo que produce el panel:
+entre los dos hay el rendimiento del MPPT. El criterio del contrato es que cada
+bloque describe su elemento, así que van a `battery`. Los del panel, que el Rover
+no mide, los calcula el servidor de las lecturas.
+
+Con eso el balance queda descrito entero sin duplicar nada: lo que entra al banco
+(`battery`), lo que sale a los consumos (`loads[]`) y lo que produce el panel
+(`generator`, en Wh del aparato y Ah calculados).
 
 `hardware_energy_historical` guarda esa decisión en `energy_wh_source` y
 `energy_ah_source`, **una por magnitud**. Con una sola marca para las dos, los

@@ -437,9 +437,12 @@ class MigrateLegacyEnergyDataCommandTest extends TestCase
 
         $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
 
+        // El panel: los vatios-hora los mide el Rover, los amperios-hora no.
+        // Los Ah que traía el esquema viejo eran los **cargados a la batería**,
+        // que en el contrato nuevo son del elemento batería.
         $panel = DB::table('hardware_energy_historical')->where('hardware_energy_id', 4)->first();
         $this->assertSame('device', $panel->energy_wh_source);
-        $this->assertSame('device', $panel->energy_ah_source);
+        $this->assertSame('derived', $panel->energy_ah_source);
 
         // La batería sólo tiene odómetro de amperios-hora: el Rover no da
         // vatios-hora de batería, así que ésos hay que calcularlos.

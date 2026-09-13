@@ -173,89 +173,128 @@ No hace falta si tu aparato manda sus propios acumuladores (`today_energy_*`,
 `historical_energy_*`): ésos sustituyen a lo que el servidor calcularía, así que
 el intervalo deja de importar para los totales.
 
-#### Sub-bloque `energy.generator`
+### Los tres sub-bloques
+
+**Regla única: cada bloque describe su elemento.** `generator` habla de lo que
+produce, `battery` de lo que almacena y `loads[]` de lo que gasta. Un campo
+llamado igual significa lo mismo en los tres, referido al elemento de ese bloque.
+
+**Los acumuladores son idénticos en los tres.** Los ocho campos de intervalo,
+día y por vida existen en `generator`, en `battery` y en `loads[]` con el mismo
+nombre y el mismo significado. Tenerlos sólo en algunos sitios fue lo que hizo
+que se perdieran datos en silencio.
+
+**Las medidas instantáneas sí son de cada papel**, porque hay cosas que sólo
+existen en uno: un canal de consumo no tiene estado de carga y una batería no
+tiene alumbrado. La tabla de abajo dice exactamente cuáles acepta cada bloque.
+
+**Todos los campos son opcionales.** Lo único obligatorio es que el bloque
+`energy` traiga al menos uno de los tres sub-bloques y que éste no vaya vacío.
+
+#### Lo que se mide ahora
+
+| Campo | Tipo | `generator` | `battery` | `loads[]` | Qué es |
+|---|---|:---:|:---:|:---:|---|
+| `voltage` | float | ✓ | ✓ | ✓ | Tensión medida de **este** elemento (V). Si falta, se usa la nominal configurada |
+| `amperage` | float | ✓ | ✓ | ✓ | Corriente medida (A). En `battery` va **con signo**: negativa al descargar |
+| `power` | float | ✓ | ✓ | ✓ | Potencia (W). Si se omite, el servidor calcula `V · A` |
+| `temperature` | float | ✓ | ✓ | ✓ | Temperatura de este elemento (°C) |
+| `charging_status` | int | ✓ | ✓ | — | Código numérico del modo de carga |
+| `charging_status_label` | string (≤255) | ✓ | ✓ | — | Etiqueta del modo: `mppt`, `boost`, `float`… |
+| `fan` | int ≥ 0 | ✓ | — | ✓ | Estado o velocidad del ventilador |
+| `soc` | int 0-100 | — | ✓ | — | Estado de carga (%). Alias: `battery_percentage` |
+| `light_status` | bool | ✓ | — | — | Salida de alumbrado encendida |
+| `light_brightness` | int 0-100 | ✓ | — | — | Nivel de alumbrado (%) |
+| `channel` | int ≥ 0 | — | — | ✓ | Canal del sensor. Alias: `sensor_position`. Por defecto 0 |
+
+Un campo mandado en un bloque que no lo acepta **se ignora en silencio**: no
+rompe la petición, pero tampoco se guarda. Mándalo donde va.
+
+#### Lo que se acumuló en este intervalo
 
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `voltage` | float | Tensión medida de entrada (V) |
-| `amperage` | float | Corriente medida (A) |
-| `power` | float | Potencia (W). Si se omite se calcula `V · A` |
-| `temperature` | float | Temperatura del controlador o del generador (°C) |
-| `fan` | int ≥ 0 | Estado o velocidad del ventilador |
-| `charging_status` | int | Código numérico del modo de carga |
-| `charging_status_label` | string (≤255) | Etiqueta del modo: `mppt`, `boost`, `float`… |
-| `light_status` | bool | Salida de alumbrado encendida |
-| `light_brightness` | int 0-100 | Nivel de alumbrado (%) |
-| `energy_wh` | float ≥ 0 | Energía **de este intervalo**, si el aparato ya la da. Si viene, `sources.energy` pasa a `device` |
-| `energy_ah` | float ≥ 0 | Amperios-hora **de este intervalo**, ídem |
-| `today_energy_wh` | float ≥ 0 | Acumulado **del día** que lleva el aparato (Wh) |
-| `today_energy_ah` | float ≥ 0 | Acumulado **del día** que lleva el aparato (Ah) |
-| `today_voltage_min` | float | Tensión mínima **del día** que ha visto el aparato (V) |
-| `today_voltage_max` | float | Tensión máxima **del día** que ha visto el aparato (V) |
-| `today_amperage_max` | float | Corriente máxima **del día** que ha visto el aparato (A) |
-| `today_power_max` | float | Potencia máxima **del día** que ha visto el aparato (W) |
-| `historical_energy_wh` | float ≥ 0 | Acumulado **de por vida** del odómetro del aparato (Wh) |
-| `historical_energy_ah` | float ≥ 0 | Acumulado **de por vida** del odómetro del aparato (Ah) |
-| `battery_full_charges` | int ≥ 0 | Ciclos de carga completa. Su sitio natural es `battery`; se acepta aquí porque es donde los ponía el contrato de la V1 |
-| `battery_over_discharges` | int ≥ 0 | Ciclos de sobredescarga. Ídem |
-| `total_operating_days` | int | Días de funcionamiento que declara el aparato. Alias: `days_operating` |
+| `energy_wh` | float | Vatios-hora **de este intervalo**, si tu aparato ya los tiene. Si viene, `sources.energy` pasa a `device`; si no, el servidor lo integra |
+| `energy_ah` | float | Amperios-hora de este intervalo, ídem |
 
-#### Sub-bloque `energy.battery`
+En `battery` los dos pueden ser **negativos** (el neto de una batería que
+descarga). En `generator` y en `loads[]` no: ahí un negativo marca la lectura
+como sospechosa.
+
+#### Lo que lleva acumulado hoy
+
+Sustituyen al total del día que calcularía el servidor. **No se suman**: son tu
+contador, no un incremento.
 
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `voltage` | float | Tensión de batería (V) |
-| `amperage` | float | Corriente neta (A) |
-| `power` | float | Potencia (W). Si se omite se calcula `V · A` |
-| `soc` | int 0-100 | Estado de carga (%). Alias: `battery_percentage` |
-| `temperature` | float | Temperatura de la batería (°C) |
-| `charging_status` | int | Código numérico del modo |
-| `charging_status_label` | string (≤255) | Etiqueta del modo |
-| `energy_wh` / `energy_ah` | float | Energía del intervalo, si la da el aparato. **Aquí sí pueden ser negativos**: en una batería son el neto, y descargando son negativos |
-| `today_energy_wh` | float | Acumulado del día en Wh |
-| `today_energy_ah` | float | Acumulado del día en Ah |
-| `today_voltage_min` | float | Tensión mínima del día que ha visto el aparato (V) |
-| `today_voltage_max` | float | Tensión máxima del día que ha visto el aparato (V) |
-| `today_amperage_max` | float | Corriente máxima del día que ha visto el aparato (A) |
-| `today_power_max` | float | Potencia máxima del día que ha visto el aparato (W) |
-| `historical_energy_wh` | float ≥ 0 | Acumulado de por vida del odómetro en Wh |
-| `historical_energy_ah` | float ≥ 0 | Acumulado de por vida del odómetro en Ah |
-| `battery_full_charges` | int ≥ 0 | Ciclos de carga completa que cuenta el aparato |
-| `battery_over_discharges` | int ≥ 0 | Ciclos de sobredescarga |
-| `total_operating_days` | int | Días de funcionamiento. Alias: `days_operating` |
+| `today_energy_wh` | float | Vatios-hora acumulados hoy por este elemento |
+| `today_energy_ah` | float | Amperios-hora acumulados hoy por este elemento |
+| `today_voltage_min` | float | Tensión mínima del día que ha visto tu aparato (V) |
+| `today_voltage_max` | float | Tensión máxima del día (V) |
+| `today_amperage_max` | float | Corriente máxima del día (A) |
+| `today_power_max` | float | Potencia máxima del día (W) |
 
-Si mandas `voltage` y **no** mandas `soc`, el servidor lo calcula
-proporcionalmente entre el `voltage_min` y el `voltage_max` configurados en el
-elemento. Con 11,0 y 14,4 V configurados, 12,7 V da 50 %.
+Los cuatro extremos **ensanchan** el resumen, nunca lo recortan: si una lectura
+de esta misma petición supera el máximo que declaras, gana la lectura.
 
-#### Sub-bloque `energy.loads` (array de objetos)
+#### Lo que lleva acumulado de por vida
 
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `channel` | int ≥ 0 | Canal del sensor. Alias: `sensor_position`. **Por defecto 0** |
-| `voltage` | float | Tensión del canal (V). Si falta se usa la nominal del elemento |
-| `amperage` | float | Corriente consumida (A) |
-| `power` | float | Potencia (W). Si se omite se calcula `V · A` |
-| `temperature` | float | Temperatura del canal o del sensor (°C) |
-| `fan` | int ≥ 0 | Estado del ventilador |
-| `energy_wh` / `energy_ah` | float ≥ 0 | Energía del intervalo, si la da el aparato |
-| `today_energy_wh` | float ≥ 0 | Consumo acumulado del día (Wh) |
-| `today_energy_ah` | float ≥ 0 | Consumo acumulado del día (Ah) |
-| `today_voltage_min` | float | Tensión mínima del día que ha visto el aparato (V) |
-| `today_voltage_max` | float | Tensión máxima del día que ha visto el aparato (V) |
-| `today_amperage_max` | float | Corriente máxima del día que ha visto el aparato (A) |
-| `today_power_max` | float | Potencia máxima del día que ha visto el aparato (W) |
-| `historical_energy_wh` | float ≥ 0 | Consumo acumulado de por vida (Wh) |
-| `historical_energy_ah` | float ≥ 0 | Consumo acumulado de por vida (Ah) |
-| `battery_full_charges` | int ≥ 0 | Ciclos de carga completa. Su sitio natural es `battery` |
-| `battery_over_discharges` | int ≥ 0 | Ciclos de sobredescarga. Ídem |
-| `total_operating_days` | int | Días de funcionamiento. Alias: `days_operating` |
+| `historical_energy_wh` | float ≥ 0 | Vatios-hora de por vida de este elemento |
+| `historical_energy_ah` | float ≥ 0 | Amperios-hora de por vida de este elemento |
+| `battery_full_charges` | int ≥ 0 | Ciclos de carga completa del banco |
+| `battery_over_discharges` | int ≥ 0 | Ciclos de sobredescarga del banco |
+| `total_operating_days` | int ≥ 0 | Días de funcionamiento. Alias: `days_operating` |
 
-El `channel` casa con el `sensor_position` del elemento. Dos entradas con el
-mismo canal en la misma petición se guardan como **dos muestras** de ese canal y
-las dos cuentan en el resumen del día. Una lista `loads` vacía es válida y no
-inventa ninguna lectura a cero: es lo que manda un controlador que no tiene nada
-conectado a su salida.
+Un acumulado de por vida **nunca baja**. Si mandas uno menor que el guardado, el
+servidor entiende que tu contador se reinició y abre una sesión nueva; el total
+del elemento pasa a ser la suma de sus sesiones.
+
+`battery_full_charges` y `battery_over_discharges` son del banco de baterías: su
+sitio es `battery`. Se aceptan en los tres bloques por comodidad, pero mándalos
+en uno solo.
+
+#### Dónde va cada medida: la regla para no duplicar
+
+Los amperios-hora son la medida que más se presta a ponerse en dos sitios,
+porque la misma corriente se puede mirar desde donde sale o desde donde entra.
+El criterio es el del elemento:
+
+| Lo que mides | Bloque | Por qué |
+|---|---|---|
+| Amperios-hora que **entran en la batería** | `battery` | Es carga del banco, aunque venga del panel |
+| Amperios-hora que **salen hacia los consumos** | `loads[]` | Es lo que gastan, aunque salga de la batería |
+| Amperios-hora que **produce el generador** | `generator` | Sólo si tu aparato lo mide aparte |
+
+Si tu aparato no da una de las tres, **no la inventes ni la dupliques**: omítela
+y el servidor la calcula de las lecturas. Un montaje que declara lo que entra en
+la batería y lo que sale a los consumos ya describe el balance entero.
+
+#### Tensión: cada elemento la suya
+
+En un controlador solar los tres elementos van a tensiones distintas —el panel a
+24 V, la batería a 12 V y la salida de carga a 12 V— y **cada bloque guarda la
+suya**. Nada se normaliza al guardar.
+
+Si no mandas `voltage`, se usa la `nominal_voltage` del elemento y
+`sources.voltage` queda en `nominal`. Si la mandas y se sale del rango
+configurado, **se guarda igual** y se avisa: un panel a 0 V es de noche y una
+batería por debajo de su mínimo es una sobredescarga, y las dos cosas hay que
+poder verlas.
+
+Si mandas `voltage` en `battery` y **no** mandas `soc`, el servidor lo calcula
+proporcionalmente entre el `voltage_min` y el `voltage_max` del elemento. Con
+11,0 y 14,4 V configurados, 12,7 V da 50 %.
+
+#### `loads[]`: varios canales
+
+El `channel` casa con el `sensor_position` del elemento dado de alta. Dos
+entradas con el mismo canal en la misma petición se guardan como **dos muestras**
+de ese canal y las dos cuentan en el resumen del día. Una lista `loads` vacía es
+válida y no inventa ninguna lectura a cero: es lo que manda un controlador que no
+tiene nada conectado a su salida.
 
 #### Bloque opcional `hardware_device_info` / `device`
 
@@ -473,11 +512,9 @@ los registros Modbus está en
       "light_status": false,
       "light_brightness": 0,
       "today_energy_wh": 1250.0,
-      "today_energy_ah": 52.0,
       "today_amperage_max": 6.1,
       "today_power_max": 148.0,
       "historical_energy_wh": 45000.0,
-      "historical_energy_ah": 1875.0,
       "total_operating_days": 1745
     },
     "battery": {
@@ -521,12 +558,21 @@ con `created_at` a las 08:15 UTC.
 propios acumuladores del día y de por vida, así que el intervalo no interviene en
 ningún total. Sí manda `read_at`, porque su Pico lleva reloj por NTP.
 
-**Qué pasa con cada magnitud.** El panel y el consumo declaran sus dos
-acumuladores de por vida, así que los dos quedan congelados como del aparato y
-nadie los recalcula. La batería sólo declara amperios-hora —el Rover no tiene
-registro de vatios-hora de batería—, así que sus Wh se calculan de las lecturas.
-Eso se ve en la respuesta del `GET` y en el panel de administración, donde cada
-sesión histórica dice de dónde sale cada una de las dos cifras.
+**Qué declara cada elemento y qué calcula el servidor.** El Rover no mide todas
+las magnitudes de los tres, y eso está bien: lo que no declara se calcula.
+
+| | Vatios-hora | Amperios-hora |
+|---|---|---|
+| `generator` | del aparato | calculado (no mide los Ah del panel) |
+| `battery` | calculado (no tiene registro) | del aparato |
+| `loads[]` | del aparato | del aparato |
+
+Los amperios-hora de carga van a `battery` porque el registro cuenta lo que
+**entra en el banco**, no lo que sale del panel: entre los dos está el
+rendimiento del MPPT. Cada bloque describe su elemento.
+
+Quién declara qué se ve en la respuesta del `GET` y en el panel de
+administración, donde cada sesión histórica dice de dónde sale cada cifra.
 
 ### Monitor de tres canales (un aparato, tres consumos ajenos)
 

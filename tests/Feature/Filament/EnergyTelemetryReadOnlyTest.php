@@ -138,6 +138,36 @@ class EnergyTelemetryReadOnlyTest extends TestCase
     }
 
     #[Test]
+    public function no_energy_screen_lets_you_edit_telemetry_by_hand(): void
+    {
+        // Editar un vatio a mano es inventarse un dato: deja de haber forma de
+        // saber qué número salió de un aparato. Si hay que rectificar, se
+        // arregla el firmware, o el código si el fallo es nuestro.
+        $this->entrarComo(administrador: true);
+
+        foreach (self::relationManagers() as [$relationManager, $que]) {
+            $this->panel($relationManager)->assertTableActionDoesNotExist('edit');
+        }
+    }
+
+    #[Test]
+    public function the_telemetry_screens_have_no_form_at_all(): void
+    {
+        // Sin crear ni editar, un formulario sólo puede servir para colar una
+        // de las dos por la puerta de atrás.
+        foreach (self::relationManagers() as [$relationManager, $que]) {
+            // La clase base declara `form()`; lo que no puede es redefinirlo.
+            $declarante = (new \ReflectionMethod($relationManager, 'form'))->getDeclaringClass()->getName();
+
+            $this->assertNotSame(
+                $relationManager,
+                $declarante,
+                "{$relationManager} no debería declarar un formulario propio."
+            );
+        }
+    }
+
+    #[Test]
     public function an_administrator_can_delete_telemetry(): void
     {
         $this->entrarComo(administrador: true);

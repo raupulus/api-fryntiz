@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 /**
- * RelationManager para las lecturas granulares de telemetría de un elemento de energía.
+ * Las lecturas crudas de un elemento de energía. **Sólo lectura.**
+ *
+ * No se pueden crear ni editar desde aquí: la telemetría entra exclusivamente
+ * por `POST /api/v2/energy/readings`. Editar a mano un vatio es inventarse un
+ * dato, y deja de haber forma de saber qué número salió de un aparato. Si hay
+ * que rectificar, se arregla el firmware —o el código, si el fallo es nuestro—.
+ *
+ * Borrar sí, para poder limpiar una serie corrupta, pero sólo administradores y
+ * con confirmación: el aparato ya mandó ese dato y no lo reenvía.
  */
 class ReadingsRelationManager extends RelationManager
 {
@@ -28,31 +31,6 @@ class ReadingsRelationManager extends RelationManager
     protected static ?string $modelLabel = 'lectura';
 
     protected static ?string $pluralModelLabel = 'lecturas de telemetría';
-
-    public function form(Schema $schema): Schema
-    {
-        return $schema->components([
-            DateTimePicker::make('created_at')->label('Fecha / Hora')->disabled(),
-            TextInput::make('voltage')->numeric()->step(0.001)->suffix(' V')->label('Tensión'),
-            TextInput::make('amperage')->numeric()->step(0.001)->suffix(' A')->label('Corriente'),
-            TextInput::make('power')->numeric()->step(0.001)->suffix(' W')->label('Potencia'),
-            TextInput::make('delta_seconds')->numeric()->minValue(0)->suffix(' s')->label('Duración intervalo'),
-            TextInput::make('energy_wh')->numeric()->step(0.0001)->suffix(' Wh')->label('Energía (Wh)'),
-            TextInput::make('energy_ah')->numeric()->step(0.0001)->suffix(' Ah')->label('Carga (Ah)'),
-            TextInput::make('energy_source')->maxLength(16)->label('Origen energía (device/derived)'),
-            TextInput::make('voltage_source')->maxLength(16)->label('Origen tensión (measured/nominal)'),
-            TextInput::make('battery_voltage')->numeric()->step(0.01)->suffix(' V')->label('Tensión batería'),
-            TextInput::make('battery_percentage')->numeric()->minValue(0)->maxValue(100)->suffix(' %')->label('Nivel batería %'),
-            TextInput::make('temperature')->numeric()->step(0.1)->suffix(' °C')->label('Temperatura'),
-            TextInput::make('fan')->numeric()->minValue(0)->label('Ventilador'),
-            TextInput::make('charging_status')->numeric()->label('Código estado carga'),
-            TextInput::make('charging_status_label')->maxLength(255)->label('Etiqueta estado carga'),
-            Toggle::make('light_status')->label('Luz activa'),
-            TextInput::make('light_brightness')->numeric()->minValue(0)->maxValue(100)->label('Brillo luz %'),
-            Toggle::make('is_suspicious')->label('Marcar como sospechosa'),
-            TextInput::make('suspicious_reason')->maxLength(255)->label('Motivo sospecha'),
-        ])->columns(2);
-    }
 
     public function table(Table $table): Table
     {
@@ -144,7 +122,6 @@ class ReadingsRelationManager extends RelationManager
                     ->falseLabel('Sólo válidas'),
             ])
             ->recordActions([
-                EditAction::make(),
                 DeleteAction::make()
                     ->visible(static fn (): bool => auth()->user()?->isAdmin() ?? false)
                     ->requiresConfirmation()

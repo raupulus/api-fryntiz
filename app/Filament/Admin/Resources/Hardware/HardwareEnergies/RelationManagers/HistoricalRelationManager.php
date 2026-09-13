@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 /**
- * RelationManager para las series históricas y sesiones de odómetro de un elemento.
+ * Los acumulados de por vida de un elemento, sesión a sesión. **Sólo lectura.**
+ *
+ * Cada fila es una sesión de odómetro: cuando el aparato se reinicia y sus
+ * contadores vuelven a cero se abre la siguiente, y el total del elemento es la
+ * suma de todas. No se crea ni se edita a mano: ver
+ * {@see ReadingsRelationManager} para el porqué.
  */
 class HistoricalRelationManager extends RelationManager
 {
@@ -25,45 +26,6 @@ class HistoricalRelationManager extends RelationManager
     protected static ?string $modelLabel = 'sesión histórica';
 
     protected static ?string $pluralModelLabel = 'sesiones históricas';
-
-    public function form(Schema $schema): Schema
-    {
-        return $schema->components([
-            TextInput::make('session_index')->numeric()->minValue(1)->required()->label('Número de sesión (odómetro)'),
-            Select::make('energy_wh_source')
-                ->options([
-                    'device' => 'Aparato (odómetro de hardware)',
-                    'derived' => 'Derivado (suma de intervalos)',
-                ])
-                ->default('derived')
-                ->required()
-                ->label('Origen de los Wh')
-                ->helperText('«Aparato» congela el valor: ni la ingesta ni el cron lo recalculan.'),
-            Select::make('energy_ah_source')
-                ->options([
-                    'device' => 'Aparato (odómetro de hardware)',
-                    'derived' => 'Derivado (suma de intervalos)',
-                ])
-                ->default('derived')
-                ->required()
-                ->label('Origen de los Ah')
-                ->helperText('Se decide aparte de los Wh: el Renogy manda los Ah de la batería pero no sus Wh.'),
-            TextInput::make('days_operating')->numeric()->minValue(0)->label('Días de operación'),
-            TextInput::make('readings_count')->numeric()->minValue(0)->label('Conteo de lecturas'),
-            TextInput::make('energy_wh')->numeric()->step(0.0001)->suffix(' Wh')->label('Energía acumulada (Wh)'),
-            TextInput::make('energy_ah')->numeric()->step(0.0001)->suffix(' Ah')->label('Carga acumulada (Ah)'),
-            TextInput::make('number_battery_full_charges')->numeric()->minValue(0)->label('Ciclos de carga completa'),
-            TextInput::make('number_battery_over_discharges')->numeric()->minValue(0)->label('Ciclos de sobredescarga'),
-            TextInput::make('voltage_min')->numeric()->step(0.001)->suffix(' V')->label('Tensión mínima histórica'),
-            TextInput::make('voltage_max')->numeric()->step(0.001)->suffix(' V')->label('Tensión máxima histórica'),
-            TextInput::make('amperage_min')->numeric()->step(0.001)->suffix(' A')->label('Corriente mínima histórica'),
-            TextInput::make('amperage_max')->numeric()->step(0.001)->suffix(' A')->label('Corriente máxima histórica'),
-            TextInput::make('power_min')->numeric()->step(0.001)->suffix(' W')->label('Potencia mínima histórica'),
-            TextInput::make('power_max')->numeric()->step(0.001)->suffix(' W')->label('Potencia máxima histórica'),
-            TextInput::make('temperature_min')->numeric()->step(0.1)->suffix(' °C')->label('Temp. mínima histórica'),
-            TextInput::make('temperature_max')->numeric()->step(0.1)->suffix(' °C')->label('Temp. máxima histórica'),
-        ])->columns(2);
-    }
 
     public function table(Table $table): Table
     {
@@ -129,7 +91,6 @@ class HistoricalRelationManager extends RelationManager
             ])
             ->defaultSort('session_index', 'desc')
             ->recordActions([
-                EditAction::make(),
                 DeleteAction::make()
                     ->visible(static fn (): bool => auth()->user()?->isAdmin() ?? false)
                     ->requiresConfirmation()

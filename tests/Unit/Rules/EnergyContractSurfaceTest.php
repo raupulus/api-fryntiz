@@ -189,6 +189,48 @@ class EnergyContractSurfaceTest extends TestCase
     }
 
     #[Test]
+    public function the_per_block_table_of_the_contract_matches_the_validation(): void
+    {
+        // La tabla «Lo que se mide ahora» del contrato marca con ✓ qué bloques
+        // aceptan cada campo instantáneo. Es lo que lee quien escribe el
+        // firmware, así que tiene que decir exactamente lo que hace el servidor.
+        $doc = file_get_contents(base_path('docs/info/api/v2/energy.md'));
+        $declarados = $this->declarados();
+
+        $bloques = ['generator', 'battery', 'loads.*'];
+        $filas = 0;
+
+        foreach (explode("\n", $doc) as $linea) {
+            // | `campo` | tipo | ✓ | — | ✓ | descripción |
+            if (! preg_match('/^\| `([a-z_]+)` \| [^|]+ \| ([✓—]) \| ([✓—]) \| ([✓—]) \|/u', $linea, $m)) {
+                continue;
+            }
+
+            $filas++;
+            [, $campo, $gen, $bat, $load] = $m;
+
+            foreach ([$gen, $bat, $load] as $i => $marca) {
+                $bloque = $bloques[$i];
+                $aceptado = in_array($campo, $declarados[$bloque] ?? [], true);
+
+                // `battery_percentage` es el alias de `soc`: el contrato lo
+                // documenta como alias y la validación declara los dos.
+                if ($campo === 'soc' && ! $aceptado) {
+                    $aceptado = in_array('battery_percentage', $declarados[$bloque] ?? [], true);
+                }
+
+                $this->assertSame(
+                    $marca === '✓',
+                    $aceptado,
+                    "El contrato y la validación no coinciden en `{$bloque}.{$campo}`."
+                );
+            }
+        }
+
+        $this->assertGreaterThanOrEqual(10, $filas, 'No se ha encontrado la tabla por bloque del contrato.');
+    }
+
+    #[Test]
     public function the_documented_contract_matches_the_validation(): void
     {
         // La documentación es lo que se copia a los clientes IoT. Si promete un

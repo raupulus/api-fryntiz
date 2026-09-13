@@ -193,7 +193,7 @@ las mediciones en **tres bloques normalizados** (`generator`, `battery`, `loads`
 > - **Todos los campos `today_*` e `historical_*` son opcionales en los tres
 >   bloques.** Un microcontrolador que sólo mide tensión y corriente manda eso y
 >   ya; un controlador que lleva sus propios contadores los manda y mandan ellos.
->   Ver §4.2 para qué hace cada uno.
+>   Ver §4.3 para qué hace cada uno.
 
 ### 3.2. Las dos magnitudes temporales: `read_at` y `duration`
 
@@ -236,7 +236,7 @@ sitios gana el de dentro.
    - Amperios-hora incrementales: $\Delta Ah = \frac{I \cdot \text{duration}}{3600}$
    - `hardware_energy_readings.energy_source` describe el origen del **delta de esta lectura** (`energy_wh` / `energy_ah`), no el de los acumulados: vale `device` si el aparato manda ya el consumo del intervalo (`energy_wh` dentro del bloque) y `derived` si el servidor lo integra a partir de `power` y `duration`. No confundirlo con `energy_wh_source` / `energy_ah_source` de `hardware_energy_historical`, que son los de la sesión (§4.1).
    - Los acumulados nativos (`today_energy_wh`, `today_energy_ah`, `historical_energy_wh`, `historical_energy_ah`) mandan siempre sobre lo calculado en sus tablas de resumen.
-3. **Respaldo de Tensión Nominal (`nominal_voltage`):** Si un canal de consumo o sensor de corriente simple (ej. INA219 montado en la línea de un router) no mide tensión, el backend recurre a `nominal_voltage` del elemento con `voltage_source: nominal` y emite un warning informativo sin descartar la muestra. **Sólo se usa cuando no hay medida**: una tensión medida se guarda tal cual aunque se salga del rango del elemento (§4.3).
+3. **Respaldo de Tensión Nominal (`nominal_voltage`):** Si un canal de consumo o sensor de corriente simple (ej. INA219 montado en la línea de un router) no mide tensión, el backend recurre a `nominal_voltage` del elemento con `voltage_source: nominal` y emite un warning informativo sin descartar la muestra. **Sólo se usa cuando no hay medida**: una tensión medida se guarda tal cual aunque se salga del rango del elemento (§4.5).
 4. **Cálculo Automático de SOC de Batería:** Si el payload incluye tensión de batería pero omite el porcentaje (`soc`), el backend lo calcula de forma proporcional entre `voltage_min` y `voltage_max`.
 
 ---
@@ -301,7 +301,31 @@ columnas de origen son un **hecho observado** de la serie, no una intención
 declarada. `auto_calculate_history` sigue existiendo y gobierna si el cron
 nocturno se ocupa del elemento, pero no decide qué es odómetro y qué no.
 
-### 4.2. Qué declara el aparato y qué calculamos nosotros
+### 4.2. Dónde va cada medida: el criterio para no duplicar
+
+**Cada bloque del contrato describe su elemento.** `generator` habla de lo que
+produce, `battery` de lo que almacena y `loads[]` de lo que gasta. Un campo
+llamado igual significa lo mismo en los tres, referido al elemento de ese bloque.
+
+Los amperios-hora son la medida que más se presta a acabar en dos sitios, porque
+la misma corriente se mira desde donde sale o desde donde entra:
+
+| Lo que se mide | Bloque | Por qué |
+|---|---|---|
+| Amperios-hora que **entran en la batería** | `battery` | Es carga del banco, aunque venga del panel. Entre los dos está el rendimiento del MPPT: no son el mismo número |
+| Amperios-hora que **salen hacia los consumos** | `loads[]` | Es lo que gastan, aunque salga de la batería |
+| Amperios-hora que **produce el generador** | `generator` | Sólo si el aparato lo mide aparte |
+
+Lo que el aparato no mida, **no se manda ni se duplica**: se omite y el servidor
+lo calcula de las lecturas. Un montaje que declara lo que entra al banco y lo que
+sale a los consumos ya describe el balance entero.
+
+> **El esquema viejo lo hacía al revés.** El contrato de la V1 ponía los
+> amperios-hora de carga en el generador, así que el elemento 4 del Renogy
+> arrastra ese valor de la migración. Se conserva —es un dato real— pero marcado
+> como calculado, no como odómetro: el Rover no mide los amperios-hora del panel.
+
+### 4.3. Qué declara el aparato y qué calculamos nosotros
 
 Todo campo `today_*` e `historical_*` del contrato es opcional y, cuando llega,
 gana. La tabla completa, con su efecto:
@@ -347,7 +371,7 @@ Que el aparato mande `duration` en cada subida sigue siendo lo mejor: sólo él
 sabe cuántos segundos pasaron de verdad cuando hubo un corte de red. La columna
 es el respaldo para cuando no puede.
 
-### 4.3. La tensión: se guarda lo medido
+### 4.5. La tensión: se guarda lo medido
 
 `nominal_voltage` es **respaldo**, no corrección. Entra sólo cuando el aparato no
 manda `voltage`; entonces `voltage_source` queda en `nominal` y no en `measured`.
@@ -401,18 +425,21 @@ El panel de administración centraliza la gestión y visualización del módulo 
 
 ### 7.2. Relation Managers de Telemetría (Ficha del Elemento)
 
-> **La telemetría no se crea a mano.** Las tres pantallas —lecturas, resúmenes
-> del día y sesiones históricas— son de sólo lectura: los datos entran
-> exclusivamente por `POST /api/v2/energy/readings`. Una fila escrita a mano no
-> tiene aparato detrás, no cuadra con ninguna lectura y deja el cierre nocturno
-> decidiendo sobre columnas de origen que nadie ha rellenado bien.
+> **La telemetría no se crea ni se edita a mano.** Las tres pantallas —lecturas,
+> resúmenes del día y sesiones históricas— son de **sólo lectura**: los datos
+> entran exclusivamente por `POST /api/v2/energy/readings`. Ni siquiera declaran
+> un formulario.
 >
-> **Borrar sí se puede, sólo administradores y con confirmación**: hace falta
-> para limpiar una serie corrupta, pero el dato no se puede volver a pedir
-> —el aparato ya lo mandó y no lo reenvía—.
+> Editar un vatio a mano es inventarse un dato: deja de haber forma de saber qué
+> número salió de un aparato. Si hay que rectificar, se arregla el firmware, o el
+> código si el fallo es nuestro.
 >
-> El catálogo de elementos (`hardware_energy`) **sí** se crea desde el panel:
-> eso es configurar la instalación, no inventarse telemetría.
+> **Borrar sí, sólo administradores y con confirmación**: hace falta para limpiar
+> una serie corrupta, pero el dato no se puede volver a pedir —el aparato ya lo
+> mandó y no lo reenvía—.
+>
+> El catálogo de elementos (`hardware_energy`) **sí** se crea y se edita desde el
+> panel: eso es configurar la instalación, no inventarse telemetría.
 En la pantalla de edición de cada elemento energético (`EditHardwareEnergy`) se montan cuatro relation managers:
 1. `RolesRelationManager`: Permite inspeccionar y dar de alta de forma contextual los roles complementarios en el mismo dispositivo físico (`create_generator`, `create_battery`, `create_load`) sin abandonar la ficha.
 2. `ReadingsRelationManager`: Tabla paginada de telemetría granular (`hardware_energy_readings`) con tensión, corriente, potencia, $\Delta Wh$, $\Delta Ah$, estado de carga y marcas de sospecha (`is_suspicious` y `suspicious_reason`).
@@ -565,12 +592,12 @@ haga ruido. Qué prueba cada archivo:
 |---|---|
 | `Hardware/EnergyHistoricalReadingTest.php` | Que el panel público y el widget de administración lean el histórico con el mismo criterio, y que la batería salga del rol `battery` |
 | `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy` y **el escalado de los amperios a la tensión de referencia** |
-| `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
+| `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
 | `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |
 | `Unit/Rules/EnergyTelemetryPayloadTest.php` | La validación del bloque `energy` |
-| `Unit/Rules/EnergyContractSurfaceTest.php` | **Que el contrato no se descuelgue del código**: que todo campo que lee el servicio esté validado, que todo campo validado lo lea el servicio, que los tres bloques ofrezcan lo mismo y que la documentación los liste todos |
+| `Unit/Rules/EnergyContractSurfaceTest.php` | **Que el contrato no se descuelgue del código**: que todo campo que lee el servicio esté validado, que todo campo validado lo lea el servicio, que los tres bloques ofrezcan los mismos acumuladores, y que la tabla por bloque del contrato diga exactamente lo que acepta el servidor |
 | `Api/V2/Energy/EnergyDocumentedExamplesTest.php` | Que los ejemplos JSON de `docs/info/api/v2/energy.md` se suban de verdad, den 201 y no levanten un solo aviso |
 
 ---
