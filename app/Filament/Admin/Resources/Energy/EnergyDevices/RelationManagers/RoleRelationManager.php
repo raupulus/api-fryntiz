@@ -65,9 +65,22 @@ abstract class RoleRelationManager extends RelationManager
 
         return $table
             ->description(static::explicacion())
+            // El estado de cada elemento —lo de hoy, lo de por vida y la última
+            // lectura— se agrega **en la consulta**, no fila a fila.
+            //
+            // Con una consulta por celda eran tres por fila, y encima devolvían
+            // cadenas: `sum()` de una columna `numeric` en PostgreSQL llega como
+            // string, y una función tipada `?float` se lleva un TypeError que
+            // tumba la pestaña entera. Aquí no hay nada que tipar.
             ->modifyQueryUsing(fn (Builder $query) => $query
                 ->where('role', $papel)
-                ->with(['monitorized', 'sourceType']))
+                ->with(['monitorized', 'sourceType'])
+                ->withSum(
+                    ['today as energia_de_hoy' => fn ($q) => $q->whereDate('date', now('UTC')->toDateString())],
+                    'energy_wh',
+                )
+                ->withSum('historical as energia_de_por_vida', 'energy_wh')
+                ->withMax('readings as ultima_lectura', 'created_at'))
             ->defaultSort('sensor_position')
             ->columns([
                 TextColumn::make('monitorized.display_name')
@@ -108,25 +121,20 @@ abstract class RoleRelationManager extends RelationManager
 
                 // El estado, para no tener que entrar en la telemetría sólo
                 // para saber si el canal está vivo.
-                TextColumn::make('today_sum')
+                TextColumn::make('energia_de_hoy')
                     ->label('Hoy')
-                    ->state(fn (HardwareEnergy $record): ?float => $record->today()
-                        ->whereDate('date', now('UTC')->toDateString())
-                        ->value('energy_wh'))
                     ->numeric(decimalPlaces: 0)
                     ->suffix(' Wh')
                     ->placeholder('—'),
 
-                TextColumn::make('lifetime_sum')
+                TextColumn::make('energia_de_por_vida')
                     ->label('De por vida')
-                    ->state(fn (HardwareEnergy $record): ?float => $record->historical()->sum('energy_wh') ?: null)
                     ->numeric(decimalPlaces: 0)
                     ->suffix(' Wh')
                     ->placeholder('—'),
 
-                TextColumn::make('last_reading')
+                TextColumn::make('ultima_lectura')
                     ->label('Última lectura')
-                    ->state(fn (HardwareEnergy $record) => $record->readings()->max('created_at'))
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('nunca'),
 

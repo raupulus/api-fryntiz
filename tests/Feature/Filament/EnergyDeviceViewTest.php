@@ -15,6 +15,9 @@ use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\CreateHardwareE
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\EditHardwareEnergy;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwareEnergyHistorical;
+use App\Models\Hardware\HardwareEnergyReading;
+use App\Models\Hardware\HardwareEnergyToday;
 use App\Models\Hardware\HardwareType;
 use App\Models\User;
 use Database\Seeders\RolesTableSeeder;
@@ -82,6 +85,43 @@ class EnergyDeviceViewTest extends TestCase
     }
 
     /**
+     * Telemetría de verdad colgando de un elemento.
+     *
+     * Sin esto, la pestaña se pinta con las columnas de estado vacías y no
+     * llega a tocar los agregados. Es lo que dejó pasar un `sum()` de
+     * PostgreSQL —que llega como cadena— por una función tipada `?float`: en
+     * local todo verde y en producción la pestaña entera reventada.
+     */
+    private function conTelemetria(HardwareEnergy $elemento): HardwareEnergy
+    {
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $elemento->hardware_device_id,
+            'hardware_energy_id' => $elemento->id,
+            'voltage' => 24.0, 'amperage' => 4.0, 'power' => 96.0,
+            'delta_seconds' => 300, 'energy_wh' => 8.0,
+        ]);
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $elemento->hardware_device_id,
+            'hardware_energy_id' => $elemento->id,
+            'date' => now('UTC')->toDateString(),
+            'readings_count' => 1,
+            'energy_wh' => 743.0,
+            'energy_ah' => 31.0,
+        ]);
+
+        HardwareEnergyHistorical::create([
+            'hardware_device_id' => $elemento->hardware_device_id,
+            'hardware_energy_id' => $elemento->id,
+            'session_index' => 1,
+            'energy_wh' => 524497.0,
+            'energy_ah' => 21854.0,
+        ]);
+
+        return $elemento;
+    }
+
+    /**
      * @param  class-string  $manager
      */
     private function pestana(string $manager): Testable
@@ -102,9 +142,10 @@ class EnergyDeviceViewTest extends TestCase
     #[Test]
     public function la_ficha_carga_entera_con_sus_tres_pestanas(): void
     {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-        $this->element($this->controller, HardwareEnergy::ROLE_BATTERY);
-        $this->element($this->controller, HardwareEnergy::ROLE_LOAD, channel: 1);
+        // Con telemetría: es lo que hace que se evalúen las columnas de estado.
+        $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_GENERATOR));
+        $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_BATTERY));
+        $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_LOAD, channel: 1));
 
         $this->get(EnergyDeviceResource::getUrl('edit', ['record' => $this->controller]))
             ->assertSuccessful()
@@ -125,6 +166,23 @@ class EnergyDeviceViewTest extends TestCase
         $this->get(EnergyDeviceResource::getUrl('index'))
             ->assertSuccessful()
             ->assertSee('Renogy Rover 20 LI');
+    }
+
+    /**
+     * Las columnas de estado, con números dentro.
+     */
+    #[Test]
+    public function cada_pestana_ensena_el_estado_del_elemento(): void
+    {
+        $panel = $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_GENERATOR));
+
+        $this->pestana(GeneratorRelationManager::class)
+            ->assertSuccessful()
+            ->assertCanRenderTableColumn('energia_de_hoy')
+            ->assertCanRenderTableColumn('energia_de_por_vida')
+            ->assertCanRenderTableColumn('ultima_lectura')
+            ->assertTableColumnStateSet('energia_de_hoy', 743.0, $panel)
+            ->assertTableColumnStateSet('energia_de_por_vida', 524497.0, $panel);
     }
 
     // ── El listado ────────────────────────────────────────────────────────
