@@ -613,13 +613,24 @@ y volver a rellenarla: si no, se guardaría sobre el elemento anterior. Hay test
 con un cero, la gráfica dibuja un desplome hasta el suelo que nunca ocurrió y
 parece una avería.
 
-#### El CSS de las pantallas nuevas hay que compilarlo
+#### En las vistas del panel, CSS llano y no utilidades de Tailwind
 
-El tema del panel (`resources/css/filament/admin/theme.css`) escanea
-`resources/views/filament/**/*.blade.php`, así que una vista nueva sólo tiene sus
-utilidades después de un `npm run build`. Sin él la maquetación se cae y todo
-aparece amontonado a la izquierda: los `flex` y los `grid` sencillamente no
-existen en el CSS desplegado. Los assets compilados van versionados.
+**El panel no carga el tema del proyecto.** `AdminPanelProvider` no llama a
+`viteTheme()`, así que la página enlaza sólo el `app.css` precompilado de
+Filament, que trae las clases `fi-*` y nada más. `resources/css/filament/admin/theme.css`
+se compila pero ningún panel lo usa.
+
+Consecuencia: una clase como `sm:flex-row` o `lg:grid-cols-4` escrita en una
+vista Blade del panel **no existe en el navegador**, compiles lo que compiles, y
+la maquetación se cae —todo apilado a la izquierda—. Pasó con el campo de YouTube
+(commit `3fdcf2f`) y con la cabecera de esta ficha, que se dio por arreglada con
+un `npm run build` que no cambiaba nada.
+
+Para maquetar algo propio: un `<style>` con clases con prefijo propio
+(`ed-aparato__…`), flexbox con `flex-wrap`, y `.dark .clase` para el modo
+oscuro, que Filament activa con la clase `dark` en `<html>`. Los componentes de
+Filament (`x-filament::section`, `x-filament::tabs`…) sí se pueden usar: sus
+estilos están en ese `app.css`.
 
 #### Esta pantalla no toca Hardware
 
