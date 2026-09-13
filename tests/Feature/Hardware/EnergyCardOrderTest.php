@@ -323,4 +323,66 @@ class EnergyCardOrderTest extends TestCase
         // Ambos están activos (reporting now), pero la carga movió 800 Wh hoy vs 500 Wh del generador
         $this->assertSame([$loadDevice->id, $genDevice->id], $this->cardOrder());
     }
+
+    /**
+     * Una instalación tiene **una** batería, y su tensión y su carga son las
+     * suyas, no las del consumo.
+     *
+     * El esquema viejo replicaba el porcentaje del banco en las filas de
+     * generación y de consumo, y de ahí salían dos tarjetas —«Bat. Charge» y
+     * «Bat. Load»— con el mismo número leído de sitios distintos. La de
+     * tensiones, además, decía «Panel / Batería» y enseñaba la del **consumo**.
+     */
+    #[Test]
+    public function there_is_one_battery_card_and_it_reads_the_battery(): void
+    {
+        $device = $this->device('Solar');
+        $this->generatedAllTime($device, 1_000);
+
+        // El panel a 24 V.
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $this->generatorEnergy($device)->id,
+            'voltage' => 24.6, 'amperage' => 2.0, 'power' => 49,
+            'created_at' => now()->subMinutes(5),
+        ]);
+
+        // El consumo a 12,2 V, con el porcentaje del banco replicado.
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $this->loadEnergy($device)->id,
+            'voltage' => 12.2, 'amperage' => 1.0, 'power' => 12,
+            'battery_percentage' => 55,
+            'created_at' => now()->subMinutes(5),
+        ]);
+
+        // Y la batería, que es quien manda: 13,4 V y 91 %.
+        $bateria = HardwareEnergy::firstOrCreate([
+            'hardware_device_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_BATTERY,
+        ], ['sensor_position' => 0, 'is_active' => true]);
+
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $bateria->id,
+            'voltage' => 13.4, 'amperage' => 3.0, 'power' => 40,
+            'battery_percentage' => 91,
+            'created_at' => now()->subMinutes(5),
+        ]);
+
+        $titulos = collect($this->get(route('hardware.energy.index'))->assertOk()->viewData('currentStats'))
+            ->pluck('title');
+
+        $this->assertFalse($titulos->contains('Bat. Load'), 'Sobraba: es el mismo dato que la otra.');
+        $this->assertFalse($titulos->contains('Bat. Charge'));
+        $this->assertTrue($titulos->contains('Batería'));
+
+        $tarjetas = collect($this->get(route('hardware.energy.index'))->viewData('currentStats'))
+            ->keyBy('title');
+
+        $this->assertSame('91', $tarjetas['Batería']['value'], 'El porcentaje sale del elemento batería.');
+
+        // Y las tres tensiones, cada una la suya.
+        $this->assertSame('24.6 / 13.4 / 12.2', $tarjetas['Panel / Bat. / Consumo']['value']);
+    }
 }

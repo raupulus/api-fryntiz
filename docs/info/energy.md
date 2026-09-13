@@ -473,7 +473,14 @@ La plataforma expone una interfaz web pública para la monitorización en tiempo
 
 ### 8.1. Métricas Agregadas
 La interfaz presenta tres bloques de tarjetas analíticas agregadas:
-1. **Ahora Mismo:** Potencia de generación actual (W), potencia de consumo actual (W), balance neto instantáneo (W y A), tensiones de panel y batería (V), porcentajes de carga de batería, intensidad solar (%) y temperatura máxima registrada (°C).
+1. **Ahora Mismo:** Potencia de generación actual (W), potencia de consumo actual (W), balance neto instantáneo (W y A), las **tres** tensiones de la instalación (panel / batería / consumo, que son distintas), carga de la batería (%), intensidad solar (%) y temperatura máxima registrada (°C).
+
+   **Una sola tarjeta de batería, y lee del elemento batería.** Había dos
+   —«Bat. Charge» y «Bat. Load»— con el mismo porcentaje leído de sitios
+   distintos: el esquema viejo replicaba la carga del banco en las filas de
+   generación y de consumo, y las dos tarjetas salían de ahí. Con la batería
+   como elemento propio, el dato tiene un sitio y sólo uno. Por lo mismo, la
+   tarjeta de tensiones decía «Panel / Batería» y enseñaba la del **consumo**.
 2. **Hoy:** Energía generada hoy (Wh), energía consumida hoy (Wh) y los mismos dos valores en amperios-hora referidos a la tensión del bus.
 3. **Histórico:** Energía total generada (kWh), total consumida (kWh), días acumulados en operación y ciclos completos de carga de batería.
 

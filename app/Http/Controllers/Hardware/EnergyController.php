@@ -164,6 +164,21 @@ class EnergyController extends Controller
             'max_temp' => number_format((float) ($loadCurrent->max('temperature') ?? 0), 1),
         ];
 
+        // Objeto con lo que dice el elemento batería
+        //
+        // Antes no existía: la batería no era un elemento propio y su tensión y
+        // su carga se leían de las filas de consumo, que las arrastraban
+        // replicadas del esquema viejo. Ahora es el elemento #11 y tiene lo suyo.
+        $battery = (object) [
+            'current_voltage' => number_format(
+                (float) ($batteryCurrent->whereNotNull('voltage')->avg('voltage')
+                    ?? $loadCurrent->whereNotNull('voltage')->avg('voltage')
+                    ?? 0),
+                1
+            ),
+            'percentage' => number_format((float) $batteryPercentageAvg),
+        ];
+
         // Estadísticas Históricas para la sección correspondiente
         $historicalStats = [
             [
@@ -242,19 +257,21 @@ class EnergyController extends Controller
                 'image' => asset('images/icons/battery-status.svg'),
                 'unit' => 'A',
             ], [
-                'title' => 'Panel / Batería',
-                'value' => $generator->current_voltage.' / '.$load->current_voltage,
+                // Las tres tensiones de la instalación, que son distintas: en el
+                // montaje real el panel va a 24 V y la batería y el consumo a 12.
+                // Esta tarjeta decía «Panel / Batería» y enseñaba la del
+                // **consumo** como si fuera la de la batería.
+                'title' => 'Panel / Bat. / Consumo',
+                'value' => $generator->current_voltage.' / '.$battery->current_voltage.' / '.$load->current_voltage,
                 'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'V',
             ], [
-                'title' => 'Bat. Charge',
-                'value' => $generator->battery_percentage ?? 0,
-                'image' => asset('images/icons/battery-status.svg'),
-                'unit' => '%',
-                'list' => '',
-            ], [
-                'title' => 'Bat. Load',
-                'value' => $load->battery_percentage ?? 0,
+                // Una sola: hay **una** batería. Antes había dos tarjetas,
+                // «Bat. Charge» y «Bat. Load», con el mismo porcentaje leído de
+                // sitios distintos, porque el esquema viejo replicaba la carga
+                // del banco en las filas de generación y de consumo.
+                'title' => 'Batería',
+                'value' => $battery->percentage,
                 'image' => asset('images/icons/battery-status.svg'),
                 'unit' => '%',
             ], [
