@@ -1,0 +1,123 @@
+/*
+ * CSS propio del panel Filament (Admin y Tenant).
+ *
+ * ── Qué es este fichero ────────────────────────────────────────────────────
+ *
+ * El único sitio para los estilos que el proyecto añade al panel. Se compila
+ * con Vite (entrada en `vite.config.js`) y lo inyectan los PanelProviders con
+ * un render hook en `HEAD_END`, **después** del `app.css` de Filament, así que
+ * puede afinar lo suyo sin `!important`.
+ *
+ * Llega al servidor con el `git pull`: `public/build` va versionado. No hace
+ * falta `composer install` ni `filament:assets`.
+ *
+ * ── Qué NO es ──────────────────────────────────────────────────────────────
+ *
+ * - **No es Tailwind.** No hay `@import "tailwindcss"` ni `@apply`: aquí se
+ *   escribe CSS normal. Las utilidades de Tailwind (`flex`, `sm:…`, `dark:…`)
+ *   siguen sin existir dentro del panel; ver la skill `filament-admin`.
+ * - **No es `theme.css`.** Ese fichero es un tema completo de Filament que
+ *   ningún panel registra; editarlo no cambia nada.
+ *
+ * ── Convenciones ───────────────────────────────────────────────────────────
+ *
+ * - Cada bloque, con un prefijo propio de su pantalla o componente (`ed-` para
+ *   Energía…), para no chocar con las clases `fi-*`.
+ * - Un componente que sólo se usa en un formulario puede traer su propia entrada
+ *   de Vite en vez de venir aquí: es lo que hace el campo de YouTube
+ *   (`resources/js/youtube-video-search.js`), para no cargarse en todo el panel.
+ * - Modo oscuro con `.dark .clase`: Filament pone la clase `dark` en `<html>`.
+ * - `flex-wrap` antes que media queries; si hacen falta, `@media (min-width)`.
+ * - Una sección por pantalla, con un comentario que diga cuál.
+ */
+
+/* ── Energía · ficha de un aparato (ManageEnergyDevice) ───────────────────── */
+
+.ed-aparato {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.ed-aparato__foto {
+    flex: 0 0 auto;
+    width: 8rem;
+    height: 8rem;
+    border-radius: 0.75rem;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(3, 7, 18, 0.1);
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ed-aparato__icono {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #9ca3af;
+}
+
+.ed-aparato__datos {
+    flex: 1 1 18rem;
+    min-width: 0;
+}
+
+.ed-aparato__nombre {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #030712;
+}
+
+.ed-aparato__senas {
+    margin: 1rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+}
+
+.ed-aparato__sena {
+    margin: 0;
+    min-width: 9rem;
+}
+
+.ed-aparato__etiqueta {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+}
+
+.ed-aparato__valor {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: #030712;
+}
+
+.ed-vacio {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.dark .ed-aparato__foto {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .ed-aparato__nombre,
+.dark .ed-aparato__valor {
+    color: #ffffff;
+}
+
+.dark .ed-aparato__etiqueta,
+.dark .ed-vacio {
+    color: #9ca3af;
+}

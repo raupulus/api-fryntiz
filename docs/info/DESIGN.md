@@ -93,8 +93,8 @@ La paleta se define en **`resources/css/app.css`** utilizando la directiva `@the
 > Las vistas Blade del panel (`resources/views/filament/`) no reciben Tailwind: el panel sólo
 > carga el `app.css` precompilado de Filament, así que clases como `flex`, `grid`, `sm:…`,
 > `dark:…` o los tokens `bg-surface-*` no existen allí y la maquetación se cae (ha pasado dos
-> veces). En el panel se usan los componentes de Filament y, para lo propio, CSS llano en un
-> `<style>` con prefijo propio. Regla completa en la skill `filament-admin`.
+> veces). En el panel se usan los componentes de Filament y, para lo propio, CSS normal en
+> `resources/css/filament/admin/panel.css`. Regla completa en la skill `filament-admin`.
 
 ---
 

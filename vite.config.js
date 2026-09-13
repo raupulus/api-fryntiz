@@ -11,6 +11,9 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/vue.js',
                 'resources/css/filament/admin/theme.css',
+                // CSS propio del panel: lo cargan los PanelProviders con un
+                // render hook. CSS normal, sin Tailwind (ver el propio fichero).
+                'resources/css/filament/admin/panel.css',
                 // Campo `YoutubeVideoField` del panel. Entrada propia y no
                 // parte de `app.js` porque sólo se carga en el formulario que
                 // lo usa; el CSS se importa desde el propio módulo, así que

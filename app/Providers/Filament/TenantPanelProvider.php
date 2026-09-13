@@ -8,6 +8,7 @@ use App\Filament\Tenant\Pages\Dashboard;
 use App\Filament\Tenant\Pages\EditProfile;
 use App\Filament\Tenant\Pages\Login;
 use App\Http\Middleware\NoIndex;
+use App\Support\FilamentPanelCss;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -39,6 +40,12 @@ class TenantPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<meta name="robots" content="'.NoIndex::VALOR.'">',
+            )
+            // El CSS propio de los paneles, el mismo que carga el de
+            // administración. Ver `FilamentPanelCss`.
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => FilamentPanelCss::etiqueta(),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,

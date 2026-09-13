@@ -15,36 +15,17 @@
     @endphp
 
     {{--
-        Quién es este aparato.
-
-        CSS llano y no utilidades de Tailwind: el panel carga el `app.css`
-        precompilado de Filament y no registra el tema del proyecto
-        (`viteTheme`), así que clases como `sm:flex-row` o `lg:grid-cols-4`
-        sencillamente no existen en el navegador y todo sale apilado. Es el
-        mismo tropiezo que tuvo el campo de YouTube (commit 3fdcf2f).
+        Quién es este aparato. Los estilos `ed-aparato__…` están en
+        resources/css/filament/admin/panel.css: en el panel no hay utilidades de
+        Tailwind, y los estilos propios van ahí y no en un <style> suelto.
     --}}
-    <style>
-        .ed-aparato { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.5rem; }
-        .ed-aparato__foto { flex: 0 0 auto; width: 8rem; height: 8rem; border-radius: 0.75rem; object-fit: cover; box-shadow: 0 0 0 1px rgba(3, 7, 18, 0.1); background: #f3f4f6; display: flex; align-items: center; justify-content: center; }
-        .ed-aparato__datos { flex: 1 1 18rem; min-width: 0; }
-        .ed-aparato__nombre { margin: 0; font-size: 1.5rem; line-height: 2rem; font-weight: 700; letter-spacing: -0.025em; color: #030712; }
-        .ed-aparato__senas { margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; }
-        .ed-aparato__sena { margin: 0; min-width: 9rem; }
-        .ed-aparato__etiqueta { font-size: 0.75rem; line-height: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
-        .ed-aparato__valor { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; color: #030712; }
-        .ed-vacio { font-size: 0.875rem; color: #6b7280; }
-        .dark .ed-aparato__foto { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); }
-        .dark .ed-aparato__nombre, .dark .ed-aparato__valor { color: #ffffff; }
-        .dark .ed-aparato__etiqueta, .dark .ed-vacio { color: #9ca3af; }
-    </style>
-
     <x-filament::section>
         <div class="ed-aparato">
             @if ($miniatura = $this->miniatura())
                 <img src="{{ $miniatura }}" alt="{{ $aparato->display_name }}" class="ed-aparato__foto">
             @else
                 <div class="ed-aparato__foto">
-                    <x-filament::icon icon="heroicon-o-cpu-chip" style="width: 2.5rem; height: 2.5rem; color: #9ca3af;" />
+                    <x-filament::icon icon="heroicon-o-cpu-chip" class="ed-aparato__icono" />
                 </div>
             @endif
 

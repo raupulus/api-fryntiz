@@ -4,7 +4,7 @@
     "name": "chunk"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DHCYMDLU.css",
+    "file": "assets/app-BZJvQOYa.css",
     "name": "app",
     "names": [
       "app.css"
@@ -12,8 +12,17 @@
     "src": "resources/css/app.css",
     "isEntry": true
   },
+  "resources/css/filament/admin/panel.css": {
+    "file": "assets/panel-D36CQka-.css",
+    "name": "panel",
+    "names": [
+      "panel.css"
+    ],
+    "src": "resources/css/filament/admin/panel.css",
+    "isEntry": true
+  },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-ejZPvCw0.css",
+    "file": "assets/theme-Cge0dut-.css",
     "name": "theme",
     "names": [
       "theme.css"

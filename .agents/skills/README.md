@@ -37,7 +37,7 @@ las convenciones reales del dominio.
 - Esquema/tabla/índice/FK → `postgresql-migrations`; método/relación/scope de modelo → `laravel-backend`.
 - **Criterio** visual (qué color/fuente, "se ve genérico") → `design-system`; **implementación** (clase Tailwind, `.vue`, dark mode) → `vue-tailwind-frontend`.
 - Meta/OG/sitemap/schema en vistas → `seo` (aunque toque `head.blade.php`).
-- Tema/branding del **panel admin** (`theme.css`) → `filament-admin`.
+- CSS propio del **panel** (`resources/css/filament/admin/panel.css`) → `filament-admin`, no `vue-tailwind-frontend`: en el panel no hay Tailwind.
 
 ## Optimizar el auto-trigger (opcional)
 

@@ -8,7 +8,7 @@ description: >-
   YoutubeVideoField); concerns/traits Filament; reglas reutilizables de
   app/Support/FilamentValidationRules; o los PanelProviders en
   app/Providers/Filament/. Incluye el tema/branding del panel
-  (resources/css/filament/admin/theme.css). Úsala en cuanto el trabajo mencione
+  (resources/css/filament/admin/panel.css). Úsala en cuanto el trabajo mencione
   "panel admin", "Filament", "recurso de administración", "tabla del admin",
   "formulario del back-office", "widget" o "tema del panel", aunque no se nombre
   Filament. Para la API pública usa api-rest-v2; para los modelos usa
@@ -58,9 +58,11 @@ Concerns/     # Traits Filament: HasImageFileUpload
 - Los modelos que edita Filament son los mismos de `app/Models/<Modulo>/`
   (extienden `BaseModel`). Reutiliza enums de `app/Enums/` en selects/badges en
   lugar de literales (`ContentStatusEnum`, `HardwareTypeEnum`, etc.).
-- ⚠️ `resources/css/filament/admin/theme.css` **se compila pero ningún panel lo
-  carga**: `AdminPanelProvider` no llama a `viteTheme()`. Editarlo no cambia nada
-  de lo que se ve en `/admin`. Ver «Vistas Blade propias del panel». Para
+- **Los estilos propios de los paneles van en
+  `resources/css/filament/admin/panel.css`**, que cargan los dos PanelProviders
+  con `App\Support\FilamentPanelCss` (ver «Vistas Blade propias del panel»).
+  ⚠️ `resources/css/filament/admin/theme.css` se compila pero **ningún panel lo
+  carga** (no hay `viteTheme()`): editarlo no cambia nada de lo que se ve. Para
   criterio de color/tipografía, ver la skill `design-system`.
 
 ## Vistas Blade propias del panel: CSS llano, nunca utilidades de Tailwind
@@ -86,22 +88,34 @@ típico es todo apilado a la izquierda.
   están en `app.css`.
 - Esquemas, tablas, widgets y relation managers de Filament.
 
-**Para maquetar algo propio**, un `<style>` en la propia vista con clases de
-prefijo propio y CSS que funcione en cualquier navegador:
+**Para maquetar algo propio, en `resources/css/filament/admin/panel.css`.** Es el
+único sitio de CSS propio del panel; **nada de `<style>` sueltos en las vistas**.
+Lo compila Vite y lo inyecta `App\Support\FilamentPanelCss::etiqueta()` en un
+render hook `HEAD_END` de los dos PanelProviders, detrás del `app.css` de
+Filament. CSS normal: ni `@import "tailwindcss"` ni `@apply`.
 
-```blade
-<style>
-    .ed-aparato { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.5rem; }
-    .ed-aparato__datos { flex: 1 1 18rem; min-width: 0; }
-    .ed-aparato__nombre { color: #030712; }
-    .dark .ed-aparato__nombre { color: #ffffff; }   /* Filament pone `dark` en <html> */
-</style>
+```css
+/* ── Energía · ficha de un aparato (ManageEnergyDevice) ── */
+.ed-aparato { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.5rem; }
+.ed-aparato__datos { flex: 1 1 18rem; min-width: 0; }
+.ed-aparato__nombre { color: #030712; }
+.dark .ed-aparato__nombre { color: #ffffff; }   /* Filament pone `dark` en <html> */
 ```
 
-- `flex-wrap` en vez de media queries siempre que se pueda: se recoloca solo.
-- Si hace falta media query, la clásica `@media (min-width: 40rem)`.
+- Una sección por pantalla, con un comentario que diga cuál.
+- Prefijo propio en las clases (`ed-`…) para no chocar con `fi-*`.
+- `flex-wrap` en vez de media queries siempre que se pueda; si hacen falta,
+  `@media (min-width: 40rem)`.
 - El modo oscuro con `.dark .clase`; nunca `dark:` de Tailwind.
-- Prefijo propio en las clases (`ed-`, `yt-`…) para no chocar con `fi-*`.
+- **Tras tocarlo, `npm run build` y commitear `public/build`**: va versionado y es
+  lo que llega al servidor con el `git pull`. `FilamentPanelCssTest` falla si la
+  entrada no está en el manifest.
+- Con `npm run dev` en marcha, Vite enlaza el servidor de desarrollo en vez de la
+  hoja compilada. Para verificar lo que verá producción, fuerza el manifest con
+  `app(Vite::class)->useHotFile(<ruta inexistente>)` antes de renderizar.
+- Por qué no `viteTheme()` (recompila el tema entero y cambia todo el panel) ni
+  `FilamentAsset` (se publica con `composer install`, fuera de git): ver
+  `docs/info/filament-panels.md`.
 
 **Comprobar antes de tocar:** qué hojas enlaza de verdad la página renderizada
 (buscar `<link … stylesheet>` en el HTML). Si sólo aparece `app.css` de Filament,

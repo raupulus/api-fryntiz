@@ -126,7 +126,8 @@ que carga `resources/css/app.css`. **Las vistas Blade del panel
 Una utilidad escrita ahí no existe en el navegador y `npm run build` no lo
 arregla. Ha roto dos despliegues.
 
-En el panel se maqueta con CSS llano en un `<style>` y clases de prefijo propio.
+En el panel, los estilos propios van en `resources/css/filament/admin/panel.css`
+(CSS normal, clases de prefijo propio, nada de `<style>` sueltos).
 La regla completa y la receta para verificarlo en un navegador están en la skill
 `filament-admin`, secciones «Vistas Blade propias del panel» y «Verificar una
 vista».

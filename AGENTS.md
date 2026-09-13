@@ -111,10 +111,12 @@ Atajo obligatorio: `composer check` (formato + análisis estático + tests).
    buena. Los tests no ven el CSS ni los datos que no siembras, y por eso han llegado a producción una
    maquetación rota y una pestaña que reventaba con datos dentro. Receta en la skill `filament-admin`,
    sección «Verificar una vista».
-9. **En las vistas Blade del panel Filament, CSS llano y nunca utilidades de Tailwind.** El panel sólo
-   carga el `app.css` precompilado de Filament (no hay `viteTheme()`), así que `flex`, `grid`,
-   `sm:…` o `dark:…` escritos en `resources/views/filament/` no existen en el navegador y `npm run build`
-   no lo arregla. Ha pasado dos veces. Detalle en la skill `filament-admin`.
+9. **En el panel Filament, los estilos propios van en `resources/css/filament/admin/panel.css` y nunca
+   son utilidades de Tailwind.** El panel sólo carga el `app.css` precompilado de Filament más ese
+   fichero (vía `App\Support\FilamentPanelCss`), así que `flex`, `grid`, `sm:…` o `dark:…` escritos en
+   `resources/views/filament/` no existen en el navegador. Nada de `<style>` sueltos en las vistas.
+   Tras tocar `panel.css`, `npm run build` y commitear `public/build`. Ha roto dos despliegues.
+   Detalle en la skill `filament-admin`.
 10. **No afirmes la causa de un fallo sin haberla comprobado.** Una explicación plausible sin verificar
     («falta compilar el CSS») hace perder un despliegue entero cuando es falsa.
 

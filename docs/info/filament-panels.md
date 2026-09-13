@@ -413,7 +413,7 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-10
+> Creado: 2026-08-30 · Última revisión: 2026-09-13
 
 
 ## Imágenes: por qué el uploader no enseña la que ya hay
@@ -613,24 +613,56 @@ y volver a rellenarla: si no, se guardaría sobre el elemento anterior. Hay test
 con un cero, la gráfica dibuja un desplome hasta el suelo que nunca ocurrió y
 parece una avería.
 
-#### En las vistas del panel, CSS llano y no utilidades de Tailwind
+#### El CSS propio del panel va en `panel.css`
 
 **El panel no carga el tema del proyecto.** `AdminPanelProvider` no llama a
-`viteTheme()`, así que la página enlaza sólo el `app.css` precompilado de
-Filament, que trae las clases `fi-*` y nada más. `resources/css/filament/admin/theme.css`
-se compila pero ningún panel lo usa.
-
-Consecuencia: una clase como `sm:flex-row` o `lg:grid-cols-4` escrita en una
-vista Blade del panel **no existe en el navegador**, compiles lo que compiles, y
-la maquetación se cae —todo apilado a la izquierda—. Pasó con el campo de YouTube
+`viteTheme()`, así que la página enlaza el `app.css` precompilado de Filament,
+que trae las clases `fi-*` y nada más. Las utilidades de Tailwind escritas en una
+vista de `resources/views/filament/` —`flex`, `grid`, `sm:flex-row`, `dark:…`— **no
+existen en el navegador**, compiles lo que compiles. Pasó con el campo de YouTube
 (commit `3fdcf2f`) y con la cabecera de esta ficha, que se dio por arreglada con
 un `npm run build` que no cambiaba nada.
 
-Para maquetar algo propio: un `<style>` con clases con prefijo propio
-(`ed-aparato__…`), flexbox con `flex-wrap`, y `.dark .clase` para el modo
-oscuro, que Filament activa con la clase `dark` en `<html>`. Los componentes de
-Filament (`x-filament::section`, `x-filament::tabs`…) sí se pueden usar: sus
-estilos están en ese `app.css`.
+Los estilos propios de los paneles tienen **un fichero**:
+
+| | |
+|---|---|
+| Fichero | `resources/css/filament/admin/panel.css`. CSS normal: sin `@import "tailwindcss"` ni `@apply` |
+| Compilación | Entrada de Vite en `vite.config.js` → `public/build/assets/panel-*.css` |
+| Carga | `App\Support\FilamentPanelCss::etiqueta()`, en un render hook `HEAD_END` de **los dos** PanelProviders, detrás del `app.css` de Filament |
+| Despliegue | Llega con el `git pull`: `public/build` va versionado. Tras tocar el CSS, `npm run build` y commitear lo compilado |
+
+**Por qué así y no de otra forma:**
+
+- `viteTheme()` recompila el tema entero de Filament: cambiaría el aspecto de todo
+  el panel, no sólo añadiría lo nuestro. `resources/css/filament/admin/theme.css`
+  es un tema de ese tipo que **ningún panel registra**; editarlo no cambia nada.
+- `FilamentAsset::register()` publica en `public/css` con `composer install`, que
+  no va versionado y un `git pull` no trae.
+
+**Si la entrada falta en el manifest** —se añadió y no se compiló—, la etiqueta
+lo registra en el log y devuelve vacío: el panel sigue funcionando sin los
+estilos propios en vez de dar un 500 en cada página. `FilamentPanelCssTest` es el
+que avisa antes: exige la entrada en el manifest y en `vite.config.js`, y que los
+dos paneles enlacen la hoja.
+
+**Con `npm run dev` en marcha** existe `public/hot` y Vite enlaza el servidor de
+desarrollo (`http://[::1]:5173/…`) en vez de la hoja compilada. Es lo esperado en
+local, pero para comprobar lo que verá producción hay que forzar el manifest
+(`app(Vite::class)->useHotFile(<ruta que no exista>)`), como hace el test.
+
+**Convenciones dentro del fichero:** una sección por pantalla con un comentario
+que diga cuál; clases con prefijo propio (`ed-` para Energía) para no chocar con
+`fi-*`; `flex-wrap` antes que media queries, y si hacen falta, `@media
+(min-width)`; modo oscuro con `.dark .clase`, que Filament activa con la clase
+`dark` en `<html>`. **Nada de `<style>` sueltos en las vistas.**
+
+Los componentes de Filament (`x-filament::section`, `x-filament::tabs`…) sí se
+usan tal cual: sus estilos están en su `app.css`.
+
+Un componente que sólo aparece en un formulario puede traer su propia entrada de
+Vite en vez de venir a `panel.css`, para no cargarse en todo el panel: es lo que
+hace el campo de YouTube (`resources/js/youtube-video-search.js`).
 
 #### Esta pantalla no toca Hardware
 

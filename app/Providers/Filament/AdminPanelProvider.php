@@ -10,6 +10,7 @@ use App\Filament\Admin\Pages\Profile;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Http\Middleware\NoIndex;
 use App\Models\Platform;
+use App\Support\FilamentPanelCss;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -90,6 +91,17 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<meta name="robots" content="'.NoIndex::VALOR.'">',
+            )
+            // El CSS propio del panel, detrás del `app.css` de Filament.
+            //
+            // No es `viteTheme()`: eso recompila el tema entero de Filament y
+            // cambiaría el aspecto de todo el panel. Y no es `FilamentAsset`:
+            // ésos se publican en `public/css` con `composer install`, que no va
+            // versionado y un `git pull` no trae. Esto es Vite, y `public/build`
+            // sí va en git.
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => FilamentPanelCss::etiqueta(),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
