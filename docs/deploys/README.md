@@ -10,6 +10,7 @@ está **cómo se despliega**. Si un documento de `docs/info` acaba explicando un
 | Fichero | Qué es |
 |---|---|
 | [`deploy-vps.md`](deploy-vps.md) | Guía completa del VPS: Docker o bare-metal, verificación, copias de seguridad, vuelta atrás y endurecimiento |
+| [`energia-v2.md`](energia-v2.md) | Checklist del esquema unificado de energía sobre una producción con datos: corta el contrato de la Pico y vacía tablas, así que el orden importa |
 | [`websockets-reverb.md`](websockets-reverb.md) | Servidor de WebSockets: paquete, variables, demonio, certificado y cortafuegos |
 | [`vhosts/`](vhosts/) | **Todos** los sitios virtuales, uno por servidor |
 
@@ -58,4 +59,4 @@ dependen de qué fichero se copió (auditoría AR-D01).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-08-30
+> Creado: 2026-08-30 · Última revisión: 2026-09-13

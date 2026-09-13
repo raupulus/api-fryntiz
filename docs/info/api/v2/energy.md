@@ -8,10 +8,14 @@
 > Para el diseño interno (modelos, tablas, decisiones de arquitectura) ver
 > [`docs/info/energy.md`](../../energy.md).
 >
-> Todo lo de aquí está verificado contra
-> `tests/Feature/Api/V2/Energy/EnergyContractTest.php`, que fija la forma de
-> cada respuesta clave por clave. Si el código cambia, ese test se rompe antes
-> de que este documento se quede viejo.
+> **Este documento no se puede quedar viejo sin que algo se rompa.** Lo sujetan
+> tres pruebas automáticas:
+>
+> | Prueba | Qué impide |
+> |---|---|
+> | `EnergyContractTest` | Que la forma de la respuesta cambie: la fija clave por clave |
+> | `EnergyContractSurfaceTest` | Que un campo exista en el código y no aquí, o al revés. También compara la tabla de «qué acepta cada bloque» con la validación real |
+> | `EnergyDocumentedExamplesTest` | Que un ejemplo de aquí abajo no funcione: los ejecuta contra la API de verdad y exige `201` y cero avisos |
 
 **Qué es este módulo.** Lo que un aparato *mide* de energía: un controlador
 solar (Renogy Rover y compatibles), un monitor de consumo de varios canales, un
