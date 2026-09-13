@@ -195,8 +195,41 @@ las mediciones en **tres bloques normalizados** (`generator`, `battery`, `loads`
 >   ya; un controlador que lleva sus propios contadores los manda y mandan ellos.
 >   Ver §4.2 para qué hace cada uno.
 
+### 3.2. Las dos magnitudes temporales: `read_at` y `duration`
+
+Son cosas distintas y se confunden con facilidad:
+
+| | Qué contesta | Quién lo manda |
+|---|---|---|
+| `read_at` | **Cuándo** se tomó la muestra | Sólo los aparatos con reloj sincronizado |
+| `duration` | **Cuánto duró** el intervalo que resume | Los que promedian entre subidas |
+
+Un controlador solar con reloj manda `read_at` y no necesita `duration`, porque
+declara sus propios acumuladores. Un nodo con un INA y sin reloj manda `duration`
+y no puede mandar `read_at`. Un aparato puede mandar los dos.
+
+**`read_at` sustituye a la hora de llegada.** Sin él, un reintento tras un corte
+de red guarda media hora de muestras todas con la hora del reintento, y la curva
+del día sale plana durante el corte con un pico al final.
+
+Afecta a dos cosas: a `created_at` de la lectura **y al día en el que cae su
+resumen**. Una muestra de ayer reenviada hoy suma en el resumen de ayer.
+
+Se rechaza con 422 si no es una fecha, si es anterior al año 2000 o si va más de
+una hora por delante del servidor: un reloj mal puesto metería lecturas en días
+que aún no existen y el cierre nocturno no volvería a pasar por ellos. Se
+toleran hasta 60 minutos de adelanto para no castigar un reloj con deriva.
+
+Las dos se aceptan en la raíz del payload o dentro de `energy`; si van en los dos
+sitios gana el de dentro.
+
 ### Principios de Cálculo e Integración:
-1. **Sin campos `read_at` en base de datos ni contrato:** La fecha y momento de la lectura se rigen exclusivamente por `created_at` del servidor o momento de recepción, eliminando redundancias y desfases horarios en clientes IoT sin RTC.
+1. **La marca de tiempo es `created_at`, y el cliente puede fijarla.** Las tablas
+   no tienen columna `read_at`: el momento de una lectura es su `created_at` y el
+   de un resumen su `date`. Por defecto lo pone el servidor al recibir, que es lo
+   que necesita un cacharro sin reloj. Un aparato con reloj sincronizado puede
+   mandar `read_at` en el payload y entonces esa hora **sustituye** a la de
+   llegada. Ver §3.2.
 2. **Derivación de Magnitudes:**
    - Potencia: $P = V \cdot I$ (W)
    - Energía incremental: $\Delta Wh = \frac{P \cdot \text{duration}}{3600}$
@@ -509,6 +542,7 @@ haga ruido. Qué prueba cada archivo:
 | Archivo | Qué sujeta |
 |---|---|
 | `Api/V2/Energy/EnergyElementResolutionTest.php` | A qué elemento va cada lectura: elemento borrado, desactivado, auto-creado, y de dónde sale el acumulado de la sesión |
+| `Api/V2/Energy/EnergyReadAtTest.php` | Que `read_at` sustituya la marca de la lectura y coloque su resumen en el día correcto, y que un reloj absurdo se rechace |
 | `Api/V2/Energy/EnergySampleIntervalTest.php` | El intervalo por elemento cuando la subida no trae `duration`, y que `duration` siga mandando cuando llega |
 | `Api/V2/Energy/EnergyRowIdentityTest.php` | Que la fila de resumen la identifique **el elemento**, no el dispositivo: una fila mal atribuida no puede devolver un 500 ni abrir otra en paralelo |
 | `Api/V2/Energy/EnergyDeclaredValuesTest.php` | **Que todo lo que el aparato manda se guarde y lo que no manda se calcule.** Los ocho acumuladores del Rover, los máximos del día, el origen por magnitud, la tensión medida fuera de rango y el signo de la batería |

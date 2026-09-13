@@ -10,6 +10,7 @@ use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -117,7 +118,15 @@ class HardwareService
         // en silencio. Se resuelve por elemento más abajo.
         $duration = isset($energy['duration']) ? (int) $energy['duration'] : null;
 
-        return DB::transaction(function () use ($device, $energy, $duration) {
+        // **Cuándo se tomó la muestra**, si el aparato lleva reloj. Sustituye a
+        // la hora de llegada, que es lo que se usaba siempre: tras un corte de
+        // red, un reintento guardaba media hora de lecturas todas con la hora
+        // del reintento. Los que no llevan reloj no mandan nada y no cambia.
+        $readAt = isset($energy['read_at'])
+            ? Carbon::parse((string) $energy['read_at'])->utc()
+            : null;
+
+        return DB::transaction(function () use ($device, $energy, $duration, $readAt) {
             /** @var list<HardwareEnergyReading> $readings */
             $readings = [];
             /** @var list<string> $warnings */
@@ -187,6 +196,11 @@ class HardwareService
                         $warnings[] = "Generador: {$measure} V se sale del rango configurado del elemento; se guarda igual.";
                     }
 
+                    if ($readAt !== null) {
+                        $reading->created_at = $readAt;
+                        $reading->updated_at = $readAt;
+                    }
+
                     $reading->save();
                     $readings[] = $reading;
 
@@ -204,7 +218,8 @@ class HardwareService
                         HardwareEnergyToday::recalculateForElement(
                             $device->id,
                             $element->id,
-                            $medido + $this->resumenDeclaradoPorElAparato($genData)
+                            $medido + $this->resumenDeclaradoPorElAparato($genData),
+                            $readAt?->format('Y-m-d')
                         );
 
                         HardwareEnergyHistorical::accumulateForElement(
@@ -280,6 +295,11 @@ class HardwareService
                         $warnings[] = "Batería: {$measure} V se sale del rango de calibración del elemento; se guarda igual.";
                     }
 
+                    if ($readAt !== null) {
+                        $reading->created_at = $readAt;
+                        $reading->updated_at = $readAt;
+                    }
+
                     $reading->save();
                     $readings[] = $reading;
 
@@ -298,7 +318,8 @@ class HardwareService
                         HardwareEnergyToday::recalculateForElement(
                             $device->id,
                             $element->id,
-                            $medido + $this->resumenDeclaradoPorElAparato($batData)
+                            $medido + $this->resumenDeclaradoPorElAparato($batData),
+                            $readAt?->format('Y-m-d')
                         );
 
                         HardwareEnergyHistorical::accumulateForElement(
@@ -373,6 +394,11 @@ class HardwareService
                         $warnings[] = "Consumo canal {$channel}: {$measure} V se sale del rango configurado del elemento; se guarda igual.";
                     }
 
+                    if ($readAt !== null) {
+                        $reading->created_at = $readAt;
+                        $reading->updated_at = $readAt;
+                    }
+
                     $reading->save();
                     $readings[] = $reading;
 
@@ -390,7 +416,8 @@ class HardwareService
                         HardwareEnergyToday::recalculateForElement(
                             $device->id,
                             $element->id,
-                            $medido + $this->resumenDeclaradoPorElAparato($loadData)
+                            $medido + $this->resumenDeclaradoPorElAparato($loadData),
+                            $readAt?->format('Y-m-d')
                         );
 
                         HardwareEnergyHistorical::accumulateForElement(

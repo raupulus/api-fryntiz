@@ -43,6 +43,7 @@ class EnergyTelemetryPayload implements ValidationRule
     {
         return [
             'duration' => ['nullable', 'integer', 'min:1'],
+            'read_at' => ['nullable', 'date'],
 
             'generator' => ['nullable', 'array'],
             'generator.voltage' => ['nullable', 'numeric'],

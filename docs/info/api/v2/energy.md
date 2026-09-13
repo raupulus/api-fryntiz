@@ -70,9 +70,10 @@ acepta ese bloque de paso para ahorrarle una petición al cacharro (ver
   | `api` | los `GET` de este módulo | 60/min |
   | `api-global` | techo de toda la API | 300/min |
 
-- **Sin campos `read_at`**: la API no acepta ni exige fechas en el payload. El
-  momento de la medición es el `created_at` que pone el servidor al recibirla,
-  lo que evita desfases en cacharros sin reloj. **Todo se guarda en UTC**; la
+- **La fecha la pone el servidor salvo que la mandes.** Por defecto el momento
+  de la medición es el `created_at` de llegada, que es lo que necesita un
+  cacharro sin reloj. Si el tuyo lleva reloj sincronizado puede mandar `read_at`
+  y entonces manda esa hora (ver más abajo). **Todo se guarda en UTC**; la
   traducción a `Europe/Madrid` es cosa de quien lo pinta.
 
 ---
@@ -125,16 +126,40 @@ ancho.
 | Campo | Tipo | Reglas |
 |---|---|---|
 | `hardware_device_id` | int | **obligatorio**. Debe existir y ser del usuario del token |
-| `duration` | int | opcional, mín. 1. Segundos que cubre la muestra. **Por defecto 60** |
+| `duration` | int | opcional, mín. 1. **Cuánto duró** el intervalo que resume la muestra, en segundos |
+| `read_at` | string | opcional. **Cuándo** se tomó la muestra, en ISO-8601. Sólo lo mandan los aparatos con reloj |
 | `energy` | object | **obligatorio**. Al menos uno de `generator`, `battery` o `loads` |
-| `energy.duration` | int | opcional, mín. 1. Si está, manda sobre el `duration` de la raíz |
 | `energy.generator` | object | opcional. Ver sub-bloque |
 | `energy.battery` | object | opcional. Ver sub-bloque |
 | `energy.loads` | array | opcional. Lista de consumos, uno por canal |
 | `hardware_device_info` | object | opcional. Salud del aparato. Alias: `device` |
 
-**`duration` es el campo que más se olvida y el que más duele.** Es lo que
-convierte una potencia instantánea en energía: `Wh = V · A · duration / 3600`.
+`duration` y `read_at` se aceptan **en la raíz o dentro de `energy`**, lo que le
+venga mejor al firmware. Si van en los dos sitios, gana el de dentro de `energy`.
+
+#### `read_at` — cuándo se tomó la muestra
+
+Por defecto, la marca de tiempo de una lectura es **la hora a la que llegó al
+servidor**. Para un aparato que sube cada minuto da igual. Después de un corte de
+red no: un reintento guarda media hora de muestras todas con la hora del
+reintento, y la curva del día sale plana durante el corte y con un pico al final.
+
+Si tu aparato lleva reloj sincronizado, manda `read_at` y **sustituye a la hora
+de llegada**. Si no lo mandas no pasa nada: sigue valiendo la de llegada.
+
+| | |
+|---|---|
+| Formato | ISO-8601. Se interpreta en **UTC**: `2026-09-13T08:15:00Z` |
+| Afecta a | La marca de la lectura **y al día en el que cae su resumen**. Una muestra de ayer reenviada hoy suma en el resumen de ayer, que es donde ocurrió |
+| Se rechaza | Si no es una fecha, si es anterior al año 2000, o si va más de **1 hora** por delante de la hora del servidor. Un reloj mal puesto metería lecturas en días que aún no existen y el cierre nocturno no volvería a pasar por ellos |
+| Tolerancia | Hasta 1 hora de adelanto, para no castigar un reloj con algo de deriva |
+
+Una subida es **una muestra**: el `read_at` vale para los tres bloques.
+
+#### `duration` — cuánto duró el intervalo
+
+**Es el campo que más se olvida y el que más duele.** Es lo que convierte una
+potencia instantánea en energía: `Wh = V · A · duration / 3600`.
 
 Si no lo mandas, el servidor usa el intervalo configurado en **cada elemento**
 (`default_interval_seconds`, 60 s de partida, editable en el panel). O sea que
@@ -143,6 +168,10 @@ la quinta parte de la energía real, **y nada te lo va a avisar**.
 
 Mándalo siempre que puedas: sólo tu aparato sabe cuántos segundos pasaron de
 verdad cuando hubo un corte de red y la subida se retrasó.
+
+No hace falta si tu aparato manda sus propios acumuladores (`today_energy_*`,
+`historical_energy_*`): ésos sustituyen a lo que el servidor calcularía, así que
+el intervalo deja de importar para los totales.
 
 #### Sub-bloque `energy.generator`
 
@@ -431,7 +460,7 @@ los registros Modbus está en
 ```json
 {
   "hardware_device_id": 6,
-  "duration": 60,
+  "read_at": "2026-09-13T08:15:00Z",
   "device": { "temp": 41.5, "uptime": 864000, "extra": { "system_voltage": 24 } },
   "energy": {
     "generator": {
@@ -485,7 +514,12 @@ los registros Modbus está en
 }
 ```
 
-Devuelve tres lecturas: una `generator`, una `battery` y una `load`.
+Devuelve tres lecturas: una `generator`, una `battery` y una `load`, las tres
+con `created_at` a las 08:15 UTC.
+
+**Este ejemplo no manda `duration`** y no le hace falta: el Rover declara sus
+propios acumuladores del día y de por vida, así que el intervalo no interviene en
+ningún total. Sí manda `read_at`, porque su Pico lleva reloj por NTP.
 
 **Qué pasa con cada magnitud.** El panel y el consumo declaran sus dos
 acumuladores de por vida, así que los dos quedan congelados como del aparato y
