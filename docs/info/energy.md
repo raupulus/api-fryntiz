@@ -293,6 +293,27 @@ Lo que **no** llega se deriva de la lectura y de `duration`:
 - `energy_ah = amperage · duration / 3600`
 - `energy_wh = energy_ah · voltage`
 
+Esos totales del día quedan marcados en `hardware_energy_today` con las mismas
+dos columnas de origen que el acumulado de por vida, y por el mismo motivo: sin
+ellas, el cierre nocturno hacía `max(lo declarado, la suma de nuestras lecturas)`
+y **sustituía el contador del aparato** en cuanto el nuestro salía mayor. Un
+controlador que declaraba 800 Wh del día amanecía con 1.500.
+
+### 4.4. El intervalo cuando no llega `duration`
+
+`duration` es lo que convierte una potencia en energía. Cuando la subida no lo
+trae, el intervalo lo pone **el elemento**, en
+`hardware_energy.default_interval_seconds` (60 s de partida, editable en el
+panel).
+
+Antes eran 60 s fijos para todo el mundo, y eso es una mentira distinta en cada
+instalación: un nodo que sube cada diez minutos registraba la sexta parte de la
+energía real, en silencio y sin forma de notarlo hasta comparar con una pinza.
+
+Que el aparato mande `duration` en cada subida sigue siendo lo mejor: sólo él
+sabe cuántos segundos pasaron de verdad cuando hubo un corte de red. La columna
+es el respaldo para cuando no puede.
+
 ### 4.3. La tensión: se guarda lo medido
 
 `nominal_voltage` es **respaldo**, no corrección. Entra sólo cuando el aparato no
@@ -346,6 +367,19 @@ El panel de administración centraliza la gestión y visualización del módulo 
 - **Formulario especializado:** `HardwareEnergyForm` configura la tensión nominal (`nominal_voltage`), umbrales de tensión (`voltage_min`, `voltage_max`), capacidad en Ah (`capacity_ah`) y flags de recálculo de históricos.
 
 ### 7.2. Relation Managers de Telemetría (Ficha del Elemento)
+
+> **La telemetría no se crea a mano.** Las tres pantallas —lecturas, resúmenes
+> del día y sesiones históricas— son de sólo lectura: los datos entran
+> exclusivamente por `POST /api/v2/energy/readings`. Una fila escrita a mano no
+> tiene aparato detrás, no cuadra con ninguna lectura y deja el cierre nocturno
+> decidiendo sobre columnas de origen que nadie ha rellenado bien.
+>
+> **Borrar sí se puede, sólo administradores y con confirmación**: hace falta
+> para limpiar una serie corrupta, pero el dato no se puede volver a pedir
+> —el aparato ya lo mandó y no lo reenvía—.
+>
+> El catálogo de elementos (`hardware_energy`) **sí** se crea desde el panel:
+> eso es configurar la instalación, no inventarse telemetría.
 En la pantalla de edición de cada elemento energético (`EditHardwareEnergy`) se montan cuatro relation managers:
 1. `RolesRelationManager`: Permite inspeccionar y dar de alta de forma contextual los roles complementarios en el mismo dispositivo físico (`create_generator`, `create_battery`, `create_load`) sin abandonar la ficha.
 2. `ReadingsRelationManager`: Tabla paginada de telemetría granular (`hardware_energy_readings`) con tensión, corriente, potencia, $\Delta Wh$, $\Delta Ah$, estado de carga y marcas de sospecha (`is_suspicious` y `suspicious_reason`).
@@ -475,6 +509,7 @@ haga ruido. Qué prueba cada archivo:
 | Archivo | Qué sujeta |
 |---|---|
 | `Api/V2/Energy/EnergyElementResolutionTest.php` | A qué elemento va cada lectura: elemento borrado, desactivado, auto-creado, y de dónde sale el acumulado de la sesión |
+| `Api/V2/Energy/EnergySampleIntervalTest.php` | El intervalo por elemento cuando la subida no trae `duration`, y que `duration` siga mandando cuando llega |
 | `Api/V2/Energy/EnergyRowIdentityTest.php` | Que la fila de resumen la identifique **el elemento**, no el dispositivo: una fila mal atribuida no puede devolver un 500 ni abrir otra en paralelo |
 | `Api/V2/Energy/EnergyDeclaredValuesTest.php` | **Que todo lo que el aparato manda se guarde y lo que no manda se calcule.** Los ocho acumuladores del Rover, los máximos del día, el origen por magnitud, la tensión medida fuera de rango y el signo de la batería |
 | `Api/V2/Energy/EnergyHistoricalResetTest.php` | Que un reinicio de odómetro abra sesión nueva sin tocar la anterior |
@@ -496,6 +531,7 @@ haga ruido. Qué prueba cada archivo:
 |---|---|
 | `Hardware/EnergyHistoricalReadingTest.php` | Que el panel público y el widget de administración lean el histórico con el mismo criterio, y que la batería salga del rol `battery` |
 | `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy` y **el escalado de los amperios a la tensión de referencia** |
+| `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
 | `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |

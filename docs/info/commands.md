@@ -253,8 +253,8 @@ php artisan iot:device-token {device_id} --abilities={scope} [--expires={días}]
 
 **Abilities disponibles.** Son las de
 `App\Support\Auth\TokenAbilities::MODULE_ABILITIES`, y el comando rechaza
-cualquier otra. `energy:write` figuraba aquí y **nunca ha existido**: la ability
-de energía es `energy:write`.
+cualquier otra. `solar:write` figuraba aquí y **nunca ha existido**: la ability
+de energía es `energy:write`, y cubre también al controlador solar.
 
 | Ability | Qué abre |
 |---------|----------|

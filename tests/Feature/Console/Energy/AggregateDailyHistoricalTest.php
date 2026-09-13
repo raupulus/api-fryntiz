@@ -246,4 +246,114 @@ class AggregateDailyHistoricalTest extends TestCase
             'readings_count' => 1,
         ]);
     }
+
+    #[Test]
+    public function it_does_not_overwrite_a_daily_total_declared_by_the_device(): void
+    {
+        // El fallo que esto fija: el cierre nocturno hacía
+        // `max(lo que había, la suma de nuestras lecturas)` sobre el resumen del
+        // día. Un controlador que declaraba 800 Wh amanecía con 1.500 porque
+        // nuestras lecturas —integradas con el intervalo supuesto— sumaban más.
+        [$device, $element] = $this->crearElemento();
+
+        $ayer = Carbon::yesterday('UTC');
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $element->id,
+            'date' => $ayer->toDateString(),
+            'readings_count' => 3,
+            'energy_wh_source' => HardwareEnergyHistorical::SOURCE_DEVICE,
+            'energy_ah_source' => HardwareEnergyHistorical::SOURCE_DEVICE,
+            'energy_wh' => 800.0,
+            'energy_ah' => 33.0,
+        ]);
+
+        foreach (range(1, 3) as $ignorado) {
+            HardwareEnergyReading::create([
+                'hardware_device_id' => $device->id,
+                'hardware_energy_id' => $element->id,
+                'voltage' => 24.0, 'amperage' => 4.0, 'power' => 96.0,
+                'delta_seconds' => 60, 'energy_wh' => 500.0, 'energy_ah' => 20.0,
+                'energy_source' => 'derived', 'voltage_source' => 'measured',
+                'created_at' => $ayer->copy()->setTime(12, 0),
+            ]);
+        }
+
+        $this->artisan('energy:aggregate-daily', ['--date' => $ayer->toDateString()])->assertSuccessful();
+
+        $resumen = HardwareEnergyToday::query()->where('hardware_energy_id', $element->id)->firstOrFail();
+
+        $this->assertSame(800.0, (float) $resumen->energy_wh, 'El total del aparato no se toca.');
+        $this->assertSame(33.0, (float) $resumen->energy_ah);
+    }
+
+    #[Test]
+    public function it_does_rebuild_a_daily_total_that_we_calculate_ourselves(): void
+    {
+        // Y el contrapunto: si el resumen es nuestro, el cron sí lo rehace.
+        [$device, $element] = $this->crearElemento();
+
+        $ayer = Carbon::yesterday('UTC');
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $element->id,
+            'date' => $ayer->toDateString(),
+            'readings_count' => 1,
+            'energy_wh' => 10.0,
+            'energy_ah' => 1.0,
+        ]);
+
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $element->id,
+            'voltage' => 24.0, 'amperage' => 4.0, 'power' => 96.0,
+            'delta_seconds' => 60, 'energy_wh' => 96.0, 'energy_ah' => 4.0,
+            'energy_source' => 'derived', 'voltage_source' => 'measured',
+            'created_at' => $ayer->copy()->setTime(12, 0),
+        ]);
+
+        $this->artisan('energy:aggregate-daily', ['--date' => $ayer->toDateString()])->assertSuccessful();
+
+        $resumen = HardwareEnergyToday::query()->where('hardware_energy_id', $element->id)->firstOrFail();
+
+        $this->assertSame(96.0, (float) $resumen->energy_wh);
+    }
+
+    #[Test]
+    public function a_declared_daily_total_only_freezes_the_magnitude_it_declares(): void
+    {
+        // Wh del aparato, Ah calculados: cada uno por su lado, igual que en el
+        // acumulado de por vida.
+        [$device, $element] = $this->crearElemento();
+
+        $ayer = Carbon::yesterday('UTC');
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $element->id,
+            'date' => $ayer->toDateString(),
+            'readings_count' => 1,
+            'energy_wh_source' => HardwareEnergyHistorical::SOURCE_DEVICE,
+            'energy_wh' => 800.0,
+            'energy_ah' => 1.0,
+        ]);
+
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $element->id,
+            'voltage' => 24.0, 'amperage' => 4.0, 'power' => 96.0,
+            'delta_seconds' => 60, 'energy_wh' => 5000.0, 'energy_ah' => 40.0,
+            'energy_source' => 'derived', 'voltage_source' => 'measured',
+            'created_at' => $ayer->copy()->setTime(12, 0),
+        ]);
+
+        $this->artisan('energy:aggregate-daily', ['--date' => $ayer->toDateString()])->assertSuccessful();
+
+        $resumen = HardwareEnergyToday::query()->where('hardware_energy_id', $element->id)->firstOrFail();
+
+        $this->assertSame(800.0, (float) $resumen->energy_wh, 'Los Wh los declara el aparato.');
+        $this->assertSame(40.0, (float) $resumen->energy_ah, 'Los Ah los calculamos nosotros.');
+    }
 }

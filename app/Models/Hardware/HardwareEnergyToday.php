@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $hardware_device_id Dispositivo al que pertenece la agregación
  * @property int|null $hardware_energy_id Elemento concreto (canal/rol)
  * @property Carbon $date Fecha del día (Y-m-d)
+ * @property string $energy_wh_source device = lo declara el aparato | derived = lo sumamos nosotros
+ * @property string $energy_ah_source device = lo declara el aparato | derived = lo sumamos nosotros
  * @property int $readings_count Número de lecturas agregadas en el día
  * @property float $energy_wh Total de energía acumulada hoy (Wh)
  * @property float $energy_ah Total de amperios-hora transferidos hoy (Ah)
@@ -67,6 +69,8 @@ class HardwareEnergyToday extends BaseModel
         'hardware_energy_id',
         'date',
         'readings_count',
+        'energy_wh_source',
+        'energy_ah_source',
         'energy_wh',
         'energy_ah',
         'voltage_min',
@@ -90,6 +94,8 @@ class HardwareEnergyToday extends BaseModel
         'hardware_energy_id' => 'integer',
         'date' => 'date',
         'readings_count' => 'integer',
+        'energy_wh_source' => 'string',
+        'energy_ah_source' => 'string',
         'energy_wh' => 'float',
         'energy_ah' => 'float',
         'voltage_min' => 'float',
@@ -190,17 +196,13 @@ class HardwareEnergyToday extends BaseModel
 
         // Energía del día: lo que declara el aparato sustituye —es su contador,
         // no un delta—; si no lo declara, se suma lo del intervalo.
-        if (isset($data['today_energy_wh'])) {
-            $record->energy_wh = (float) $data['today_energy_wh'];
-        } elseif (isset($data['energy_wh'])) {
-            $record->energy_wh = (float) $record->energy_wh + (float) $data['energy_wh'];
-        }
-
-        if (isset($data['today_energy_ah'])) {
-            $record->energy_ah = (float) $data['today_energy_ah'];
-        } elseif (isset($data['energy_ah'])) {
-            $record->energy_ah = (float) $record->energy_ah + (float) $data['energy_ah'];
-        }
+        //
+        // Se deja constancia de cuál de las dos cosas ha pasado, **por
+        // magnitud**, porque el cierre nocturno vuelve a pasar por aquí: sin
+        // esa marca hacía `max(lo declarado, la suma de nuestras lecturas)` y
+        // pisaba el contador del aparato en cuanto el nuestro salía mayor.
+        $record->acumulaDelDia('energy_wh', $data['today_energy_wh'] ?? null, $data['energy_wh'] ?? null);
+        $record->acumulaDelDia('energy_ah', $data['today_energy_ah'] ?? null, $data['energy_ah'] ?? null);
 
         $record->readings_count = (int) $record->readings_count + 1;
         $record->save();
@@ -271,6 +273,35 @@ class HardwareEnergyToday extends BaseModel
         } catch (UniqueConstraintViolationException $e) {
             return $buscar() ?? throw $e;
         }
+    }
+
+    /**
+     * Acumula una magnitud del día respetando de dónde sale.
+     *
+     * El total que declara el aparato **sustituye**: es su contador del día, no
+     * un incremento, así que sumarlo lo contaría dos veces. Mientras no lo
+     * declare, se van sumando los deltas de cada lectura.
+     *
+     * @param  'energy_wh'|'energy_ah'  $magnitud
+     * @param  mixed  $declarado  Total del día según el aparato.
+     * @param  mixed  $delta  Energía de este intervalo.
+     */
+    protected function acumulaDelDia(string $magnitud, mixed $declarado, mixed $delta): void
+    {
+        $columnaOrigen = HardwareEnergyHistorical::SOURCE_COLUMNS[$magnitud];
+
+        if ($declarado !== null && $declarado !== '') {
+            $this->{$columnaOrigen} = HardwareEnergyHistorical::SOURCE_DEVICE;
+            $this->{$magnitud} = (float) $declarado;
+
+            return;
+        }
+
+        if ($this->{$columnaOrigen} === HardwareEnergyHistorical::SOURCE_DEVICE || $delta === null || $delta === '') {
+            return;
+        }
+
+        $this->{$magnitud} = (float) $this->{$magnitud} + (float) $delta;
     }
 
     /**

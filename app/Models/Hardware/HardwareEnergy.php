@@ -52,6 +52,7 @@ use function is_finite;
  * @property float|null $voltage_max
  * @property float|null $rated_power_w
  * @property float|null $capacity_ah Capacidad nominal de batería en Ah (resolución 1 mAh)
+ * @property int $default_interval_seconds Segundos que se suponen cuando la subida no trae `duration`
  * @property bool $auto_calculate_history true si el cron nocturno consolida/recalcula históricos
  * @property bool $is_active
  * @property Carbon|null $created_at
@@ -136,6 +137,14 @@ class HardwareEnergy extends BaseModel
 
     private const FACTOR_MAX = 2.0;
 
+    /**
+     * Intervalo de respaldo si el elemento no tiene el suyo configurado.
+     *
+     * Es el valor de partida de la columna; existe aquí para que un elemento
+     * creado al vuelo por la ingesta tampoco se quede sin uno.
+     */
+    public const FALLBACK_INTERVAL_SECONDS = 60;
+
     protected $table = 'hardware_energy';
 
     protected $fillable = [
@@ -143,7 +152,7 @@ class HardwareEnergy extends BaseModel
         'energy_source_type_id',
         'role', 'sensor_position',
         'nominal_voltage', 'voltage_min', 'voltage_max',
-        'rated_power_w', 'capacity_ah', 'auto_calculate_history', 'is_active',
+        'rated_power_w', 'capacity_ah', 'auto_calculate_history', 'default_interval_seconds', 'is_active',
     ];
 
     protected $casts = [
@@ -158,6 +167,7 @@ class HardwareEnergy extends BaseModel
         'rated_power_w' => 'float',
         'capacity_ah' => 'float',
         'auto_calculate_history' => 'boolean',
+        'default_interval_seconds' => 'integer',
     ];
 
     // ─────────────────────────── Relaciones ────────────────────────────
@@ -422,6 +432,24 @@ class HardwareEnergy extends BaseModel
         // Ni medida ni nominal. No se inventa un 0: eso convertiría «no tengo
         // dato» en una medición de cero vatios que baja todas las medias.
         return [null, 'measured'];
+    }
+
+    /**
+     * Segundos que se suponen entre lecturas cuando la subida no trae `duration`.
+     *
+     * Es de cada elemento porque depende de cada cuánto sube ese cacharro. Un
+     * 60 global hacía que un nodo que sube cada diez minutos registrara la sexta
+     * parte de la energía real sin que nada lo avisara.
+     *
+     * Lo mejor sigue siendo que el aparato mande `duration`: sólo él sabe
+     * cuántos segundos pasaron de verdad cuando hubo un corte de red. Esto es el
+     * respaldo para cuando no puede.
+     */
+    public function defaultIntervalSeconds(): int
+    {
+        $segundos = (int) ($this->default_interval_seconds ?? 0);
+
+        return $segundos > 0 ? $segundos : self::FALLBACK_INTERVAL_SECONDS;
     }
 
     /**

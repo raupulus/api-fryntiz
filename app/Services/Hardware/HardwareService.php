@@ -110,7 +110,12 @@ class HardwareService
             return ['readings' => [], 'warnings' => ['El dispositivo no existe.']];
         }
 
-        $duration = isset($energy['duration']) ? (int) $energy['duration'] : 60;
+        // `duration` es lo que convierte una potencia en energía. Cuando no
+        // llega, cada elemento dice cuántos segundos suponer: depende de cada
+        // cuánto sube ese cacharro, y asumir 60 para todos hacía que un nodo que
+        // sube cada diez minutos registrara la sexta parte de la energía real,
+        // en silencio. Se resuelve por elemento más abajo.
+        $duration = isset($energy['duration']) ? (int) $energy['duration'] : null;
 
         return DB::transaction(function () use ($device, $energy, $duration) {
             /** @var list<HardwareEnergyReading> $readings */
@@ -133,16 +138,17 @@ class HardwareService
                 }
 
                 if ($element !== null) {
+                    $intervalo = $duration ?? $element->defaultIntervalSeconds();
                     $amperage = isset($genData['amperage']) ? (float) $genData['amperage'] : null;
                     $measure = isset($genData['voltage']) ? (float) $genData['voltage'] : null;
                     [$voltage, $voltageSource] = $element->resolveVoltage($measure);
 
                     $intervalWh = isset($genData['energy_wh'])
                         ? (float) $genData['energy_wh']
-                        : $element->computeWattHours($amperage, $voltage, $duration);
+                        : $element->computeWattHours($amperage, $voltage, $intervalo);
                     $intervalAh = isset($genData['energy_ah'])
                         ? (float) $genData['energy_ah']
-                        : $element->computeAmpHours($amperage, $duration);
+                        : $element->computeAmpHours($amperage, $intervalo);
 
                     $power = isset($genData['power']) ? (float) $genData['power'] : $element->computePower($amperage, $voltage);
                     $energySource = isset($genData['energy_wh']) ? 'device' : 'derived';
@@ -153,7 +159,7 @@ class HardwareService
                         'voltage' => $voltage,
                         'amperage' => $amperage,
                         'power' => $power,
-                        'delta_seconds' => $duration,
+                        'delta_seconds' => $intervalo,
                         'energy_wh' => $intervalWh,
                         'energy_ah' => $intervalAh,
                         'energy_source' => $energySource,
@@ -225,6 +231,7 @@ class HardwareService
                 }
 
                 if ($element !== null) {
+                    $intervalo = $duration ?? $element->defaultIntervalSeconds();
                     $measure = isset($batData['voltage']) ? (float) $batData['voltage'] : null;
                     [$voltage, $voltageSource] = $element->resolveVoltage($measure);
                     $amperage = isset($batData['amperage']) ? (float) $batData['amperage'] : null;
@@ -232,10 +239,10 @@ class HardwareService
 
                     $intervalWh = isset($batData['energy_wh'])
                         ? (float) $batData['energy_wh']
-                        : $element->computeWattHours($amperage, $voltage, $duration);
+                        : $element->computeWattHours($amperage, $voltage, $intervalo);
                     $intervalAh = isset($batData['energy_ah'])
                         ? (float) $batData['energy_ah']
-                        : $element->computeAmpHours($amperage, $duration);
+                        : $element->computeAmpHours($amperage, $intervalo);
 
                     $soc = isset($batData['soc']) ? (int) $batData['soc'] : (isset($batData['battery_percentage']) ? (int) $batData['battery_percentage'] : null);
 
@@ -251,7 +258,7 @@ class HardwareService
                         'voltage' => $voltage,
                         'amperage' => $amperage,
                         'power' => $power,
-                        'delta_seconds' => $duration,
+                        'delta_seconds' => $intervalo,
                         'energy_wh' => $intervalWh,
                         'energy_ah' => $intervalAh,
                         'energy_source' => isset($batData['energy_wh']) ? 'device' : 'derived',
@@ -326,16 +333,17 @@ class HardwareService
                         continue;
                     }
 
+                    $intervalo = $duration ?? $element->defaultIntervalSeconds();
                     $amperage = isset($loadData['amperage']) ? (float) $loadData['amperage'] : null;
                     $measure = isset($loadData['voltage']) ? (float) $loadData['voltage'] : null;
                     [$voltage, $voltageSource] = $element->resolveVoltage($measure);
 
                     $intervalWh = isset($loadData['energy_wh'])
                         ? (float) $loadData['energy_wh']
-                        : $element->computeWattHours($amperage, $voltage, $duration);
+                        : $element->computeWattHours($amperage, $voltage, $intervalo);
                     $intervalAh = isset($loadData['energy_ah'])
                         ? (float) $loadData['energy_ah']
-                        : $element->computeAmpHours($amperage, $duration);
+                        : $element->computeAmpHours($amperage, $intervalo);
                     $power = isset($loadData['power']) ? (float) $loadData['power'] : $element->computePower($amperage, $voltage);
 
                     $reading = new HardwareEnergyReading([
@@ -344,7 +352,7 @@ class HardwareService
                         'voltage' => $voltage,
                         'amperage' => $amperage,
                         'power' => $power,
-                        'delta_seconds' => $duration,
+                        'delta_seconds' => $intervalo,
                         'energy_wh' => $intervalWh,
                         'energy_ah' => $intervalAh,
                         'energy_source' => isset($loadData['energy_wh']) ? 'device' : 'derived',

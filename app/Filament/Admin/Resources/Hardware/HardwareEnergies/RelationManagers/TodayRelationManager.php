@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers;
 
 use App\Models\Hardware\HardwareEnergyToday;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
@@ -100,12 +99,16 @@ class TodayRelationManager extends RelationManager
             ])
             ->defaultSort('date', 'desc')
             ->paginated([25, 50, 100])
-            ->headerActions([
-                CreateAction::make()->label('Nuevo resumen'),
-            ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->visible(static fn (): bool => auth()->user()?->isAdmin() ?? false)
+                    ->requiresConfirmation()
+                    ->modalHeading('Borrar esta resumen del día')
+                    ->modalDescription(
+                        'Esto no se puede deshacer y el dato no se puede volver a pedir: '
+                        .'el aparato ya lo mandó y no lo reenvía.'
+                    ),
             ]);
     }
 }

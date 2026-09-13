@@ -135,8 +135,14 @@ ancho.
 
 **`duration` es el campo que más se olvida y el que más duele.** Es lo que
 convierte una potencia instantánea en energía: `Wh = V · A · duration / 3600`.
-Si no lo mandas se asumen 60 s, y si tu aparato mide cada 5 minutos estarás
-registrando la doceava parte de la energía real.
+
+Si no lo mandas, el servidor usa el intervalo configurado en **cada elemento**
+(`default_interval_seconds`, 60 s de partida, editable en el panel). O sea que
+si tu aparato mide cada 5 minutos y ese campo sigue en 60, estarás registrando
+la quinta parte de la energía real, **y nada te lo va a avisar**.
+
+Mándalo siempre que puedas: sólo tu aparato sabe cuántos segundos pasaron de
+verdad cuando hubo un corte de red y la subida se retrasó.
 
 #### Sub-bloque `energy.generator`
 

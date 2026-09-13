@@ -184,9 +184,10 @@ class MigrateLegacyEnergyDataCommand extends Command
             }
 
             $this->info('4/5. Traspasando resúmenes diarios (hardware_energy_today)...');
-            DB::statement('
+            DB::statement("
                 INSERT INTO hardware_energy_today (
                     hardware_device_id, hardware_energy_id, date, readings_count,
+                    energy_wh_source, energy_ah_source,
                     energy_wh, energy_ah, voltage_min, voltage_max, amperage_min, amperage_max,
                     power_min, power_max, temperature_min, temperature_max,
                     battery_min, battery_max, battery_percentage_min, battery_percentage_max,
@@ -194,6 +195,8 @@ class MigrateLegacyEnergyDataCommand extends Command
                 )
                 SELECT
                     e.hardware_device_id, l.hardware_energy_id, l.date, l.readings_count,
+                    CASE WHEN e.hardware_device_id = 6 THEN 'device' ELSE 'derived' END,
+                    CASE WHEN e.hardware_device_id = 6 THEN 'device' ELSE 'derived' END,
                     l.energy_wh, l.energy_ah, l.voltage_min, l.voltage_max, l.amperage_min, l.amperage_max,
                     l.power_min, l.power_max, l.temperature_min, l.temperature_max,
                     l.battery_min, l.battery_max, l.battery_percentage_min, l.battery_percentage_max,
@@ -201,11 +204,12 @@ class MigrateLegacyEnergyDataCommand extends Command
                 FROM hardware_power_generators_today AS l
                 JOIN hardware_energy AS e ON e.id = l.hardware_energy_id
                 ON CONFLICT (hardware_energy_id, date) DO NOTHING
-            ');
+            ");
 
-            DB::statement('
+            DB::statement("
                 INSERT INTO hardware_energy_today (
                     hardware_device_id, hardware_energy_id, date, readings_count,
+                    energy_wh_source, energy_ah_source,
                     energy_wh, energy_ah, voltage_min, voltage_max, amperage_min, amperage_max,
                     power_min, power_max, temperature_min, temperature_max,
                     battery_min, battery_max, battery_percentage_min, battery_percentage_max,
@@ -213,6 +217,8 @@ class MigrateLegacyEnergyDataCommand extends Command
                 )
                 SELECT
                     e.hardware_device_id, l.hardware_energy_id, l.date, l.readings_count,
+                    CASE WHEN e.hardware_device_id = 6 THEN 'device' ELSE 'derived' END,
+                    CASE WHEN e.hardware_device_id = 6 THEN 'device' ELSE 'derived' END,
                     l.energy_wh, l.energy_ah, l.voltage_min, l.voltage_max, l.amperage_min, l.amperage_max,
                     l.power_min, l.power_max, l.temperature_min, l.temperature_max,
                     l.battery_min, l.battery_max, l.battery_percentage_min, l.battery_percentage_max,
@@ -220,7 +226,7 @@ class MigrateLegacyEnergyDataCommand extends Command
                 FROM hardware_power_loads_today AS l
                 JOIN hardware_energy AS e ON e.id = l.hardware_energy_id
                 ON CONFLICT (hardware_energy_id, date) DO NOTHING
-            ');
+            ");
 
             $this->info('5/5. Traspasando acumulados históricos (hardware_energy_historical)...');
             DB::statement("

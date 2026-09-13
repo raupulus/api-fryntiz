@@ -152,8 +152,20 @@ class AggregateDailyEnergyCommand extends Command
 
                 $todayRecord->hardware_device_id = $element->hardware_device_id;
 
-                $finalWh = max((float) ($todayRecord->energy_wh ?? 0), (float) $agg->sum_wh);
-                $finalAh = max((float) ($todayRecord->energy_ah ?? 0), (float) $agg->sum_ah);
+                // **Un total declarado por el aparato no se toca.** Antes esto
+                // hacía `max(lo que había, la suma de nuestras lecturas)`, y con
+                // eso un controlador que declaraba 800 Wh del día amanecía con
+                // 1.500 porque nuestras lecturas —todas integradas con el
+                // intervalo por defecto— sumaban más. Se comprobó: pasaba.
+                $whDelAparato = $todayRecord->energy_wh_source === HardwareEnergyHistorical::SOURCE_DEVICE;
+                $ahDelAparato = $todayRecord->energy_ah_source === HardwareEnergyHistorical::SOURCE_DEVICE;
+
+                $finalWh = $whDelAparato
+                    ? (float) $todayRecord->energy_wh
+                    : max((float) ($todayRecord->energy_wh ?? 0), (float) $agg->sum_wh);
+                $finalAh = $ahDelAparato
+                    ? (float) $todayRecord->energy_ah
+                    : max((float) ($todayRecord->energy_ah ?? 0), (float) $agg->sum_ah);
 
                 $todayRecord->fill([
                     'readings_count' => $readingsCount,

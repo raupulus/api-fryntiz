@@ -50,7 +50,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `app/Filament/Concerns/ScopesToOwner.php` | Usado por `HardwareDeviceResource` y `HardwareEnergyResource` |
 | `app/Enums/HardwareTypeEnum.php` | Enum tipos de hardware |
 | `app/Traits/BelongsToHardwareDevice.php` | Trait relación con dispositivo hardware |
-| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas IoT — lo usan Energía y Solar (módulo Energía) y también KeyCounter, SmartPlant, WeatherStation y AirFlight |
+| `app/Http/Controllers/Api/Hardware/V2/Concerns/HandlesHardwareDeviceInfo.php` | Trait para adjuntar estado del dispositivo (`hardware_device_info`) en subidas IoT — lo usan Energía, KeyCounter, SmartPlant, WeatherStation y AirFlight |
 | `app/Rules/OwnedHardwareDevice.php` | Regla de validación: pertenencia del dispositivo (por usuario + ligado estricto por token) |
 | `app/Console/Commands/IoT/IssueDeviceTokenCommand.php` | Comando `iot:device-token` (usa `DeviceTokenService`) |
 
@@ -87,7 +87,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
 | `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
 
-> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía y carga solar (este módulo), y también KeyCounter, SmartPlant, WeatherStation y AirFlight.
+> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía (ver [`energy.md`](energy.md)), KeyCounter, SmartPlant, WeatherStation y AirFlight.
 | `battery_voltage` | decimal | Batería del **propio** dispositivo (V). D108 |
 | `battery_percentage` | int | Batería del propio dispositivo (%) |
 | `battery_read_at` | timestamp | Cuándo se midió esa batería |

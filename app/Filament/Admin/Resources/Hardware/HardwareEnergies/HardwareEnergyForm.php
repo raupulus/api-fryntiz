@@ -265,6 +265,15 @@ class HardwareEnergyForm
                     ->label('Capacidad nominal (Ah)')
                     ->helperText('Capacidad nominal en amperios-hora (resolución hasta 1 mAh).')
                     ->visible(fn (Get $get): bool => self::isBattery($get)),
+                TextInput::make('default_interval_seconds')
+                    ->numeric()->minValue(1)->default(60)->required()->suffix(' s')
+                    ->label('Intervalo supuesto sin «duration»')
+                    ->helperText(
+                        'Segundos que se suponen entre lecturas cuando la subida no manda `duration`. '
+                        .'Ponle cada cuánto sube este cacharro: si sube cada 10 minutos y aquí hay 60, '
+                        .'se registrará la sexta parte de la energía real. '
+                        .'Lo mejor es que el aparato mande `duration` en cada subida; esto es el respaldo.'
+                    ),
                 Toggle::make('auto_calculate_history')
                     ->label('Rehacer el acumulado cada noche')
                     ->helperText(
