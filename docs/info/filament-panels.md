@@ -574,20 +574,48 @@ saliera en dos, editarlo en una y mirarlo en la otra daría respuestas distintas
 ### Aparatos: entrar por el cacharro y no por el papel
 
 Un controlador solar son tres papeles, y mirarlos de uno en uno obligaba a
-volver al listado general entre medias. **Aparatos** entra por el otro lado:
-cada fila es un aparato con sus papeles en badges, y dentro están los tres, con
-un enlace directo a la telemetría de cada uno.
+volver al listado general entre medias. **Aparatos** entra por el otro lado.
 
-Los aparatos **no se dan de alta ni se editan desde aquí** —eso es de Hardware;
-hay un botón a su ficha—. Lo único que se gestiona son sus papeles, con el mismo
-relation manager que usa la ficha de Hardware, para que no acaben diciendo cosas
-distintas.
+**El listado** es una fila por aparato con sus papeles en badges. Sólo salen los
+que miden algo: un listado con todos los dispositivos del usuario dentro del
+módulo de energía no dice nada, porque la mayoría no mide corriente.
 
-⚠️ El recurso redefine `getEloquentQuery()` para quedarse sólo con los aparatos
-que miden algo, y eso **gana al método del trait `ScopesToOwner`**: sin aliasarlo
-(`getEloquentQuery as protected consultaDelPropietario`) el filtro por
-propietario desaparecía entero y el listado enseñaba los aparatos de todos los
-usuarios (AR-SEC-02). Hay test.
+**La ficha** (`ManageEnergyDevice`) es *todo lo de ese cacharro en una
+pantalla*:
+
+| Dónde | Qué |
+|---|---|
+| Título | **El nombre del aparato**, con su tipo, marca, modelo y zona debajo |
+| Arriba | Su formulario entero, editable: imagen, identidad, batería propia, estado reportado |
+| Debajo | **Una pestaña por papel** — Generadores, Baterías, Consumos — con los elementos de cada uno |
+
+Cada pestaña enseña la configuración del elemento **y su estado** (energía de
+hoy, acumulado de por vida, última lectura), para no tener que salir sólo para
+saber si un canal está vivo. Su botón de crear ya sabe qué papel crea, y
+desaparece cuando ya no cabe otro: de generador y de batería hay uno, de consumo
+tantos como canales.
+
+El formulario del aparato es el de Hardware (`HardwareDeviceResource::form()`),
+no una copia. Dos formularios del mismo modelo acaban diciendo cosas distintas.
+
+Tres cosas que estaban mal y conviene no repetir:
+
+1. **Era una `ViewRecord`.** Filament pone los relation managers en sólo lectura
+   cuando cuelgan de una página de vista
+   (`hasReadOnlyRelationManagersOnResourceViewPagesByDefault`), así que no se
+   podía dar de alta ni un consumo más: los botones no se pintaban. Es una
+   página de edición, que es a lo que se viene.
+2. **El título ponía «Ver Aparato»** y la primera sección «El aparato». Volver a
+   una pestaña abierta no decía sobre qué cacharro estabas tocando.
+3. **El filtro de «sólo los que miden energía» estaba en
+   `getEloquentQuery()`.** Ahí se solapaba con el del trait `ScopesToOwner` —un
+   método propio gana al del trait, y sin aliasarlo el listado enseñaba los
+   aparatos de todos los usuarios (AR-SEC-02)— y además hacía que la ficha
+   devolviera un 404 en cuanto se borraba el último elemento del aparato. Es un
+   filtro de presentación: va en la tabla.
+
+Hay tests que **cargan la página entera por HTTP**, no sólo sus componentes: un
+relation manager roto no se nota hasta que se pinta con los demás.
 
 ### El papel se elige al crear y no se cambia
 

@@ -689,7 +689,7 @@ haga ruido. Qué prueba cada archivo:
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
 | `Filament/EnergyListTabsTest.php` | Las pestañas del listado: sólo la que tiene algo dentro, y que ninguna esconda nada de «Todos» |
-| `Filament/EnergyDeviceViewTest.php` | La entrada por el aparato: sólo los que miden energía, el filtro por propietario que el override casi se lleva por delante, y que el papel no se pueda cambiar una vez creado |
+| `Filament/EnergyDeviceViewTest.php` | La ficha energética de un aparato: que cargue entera por HTTP con sus tres pestañas, que se titule con el nombre del cacharro, que deje editarlo todo, que se pueda añadir otro consumo, y que el papel no se pueda cambiar una vez creado |
 | `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |
 | `Unit/Rules/EnergyTelemetryPayloadTest.php` | La validación del bloque `energy` |

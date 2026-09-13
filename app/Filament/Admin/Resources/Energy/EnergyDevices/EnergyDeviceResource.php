@@ -6,13 +6,15 @@ namespace App\Filament\Admin\Resources\Energy\EnergyDevices;
 
 use App\Filament\Admin\Clusters\Energy;
 use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ListEnergyDevices;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ViewEnergyDevice;
-use App\Filament\Admin\Resources\Hardware\HardwareDevices\RelationManagers\EnergyRelationManager;
+use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ManageEnergyDevice;
+use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\BatteryRelationManager;
+use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\GeneratorRelationManager;
+use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\LoadRelationManager;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
 use BackedEnum;
-use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -34,18 +36,7 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class EnergyDeviceResource extends Resource
 {
-    /**
-     * El filtro por propietario del trait, con otro nombre.
-     *
-     * `ScopesToOwner` lo trae como `getEloquentQuery()`, y este recurso
-     * necesita redefinir ese método para quedarse sólo con los aparatos que
-     * miden energía. Un método propio **gana** al del trait, así que sin este
-     * alias `parent::getEloquentQuery()` se saltaría el filtro entero y el
-     * listado enseñaría los aparatos de todos los usuarios (AR-SEC-02).
-     */
-    use ScopesToOwner {
-        getEloquentQuery as protected consultaDelPropietario;
-    }
+    use ScopesToOwner;
 
     protected static ?string $model = HardwareDevice::class;
 
@@ -60,22 +51,6 @@ class EnergyDeviceResource extends Resource
     protected static ?string $pluralModelLabel = 'Aparatos';
 
     /**
-     * Sólo los aparatos que pintan algo en energía.
-     *
-     * Un listado con todos los dispositivos del usuario dentro del módulo de
-     * energía no dice nada: la mayoría no mide corriente. El filtro va en
-     * `getEloquentQuery()` y no en `scopeOwnerQuery()` porque el trait se salta
-     * ese método cuando quien mira es administrador, y esto no es un filtro de
-     * propiedad sino de alcance.
-     *
-     * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
-     */
-    public static function getEloquentQuery(): Builder
-    {
-        return static::consultaDelPropietario()->whereHas('hardwareEnergy');
-    }
-
-    /**
      * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
      */
@@ -87,7 +62,17 @@ class EnergyDeviceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['type', 'hardwareEnergy']))
+            // **Sólo los aparatos que pintan algo en energía.** Un listado con
+            // todos los dispositivos del usuario dentro del módulo de energía no
+            // dice nada: la mayoría no mide corriente.
+            //
+            // El filtro va aquí y no en `getEloquentQuery()` porque es de
+            // presentación, no de permisos: puesto allí, además de solaparse con
+            // el del trait `ScopesToOwner`, hacía que la ficha de un aparato
+            // devolviera un 404 en cuanto se le borraba su último elemento.
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->whereHas('hardwareEnergy')
+                ->with(['type', 'hardwareEnergy']))
             ->defaultSort('name')
             ->columns([
                 TextColumn::make('name')
@@ -124,7 +109,7 @@ class EnergyDeviceResource extends Resource
                     ->label('Tipo de aparato'),
             ])
             ->recordActions([
-                ViewAction::make()->label('Ver energía'),
+                EditAction::make()->label('Ver energía')->icon('heroicon-o-bolt'),
             ])
             ->emptyStateHeading('Ningún aparato mide energía todavía')
             ->emptyStateDescription(
@@ -133,10 +118,17 @@ class EnergyDeviceResource extends Resource
             );
     }
 
+    /**
+     * Una pestaña por papel, y en el orden en que la energía atraviesa la
+     * instalación: entra por el generador, se guarda en la batería y sale por
+     * los consumos.
+     */
     public static function getRelations(): array
     {
         return [
-            EnergyRelationManager::class,
+            GeneratorRelationManager::class,
+            BatteryRelationManager::class,
+            LoadRelationManager::class,
         ];
     }
 
@@ -144,7 +136,7 @@ class EnergyDeviceResource extends Resource
     {
         return [
             'index' => ListEnergyDevices::route('/'),
-            'view' => ViewEnergyDevice::route('/{record}'),
+            'edit' => ManageEnergyDevice::route('/{record}'),
         ];
     }
 }
