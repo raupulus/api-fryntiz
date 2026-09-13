@@ -712,6 +712,7 @@ haga ruido. Qué prueba cada archivo:
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
 | `Filament/EnergyListTabsTest.php` | Las pestañas del listado: sólo la que tiene algo dentro, y que ninguna esconda nada de «Todos» |
+| `Filament/EnergyRoleTrendChartTest.php` | La gráfica de cada papel: potencia media por hora de la última semana, que las horas sin lecturas queden en blanco y no a cero, que sume los canales del mismo aparato, que las sospechosas no cuenten y que la batería conserve el signo |
 | `Filament/EnergyDeviceViewTest.php` | La ficha energética de un aparato: que cargue entera por HTTP con sus pestañas y sus tres tablas de telemetría, una pestaña por fila de `hardware_energy` y en el orden en que circula la energía, que cambiar de pestaña guarde sobre el elemento bueno, y que ni el papel ni el medidor se puedan cambiar una vez creados |
 | `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |

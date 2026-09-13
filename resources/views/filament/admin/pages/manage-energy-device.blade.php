@@ -1,45 +1,55 @@
 {{--
     La ficha energética de un aparato.
 
-    Arriba quién es —foto y nombre—, debajo una pestaña por cada fila de
-    `hardware_energy` y, dentro, su configuración y sus tres tablas de
-    telemetría. Todo sin salir de la página.
+    Arriba quién es —foto a la izquierda, sus datos a la derecha—; luego una
+    gráfica por papel con la última semana; y debajo una pestaña por cada fila
+    de `hardware_energy` con su configuración y sus tres tablas de telemetría.
+    Todo sin salir de la página.
 --}}
 <x-filament-panels::page>
     @php
         $aparato = $this->aparato();
         $elementos = $this->elementos();
         $activo = $this->elementoActivo();
+        $senas = $this->senasDelAparato();
     @endphp
 
     {{-- Quién es este aparato --}}
     <x-filament::section>
-        <div class="fi-ta-content flex items-center gap-4">
-            @if ($miniatura = $this->miniatura())
-                <img
-                    src="{{ $miniatura }}"
-                    alt="{{ $aparato->display_name }}"
-                    class="h-20 w-20 shrink-0 rounded-lg object-cover ring-1 ring-gray-950/10 dark:ring-white/20"
-                >
-            @else
-                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-gray-100 ring-1 ring-gray-950/10 dark:bg-white/5 dark:ring-white/20">
-                    <x-filament::icon icon="heroicon-o-cpu-chip" class="h-8 w-8 text-gray-400" />
-                </div>
-            @endif
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
+            <div class="shrink-0">
+                @if ($miniatura = $this->miniatura())
+                    <img
+                        src="{{ $miniatura }}"
+                        alt="{{ $aparato->display_name }}"
+                        class="h-32 w-32 rounded-xl object-cover ring-1 ring-gray-950/10 dark:ring-white/20"
+                    >
+                @else
+                    <div class="flex h-32 w-32 items-center justify-center rounded-xl bg-gray-100 ring-1 ring-gray-950/10 dark:bg-white/5 dark:ring-white/20">
+                        <x-filament::icon icon="heroicon-o-cpu-chip" class="h-10 w-10 text-gray-400" />
+                    </div>
+                @endif
+            </div>
 
-            <div class="min-w-0">
-                <h2 class="text-xl font-bold tracking-tight text-gray-950 dark:text-white">
+            <div class="min-w-0 flex-1">
+                <h2 class="text-2xl font-bold tracking-tight text-gray-950 dark:text-white">
                     {{ $aparato->display_name }}
                 </h2>
 
-                <dl class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
-                    @foreach ($this->senasDelAparato() as $etiqueta => $valor)
-                        <div class="flex gap-1">
-                            <dt class="font-medium">{{ $etiqueta }}:</dt>
-                            <dd>{{ $valor }}</dd>
-                        </div>
-                    @endforeach
-                </dl>
+                @if ($senas !== [])
+                    <dl class="mt-4 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+                        @foreach ($senas as $etiqueta => $valor)
+                            <div>
+                                <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                    {{ $etiqueta }}
+                                </dt>
+                                <dd class="mt-1 text-sm font-medium text-gray-950 dark:text-white">
+                                    {{ $valor }}
+                                </dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                @endif
             </div>
         </div>
     </x-filament::section>
@@ -55,6 +65,15 @@
             </p>
         </x-filament::section>
     @else
+        {{-- Cómo ha ido cada papel esta semana --}}
+        @foreach ($elementos->pluck('role')->unique() as $papel)
+            @livewire(
+                \App\Filament\Admin\Widgets\EnergyRoleTrendChart::class,
+                ['deviceId' => $aparato->getKey(), 'papel' => $papel],
+                key('grafica-' . $papel . '-' . $aparato->getKey())
+            )
+        @endforeach
+
         {{-- Una pestaña por fila de hardware_energy --}}
         <x-filament::tabs>
             @foreach ($elementos as $elemento)

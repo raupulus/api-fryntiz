@@ -581,6 +581,7 @@ aparato, sino el elemento que esté seleccionado**.
 |---|---|
 | Título | El nombre del aparato |
 | Cabecera | Su miniatura a la izquierda y, al lado, tipo, marca y modelo, zona y última señal. **No se edita aquí**: está para reconocer el cacharro. El aparato se gestiona en Hardware |
+| Gráficas | Una por papel, antes de las pestañas: **la potencia media hora a hora de los últimos 7 días**. Se dibuja potencia y no energía acumulada porque lo que se viene a mirar es la forma del día. La de la batería lleva signo: positiva cargando, negativa descargando |
 | Pestañas | **Una por cada fila de `hardware_energy`**, no una por papel. Dos consumos son dos pestañas. Ordenadas como circula la energía: generador → batería → consumos. Con varios consumos, cada pestaña dice su canal |
 | Dentro de cada pestaña | La configuración de ese elemento, editable, y sus tres tablas de telemetría: lecturas, resúmenes diarios e histórico |
 
@@ -605,6 +606,20 @@ componente al cambiar de pestaña y sigue enseñando la telemetría del anterior
 `InteractsWithSchemas` cachea el esquema atado al modelo con el que se construyó.
 Al cambiar de pestaña hay que tirar la caché (`cacheSchema('configuracion', null)`)
 y volver a rellenarla: si no, se guardaría sobre el elemento anterior. Hay test.
+
+#### Las horas sin lecturas quedan en blanco, no a cero
+
+`null` y no `0` en la serie de la gráfica. Una hora sin lecturas es un hueco;
+con un cero, la gráfica dibuja un desplome hasta el suelo que nunca ocurrió y
+parece una avería.
+
+#### El CSS de las pantallas nuevas hay que compilarlo
+
+El tema del panel (`resources/css/filament/admin/theme.css`) escanea
+`resources/views/filament/**/*.blade.php`, así que una vista nueva sólo tiene sus
+utilidades después de un `npm run build`. Sin él la maquetación se cae y todo
+aparece amontonado a la izquierda: los `flex` y los `grid` sencillamente no
+existen en el CSS desplegado. Los assets compilados van versionados.
 
 #### Esta pantalla no toca Hardware
 

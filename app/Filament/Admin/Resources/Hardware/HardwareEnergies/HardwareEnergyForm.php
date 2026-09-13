@@ -75,7 +75,10 @@ class HardwareEnergyForm
                         ->relationship('monitorized', 'name')
                         ->required()->searchable()->preload()
                         ->label('Dispositivo monitorizado')
-                        ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
+                        ->helperText(
+                            'Qué cacharro hay enchufado a este canal. Si el aparato se mide a sí mismo '
+                            .'—un controlador solar midiendo su propio panel—, es él mismo.'
+                        ),
                     self::role(),
                     self::channel(),
                     self::active(),
@@ -110,7 +113,10 @@ class HardwareEnergyForm
                         ->relationship('monitorized', 'name')
                         ->required()->searchable()->preload()
                         ->label('Dispositivo monitorizado')
-                        ->helperText('El aparato medido. Las lecturas se guardan contra éste, no contra el monitor.'),
+                        ->helperText(
+                            'Qué cacharro hay enchufado a este canal. Si el aparato se mide a sí mismo '
+                            .'—un controlador solar midiendo su propio panel—, es él mismo.'
+                        ),
                     self::role(),
                     self::channel(),
                     self::active(),
@@ -196,8 +202,10 @@ class HardwareEnergyForm
             ->numeric()->minValue(0)->default(0)->required()
             ->label('Canal del monitor')
             ->helperText(fn (Get $get): string => self::isLoad($get)
-                ? 'El `channel` que manda el dispositivo en cada lectura de consumo. 0 si sólo tiene un canal.'
-                : 'De generador y de batería sólo hay uno por aparato, así que la ingesta no mira el canal. Déjalo en 0.')
+                ? 'Qué entrada del medidor es ésta. Un sensor con tres pinzas manda «channel: 0», «channel: 1» y «channel: 2» '
+                  .'en cada subida, y este número es el que dice cuál de las tres es este canal. '
+                  .'Si el aparato sólo mide una cosa, déjalo en 0.'
+                : 'De generador y de batería sólo hay uno por aparato, así que este número no se usa para nada. Déjalo en 0.')
             ->disabled(fn (Get $get): bool => ! self::isLoad($get))
             ->dehydrated()
             // Sin esto, repetir medidor + medido + papel + canal chocaba contra
@@ -284,7 +292,11 @@ class HardwareEnergyForm
         return Toggle::make('is_active')
             ->default(true)
             ->label('Activo')
-            ->helperText('Apágalo para dejar de recoger lecturas de este canal sin borrar lo que ya hay.');
+            ->helperText(
+                'Apágalo para que las subidas de este canal dejen de guardarse. '
+                .'No se borra nada de lo que ya hay ni se pierde el histórico: es para cuando desconectas '
+                .'algo del medidor y no quieres que siga apuntando ceros.'
+            );
     }
 
     /**
@@ -294,7 +306,11 @@ class HardwareEnergyForm
     private static function electricalCharacteristics(): Section
     {
         return Section::make('Características eléctricas')
-            ->description('Para calcular manda siempre la tensión que reporte el aparato en cada lectura. Lo de aquí es el respaldo para cuando no la mande.')
+            ->description(
+                'Los datos de catálogo de lo que hay conectado en este canal. '
+                .'Para calcular los vatios se usa siempre la tensión que el aparato mida '
+                .'y mande en cada lectura; lo que se ponga aquí sólo se usa cuando esa lectura llega sin tensión.'
+            )
             ->columns(2)
             ->columnSpanFull()
             ->collapsed()
@@ -302,42 +318,72 @@ class HardwareEnergyForm
                 TextInput::make('nominal_voltage')
                     ->numeric()->step(0.01)->suffix(' V')
                     ->label('Tensión nominal')
-                    ->helperText('La de ESTE lado: en un controlador solar, el panel y la batería no están a la misma.'),
+                    ->helperText(
+                        'La tensión de trabajo de lo que hay conectado en ESTE canal, no la del aparato entero. '
+                        .'Un controlador solar tiene tres tensiones distintas a la vez: el panel puede ir a 24 V '
+                        .'mientras la batería y la salida de carga van a 12 V, así que cada papel lleva la suya. '
+                        .'Se usa para dos cosas: calcular los vatios cuando una lectura llega sin tensión, '
+                        .'y repartir los amperios-hora entre el panel y la batería.'
+                    ),
                 TextInput::make('rated_power_w')
                     ->numeric()->step(0.01)->suffix(' W')
                     ->label('Potencia nominal')
-                    ->helperText('Potencia de diseño/catálogo (W).'),
+                    ->placeholder('Opcional')
+                    ->helperText(
+                        'Los vatios que pone el fabricante: los del panel, los que consume el aparato conectado. '
+                        .'Es informativo y no entra en ningún cálculo; sirve para saber de un vistazo '
+                        .'si lo que se está midiendo cuadra con lo que debería dar.'
+                    ),
                 TextInput::make('voltage_min')
                     ->numeric()->step(0.01)->suffix(' V')
-                    ->label(fn (Get $get): string => self::isBattery($get) ? 'Tensión a 0 % de carga' : 'Tensión mínima esperada')
+                    ->label(fn (Get $get): string => self::isBattery($get) ? 'Tensión con la batería vacía' : 'Tensión mínima normal')
+                    ->placeholder('Opcional')
                     ->helperText(fn (Get $get): string => self::isBattery($get)
-                        ? 'Con ésta y la de 100 % se calcula el porcentaje de carga cuando el aparato no lo manda. Pon las del banco real, no un rango ancho.'
-                        : 'Sólo para avisar: una medida por debajo se guarda igual, con un aviso en la respuesta. Vacío = no se avisa nunca.'),
+                        ? 'La tensión que marca el banco cuando está descargado del todo. Con ésta y la de batería llena '
+                          .'se calcula el porcentaje de carga en las lecturas que lleguen sin él. '
+                          .'Pon las de tu banco: un LiFePO4 de 12 V va de 10,0 a 14,6 V y uno de plomo de 10,5 a 12,8 V. '
+                          .'Un rango inventado da porcentajes inventados.'
+                        : 'Por debajo de esta tensión, la lectura se marca como sospechosa: se guarda igual y no se pierde nada, '
+                          .'pero deja de contar para las medias y el aparato recibe un aviso en la respuesta de la subida. '
+                          .'Sirve para que un sensor que empieza a fallar no arrastre las estadísticas. '
+                          .'Déjalo vacío y no se avisará nunca.'),
                 TextInput::make('voltage_max')
                     ->numeric()->step(0.01)->suffix(' V')
-                    ->label(fn (Get $get): string => self::isBattery($get) ? 'Tensión a 100 % de carga' : 'Tensión máxima esperada'),
+                    ->label(fn (Get $get): string => self::isBattery($get) ? 'Tensión con la batería llena' : 'Tensión máxima normal')
+                    ->placeholder('Opcional')
+                    ->helperText(fn (Get $get): string => self::isBattery($get)
+                        ? 'La tensión que marca el banco recién cargado, en absorción. Es el otro extremo del cálculo del porcentaje.'
+                        : 'Igual que la mínima pero por arriba: una lectura que la supere se guarda y se marca como sospechosa.'),
 
                 // Sólo tienen sentido en una batería.
                 TextInput::make('capacity_ah')
                     ->numeric()->step(0.001)->suffix(' Ah')
-                    ->label('Capacidad nominal (Ah)')
-                    ->helperText('Capacidad nominal en amperios-hora (resolución hasta 1 mAh).')
+                    ->label('Capacidad del banco')
+                    ->placeholder('Opcional')
+                    ->helperText(
+                        'Los amperios-hora que pone el fabricante en la batería. '
+                        .'Una de 250 Ah a 12 V almacena 3.000 Wh, y ese número se calcula solo a partir de aquí '
+                        .'y de la tensión nominal. Admite decimales para baterías pequeñas: 2,5 Ah son 2.500 mAh.'
+                    )
                     ->visible(fn (Get $get): bool => self::isBattery($get)),
                 TextInput::make('default_interval_seconds')
                     ->numeric()->minValue(1)->default(60)->required()->suffix(' s')
-                    ->label('Intervalo supuesto sin «duration»')
+                    ->label('Cada cuántos segundos sube este canal')
                     ->helperText(
-                        'Segundos que se suponen entre lecturas cuando la subida no manda `duration`. '
-                        .'Ponle cada cuánto sube este cacharro: si sube cada 10 minutos y aquí hay 60, '
-                        .'se registrará la sexta parte de la energía real. '
-                        .'Lo mejor es que el aparato mande `duration` en cada subida; esto es el respaldo.'
+                        'Cuánto tiempo representa cada lectura, y por tanto cuánta energía se apunta con ella: '
+                        .'2 A a 12 V durante 300 segundos son 2 Wh. '
+                        .'Lo normal es que el aparato lo mande él mismo en cada subida (el campo «duration» del contrato) '
+                        .'y entonces esto no se usa; esto es el respaldo para cuando no lo manda. '
+                        .'Pon cada cuánto sube de verdad: si sube cada 10 minutos y aquí pone 60, '
+                        .'se apuntará la sexta parte de la energía real y nadie se dará cuenta.'
                     ),
                 Toggle::make('auto_calculate_history')
-                    ->label('Rehacer el acumulado cada noche')
+                    ->label('Rehacer cada noche el total acumulado')
                     ->helperText(
-                        'Actívalo si los totales de este elemento los calculamos nosotros sumando sus lecturas. '
-                        .'Apágalo si el aparato lleva su propio contador de por vida, como el Renogy Rover: '
-                        .'ahí el acumulado es suyo y el cron no debe tocarlo.'
+                        'Actívalo cuando el total de por vida de este canal lo calculamos nosotros sumando sus lecturas: '
+                        .'cada madrugada se vuelve a sumar, así que un hueco que se rellene más tarde acaba cuadrando. '
+                        .'Apágalo cuando el aparato lleva su propio contador de por vida y lo manda en cada subida, '
+                        .'como hace el Renogy Rover: ahí el total es suyo y volver a calcularlo lo estropearía.'
                     )
                     ->default(true),
             ]);

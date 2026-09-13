@@ -142,6 +142,10 @@ class EnergyDeviceViewTest extends TestCase
             ->assertSee('Lecturas de telemetría')
             ->assertSee('Resúmenes diarios')
             ->assertSee('Histórico y sesiones')
+            // Y una gráfica por papel antes de las pestañas.
+            ->assertSee('Generador — potencia media por hora, últimos 7 días')
+            ->assertSee('Batería — potencia media por hora, últimos 7 días')
+            ->assertSee('Consumo — potencia media por hora, últimos 7 días')
             // Y el título es el nombre del cacharro, no «Ver Aparato».
             ->assertDontSee('Ver Aparato');
     }
