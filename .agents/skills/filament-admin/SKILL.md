@@ -58,9 +58,81 @@ Concerns/     # Traits Filament: HasImageFileUpload
 - Los modelos que edita Filament son los mismos de `app/Models/<Modulo>/`
   (extienden `BaseModel`). Reutiliza enums de `app/Enums/` en selects/badges en
   lugar de literales (`ContentStatusEnum`, `HardwareTypeEnum`, etc.).
-- El tema visual del panel Admin vive en
-  `resources/css/filament/admin/theme.css` (entrypoint de Vite). Para criterio
-  de color/tipografía, ver la skill `design-system`.
+- ⚠️ `resources/css/filament/admin/theme.css` **se compila pero ningún panel lo
+  carga**: `AdminPanelProvider` no llama a `viteTheme()`. Editarlo no cambia nada
+  de lo que se ve en `/admin`. Ver «Vistas Blade propias del panel». Para
+  criterio de color/tipografía, ver la skill `design-system`.
+
+## Vistas Blade propias del panel: CSS llano, nunca utilidades de Tailwind
+
+**Regla dura. Ya ha costado dos despliegues rotos:** el campo de YouTube (commit
+`3fdcf2f`) y la cabecera de la ficha de Aparatos de Energía (`50af197`). En el
+segundo se dio por arreglado con un `npm run build` que no cambiaba nada.
+
+**Por qué.** El panel enlaza **sólo** el `app.css` precompilado de Filament
+(`public/css/filament/filament/app.css`), que trae las clases `fi-*` y las que
+usa el propio Filament. Las utilidades de Tailwind que escribas en una vista de
+`resources/views/filament/` —`flex`, `grid`, `sm:flex-row`, `lg:grid-cols-4`,
+`gap-x-8`, `text-gray-500`…— **no existen en el navegador**, compiles lo que
+compiles. Unas pocas coinciden por casualidad con clases que Filament ya usa, y
+eso es peor: la vista sale medio bien en un sitio y rota en otro. El síntoma
+típico es todo apilado a la izquierda.
+
+**Qué sí se puede usar:**
+
+- Los componentes Blade de Filament: `x-filament-panels::page`,
+  `x-filament::section`, `x-filament::tabs`, `x-filament::tabs.item`,
+  `x-filament::button`, `x-filament::icon`, `x-filament::badge`… Sus estilos
+  están en `app.css`.
+- Esquemas, tablas, widgets y relation managers de Filament.
+
+**Para maquetar algo propio**, un `<style>` en la propia vista con clases de
+prefijo propio y CSS que funcione en cualquier navegador:
+
+```blade
+<style>
+    .ed-aparato { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.5rem; }
+    .ed-aparato__datos { flex: 1 1 18rem; min-width: 0; }
+    .ed-aparato__nombre { color: #030712; }
+    .dark .ed-aparato__nombre { color: #ffffff; }   /* Filament pone `dark` en <html> */
+</style>
+```
+
+- `flex-wrap` en vez de media queries siempre que se pueda: se recoloca solo.
+- Si hace falta media query, la clásica `@media (min-width: 40rem)`.
+- El modo oscuro con `.dark .clase`; nunca `dark:` de Tailwind.
+- Prefijo propio en las clases (`ed-`, `yt-`…) para no chocar con `fi-*`.
+
+**Comprobar antes de tocar:** qué hojas enlaza de verdad la página renderizada
+(buscar `<link … stylesheet>` en el HTML). Si sólo aparece `app.css` de Filament,
+esta regla aplica.
+
+## Verificar una vista: los tests no bastan
+
+Que los tests pasen no dice que la vista **se vea** bien ni que aguante los
+datos reales. Las dos cosas han fallado en producción con la suite en verde:
+
+- **Maquetación:** ver arriba. Un test no mira el CSS.
+- **Datos:** una pestaña reventaba sólo con telemetría dentro, porque en
+  PostgreSQL `sum()` de una columna `numeric` llega como cadena y el cierre
+  estaba tipado `?float`. El test creaba elementos sin lecturas y la columna ni se
+  evaluaba. Agrega en la consulta (`withSum`, `withMax`) en vez de por celda, y
+  en los tests de vistas **siembra datos** en todo lo que pinte la pantalla.
+
+**Antes de decir que una vista del panel está terminada, se carga en un navegador
+real con datos reales y se mira.** Sin credenciales, con Chrome en headless:
+
+1. Renderizar la página por el kernel de HTTP, autenticado como un admin, contra
+   la base local (copia de producción) y guardar el HTML.
+2. Copiarlo temporalmente a `public/` y servir con `php -S localhost:8000 -t public`
+   (las URLs de assets apuntan a `APP_URL`).
+3. Capturar: `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+   --headless=new --window-size=1400,1100 --virtual-time-budget=4000
+   --screenshot=captura.png http://localhost:8000/<fichero>.html`.
+4. **Mirar la captura.** Luego borrar el HTML de `public/` y parar el servidor.
+
+Y **no se afirma la causa de un fallo sin comprobarla.** «Falta compilar el CSS»
+se dijo sin mirar qué hoja cargaba la página, y era falso.
 
 ## Al terminar
 
@@ -68,3 +140,5 @@ Concerns/     # Traits Filament: HasImageFileUpload
 2. Si el cambio altera el comportamiento de un módulo, **actualiza
    `docs/info/<modulo>.md`** (sección "Configuración Filament").
 3. Verifica que el recurso aparece en el panel correcto y respeta la policy.
+4. Si has tocado una vista, **cárgala en un navegador real con datos y mírala**
+   (receta en «Verificar una vista»). Sin captura, no está terminada.

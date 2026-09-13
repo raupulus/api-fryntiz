@@ -89,6 +89,13 @@ La paleta se define en **`resources/css/app.css`** utilizando la directiva `@the
 5. **Formas "Pill" para Acciones:**
    - Botones principales y chips de estado utilizan radios completos (`rounded-full`) proporcionando un tacto moderno y amigable.
 
+> ⚠️ **Estas reglas son del frontend público y no aplican dentro del panel Filament.**
+> Las vistas Blade del panel (`resources/views/filament/`) no reciben Tailwind: el panel sólo
+> carga el `app.css` precompilado de Filament, así que clases como `flex`, `grid`, `sm:…`,
+> `dark:…` o los tokens `bg-surface-*` no existen allí y la maquetación se cae (ha pasado dos
+> veces). En el panel se usan los componentes de Filament y, para lo propio, CSS llano en un
+> `<style>` con prefijo propio. Regla completa en la skill `filament-admin`.
+
 ---
 
 ## 5. Prevención de FOUC (Flash of Unstyled Content)
@@ -97,7 +104,7 @@ El layout base `resources/views/layouts/app.blade.php` incluye una pequeña ruti
 
 ---
 
-> Creado: 2026-08-26 · Última revisión: 2026-08-26
+> Creado: 2026-08-26 · Última revisión: 2026-09-13
 
 ---
 

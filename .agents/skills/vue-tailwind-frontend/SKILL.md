@@ -117,6 +117,20 @@ Reglas:
    `design-system` (criterio y reglas de marca). Esta skill es el "cómo" técnico;
    `design-system` es el "qué/por qué" visual.
 
+## ⚠️ Esto no vale dentro del panel Filament
+
+Todo lo de arriba —tokens, utilidades, `dark:`— es para el **frontend público**,
+que carga `resources/css/app.css`. **Las vistas Blade del panel
+(`resources/views/filament/`) no reciben Tailwind**: el panel enlaza sólo el
+`app.css` precompilado de Filament y no registra ningún tema (`viteTheme()`).
+Una utilidad escrita ahí no existe en el navegador y `npm run build` no lo
+arregla. Ha roto dos despliegues.
+
+En el panel se maqueta con CSS llano en un `<style>` y clases de prefijo propio.
+La regla completa y la receta para verificarlo en un navegador están en la skill
+`filament-admin`, secciones «Vistas Blade propias del panel» y «Verificar una
+vista».
+
 ## Organización de assets JS
 
 `resources/js/` separa responsabilidades: `app.js` (global; aquí vive el

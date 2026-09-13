@@ -106,6 +106,17 @@ Atajo obligatorio: `composer check` (formato + análisis estático + tests).
    La de creación no se toca nunca una vez puesta. La de revisión se actualiza **en el mismo commit** en que se cambia el documento. Sirve para auditar que la documentación viva se mantiene al día.
 6. **Si trabajas sobre una fase del roadmap**, marca su checklist al terminar.
 7. **Directriz de Lectura Dirigida y Economía de Tokens**: Al trabajar en un módulo o funcionalidad específica (ej. noticias, páginas, usuarios), el agente debe consultar **únicamente** el archivo técnico correspondiente en `docs/info/[modulo].md` y la guía de diseño en `docs/info/DESIGN.md` en caso de tocar el frontend/vistas. No debe leer el resto de archivos de `docs/info/` a menos que sea estrictamente necesario para resolver una relación cruzada entre modelos.
+8. **Una vista no está terminada porque pasen los tests.** Si has tocado una vista del panel o del
+   frontend, **cárgala en un navegador real con datos reales y mira la captura** antes de darla por
+   buena. Los tests no ven el CSS ni los datos que no siembras, y por eso han llegado a producción una
+   maquetación rota y una pestaña que reventaba con datos dentro. Receta en la skill `filament-admin`,
+   sección «Verificar una vista».
+9. **En las vistas Blade del panel Filament, CSS llano y nunca utilidades de Tailwind.** El panel sólo
+   carga el `app.css` precompilado de Filament (no hay `viteTheme()`), así que `flex`, `grid`,
+   `sm:…` o `dark:…` escritos en `resources/views/filament/` no existen en el navegador y `npm run build`
+   no lo arregla. Ha pasado dos veces. Detalle en la skill `filament-admin`.
+10. **No afirmes la causa de un fallo sin haberla comprobado.** Una explicación plausible sin verificar
+    («falta compilar el CSS») hace perder un despliegue entero cuando es falsa.
 
 ### Idiomas
 
