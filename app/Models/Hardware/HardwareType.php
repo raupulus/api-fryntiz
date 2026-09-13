@@ -40,6 +40,17 @@ class HardwareType extends BaseModel
      */
     public const WEATHER_STATION = 'Estación Meteorológica';
 
+    /**
+     * Slug del tipo que agrupa a los controladores solares.
+     *
+     * Es el criterio con el que el panel separa sus elementos del resto: un
+     * controlador mide el panel, la batería y la salida de carga, y los tres
+     * mezclados con los consumos sueltos no se distinguen. Va por tipo de
+     * aparato y no por tipo de fuente porque hoy casi todo es «Fotovoltaica» y
+     * ésa no separa nada.
+     */
+    public const SOLAR_CONTROLLER_SLUG = 'controlador-solar';
+
     protected $fillable = ['name', 'slug', 'description'];
 
     /**

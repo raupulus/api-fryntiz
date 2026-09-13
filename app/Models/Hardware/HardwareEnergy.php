@@ -125,6 +125,18 @@ class HardwareEnergy extends BaseModel
     ];
 
     /**
+     * Lo mismo en plural, para los sitios que nombran al grupo y no a la fila:
+     * las pestañas del listado.
+     *
+     * @var array<string, string>
+     */
+    public const ROLE_LABELS_PLURAL = [
+        self::ROLE_GENERATOR => 'Generadores',
+        self::ROLE_LOAD => 'Consumos',
+        self::ROLE_BATTERY => 'Baterías',
+    ];
+
+    /**
      * Márgenes con los que se juzga una tensión cuando el elemento no tiene
      * `voltage_min` / `voltage_max` puestos a mano.
      *

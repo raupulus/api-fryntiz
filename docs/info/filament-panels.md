@@ -568,20 +568,45 @@ saliera en dos, editarlo en una y mirarlo en la otra daría respuestas distintas
 | Pantalla | Qué gestiona | Criterio |
 |---|---|---|
 | Ficha del dispositivo · pestaña **Energía** | Los papeles de **ese** aparato, midiéndose a sí mismo | Alta rápida: el papel lo pone el botón y el monitorizado se rellena solo |
-| **Instalaciones** · pestaña *Elementos del controlador* | Lo que mide el **controlador solar** de la instalación | El monitor es de tipo `controlador-solar` |
-| **Elementos de Energía** | Todo lo demás: monitores de energía y cargas sueltas | El monitor **no** es de tipo `controlador-solar` |
+| **Elementos de energía** | Todos los elementos, repartidos en pestañas | Es el listado del módulo |
 
-El reparto lo decide el **tipo del dispositivo que mide**
-(`hardware_types.slug`), no la fuente de energía: hoy los ocho elementos reales
-tienen fuente «Fotovoltaica» y ésa no distingue nada.
+Hubo una pantalla **Instalaciones** que se quedaba con los elementos de los
+controladores solares y los apartaba del listado general. Desapareció con la
+tabla `energy_systems` al unificar el esquema, y con ella la forma de ver los
+grupos solares de un vistazo. Lo que la sustituye son las pestañas de abajo.
 
-`HardwareEnergyResource::getEloquentQuery()` es donde se aplica, **no**
-`scopeOwnerQuery()`: el trait `ScopesToOwner` se salta ese método cuando quien
-mira es administrador, y este filtro no es de propiedad sino de alcance. Hay un
-test que comprueba que los dos listados no se solapan y que ningún elemento se
-queda sin pantalla.
+### Las pestañas del listado
 
-### Elementos de Energía se agrupa por el dispositivo monitor
+`ListHardwareEnergies::getTabs()`. Una tabla plana con todos los elementos
+mezclados no deja ver nada: el mismo controlador solar sale tres veces —panel,
+batería y salida de carga— entre los consumos sueltos de los demás aparatos.
+
+| Pestaña | Qué enseña |
+|---|---|
+| **Todos** | El listado entero. Es la de por defecto |
+| **Energía solar** | Los elementos cuyo medidor es de tipo `controlador-solar` |
+| **Generadores** · **Consumos** · **Baterías** | Los de ese papel, sea cual sea el medidor |
+
+Dos reglas:
+
+1. **Ninguna pestaña esconde nada.** Son vistas del mismo listado, no
+   compartimentos: un elemento de un controlador solar sale en «Energía solar»
+   *y* en la de su papel, que es donde se le busca cuando lo que se quiere es
+   comparar generadores entre sí. Esto es lo que cambia respecto a
+   «Instalaciones», que sí los apartaba.
+2. **Sólo aparece la pestaña que tiene algo dentro.** Sin baterías dadas de
+   alta, «Baterías» no se pinta. El número del badge lo dice.
+
+Lo solar se distingue por el **tipo del dispositivo que mide**
+(`hardware_types.slug`, constante `HardwareType::SOLAR_CONTROLLER_SLUG`), no por
+el tipo de fuente: hoy casi todos los elementos reales tienen fuente
+«Fotovoltaica» y ésa no separa nada.
+
+Los badges cuentan sobre `HardwareEnergyResource::getEloquentQuery()`, que ya
+lleva el filtro por propietario de `ScopesToOwner`. Contar sobre el modelo a
+pelo daría números mayores que las filas que la tabla enseña.
+
+### El listado se agrupa por el dispositivo monitor
 
 Porque **es lo único que no cambia** entre las filas de un mismo medidor: el
 aparato medido, la instalación, la fuente y el `is_active` son de cada canal.
@@ -591,9 +616,10 @@ litio a una lámpara y el cargador de red a un microcontrolador.
 ### El formulario vive en un sitio
 
 `HardwareEnergyForm` tiene los campos y sus ayudas, y lo usan las tres
-pantallas: `deUnDispositivo()` para la ficha —sin preguntar medidor, medido ni
-papel, que los pone el contexto— y `completo()` para las otras dos. Copiarlo
-tres veces es la forma de que acaben diciendo cosas distintas.
+pantallas: `forADevice()` para la ficha del dispositivo —sin preguntar medidor,
+medido ni papel, que los pone el contexto—, `forSameMeter()` para los papeles
+del mismo medidor y `full()` para el listado. Copiarlo tres veces es la forma de
+que acaben diciendo cosas distintas.
 
 ### Dónde se crea cada papel
 
@@ -618,7 +644,7 @@ no se confundan con lo de arriba.
 ### «Energy» en las migas de pan
 
 `/admin/energy` no es una página: su `mount()` redirige al **primer** elemento de
-la subnavegación del clúster. `EnergyDashboard` y `EnergySystemResource` estaban
-empatados en `navigationSort`, ganaba Instalaciones, y pulsar «Energy» llevaba
-siempre allí — estando ya en esa pantalla, parecía que sólo se recargaba. El
+la subnavegación del clúster. Cuando `EnergyDashboard` empataba en
+`navigationSort` con el otro recurso del clúster, pulsar «Energy» llevaba
+siempre a ése — estando ya en esa pantalla, parecía que sólo se recargaba. El
 resumen es la portada del módulo, así que va con `navigationSort = 0`.
