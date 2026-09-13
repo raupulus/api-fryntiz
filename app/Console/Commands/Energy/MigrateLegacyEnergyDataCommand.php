@@ -85,31 +85,34 @@ class MigrateLegacyEnergyDataCommand extends Command
         }
 
         DB::transaction(function () use ($solarCount) {
-            $this->info('0/6. Vaciando tablas unificadas...');
+            $this->info('0/7. Vaciando tablas unificadas...');
             DB::statement('TRUNCATE TABLE hardware_energy_readings, hardware_energy_today, hardware_energy_historical RESTART IDENTITY CASCADE');
 
-            $this->info('1/6. Traspasando lecturas de generadores y consumos...');
+            $this->info('1/7. Traspasando lecturas de generadores y consumos...');
             $this->traspasaLecturasDeGeneradores();
             $this->traspasaLecturasDeConsumos();
 
             if ($solarCount > 0) {
-                $this->info('2/6. Descomponiendo hardware_power_generators_solar (panel, carga y batería)...');
+                $this->info('2/7. Descomponiendo hardware_power_generators_solar (panel, carga y batería)...');
                 $this->traspasaLecturasSolares();
             }
 
-            $this->info('3/6. Traspasando resúmenes diarios...');
+            $this->info('3/7. Traspasando resúmenes diarios...');
             $this->traspasaResumenesDiarios();
 
             if ($solarCount > 0) {
-                $this->info('4/6. Resúmenes diarios de la batería desde la tabla solar...');
+                $this->info('4/7. Resúmenes diarios de la batería desde la tabla solar...');
                 $this->traspasaResumenesDiariosDeBateria();
             }
 
-            $this->info('5/6. Traspasando acumulados históricos...');
+            $this->info('5/7. Traspasando acumulados históricos...');
             $this->traspasaAcumulados();
 
-            $this->info('6/6. Recalculando contadores y extremos diarios desde las lecturas...');
+            $this->info('6/7. Recalculando contadores y extremos diarios desde las lecturas...');
             $this->recalculaResumenesDesdeLasLecturas();
+
+            $this->info('7/7. Cuadrando las magnitudes de cada elemento con su tensión...');
+            $this->cuadraCadaElementoConSuTension();
         });
 
         $this->resumenFinal();
@@ -286,10 +289,10 @@ class MigrateLegacyEnergyDataCommand extends Command
      * horas siguen arrastrando el total de ayer, así que `MAX()` devolvía el
      * día anterior y toda la serie salía corrida un día.
      *
-     * Los vatios-hora se calculan —el Rover no tiene registro de vatios-hora de
-     * batería—, multiplicando los amperios-hora por la tensión media del banco
-     * ese día. Es la misma regla que usa la ingesta cuando falta una magnitud y
-     * sobran las otras dos.
+     * Los vatios-hora se quedan a cero aquí y los pone
+     * {@see self::cuadraCadaElementoConSuTension()}, para que todos los días de
+     * la batería se calculen con la misma regla y no unos con la tensión media
+     * medida y otros con la nominal.
      */
     private function traspasaResumenesDiariosDeBateria(): void
     {
@@ -313,8 +316,7 @@ class MigrateLegacyEnergyDataCommand extends Command
                     SELECT
                         s.date,
                         MIN(COALESCE(s.read_at, s.created_at)) AS desde,
-                        MAX(COALESCE(s.read_at, s.created_at)) AS hasta,
-                        AVG(NULLIF(s.battery_voltage, 0)) AS tension
+                        MAX(COALESCE(s.read_at, s.created_at)) AS hasta
                     FROM hardware_power_generators_solar AS s
                     WHERE s.hardware_device_id = ?
                       AND s.date IS NOT NULL
@@ -327,9 +329,7 @@ class MigrateLegacyEnergyDataCommand extends Command
                 )
                 SELECT
                     cierre.hardware_device_id, ?, cierre.date, 0,
-                    'derived', 'device',
-                    ROUND(cierre.amperios_hora * COALESCE(marco.tension, 0), 4),
-                    COALESCE(cierre.amperios_hora, 0),
+                    'derived', 'device', 0, COALESCE(cierre.amperios_hora, 0),
                     marco.desde, marco.hasta
                 FROM cierre
                 JOIN marco ON marco.date = cierre.date
@@ -514,6 +514,114 @@ class MigrateLegacyEnergyDataCommand extends Command
             GROUP BY e.hardware_device_id, r.hardware_energy_id, (r.created_at)::date
             ON CONFLICT (hardware_energy_id, date) DO NOTHING
         ");
+    }
+
+    // ──────────────── Cada magnitud con su tensión ──────────────────────
+
+    /**
+     * En cada fila, los vatios-hora y los amperios-hora tienen que cuadrar con
+     * **la tensión del elemento al que pertenecen**. Aquí no cuadraban.
+     *
+     * El Rover no mide amperios-hora de panel: los únicos que da son los que
+     * **entran y salen de la batería**, y el esquema viejo los guardaba en la
+     * fila del generador. Resultado: el panel, que es de 24 V nominales, tenía
+     * 743 Wh y 56 Ah el mismo día — una tensión implícita de 13,27 V, que es la
+     * de la batería—. Los 56 Ah eran los del banco, no los del panel.
+     *
+     * Lo que se hace, siguiendo la regla que ya está escrita en
+     * `docs/info/hardware/renogy-rover.md`:
+     *
+     * | Elemento | Vatios-hora | Amperios-hora |
+     * |---|---|---|
+     * | Generador | los del controlador | **calculados**: Wh ÷ tensión nominal del panel |
+     * | Batería | **calculados**: Ah × tensión nominal del banco | los de carga del controlador |
+     *
+     * Y la batería se queda con **todos** los días, no sólo con los de la tabla
+     * solar: sus amperios-hora de los cuatro años anteriores estaban en la fila
+     * del generador, que es de donde se traen.
+     *
+     * El acumulado de por vida se cuadra igual. El de la batería pasa a ser la
+     * suma de sus días en vez del registro que traía el esquema viejo —65.191 Ah
+     * frente a los 39.971 de la serie—: aquél contaba los 1.746 días que lleva
+     * encendido el controlador y nosotros sólo tenemos 915, así que mezclarlos
+     * era comparar dos tramos distintos. Con la suma, los 524.497 Wh generados y
+     * los ~480.000 almacenados dan un rendimiento del 91 %, que es lo que cabe
+     * esperar de un banco de plomo.
+     */
+    private function cuadraCadaElementoConSuTension(): void
+    {
+        foreach ($this->controladoresSolares() as $deviceId => $elementos) {
+            $generador = $elementos[HardwareEnergy::ROLE_GENERATOR] ?? null;
+            $bateria = $elementos[HardwareEnergy::ROLE_BATTERY] ?? null;
+
+            if ($generador === null || $bateria === null) {
+                continue;
+            }
+
+            $tensionPanel = HardwareEnergy::find($generador)?->nominal_voltage;
+            $tensionBanco = HardwareEnergy::find($bateria)?->nominal_voltage;
+
+            if ($tensionPanel === null || $tensionPanel <= 0 || $tensionBanco === null || $tensionBanco <= 0) {
+                $this->warn("Elemento {$generador} o {$bateria} sin tensión nominal: no se pueden cuadrar sus magnitudes.");
+
+                continue;
+            }
+
+            // 1. Los amperios-hora que el generador traía del esquema viejo son
+            //    los que entraron en el banco: se llevan a la batería, con los
+            //    días que ella no tenga.
+            DB::insert("
+                INSERT INTO hardware_energy_today (
+                    hardware_device_id, hardware_energy_id, date, readings_count,
+                    energy_wh_source, energy_ah_source, energy_wh, energy_ah,
+                    created_at, updated_at
+                )
+                SELECT
+                    ?, ?, g.date, 0,
+                    'derived', 'device', 0, g.energy_ah,
+                    g.created_at, g.updated_at
+                FROM hardware_energy_today AS g
+                WHERE g.hardware_energy_id = ?
+                  AND g.energy_ah > 0
+                ON CONFLICT (hardware_energy_id, date) DO NOTHING
+            ", [$deviceId, $bateria, $generador]);
+
+            // 2. Y el generador se queda con los suyos, los del panel.
+            DB::update("
+                UPDATE hardware_energy_today
+                SET energy_ah = ROUND(energy_wh / ?, 4), energy_ah_source = 'derived'
+                WHERE hardware_energy_id = ?
+            ", [$tensionPanel, $generador]);
+
+            // 3. Los vatios-hora de la batería, con la tensión del banco: el
+            //    Rover no tiene registro de vatios-hora de batería.
+            DB::update("
+                UPDATE hardware_energy_today
+                SET energy_wh = ROUND(energy_ah * ?, 4), energy_wh_source = 'derived'
+                WHERE hardware_energy_id = ?
+            ", [$tensionBanco, $bateria]);
+
+            // 4. Lo mismo en el acumulado de por vida.
+            DB::update("
+                UPDATE hardware_energy_historical
+                SET energy_ah = ROUND(energy_wh / ?, 4), energy_ah_source = 'derived'
+                WHERE hardware_energy_id = ?
+            ", [$tensionPanel, $generador]);
+
+            DB::update("
+                UPDATE hardware_energy_historical AS h
+                SET energy_ah = serie.amperios_hora,
+                    energy_wh = ROUND(serie.amperios_hora * ?, 4),
+                    energy_ah_source = 'derived',
+                    energy_wh_source = 'derived'
+                FROM (
+                    SELECT COALESCE(SUM(energy_ah), 0) AS amperios_hora
+                    FROM hardware_energy_today
+                    WHERE hardware_energy_id = ?
+                ) AS serie
+                WHERE h.hardware_energy_id = ?
+            ", [$tensionBanco, $bateria, $bateria]);
+        }
     }
 
     // ─────────────────────────────── Apoyo ──────────────────────────────

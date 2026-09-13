@@ -432,9 +432,16 @@ class MigrateLegacyEnergyDataCommandTest extends TestCase
         $bateria = DB::table('hardware_energy_historical')->where('hardware_energy_id', 11)->first();
 
         $this->assertNotNull($bateria, 'La batería se quedaba sin acumulado de por vida.');
-        $this->assertEqualsWithDelta(65191.0, (float) $bateria->energy_ah, 0.001);
         $this->assertSame(1348, (int) $bateria->number_battery_full_charges);
         $this->assertSame(26, (int) $bateria->number_battery_over_discharges);
+
+        // Los amperios-hora salen de la serie de días, no del registro que
+        // traía el esquema viejo. Ver `el_acumulado_de_por_vida_tambien_cuadra`.
+        $this->assertEqualsWithDelta(
+            (float) DB::table('hardware_energy_today')->where('hardware_energy_id', 11)->sum('energy_ah'),
+            (float) $bateria->energy_ah,
+            0.001
+        );
     }
 
     #[Test]
@@ -578,5 +585,77 @@ class MigrateLegacyEnergyDataCommandTest extends TestCase
             $this->assertSame('device', $dia->energy_ah_source, 'Los amperios-hora los declara el controlador.');
             $this->assertGreaterThan(0, (int) $dia->readings_count, 'Y sus lecturas se cuentan.');
         }
+    }
+
+    #[Test]
+    public function cada_elemento_cuadra_con_su_propia_tension(): void
+    {
+        // El Rover no mide amperios-hora de panel: los únicos que da son los de
+        // carga y descarga **del banco**, y el esquema viejo los guardaba en la
+        // fila del generador. Así, el panel —24 V nominales— tenía 743 Wh y
+        // 56 Ah el mismo día: una tensión implícita de 13,27 V, que es la de la
+        // batería.
+        $this->sembrarInstalacionSolarReal();
+
+        $dia = Carbon::parse('2026-09-12');
+
+        DB::table('hardware_power_generators_today')->insert([
+            'hardware_device_id' => 6,
+            'hardware_energy_id' => 4,
+            'date' => $dia->toDateString(),
+            'energy_wh' => 743.0,
+            'energy_ah' => 56.0,
+            'readings_count' => 0,
+            'created_at' => $dia, 'updated_at' => $dia,
+        ]);
+
+        $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
+
+        $panel = DB::table('hardware_energy_today')
+            ->where('hardware_energy_id', 4)->where('date', $dia->toDateString())->first();
+
+        $this->assertNotNull($panel);
+        $this->assertEqualsWithDelta(743.0, (float) $panel->energy_wh, 0.001, 'Los vatios-hora los mide el controlador.');
+        $this->assertEqualsWithDelta(743 / 24, (float) $panel->energy_ah, 0.001, 'Y los amperios del panel salen de su tensión.');
+        $this->assertSame('derived', $panel->energy_ah_source);
+
+        // Los 56 Ah eran del banco y ahí es donde tienen que estar.
+        $banco = DB::table('hardware_energy_today')
+            ->where('hardware_energy_id', 11)->where('date', $dia->toDateString())->first();
+
+        $this->assertNotNull($banco, 'La batería se quedaba sin los días que el generador le guardaba.');
+        $this->assertEqualsWithDelta(56.0, (float) $banco->energy_ah, 0.001);
+        $this->assertEqualsWithDelta(56 * 12, (float) $banco->energy_wh, 0.001);
+        $this->assertSame('device', $banco->energy_ah_source);
+    }
+
+    #[Test]
+    public function el_acumulado_de_por_vida_tambien_cuadra(): void
+    {
+        $this->sembrarInstalacionSolarReal();
+
+        $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
+
+        $panel = DB::table('hardware_energy_historical')->where('hardware_energy_id', 4)->first();
+
+        $this->assertNotNull($panel);
+        $this->assertEqualsWithDelta(
+            (float) $panel->energy_wh / 24,
+            (float) $panel->energy_ah,
+            0.001,
+            'El panel es de 24 V: sus vatios-hora y sus amperios-hora tienen que decirlo.'
+        );
+
+        // El acumulado del banco es la suma de sus días, no el registro que
+        // traía el esquema viejo: aquél contaba los 1.746 días que lleva
+        // encendido el controlador y de la serie sólo tenemos una parte, así que
+        // mezclarlos era comparar dos tramos distintos.
+        $banco = DB::table('hardware_energy_historical')->where('hardware_energy_id', 11)->first();
+        $suma = (float) DB::table('hardware_energy_today')->where('hardware_energy_id', 11)->sum('energy_ah');
+
+        $this->assertNotNull($banco);
+        $this->assertEqualsWithDelta($suma, (float) $banco->energy_ah, 0.001);
+        $this->assertEqualsWithDelta($suma * 12, (float) $banco->energy_wh, 0.001);
+        $this->assertNotEqualsWithDelta(65191.0, (float) $banco->energy_ah, 0.001);
     }
 }

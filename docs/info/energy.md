@@ -362,10 +362,43 @@ Lo que el aparato no mida, **no se manda ni se duplica**: se omite y el servidor
 lo calcula de las lecturas. Un montaje que declara lo que entra al banco y lo que
 sale a los consumos ya describe el balance entero.
 
-> **El esquema viejo lo hacía al revés.** El contrato de la V1 ponía los
-> amperios-hora de carga en el generador, así que el elemento 4 del Renogy
-> arrastra ese valor de la migración. Se conserva —es un dato real— pero marcado
-> como calculado, no como odómetro: el Rover no mide los amperios-hora del panel.
+#### Los vatios-hora y los amperios-hora de una fila cuadran con la tensión de su elemento
+
+Es la comprobación que lo destapa todo: `energy_wh / energy_ah` de una fila tiene
+que dar **la tensión de ese elemento**. Si da otra, la fila lleva la medida de
+otro sitio del circuito.
+
+**El esquema viejo lo hacía al revés.** El contrato de la V1 ponía los
+amperios-hora de carga del banco en el generador, y así el panel del Rover
+—24 V nominales— acabó con 743 Wh y 56 Ah el mismo día: **13,27 V implícitos**,
+que son los de la batería. Los 56 Ah nunca fueron del panel.
+
+El traspaso lo cuadra, siguiendo esta tabla:
+
+| Elemento | Vatios-hora | Amperios-hora |
+|---|---|---|
+| Generador | los del controlador | **calculados**: Wh ÷ tensión nominal del panel |
+| Batería | **calculados**: Ah × tensión nominal del banco | los de carga del controlador |
+| Consumo | los del controlador | los del controlador |
+
+Y la batería se queda con **todos** los días, no sólo con aquellos en los que
+existe la tabla solar: sus amperios-hora de los años anteriores estaban en la
+fila del generador.
+
+El acumulado de por vida del banco pasa a ser **la suma de sus días** en vez del
+registro que traía el esquema viejo —39.971 Ah frente a 65.191—: aquél contaba
+los 1.746 días que lleva encendido el controlador y de la serie sólo tenemos 915,
+así que mezclarlos era comparar dos tramos distintos. Con la suma, la instalación
+real queda así:
+
+| | Wh de por vida | Ah | V implícita |
+|---|---|---|---|
+| Panel | 524.497 | 21.854 | **24,00** |
+| Batería | 479.652 | 39.971 | **12,00** |
+| Consumo | 450.527 | 35.788 | 12,59 |
+
+91,4 % del panel entra en el banco y el 94 % de eso sale a los consumos, que es
+lo que cabe esperar.
 
 ### 4.3. Qué declara el aparato y qué calculamos nosotros
 

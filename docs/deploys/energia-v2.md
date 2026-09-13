@@ -23,6 +23,7 @@ volviendo a traspasar con el código nuevo.
 | Días sin lecturas contadas | `readings_count` a 0 en 907 de los 915 días, teniendo 400 lecturas guardadas de cada uno |
 | Lecturas del consumo duplicadas | Del 06 al 13 de septiembre, las mismas 1.720 lecturas estaban en `hardware_power_loads` y en `hardware_power_generators_solar`, y entraron dos veces |
 | La batería sin resúmenes diarios | Tenía 1.730 lecturas y ni un solo día resumido |
+| Los amperios-hora del banco en la fila del panel | El panel, de 24 V nominales, tenía 743 Wh y 56 Ah el mismo día: 13,27 V implícitos, que son los de la batería |
 
 ## Cómo se arregla
 
@@ -75,6 +76,20 @@ volviendo a traspasar con el código nuevo.
       FROM hardware_energy_today
       WHERE hardware_energy_id = 11 ORDER BY date DESC LIMIT 5;"
       ```
+- [ ] **Que cada elemento cuadre con su tensión.** Dividir las dos columnas de
+      una fila tiene que dar la tensión nominal de ese elemento; si da otra, la
+      fila lleva la medida de otro sitio del circuito:
+      ```bash
+      psql -d raupulus_api -c "
+      SELECT h.hardware_energy_id, e.role, e.nominal_voltage,
+             h.energy_wh, h.energy_ah,
+             round(h.energy_wh / NULLIF(h.energy_ah, 0), 2) AS v_implicita
+      FROM hardware_energy_historical h
+      JOIN hardware_energy e ON e.id = h.hardware_energy_id
+      WHERE e.hardware_device_id = 6 ORDER BY 1;"
+      ```
+      El panel a **24,00**, la batería a **12,00**. El consumo sale sobre 12,6:
+      ésos los declara el Rover enteros y no se tocan.
 - [ ] **Dejar que suba una lectura** y comprobar que **no** se abre una sesión 2:
       ```bash
       psql -d raupulus_api -c "

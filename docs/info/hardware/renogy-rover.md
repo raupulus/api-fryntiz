@@ -138,6 +138,12 @@ Con eso el balance queda descrito entero sin duplicar nada: lo que entra al banc
 (`battery`), lo que sale a los consumos (`loads[]`) y lo que produce el panel
 (`generator`, en Wh del aparato y Ah calculados).
 
+**Lo que se calcula, se calcula con la tensión nominal del elemento**: los Ah del
+panel son `Wh ÷ 24 V` y los Wh del banco son `Ah × 12 V`. La comprobación de que
+está bien es dividir las dos columnas de una fila: tiene que salir la tensión de
+ese elemento. Cuando el traspaso dejaba los Ah de carga en la fila del panel,
+salían **13,27 V** —los del banco— en un elemento de 24 V.
+
 `hardware_energy_historical` guarda esa decisión en `energy_wh_source` y
 `energy_ah_source`, **una por magnitud**. Con una sola marca para las dos, los
 vatios-hora de la batería se quedaban congelados a 0 para siempre mientras el
