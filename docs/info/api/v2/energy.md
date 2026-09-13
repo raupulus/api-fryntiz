@@ -255,9 +255,15 @@ de esta misma petición supera el máximo que declaras, gana la lectura.
 | `battery_over_discharges` | int ≥ 0 | Ciclos de sobredescarga del banco |
 | `total_operating_days` | int ≥ 0 | Días de funcionamiento. Alias: `days_operating` |
 
-Un acumulado de por vida **nunca baja**. Si mandas uno menor que el guardado, el
-servidor entiende que tu contador se reinició y abre una sesión nueva; el total
-del elemento pasa a ser la suma de sus sesiones.
+**Manda el valor que marca tu contador, tal cual, en cada lectura.** El servidor
+se queda con **cuánto ha subido desde la última vez**, no con lo que marca: así
+puedes mandarlo siempre sin miedo a inflar nada, y da igual que tu contador vaya
+por debajo de lo que el servidor lleve acumulado —que es lo normal si el aparato
+se reinició antes de que existiera este endpoint—.
+
+Si el valor se desploma a menos de la mitad, el servidor entiende que tu contador
+se reinició y abre una sesión nueva. El total del elemento es la suma de sus
+sesiones.
 
 `battery_full_charges` y `battery_over_discharges` son del banco de baterías: su
 sitio es `battery`. Se aceptan en los tres bloques por comodidad, pero mándalos
@@ -410,16 +416,33 @@ un tramo entre reinicios del contador del aparato.
 
 | Si mandas | El total de por vida |
 |---|---|
-| `historical_energy_wh` / `historical_energy_ah` | Se guarda **el mayor** entre el que había y el que mandas. Nunca baja |
+| `historical_energy_wh` / `historical_energy_ah` | Se suma **lo que tu contador haya subido** desde la lectura anterior |
 | No los mandas | **Se suma** el `energy_wh` / `energy_ah` de cada lectura |
 
-**Qué pasa si tu contador se reinicia.** Si el valor que mandas cae por debajo de
-la mitad del guardado, el servidor entiende que tu aparato se reinició:
+**Tu contador aporta su avance, no su valor.** El servidor recuerda el último que
+mandaste y suma la diferencia. La primera vez que mandas uno sólo se anota el
+punto de partida —si ya había acumulado, no se suma nada: no hay forma de saber
+cuánto de lo que marca ya estaba contado—.
+
+Esto significa que **no importa que tu contador marque menos que el total del
+servidor**. Es el caso del Rover: el servidor lleva 524.497 Wh contados desde
+2022 y el registro Modbus del controlador marca 41.206 porque se reinició por el
+camino. Mándalo igual; lo que cuenta es cómo sube.
 
 ```
-Sesión 1 con 5.000 Wh acumulados
-  mandas 4.900  →  se ignora (no baja): sesión 1 sigue en 5.000
-  mandas    30  →  cae a menos de la mitad: se abre la sesión 2 con 30
+Acumulado del servidor: 524.497 Wh   (contador del aparato: nunca visto)
+  mandas 41.206  →  se anota el punto de partida. Total sigue en 524.497
+  mandas 41.220  →  subió 14. Total: 524.511
+  mandas 41.234  →  subió 14. Total: 524.525
+```
+
+**Qué pasa si tu contador se reinicia.** Si el valor se desploma a menos de la
+mitad del último que mandaste, el servidor abre una sesión nueva:
+
+```
+Sesión 1 con 5.000 Wh, contador del aparato en 5.000
+  mandas 4.900  →  retroceso pequeño: se ignora. Sesión 1 sigue en 5.000
+  mandas    30  →  menos de la mitad: se abre la sesión 2 con 30
 
 Total del elemento = 5.000 + 30 = 5.030 Wh
 ```

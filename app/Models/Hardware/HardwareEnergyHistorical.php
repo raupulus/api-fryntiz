@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $readings_count Lecturas acumuladas en esta sesión
  * @property string $energy_wh_source device = odómetro del aparato | derived = suma de nuestras lecturas
  * @property string $energy_ah_source device = odómetro del aparato | derived = suma de nuestras lecturas
+ * @property float|null $energy_wh_device_total Último total de Wh que reportó el aparato
+ * @property float|null $energy_ah_device_total Último total de Ah que reportó el aparato
  * @property float $energy_wh Total acumulado de energía en esta sesión (Wh)
  * @property float $energy_ah Total acumulado de amperios-hora en esta sesión (Ah)
  * @property int|null $number_battery_full_charges Ciclos de carga completa acumulados
@@ -87,6 +89,37 @@ class HardwareEnergyHistorical extends BaseModel
         'energy_ah' => 'energy_ah_source',
     ];
 
+    /**
+     * Dónde se recuerda el último odómetro que reportó el aparato, magnitud a
+     * magnitud.
+     *
+     * Es lo que permite sumar **avances** en vez de sustituir totales, y lo
+     * único contra lo que tiene sentido comparar para saber si el aparato se ha
+     * reiniciado: comparar su odómetro contra nuestro acumulado es comparar dos
+     * cosas que no miden lo mismo.
+     *
+     * @var array<string, string>
+     */
+    public const DEVICE_TOTAL_COLUMNS = [
+        'energy_wh' => 'energy_wh_device_total',
+        'energy_ah' => 'energy_ah_device_total',
+    ];
+
+    /**
+     * Por debajo de qué fracción del último odómetro se considera que el
+     * aparato ha vuelto a contar desde cero.
+     *
+     * No es `< anterior` a secas porque un registro Modbus leído a medias o una
+     * lectura corrupta hacen bajar la cifra sin que nada se haya reiniciado.
+     */
+    private const RESET_FACTOR = 0.5;
+
+    /**
+     * Odómetro por debajo del cual no se juzga nada: con cifras pequeñas, medio
+     * vatio-hora de ruido dispara cualquier proporción.
+     */
+    private const RESET_FLOOR = 50.0;
+
     protected $table = 'hardware_energy_historical';
 
     protected $fillable = [
@@ -97,6 +130,8 @@ class HardwareEnergyHistorical extends BaseModel
         'readings_count',
         'energy_wh_source',
         'energy_ah_source',
+        'energy_wh_device_total',
+        'energy_ah_device_total',
         'energy_wh',
         'energy_ah',
         'number_battery_full_charges',
@@ -123,6 +158,8 @@ class HardwareEnergyHistorical extends BaseModel
         'readings_count' => 'integer',
         'energy_wh_source' => 'string',
         'energy_ah_source' => 'string',
+        'energy_wh_device_total' => 'float',
+        'energy_ah_device_total' => 'float',
         'energy_wh' => 'float',
         'energy_ah' => 'float',
         'number_battery_full_charges' => 'integer',
@@ -220,15 +257,21 @@ class HardwareEnergyHistorical extends BaseModel
             ? (float) $data['historical_energy_ah']
             : (isset($data['total_energy_ah']) ? (float) $data['total_energy_ah'] : null);
 
-        // Detección de reinicio de odómetro: si el total reportado cae significativamente por debajo del acumulado previo
-        $isReset = false;
-        if ($latest !== null) {
-            if ($reportedWh !== null && $latest->energy_wh > 50.0 && $reportedWh < ($latest->energy_wh * 0.5)) {
-                $isReset = true;
-            } elseif ($reportedAh !== null && $latest->energy_ah > 50.0 && $reportedAh < ($latest->energy_ah * 0.5)) {
-                $isReset = true;
-            }
-        }
+        // **El reinicio se detecta comparando el odómetro consigo mismo.**
+        //
+        // Antes esto comparaba el total que manda el aparato contra el que
+        // tenemos acumulado, y son dos números que no miden lo mismo: el
+        // nuestro puede venir de sumar años de resúmenes diarios y el suyo de
+        // un registro que empezó a contar mucho después. Con esa regla,
+        // cualquier aparato cuyo contador vaya por debajo de nuestra suma
+        // parecía reiniciado en cuanto abría la boca — y partía el histórico en
+        // dos. Pasó en producción el 13/09/2026: la primera subida con el
+        // contrato nuevo abrió una sesión 2 en el panel, el consumo y la
+        // batería del Rover sin que el controlador se hubiera reiniciado.
+        $isReset = $latest !== null && (
+            self::odometroReiniciado($reportedWh, $latest->energy_wh_device_total)
+            || self::odometroReiniciado($reportedAh, $latest->energy_ah_device_total)
+        );
 
         if ($latest === null) {
             $record = self::lockSession($deviceId, $elementId, 1);
@@ -295,18 +338,55 @@ class HardwareEnergyHistorical extends BaseModel
     }
 
     /**
+     * ¿El aparato ha vuelto a contar desde cero?
+     *
+     * Sólo se puede responder comparando su odómetro con **el último valor que
+     * él mismo reportó**. Mientras no haya uno anterior con el que comparar
+     * —la primera vez que manda esta magnitud— no se puede afirmar nada, y no
+     * afirmar nada es lo correcto: dar por reiniciado lo que no lo está parte
+     * el histórico en dos.
+     */
+    private static function odometroReiniciado(?float $reportado, ?float $ultimoDelAparato): bool
+    {
+        if ($reportado === null || $ultimoDelAparato === null) {
+            return false;
+        }
+
+        return $ultimoDelAparato > self::RESET_FLOOR
+            && $reportado < ($ultimoDelAparato * self::RESET_FACTOR);
+    }
+
+    /**
      * Acumula una magnitud respetando de dónde sale.
      *
-     * En cuanto llega un odómetro de esta magnitud, la magnitud queda fijada
-     * como `device` para el resto de la sesión: sus totales son los del aparato
-     * y los deltas que calculamos nosotros dejan de sumarse, porque sumarlos
-     * encima de un total absoluto lo infla sin vuelta atrás. Mientras no llegue
-     * ninguno, se van sumando los deltas de cada lectura.
+     * ## Con odómetro del aparato: se suma lo que avanza, no lo que marca
      *
-     * El `max()` es lo que impide que un acumulado baje: un odómetro que
-     * retrocede sin llegar a la mitad —una lectura corrupta, un registro leído
-     * a medias— no borra lo que ya había. Un reinicio de verdad no pasa por
-     * aquí: lo detecta {@see self::accumulateForElement()} y abre otra sesión.
+     * Un odómetro es un total absoluto, y lo que aporta a nuestro acumulado es
+     * **su avance desde la última vez**, no su valor. Guardarlo tal cual —con
+     * `max()`, como se hacía— tenía dos formas de salir mal:
+     *
+     * - Si nuestro total ya era mayor, el acumulado se quedaba congelado. El
+     *   Rover lleva 524.497 Wh contados desde 2022 y su registro marca 41.206:
+     *   ninguna lectura suya volvería a mover la cifra en años.
+     * - Si el aparato se adoptaba de golpe, su odómetro traía dentro energía
+     *   que ya estaba contada en nuestro total, y se contaba dos veces.
+     *
+     * Por eso la **primera** vez que llega el odómetro de una magnitud sólo se
+     * anota el punto de partida: no hay forma de saber cuánto de lo que marca
+     * ya está en lo que tenemos. Desde ahí se suman avances. Si el aparato se
+     * ha reiniciado, todo lo que marca es nuevo y se suma entero —aunque el
+     * caso normal es que {@see self::accumulateForElement()} ya haya abierto
+     * otra sesión y esta fila empiece de cero—.
+     *
+     * Si no hay nada acumulado todavía, el odómetro **es** el total: es el
+     * aparato recién dado de alta, y su historia entera es la suya.
+     *
+     * ## Sin odómetro: se suman nuestros deltas
+     *
+     * Y en cuanto una magnitud ha traído odómetro alguna vez queda fijada como
+     * `device` para el resto de la sesión: sus totales son los del aparato y
+     * los deltas que calculamos nosotros dejan de sumarse, porque sumarlos
+     * encima de un total absoluto lo infla sin vuelta atrás.
      *
      * @param  'energy_wh'|'energy_ah'  $magnitud
      * @param  float|null  $odometro  Total absoluto declarado por el aparato.
@@ -315,10 +395,38 @@ class HardwareEnergyHistorical extends BaseModel
     private function acumulaMagnitud(string $magnitud, ?float $odometro, mixed $delta): void
     {
         $columnaOrigen = self::SOURCE_COLUMNS[$magnitud];
+        $columnaOdometro = self::DEVICE_TOTAL_COLUMNS[$magnitud];
 
         if ($odometro !== null) {
+            $anterior = $this->{$columnaOdometro} !== null ? (float) $this->{$columnaOdometro} : null;
+
             $this->{$columnaOrigen} = self::SOURCE_DEVICE;
-            $this->{$magnitud} = max((float) $this->{$magnitud}, $odometro);
+
+            if ($anterior === null) {
+                // Primera vez que vemos su odómetro. Si no hay nada acumulado,
+                // su total es el nuestro; si lo hay, sólo se adopta el punto de
+                // partida y desde aquí se cuentan avances.
+                $this->{$columnaOdometro} = $odometro;
+
+                if ((float) $this->{$magnitud} <= 0.0) {
+                    $this->{$magnitud} = $odometro;
+                }
+
+                return;
+            }
+
+            if ($odometro < $anterior) {
+                // Retrocede sin llegar a reiniciarse: un registro leído a
+                // medias, una lectura corrupta. Ni suma ni mueve la referencia
+                // hacia atrás —moverla convertiría la siguiente lectura buena
+                // en un avance enorme—. Un reinicio de verdad no pasa por aquí:
+                // lo detecta {@see self::accumulateForElement()} y abre otra
+                // sesión, que empieza sin odómetro anterior.
+                return;
+            }
+
+            $this->{$columnaOdometro} = $odometro;
+            $this->{$magnitud} = (float) $this->{$magnitud} + ($odometro - $anterior);
 
             return;
         }

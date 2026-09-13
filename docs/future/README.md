@@ -12,6 +12,6 @@ no versionada) y de `docs/info/` (documentación técnica de lo que existe).
 | [`retencion-datos-iot.md`](retencion-datos-iot.md) | Estrategia de crecimiento y particionado de las tablas de sensores | Cuando el volumen lo justifique |
 | [`revisar-aemet.md`](revisar-aemet.md) | Decidir qué endpoints de AEMET sin implementar interesan (el endurecimiento del parseo y de errores/cuota ya se hizo) | Sin fecha; no bloquea el despliegue |
 | [`content-conteo-palabras-y-tiempo-lectura.md`](content-conteo-palabras-y-tiempo-lectura.md) | Guardar conteo de caracteres y/o palabras por página y exponer tiempo estimado de lectura en la API de Content | Sin fecha; no bloquea el despliegue |
-| [`limpieza-energia-legacy.md`](limpieza-energia-legacy.md) | Retirar el andamiaje del esquema de energía: el comando de traspaso, las ocho tablas del esquema viejo (456 MB) y consolidar once migraciones en cuatro | Cuando el esquema unificado lleve unos meses estable en producción |
+| [`limpieza-energia-legacy.md`](limpieza-energia-legacy.md) | Retirar el andamiaje del esquema de energía: el comando de traspaso, las ocho tablas del esquema viejo (456 MB) y consolidar doce migraciones en cuatro | Cuando el esquema unificado lleve unos meses estable en producción |
 
 > Creado: 2026-08-30 · Última revisión: 2026-09-13

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Hardware\HardwareDevices\RelationManagers;
 
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\HardwareEnergyForm;
+use App\Filament\Admin\Resources\Hardware\HardwareEnergies\HardwareEnergyResource;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -89,6 +91,15 @@ class EnergyRelationManager extends RelationManager
             ])
             ->headerActions($this->creationButtons())
             ->recordActions([
+                // Lleva a la ficha del elemento, que es donde están sus
+                // lecturas, sus resúmenes diarios y su acumulado. Sin esto, ver
+                // la telemetría de otro papel del mismo aparato obligaba a
+                // volver al listado general y buscarlo a mano.
+                Action::make('telemetria')
+                    ->label('Telemetría')
+                    ->icon('heroicon-o-chart-bar')
+                    ->color('gray')
+                    ->url(fn (HardwareEnergy $record): string => HardwareEnergyResource::getUrl('edit', ['record' => $record])),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

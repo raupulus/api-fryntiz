@@ -7,6 +7,7 @@ namespace Tests\Feature\Console\Energy;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -342,6 +343,10 @@ class MigrateLegacyEnergyDataCommandTest extends TestCase
 
         DB::table('hardware_power_generators_solar')->insert([
             'hardware_device_id' => 6,
+            'date' => now('UTC')->toDateString(),
+            'read_at' => now('UTC'),
+            'day_charging_amp_hours' => 66.0,
+            'day_power_generation_wh' => 853.0,
             'voltage' => 25.4, 'amperage' => 4.2, 'power' => 106.7,
             'load_voltage' => 12.9, 'load_current' => 2.1, 'load_power' => 27.1, 'load_fan' => 0,
             'battery_voltage' => 12.4, 'battery_current' => -2.24, 'battery_power' => -27.78,
@@ -370,7 +375,9 @@ class MigrateLegacyEnergyDataCommandTest extends TestCase
 
         $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
 
-        foreach ([4, 7, 11] as $elemento) {
+        // El sembrado sólo trae el acumulado del generador; de ahí sale también
+        // el de la batería.
+        foreach ([4, 11] as $elemento) {
             $this->assertSame(
                 1,
                 DB::table('hardware_energy_readings')->where('hardware_energy_id', $elemento)->count(),
@@ -431,23 +438,145 @@ class MigrateLegacyEnergyDataCommandTest extends TestCase
     }
 
     #[Test]
-    public function the_rover_accumulators_are_marked_as_the_device_own(): void
+    public function lo_que_viene_del_esquema_viejo_no_es_el_odometro_del_aparato(): void
     {
         $this->sembrarInstalacionSolarReal();
 
         $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
 
-        // El panel: los vatios-hora los mide el Rover, los amperios-hora no.
-        // Los Ah que traía el esquema viejo eran los **cargados a la batería**,
-        // que en el contrato nuevo son del elemento batería.
-        $panel = DB::table('hardware_energy_historical')->where('hardware_energy_id', 4)->first();
-        $this->assertSame('device', $panel->energy_wh_source);
-        $this->assertSame('derived', $panel->energy_ah_source);
+        // **El acumulado del esquema viejo lo calculábamos nosotros.** La V1
+        // sumaba los totales diarios que declaraba el controlador, año tras
+        // año; no es el registro Modbus del Rover. Se nota en los números: el
+        // panel llevaba 524.497 Wh contados así mientras el registro del
+        // aparato marcaba 41.206, porque el controlador se reinició en algún
+        // momento de esos cuatro años.
+        //
+        // Marcarlo como `device` era afirmar que ese número lo puso el aparato,
+        // y con esa mentira pasaban dos cosas: el acumulado se congelaba —se
+        // guardaba con `max()` y el odómetro nunca lo alcanzaría— y la primera
+        // subida parecía un reinicio, porque el odómetro venía muy por debajo.
+        // El 13/09/2026 partió en dos el histórico del panel, el consumo y la
+        // batería en producción.
+        // El sembrado sólo trae el acumulado del generador; de ahí sale también
+        // el de la batería.
+        foreach ([4, 11] as $elemento) {
+            $fila = DB::table('hardware_energy_historical')->where('hardware_energy_id', $elemento)->first();
 
-        // La batería sólo tiene odómetro de amperios-hora: el Rover no da
-        // vatios-hora de batería, así que ésos hay que calcularlos.
-        $bateria = DB::table('hardware_energy_historical')->where('hardware_energy_id', 11)->first();
-        $this->assertSame('derived', $bateria->energy_wh_source);
-        $this->assertSame('device', $bateria->energy_ah_source);
+            $this->assertNotNull($fila);
+            $this->assertSame('derived', $fila->energy_wh_source, "Elemento {$elemento}: los Wh los sumamos nosotros.");
+            $this->assertSame('derived', $fila->energy_ah_source, "Elemento {$elemento}: los Ah los sumamos nosotros.");
+            $this->assertNull($fila->energy_wh_device_total, "Elemento {$elemento}: el aparato aún no ha declarado odómetro.");
+            $this->assertNull($fila->energy_ah_device_total, "Elemento {$elemento}: el aparato aún no ha declarado odómetro.");
+        }
+    }
+
+    // ── Lo que el esquema viejo traía mal ─────────────────────────────────
+
+    #[Test]
+    public function las_lecturas_que_estaban_en_dos_tablas_no_se_duplican(): void
+    {
+        // `hardware_power_loads` siguió recibiendo las lecturas del Rover
+        // mientras `hardware_power_generators_solar` ya las guardaba también.
+        // Del 06 al 13 de septiembre de 2026 las mismas 1.720 lecturas estaban
+        // en las dos tablas, y el traspaso las metía dos veces.
+        $this->sembrarInstalacionSolarReal();
+
+        $instante = Carbon::parse('2026-09-10 12:05:13');
+
+        DB::table('hardware_power_loads')->insert([
+            'hardware_device_id' => 6,
+            'hardware_energy_id' => 7,
+            'voltage' => 14.1, 'amperage' => 2.0, 'power' => 28.0,
+            'read_at' => $instante, 'created_at' => $instante, 'updated_at' => $instante,
+        ]);
+
+        $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
+
+        $this->assertSame(
+            1,
+            DB::table('hardware_energy_readings')
+                ->where('hardware_energy_id', 7)
+                ->where('created_at', $instante)
+                ->count(),
+            'La misma lectura estaba en las dos tablas viejas y entró dos veces.'
+        );
+    }
+
+    #[Test]
+    public function los_contadores_y_los_extremos_del_dia_salen_de_las_lecturas(): void
+    {
+        // El esquema viejo los recibía del firmware y venían mal: `power_max`
+        // era literalmente `amperage_max × 100` —1.090 W en un controlador cuya
+        // lectura máxima real de ese día fueron 145 W— y `readings_count`
+        // llegaba a 0 pese a haber cientos de lecturas guardadas.
+        $dia = Carbon::parse('2026-09-04');
+
+        DB::table('hardware_power_generators')->insert([
+            [
+                'hardware_device_id' => $this->generador->hardware_device_id,
+                'hardware_energy_id' => $this->generador->id,
+                'voltage' => 35.5, 'amperage' => 4.8, 'power' => 145.0,
+                'read_at' => $dia->copy()->setTime(12, 0),
+                'created_at' => $dia->copy()->setTime(12, 0),
+                'updated_at' => $dia->copy()->setTime(12, 0),
+            ],
+            [
+                'hardware_device_id' => $this->generador->hardware_device_id,
+                'hardware_energy_id' => $this->generador->id,
+                'voltage' => 30.0, 'amperage' => 2.0, 'power' => 60.0,
+                'read_at' => $dia->copy()->setTime(13, 0),
+                'created_at' => $dia->copy()->setTime(13, 0),
+                'updated_at' => $dia->copy()->setTime(13, 0),
+            ],
+        ]);
+
+        DB::table('hardware_power_generators_today')->insert([
+            'hardware_device_id' => $this->generador->hardware_device_id,
+            'hardware_energy_id' => $this->generador->id,
+            'date' => $dia->toDateString(),
+            'energy_wh' => 697.0,
+            'readings_count' => 0,
+            'amperage_max' => 10.9,
+            'power_max' => 1090.0,
+            'created_at' => $dia, 'updated_at' => $dia,
+        ]);
+
+        $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
+
+        $resumen = DB::table('hardware_energy_today')
+            ->where('hardware_energy_id', $this->generador->id)
+            ->where('date', $dia->toDateString())
+            ->first();
+
+        $this->assertNotNull($resumen);
+        $this->assertSame(2, (int) $resumen->readings_count, 'Las lecturas están: hay que contarlas.');
+        $this->assertEqualsWithDelta(145.0, (float) $resumen->power_max, 0.001, 'El pico sale de las lecturas, no del firmware.');
+        $this->assertEqualsWithDelta(4.8, (float) $resumen->amperage_max, 0.001);
+        $this->assertEqualsWithDelta(30.0, (float) $resumen->voltage_min, 0.001);
+
+        // La energía del día sí la declara el controlador y no se toca: las
+        // lecturas viejas no la traen, no hay nada mejor con lo que sustituirla.
+        $this->assertEqualsWithDelta(697.0, (float) $resumen->energy_wh, 0.001);
+        $this->assertSame('device', $resumen->energy_wh_source);
+    }
+
+    #[Test]
+    public function la_bateria_del_controlador_se_queda_con_sus_dias(): void
+    {
+        // En el esquema viejo no había tabla de resúmenes diarios de batería, y
+        // la batería acababa con lecturas pero sin un solo día resumido: el
+        // panel no tenía nada que enseñar de ella.
+        $this->sembrarInstalacionSolarReal();
+
+        $this->artisan('energy:migrate-legacy-data', ['--force' => true])->assertExitCode(0);
+
+        $dias = DB::table('hardware_energy_today')->where('hardware_energy_id', 11)->get();
+
+        $this->assertTrue($dias->isNotEmpty(), 'La batería se quedaba sin resúmenes diarios.');
+
+        foreach ($dias as $dia) {
+            $this->assertSame('device', $dia->energy_ah_source, 'Los amperios-hora los declara el controlador.');
+            $this->assertGreaterThan(0, (int) $dia->readings_count, 'Y sus lecturas se cuentan.');
+        }
     }
 }

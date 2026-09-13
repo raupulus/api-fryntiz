@@ -567,8 +567,38 @@ saliera en dos, editarlo en una y mirarlo en la otra daría respuestas distintas
 
 | Pantalla | Qué gestiona | Criterio |
 |---|---|---|
+| Energy · **Aparatos** | La cara energética de un aparato: **todos sus papeles juntos** | Sólo los aparatos con algún elemento dado de alta |
+| Energy · **Elementos de energía** | Todos los elementos, repartidos en pestañas | Es el listado del módulo |
 | Ficha del dispositivo · pestaña **Energía** | Los papeles de **ese** aparato, midiéndose a sí mismo | Alta rápida: el papel lo pone el botón y el monitorizado se rellena solo |
-| **Elementos de energía** | Todos los elementos, repartidos en pestañas | Es el listado del módulo |
+
+### Aparatos: entrar por el cacharro y no por el papel
+
+Un controlador solar son tres papeles, y mirarlos de uno en uno obligaba a
+volver al listado general entre medias. **Aparatos** entra por el otro lado:
+cada fila es un aparato con sus papeles en badges, y dentro están los tres, con
+un enlace directo a la telemetría de cada uno.
+
+Los aparatos **no se dan de alta ni se editan desde aquí** —eso es de Hardware;
+hay un botón a su ficha—. Lo único que se gestiona son sus papeles, con el mismo
+relation manager que usa la ficha de Hardware, para que no acaben diciendo cosas
+distintas.
+
+⚠️ El recurso redefine `getEloquentQuery()` para quedarse sólo con los aparatos
+que miden algo, y eso **gana al método del trait `ScopesToOwner`**: sin aliasarlo
+(`getEloquentQuery as protected consultaDelPropietario`) el filtro por
+propietario desaparecía entero y el listado enseñaba los aparatos de todos los
+usuarios (AR-SEC-02). Hay test.
+
+### El papel se elige al crear y no se cambia
+
+`role` está deshabilitado en cuanto el elemento existe. Cambiarlo no convierte
+un elemento en otro: deja sus lecturas, sus resúmenes diarios y su acumulado de
+años contando algo que ya no es —la generación de un panel pasaría a figurar
+como consumo— y no hay forma de deshacerlo. Además es parte del índice único
+junto al medidor, el medido y el canal, así que moverlo puede chocar con otro
+elemento.
+
+Si un elemento está mal, se da de baja y se crea el bueno.
 
 Hubo una pantalla **Instalaciones** que se quedaba con los elementos de los
 controladores solares y los apartaba del listado general. Desapareció con la

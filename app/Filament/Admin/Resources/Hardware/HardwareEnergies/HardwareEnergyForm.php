@@ -130,6 +130,20 @@ class HardwareEnergyForm
         ]);
     }
 
+    /**
+     * El papel se elige **al crear y nunca más**.
+     *
+     * Cambiarlo en un elemento que ya existe no lo convierte en otra cosa: deja
+     * sus lecturas, sus resúmenes diarios y su acumulado de años contando algo
+     * que ya no es —la generación de un panel pasa a figurar como consumo— y no
+     * hay forma de deshacerlo. Además el papel es parte del índice único junto
+     * al medidor, el medido y el canal, así que moverlo puede chocar con otro
+     * elemento existente.
+     *
+     * Si un elemento está dado de alta con el papel equivocado, lo que se hace
+     * es darlo de baja y crear el bueno, que es lo único que no miente sobre lo
+     * que hay medido.
+     */
     private static function role(): Select
     {
         return Select::make('role')
@@ -138,7 +152,10 @@ class HardwareEnergyForm
             ->required()
             ->live()
             ->label('Papel')
-            ->helperText('Generador es lo que produce, consumo lo que gasta y batería lo que almacena.');
+            ->disabled(fn (?HardwareEnergy $record): bool => $record !== null)
+            ->helperText(fn (?HardwareEnergy $record): string => $record !== null
+                ? 'No se puede cambiar: sus lecturas y acumulados ya están contados como este papel. Si está mal, da de baja el elemento y crea el bueno.'
+                : 'Generador es lo que produce, consumo lo que gasta y batería lo que almacena. Se elige ahora y no se puede cambiar después.');
     }
 
     /**

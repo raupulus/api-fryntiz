@@ -243,16 +243,53 @@ sitios gana el de dentro.
 
 ## 4. Gestión Multisensión y Reseteo de Odómetro
 
-Los microcontroladores y controladores de carga pueden reiniciar sus contadores internos
-(ej. tras apagado prolongado, corte de suministro o desborde numérico).
-Para evitar la pérdida de años de históricos acumulados:
+Los microcontroladores y controladores de carga pueden reiniciar sus contadores
+internos (apagado prolongado, corte de suministro, desborde numérico). Para no
+perder años de acumulado:
 
 1. `HardwareEnergyHistorical` organiza los datos en sesiones (`session_index`).
-2. Cuando se detecta una caída drástica en el acumulado reportado ($< 50\%$ del valor previamente alcanzado habiendo acumulado $> 50\text{ Wh}$ o $50\text{ Ah}$):
-   - La sesión previa se cierra y preserva con su valor íntegro alcanzado.
-   - Se crea automáticamente una nueva fila con `session_index = anterior + 1`.
-   - El nuevo valor del odómetro reiniciado comienza a contar en la nueva sesión.
-3. El acumulado total absoluto de un elemento corresponde a la suma de `energy_wh` y `energy_ah` de todas sus sesiones históricas.
+2. Al detectarse un reinicio se cierra la sesión con su valor íntegro y se abre
+   otra con `session_index = anterior + 1`, que empieza a contar desde cero.
+3. El acumulado absoluto de un elemento es la **suma** de todas sus sesiones.
+
+### 4.0. Un odómetro aporta su avance, no su valor
+
+Es la regla de la que cuelga todo lo demás, y la que estuvo mal hasta el
+13/09/2026.
+
+**`historical_energy_wh` y `historical_energy_ah` son totales absolutos.** Lo
+que aportan al acumulado es **cuánto han subido desde la última vez**, no lo que
+marcan. Por eso:
+
+| Situación | Qué se hace |
+|---|---|
+| Primera vez que llega el odómetro de esa magnitud | Se anota como punto de partida. **No se suma nada** si ya había acumulado: no hay forma de saber cuánto de lo que marca ya está contado |
+| Primera vez y no había acumulado | El odómetro **es** el total: el aparato se acaba de dar de alta y su historia es la suya |
+| Sube | Se suma la diferencia con el anterior |
+| Baja poco | Ni suma ni mueve la referencia: es un registro leído a medias, no un reinicio |
+| Se desploma | Reinicio: nueva sesión, que empieza en lo que marque |
+
+El último valor reportado se guarda en `energy_wh_device_total` y
+`energy_ah_device_total`.
+
+#### Por qué el reinicio se mide contra el odómetro y no contra el acumulado
+
+Antes se comparaba el total que manda el aparato contra el que tenemos
+acumulado. **Son dos números que no miden lo mismo**: el nuestro puede venir de
+sumar años de resúmenes diarios y el suyo de un registro que empezó a contar
+mucho después. Con esa regla, cualquier aparato cuyo contador vaya por debajo de
+nuestra suma parecía reiniciado en cuanto abría la boca.
+
+Es exactamente lo que pasó con el Rover: llevaba **524.497 Wh** contados por
+nosotros desde 2022 y su registro Modbus marcaba **41.206**, así que la primera
+subida con el contrato nuevo partió en dos el histórico del panel, del consumo y
+de la batería sin que el controlador se hubiera reiniciado —su registro venía
+subiendo sin saltos desde días antes—.
+
+Y el `max()` con el que se guardaba tenía el problema simétrico: con 524.497
+guardados, ninguna lectura del aparato volvería a mover la cifra en años.
+
+Lo fija `tests/Feature/Api/V2/Energy/EnergyOdometerTest.php`.
 
 **Ese criterio vale para todo el que lea esta tabla.** El panel público
 (`EnergyController`) y el widget del panel de administración
@@ -271,8 +308,13 @@ columnas:
 
 | Valor | Qué significa |
 |---|---|
-| `device` | Lo lleva el odómetro del aparato. Se guarda el mayor entre lo que había y lo reportado, y **nunca se le suman nuestros deltas** |
+| `device` | Lo lleva el odómetro del aparato. Se le suman sus **avances** (ver 4.0) y **nunca nuestros deltas** |
 | `derived` | Lo llevamos nosotros sumando la energía de cada intervalo |
+
+**Lo que viene del esquema viejo entra como `derived`**, aunque el número lo
+declarara un controlador: lo calculaba la V1 sumando totales diarios, no es el
+registro del aparato. Marcarlo como `device` es lo que congelaba el acumulado y
+disparaba el falso reinicio.
 
 **Las fija la primera lectura que trae odómetro de esa magnitud**, y desde
 entonces esa magnitud ignora los deltas. La otra sigue su propio camino.
@@ -591,6 +633,7 @@ haga ruido. Qué prueba cada archivo:
 | `Api/V2/Energy/EnergySampleIntervalTest.php` | El intervalo por elemento cuando la subida no trae `duration`, y que `duration` siga mandando cuando llega |
 | `Api/V2/Energy/EnergyRowIdentityTest.php` | Que la fila de resumen la identifique **el elemento**, no el dispositivo: una fila mal atribuida no puede devolver un 500 ni abrir otra en paralelo |
 | `Api/V2/Energy/EnergyDeclaredValuesTest.php` | **Que todo lo que el aparato manda se guarde y lo que no manda se calcule.** Los ocho acumuladores del Rover, los máximos del día, el origen por magnitud, la tensión medida fuera de rango y el signo de la batería |
+| `Api/V2/Energy/EnergyOdometerTest.php` | **Que un odómetro aporte su avance y no su valor**: adoptarlo sobre un acumulado que ya existe no suma nada, el reinicio se juzga contra el propio odómetro y un retroceso pequeño ni suma ni mueve la referencia |
 | `Api/V2/Energy/EnergyHistoricalResetTest.php` | Que un reinicio de odómetro abra sesión nueva sin tocar la anterior |
 | `Api/V2/Energy/EnergyMonitorSimpleTest.php` | Derivación de potencia, Wh y Ah, y respaldo de tensión nominal |
 
@@ -601,7 +644,7 @@ haga ruido. Qué prueba cada archivo:
 | `Api/V2/Energy/EnergyDailyCycleTest.php` | El ciclo entero: subidas repartidas por el día, cierre nocturno, totales, idempotencia, lecturas sospechosas y corte del día en UTC |
 | `Console/Energy/AggregateDailyHistoricalTest.php` | Que el cron no borre acumulados que los resúmenes no cubren, que `--rebuild` sí lo haga, y que cada sesión se reconcilie sólo con sus días |
 | `Console/Energy/AggregateDailyEnergyCommandTest.php` | Opciones del comando y filtrado por `auto_calculate_history` |
-| `Console/Energy/MigrateLegacyEnergyDataCommandTest.php` | El traspaso del esquema viejo: `--dry-run` no escribe, las filas sin elemento no pasan, relanzarlo deja lo mismo y su `TRUNCATE` se lleva lo que hubiera entrado en vivo |
+| `Console/Energy/MigrateLegacyEnergyDataCommandTest.php` | El traspaso del esquema viejo: `--dry-run` no escribe, las filas sin elemento no pasan, relanzarlo deja lo mismo y su `TRUNCATE` se lleva lo que hubiera entrado en vivo. Y lo que el esquema viejo traía mal: lecturas que estaban en dos tablas, extremos y contadores diarios que hay que recalcular, y la batería sin resúmenes |
 | `Console/Energy/SeedEnergyDebugCommandTest.php` | Que `debug:seed-energy` escriba en la forma del esquema: un resumen por día y **un** acumulado por elemento |
 
 ### Lectura y pantallas
@@ -612,6 +655,8 @@ haga ruido. Qué prueba cada archivo:
 | `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy` y **el escalado de los amperios a la tensión de referencia** |
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
+| `Filament/EnergyListTabsTest.php` | Las pestañas del listado: sólo la que tiene algo dentro, y que ninguna esconda nada de «Todos» |
+| `Filament/EnergyDeviceViewTest.php` | La entrada por el aparato: sólo los que miden energía, el filtro por propietario que el override casi se lleva por delante, y que el papel no se pueda cambiar una vez creado |
 | `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |
 | `Unit/Rules/EnergyTelemetryPayloadTest.php` | La validación del bloque `energy` |

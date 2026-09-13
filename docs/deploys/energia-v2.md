@@ -8,6 +8,94 @@ Para el despliegue general del VPS ver [`deploy-vps.md`](deploy-vps.md).
 
 ---
 
+# ⚠️ Reparación del despliegue del 13/09/2026
+
+**Si ya desplegaste, esto va primero.** El traspaso de aquel día dejó cuatro
+cosas mal, y la subida de la Pico partió el histórico en dos. Todo se arregla
+volviendo a traspasar con el código nuevo.
+
+## Qué está mal ahora mismo en producción
+
+| | Qué pasó |
+|---|---|
+| Histórico partido en dos | La primera subida con el contrato nuevo pareció un reinicio del odómetro y abrió una sesión 2 en el panel, el consumo y la batería. El controlador no se había reiniciado |
+| Picos de potencia imposibles | Los resúmenes diarios heredaron los extremos del esquema viejo, que el firmware mandaba mal: `power_max` era `amperage_max × 100`. Hasta 1.300 W en un controlador de 20 A cuyo máximo real del día fueron 145 W |
+| Días sin lecturas contadas | `readings_count` a 0 en 907 de los 915 días, teniendo 400 lecturas guardadas de cada uno |
+| Lecturas del consumo duplicadas | Del 06 al 13 de septiembre, las mismas 1.720 lecturas estaban en `hardware_power_loads` y en `hardware_power_generators_solar`, y entraron dos veces |
+| La batería sin resúmenes diarios | Tenía 1.730 lecturas y ni un solo día resumido |
+
+## Cómo se arregla
+
+- [ ] **Desplegar el código** (`git pull`, `composer install`, `php8.5 artisan project:clear`).
+- [ ] **Migrar el esquema.** Sale una sola migración pendiente:
+      ```bash
+      php8.5 artisan migrate:status | grep Pending
+      php8.5 artisan migrate --force
+      ```
+      `2026_09_13_000004` añade `energy_wh_device_total` y
+      `energy_ah_device_total` al acumulado: son el último valor que reportó el
+      aparato, y sin ellos el reinicio no se puede detectar bien.
+- [ ] **Volver a traspasar.**
+      ```bash
+      php8.5 artisan energy:migrate-legacy-data --force
+      ```
+      ⚠️ **Vacía las tres tablas nuevas antes de rellenarlas**, así que se pierden
+      las lecturas que hayan entrado por el contrato nuevo desde el despliegue
+      (unas 30 por hora y aparato). Las tablas viejas no se tocan, así que se
+      puede repetir las veces que haga falta. Hazlo de noche.
+- [ ] **Comprobar que quedó bien:**
+      ```bash
+      psql -d raupulus_api -c "
+      SELECT hardware_energy_id, count(*) AS sesiones, sum(energy_wh) AS wh
+      FROM hardware_energy_historical GROUP BY 1 ORDER BY 1;"
+      ```
+      **Una sesión por elemento.** Si sale alguna con dos, el traspaso no se ha
+      ejecutado con el código nuevo.
+      ```bash
+      psql -d raupulus_api -c "
+      SELECT count(*) FILTER (WHERE power_max > 700) AS picos_imposibles,
+             count(*) FILTER (WHERE readings_count = 0) AS dias_sin_contar
+      FROM hardware_energy_today;"
+      ```
+      Los picos imposibles a cero. Días sin contar, sólo los que de verdad no
+      tengan lecturas.
+      ```bash
+      psql -d raupulus_api -c "
+      SELECT hardware_energy_id, count(*) - count(DISTINCT created_at) AS duplicados
+      FROM hardware_energy_readings
+      WHERE created_at >= '2026-09-06' GROUP BY 1 ORDER BY 1;"
+      ```
+      A cero. (Antes del 06/09 quedan unos pocos instantes repetidos: son
+      reintentos que el propio aparato mandó dos veces en la V1, y se conservan
+      tal cual.)
+- [ ] **Y que la batería tiene sus días:**
+      ```bash
+      psql -d raupulus_api -c "
+      SELECT date, readings_count, energy_ah, energy_ah_source
+      FROM hardware_energy_today
+      WHERE hardware_energy_id = 11 ORDER BY date DESC LIMIT 5;"
+      ```
+- [ ] **Dejar que suba una lectura** y comprobar que **no** se abre una sesión 2:
+      ```bash
+      psql -d raupulus_api -c "
+      SELECT hardware_energy_id, session_index, energy_wh,
+             energy_wh_source, energy_wh_device_total
+      FROM hardware_energy_historical ORDER BY 1, 2;"
+      ```
+      Lo que tiene que pasar: `session_index` sigue a 1, `energy_wh` no se mueve
+      del total de siempre y `energy_wh_device_total` pasa a tener el valor que
+      marca el controlador. Desde ahí, el total sube con los avances del aparato.
+
+**El firmware no hay que tocarlo.** El contrato no cambia: sigue mandando
+`historical_energy_wh` con lo que marque su registro. Lo que cambia es qué hace
+el servidor con ese número.
+
+---
+
+# Despliegue inicial
+
+---
+
 ## Lo que hay que saber antes de empezar
 
 **1 · El endpoint que usa la Pico desaparece.**

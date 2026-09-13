@@ -72,7 +72,7 @@ Con ellas se van sus migraciones:
 
 ## 3 · Consolidar las migraciones de energía
 
-Hoy hay **once** para dejar tres tablas y ajustar una cuarta, y la mitad son
+Hoy hay **doce** para dejar tres tablas y ajustar una cuarta, y la mitad son
 parches encima del parche anterior:
 
 | Migración | Qué hace |
@@ -81,7 +81,7 @@ parches encima del parche anterior:
 | `2026_09_07_000003_clean_roles_in_hardware_energy_table` | Arregla valores de `role` |
 | `2026_09_12_000001..3` | Crean las tres tablas nuevas |
 | `2026_09_12_000004_update_hardware_energy_table` | Quita lo que creó la de 2022 y añade `capacity_ah` y `auto_calculate_history` |
-| `2026_09_13_000001..3` | Añaden las columnas de origen y `default_interval_seconds` |
+| `2026_09_13_000001..4` | Añaden las columnas de origen, `default_interval_seconds` y el último odómetro del aparato |
 
 Lo razonable es dejar **cuatro**: una por tabla, con las columnas definitivas
 desde el principio. Una instalación nueva no tiene por qué crear una columna para
