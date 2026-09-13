@@ -453,6 +453,73 @@ class HardwareEnergy extends BaseModel
     }
 
     /**
+     * Las tres magnitudes derivadas de una lectura: potencia, vatios-hora y
+     * amperios-hora del intervalo.
+     *
+     * **Lo que manda el aparato se respeta; lo que falta se calcula de lo que
+     * hay.** Están juntas porque se apoyan unas en otras y calcularlas por
+     * separado dejaba huecos: un aparato que sólo mide potencia —hay sensores
+     * que dan vatios y no amperios— registraba `energy_wh` a nulo y su resumen
+     * del día sumaba **cero**, con un 201 y sin un aviso.
+     *
+     * El orden de preferencia de cada una:
+     *
+     * | | Se usa lo que manda el aparato | Si no, se calcula de… | Y si no, de… |
+     * |---|---|---|---|
+     * | Potencia | `power` | `V · A` | — |
+     * | Vatios-hora | `energy_wh` | `A · V · s / 3600` | `P · s / 3600` |
+     * | Amperios-hora | `energy_ah` | `A · s / 3600` | `Wh / V` |
+     *
+     * Si no llega nada de lo que hace falta, la magnitud se queda a `null`. No
+     * se inventa un 0: eso convertiría «no tengo dato» en «medí cero».
+     *
+     * @param  int  $seconds  Duración del intervalo.
+     * @return array{power: float|null, energy_wh: float|null, energy_ah: float|null}
+     */
+    public function deriveMagnitudes(
+        ?float $voltage,
+        ?float $amperage,
+        ?float $power,
+        ?float $energyWh,
+        ?float $energyAh,
+        int $seconds
+    ): array {
+        $power ??= $this->computePower($amperage, $voltage);
+
+        $energyWh ??= $this->computeWattHours($amperage, $voltage, $seconds)
+            ?? $this->integratePower($power, $seconds);
+
+        $energyAh ??= $this->computeAmpHours($amperage, $seconds)
+            ?? $this->ampHoursFromWattHours($energyWh, $voltage);
+
+        return ['power' => $power, 'energy_wh' => $energyWh, 'energy_ah' => $energyAh];
+    }
+
+    /**
+     * Wh = P · s / 3600. El respaldo para un aparato que da vatios y no amperios.
+     */
+    private function integratePower(?float $power, ?int $seconds): ?float
+    {
+        if ($power === null || $seconds === null || $seconds <= 0) {
+            return null;
+        }
+
+        return $power * $seconds / 3600;
+    }
+
+    /**
+     * Ah = Wh / V. El respaldo cuando se conoce la energía pero no la corriente.
+     */
+    private function ampHoursFromWattHours(?float $energyWh, ?float $voltage): ?float
+    {
+        if ($energyWh === null || $voltage === null || $voltage <= 0.0) {
+            return null;
+        }
+
+        return $energyWh / $voltage;
+    }
+
+    /**
      * W = V · A. Potencia media del periodo, no instantánea.
      */
     public function computePower(?float $amperage, ?float $voltage): ?float

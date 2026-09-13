@@ -177,6 +177,9 @@ No hace falta si tu aparato manda sus propios acumuladores (`today_energy_*`,
 `historical_energy_*`): ésos sustituyen a lo que el servidor calcularía, así que
 el intervalo deja de importar para los totales.
 
+Cómo entra `duration` en cada cálculo:
+[§1 · Las tres magnitudes de una lectura](#1--las-tres-magnitudes-de-una-lectura).
+
 ### Los tres sub-bloques
 
 **Regla única: cada bloque describe su elemento.** `generator` habla de lo que
@@ -282,11 +285,8 @@ En un controlador solar los tres elementos van a tensiones distintas —el panel
 24 V, la batería a 12 V y la salida de carga a 12 V— y **cada bloque guarda la
 suya**. Nada se normaliza al guardar.
 
-Si no mandas `voltage`, se usa la `nominal_voltage` del elemento y
-`sources.voltage` queda en `nominal`. Si la mandas y se sale del rango
-configurado, **se guarda igual** y se avisa: un panel a 0 V es de noche y una
-batería por debajo de su mínimo es una sobredescarga, y las dos cosas hay que
-poder verlas.
+Qué pasa si no la mandas, o si mandas una rara, está en
+[§3 · La tensión](#3--la-tensión).
 
 Si mandas `voltage` en `battery` y **no** mandas `soc`, el servidor lo calcula
 proporcionalmente entre el `voltage_min` y el `voltage_max` del elemento. Con
@@ -322,42 +322,125 @@ La IP pública la resuelve el servidor; no hace falta mandarla.
 
 ### Qué hace el servidor con lo que mandas
 
-**La regla de oro: lo que mandas se guarda tal cual; lo que no mandas, se
-calcula.** Nunca al revés. Si tu aparato lleva su propio contador, el nuestro no
-lo sustituye ni lo corrige.
+> ⚠️ **«Lo que no mandes se calcula» NO significa que puedas mandar nulos y el
+> servidor invente el dato.** Cada magnitud sale de otras concretas. Si esas
+> tampoco están, la magnitud se queda a `null` — no a 0, porque un 0 diría que
+> se midió y dio cero, y eso bajaría todas las medias.
+>
+> **Lo mínimo útil de una lectura es `amperage`, o `power`.** Sin una de las dos
+> no hay energía que calcular, y la subida se guarda vacía sin avisar de nada.
 
-1. **Lo que manda el aparato, manda.** Si viene `power`, se guarda ese y no
-   `V · A`. Si viene `energy_wh`, se guarda como energía del intervalo y
-   `sources.energy` queda en `device`; si no, se integra y queda en `derived`.
-2. **Derivaciones**, cuando no vienen dadas:
-   - `power = voltage · amperage` (W)
-   - `energy_ah = amperage · duration / 3600` (Ah)
-   - `energy_wh = energy_ah · voltage` (Wh)
-3. **La tensión medida se guarda siempre.** La `nominal_voltage` del elemento se
-   usa **sólo** cuando no mandas `voltage`, y entonces `sources.voltage` queda en
-   `nominal` en vez de `measured`. Si mandas una tensión que se sale del rango
-   configurado del elemento, se guarda igual y se avisa en `warnings`: un panel a
-   0 V es de noche y una batería por debajo de su mínimo es una sobredescarga, y
-   las dos cosas hay que poder verlas. Si no hay ni medida ni nominal, la lectura
-   se guarda marcada como sospechosa y no entra en los resúmenes.
-4. **Los acumuladores del día sustituyen; los de por vida nunca bajan.**
-   `today_energy_*` reemplaza el total del día en vez de sumarse —si se sumara se
-   contaría dos veces—, y `historical_energy_*` alimenta el total de por vida,
-   que sólo puede subir: si el aparato se reinicia y sus contadores vuelven a
-   cero, se abre una sesión nueva y la anterior se conserva entera.
-5. **Los vatios-hora y los amperios-hora se tratan por separado.** Puedes mandar
-   el odómetro de uno y no del otro: el que mandas se guarda tal cual y el que no,
-   se calcula de tus lecturas. Es el caso del Renogy Rover, que lleva contador de
-   amperios-hora de batería pero no de vatios-hora de batería.
-6. **Los máximos del día que declaras ensanchan, nunca recortan.** Si dices que
-   el máximo del día fueron 90 W pero en esta misma petición mandas 104 W, se
-   queda el 104: tu contador ve picos que nuestro muestreo se pierde, pero una
-   medida concreta no se puede borrar.
-7. **Lecturas sospechosas.** Una corriente negativa en un generador o en un
-   consumo, o una lectura sin tensión posible, se guardan igual —el dato crudo no
-   se tira— pero marcadas con `is_suspicious` y fuera de todos los agregados.
-   Siempre se avisa en `warnings`. **En la batería la corriente negativa es
-   normal** (está descargando) y no marca nada.
+#### 1 · Las tres magnitudes de una lectura
+
+Se resuelven en este orden. La primera que se pueda, gana:
+
+| Magnitud | 1.º · lo que mandas | 2.º · se calcula de | 3.º · o de | Si no, queda |
+|---|---|---|---|---|
+| **Potencia** (W) | `power` | `V · A` | — | `null` |
+| **Vatios-hora** del intervalo | `energy_wh` | `A · V · s / 3600` | `P · s / 3600` | `null` |
+| **Amperios-hora** del intervalo | `energy_ah` | `A · s / 3600` | `Wh / V` | `null` |
+
+Donde `s` es [`duration`](#duration--cuánto-duró-el-intervalo) y `V` es la
+tensión resuelta (la que mandas o, si no, la nominal del elemento).
+
+**Lo que mandas nunca se recalcula.** Si mandas `power: 99` con 12 V y 2 A, se
+guarda 99 aunque no cuadre: es tu medida y tu instrumento.
+
+#### 2 · Qué pasa con cada hueco
+
+Con un elemento de 12 V nominales y `duration: 600`:
+
+| Lo que mandas | Potencia | Wh | Ah | ¿Cuenta en los resúmenes? |
+|---|---|---|---|---|
+| `voltage: 12, amperage: 2` | 24 W | 4 | 0,333 | Sí |
+| `amperage: 2` (sin tensión) | 24 W | 4 | 0,333 | Sí, con `sources.voltage: nominal` |
+| `power: 24` (sin corriente) | 24 W | 4 | 0,333 | Sí |
+| `voltage: 12` (sin corriente ni potencia) | `null` | `null` | `null` | **Cuenta como lectura, aporta 0 energía** |
+| `amperage: 2`, elemento **sin** nominal | `null` | `null` | 0,333 | **No**: sospechosa, fuera de todo |
+| nada | `null` | `null` | `null` | Cuenta como lectura, aporta 0 |
+
+Dos cosas que sorprenden y conviene tener claras:
+
+- **Mandar un campo a `null` es exactamente igual que no mandarlo.** No hay
+  diferencia entre `"voltage": null` y omitir `voltage`.
+- **Una lectura sin energía sigue contando como lectura.** Sube el
+  `readings_count` del día y no aporta nada. Subir muestras vacías no rompe
+  nada, pero ensucia el recuento.
+
+#### 3 · La tensión
+
+La `nominal_voltage` del elemento es **respaldo**, no corrección:
+
+- Si mandas `voltage`, se guarda esa. Siempre. `sources.voltage: measured`.
+- Si no la mandas, se usa la nominal. `sources.voltage: nominal`.
+- Si mandas una que se sale del rango configurado, **se guarda igual** y se
+  avisa: un panel a 0 V es de noche y una batería por debajo de su mínimo es una
+  sobredescarga, y las dos cosas hay que poder verlas.
+- Si no hay ni medida ni nominal, la lectura se guarda **marcada como sospechosa**
+  y no entra en ningún resumen.
+
+#### 4 · Cómo se construye el acumulado **del día**
+
+Una fila por elemento y día (`hardware_energy_today`), en UTC.
+
+| Si mandas | El total del día |
+|---|---|
+| `today_energy_wh` / `today_energy_ah` | **Se sustituye** por lo que mandas. Es tu contador, no un incremento: sumarlo lo contaría dos veces |
+| No los mandas | **Se suma** el `energy_wh` / `energy_ah` de cada lectura |
+
+Las dos magnitudes van **por separado**: puedes declarar el total de vatios-hora
+y dejar que los amperios-hora se sumen solos.
+
+```
+Tres subidas de 10 min a 24 W, sin declarar totales:
+  4 Wh + 4 Wh + 4 Wh  →  día = 12 Wh, readings_count = 3
+
+Tres subidas declarando today_energy_wh = 100, 150 y 180:
+  →  día = 180 Wh (el último), readings_count = 3
+```
+
+Los máximos del día que declares (`today_amperage_max`, `today_power_max`,
+`today_voltage_min/max`) **ensanchan** el rango, nunca lo recortan: si dices que
+el máximo fueron 90 W pero en esa misma petición mandas 104 W, se queda 104.
+
+#### 5 · Cómo se construye el acumulado **de por vida**
+
+Una fila por elemento y **sesión** (`hardware_energy_historical`). Una sesión es
+un tramo entre reinicios del contador del aparato.
+
+| Si mandas | El total de por vida |
+|---|---|
+| `historical_energy_wh` / `historical_energy_ah` | Se guarda **el mayor** entre el que había y el que mandas. Nunca baja |
+| No los mandas | **Se suma** el `energy_wh` / `energy_ah` de cada lectura |
+
+**Qué pasa si tu contador se reinicia.** Si el valor que mandas cae por debajo de
+la mitad del guardado, el servidor entiende que tu aparato se reinició:
+
+```
+Sesión 1 con 5.000 Wh acumulados
+  mandas 4.900  →  se ignora (no baja): sesión 1 sigue en 5.000
+  mandas    30  →  cae a menos de la mitad: se abre la sesión 2 con 30
+
+Total del elemento = 5.000 + 30 = 5.030 Wh
+```
+
+La sesión anterior **se conserva entera**. El total del elemento es siempre la
+suma de todas sus sesiones.
+
+Igual que en el día, las dos magnitudes van por separado: puedes tener los
+vatios-hora de tu contador y los amperios-hora calculados de las lecturas. Es el
+caso del Renogy Rover, que lleva contador de amperios-hora de batería pero no de
+vatios-hora de batería.
+
+#### 6 · Lecturas sospechosas
+
+Se guardan —el dato crudo no se tira— pero marcadas con `is_suspicious` y
+**fuera de todos los agregados**. Siempre se avisa en `warnings`.
+
+| Motivo | |
+|---|---|
+| Corriente negativa | Sólo en `generator` y `loads[]`. **En `battery` es normal**: está descargando, y no marca nada |
+| Sin tensión ni medida ni nominal | Sin tensión no hay vatios que calcular |
 
 ### Respuesta `201 Created`
 

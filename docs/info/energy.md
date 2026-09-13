@@ -344,11 +344,21 @@ gana. La tabla completa, con su efecto:
 que el declarado, gana el nuestro: el máximo del controlador ve picos que un
 muestreo cada minuto se pierde, pero una medida concreta no se puede borrar.
 
-Lo que **no** llega se deriva de la lectura y de `duration`:
+Lo que **no** llega se deriva de lo que sí hay, en este orden de preferencia
+(`HardwareEnergy::deriveMagnitudes()`):
 
-- `power = voltage · amperage`
-- `energy_ah = amperage · duration / 3600`
-- `energy_wh = energy_ah · voltage`
+| Magnitud | 1.º | 2.º | 3.º | Si no |
+|---|---|---|---|---|
+| Potencia | `power` | `V · A` | — | `null` |
+| Vatios-hora | `energy_wh` | `A · V · s / 3600` | `P · s / 3600` | `null` |
+| Amperios-hora | `energy_ah` | `A · s / 3600` | `Wh / V` | `null` |
+
+**Nunca se inventa un 0.** Un 0 diría que se midió y dio cero, y eso baja todas
+las medias. Una magnitud que no se puede calcular se queda a `null`.
+
+El tercer escalón de los vatios-hora existe porque hay sensores que dan vatios y
+no amperios: sin él, esos aparatos registraban `energy_wh` a nulo y su resumen
+del día sumaba **cero**, con un 201 y sin un aviso.
 
 Esos totales del día quedan marcados en `hardware_energy_today` con las mismas
 dos columnas de origen que el acumulado de por vida, y por el mismo motivo: sin
@@ -569,6 +579,7 @@ haga ruido. Qué prueba cada archivo:
 | Archivo | Qué sujeta |
 |---|---|
 | `Api/V2/Energy/EnergyElementResolutionTest.php` | A qué elemento va cada lectura: elemento borrado, desactivado, auto-creado, y de dónde sale el acumulado de la sesión |
+| `Api/V2/Energy/EnergyDerivationTest.php` | **Qué se calcula y qué no con cada hueco**: el orden de preferencia de las tres magnitudes, que un nulo sea igual que no mandar nada, que sin corriente ni potencia no haya energía, y cómo se construyen los acumulados del día y de por vida |
 | `Api/V2/Energy/EnergyReadAtTest.php` | Que `read_at` sustituya la marca de la lectura y coloque su resumen en el día correcto, y que un reloj absurdo se rechace |
 | `Api/V2/Energy/EnergySampleIntervalTest.php` | El intervalo por elemento cuando la subida no trae `duration`, y que `duration` siga mandando cuando llega |
 | `Api/V2/Energy/EnergyRowIdentityTest.php` | Que la fila de resumen la identifique **el elemento**, no el dispositivo: una fila mal atribuida no puede devolver un 500 ni abrir otra en paralelo |
