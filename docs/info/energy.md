@@ -62,6 +62,29 @@ Un mismo aparato físico puede cumplir varios roles simultáneos mediante filas 
 | `battery` | Almacenamiento de energía | Banco de baterías LiFePO4, AGM, GEL, 18650 | **1** por medidor |
 | `load` | Consumo de energía | Router, servidor, Raspberry Pi, farola, salida de carga | **Múltiples** (por canal `sensor_position`) |
 
+El límite es **un requisito de diseño del módulo**, no una casualidad de los
+datos: un medidor mide un generador, un banco de baterías y tantos consumos como
+canales tenga. Vive en `HardwareEnergy::LIMIT_PER_ROLE` y lo aplican tanto el
+índice único de la tabla como los botones de alta del panel.
+
+### 2.0. Lo que se elige al crear y no se cambia nunca
+
+Tres columnas quedan cerradas en cuanto el elemento existe, y el panel las
+deshabilita:
+
+| Columna | Por qué |
+|---|---|
+| `role` | Cambiarlo no convierte el elemento en otra cosa: deja sus lecturas, resúmenes y acumulado de años contando algo que ya no es |
+| `hardware_device_id` | Sus lecturas las tomó **ese** medidor. En la telemetría no queda constancia de quién midió aparte de esta columna, así que moverla las atribuye a un aparato que nunca las tomó |
+| `sensor_position` de un generador o una batería | De cada uno hay uno y la ingesta no mira el canal |
+
+Las tres son además parte del índice único
+`(hardware_device_id, hardware_device_monitorized_id, role, sensor_position)`, así
+que moverlas puede chocar con otro elemento existente.
+
+**Si un elemento está mal, se da de baja y se crea el bueno.** Es lo único que no
+miente sobre lo que hay medido.
+
 ### Campos Principales de `HardwareEnergy`:
 - `hardware_device_id`: Dispositivo físico que realiza la medición (medidor/sensor).
 - `hardware_device_monitorized_id`: Dispositivo físico medido (ej. el router conectado al sensor).
@@ -689,7 +712,7 @@ haga ruido. Qué prueba cada archivo:
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
 | `Filament/EnergyListTabsTest.php` | Las pestañas del listado: sólo la que tiene algo dentro, y que ninguna esconda nada de «Todos» |
-| `Filament/EnergyDeviceViewTest.php` | La ficha energética de un aparato: que cargue entera por HTTP con sus tres pestañas, que se titule con el nombre del cacharro, que deje editarlo todo, que se pueda añadir otro consumo, y que el papel no se pueda cambiar una vez creado |
+| `Filament/EnergyDeviceViewTest.php` | La ficha energética de un aparato: que cargue entera por HTTP con sus pestañas y sus tres tablas de telemetría, una pestaña por fila de `hardware_energy` y en el orden en que circula la energía, que cambiar de pestaña guarde sobre el elemento bueno, y que ni el papel ni el medidor se puedan cambiar una vez creados |
 | `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |
 | `Unit/Rules/EnergyTelemetryPayloadTest.php` | La validación del bloque `energy` |

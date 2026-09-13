@@ -7,14 +7,11 @@ namespace App\Filament\Admin\Resources\Energy\EnergyDevices;
 use App\Filament\Admin\Clusters\Energy;
 use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ListEnergyDevices;
 use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ManageEnergyDevice;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\BatteryRelationManager;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\GeneratorRelationManager;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\LoadRelationManager;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
 use BackedEnum;
-use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -109,27 +106,18 @@ class EnergyDeviceResource extends Resource
                     ->label('Tipo de aparato'),
             ])
             ->recordActions([
-                EditAction::make()->label('Ver energía')->icon('heroicon-o-bolt'),
+                // Lleva a la ficha energética del aparato, que es donde está
+                // todo lo suyo: sus papeles, su configuración y su telemetría.
+                Action::make('energia')
+                    ->label('Ver energía')
+                    ->icon('heroicon-o-bolt')
+                    ->url(fn (HardwareDevice $record): string => ManageEnergyDevice::getUrl(['record' => $record])),
             ])
             ->emptyStateHeading('Ningún aparato mide energía todavía')
             ->emptyStateDescription(
                 'Un aparato aparece aquí en cuanto se le da de alta un papel '
                 .'—generador, consumo o batería— desde su ficha en Hardware.'
             );
-    }
-
-    /**
-     * Una pestaña por papel, y en el orden en que la energía atraviesa la
-     * instalación: entra por el generador, se guarda en la batería y sale por
-     * los consumos.
-     */
-    public static function getRelations(): array
-    {
-        return [
-            GeneratorRelationManager::class,
-            BatteryRelationManager::class,
-            LoadRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

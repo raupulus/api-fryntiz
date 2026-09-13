@@ -567,102 +567,49 @@ saliera en dos, editarlo en una y mirarlo en la otra daría respuestas distintas
 
 | Pantalla | Qué gestiona | Criterio |
 |---|---|---|
-| Energy · **Aparatos** | La cara energética de un aparato: **todos sus papeles juntos** | Sólo los aparatos con algún elemento dado de alta |
-| Energy · **Elementos de energía** | Todos los elementos, repartidos en pestañas | Es el listado del módulo |
-| Ficha del dispositivo · pestaña **Energía** | Los papeles de **ese** aparato, midiéndose a sí mismo | Alta rápida: el papel lo pone el botón y el monitorizado se rellena solo |
+| Energy · **Aparatos** | **Todo lo energético de un aparato en una página**: su configuración y su telemetría, con una pestaña por elemento | Es la puerta de entrada al módulo. Sólo los aparatos con algún elemento dado de alta |
+| Energy · **Elementos de energía** | El listado plano de elementos, repartido en pestañas por papel | Para buscar un elemento suelto o dar de alta uno que mide **otro** aparato |
+| Ficha del dispositivo · pestaña **Energía** (Hardware) | Los papeles de **ese** aparato, midiéndose a sí mismo | Alta rápida desde Hardware |
 
-### Aparatos: entrar por el cacharro y no por el papel
+### Aparatos: todo lo de un cacharro en una página
 
-Un controlador solar son tres papeles, y mirarlos de uno en uno obligaba a
-volver al listado general entre medias. **Aparatos** entra por el otro lado.
-
-**El listado** es una fila por aparato con sus papeles en badges. Sólo salen los
-que miden algo: un listado con todos los dispositivos del usuario dentro del
-módulo de energía no dice nada, porque la mayoría no mide corriente.
-
-**La ficha** (`ManageEnergyDevice`) es *todo lo de ese cacharro en una
-pantalla*:
+`ManageEnergyDevice`, en `/admin/energy/energy/energy-devices/{id}`. Es una
+página propia y no una `EditRecord` de Filament porque **lo que se edita no es el
+aparato, sino el elemento que esté seleccionado**.
 
 | Dónde | Qué |
 |---|---|
-| Título | **El nombre del aparato**, con su tipo, marca, modelo y zona debajo |
-| Arriba | Su formulario entero, editable: imagen, identidad, batería propia, estado reportado |
-| Debajo | **Una pestaña por papel** — Generadores, Baterías, Consumos — con los elementos de cada uno |
+| Título | El nombre del aparato |
+| Cabecera | Su miniatura a la izquierda y, al lado, tipo, marca y modelo, zona y última señal. **No se edita aquí**: está para reconocer el cacharro. El aparato se gestiona en Hardware |
+| Pestañas | **Una por cada fila de `hardware_energy`**, no una por papel. Dos consumos son dos pestañas. Ordenadas como circula la energía: generador → batería → consumos. Con varios consumos, cada pestaña dice su canal |
+| Dentro de cada pestaña | La configuración de ese elemento, editable, y sus tres tablas de telemetría: lecturas, resúmenes diarios e histórico |
 
-Cada pestaña enseña la configuración del elemento **y su estado** (energía de
-hoy, acumulado de por vida, última lectura), para no tener que salir sólo para
-saber si un canal está vivo. Su botón de crear ya sabe qué papel crea, y
-desaparece cuando ya no cabe otro: de generador y de batería hay uno, de consumo
-tantos como canales.
+La pestaña activa va en la URL (`?elemento=`), para que reabrir una pestaña del
+navegador caiga donde estaba y para poder pasar un enlace a un canal concreto.
+Un id que no sea de este aparato se ignora y se abre el primero.
 
-El formulario del aparato es el de Hardware (`HardwareDeviceResource::form()`),
-no una copia. Dos formularios del mismo modelo acaban diciendo cosas distintas.
+Los botones de alta son uno por papel y sólo aparecen mientras quepa otro: de
+generador y de batería hay **uno** por aparato, de consumo tantos como canales.
 
-Tres cosas que estaban mal y conviene no repetir:
+#### Los cuadros de telemetría son los mismos de siempre
 
-1. **Era una `ViewRecord`.** Filament pone los relation managers en sólo lectura
-   cuando cuelgan de una página de vista
-   (`hasReadOnlyRelationManagersOnResourceViewPagesByDefault`), así que no se
-   podía dar de alta ni un consumo más: los botones no se pintaban. Es una
-   página de edición, que es a lo que se viene.
-2. **El título ponía «Ver Aparato»** y la primera sección «El aparato». Volver a
-   una pestaña abierta no decía sobre qué cacharro estabas tocando.
-3. **El filtro de «sólo los que miden energía» estaba en
-   `getEloquentQuery()`.** Ahí se solapaba con el del trait `ScopesToOwner` —un
-   método propio gana al del trait, y sin aliasarlo el listado enseñaba los
-   aparatos de todos los usuarios (AR-SEC-02)— y además hacía que la ficha
-   devolviera un 404 en cuanto se borraba el último elemento del aparato. Es un
-   filtro de presentación: va en la tabla.
+`ReadingsRelationManager`, `TodayRelationManager` y `HistoricalRelationManager`
+cuelgan de `HardwareEnergy`, y aquí se montan con `@livewire()` sobre el elemento
+activo. Duplicarlos sería la forma de que acaben diciendo cosas distintas.
 
-Hay tests que **cargan la página entera por HTTP**, no sólo sus componentes: un
-relation manager roto no se nota hasta que se pinta con los demás.
+El `wire:key` incluye el id del elemento: sin él, Livewire reutiliza el
+componente al cambiar de pestaña y sigue enseñando la telemetría del anterior.
 
-### El papel se elige al crear y no se cambia
+#### El esquema de configuración se rehace al cambiar de pestaña
 
-`role` está deshabilitado en cuanto el elemento existe. Cambiarlo no convierte
-un elemento en otro: deja sus lecturas, sus resúmenes diarios y su acumulado de
-años contando algo que ya no es —la generación de un panel pasaría a figurar
-como consumo— y no hay forma de deshacerlo. Además es parte del índice único
-junto al medidor, el medido y el canal, así que moverlo puede chocar con otro
-elemento.
+`InteractsWithSchemas` cachea el esquema atado al modelo con el que se construyó.
+Al cambiar de pestaña hay que tirar la caché (`cacheSchema('configuracion', null)`)
+y volver a rellenarla: si no, se guardaría sobre el elemento anterior. Hay test.
 
-Si un elemento está mal, se da de baja y se crea el bueno.
+#### Esta pantalla no toca Hardware
 
-Hubo una pantalla **Instalaciones** que se quedaba con los elementos de los
-controladores solares y los apartaba del listado general. Desapareció con la
-tabla `energy_systems` al unificar el esquema, y con ella la forma de ver los
-grupos solares de un vistazo. Lo que la sustituye son las pestañas de abajo.
-
-### Las pestañas del listado
-
-`ListHardwareEnergies::getTabs()`. Una tabla plana con todos los elementos
-mezclados no deja ver nada: el mismo controlador solar sale tres veces —panel,
-batería y salida de carga— entre los consumos sueltos de los demás aparatos.
-
-| Pestaña | Qué enseña |
-|---|---|
-| **Todos** | El listado entero. Es la de por defecto |
-| **Energía solar** | Los elementos cuyo medidor es de tipo `controlador-solar` |
-| **Generadores** · **Consumos** · **Baterías** | Los de ese papel, sea cual sea el medidor |
-
-Dos reglas:
-
-1. **Ninguna pestaña esconde nada.** Son vistas del mismo listado, no
-   compartimentos: un elemento de un controlador solar sale en «Energía solar»
-   *y* en la de su papel, que es donde se le busca cuando lo que se quiere es
-   comparar generadores entre sí. Esto es lo que cambia respecto a
-   «Instalaciones», que sí los apartaba.
-2. **Sólo aparece la pestaña que tiene algo dentro.** Sin baterías dadas de
-   alta, «Baterías» no se pinta. El número del badge lo dice.
-
-Lo solar se distingue por el **tipo del dispositivo que mide**
-(`hardware_types.slug`, constante `HardwareType::SOLAR_CONTROLLER_SLUG`), no por
-el tipo de fuente: hoy casi todos los elementos reales tienen fuente
-«Fotovoltaica» y ésa no separa nada.
-
-Los badges cuentan sobre `HardwareEnergyResource::getEloquentQuery()`, que ya
-lleva el filtro por propietario de `ScopesToOwner`. Contar sobre el modelo a
-pelo daría números mayores que las filas que la tabla enseña.
+Los aparatos se dan de alta y se editan en su módulo. Desde aquí hay que llegar
+a todo lo energético sin salir, y a nada más.
 
 ### El listado se agrupa por el dispositivo monitor
 

@@ -64,12 +64,7 @@ class HardwareEnergyForm
                 ->description('No cambia entre los papeles de este aparato. Todo lo de abajo sí: cada canal mide una cosa, con su fuente y su tensión.')
                 ->columnSpanFull()
                 ->schema([
-                    Select::make('hardware_device_id')
-                        ->relationship('hardwareDevice', 'name')
-                        ->required()->searchable()->preload()
-                        ->label('Dispositivo monitor')
-                        ->helperText('El aparato que mide.')
-                        ->columnSpanFull(),
+                    self::meter(),
                 ]),
 
             Section::make('Qué mide este canal')
@@ -87,8 +82,10 @@ class HardwareEnergyForm
                 ]),
 
             Section::make('Fuente de energía')
+                ->description('Opcional. Sólo para reconocer el canal en los listados.')
                 ->columns(2)
                 ->columnSpanFull()
+                ->collapsed()
                 ->schema([
                     self::source(),
                 ]),
@@ -105,7 +102,7 @@ class HardwareEnergyForm
     {
         return $schema->components([
             Section::make('Qué mide este canal')
-                ->description('El aparato que mide es el mismo del que vienes.')
+                ->description('El medidor no se pregunta: es el mismo aparato.')
                 ->columns(2)
                 ->columnSpanFull()
                 ->schema([
@@ -120,14 +117,40 @@ class HardwareEnergyForm
                 ]),
 
             Section::make('Fuente de energía')
+                ->description('Opcional. Sólo para reconocer el canal en los listados.')
                 ->columns(2)
                 ->columnSpanFull()
+                ->collapsed()
                 ->schema([
                     self::source(),
                 ]),
 
             self::electricalCharacteristics(),
         ]);
+    }
+
+    /**
+     * El aparato que mide se elige **al crear y nunca más**.
+     *
+     * Cambiarlo en un elemento que ya existe deja sus lecturas, sus resúmenes y
+     * su acumulado atribuidos a un medidor que nunca los tomó, y no hay forma
+     * de deshacerlo: en la telemetría no queda constancia de quién la midió
+     * aparte de esta columna. Además el medidor es parte del índice único junto
+     * al medido, el papel y el canal.
+     *
+     * Si está mal, se da de baja el elemento y se crea el bueno.
+     */
+    private static function meter(): Select
+    {
+        return Select::make('hardware_device_id')
+            ->relationship('hardwareDevice', 'name')
+            ->required()->searchable()->preload()
+            ->label('Dispositivo monitor')
+            ->disabled(fn (?HardwareEnergy $record): bool => $record !== null)
+            ->helperText(fn (?HardwareEnergy $record): string => $record !== null
+                ? 'No se puede cambiar: sus lecturas y acumulados están tomados por este aparato. Si está mal, da de baja el elemento y crea el bueno.'
+                : 'El aparato que hace la medida. Se elige ahora y no se puede cambiar después.')
+            ->columnSpanFull();
     }
 
     /**
@@ -229,13 +252,31 @@ class HardwareEnergyForm
         return $role === null || $role === HardwareEnergy::ROLE_LOAD;
     }
 
+    /**
+     * De dónde viene la energía de este canal.
+     *
+     * **Es una etiqueta, no un cálculo.** No entra en ninguna cuenta ni cambia
+     * nada de lo que se guarda: sirve para saber, mirando el listado, si un
+     * canal cuelga del panel, de la red o de una batería que se carga a mano.
+     * Por eso se puede dejar vacío.
+     *
+     * Es de cada canal y no del aparato porque un mismo medidor puede tener
+     * canales alimentados de sitios distintos: una Raspberry con un INA puede
+     * medir un ventilador que va del panel y un router que va de la red.
+     */
     private static function source(): Select
     {
         return Select::make('energy_source_type_id')
             ->relationship('sourceType', 'name')
             ->searchable()->preload()
-            ->label('Tipo de fuente')
-            ->helperText('De dónde sale la energía de ESTE canal, que puede no ser la misma que la del de al lado.');
+            ->label('De dónde viene la energía de este canal')
+            ->placeholder('Sin especificar')
+            ->helperText(
+                'Sólo es una etiqueta para reconocerlo en los listados: no entra '
+                .'en ningún cálculo y se puede dejar vacío. Ponlo si este canal '
+                .'cuelga de algo distinto a los demás del mismo aparato — por '
+                .'ejemplo un canal alimentado de la red en un montaje solar.'
+            );
     }
 
     private static function active(): Toggle

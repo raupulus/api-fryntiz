@@ -7,10 +7,6 @@ namespace Tests\Feature\Filament;
 use App\Filament\Admin\Resources\Energy\EnergyDevices\EnergyDeviceResource;
 use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ListEnergyDevices;
 use App\Filament\Admin\Resources\Energy\EnergyDevices\Pages\ManageEnergyDevice;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\BatteryRelationManager;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\GeneratorRelationManager;
-use App\Filament\Admin\Resources\Energy\EnergyDevices\RelationManagers\LoadRelationManager;
-use App\Filament\Admin\Resources\Hardware\HardwareEnergies\HardwareEnergyResource;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\CreateHardwareEnergy;
 use App\Filament\Admin\Resources\Hardware\HardwareEnergies\Pages\EditHardwareEnergy;
 use App\Models\Hardware\HardwareDevice;
@@ -29,18 +25,11 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * La ficha energética de un aparato.
+ * La ficha energética de un aparato: **todo lo suyo en una sola página**.
  *
- * Todo lo de un cacharro en una pantalla: arriba sus datos y su configuración,
- * editables; debajo una pestaña por papel con sus elementos.
- *
- * Las dos cosas que estaban mal y que estas pruebas sujetan:
- *
- * 1. La pantalla era de sólo lectura, y Filament pone los relation managers en
- *    sólo lectura cuando cuelgan de una `ViewRecord`. No se podía dar de alta
- *    ni un consumo más: los botones no se pintaban.
- * 2. El título ponía «Ver Aparato» y la primera sección «El aparato». Volver a
- *    una pestaña abierta no decía sobre qué cacharro estabas tocando.
+ * Arriba quién es. Debajo una pestaña por cada fila de `hardware_energy` —no
+ * una por papel— y, dentro, su configuración editable y sus tres tablas de
+ * telemetría, sin salir de la página.
  */
 class EnergyDeviceViewTest extends TestCase
 {
@@ -71,26 +60,26 @@ class EnergyDeviceViewTest extends TestCase
             'name' => 'Renogy Rover 20 LI',
             'hardware_type_id' => $tipo->id,
             'brand' => 'Renogy',
+            'zone' => 'Despacho',
         ]);
     }
 
-    private function element(HardwareDevice $meter, string $role, int $channel = 0): HardwareEnergy
+    private function element(string $role, int $channel = 0, ?HardwareDevice $meter = null): HardwareEnergy
     {
+        $meter ??= $this->controller;
+
         return HardwareEnergy::create([
             'hardware_device_id' => $meter->id,
             'hardware_device_monitorized_id' => $meter->id,
             'role' => $role,
             'sensor_position' => $channel,
+            'nominal_voltage' => 12.0,
         ]);
     }
 
     /**
-     * Telemetría de verdad colgando de un elemento.
-     *
-     * Sin esto, la pestaña se pinta con las columnas de estado vacías y no
-     * llega a tocar los agregados. Es lo que dejó pasar un `sum()` de
-     * PostgreSQL —que llega como cadena— por una función tipada `?float`: en
-     * local todo verde y en producción la pestaña entera reventada.
+     * Telemetría de verdad colgando de un elemento: lecturas, resumen del día y
+     * acumulado. Sin esto las tablas se pintan vacías y no se prueba nada.
      */
     private function conTelemetria(HardwareEnergy $elemento): HardwareEnergy
     {
@@ -106,83 +95,207 @@ class EnergyDeviceViewTest extends TestCase
             'hardware_energy_id' => $elemento->id,
             'date' => now('UTC')->toDateString(),
             'readings_count' => 1,
-            'energy_wh' => 743.0,
-            'energy_ah' => 31.0,
+            'energy_wh' => 743.0, 'energy_ah' => 31.0,
         ]);
 
         HardwareEnergyHistorical::create([
             'hardware_device_id' => $elemento->hardware_device_id,
             'hardware_energy_id' => $elemento->id,
             'session_index' => 1,
-            'energy_wh' => 524497.0,
-            'energy_ah' => 21854.0,
+            'energy_wh' => 524497.0, 'energy_ah' => 21854.0,
         ]);
 
         return $elemento;
     }
 
-    /**
-     * @param  class-string  $manager
-     */
-    private function pestana(string $manager): Testable
+    private function ficha(?int $elemento = null): Testable
     {
-        return Livewire::test($manager, [
-            'ownerRecord' => $this->controller,
-            'pageClass' => ManageEnergyDevice::class,
-        ]);
+        return Livewire::test(ManageEnergyDevice::class, array_filter([
+            'record' => $this->controller->getKey(),
+            'elementoId' => $elemento,
+        ]));
     }
 
-    // ── Que las páginas carguen de verdad ─────────────────────────────────
+    // ── Que la página cargue de verdad ────────────────────────────────────
 
     /**
-     * Una petición HTTP completa, con la página, sus pestañas y sus tablas
-     * dentro. Probar los componentes por separado no vale para esto: un
-     * relation manager roto no se nota hasta que se pinta con los demás.
+     * Una petición HTTP completa, con la página, sus pestañas y las tres tablas
+     * de telemetría dentro.
      */
     #[Test]
-    public function la_ficha_carga_entera_con_sus_tres_pestanas(): void
+    public function la_ficha_carga_entera_por_http(): void
     {
-        // Con telemetría: es lo que hace que se evalúen las columnas de estado.
-        $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_GENERATOR));
-        $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_BATTERY));
-        $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_LOAD, channel: 1));
+        $this->conTelemetria($this->element(HardwareEnergy::ROLE_GENERATOR));
+        $this->conTelemetria($this->element(HardwareEnergy::ROLE_BATTERY));
+        $this->conTelemetria($this->element(HardwareEnergy::ROLE_LOAD, channel: 1));
 
-        $this->get(EnergyDeviceResource::getUrl('edit', ['record' => $this->controller]))
+        $this->get(ManageEnergyDevice::getUrl(['record' => $this->controller]))
             ->assertSuccessful()
+            // Quién es el aparato, arriba del todo.
             ->assertSee('Renogy Rover 20 LI')
-            ->assertSee('Generadores')
-            ->assertSee('Baterías')
-            ->assertSee('Consumos')
-            // Y ya no dice «Ver Aparato» ni «El aparato».
-            ->assertDontSee('Ver Aparato')
-            ->assertDontSee('El aparato');
+            ->assertSee('Despacho')
+            // Una pestaña por elemento.
+            ->assertSee('Generador')
+            ->assertSee('Batería')
+            ->assertSee('Consumo')
+            // Y sus tres tablas, sin salir de aquí.
+            ->assertSee('Lecturas de telemetría')
+            ->assertSee('Resúmenes diarios')
+            ->assertSee('Histórico y sesiones')
+            // Y el título es el nombre del cacharro, no «Ver Aparato».
+            ->assertDontSee('Ver Aparato');
     }
 
     #[Test]
     public function el_listado_carga_entero(): void
     {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
+        $this->element(HardwareEnergy::ROLE_GENERATOR);
 
         $this->get(EnergyDeviceResource::getUrl('index'))
             ->assertSuccessful()
             ->assertSee('Renogy Rover 20 LI');
     }
 
+    // ── Una pestaña por tupla ─────────────────────────────────────────────
+
     /**
-     * Las columnas de estado, con números dentro.
+     * Dos consumos son **dos** pestañas, no una con una tabla dentro.
      */
     #[Test]
-    public function cada_pestana_ensena_el_estado_del_elemento(): void
+    public function hay_una_pestana_por_fila_de_hardware_energy(): void
     {
-        $panel = $this->conTelemetria($this->element($this->controller, HardwareEnergy::ROLE_GENERATOR));
+        $this->element(HardwareEnergy::ROLE_GENERATOR);
+        $this->element(HardwareEnergy::ROLE_BATTERY);
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 0);
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 1);
 
-        $this->pestana(GeneratorRelationManager::class)
-            ->assertSuccessful()
-            ->assertCanRenderTableColumn('energia_de_hoy')
-            ->assertCanRenderTableColumn('energia_de_por_vida')
-            ->assertCanRenderTableColumn('ultima_lectura')
-            ->assertTableColumnStateSet('energia_de_hoy', 743.0, $panel)
-            ->assertTableColumnStateSet('energia_de_por_vida', 524497.0, $panel);
+        $this->assertCount(4, $this->ficha()->instance()->elementos());
+    }
+
+    #[Test]
+    public function las_pestanas_van_en_el_orden_en_que_circula_la_energia(): void
+    {
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 1);
+        $this->element(HardwareEnergy::ROLE_BATTERY);
+        $this->element(HardwareEnergy::ROLE_GENERATOR);
+
+        $this->assertSame(
+            [HardwareEnergy::ROLE_GENERATOR, HardwareEnergy::ROLE_BATTERY, HardwareEnergy::ROLE_LOAD],
+            $this->ficha()->instance()->elementos()->pluck('role')->all(),
+        );
+    }
+
+    /**
+     * El canal sólo se nombra cuando hay más de un consumo: con uno solo es
+     * ruido.
+     */
+    #[Test]
+    public function la_pestana_nombra_el_canal_solo_cuando_hace_falta(): void
+    {
+        $unico = $this->element(HardwareEnergy::ROLE_LOAD, channel: 0);
+
+        $this->assertSame('Consumo', $this->ficha()->instance()->etiquetaDe($unico));
+
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 1);
+
+        $this->assertSame('Consumo · canal 0', $this->ficha()->instance()->etiquetaDe($unico->refresh()));
+    }
+
+    #[Test]
+    public function se_abre_por_el_primer_elemento_y_se_puede_cambiar(): void
+    {
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
+        $banco = $this->element(HardwareEnergy::ROLE_BATTERY);
+
+        $ficha = $this->ficha();
+
+        $this->assertSame($panel->id, $ficha->instance()->elementoActivo()?->id);
+
+        $ficha->set('elementoId', $banco->id);
+
+        $this->assertSame($banco->id, $ficha->instance()->elementoActivo()?->id);
+    }
+
+    /**
+     * Un `?elemento=` a mano que apunte a otra cosa no rompe la página.
+     */
+    #[Test]
+    public function un_elemento_de_otro_aparato_en_la_url_no_rompe_nada(): void
+    {
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
+
+        $ajeno = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Otro']);
+        $suyo = $this->element(HardwareEnergy::ROLE_LOAD, meter: $ajeno);
+
+        $ficha = $this->ficha($suyo->id);
+
+        $ficha->assertSuccessful();
+        $this->assertSame($panel->id, $ficha->instance()->elementoActivo()?->id);
+    }
+
+    // ── Configurar sin salir de la página ─────────────────────────────────
+
+    #[Test]
+    public function la_configuracion_del_elemento_se_edita_aqui(): void
+    {
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
+
+        $this->ficha()
+            ->fillForm(['nominal_voltage' => 24.0], 'configuracion')
+            ->call('guardar');
+
+        $this->assertEqualsWithDelta(24.0, (float) $panel->fresh()?->nominal_voltage, 0.001);
+    }
+
+    #[Test]
+    public function cambiar_de_pestana_guarda_sobre_el_elemento_bueno(): void
+    {
+        // El esquema se cachea atado a un modelo: sin rehacerlo al cambiar de
+        // pestaña, se guardaría sobre el elemento anterior.
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
+        $banco = $this->element(HardwareEnergy::ROLE_BATTERY);
+
+        $this->ficha()
+            ->set('elementoId', $banco->id)
+            ->fillForm(['nominal_voltage' => 48.0], 'configuracion')
+            ->call('guardar');
+
+        $this->assertEqualsWithDelta(48.0, (float) $banco->fresh()?->nominal_voltage, 0.001);
+        $this->assertEqualsWithDelta(12.0, (float) $panel->fresh()?->nominal_voltage, 0.001, 'El de la otra pestaña no se toca.');
+    }
+
+    // ── Dar de alta ───────────────────────────────────────────────────────
+
+    #[Test]
+    public function se_puede_anadir_otro_consumo(): void
+    {
+        $this->element(HardwareEnergy::ROLE_LOAD, channel: 0);
+
+        $this->ficha()
+            ->callAction('crear_load', data: ['sensor_position' => 1, 'is_active' => true])
+            ->assertHasNoActionErrors();
+
+        $this->assertSame(
+            2,
+            $this->controller->hardwareEnergy()->where('role', HardwareEnergy::ROLE_LOAD)->count(),
+        );
+    }
+
+    /**
+     * El requisito del módulo: un generador, una batería y tantos consumos como
+     * canales.
+     */
+    #[Test]
+    public function del_generador_y_la_bateria_solo_cabe_uno(): void
+    {
+        $this->element(HardwareEnergy::ROLE_GENERATOR);
+        $this->element(HardwareEnergy::ROLE_BATTERY);
+
+        $ficha = $this->ficha();
+
+        $ficha->assertActionHidden('crear_generator');
+        $ficha->assertActionHidden('crear_battery');
+        $ficha->assertActionVisible('crear_load');
     }
 
     // ── El listado ────────────────────────────────────────────────────────
@@ -190,7 +303,7 @@ class EnergyDeviceViewTest extends TestCase
     #[Test]
     public function solo_salen_los_aparatos_que_miden_energia(): void
     {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
+        $this->element(HardwareEnergy::ROLE_GENERATOR);
 
         $mudo = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Portátil']);
 
@@ -205,150 +318,17 @@ class EnergyDeviceViewTest extends TestCase
     {
         $ajeno = User::factory()->create(['role_id' => 3, 'is_active' => true]);
         $suyo = HardwareDevice::create(['user_id' => $ajeno->id, 'name' => 'Ajeno']);
-        $this->element($suyo, HardwareEnergy::ROLE_LOAD);
+        $this->element(HardwareEnergy::ROLE_LOAD, meter: $suyo);
 
         $mio = User::factory()->create(['role_id' => 3, 'is_active' => true]);
         $miAparato = HardwareDevice::create(['user_id' => $mio->id, 'name' => 'Mío']);
-        $this->element($miAparato, HardwareEnergy::ROLE_LOAD);
+        $this->element(HardwareEnergy::ROLE_LOAD, meter: $miAparato);
 
         $this->actingAs($mio);
 
         Livewire::test(ListEnergyDevices::class)
             ->assertCanSeeTableRecords([$miAparato])
             ->assertCanNotSeeTableRecords([$suyo]);
-    }
-
-    // ── La ficha ──────────────────────────────────────────────────────────
-
-    #[Test]
-    public function la_ficha_se_titula_con_el_nombre_del_aparato(): void
-    {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-
-        $pagina = Livewire::test(ManageEnergyDevice::class, ['record' => $this->controller->getKey()]);
-
-        $pagina->assertSuccessful();
-
-        $this->assertSame('Renogy Rover 20 LI', $pagina->instance()->getTitle());
-        $this->assertStringContainsString('Controlador Solar', (string) $pagina->instance()->getSubheading());
-        $this->assertStringContainsString('Renogy', (string) $pagina->instance()->getSubheading());
-    }
-
-    /**
-     * Es lo que hace que la pantalla sirva para algo: se viene aquí a
-     * configurar el aparato entero, no a mirarlo.
-     */
-    #[Test]
-    public function la_ficha_deja_editar_los_datos_del_aparato(): void
-    {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-
-        Livewire::test(ManageEnergyDevice::class, ['record' => $this->controller->getKey()])
-            ->fillForm(['name_friendly' => 'El del despacho'])
-            ->call('save')
-            ->assertHasNoFormErrors();
-
-        $this->assertSame('El del despacho', $this->controller->fresh()?->name_friendly);
-    }
-
-    #[Test]
-    public function la_ficha_lleva_el_campo_de_imagen(): void
-    {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-
-        Livewire::test(ManageEnergyDevice::class, ['record' => $this->controller->getKey()])
-            ->assertFormFieldExists('image_id');
-    }
-
-    // ── Una pestaña por papel ─────────────────────────────────────────────
-
-    #[Test]
-    public function hay_una_pestana_por_papel(): void
-    {
-        $this->assertSame(
-            [GeneratorRelationManager::class, BatteryRelationManager::class, LoadRelationManager::class],
-            EnergyDeviceResource::getRelations(),
-        );
-    }
-
-    #[Test]
-    public function cada_pestana_solo_ensena_los_suyos(): void
-    {
-        $panel = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-        $banco = $this->element($this->controller, HardwareEnergy::ROLE_BATTERY);
-        $consumo = $this->element($this->controller, HardwareEnergy::ROLE_LOAD, channel: 1);
-
-        $this->pestana(GeneratorRelationManager::class)
-            ->assertSuccessful()
-            ->assertCanSeeTableRecords([$panel])
-            ->assertCanNotSeeTableRecords([$banco, $consumo]);
-
-        $this->pestana(BatteryRelationManager::class)
-            ->assertSuccessful()
-            ->assertCanSeeTableRecords([$banco])
-            ->assertCanNotSeeTableRecords([$panel, $consumo]);
-
-        $this->pestana(LoadRelationManager::class)
-            ->assertSuccessful()
-            ->assertCanSeeTableRecords([$consumo])
-            ->assertCanNotSeeTableRecords([$panel, $banco]);
-    }
-
-    // ── Dar de alta ───────────────────────────────────────────────────────
-
-    /**
-     * El fallo que se veía a simple vista: con la pantalla de sólo lectura no
-     * había forma de añadir otro consumo.
-     */
-    #[Test]
-    public function se_puede_anadir_otro_consumo(): void
-    {
-        $this->element($this->controller, HardwareEnergy::ROLE_LOAD, channel: 0);
-
-        $this->pestana(LoadRelationManager::class)
-            ->callTableAction('create', data: ['sensor_position' => 1, 'is_active' => true])
-            ->assertHasNoTableActionErrors();
-
-        $this->assertSame(
-            2,
-            $this->controller->hardwareEnergy()->where('role', HardwareEnergy::ROLE_LOAD)->count(),
-        );
-    }
-
-    #[Test]
-    public function el_papel_lo_pone_la_pestana(): void
-    {
-        $this->pestana(BatteryRelationManager::class)
-            ->callTableAction('create', data: ['sensor_position' => 0, 'is_active' => true])
-            ->assertHasNoTableActionErrors();
-
-        $banco = $this->controller->hardwareEnergy()->sole();
-
-        $this->assertSame(HardwareEnergy::ROLE_BATTERY, $banco->role);
-        $this->assertSame($this->controller->id, $banco->hardware_device_monitorized_id);
-    }
-
-    #[Test]
-    public function del_generador_y_la_bateria_solo_cabe_uno(): void
-    {
-        $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-        $this->element($this->controller, HardwareEnergy::ROLE_BATTERY);
-
-        $this->pestana(GeneratorRelationManager::class)->assertTableActionHidden('create');
-        $this->pestana(BatteryRelationManager::class)->assertTableActionHidden('create');
-        $this->pestana(LoadRelationManager::class)->assertTableActionVisible('create');
-    }
-
-    #[Test]
-    public function desde_cada_papel_se_llega_a_su_telemetria(): void
-    {
-        $panel = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
-
-        $this->pestana(GeneratorRelationManager::class)->assertTableActionHasUrl(
-            'telemetria',
-            HardwareEnergyResource::getUrl('edit', ['record' => $panel]),
-            record: $panel,
-        );
     }
 
     #[Test]
@@ -358,32 +338,55 @@ class EnergyDeviceViewTest extends TestCase
         $this->assertArrayNotHasKey('create', EnergyDeviceResource::getPages());
     }
 
-    // ── El papel no se cambia después ─────────────────────────────────────
+    // ── Lo que no se puede cambiar nunca ──────────────────────────────────
 
     #[Test]
     public function el_papel_no_se_puede_cambiar_al_editar(): void
     {
-        $panel = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
 
         Livewire::test(EditHardwareEnergy::class, ['record' => $panel->getKey()])
             ->assertFormFieldDisabled('role');
     }
 
+    /**
+     * Cambiarlo dejaría lecturas y acumulados atribuidos a un medidor que nunca
+     * los tomó, y en la telemetría no queda constancia de quién midió aparte de
+     * esa columna.
+     */
     #[Test]
-    public function el_papel_si_se_elige_al_crear(): void
+    public function el_aparato_que_mide_tampoco_se_puede_cambiar(): void
     {
-        Livewire::test(CreateHardwareEnergy::class)->assertFormFieldEnabled('role');
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
+
+        Livewire::test(EditHardwareEnergy::class, ['record' => $panel->getKey()])
+            ->assertFormFieldDisabled('hardware_device_id');
     }
 
     #[Test]
-    public function guardar_no_mueve_el_papel(): void
+    public function los_dos_si_se_eligen_al_crear(): void
     {
-        $panel = $this->element($this->controller, HardwareEnergy::ROLE_GENERATOR);
+        Livewire::test(CreateHardwareEnergy::class)
+            ->assertFormFieldEnabled('role')
+            ->assertFormFieldEnabled('hardware_device_id');
+    }
+
+    #[Test]
+    public function guardar_no_mueve_el_papel_ni_el_medidor(): void
+    {
+        $panel = $this->element(HardwareEnergy::ROLE_GENERATOR);
+        $otro = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Otro medidor']);
 
         Livewire::test(EditHardwareEnergy::class, ['record' => $panel->getKey()])
-            ->fillForm(['role' => HardwareEnergy::ROLE_LOAD])
+            ->fillForm([
+                'role' => HardwareEnergy::ROLE_LOAD,
+                'hardware_device_id' => $otro->id,
+            ])
             ->call('save');
 
-        $this->assertSame(HardwareEnergy::ROLE_GENERATOR, $panel->fresh()?->role);
+        $fresco = $panel->fresh();
+
+        $this->assertSame(HardwareEnergy::ROLE_GENERATOR, $fresco?->role);
+        $this->assertSame($this->controller->id, $fresco?->hardware_device_id);
     }
 }
