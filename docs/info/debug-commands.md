@@ -140,13 +140,22 @@ php artisan debug:seed-content --count=10
 
 ## Curriculum Vitae (CV)
 
-Crea la estructura completa de un currículum vitae con sus 18 secciones asociadas:
+Crea la estructura completa de un currículum vitae con sus 18 secciones asociadas. El CV queda
+marcado `visibility: public` (activo y descargable), así que aparece en `/cv` y en su propia
+`/cv/{slug}` sin pasos adicionales:
 
 ```bash
 php artisan debug:seed-cv
 ```
 
 **Archivo:** `app/Console/Commands/Debug/SeedCvDebugCommand.php`
+
+> ⚠️➡️✅ **Bug corregido el 2026-09-14**: el comando pasaba `is_public => true` a mano, pero ese
+> campo lo recalcula `Curriculum::booted()` a partir de `visibility` en cada guardado —lo que se
+> pase por mass assignment no tiene efecto—. Al no fijar `visibility`, el CV se quedaba con el
+> valor por defecto de la columna (`private`) y no aparecía ni en el listado público ni en el
+> sitemap pese a lo que decía el comando. Test de regresión en
+> `tests/Feature/Console/SeedCvDebugCommandTest.php`.
 
 ## Newsletter
 
@@ -210,4 +219,4 @@ php artisan debug:seed-all --small
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-12
+> Creado: 2026-05-26 · Última revisión: 2026-09-14

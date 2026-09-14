@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Debug;
 
 use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
+use App\Enums\CurriculumVisibilityEnum;
 use App\Models\CV\Curriculum;
 use App\Models\CV\CurriculumAcademicComplementary;
 use App\Models\CV\CurriculumAcademicComplementaryOnline;
@@ -54,14 +55,20 @@ class SeedCvDebugCommand extends Command
 
         $title = 'Curriculum de Raúl Caro';
 
+        // `is_public` NO se pasa aquí: `Curriculum::booted()` lo recalcula a
+        // partir de `visibility` en cada guardado (deja el que se pase por
+        // mass assignment sin efecto), así que lo único que hace público de
+        // verdad al CV es `visibility`. Sin esto, el CV de prueba se quedaba
+        // marcado como privado y no aparecía ni en `/cv` ni en el sitemap
+        // pese a que el comando decía «hazlo público».
         $cv = Curriculum::firstOrCreate(['user_id' => $user->id], [
             'title' => $title,
             'slug' => Str::slug($title),
             'presentation' => fake()->paragraph(),
+            'visibility' => CurriculumVisibilityEnum::Public,
             'is_active' => true,
             'is_downloadable' => true,
             'is_default' => true,
-            'is_public' => true,
         ]);
 
         $this->info('Creando formación académica de prueba...');
