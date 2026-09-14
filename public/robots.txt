@@ -28,8 +28,16 @@ Disallow: /two-factor-challenge
 Disallow: /newsletter/
 Disallow: /cv/s/
 
-# La API se consume con un cliente, no se lee en un buscador. La documentación
-# (/docs) sí se indexa a propósito.
+# La API se consume con un cliente, no se lee en un buscador.
+#
+# /docs no se lista aquí a propósito, pero no hace falta: exige sesión
+# iniciada (`routes/web.php`), así que un rastreador anónimo sólo ve la
+# redirección al login y nunca llega al contenido. No indexarlo es
+# consecuencia de la autenticación, no de este fichero.
 Disallow: /api/
 
-Sitemap: https://raupulus.dev/sitemap.xml
+# El sitemap vive en ESTE mismo host (los vhosts de `docs/deploys/vhosts/`
+# sirven la aplicación en `api.raupulus.dev`, no en `raupulus.dev`): apuntar a
+# otro dominio deja el sitemap sin descubrir para cualquier rastreador que siga
+# esta directiva.
+Sitemap: https://api.raupulus.dev/sitemap.xml

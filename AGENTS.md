@@ -1,6 +1,6 @@
 # AGENTS.md — Api Raupulus
 
-> **Última revisión:** 2026-09-12 · Verificado contra la rama `v2`.
+> **Última revisión:** 2026-09-14 · Verificado contra la rama `v2`.
 > Todo lo que hay aquí se ha comprobado contra el código. Si encuentras una discrepancia,
 > **corrige este fichero en el mismo commit** en el que la detectes.
 
@@ -353,7 +353,14 @@ La plataforma expone sus servicios a través de cuatro capas de enrutamiento pri
 - **Panel Admin (`/admin`):** SuperAdmin, Admin y Editor (`AdminPanelProvider`,
   `User::canAccessPanel()`).
   - Login dedicado en `/admin/login` y perfil en `/admin/profile`.
-  - 24 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags, Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Energías, Estación Meteorológica, Plantas Inteligentes (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV, Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter), Tipos de fichero.
+  - 24 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags,
+    Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Tipos de archivo,
+    Dispositivos de Energía + Registros de Energía (dos Resources distintos, uno por
+    `HardwareDevice` filtrado a energía y otro por `HardwareEnergy`), Plantas Inteligentes
+    (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV,
+    Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter). **No hay Resource de
+    Estación Meteorológica** — pese a lo que decía una versión anterior de este fichero, ese
+    módulo no tiene panel de administración propio hoy.
 - **Panel Tenant / Usuario (`/panel`):** Panel para usuarios autenticados (`TenantPanelProvider`).
   - Dashboard de cliente y visualización de recursos propios.
 
@@ -443,7 +450,7 @@ Los endpoints de escritura llevan `auth:sanctum` + `ability:<scope>` + `throttle
 
 Todos los comandos Artisan personalizados del proyecto están especificados y documentados en detalle en [`docs/info/commands.md`](docs/info/commands.md).
 
-36 comandos propios en total (`find app/Console/Commands -iname '*.php' | grep -v Concerns | wc -l`).
+41 comandos propios en total (`find app/Console/Commands -iname '*.php' | grep -v Concerns | wc -l`).
 
 ### Comandos del Proyecto
 - `php artisan project:install`: Instalación guiada del entorno (migraciones, seeders y storage:link).
@@ -528,7 +535,7 @@ El CORS real lo aplica `Illuminate\Http\Middleware\HandleCors` (prepend global) 
 
 ## 11. Base de datos
 
-- PostgreSQL. 133 migraciones, 105 factories, 19 ficheros de seeder (18 seeders + `DatabaseSeeder`).
+- PostgreSQL. 105 migraciones, 94 factories, 18 ficheros de seeder (17 seeders + `DatabaseSeeder`).
 - Toda columna lleva `->comment()` en español.
 - Foreign keys con `onDelete`/`onUpdate` explícitos.
 - Índices en las columnas de búsqueda frecuente.
@@ -728,4 +735,4 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 
 ---
 
-> Última revisión: 2026-09-05
+> Última revisión: 2026-09-14

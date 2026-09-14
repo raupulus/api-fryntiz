@@ -5,6 +5,9 @@
             <div>
                 <h3 class="text-lg font-bold mb-4">Api Raupulus</h3>
                 <p class="text-sm opacity-70">Plataforma de APIs y servicios de Raul Caro Pastorino</p>
+                <a href="{{ route('about') }}" class="text-sm opacity-70 hover:opacity-100 transition-opacity underline underline-offset-2 mt-2 inline-block">
+                    Sobre el proyecto
+                </a>
             </div>
 
             {{-- Columna 2: Módulos --}}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Http\Controllers\WeatherStation\WeatherStationController;
+use App\Models\CV\Curriculum;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\SmartPlant\SmartPlantPlant;
 use Carbon\Carbon;
@@ -66,6 +67,15 @@ class SitemapGeneratorCommand extends Command
         // públicas y no se indexaban. La documentación de la API (/docs) ya
         // no aparece aquí: ahora exige sesión iniciada y no tiene sentido
         // indexarla ni ofrecerla a rastreadores anónimos.
+        //
+        // `/about` dejó de ser una redirección a la portada: ahora es una
+        // página real con la información del proyecto (2026-09-14).
+        //
+        // `cv.index` entra siempre, tenga o no currículums públicos hoy: es un
+        // listado, igual que `smartplant.index` o `weather_station.index`, y
+        // se comporta igual que ellos aunque esté vacío. Lo dinámico —que
+        // depende de cuántos currículums estén marcados como públicos— son las
+        // páginas de cada uno, que añade `addCurriculumUrls()`.
         $staticUrls = [
             ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly'],
             ['url' => route('about'), 'priority' => 0.8, 'changefreq' => 'monthly'],
@@ -73,6 +83,7 @@ class SitemapGeneratorCommand extends Command
             ['url' => route('hardware.energy.index'), 'priority' => 0.7, 'changefreq' => 'daily'],
             ['url' => route('keycounter.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
             ['url' => route('airflight.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
+            ['url' => route('cv.index'), 'priority' => 0.6, 'changefreq' => 'monthly'],
         ];
 
         foreach ($staticUrls as $urlData) {
@@ -86,8 +97,31 @@ class SitemapGeneratorCommand extends Command
 
         $this->addSmartPlantUrls($sitemap);
         $this->addWeatherStationUrls($sitemap);
+        $this->addCurriculumUrls($sitemap);
 
         return $sitemap;
+    }
+
+    /**
+     * Un currículum sólo entra en el sitemap si está marcado como público
+     * (`Curriculum::scopePublicOnly()`): los compartidos por token y los
+     * privados no deben ser indexables, y esa es exactamente la comprobación
+     * que ya hace `Curriculum::isVisibleTo()` sin token —la misma que usa
+     * `CurriculumController::show()` para decidir el 404.
+     *
+     * Interesa que cuantos más currículums públicos haya, más visibilidad:
+     * todos entran, no sólo uno.
+     */
+    private function addCurriculumUrls(Sitemap $sitemap): void
+    {
+        Curriculum::publicOnly()->get()->each(function (Curriculum $cv) use ($sitemap) {
+            $sitemap->add(
+                Url::create(route('cv.show', ['slug' => $cv->slug]))
+                    ->setPriority(0.5)
+                    ->setChangeFrequency('monthly')
+                    ->setLastModificationDate($cv->updated_at ?? Carbon::now())
+            );
+        });
     }
 
     private function addSmartPlantUrls(Sitemap $sitemap): void

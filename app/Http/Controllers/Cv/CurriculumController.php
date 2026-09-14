@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CV\Curriculum;
 use App\Services\Cv\CurriculumPdfService;
 use App\Services\Cv\CurriculumService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -27,6 +28,32 @@ class CurriculumController extends Controller
         private readonly CurriculumService $service,
         private readonly CurriculumPdfService $pdf,
     ) {}
+
+    /**
+     * Listado de currículums públicos: una tarjeta por cada uno, para entrar y
+     * copiar su enlace o descargarlo.
+     */
+    public function index(): View
+    {
+        return view('cv.index', [
+            'curricula' => $this->service->publicOnly(),
+        ]);
+    }
+
+    /**
+     * Vista pública de un currículum. Mismo criterio que el PDF: sólo
+     * currículums activos y con visibilidad `public` (sin token).
+     */
+    public function show(string $slug): View
+    {
+        $cv = $this->service->bySlug($slug);
+
+        if (! $cv || ! $cv->isVisibleTo()) {
+            abort(404);
+        }
+
+        return view('cv.show', ['cv' => $cv]);
+    }
 
     /**
      * PDF del currículum predeterminado.

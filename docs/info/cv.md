@@ -66,7 +66,7 @@ romper consultas antiguas que aún lo miren.
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Cv/V2/CurriculumController.php` | API V2 | `index`, `shared`, `show`, `section` — ver [contrato de API](api/v2/cv.md) |
-| `app/Http/Controllers/Cv/CurriculumController.php` | Web | Descarga de PDF: `defaultPdf`, `pdf`, `sharedPdf` |
+| `app/Http/Controllers/Cv/CurriculumController.php` | Web | Vistas públicas (`index`, `show`) y descarga de PDF: `defaultPdf`, `pdf`, `sharedPdf` |
 
 ### Servicios
 
@@ -131,16 +131,38 @@ JSON de respuesta, errores).
 
 | Ruta | Nombre | Descripción |
 |------|--------|-------------|
+| `GET /cv` | `cv.index` | Listado de currículums públicos: una tarjeta horizontal por cada uno (`Curriculum::scopePublicOnly()`), enlazada desde el home en la tarjeta que antes llevaba al panel de gestión |
+| `GET /cv/{slug}` | `cv.show` | Vista pública de un currículum completo, con botón de descarga del PDF en la esquina superior derecha (sólo si `is_downloadable`) |
 | `GET /cv/pdf` | `cv.pdf.default` | PDF del currículum predeterminado |
 | `GET /cv/{slug}/pdf` | `cv.pdf` | PDF de un currículum público, por slug |
 | `GET /cv/s/{shareToken}` | `cv.shared.pdf` | PDF de un currículum compartido por enlace (cabecera `X-Robots-Tag: noindex, nofollow`) |
 
-> ⚠️➡️✅ **Bug corregido el 2026-08-30**: las tres rutas apuntaban a métodos
-> que no existían en el controlador (`pdfPorDefecto`, `pdfCompartido` en vez
-> de `defaultPdf`, `sharedPdf`), así que **las tres devolvían 500** en
+> ⚠️ **Orden de las rutas**: `/{slug}` va registrada la última del grupo, después
+> de `/s/{shareToken}` y `/pdf`. Los tres son literales de un solo segmento;
+> si `/{slug}` se registrara antes, se comería «s» y «pdf» como si fueran un
+> slug real y esas dos rutas nunca se alcanzarían.
+
+> ⚠️ **`route('cv.show', ...)` y `route('cv.pdf', ...)` necesitan `['slug' =>
+> ...]` explícito.** `Curriculum` no sobreescribe `getRouteKeyName()`, así que
+> pasar el modelo tal cual (`route('cv.show', $cv)`) generaría la URL con el
+> `id`, no con el `slug`. Se usa así en las vistas (`cv/index.blade.php`,
+> `cv/show.blade.php`) y en `SitemapGeneratorCommand`.
+
+> ⚠️➡️✅ **Bug corregido el 2026-08-30**: las tres rutas de PDF apuntaban a
+> métodos que no existían en el controlador (`pdfPorDefecto`, `pdfCompartido`
+> en vez de `defaultPdf`, `sharedPdf`), así que **las tres devolvían 500** en
 > cualquier petición (`BadMethodCallException`). Arreglado en
 > `routes/cv/web.php`; test de regresión en
 > `tests/Feature/Cv/CurriculumWebRoutesTest.php`.
+
+## Sitemap (2026-09-14)
+
+`cv.index` entra siempre en `sitemap:generate`, tenga o no currículums
+públicos hoy —igual que `smartplant.index` o `weather_station.index`—. Cada
+currículum con `visibility = public` (y `is_active`) añade además su propia
+`cv.show` (`SitemapGeneratorCommand::addCurriculumUrls()`): si no hay ninguno
+público, no hay ninguna `cv.show` en el sitemap; si hay varios, entran todos.
+Los compartidos por token y los privados nunca aparecen. Ver skill `seo`.
 
 ## PDF: generación real, no un fichero estático
 
@@ -167,4 +189,4 @@ php artisan debug:seed-cv
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-09-14

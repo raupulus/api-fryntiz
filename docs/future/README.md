@@ -12,5 +12,6 @@ no versionada) y de `docs/info/` (documentación técnica de lo que existe).
 | [`retencion-datos-iot.md`](retencion-datos-iot.md) | Estrategia de crecimiento y particionado de las tablas de sensores | Cuando el volumen lo justifique |
 | [`revisar-aemet.md`](revisar-aemet.md) | Decidir qué endpoints de AEMET sin implementar interesan (el endurecimiento del parseo y de errores/cuota ya se hizo) | Sin fecha; no bloquea el despliegue |
 | [`content-conteo-palabras-y-tiempo-lectura.md`](content-conteo-palabras-y-tiempo-lectura.md) | Guardar conteo de caracteres y/o palabras por página y exponer tiempo estimado de lectura en la API de Content | Sin fecha; no bloquea el despliegue |
+| [`about-page-cms.md`](about-page-cms.md) | Plataforma de contenidos propia del backend para dinamizar `/about` (y otras páginas estáticas del frontend) sin desplegar código | Sin fecha; no bloquea el despliegue |
 
 > Creado: 2026-08-30 · Última revisión: 2026-09-14

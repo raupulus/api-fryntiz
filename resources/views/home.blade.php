@@ -410,29 +410,29 @@
                     </div>
                 </div>
 
-                {{-- Panel de gestión --}}
+                {{-- Currículum --}}
                 <div class="flex flex-col flex-grow flex-shrink">
                     <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow">
-                        <a href="/panel"
-                           title="Acceso al panel de gestión para la api de Raúl Caro Pastorino"
+                        <a href="{{ route('cv.index') }}"
+                           title="Currículums públicos de Raúl Caro Pastorino"
                            class="flex flex-wrap no-underline hover:no-underline p-6">
                             <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
-                                Dashboard
+                                CV
                             </p>
                             <div class="w-full font-bold text-xl text-on-surface">
-                                Panel de gestión.
+                                Currículum
                             </div>
                             <p class="text-on-surface-variant text-base mb-5">
-                                Desde el panel de gestión se pueden crear tokens para conectar y subir o consumir los datos que se ofrecen en esta api.
+                                Varios currículums según el perfil —frontend, backend, resumen— listos para consultar en línea o descargar en PDF.
                             </p>
                         </a>
                     </div>
                     <div class="flex-none mt-auto bg-surface-container-lowest rounded-b overflow-hidden shadow p-6">
                         <div class="flex items-center justify-center">
-                            <a href="/panel"
-                               title="Acceso al panel de gestión para la api de Raúl Caro Pastorino"
+                            <a href="{{ route('cv.index') }}"
+                               title="Currículums públicos de Raúl Caro Pastorino"
                                class="mx-auto lg:mx-0 gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
-                                Acceder
+                                Ver currículum
                             </a>
                         </div>
                     </div>

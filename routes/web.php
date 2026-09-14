@@ -24,8 +24,11 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+// La página vive en `resources/views/about.blade.php` como contenido
+// estático escrito a mano. En el futuro se dinamizará desde una plataforma de
+// contenidos propia del backend de la API (ver `docs/future/about-page-cms.md`).
 Route::get('/about', function () {
-    return redirect()->route('home');
+    return view('about');
 })->name('about');
 
 /*
