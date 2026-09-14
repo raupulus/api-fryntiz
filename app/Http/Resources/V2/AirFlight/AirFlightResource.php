@@ -46,6 +46,8 @@ class AirFlightResource extends JsonResource
         return [
             'id' => $this->id,
             'icao' => $this->icao,
+            'registration' => $this->registration,
+            'aircraft_type' => $this->aircraft_type,
             'category' => $this->category,
             'flight' => $route?->flight,
             'squawk' => $route?->squawk,

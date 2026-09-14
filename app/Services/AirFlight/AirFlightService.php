@@ -22,8 +22,9 @@ class AirFlightService
      *
      * El sondeo trae dos cosas distintas y van a dos tablas distintas:
      *
-     * - **el avión** (`icao`, y con el tiempo `country`, `category`, `flag`) →
-     *   `airflight_airplanes`, una fila por aparato;
+     * - **el avión** (`icao`, `registration`, `aircraft_type`, y con el tiempo
+     *   `country`, `category`, `flag`) → `airflight_airplanes`, una fila por
+     *   aparato;
      * - **la posición** (`lat`, `lon`, `altitude`, `speed`, `track`, `squawk`,
      *   `flight`, `messages`) → `airflight_routes`, una fila por sondeo.
      *
@@ -54,6 +55,19 @@ class AirFlightService
             $aircraft->user_id = $userId;
             $aircraft->hardware_device_id = $hardwareDeviceId;
             $aircraft->seen_first_at = now();
+        }
+
+        // Matrícula y tipo: los resuelve el receptor contra su base local
+        // (ver docs/future/airflight-registro-de-matriculas.md), no esta API.
+        // Se aplican tanto en alta como en avión ya existente —a diferencia
+        // de `user_id`/`hardware_device_id`, no son "quién lo vio la primera
+        // vez" sino un dato fijo del aparato que puede llegar en cualquier
+        // sondeo—, y sólo si vienen con valor: igual que `routeFieldsOnly()`,
+        // nunca se borra un dato ya guardado con uno vacío.
+        foreach (['registration', 'aircraft_type'] as $field) {
+            if (array_key_exists($field, $data) && $data[$field] !== null && trim((string) $data[$field]) !== '') {
+                $aircraft->{$field} = trim((string) $data[$field]);
+            }
         }
 
         $aircraft->seen_last_at = now();

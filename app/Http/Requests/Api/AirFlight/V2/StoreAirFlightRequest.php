@@ -29,6 +29,12 @@ class StoreAirFlightRequest extends BaseFormRequest
             // comprueba que sea del usuario (**N293**).
             'hardware_device_id' => ['nullable', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'icao' => ['required', 'string', 'max:10'],
+            // Resueltas por el propio receptor contra su base local de
+            // matrículas (dump1090-fa/skyaware), no por esta API — ver
+            // docs/future/airflight-registro-de-matriculas.md. Opcionales:
+            // null si el receptor no encontró el ICAO en esa base.
+            'registration' => ['nullable', 'string', 'max:20'],
+            'aircraft_type' => ['nullable', 'string', 'max:10'],
             'flight' => ['nullable', 'string', 'max:20'],
             'squawk' => ['nullable', 'string', 'max:10'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],

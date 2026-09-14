@@ -30,6 +30,8 @@ use function file_exists;
  * @property int|null $user_id Usuario asociado
  * @property int|null $hardware_device_id Dispositivo asociado
  * @property string|null $icao Código ICAO 24 bits (6 dígitos hexadecimales)
+ * @property string|null $registration Matrícula de la aeronave, resuelta por el receptor
+ * @property string|null $aircraft_type Tipo ICAO de aeronave, resuelto por el receptor
  * @property string|null $country País de origen del avión
  * @property string|null $category Categoría del avión
  * @property string|null $seen_first_at Indica momento en el que se ha visto por primera vez
@@ -77,6 +79,8 @@ class AirFlightAirPlane extends BaseModel
         'user_id',
         'hardware_device_id',
         'icao',
+        'registration',
+        'aircraft_type',
         'country',
         'category',
         'flag',

@@ -28,6 +28,9 @@ class StoreBatchAirFlightRequest extends BaseFormRequest
             'hardware_device_id' => ['nullable', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'data' => ['required', 'array', 'min:1', 'max:500'],
             'data.*.icao' => ['required', 'string', 'max:10'],
+            // Ver StoreAirFlightRequest: resueltas por el receptor, no aquí.
+            'data.*.registration' => ['nullable', 'string', 'max:20'],
+            'data.*.aircraft_type' => ['nullable', 'string', 'max:10'],
             'data.*.flight' => ['nullable', 'string', 'max:20'],
             'data.*.squawk' => ['nullable', 'string', 'max:10'],
             'data.*.lat' => ['nullable', 'numeric', 'between:-90,90'],

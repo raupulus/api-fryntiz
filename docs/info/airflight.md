@@ -15,6 +15,8 @@ corregir lo otro.
 | Campo | Tipo | Unidad | Rango | Ejemplo |
 |---|---|---|---|---|
 | `icao` | string | — | 6 hex | `"4ca61f"` |
+| `registration` | string\|null | — | matrícula, opcional | `"EC-NBA"` |
+| `aircraft_type` | string\|null | — | tipo ICAO de aeronave, opcional | `"A320"` |
 | `flight` | string\|null | — | callsign sin espacios | `"RYR11CL"` |
 | `squawk` | string\|null | — | 4 dígitos octales | `"7105"` |
 | `lat` | float\|null | grados decimales WGS84 (°) | -90 a 90 | `36.623623` |
@@ -42,6 +44,29 @@ Confirmado con un caso real (2026-09-09): un `vert_rate` que en bruto de
 dump1090 era **-1267.906126181 ft/min**, tras la conversión del capturador,
 sube como **≈ -6.44 m/s** (`-1267.906126181 × 0.3048 / 60`) — un descenso
 normal, dentro del rango -100 a 100 de la tabla de arriba.
+
+### Matrícula y tipo de aeronave: los resuelve el receptor, no esta API (2026-09-14)
+
+`registration`/`aircraft_type` son **opcionales** y llegan ya resueltos: el
+receptor (`dump1090-fa`+`skyaware`) trae instalada de fábrica una base local
+de matrículas (`/usr/share/skyaware/html/db/`, snapshot fijo de VRS
+`BasicAircraftLookup`, ya no se actualiza en origen), y el capturador
+(`dump1090-to-db`, fuera de este repo) la consulta por ICAO antes de subir. Si
+no encuentra el ICAO en esa base, manda `null` — esta API nunca busca nada,
+solo guarda lo que llegue. Decisión completa y alternativas descartadas (API
+externa, servir los 250.000 ficheros del dataset) en
+[`docs/future/airflight-registro-de-matriculas.md`](../future/airflight-registro-de-matriculas.md).
+
+`AirFlightService::addAircraft()` los guarda tanto en alta como en avión ya
+existente (a diferencia de `user_id`/`hardware_device_id`, que solo se fijan
+al crear): son un dato fijo del aparato, no de "quién lo vio primero", y
+pueden llegar en cualquier sondeo. Igual que con la posición
+(`routeFieldsOnly()`), un sondeo sin estos campos nunca borra un valor ya
+guardado — solo se escribe si llega con valor.
+
+**Alcance de este cambio**: solo lo que se suba a partir de ahora. Los
+aviones ya guardados se quedan con `registration`/`aircraft_type` a `null`
+hasta que el receptor vuelva a reportarlos — no ha corrido ningún backfill.
 
 ### Corrección sobre una confusión propia (2026-09-08 → 09)
 
@@ -273,6 +298,8 @@ editarlos a mano — divergiría de lo que reporta el propio receptor ADS-B.
 |-------|------|-------------|
 | `id` | bigint | PK |
 | `icao` | string(10) | Código ICAO del avión (identificador único transponder) |
+| `registration` | string\|null | Matrícula, resuelta por el receptor (ver más arriba) |
+| `aircraft_type` | string(10)\|null | Tipo ICAO de aeronave, resuelto por el receptor (ver más arriba) |
 | `category` | string | Categoría del avión |
 | `seen_last_at` | timestamp | Última vez detectado |
 | `seen_first_at` | timestamp | Primera vez detectado |
@@ -524,4 +551,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-06
+> Creado: 2026-05-25 · Última revisión: 2026-09-14

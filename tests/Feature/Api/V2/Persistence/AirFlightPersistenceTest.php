@@ -52,6 +52,8 @@ class AirFlightPersistenceTest extends ApiTestCase
     {
         return [
             'icao' => $icao,
+            'registration' => 'EC-NBA',
+            'aircraft_type' => 'A320',
             'flight' => 'IBE3245 ',
             'squawk' => '7010',
             'lat' => 36.7412,
@@ -130,6 +132,78 @@ class AirFlightPersistenceTest extends ApiTestCase
             'messages' => $probe['messages'],
             'squawk' => $probe['squawk'],
         ]);
+    }
+
+    /**
+     * Matrícula y tipo los resuelve el receptor (ver
+     * docs/future/airflight-registro-de-matriculas.md), no esta API: aquí solo
+     * hay que guardar lo que llegue.
+     */
+    #[Test]
+    public function registration_and_aircraft_type_are_stored_when_present(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertSame('EC-NBA', $aircraft?->registration);
+        $this->assertSame('A320', $aircraft?->aircraft_type);
+    }
+
+    /**
+     * Son opcionales: el receptor no siempre los encuentra en su base local.
+     */
+    #[Test]
+    public function registration_and_aircraft_type_are_optional(): void
+    {
+        $probe = $this->probe();
+        unset($probe['registration'], $probe['aircraft_type']);
+
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $probe,
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertNull($aircraft?->registration);
+        $this->assertNull($aircraft?->aircraft_type);
+    }
+
+    /**
+     * Un sondeo posterior sin matrícula/tipo (el receptor no siempre los
+     * manda, p. ej. si todavía no arrancó la resolución) no debe borrar lo
+     * que ya se sabía del avión — mismo principio que `routeFieldsOnly()`
+     * para la posición.
+     */
+    #[Test]
+    public function a_later_probe_without_registration_does_not_erase_the_known_value(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $probe = $this->probe();
+        unset($probe['registration'], $probe['aircraft_type']);
+        $probe['messages'] = 3185;
+
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $probe,
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->where('icao', '3444d2')->firstOrFail();
+
+        $this->assertSame('EC-NBA', $aircraft->registration);
+        $this->assertSame('A320', $aircraft->aircraft_type);
     }
 
     /**

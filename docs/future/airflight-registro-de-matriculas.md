@@ -1,5 +1,18 @@
 # AirFlight — el registro de matrículas (`bkey`)
 
+> **Resuelto (2026-09-14), con una cuarta opción que no estaba en la tabla de
+> abajo:** ni fichero estático, ni tabla propia con importador, ni API
+> externa. El receptor (`dump1090-fa`+`skyaware`) ya trae instalada de
+> fábrica una base local de matrículas/tipos
+> (`/usr/share/skyaware/html/db/`, snapshot de VRS `BasicAircraftLookup`); el
+> capturador (`dump1090-to-db`, fuera de este repo) la resuelve por ICAO
+> antes de subir, y esta API solo guarda lo que llegue en los nuevos campos
+> opcionales `registration`/`aircraft_type` de `POST /aircrafts` (contrato en
+> [`docs/info/api/v2/airflight.md`](../info/api/v2/airflight.md)). Sin
+> dataset que mantener aquí, sin backfill de lo ya guardado — solo lo que se
+> suba a partir de ahora. El análisis de abajo se conserva porque documenta
+> por qué se descartaron las otras tres.
+
 > Anotado al retirar `GET /airflight/db/{bkey}` en la fase 5. Tu instrucción
 > (M6): *«Si no se usa realmente déjalo documentado en "future" tal como se
 > planteaba que debería funcionar y ya revisaré si obtengo los más comunes o lo

@@ -47,6 +47,12 @@
   > **Qué tiene que hacer un cliente que leyera sin token:** emitir uno con
   > `airflight:read`. Sin él, las lecturas responden `401`.
 
+  > ⚠️ **Cambio de contrato del 2026-09-14.** `POST /aircrafts` y `POST
+  > /aircrafts/batch` aceptan ahora `registration` y `aircraft_type`
+  > (opcionales). Los resuelve el receptor contra su base local de
+  > matrículas, no esta API — si no encuentra el ICAO, manda `null`. Un
+  > cliente que no los mande no tiene que cambiar nada.
+
   > ⚠️ **Cambio de contrato del 2026-09-08.** `POST /aircrafts` y `POST
   > /aircrafts/batch` aceptan ahora `vert_rate`, `rssi` y `emergency`. Antes
   > se podían mandar y la petición respondía `201` sin quejarse, pero
@@ -156,6 +162,8 @@ por fechas; no son recursos distintos.
     {
       "id": 42,
       "icao": "3443d1",
+      "registration": "EC-NBA",
+      "aircraft_type": "A320",
       "category": null,
       "flight": "IBE1234",
       "squawk": "1000",
@@ -190,6 +198,8 @@ por fechas; no son recursos distintos.
     {
       "id": 42,
       "icao": "3443d1",
+      "registration": "EC-NBA",
+      "aircraft_type": "A320",
       "category": null,
       "flight": "IBE1234",
       "squawk": "1000",
@@ -224,7 +234,10 @@ por fechas; no son recursos distintos.
   - Unidades: `altitude` en metros, `speed`/`vert_rate` en m/s,
     `lat`/`lon`/`track` en grados, `rssi` en dBFS — ver el aviso de unidades
     al principio de este documento.
-  - `id`, `icao`, `category`, `created_at` pertenecen al avión.
+  - `id`, `icao`, `registration`, `aircraft_type`, `category`, `created_at`
+    pertenecen al avión. `registration`/`aircraft_type` los resuelve el
+    receptor (opcionales, `null` si no encontró el ICAO en su base local) —
+    ver el aviso de cambio de contrato del 2026-09-14 más arriba.
   - `flight`, `squawk`, `altitude`, `vert_rate`, `speed`, `track`, `rssi`,
     `emergency`, `messages` y `seen` vienen del **último mensaje recibido**
     (`latestRoute`), sea cual sea su contenido.
@@ -265,6 +278,8 @@ por fechas; no son recursos distintos.
 |---|---|---|
 | `hardware_device_id` | int\|null | opcional, debe existir en `hardware_devices` y pertenecer al usuario del token (si el token está ligado a un dispositivo concreto vía ability `device:{id}`, debe coincidir con ese dispositivo) |
 | `icao` | string | `required`, máx. 10 |
+| `registration` | string\|null | opcional, máx. 20. La resuelve el receptor contra su base local de matrículas, no esta API; `null` si no la encontró |
+| `aircraft_type` | string\|null | opcional, máx. 10. Tipo ICAO de aeronave (ej. `A320`), mismo origen que `registration` |
 | `flight` | string\|null | opcional, máx. 20 |
 | `squawk` | string\|null | opcional, máx. 10 |
 | `lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
@@ -300,6 +315,8 @@ por fechas; no son recursos distintos.
   "data": {
     "id": 42,
     "icao": "3443d1",
+    "registration": "EC-NBA",
+    "aircraft_type": "A320",
     "category": null,
     "flight": "IBE1234",
     "squawk": "1000",
@@ -349,6 +366,8 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `hardware_device_id` | int\|null | opcional, mismas reglas que en el alta individual (pertenencia + ligado al token) |
 | `data` | array | `required`, mínimo 1, **máximo 500** elementos |
 | `data.*.icao` | string | `required`, máx. 10 |
+| `data.*.registration` | string\|null | opcional, máx. 20. Ver `registration` del alta individual |
+| `data.*.aircraft_type` | string\|null | opcional, máx. 10. Ver `aircraft_type` del alta individual |
 | `data.*.flight` | string\|null | opcional, máx. 20 |
 | `data.*.squawk` | string\|null | opcional, máx. 10 |
 | `data.*.lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
@@ -394,7 +413,7 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 
 | Ruta antigua | Qué pasó |
 |---|---|
-| `GET /airflight/db/{bkey}` | Retirada: siempre devolvía 404 porque el dataset del registro OACI (matrícula/modelo/país a partir del hexadecimal ICAO) no se mantiene. Un endpoint que solo sabe decir "no encontrado" es peor que no tenerlo: parece que existe. |
+| `GET /airflight/db/{bkey}` | Retirada: siempre devolvía 404 porque el dataset del registro OACI (matrícula/modelo/país a partir del hexadecimal ICAO) no se mantenía en esta API. Un endpoint que solo sabe decir "no encontrado" es peor que no tenerlo: parece que existe. Matrícula y tipo llegan ahora por otra vía (`registration`/`aircraft_type` en `POST /aircrafts`, ver cambio de contrato del 2026-09-14): las resuelve el receptor, esta API nunca las busca. |
 | `GET /airflight/history` | Retirada: era la misma colección de aviones que `GET /aircrafts`, sin la ventana de actividad reciente. Ahora es `GET /aircrafts?from=&to=` (paginado), sobre el mismo recurso. |
 
 `GET /airflight/receiver` se mantiene tal cual pese a no tener colección: hay
@@ -409,4 +428,4 @@ cada petición trae hasta 500 filas).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-08
+> Creado: 2026-08-30 · Última revisión: 2026-09-14
