@@ -326,7 +326,6 @@ distinto de cero significa ahora que ha fallado el comando de verdad.
 | Comando | Opciones | Descripción |
 |---------|----------|-------------|
 | `energy:aggregate-daily` | `--date=YYYY-MM-DD`, `--today`, `--element=ID`, `--all`, `--rebuild` | Consolida y recalcula resúmenes diarios (`hardware_energy_today`) e históricos (`hardware_energy_historical`, sesión a sesión) para elementos con recálculo automático (`auto_calculate_history = true`). Fechas en UTC. Programado a diario a las 00:05 UTC. `--rebuild` sustituye acumulados aunque los resúmenes no cubran toda su historia: es destructivo. |
-| `energy:migrate-legacy-data` | `--dry-run`, `--force` | Traspaso de una vez de las tablas antiguas al esquema unificado. **Empieza por un `TRUNCATE`** de `hardware_energy_readings`, `_today` e `_historical`: se lanza antes de que los aparatos suban con el contrato nuevo, no después. Toma el dispositivo de cada fila del catálogo del elemento y descarta las filas sin elemento. |
 
 ```bash
 # Consolidación habitual (cierra el día de ayer)
@@ -473,4 +472,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-13
+> Creado: 2026-05-26 · Última revisión: 2026-09-14

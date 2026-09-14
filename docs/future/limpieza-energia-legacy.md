@@ -1,6 +1,7 @@
 # Limpieza del andamiaje del esquema de energía
 
-> **Estado:** anotado, sin trabajo asignado. **No corre prisa.**
+> **Estado:** grupos 1 y 2 **hechos** el 2026-09-14 (comando y tablas viejas borrados,
+> `2026_09_14_000004_drop_legacy_power_tables`). Queda el grupo 3.
 > **Decidido el:** 2026-09-13
 
 Cuando el esquema unificado de energía lleve un tiempo funcionando en producción,
@@ -14,7 +15,7 @@ comando deja el comando roto, y tocar las migraciones sin reconciliar la tabla
 
 ---
 
-## 1 · El comando de traspaso
+## 1 · El comando de traspaso — ✅ hecho (2026-09-14)
 
 `energy:migrate-legacy-data` existe para una sola ejecución: llenar las tablas
 nuevas desde las viejas. Ya se ejecutó. Volver a lanzarlo **vacía las tres tablas
@@ -35,7 +36,11 @@ queda.
 
 ---
 
-## 2 · Las tablas del esquema viejo
+## 2 · Las tablas del esquema viejo — ✅ hecho (2026-09-14)
+
+Borradas con `2026_09_14_000004_drop_legacy_power_tables`, que también quita sus
+migraciones de creación y sus filas de `migrations`. La copia es el volcado de
+producción del 2026-09-14.
 
 Siete tablas, **unos 456 MB**, sin una sola línea de código que las lea desde que
 se retiraron sus modelos:

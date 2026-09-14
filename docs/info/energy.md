@@ -33,21 +33,13 @@ El subsistema de energía se estructura en cuatro tablas principales:
 | `App\Models\Hardware\HardwareEnergyToday` | `hardware_energy_today` | **Agregado diario**: una fila por elemento y fecha con acumulados del día y extremos |
 | `App\Models\Hardware\HardwareEnergyHistorical` | `hardware_energy_historical` | **Serie histórica multisensión**: acumulados totales y extremos por sesión de odómetro |
 
-> ℹ️ Las tablas antiguas (`hardware_power_generators*`, `hardware_power_loads*`,
-> `hardware_power_generators_solar`) **se quedan intactas en la base como
-> respaldo en frío**. Sus datos se traspasan con
-> `php artisan energy:migrate-legacy-data`, que:
->
-> - toma el dispositivo de cada fila del **catálogo del elemento**, no de la fila
->   vieja, porque el esquema antiguo guardaba a veces el aparato monitorizado en
->   vez del que mide;
-> - **descarta las filas sin elemento asignado**, que en el esquema nuevo no se
->   pueden sumar a nada y ensucian cualquier total que no filtre;
-> - descompone cada fila de `hardware_power_generators_solar` en tres lecturas
->   —panel, salida de carga y batería—, que es el rango de fechas en el que la
->   tabla dedicada del Rover fue la única que se llenó;
-> - empieza por un `TRUNCATE` de las tres tablas nuevas, así que **se lanza antes
->   de que los aparatos empiecen a subir, no después**.
+> ℹ️ **Las tablas antiguas ya no existen.** `hardware_power_generators*`,
+> `hardware_power_loads*` y `hardware_power_generators_solar` se traspasaron a
+> estas tres con el comando `energy:migrate-legacy-data` y se borraron el
+> **2026-09-14** (`2026_09_14_000004_drop_legacy_power_tables`), junto con el
+> comando y sus migraciones de creación. Sólo quedaron fuera 30 lecturas de
+> pruebas de 2023–2025 sin elemento asignado. La copia de lo que había es el
+> volcado de producción de ese día.
 
 ---
 
@@ -758,7 +750,7 @@ haga ruido. Qué prueba cada archivo:
 | `Api/V2/Energy/EnergyDailyCycleTest.php` | El ciclo entero: subidas repartidas por el día, cierre nocturno, totales, idempotencia, lecturas sospechosas y corte del día en UTC |
 | `Console/Energy/AggregateDailyHistoricalTest.php` | Que el cron no borre acumulados que los resúmenes no cubren, que `--rebuild` sí lo haga, y que cada sesión se reconcilie sólo con sus días |
 | `Console/Energy/AggregateDailyEnergyCommandTest.php` | Opciones del comando y filtrado por `auto_calculate_history` |
-| `Console/Energy/MigrateLegacyEnergyDataCommandTest.php` | El traspaso del esquema viejo: `--dry-run` no escribe, las filas sin elemento no pasan, relanzarlo deja lo mismo y su `TRUNCATE` se lleva lo que hubiera entrado en vivo. Y lo que el esquema viejo traía mal: lecturas que estaban en dos tablas, extremos y contadores diarios que hay que recalcular, y la batería sin resúmenes |
+| `Database/RepairRoverEnergyDaysMigrationTest.php` | La reparación de los días del Rover del 7 al 14/09/2026: consumo rehecho desde las lecturas, panel y batería a su tensión nominal, acumulados que cuadran con los días e idempotencia |
 | `Console/Energy/SeedEnergyDebugCommandTest.php` | Que `debug:seed-energy` escriba en la forma del esquema: un resumen por día y **un** acumulado por elemento |
 
 ### Lectura y pantallas

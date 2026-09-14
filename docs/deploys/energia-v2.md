@@ -6,6 +6,11 @@ corte de contrato y un comando que vacía tablas, así que el orden importa.
 
 Para el despliegue general del VPS ver [`deploy-vps.md`](deploy-vps.md).
 
+> **Histórico: ya no se puede repetir.** El 2026-09-14 se borraron las tablas
+> antiguas y el comando `energy:migrate-legacy-data`
+> (`2026_09_14_000004_drop_legacy_power_tables`). Esta guía queda como registro
+> de cómo se hizo el traspaso.
+
 ---
 
 # ⚠️ Reparación del despliegue del 13/09/2026
@@ -349,4 +354,4 @@ pg_restore -c -d raupulus_api ~/backups/raupulus_api_<fecha>.dump
 
 ---
 
-> Creado: 2026-09-13 · Última revisión: 2026-09-13
+> Creado: 2026-09-13 · Última revisión: 2026-09-14

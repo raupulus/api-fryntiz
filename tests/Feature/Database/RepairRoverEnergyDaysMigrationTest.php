@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Database;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -98,8 +100,33 @@ class RepairRoverEnergyDaysMigrationTest extends TestCase
         return ['wh' => (float) $fila->energy_wh, 'ah' => (float) $fila->energy_ah, 'ws' => $fila->energy_wh_source, 'as' => $fila->energy_ah_source];
     }
 
+    /**
+     * Las dos tablas viejas de las que la reparación toma la base del día 13.
+     * Ya no existen (`2026_09_14_000004_drop_legacy_power_tables`), así que se
+     * crean aquí sólo con las columnas que lee.
+     */
+    private function creaLasTablasViejas(): void
+    {
+        Schema::create('hardware_power_generators_today', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('hardware_device_id')->nullable();
+            $table->date('date')->nullable();
+            $table->decimal('energy_wh', 14, 4)->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('hardware_power_generators_solar', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('hardware_device_id');
+            $table->date('date')->nullable();
+            $table->decimal('day_charging_amp_hours', 10, 2)->nullable();
+            $table->timestamps();
+        });
+    }
+
     private function montaLosDatosRotos(): void
     {
+        $this->creaLasTablasViejas();
         $this->montaElRover();
 
         // Consumo: un día viejo bien (el 5) y uno con el contador de 19:14 (el 8).
