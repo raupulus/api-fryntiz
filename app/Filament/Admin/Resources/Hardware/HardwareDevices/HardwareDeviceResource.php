@@ -100,6 +100,28 @@ class HardwareDeviceResource extends Resource
         return false;
     }
 
+    /**
+     * Una tarjeta tipo badge por cada clave del `extra` del dispositivo.
+     *
+     * @return list<TextEntry>
+     */
+    private static function extraBadges(?HardwareDevice $record): array
+    {
+        $extra = $record?->extra;
+
+        if (! is_array($extra)) {
+            return [];
+        }
+
+        return collect($extra)
+            ->map(fn ($value, $key) => TextEntry::make("extra.{$key}")
+                ->label((string) $key)
+                ->state(is_scalar($value) ? (string) $value : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+                ->badge())
+            ->values()
+            ->all();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -137,22 +159,11 @@ class HardwareDeviceResource extends Resource
                     ->visible(fn (?HardwareDevice $record): bool => self::hasAnyReading($record))
                     ->columnSpanFull(),
 
-                // Lo único que sigue siendo un campo de texto: es JSON libre y
-                // no cabe en una tarjeta.
+                // Una tarjeta tipo badge por cada clave de `extra`. Si el JSON
+                // está vacío la sección entera no se muestra.
                 Section::make('Métricas adicionales')
                     ->description('Lo que el dispositivo manda en `extra`, tal cual.')
-                    ->collapsed()
-                    ->schema([
-                        Textarea::make('extra')
-                            ->hiddenLabel()
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->rows(6)
-                            ->formatStateUsing(fn ($state) => filled($state)
-                                ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-                                : null)
-                            ->columnSpanFull(),
-                    ])
+                    ->schema(fn (?HardwareDevice $record) => self::extraBadges($record))
                     ->visible(fn (?HardwareDevice $record): bool => filled($record?->extra))
                     ->columnSpanFull(),
 
@@ -193,17 +204,7 @@ class HardwareDeviceResource extends Resource
                             ->disabled()
                             ->dehydrated(false)
                             ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
-                        TextInput::make('ip_public')
-                            ->label('IP Pública')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
                         DateTimePicker::make('buy_at')->label('Comprado el'),
-                        DateTimePicker::make('last_seen_at')
-                            ->label('Última vez en línea')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
                         Textarea::make('description')
                             ->label('Descripción')
                             ->columnSpanFull(),
