@@ -121,3 +121,15 @@
 .dark .ed-vacio {
     color: #9ca3af;
 }
+
+/* ── Hardware · métricas adicionales (HardwareDeviceResource) ─────────────── */
+
+/*
+ * El `Flex` de Filament (`.fi-sc-flex`) ya trae `display:flex`; sólo hace
+ * falta el `flex-wrap` para que las tarjetas salten de línea en vez de
+ * desbordar o apilarse una debajo de otra.
+ */
+.hd-extra {
+    flex-wrap: wrap;
+    row-gap: 1rem;
+}

@@ -22,6 +22,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -101,9 +102,12 @@ class HardwareDeviceResource extends Resource
     }
 
     /**
-     * Una tarjeta tipo badge por cada clave del `extra` del dispositivo.
+     * Una tarjeta tipo badge por cada clave del `extra` del dispositivo, una
+     * al lado de otra y saltando de línea cuando no caben más (clase
+     * `hd-extra` en `panel.css`, que fuerza el `flex-wrap` sobre el `Flex`
+     * de Filament).
      *
-     * @return list<TextEntry>
+     * @return list<Flex>
      */
     private static function extraBadges(?HardwareDevice $record): array
     {
@@ -113,13 +117,17 @@ class HardwareDeviceResource extends Resource
             return [];
         }
 
-        return collect($extra)
+        $badges = collect($extra)
             ->map(fn ($value, $key) => TextEntry::make("extra.{$key}")
                 ->label((string) $key)
                 ->state(is_scalar($value) ? (string) $value : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
                 ->badge())
             ->values()
             ->all();
+
+        return [
+            Flex::make($badges)->extraAttributes(['class' => 'hd-extra']),
+        ];
     }
 
     public static function form(Schema $schema): Schema
