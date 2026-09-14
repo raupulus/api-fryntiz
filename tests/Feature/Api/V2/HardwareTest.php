@@ -41,8 +41,8 @@ class HardwareTest extends ApiTestCase
             ->assertJsonPath('data.status.uptime', 86400)
             ->assertJsonStructure(['data' => ['status' => [
                 'hardware_device_id', 'temp', 'voltage', 'battery_level',
-                'cpu', 'disk', 'ram', 'uptime', 'ip_local', 'ip_public',
-                'extra', 'last_seen_at',
+                'battery_voltage', 'cpu', 'disk', 'ram', 'uptime', 'ip_local',
+                'ip_public', 'extra', 'last_seen_at',
             ]]]);
     }
 
@@ -202,6 +202,53 @@ class HardwareTest extends ApiTestCase
         $this->assertNull($device->ip_public);
     }
 
+    /**
+     * Hasta el 2026-09-14, `battery_voltage` estaba en la lista blanca del
+     * servicio pero no en `DeviceStatusPayload::rules()`: en esta ruta se
+     * descartaba en `prepareForValidation()` antes de llegar a guardarse.
+     */
+    #[Test]
+    public function store_device_status_saves_and_returns_battery_voltage(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);
+
+        $device = HardwareDevice::create(['user_id' => $user->id, 'name' => 'Test Device']);
+
+        $response = $this->putJson(
+            $this->apiUrl("hardware/devices/{$device->id}/status"),
+            ['hardware_device_id' => $device->id, 'battery_voltage' => 3.98],
+            $headers
+        );
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.battery_voltage', 3.98);
+
+        $device->refresh();
+        $this->assertSame(3.98, (float) $device->battery_voltage);
+
+        $read = $this->getJson(
+            $this->apiUrl("hardware/devices/{$device->id}?include=status"),
+            $this->moduleHeaders($user, TokenAbilities::HARDWARE_READ)
+        );
+        $read->assertOk()->assertJsonPath('data.status.battery_voltage', 3.98);
+    }
+
+    #[Test]
+    public function battery_voltage_that_is_not_numeric_is_rejected(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);
+
+        $device = HardwareDevice::create(['user_id' => $user->id, 'name' => 'Test Device']);
+
+        $this->putJson(
+            $this->apiUrl("hardware/devices/{$device->id}/status"),
+            ['hardware_device_id' => $device->id, 'battery_voltage' => 'no-numerico'],
+            $headers
+        )->assertStatus(422);
+    }
+
     #[Test]
     public function memory_out_of_range_is_rejected(): void
     {
@@ -234,6 +281,7 @@ class HardwareTest extends ApiTestCase
                 'temp' => 40,
                 'voltage' => 4.1,
                 'uptime' => 999,
+                'battery_voltage' => 3.85,
             ],
         ];
 
@@ -243,5 +291,6 @@ class HardwareTest extends ApiTestCase
         $device->refresh();
         $this->assertSame(40.0, (float) $device->temp);
         $this->assertSame(999, $device->uptime);
+        $this->assertSame(3.85, (float) $device->battery_voltage);
     }
 }

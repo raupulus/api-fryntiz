@@ -72,7 +72,7 @@ class HardwareService
 
         $allowed = [
             'temp', 'voltage', 'battery_level', 'cpu', 'disk', 'ram', 'uptime',
-            'ip_local', 'ip_public', 'extra', 'battery_voltage', 'battery_percentage', 'battery_read_at',
+            'ip_local', 'ip_public', 'extra', 'battery_voltage',
         ];
 
         $status = array_intersect_key($data, array_flip($allowed));

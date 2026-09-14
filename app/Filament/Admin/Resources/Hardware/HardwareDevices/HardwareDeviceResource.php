@@ -198,6 +198,10 @@ class HardwareDeviceResource extends Resource
                         TextInput::make('battery_type')->label('Tipo de batería'),
                         TextInput::make('battery_nominal_capacity')
                             ->numeric()->label('Capacidad nominal de batería'),
+                        TextInput::make('battery_nominal_voltage')
+                            ->numeric()
+                            ->label('Tensión nominal de batería')
+                            ->helperText('Tensión de diseño que declara el fabricante, EJ: 12. No es una medida.'),
                         TextInput::make('url_company')->label('Sitio web empresa'),
                         TextInput::make('ip_local')
                             ->label('IP Local')
@@ -293,6 +297,11 @@ class HardwareDeviceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('battery_nominal_capacity')
                     ->label('Capacidad batería')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('battery_nominal_voltage')
+                    ->label('Tensión nominal batería')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

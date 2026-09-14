@@ -190,6 +190,7 @@
   "temp": 41.2,
   "voltage": 5.05,
   "battery_level": 82,
+  "battery_voltage": 3.98,
   "cpu": 12.5,
   "disk": 63.1,
   "ram": 34.2,
@@ -232,6 +233,7 @@ veces deja el sistema igual (idempotente).
 | `temp` | number\|null | opcional |
 | `voltage` | number\|null | opcional |
 | `battery_level` | int\|null | opcional, entre 0 y 100 |
+| `battery_voltage` | number\|null | opcional. **Nuevo el 2026-09-14** |
 | `cpu` | number\|null | opcional, entre 0 y 100 |
 | `disk` | number\|null | opcional, entre 0 y 100 |
 | `ram` | number\|null | opcional, entre 0 y 100. **Nuevo el 2026-09-06** |
@@ -270,6 +272,19 @@ veces deja el sistema igual (idempotente).
 > Columna `hardware_devices.ram`, migración
 > `2026_09_06_000001_add_ram_to_hardware_devices_table`.
 
+> ### `battery_voltage` (2026-09-14)
+>
+> Tensión de la batería del propio dispositivo (V). La columna existía desde
+> antes (D108), pero no estaba en `DeviceStatusPayload::rules()`: en esta ruta
+> se descartaba en silencio antes de validar, así que nunca llegaba a
+> guardarse pese a estar en la lista blanca del servicio. Ahora está validada
+> (`nullable`, `numeric`) y sale también en el bloque `status` de lectura.
+>
+> Sus antiguos acompañantes `battery_percentage` y `battery_read_at` (D108) se
+> eliminaron: nunca se validaron, ni se mostraron en ningún sitio, ni los
+> cubría ningún test. Migración
+> `2026_09_14_000001_update_hardware_devices_battery_fields_table`.
+
   `hardware_device_id` **no** se acepta como campo: viene de la URL
   (`{device}`) y ahí es donde se comprueba la pertenencia/ligado al token
   (regla `OwnedHardwareDevice`). No se puede sobreescribir metiéndolo dentro de
@@ -287,6 +302,7 @@ veces deja el sistema igual (idempotente).
     "temp": 42.5,
     "voltage": 5.05,
     "battery_level": 78,
+    "battery_voltage": 4.05,
     "cpu": 12.3,
     "disk": 44.1,
     "ram": 62.5,
@@ -325,4 +341,4 @@ veces deja el sistema igual (idempotente).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-13
+> Creado: 2026-08-30 · Última revisión: 2026-09-14

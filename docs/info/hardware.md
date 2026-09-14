@@ -72,6 +72,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `serial_number` | string | Número de serie |
 | `battery_type` | string | Tipo de batería |
 | `battery_nominal_capacity` | string | Capacidad nominal de batería |
+| `battery_nominal_voltage` | decimal | Tensión nominal de diseño de la batería (V), la que declara el fabricante. Editable desde el panel |
 | `url_company` | string | URL del fabricante |
 | `description` | text | Descripción |
 | `buy_at` | date | Fecha de compra |
@@ -82,15 +83,23 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `temp` | decimal | Último estado: temperatura del dispositivo (ºC) |
 | `voltage` | decimal | Último estado: tensión del dispositivo (V) |
 | `battery_level` | smallint | Último estado: nivel de batería (0-100) |
+| `battery_voltage` | decimal | Último estado: tensión de la batería (V) |
 | `cpu` | decimal | Último estado: uso de CPU (0-100) |
 | `disk` | decimal | Último estado: uso de disco (0-100) |
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
 | `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
 
-> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía (ver [`energy.md`](energy.md)), KeyCounter, SmartPlant, WeatherStation y AirFlight.
-| `battery_voltage` | decimal | Batería del **propio** dispositivo (V). D108 |
-| `battery_percentage` | int | Batería del propio dispositivo (%) |
-| `battery_read_at` | timestamp | Cuándo se midió esa batería |
+> **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `battery_voltage`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía (ver [`energy.md`](energy.md)), KeyCounter, SmartPlant, WeatherStation y AirFlight.
+>
+> `battery_voltage` (D108) solo se rellena desde la API: no tiene campo en el
+> panel, igual que el resto del bloque de estado. Hasta el 2026-09-14 estaba en
+> la lista blanca del servicio pero **no** en `DeviceStatusPayload::rules()`,
+> así que en la ruta dedicada (`PUT .../status`) se descartaba en silencio
+> antes de llegar a guardarse. Ahora está validado (`nullable`, `numeric`) y
+> también sale en el bloque `status` de lectura. Sus antiguos compañeros
+> `battery_percentage` y `battery_read_at` nunca llegaron a validarse, ni a
+> mostrarse en ningún sitio, ni un test los ejercitaba: se eliminaron sin
+> reemplazo (migración `2026_09_14_000001_update_hardware_devices_battery_fields_table`).
 
 ## Relaciones
 
@@ -133,7 +142,8 @@ Contrato exacto de este módulo en
 Pensado para NAS, Raspberry Pi, portátiles, etc. que suben periódicamente su
 estado. El cuerpo debe incluir siempre `hardware_device_id` (id del dispositivo,
 validado con `OwnedHardwareDevice`). Campos opcionales: `temp`, `voltage`,
-`battery_level`, `cpu`, `disk`, **`ram`**, `uptime`, `ip_local`, `extra`.
+`battery_level`, `battery_voltage`, `cpu`, `disk`, **`ram`**, `uptime`,
+`ip_local`, `extra`.
 No se guarda histórico: solo se sobrescribe el último estado y se actualiza
 `last_seen_at` al momento actual.
 
@@ -178,6 +188,7 @@ Ejemplo de cuerpo:
     "temp": 33,
     "voltage": 3.7,
     "battery_level": 48,
+    "battery_voltage": 3.9,
     "ip_local": "192.168.1.100",
     "cpu": 33,
     "ram": 62.5,
@@ -320,4 +331,4 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-12
+> Creado: 2026-05-25 · Última revisión: 2026-09-14

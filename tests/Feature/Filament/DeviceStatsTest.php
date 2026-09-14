@@ -125,6 +125,24 @@ class DeviceStatsTest extends TestCase
     }
 
     /**
+     * `battery_nominal_voltage` es la tensión de diseño que declara el
+     * fabricante, no una medida: se edita a mano desde el panel, junto a
+     * `battery_nominal_capacity`.
+     */
+    #[Test]
+    public function battery_nominal_voltage_is_editable_from_the_panel(): void
+    {
+        $device = HardwareDevice::create(['name' => 'Rover Solar']);
+
+        Livewire::test(EditHardwareDevice::class, ['record' => $device->getKey()])
+            ->fillForm(['battery_nominal_voltage' => 12.8])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame(12.8, (float) $device->refresh()->battery_nominal_voltage);
+    }
+
+    /**
      * De las dos pestañas de abajo, la que se usa a diario es la de tokens.
      * Filament abre la primera del array.
      */

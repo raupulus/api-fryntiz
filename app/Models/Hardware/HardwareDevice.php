@@ -46,6 +46,7 @@ use function array_filter;
  * @property string|null $serial_number Número de serie del dispositivo
  * @property string|null $battery_type Tipo de batería, EJ: Gel, li ion
  * @property int|null $battery_nominal_capacity Capacidad nominal de la batería en mAh, EJ: 4200
+ * @property float|null $battery_nominal_voltage Tensión nominal de diseño de la batería en voltios, EJ: 12
  * @property string|null $url_company Enlace a la página de la empresa fabricante
  * @property string|null $description Descripción del dispositivo.
  * @property string|null $buy_at Fecha de compra del dispositivo
@@ -56,8 +57,6 @@ use function array_filter;
  * @property float|null $voltage Última tensión conocida del dispositivo en voltios
  * @property int|null $battery_level Último nivel de batería conocido en porcentaje (0-100)
  * @property float|null $battery_voltage Última tensión de batería conocida en voltios
- * @property int|null $battery_percentage Último porcentaje de batería conocido (0-100)
- * @property Carbon|null $battery_read_at Cuándo se midió la batería
  * @property float|null $cpu Último uso de CPU conocido en porcentaje (0-100)
  * @property float|null $disk Último uso de disco conocido en porcentaje (0-100)
  * @property float|null $ram Último uso de memoria conocido en porcentaje (0-100)
@@ -133,12 +132,12 @@ class HardwareDevice extends BaseModel
     protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id', 'image_id',
         'name', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
-        'battery_nominal_capacity', 'url_company', 'description', 'buy_at',
+        'battery_nominal_capacity', 'battery_nominal_voltage', 'url_company', 'description', 'buy_at',
         'last_seen_at', 'ip_local', 'ip_public', 'temp', 'voltage',
         'battery_level', 'cpu', 'disk', 'ram', 'uptime', 'extra',
         // Batería del propio dispositivo (D108). La puede mandar cualquier
         // endpoint IoT y siempre es opcional; no es una lectura de energía.
-        'battery_voltage', 'battery_percentage', 'battery_read_at'];
+        'battery_voltage'];
 
     protected $casts = [
         'buy_at' => 'datetime',
@@ -148,8 +147,7 @@ class HardwareDevice extends BaseModel
         'voltage' => 'float',
         'battery_level' => 'integer',
         'battery_voltage' => 'float',
-        'battery_percentage' => 'integer',
-        'battery_read_at' => 'datetime',
+        'battery_nominal_voltage' => 'float',
         'cpu' => 'float',
         'disk' => 'float',
         'ram' => 'float',
