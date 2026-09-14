@@ -164,6 +164,38 @@ class DeviceStatsTest extends TestCase
     }
 
     /**
+     * `battery_nominal_capacity` es `integer` en la base de datos (mAh). Sin
+     * validar que sea entero, un decimal como `6.8` pasaba el formulario y
+     * reventaba en el `UPDATE` con un `SQLSTATE[22P02]` de Postgres —un 500
+     * a medio guardar, con la ficha llena de cambios que no se guardaban.
+     */
+    #[Test]
+    public function battery_nominal_capacity_rejects_decimals_with_a_form_error(): void
+    {
+        $device = HardwareDevice::create(['name' => 'Rover Solar']);
+
+        Livewire::test(EditHardwareDevice::class, ['record' => $device->getKey()])
+            ->fillForm(['battery_nominal_capacity' => 6.8])
+            ->call('save')
+            ->assertHasFormErrors(['battery_nominal_capacity' => 'integer']);
+
+        $this->assertNull($device->refresh()->battery_nominal_capacity);
+    }
+
+    #[Test]
+    public function battery_nominal_capacity_is_editable_from_the_panel(): void
+    {
+        $device = HardwareDevice::create(['name' => 'Rover Solar']);
+
+        Livewire::test(EditHardwareDevice::class, ['record' => $device->getKey()])
+            ->fillForm(['battery_nominal_capacity' => 4200])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame(4200, $device->refresh()->battery_nominal_capacity);
+    }
+
+    /**
      * De las dos pestañas de abajo, la que se usa a diario es la de tokens.
      * Filament abre la primera del array.
      */

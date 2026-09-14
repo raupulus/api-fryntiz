@@ -206,7 +206,9 @@ class HardwareDeviceResource extends Resource
                         TextInput::make('serial_number')->label('Número de serie'),
                         TextInput::make('battery_type')->label('Tipo de batería'),
                         TextInput::make('battery_nominal_capacity')
-                            ->numeric()->label('Capacidad nominal de batería'),
+                            ->integer()
+                            ->label('Capacidad nominal de batería')
+                            ->helperText('En mAh, sin decimales. EJ: 4200.'),
                         TextInput::make('battery_nominal_voltage')
                             ->numeric()
                             ->label('Tensión nominal de batería')

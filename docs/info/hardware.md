@@ -71,7 +71,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `hardware_version` | string | Versión de hardware |
 | `serial_number` | string | Número de serie |
 | `battery_type` | string | Tipo de batería |
-| `battery_nominal_capacity` | string | Capacidad nominal de batería |
+| `battery_nominal_capacity` | int | Capacidad nominal de batería (mAh), sin decimales. Editable desde el panel |
 | `battery_nominal_voltage` | decimal | Tensión nominal de diseño de la batería (V), la que declara el fabricante. Editable desde el panel |
 | `url_company` | string | URL del fabricante |
 | `description` | text | Descripción |
@@ -327,6 +327,19 @@ Estas tarjetas son componentes de infolist (`TextEntry`), no campos de
 formulario: no hace falta `dehydrated(false)` porque no se dehidratan en
 absoluto. Guardar la ficha no escribe en las columnas que rellena la API, y
 hay un test que lo comprueba (`tests/Feature/Filament/DeviceStatsTest.php`).
+
+> ### `battery_nominal_capacity`: el `TextInput` debe ser `->integer()`, no `->numeric()` (2026-09-14)
+>
+> La columna es `integer` (mAh) en Postgres. El campo del formulario sólo
+> tenía `->numeric()`, que también acepta decimales: un `6.8` pasaba la
+> validación de Filament sin avisar y llegaba tal cual al `UPDATE`, donde
+> Postgres lo rechazaba con `SQLSTATE[22P02]` — un 500 a mitad de guardado,
+> con la ficha llena de cambios sin persistir. `->integer()` añade la regla
+> de validación `integer` (y el paso `1` del input) encima de `numeric()`, así
+> que ahora el propio formulario avisa con un error de campo en vez de
+> tumbarse contra la base de datos. Cubierto en
+> `battery_nominal_capacity_rejects_decimals_with_a_form_error`
+> (`DeviceStatsTest`).
 
 ### Widget del dashboard — Estado de dispositivos
 
