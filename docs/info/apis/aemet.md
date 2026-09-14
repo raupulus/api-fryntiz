@@ -16,7 +16,7 @@ cuánto, qué guardamos y qué hay que vigilar.
 ## 1. Las piezas
 
 ```
-Comandos artisan (8 productos + 1 de vigilancia)
+Comandos artisan (9 productos + 1 de vigilancia)
         │
         │  \AEMETHelper::getLoQueSea()     ← parsea cada producto
         ▼
@@ -137,15 +137,18 @@ cuota.
 | Predicción de costa | `aemet:coast` | diario | 6 h |
 | Alta mar | `aemet:high-sea` | diario 08:15 | 6 h |
 | Radiación solar | `aemet:sun-radiation` | diario 08:25 | 12 h |
-| Perfil de ozono (sondeo) | `aemet:ozone-profile` | lunes 12:25 | días |
+| Perfil de ozono (sondeo) | `aemet:ozone-profile` | lunes 12:30 | días |
+| Ozono total (superficie) | `aemet:ozone-total` | diario 08:30 | 12-24 h |
 | **Vigilancia de la clave** | `aemet:check-api-key` | diario 08:00 | — |
 
 Horas en `Europe/Madrid`, fijadas para que no se muevan con el cambio de hora.
+AEMET declara "Cada 24 h" para el ozono total pero no una hora concreta de
+publicación, así que va en la tanda de la mañana, 5 min detrás del último.
 
-> **`aemet:ozone-profile` no es ozono de superficie (2026-09-14).** Hasta esta
-> fecha el comando se llamaba `aemet:ozone`, corría a diario a las 12:25 y su
-> descripción decía "Ozono en superficie. Publicación diaria." — pero
-> `AEMETHelper::getOzone()` siempre ha pedido
+> **`aemet:ozone-profile` no era ozono de superficie, y ya existe el que sí lo
+> es (2026-09-14).** Hasta esta fecha el comando se llamaba `aemet:ozone`,
+> corría a diario a las 12:25 y su descripción decía "Ozono en superficie.
+> Publicación diaria." — pero `AEMETHelper::getOzone()` siempre ha pedido
 > `red/especial/perfilozono/estacion/peninsula` (el perfil vertical de una
 > ozonosonda: presión, altura, temperatura, velocidad de ascenso…), no
 > `red/especial/ozono` (el ozono total diario, CSV con 7 estaciones). Lo
@@ -155,22 +158,21 @@ Horas en `Europe/Madrid`, fijadas para que no se muevan con el cambio de hora.
 > [`09-redes-especiales.md`](../../apis/aemet/09-redes-especiales.md)): el
 > perfil se publica cada 7 días y se ha observado hasta con 28 de retraso; el
 > total, a diario. El modelo `AEMETOzone` está construido para el perfil (los
-> campos son los del sondeo), así que no es un desliz aislado del comando: todo
-> el pipeline es del perfil. Se ha renombrado el comando y bajado su cadencia a
-> semanal para no quemar cuota contra un dato que casi nunca cambia. El ozono
-> total de superficie **sigue sin implementarse** — es una decisión de negocio
-> pendiente, ver [`docs/future/revisar-aemet.md`](../../future/revisar-aemet.md).
+> campos son los del sondeo), así que no fue un desliz aislado del comando:
+> todo el pipeline era del perfil. Se renombró el comando y se bajó su
+> cadencia a semanal.
 >
-> De paso: `AEMETService::getOzone()` apunta (por casualidad) al endpoint
-> correcto del ozono total, pero **no lo llama nadie** — es código muerto. Ojo
-> también con `AEMETService::getContamination()` y `getSunRadiation()`, en el
-> mismo archivo: usan `red/especial/contaminacionfondo` y
-> `red/especial/radiacionsolar` sin verificar, y ambas rutas están documentadas
-> como **incorrectas (404)** en
-> [`09-redes-especiales.md`](../../apis/aemet/09-redes-especiales.md#dos-rutas-que-se-documentan-mal-a-menudo).
-> Nada de esto se ejecuta hoy (los comandos reales usan `AEMETHelper`, con sus
-> propias rutas ya verificadas), pero si alguien retoma la migración a
-> `AEMETService` sin comprobarlo de nuevo, hereda esos dos 404.
+> El ozono total de superficie que el nombre viejo prometía **ya está
+> implementado**: `aemet:ozone-total`, modelo `AEMETOzoneTotal`
+> (`meteorology_aemet_ozone_total`, una fila por estación y día), parseado en
+> `AEMETHelper::getOzoneTotal()`. De paso se repararon
+> `AEMETService::getContamination()`, `getOzone()` y `getSunRadiation()`:
+> las dos primeras pedían rutas que `09-redes-especiales.md` documenta como
+> **incorrectas (404)** —`red/especial/contaminacionfondo` sin estación y
+> `red/especial/radiacionsolar`— y las tres asumían un cuerpo JSON para un
+> producto que en realidad es texto/CSV. Nada de esto lo llama ningún comando
+> real hoy (los comandos usan `AEMETHelper`), pero ya no son una trampa para
+> quien retome la migración descrita en el punto 8.
 
 ---
 

@@ -9,6 +9,7 @@ use App\Models\WeatherStation\AEMET\AEMETCoast;
 use App\Models\WeatherStation\AEMET\AEMETContamination;
 use App\Models\WeatherStation\AEMET\AEMETHighSea;
 use App\Models\WeatherStation\AEMET\AEMETOzone;
+use App\Models\WeatherStation\AEMET\AEMETOzoneTotal;
 use App\Models\WeatherStation\AEMET\AEMETPrediction;
 use App\Models\WeatherStation\AEMET\AEMETPredictionBeach;
 use App\Models\WeatherStation\AEMET\AEMETSunRadiation;
@@ -101,6 +102,12 @@ class AemetDashboard extends Page
                 'description' => 'Perfil vertical de ozono (sondeo). Publicación cada 7 días, con hasta 28 de retraso.',
                 'model' => AEMETOzone::class,
                 'command' => 'aemet:ozone-profile',
+            ],
+            'ozone_total' => [
+                'label' => 'Ozono total',
+                'description' => 'Ozono total en superficie por estación. Publicación diaria.',
+                'model' => AEMETOzoneTotal::class,
+                'command' => 'aemet:ozone-total',
             ],
             'sun_radiation' => [
                 'label' => 'Radiación solar',

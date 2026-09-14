@@ -51,6 +51,11 @@ return [
     'default_coast' => env('AEMET_DEFAULT_COSTA', '11'),
     'default_area' => env('AEMET_DEFAULT_AREA', '61'),
 
+    // Campisábalos (09) está en el ejemplo de la documentación de AEMET, pero
+    // en producción se usa 17 desde siempre (ver AEMETHelper::$PATHS). Se deja
+    // aquí también por si algún día se centraliza.
+    'default_contamination_station' => env('AEMET_DEFAULT_CONTAMINATION_STATION', '17'),
+
     /*
     |--------------------------------------------------------------------------
     | Cuota

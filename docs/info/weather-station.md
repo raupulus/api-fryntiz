@@ -65,6 +65,7 @@ cambiarla vía `data-station` (prop `station`), mostrando ubicación dinámica.
 | `app/Models/WeatherStation/AEMETHighSea.php` | — | Predicción de alta mar |
 | `app/Models/WeatherStation/AEMETContamination.php` | — | Datos de contaminación |
 | `app/Models/WeatherStation/AEMETOzone.php` | — | Perfil vertical de ozono (sondeo), no ozono de superficie — ver [aemet.md](apis/aemet.md#cadencia-de-cada-producto) |
+| `app/Models/WeatherStation/AEMET/AEMETOzoneTotal.php` | — | Ozono total diario en superficie, por estación |
 | `app/Models/WeatherStation/AEMETSunRadiation.php` | — | Radiación solar |
 | `app/Models/WeatherStation/AEMETPredictionBeach.php` | — | Predicción de playas |
 
@@ -367,4 +368,4 @@ como `HasOneThrough` a través del dispositivo.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-13
+> Creado: 2026-05-25 · Última revisión: 2026-09-14

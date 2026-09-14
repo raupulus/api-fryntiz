@@ -44,33 +44,45 @@ datos de sondeo legítimos, sólo estaban mal etiquetados:**
 - [x] `AemetDashboard.php`, `docs/info/commands.md`, `docs/info/apis/aemet.md`, `AGENTS.md` y
       `docs/info/weather-station.md` actualizados con el nombre y la descripción reales.
 
-**Sigue pendiente de decidir** — no se ha tocado sin que el usuario elija:
+**Implementado el mismo día (2026-09-14), a petición expresa:**
 
-- [ ] ¿Interesa el ozono de superficie diario (`red/especial/ozono`, CSV de 7 estaciones)? Es un
-      producto nuevo por completo: modelo/tabla nuevos (el payload no tiene nada que ver con
-      `AEMETOzone`), comando nuevo, entrada nueva en el scheduler. `AEMETService::getOzone()` ya
-      apunta a la ruta correcta, pero es **código muerto** — no lo llama nadie hoy.
-- [ ] `AEMETService::getContamination()` y `getSunRadiation()` (mismo archivo) usan rutas que
-      `09-redes-especiales.md` documenta como **incorrectas (404)**:
-      `red/especial/contaminacionfondo` (falta `/estacion/{nombre}`) y `red/especial/radiacionsolar`
-      (la ruta real es `red/especial/radiacion`). No se ejecutan hoy — los comandos reales usan
-      `AEMETHelper` con sus propias rutas, ya verificadas —, pero son una trampa para quien retome la
-      migración a `AEMETService` sin volver a comprobarlo.
+- [x] **Ozono de superficie diario** (`red/especial/ozono`, CSV de 7 estaciones): comando nuevo
+      `aemet:ozone-total`, modelo `AEMETOzoneTotal`, migración
+      `meteorology_aemet_ozone_total` (una fila por estación y día, `unique(station_code, measured_on)`
+      para que una segunda ejecución el mismo día actualice en vez de duplicar), parseo en
+      `AEMETHelper::getOzoneTotal()`, scheduler diario a las 08:30 (AEMET no declara hora de
+      publicación; va 5 min detrás del último de la tanda de la mañana). Probado contra la API real:
+      guarda las 7 estaciones, no duplica en una segunda ejecución, y no revienta con un cuerpo vacío.
+      Tests en `tests/Feature/Console/AemetOzoneTotalCommandTest.php`.
+- [x] **Rutas rotas de `AEMETService`**: `getContamination()` pedía
+      `red/especial/contaminacionfondo` sin estación (**404**, la estación no es opcional) y
+      `getSunRadiation()` pedía `red/especial/radiacionsolar` (**404**, la ruta real es
+      `red/especial/radiacion`) — ambas documentadas como incorrectas en
+      [`09-redes-especiales.md`](../apis/aemet/09-redes-especiales.md#dos-rutas-que-se-documentan-mal-a-menudo).
+      Las tres (`getContamination()`, `getOzone()`, `getSunRadiation()`) además asumían un cuerpo JSON
+      para un producto que es texto/CSV — `decodeJson()` habría devuelto `null` siempre, incluso con la
+      URL bien. Se corrigieron las rutas y se añadió el parámetro `$comoJson` a `cachedRequest()` /
+      `makeRequest()`. Verificado lanzando las tres contra la API real: las tres devuelven ahora el
+      cuerpo correcto. Sigue sin llamarlas nadie en producción (los comandos reales usan
+      `AEMETHelper`), pero ya no son una trampa para quien retome la migración del punto 8 de
+      [`docs/info/apis/aemet.md`](../info/apis/aemet.md). Tests en
+      `tests/Unit/Services/AEMETServiceTest.php`.
 
 ## Endpoints que faltan por decidir
 
 AEMET OpenData publica su especificación completa (OpenAPI). Hoy se consumen **9 productos** —los que
-tienen comando `aemet:*`— de los **64 endpoints** ya verificados contra la API real en
-`docs/apis/aemet/`. Falta **decidir cuáles de los 55 restantes interesan** a este proyecto.
+tienen comando `aemet:*` y no son la vigilancia de la clave— de los **64 endpoints** ya verificados
+contra la API real en `docs/apis/aemet/`. Falta **decidir cuáles de los 54 restantes interesan** a
+este proyecto.
 
 > ⚠️ **No fiarse del todo de la especificación.** `docs/apis/aemet/` documenta lo que cada endpoint
 > devuelve **de verdad**, no siempre lo que dice el spec. Validar contra una respuesta real antes de
 > dar por bueno un contrato nuevo.
 
 Modelos AEMET que ya existen, para no duplicar: `AEMETPrediction`, `AEMETPredictionBeach`,
-`AEMETCoast`, `AEMETHighSea`, `AEMETOzone`, `AEMETContamination`, `AEMETSunRadiation`,
-`AEMETAdverseEvents` (los 8, bajo `app/Models/WeatherStation/AEMET/`; no existe un modelo base
-`AEMET` suelto, pese a lo que decía esta lista antes).
+`AEMETCoast`, `AEMETHighSea`, `AEMETOzone`, `AEMETOzoneTotal`, `AEMETContamination`,
+`AEMETSunRadiation`, `AEMETAdverseEvents` (los 9, bajo `app/Models/WeatherStation/AEMET/`; no existe
+un modelo base `AEMET` suelto, pese a lo que decía esta lista antes).
 
 ## Referencias
 

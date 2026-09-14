@@ -110,12 +110,21 @@ Schedule::command('aemet:sun-radiation')
     ->runInBackground()
     ->onFailure($warnOnFailure('aemet:sun-radiation'));
 
+// AEMET declara "Cada 24 h" pero no una hora concreta de publicación; se deja
+// 5 minutos detrás del último de la tanda de la mañana, igual que el resto.
+Schedule::command('aemet:ozone-total')
+    ->dailyAt('08:30')
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('aemet:ozone-total'));
+
 // Es el perfil de la ozonosonda, no ozono de superficie: AEMET lo publica cada
 // 7 días y se ha observado hasta con 28 días de retraso (verificado 2026-09-14
 // contra la API real). Pedirlo a diario sólo quemaba cuota sin traer nada
 // nuevo la inmensa mayoría de esas ejecuciones.
 Schedule::command('aemet:ozone-profile')
-    ->weeklyOn(1, '12:25')
+    ->weeklyOn(1, '12:30')
     ->timezone('Europe/Madrid')
     ->withoutOverlapping()
     ->runInBackground()

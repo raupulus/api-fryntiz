@@ -462,7 +462,8 @@ Todos los comandos Artisan personalizados del proyecto están especificados y do
 ### Comandos de Módulos e Integraciones
 - **AEMET (Estación Meteorológica):** un comando por producto, con la cadencia real de AEMET —
   `aemet:adverse-events`, `aemet:contamination`, `aemet:hourly-prediction`, `aemet:coast`,
-  `aemet:beaches`, `aemet:high-sea`, `aemet:sun-radiation`, `aemet:ozone-profile`, `aemet:check-api-key`.
+  `aemet:beaches`, `aemet:high-sea`, `aemet:sun-radiation`, `aemet:ozone-profile`, `aemet:ozone-total`,
+  `aemet:check-api-key`.
   Los antiguos (`aemet:update*`) ya no existen: se retiraron en la fase 4 (ver
   `_to_delete/POR-QUE-ESTAN-AQUI.md`).
 - **AirFlight:** `airflight:fix`.

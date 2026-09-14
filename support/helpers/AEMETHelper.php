@@ -33,6 +33,7 @@ class AEMETHelper
         'costaPrediction' => 'prediccion/maritima/costera/costa/42',
         'contamination' => 'red/especial/contaminacionfondo/estacion/17',
         'ozono' => 'red/especial/perfilozono/estacion/peninsula',
+        'ozono_total' => 'red/especial/ozono',
         'sunradiation' => 'red/especial/radiacion',
         'avisos_cap' => 'avisos_cap/ultimoelaborado/area/61', // Andalucia
     ];
@@ -778,6 +779,88 @@ class AEMETHelper
         }
 
         return isset($finalResponseArray) ? $finalResponseArray : null;
+    }
+
+    /**
+     * Ozono total en superficie: `red/especial/ozono`, un CSV con el dato
+     * medio diario por estación. No confundir con `getOzone()`: esa pide el
+     * perfil vertical de una ozonosonda (`perfilozono`), un producto distinto
+     * que AEMET publica cada 7 días. Este sí es diario.
+     *
+     * Formato real (verificado 2026-09-14, CSV en UTF-8):
+     *
+     *   "CAPA DE OZONO"
+     *   "13-09-26"
+     *   "Estación";"Indicativo";"OZONO"
+     *   "A Coruña";"1387";"289"
+     *   …
+     *
+     * @return array<int,array{station_name:string,station_code:string,ozone_value:int,measured_on:string}>|null
+     */
+    public static function getOzoneTotal(): ?array
+    {
+        $url = self::getUrl('ozono_total');
+        $curl = self::getCurl($url);
+
+        if (! $curl || empty($curl['datos'])) {
+            return null;
+        }
+
+        $body = self::getCurl($curl['datos'], false);
+
+        if (! $body) {
+            return null;
+        }
+
+        $lines = array_values(array_filter(
+            preg_split('/\r\n|\r|\n/', trim((string) $body)) ?: [],
+            static fn (string $line): bool => trim($line) !== ''
+        ));
+
+        // Línea 0: título. Línea 1: fecha del dato (dd-mm-aa). Línea 2: cabecera.
+        if (count($lines) < 4) {
+            Log::error('AEMET getOzoneTotal() Respuesta demasiado corta para ser el CSV esperado.');
+
+            return null;
+        }
+
+        $dateRaw = trim($lines[1], " \t\n\r\0\x0B\"");
+
+        try {
+            $measuredOn = Carbon::createFromFormat('d-m-y', $dateRaw)->toDateString();
+        } catch (Throwable $e) {
+            Log::error('AEMET getOzoneTotal() No se ha podido parsear la fecha del CSV.', [
+                'raw' => $dateRaw,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        $rows = [];
+
+        foreach (array_slice($lines, 3) as $line) {
+            $fields = str_getcsv($line, ';', '"');
+
+            if (count($fields) !== 3) {
+                continue;
+            }
+
+            [$stationName, $stationCode, $ozoneValue] = $fields;
+
+            if (! is_numeric($ozoneValue)) {
+                continue;
+            }
+
+            $rows[] = [
+                'station_name' => trim($stationName),
+                'station_code' => trim($stationCode),
+                'ozone_value' => (int) $ozoneValue,
+                'measured_on' => $measuredOn,
+            ];
+        }
+
+        return $rows === [] ? null : $rows;
     }
 
     /**

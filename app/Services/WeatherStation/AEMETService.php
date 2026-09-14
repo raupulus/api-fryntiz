@@ -125,38 +125,60 @@ class AEMETService
     // ─────────────────────── Calidad del aire ───────────────────────
 
     /**
-     * Datos de contaminación de fondo.
+     * Datos de contaminación de fondo (formato FINN, texto de ancho fijo).
+     *
+     * Hasta el 2026-09-14 pedía `/red/especial/contaminacionfondo` sin
+     * estación: esa ruta da **404** siempre, la estación no es opcional (ver
+     * `docs/apis/aemet/09-redes-especiales.md`, «Dos rutas que se documentan
+     * mal a menudo»). `AEMETHelper::getContamination()` —lo que de verdad usa
+     * el comando `aemet:contamination`— ya pedía la ruta correcta con la
+     * estación `17`; aquí se usa el mismo valor por defecto.
      */
-    public function getContamination(): ?array
+    public function getContamination(?string $stationCode = null): array|string|null
     {
+        $code = $stationCode ?? config('aemet.default_contamination_station', '17');
+
         return $this->cachedRequest(
-            '/red/especial/contaminacionfondo',
+            "/red/especial/contaminacionfondo/estacion/{$code}",
             'contamination',
-            'aemet:contamination'
+            "aemet:contamination:{$code}",
+            comoJson: false
         );
     }
 
     /**
-     * Datos de ozono troposférico.
+     * Ozono total en superficie (CSV, `"Estación";"Indicativo";"OZONO"`).
+     *
+     * La ruta ya era correcta, pero el método pedía el cuerpo como JSON: este
+     * producto es CSV en UTF-8 real, así que `decodeJson()` siempre devolvía
+     * `null` — «roto» de otra forma aunque la URL estuviera bien. Verificado
+     * lanzando la petición real el 2026-09-14.
      */
-    public function getOzone(): ?array
+    public function getOzone(): array|string|null
     {
         return $this->cachedRequest(
             '/red/especial/ozono',
             'ozone',
-            'aemet:ozone'
+            'aemet:ozone',
+            comoJson: false
         );
     }
 
     /**
-     * Datos de radiación solar.
+     * Datos de radiación solar (CSV, texto tabulado en UTF-8 real).
+     *
+     * Hasta el 2026-09-14 pedía `/red/especial/radiacionsolar`: esa ruta da
+     * **404** siempre, la correcta es `/red/especial/radiacion` (ver
+     * `docs/apis/aemet/09-redes-especiales.md`). Igual que ozono, además
+     * pedía JSON para un cuerpo que es CSV.
      */
-    public function getSunRadiation(): ?array
+    public function getSunRadiation(): array|string|null
     {
         return $this->cachedRequest(
-            '/red/especial/radiacionsolar',
+            '/red/especial/radiacion',
             'sun_radiation',
-            'aemet:sun_radiation'
+            'aemet:sun_radiation',
+            comoJson: false
         );
     }
 
@@ -180,12 +202,15 @@ class AEMETService
 
     /**
      * Wrap una llamada HTTP con caché por TTL configurado por tipo de endpoint.
+     *
+     * @param  bool  $comoJson  false para los productos que vienen en texto
+     *                          plano o CSV (contaminación, ozono, radiación).
      */
-    private function cachedRequest(string $endpoint, string $ttlKey, string $cacheKey): ?array
+    private function cachedRequest(string $endpoint, string $ttlKey, string $cacheKey, bool $comoJson = true): array|string|null
     {
         $ttl = (int) config("aemet.cache_ttl.{$ttlKey}", 600);
 
-        return Cache::remember($cacheKey, $ttl, fn () => $this->makeRequest($endpoint));
+        return Cache::remember($cacheKey, $ttl, fn () => $this->makeRequest($endpoint, $comoJson));
     }
 
     /**
@@ -364,7 +389,7 @@ class AEMETService
         return $body;
     }
 
-    private function makeRequest(string $endpoint): ?array
+    private function makeRequest(string $endpoint, bool $comoJson = true): array|string|null
     {
         if ($this->apiKey === '') {
             // Sin clave, AEMET devuelve 200 con el cuerpo VACÍO — no un 401.
@@ -430,6 +455,12 @@ class AEMETService
                 ]);
 
                 return null;
+            }
+
+            if (! $comoJson) {
+                // Los productos de texto (contaminación, ozono, radiación) no
+                // traen `elaborado`/`origen`: warnIfStale() sólo aplica a JSON.
+                return $this->bodyAsUtf8($data, $endpoint);
             }
 
             $payload = $this->decodeJson($data, $endpoint);
