@@ -606,6 +606,21 @@ duda de contra qué se comparan.
 Las tarjetas por dispositivo van todas en W y Wh, así que no necesitan
 referencia.
 
+#### Formato de las cifras
+
+Todo valor decimal de esta pantalla —los tres bloques agregados y las tarjetas
+de dispositivo— pasa por `Figures::rounded()`
+(`App\Support\Format\Figures`, 2026-09-14): hasta dos decimales, redondeados,
+sin forzar ceros que no miden nada (`5.0` → «5», `5.256` → «5.26», `5.2` →
+«5.2»). Antes cada valor se formateaba a mano en el controlador —`round()`
+(sin decimales, aunque los hubiera) o `number_format($x, 1)` (siempre uno,
+aunque fuera «.0»), según el sitio— y salía inconsistente entre tarjetas.
+
+La cadena compuesta «Panel / Bat. / Consumo» (tres tensiones separadas por
+` / `) no es una cifra y `Figures::rounded()` la deja pasar tal cual si se le
+da entera; cada tensión se redondea por separado **en el controlador** antes
+de concatenarlas, no en la vista.
+
 ### 8.2. Tarjetas de Dispositivos y Ordenación en Cascada
 Cada dispositivo físico medidor se renderiza en una tarjeta individual con su miniatura, versión de software, resumen de kWh históricos, porcentaje de batería y barras comparativas de potencia instantánea y energía diaria.
 
@@ -613,6 +628,37 @@ Para ofrecer una visualización priorizada y relevante, las tarjetas se ordenan 
 1. **Activos en la última hora:** Dispositivos reportando potencia instantánea (`generated_now > 0 || consumed_now > 0`) aparecen en primer lugar.
 2. **Mayor actividad hoy:** En caso de empate, se prioriza el dispositivo que más energía haya movido en el día (`generated_today + consumed_today`).
 3. **Mayor acumulado histórico:** Si no hay actividad hoy, se ordenan por su acumulado histórico total (`generated_historical_kwh + consumed_historical_kwh`).
+
+#### Sin generador configurado (2026-09-14)
+
+`$stats->has_generator` (`EnergyController::index()`) dice si el dispositivo
+tiene algún elemento `HardwareEnergy` con rol **generador** — no si generó
+algo en la última hora: de noche un generador real sigue enseñando «0 W», y
+eso es información. Un dispositivo que **nunca** tuvo generador (uno que sólo
+mide consumo) no lleva la fila en absoluto:
+
+- Las filas «Generando ahora» y «Generado hoy» no se pintan.
+- El «resumen rápido» de arriba —normalmente Generado (kWh) / Consumido (kWh)
+  / Batería (%)— se sustituye por lo que el propio dispositivo reporta de sí
+  mismo (bloque de estado D108, no energía): **CPU, temperatura, su batería
+  propia y RAM**, en ese orden de prioridad, las tres primeras que tengan
+  dato (`EnergyController::ownStatusBadges()`). Con generador, el resumen no
+  cambia.
+
+#### Varios consumos en el mismo monitor (2026-09-14)
+
+Antes todos los elementos de rol **carga** de un dispositivo se sumaban en una
+única fila «Consumiendo ahora» / «Consumido hoy»: una nevera y un router en
+canales distintos del mismo monitor se veían como una sola cifra, sin decir
+cuál pesaba más.
+
+`EnergyController::loadChannels()` devuelve un elemento por cada carga activa,
+con su propio ahora/hoy, y la vista pinta un bloque de barras por cada uno. La
+etiqueta es el nombre del dispositivo **monitorizado** (`HardwareEnergy::monitorized`)
+si lo tiene, o «Canal N» / «Consumo» si no; el canal sólo se nombra cuando hay
+más de un consumo que distinguir —igual que
+`HardwareEnergy::getDisplayNameAttribute()`—. Con un único consumo la tarjeta
+queda igual que antes: sin cabecera de nombre/canal delante de las barras.
 
 ### 8.3. Tokens de Diseño y Accesibilidad
 La interfaz respeta estrictamente la paleta del sistema de diseño («Obsidian Flux / Raupulus Slate») mediante tokens semánticos `@theme` de Tailwind v4 (`bg-surface`, `bg-surface-container-*`, `text-on-surface*`), asegurando un ratio de contraste WCAG AA en modos claro y oscuro verificado por `tests/Unit/Design/ContrastTest.php`.
@@ -709,6 +755,8 @@ haga ruido. Qué prueba cada archivo:
 |---|---|
 | `Hardware/EnergyHistoricalReadingTest.php` | Que el panel público y el widget de administración lean el histórico con el mismo criterio, y que la batería salga del rol `battery` |
 | `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy` y **el escalado de los amperios a la tensión de referencia** |
+| `Hardware/EnergyDeviceCardTest.php` | Sin generador: las filas de "generando" no salen y el resumen rápido pasa a CPU/temperatura/batería/RAM propios. Decimales a máximo dos sin forzar ceros. Varios consumos del mismo monitor, cada uno con su nombre y canal; con uno solo, sin cabecera |
+| `Unit/Support/FiguresTest.php` | `Figures::rounded()`: hasta N decimales sin forzar ceros, y que una cadena compuesta (no numérica) se devuelva tal cual |
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
 | `Filament/EnergyElementFormTest.php` | El alta de un elemento: canal repetido como error de formulario y no como 500, los tres papeles de un controlador, los tres canales de un INA, y qué campos se piden en cada papel |
 | `Filament/EnergyListTabsTest.php` | Las pestañas del listado: sólo la que tiene algo dentro, y que ninguna esconda nada de «Todos» |
@@ -722,4 +770,4 @@ haga ruido. Qué prueba cada archivo:
 
 ---
 
-> Creado: 2026-09-06 · Última revisión: 2026-09-13
+> Creado: 2026-09-06 · Última revisión: 2026-09-14

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@use('App\Support\Format\Figures')
+
 @section('title', 'Energy | Api Raupulus')
 @section('description', 'Monitorización de generación y consumo de energía solar')
 @section('keywords', 'energy, energía solar, consumo, generación, Raúl Caro Pastorino, raupulus')
@@ -42,7 +44,7 @@
                             </div>
                         </div>
                         <h4 class="text-xs uppercase text-on-surface-variant leading-tight mb-1">{{ $stat['title'] }}</h4>
-                        <h3 class="text-2xl text-on-surface font-semibold">{{ $stat['value'] }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
+                        <h3 class="text-2xl text-on-surface font-semibold">{{ Figures::rounded($stat['value']) }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
                     </div>
                 @endforeach
             </div>
@@ -62,7 +64,7 @@
                             </div>
                         </div>
                         <h4 class="text-xs uppercase text-on-surface-variant leading-tight mb-1">{{ $stat['title'] }}</h4>
-                        <h3 class="text-2xl text-on-surface font-semibold">{{ $stat['value'] }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
+                        <h3 class="text-2xl text-on-surface font-semibold">{{ Figures::rounded($stat['value']) }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
                     </div>
                 @endforeach
             </div>
@@ -82,7 +84,7 @@
                             </div>
                         </div>
                         <h4 class="text-xs uppercase text-on-surface-variant leading-tight mb-1">{{ $stat['title'] }}</h4>
-                        <h3 class="text-2xl text-on-surface font-semibold">{{ $stat['value'] }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
+                        <h3 class="text-2xl text-on-surface font-semibold">{{ Figures::rounded($stat['value']) }} <span class="text-sm text-on-surface-variant">{{ $stat['unit'] }}</span></h3>
                     </div>
                 @endforeach
             </div>
@@ -118,58 +120,79 @@
 
                                 {{-- Resumen rápido --}}
                                 <div class="grid grid-cols-3 gap-2 text-center mb-5">
-                                    <div class="bg-surface-container-low rounded-lg py-2">
-                                        <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-lg block">solar_power</span>
-                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->generated_historical_kwh }} kWh</span>
-                                    </div>
-                                    <div class="bg-surface-container-low rounded-lg py-2">
-                                        <span class="material-symbols-outlined text-sky-600 dark:text-sky-400 text-lg block">bolt</span>
-                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->consumed_historical_kwh }} kWh</span>
-                                    </div>
-                                    <div class="bg-surface-container-low rounded-lg py-2">
-                                        <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-lg block">battery_charging_full</span>
-                                        <span class="text-xs font-semibold text-on-surface">{{ $stats->battery_percentage }}%</span>
-                                    </div>
+                                    @if($stats->has_generator)
+                                        <div class="bg-surface-container-low rounded-lg py-2">
+                                            <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-lg block">solar_power</span>
+                                            <span class="text-xs font-semibold text-on-surface">{{ Figures::rounded($stats->generated_historical_kwh) }} kWh</span>
+                                        </div>
+                                        <div class="bg-surface-container-low rounded-lg py-2">
+                                            <span class="material-symbols-outlined text-sky-600 dark:text-sky-400 text-lg block">bolt</span>
+                                            <span class="text-xs font-semibold text-on-surface">{{ Figures::rounded($stats->consumed_historical_kwh) }} kWh</span>
+                                        </div>
+                                        <div class="bg-surface-container-low rounded-lg py-2">
+                                            <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-lg block">battery_charging_full</span>
+                                            <span class="text-xs font-semibold text-on-surface">{{ Figures::rounded($stats->battery_percentage) }}%</span>
+                                        </div>
+                                    @else
+                                        {{-- Sin generador: "Generado" y la batería de la instalación no dicen
+                                        nada de este aparato. En su lugar, lo que reporta de sí mismo. --}}
+                                        @foreach($stats->own_status_badges as $badge)
+                                            <div class="bg-surface-container-low rounded-lg py-2">
+                                                <span class="material-symbols-outlined {{ $badge['color'] }} text-lg block">{{ $badge['icon'] }}</span>
+                                                <span class="text-xs font-semibold text-on-surface">{{ Figures::rounded($badge['value']) }}{{ $badge['unit'] }}</span>
+                                            </div>
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 {{-- Comparativa Ahora / Hoy --}}
                                 <div class="space-y-3">
-                                    <div>
-                                        <div class="flex justify-between text-xs text-on-surface-variant mb-1">
-                                            <span>Generando ahora</span>
-                                            <span class="font-semibold text-on-surface">{{ $stats->generated_now }} W</span>
+                                    @if($stats->has_generator)
+                                        <div>
+                                            <div class="flex justify-between text-xs text-on-surface-variant mb-1">
+                                                <span>Generando ahora</span>
+                                                <span class="font-semibold text-on-surface">{{ Figures::rounded($stats->generated_now) }} W</span>
+                                            </div>
+                                            <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+                                                <div class="h-full rounded-full bg-amber-500" style="width: {{ min(100, $stats->generated_now / $maxBar * 100) }}%"></div>
+                                            </div>
                                         </div>
-                                        <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
-                                            <div class="h-full rounded-full bg-amber-500" style="width: {{ min(100, $stats->generated_now / $maxBar * 100) }}%"></div>
+                                        <div>
+                                            <div class="flex justify-between text-xs text-on-surface-variant mb-1">
+                                                <span>Generado hoy</span>
+                                                <span class="font-semibold text-on-surface">{{ Figures::rounded($stats->generated_today) }} Wh</span>
+                                            </div>
+                                            <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+                                                <div class="h-full rounded-full bg-amber-500/60" style="width: {{ min(100, $stats->generated_today / $maxBar * 100) }}%"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs text-on-surface-variant mb-1">
-                                            <span>Generado hoy</span>
-                                            <span class="font-semibold text-on-surface">{{ $stats->generated_today }} Wh</span>
+                                    @endif
+
+                                    {{-- Un bloque por cada consumo activo: una nevera y un router en
+                                    canales distintos del mismo monitor no son la misma cifra. --}}
+                                    @foreach($stats->loads as $loadChannel)
+                                        @if(count($stats->loads) > 1)
+                                            <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide pt-1">{{ $loadChannel->label }}</p>
+                                        @endif
+                                        <div>
+                                            <div class="flex justify-between text-xs text-on-surface-variant mb-1">
+                                                <span>Consumiendo ahora</span>
+                                                <span class="font-semibold text-on-surface">{{ Figures::rounded($loadChannel->now) }} W</span>
+                                            </div>
+                                            <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+                                                <div class="h-full rounded-full bg-sky-500" style="width: {{ min(100, $loadChannel->now / $maxBar * 100) }}%"></div>
+                                            </div>
                                         </div>
-                                        <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
-                                            <div class="h-full rounded-full bg-amber-500/60" style="width: {{ min(100, $stats->generated_today / $maxBar * 100) }}%"></div>
+                                        <div>
+                                            <div class="flex justify-between text-xs text-on-surface-variant mb-1">
+                                                <span>Consumido hoy</span>
+                                                <span class="font-semibold text-on-surface">{{ Figures::rounded($loadChannel->today) }} Wh</span>
+                                            </div>
+                                            <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+                                                <div class="h-full rounded-full bg-sky-500/60" style="width: {{ min(100, $loadChannel->today / $maxBar * 100) }}%"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs text-on-surface-variant mb-1">
-                                            <span>Consumiendo ahora</span>
-                                            <span class="font-semibold text-on-surface">{{ $stats->consumed_now }} W</span>
-                                        </div>
-                                        <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
-                                            <div class="h-full rounded-full bg-sky-500" style="width: {{ min(100, $stats->consumed_now / $maxBar * 100) }}%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs text-on-surface-variant mb-1">
-                                            <span>Consumido hoy</span>
-                                            <span class="font-semibold text-on-surface">{{ $stats->consumed_today }} Wh</span>
-                                        </div>
-                                        <div class="h-1.5 rounded-full bg-surface-container-low overflow-hidden">
-                                            <div class="h-full rounded-full bg-sky-500/60" style="width: {{ min(100, $stats->consumed_today / $maxBar * 100) }}%"></div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>

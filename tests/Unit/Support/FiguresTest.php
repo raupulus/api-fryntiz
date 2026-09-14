@@ -44,4 +44,28 @@ class FiguresTest extends TestCase
         $this->assertSame('999.999', Figures::abbreviated(999999));
         $this->assertSame('0', Figures::abbreviated(null));
     }
+
+    #[Test]
+    public function rounded_keeps_up_to_two_decimals_without_forcing_zeros(): void
+    {
+        // Entero: sin decimales forzados, aunque el valor sea un float 5.0.
+        $this->assertSame('5', Figures::rounded(5.0));
+        $this->assertSame('5', Figures::rounded('5'));
+
+        // Con decimales de verdad, hasta dos, redondeando.
+        $this->assertSame('5.26', Figures::rounded(5.256));
+        $this->assertSame('5.2', Figures::rounded(5.2));
+
+        // Negativos y null.
+        $this->assertSame('-3.14', Figures::rounded(-3.14159, 2));
+        $this->assertSame('0', Figures::rounded(null));
+
+        // Otra cantidad de decimales.
+        $this->assertSame('5.256', Figures::rounded(5.2560001, 3));
+        $this->assertSame('5', Figures::rounded(5.001, 1));
+
+        // Una cadena compuesta no es una cifra: se devuelve tal cual en vez
+        // de comerse todo menos el primer número.
+        $this->assertSame('12.5 / 12.0 / 12.3', Figures::rounded('12.5 / 12.0 / 12.3'));
+    }
 }

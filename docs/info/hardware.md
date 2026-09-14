@@ -300,8 +300,10 @@ RelationManagers en la ficha de edición:
 
 En lo alto de la ficha, **antes de la imagen**, va la sección **«Estado del
 dispositivo»**: el último estado conocido que ha reportado el propio cacharro
-por la API (`temp`, `voltage`, `battery_level`, `cpu`, `ram`, `disk`, `uptime`,
-`ip_local`, `ip_public` y `last_seen_at`).
+por la API (`temp`, `voltage`, `battery_level`, `battery_voltage`, `cpu`,
+`ram`, `disk`, `uptime`, `ip_local`, `ip_public` y `last_seen_at`). Estos dos
+últimos, y el resto de esta sección, **sólo se muestran aquí**: no hay ningún
+`TextInput` duplicado más abajo en el formulario.
 
 Son `TextEntry` en una rejilla de tarjetas, no campos de formulario. Antes eran
 diez `TextInput` deshabilitados dentro de una sección colapsada al final de la
@@ -315,12 +317,16 @@ Dos reglas al tocar esto:
 - **`uptime` se pinta en unidades legibles** («5 meses, 12 días») con
   `uptimeLegible()`. El valor crudo en segundos no dice nada de un vistazo.
 
-`extra` se queda aparte, en su propia sección colapsada y como `Textarea` de
-sólo lectura con el JSON formateado: es contenido libre y no cabe en una tarjeta.
+`extra` se queda aparte, en su propia sección **«Métricas adicionales»**: una
+tarjeta tipo *badge* por cada clave del JSON (`TextEntry::badge()`), una al
+lado de otra y saltando de línea cuando no caben más (clase `hd-extra` en
+`resources/css/filament/admin/panel.css`, que añade `flex-wrap` al `Flex` de
+Filament). Si `extra` está vacío o es `null`, la sección entera no se muestra.
 
-Nada de esto se persiste (`dehydrated(false)`): guardar la ficha no escribe en
-las columnas que rellena la API, y hay un test que lo comprueba
-(`tests/Feature/Filament/DeviceStatsTest.php`).
+Estas tarjetas son componentes de infolist (`TextEntry`), no campos de
+formulario: no hace falta `dehydrated(false)` porque no se dehidratan en
+absoluto. Guardar la ficha no escribe en las columnas que rellena la API, y
+hay un test que lo comprueba (`tests/Feature/Filament/DeviceStatsTest.php`).
 
 ### Widget del dashboard — Estado de dispositivos
 

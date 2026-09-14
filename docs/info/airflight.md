@@ -236,6 +236,36 @@ repartiendo datos entre varias filas.
 | `app/Policies/AirFlightRoutePolicy.php` | Rutas guardadas: lectura pública, escritura del dueño o administrador |
 | `app/Console/Commands/AirflightFixCommand.php` | Comando corrección datos |
 | `app/Console/Commands/AirFlightRemoveDuplicateRoutesCommand.php` | `airflight:remove_duplicate_routes` — borra subidas duplicadas en `airflight_routes` (ver detalle más abajo) |
+| `app/Filament/Admin/Resources/AirFlight/AirFlightAirPlanes/AirFlightAirPlaneResource.php` | Panel Admin, sólo lectura (ver [Configuración Filament](#configuración-filament)) |
+| `app/Filament/Admin/Resources/AirFlight/AirFlightRoutes/AirFlightRouteResource.php` | Panel Admin, sólo lectura (ver [Configuración Filament](#configuración-filament)) |
+
+## Configuración Filament
+
+Panel **Admin**, cluster **AirFlight**. Ambos recursos son **sólo lectura**:
+aviones y rutas se suben exclusivamente por la API (ver [Rutas API
+V2](#rutas-api-v2)), así que un admin nunca debería poder crearlos ni
+editarlos a mano — divergiría de lo que reporta el propio receptor ADS-B.
+
+- **`canCreate()`/`canEdit()` devuelven `false`** en los dos Resources: sin
+  botón "Nuevo", sin acción de fila para editar, y la URL directa `.../edit`
+  da 403 (`EditRecord::mount()` lo comprueba con `abort_unless`). Las páginas
+  `Create*`/`Edit*` se han eliminado, no sólo ocultado.
+- La acción de fila es **`ViewAction`**, no `EditAction`: se puede inspeccionar
+  un registro, pero no guardar cambios en él.
+- **Borrar sigue permitido** (`DeleteBulkAction`): esto es sólo-lectura de
+  contenido, no un archivo inmutable. Las Policies (`AirFlightPolicy`,
+  `AirFlightRoutePolicy`), compartidas con la autorización de la ingesta por
+  API, no se han tocado — el bloqueo de creación/edición vive sólo en el
+  Resource de Filament.
+- **`AirFlightAirPlaneResource`**: la columna de bandera usa
+  `url_flag` (accessor del modelo que resuelve
+  `asset('resources/airflight/flags-tiny/'.$flag)`, con `blank.png` de
+  fallback), no la columna `flag` cruda — antes apuntaba directamente a
+  `flag` y las banderas salían rotas porque `ImageColumn` no sabe resolver un
+  nombre de fichero suelto contra el disco correcto sin ese accessor.
+- **`AirFlightRouteResource`**: la tabla ordena por defecto `seen_at` **desc**
+  (`->defaultSort('seen_at', 'desc')`), para que las rutas vistas más
+  recientemente aparezcan arriba al entrar.
 
 ## Campos del modelo AirFlightAirPlane
 

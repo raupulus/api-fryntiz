@@ -10,6 +10,7 @@ use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
+use App\Support\Format\Figures;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -41,7 +42,15 @@ class EnergyController extends Controller
         $lastHour = Carbon::now()->subHour();
 
         // Dispositivos que tienen elementos energéticos configurados o telemetría
-        $hardwareItems = HardwareDevice::with('image.fileType')
+        $hardwareItems = HardwareDevice::with([
+            'image.fileType',
+            // Para la tarjeta: saber si tiene generador, y el nombre/canal de
+            // cada consumo. Sin este eager load sería una consulta por fila
+            // (el proyecto tiene el lazy loading desactivado, así que además
+            // reventaría en vez de ir despacio en silencio).
+            'hardwareEnergy' => fn ($q) => $q->where('is_active', true)->orderBy('sensor_position'),
+            'hardwareEnergy.monitorized',
+        ])
             ->where(function (Builder $query) {
                 $query->whereHas('hardwareEnergy')
                     ->orWhereHas('energyHistorical', static fn (Builder $q) => $q->whereNotNull('energy_wh'))
@@ -141,7 +150,7 @@ class EnergyController extends Controller
         $generator = (object) [
             'current' => round((float) $generatorCurrent->sum('power')),
             'current_amperage' => round($this->amperageAtReference($generatorCurrent, $referenceVoltage), 1),
-            'current_voltage' => number_format((float) ($generatorCurrent->avg('voltage') ?? 0), 1),
+            'current_voltage' => Figures::rounded($generatorCurrent->avg('voltage') ?? 0, 1),
             'today' => round((float) $generatorToday->sum('energy_wh')),
             'today_amperage' => round((float) $generatorToday->sum('energy_wh') / $referenceVoltage),
             'historical' => number_format((float) $generatorHistorical->sum('energy_wh') / 1000, 1),
@@ -156,7 +165,7 @@ class EnergyController extends Controller
         $load = (object) [
             'current' => round((float) $loadCurrent->sum('power')),
             'current_amperage' => number_format($this->amperageAtReference($loadCurrent, $referenceVoltage), 1),
-            'current_voltage' => number_format((float) ($loadCurrent->avg('voltage') ?? 0), 1),
+            'current_voltage' => Figures::rounded($loadCurrent->avg('voltage') ?? 0, 1),
             'today' => round((float) $loadToday->sum('energy_wh')),
             'today_amperage' => round((float) $loadToday->sum('energy_wh') / $referenceVoltage),
             'historical' => number_format((float) $loadHistorical->sum('energy_wh') / 1000, 1),
@@ -170,10 +179,10 @@ class EnergyController extends Controller
         // su carga se leían de las filas de consumo, que las arrastraban
         // replicadas del esquema viejo. Ahora es el elemento #11 y tiene lo suyo.
         $battery = (object) [
-            'current_voltage' => number_format(
-                (float) ($batteryCurrent->whereNotNull('voltage')->avg('voltage')
+            'current_voltage' => Figures::rounded(
+                $batteryCurrent->whereNotNull('voltage')->avg('voltage')
                     ?? $loadCurrent->whereNotNull('voltage')->avg('voltage')
-                    ?? 0),
+                    ?? 0,
                 1
             ),
             'percentage' => number_format((float) $batteryPercentageAvg),
@@ -306,6 +315,12 @@ class EnergyController extends Controller
                 ?? $loadCurrentDev->whereNotNull('battery_percentage')->avg('battery_percentage')
                 ?? 0;
 
+            // Configurado como generador, no "generando algo ahora mismo": de
+            // noche un panel solar sigue teniendo sentido enseñar «0 W», pero
+            // un dispositivo que nunca tiene generador no debería enseñar la
+            // fila en absoluto.
+            $hasGenerator = $hw->hardwareEnergy->contains('role', HardwareEnergy::ROLE_GENERATOR);
+
             return [$hw->id => (object) [
                 'generated_now' => (float) $genCurrent->sum('power'),
                 'generated_today' => (float) $genToday->sum('energy_wh'),
@@ -315,6 +330,12 @@ class EnergyController extends Controller
                 'days_operating' => (int) ($genHistorical->max('days_operating') ?? 0),
                 'generated_historical_kwh' => round((float) $genHistorical->sum('energy_wh') / 1000, 2),
                 'consumed_historical_kwh' => round((float) $loadHistoricalDev->sum('energy_wh') / 1000, 2),
+                'has_generator' => $hasGenerator,
+                // Sólo tiene sentido cuando no hay generador: si lo hay, los
+                // tres huecos de "resumen rápido" ya están ocupados por
+                // generado/consumido/batería.
+                'own_status_badges' => $hasGenerator ? [] : $this->ownStatusBadges($hw),
+                'loads' => $this->loadChannels($hw, $loadCurrentDev, $loadTodayDev),
             ]];
         });
 
@@ -388,5 +409,84 @@ class EnergyController extends Controller
         }
 
         return (float) $readings->sum('power') / $referenceVoltage;
+    }
+
+    /**
+     * Las tres tarjetas de "resumen rápido" cuando el dispositivo no tiene
+     * generador: no tiene sentido enseñar "Generado" ni la batería de la
+     * instalación solar, así que se enseña lo que el propio dispositivo
+     * reporta de sí mismo (D108/estado): CPU, temperatura, su batería propia
+     * y memoria, en ese orden de prioridad, las tres primeras que tengan dato.
+     *
+     * @return list<array{icon: string, color: string, label: string, unit: string, value: float}>
+     */
+    private function ownStatusBadges(HardwareDevice $hw): array
+    {
+        $candidates = [
+            ['field' => 'cpu', 'icon' => 'memory', 'color' => 'text-violet-600 dark:text-violet-400', 'label' => 'CPU', 'unit' => '%'],
+            ['field' => 'temp', 'icon' => 'device_thermostat', 'color' => 'text-orange-600 dark:text-orange-400', 'label' => 'Temp.', 'unit' => '°C'],
+            ['field' => 'battery_level', 'icon' => 'battery_full', 'color' => 'text-emerald-600 dark:text-emerald-400', 'label' => 'Batería', 'unit' => '%'],
+            ['field' => 'ram', 'icon' => 'sd_card', 'color' => 'text-sky-600 dark:text-sky-400', 'label' => 'RAM', 'unit' => '%'],
+        ];
+
+        $badges = [];
+
+        foreach ($candidates as $candidate) {
+            $value = $hw->getAttribute($candidate['field']);
+
+            if ($value === null) {
+                continue;
+            }
+
+            $badges[] = [
+                'icon' => $candidate['icon'],
+                'color' => $candidate['color'],
+                'label' => $candidate['label'],
+                'unit' => $candidate['unit'],
+                'value' => (float) $value,
+            ];
+
+            if (count($badges) === 3) {
+                break;
+            }
+        }
+
+        return $badges;
+    }
+
+    /**
+     * Un elemento por cada consumo activo del dispositivo, con su propio
+     * "ahora"/"hoy": antes se sumaban todos en una única fila, y una nevera y
+     * un router en canales distintos del mismo monitor se veían como un solo
+     * número sin decir cuál pesaba más.
+     *
+     * El nombre es el del dispositivo monitorizado si lo tiene, y el canal
+     * sólo se nombra cuando hay más de un consumo que distinguir —igual que
+     * {@see HardwareEnergy::getDisplayNameAttribute()}.
+     *
+     * @param  Collection<int, HardwareEnergyReading>  $loadCurrentDev
+     * @param  Collection<int, HardwareEnergyToday>  $loadTodayDev
+     * @return list<object{label: string, now: float, today: float}>
+     */
+    private function loadChannels(HardwareDevice $hw, $loadCurrentDev, $loadTodayDev): array
+    {
+        $loads = $hw->hardwareEnergy->where('role', HardwareEnergy::ROLE_LOAD)->values();
+        $several = $loads->count() > 1;
+
+        return $loads->map(function (HardwareEnergy $element) use ($loadCurrentDev, $loadTodayDev, $several) {
+            $label = $element->monitorized?->display_name;
+
+            if ($label === null) {
+                $label = $several ? 'Canal '.$element->sensor_position : 'Consumo';
+            } elseif ($several && $element->sensor_position > 0) {
+                $label .= ' · canal '.$element->sensor_position;
+            }
+
+            return (object) [
+                'label' => $label,
+                'now' => (float) $loadCurrentDev->where('hardware_energy_id', $element->id)->sum('power'),
+                'today' => (float) $loadTodayDev->where('hardware_energy_id', $element->id)->sum('energy_wh'),
+            ];
+        })->all();
     }
 }
