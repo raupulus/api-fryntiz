@@ -67,7 +67,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `ref` | string | Referencia |
 | `model` | string | Modelo del hardware |
 | `brand` | string | Marca |
-| `software_version` | string | Versión de software |
+| `software_version` | string | Versión de software. Editable desde el panel; si el dispositivo la manda por API, la sobrescribe (igual que el resto del bloque de estado) |
 | `hardware_version` | string | Versión de hardware |
 | `serial_number` | string | Número de serie |
 | `battery_type` | string | Tipo de batería |
@@ -83,7 +83,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `temp` | decimal | Último estado: temperatura del dispositivo (ºC) |
 | `voltage` | decimal | Último estado: tensión del dispositivo (V) |
 | `battery_level` | smallint | Último estado: nivel de batería (0-100) |
-| `battery_voltage` | decimal | Último estado: tensión de la batería (V) |
+| `battery_voltage` | decimal | Último estado: tensión de la batería (V). Tarjeta de solo lectura en el panel desde el 2026-09-14 |
 | `cpu` | decimal | Último estado: uso de CPU (0-100) |
 | `disk` | decimal | Último estado: uso de disco (0-100) |
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
@@ -91,15 +91,24 @@ consumos, con sus resúmenes diarios e históricos— está en
 
 > **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `battery_voltage`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía (ver [`energy.md`](energy.md)), KeyCounter, SmartPlant, WeatherStation y AirFlight.
 >
-> `battery_voltage` (D108) solo se rellena desde la API: no tiene campo en el
-> panel, igual que el resto del bloque de estado. Hasta el 2026-09-14 estaba en
-> la lista blanca del servicio pero **no** en `DeviceStatusPayload::rules()`,
-> así que en la ruta dedicada (`PUT .../status`) se descartaba en silencio
-> antes de llegar a guardarse. Ahora está validado (`nullable`, `numeric`) y
-> también sale en el bloque `status` de lectura. Sus antiguos compañeros
-> `battery_percentage` y `battery_read_at` nunca llegaron a validarse, ni a
-> mostrarse en ningún sitio, ni un test los ejercitaba: se eliminaron sin
-> reemplazo (migración `2026_09_14_000001_update_hardware_devices_battery_fields_table`).
+> `battery_voltage` (D108) solo se rellena desde la API, igual que el resto del
+> bloque de estado. Hasta el 2026-09-14 estaba en la lista blanca del servicio
+> pero **no** en `DeviceStatusPayload::rules()`, así que en la ruta dedicada
+> (`PUT .../status`) se descartaba en silencio antes de llegar a guardarse.
+> Ahora está validado (`nullable`, `numeric`) y también sale en el bloque
+> `status` de lectura. Tampoco tenía tarjeta en el panel (`HardwareDeviceResource`);
+> desde el 2026-09-14 aparece como tarjeta de solo lectura junto a
+> `battery_level`, con el mismo patrón: se oculta si el dispositivo no la
+> reporta. Sus antiguos compañeros `battery_percentage` y `battery_read_at`
+> nunca llegaron a validarse, ni a mostrarse en ningún sitio, ni un test los
+> ejercitaba: se eliminaron sin reemplazo (migración
+> `2026_09_14_000001_update_hardware_devices_battery_fields_table`).
+>
+> `software_version` seguía sin poder subirse por API hasta el 2026-09-14: no
+> estaba ni en `DeviceStatusPayload::rules()` ni en la lista blanca de
+> `HardwareService::updateDeviceStatus()`. Ahora sí, por los mismos siete
+> endpoints que aceptan `hardware_device_info`. Sigue siendo editable a mano
+> desde el panel, así que si el dispositivo la manda, la sobrescribe.
 
 ## Relaciones
 
@@ -143,7 +152,7 @@ Pensado para NAS, Raspberry Pi, portátiles, etc. que suben periódicamente su
 estado. El cuerpo debe incluir siempre `hardware_device_id` (id del dispositivo,
 validado con `OwnedHardwareDevice`). Campos opcionales: `temp`, `voltage`,
 `battery_level`, `battery_voltage`, `cpu`, `disk`, **`ram`**, `uptime`,
-`ip_local`, `extra`.
+`ip_local`, `extra`, `software_version`.
 No se guarda histórico: solo se sobrescribe el último estado y se actualiza
 `last_seen_at` al momento actual.
 

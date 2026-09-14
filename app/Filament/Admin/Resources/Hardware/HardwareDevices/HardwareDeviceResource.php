@@ -52,7 +52,7 @@ class HardwareDeviceResource extends Resource
      * @var list<string>
      */
     private const READING_FIELDS = [
-        'temp', 'voltage', 'battery_level', 'cpu', 'ram', 'disk',
+        'temp', 'voltage', 'battery_level', 'battery_voltage', 'cpu', 'ram', 'disk',
         'uptime', 'ip_local', 'ip_public', 'last_seen_at',
     ];
 
@@ -150,6 +150,7 @@ class HardwareDeviceResource extends Resource
                         self::readingCard('temp', 'Temperatura', 'heroicon-o-fire', '°C'),
                         self::readingCard('voltage', 'Tensión', 'heroicon-o-bolt', 'V'),
                         self::readingCard('battery_level', 'Batería', 'heroicon-o-battery-100', '%'),
+                        self::readingCard('battery_voltage', 'Tensión de batería', 'heroicon-o-bolt', 'V'),
                         self::readingCard('cpu', 'CPU', 'heroicon-o-cpu-chip', '%'),
                         self::readingCard('ram', 'Memoria', 'heroicon-o-circle-stack', '%'),
                         self::readingCard('disk', 'Disco', 'heroicon-o-server', '%'),

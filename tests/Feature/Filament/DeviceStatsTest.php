@@ -65,7 +65,27 @@ class DeviceStatsTest extends TestCase
             // No mide memoria, disco ni batería: esas tarjetas no salen.
             ->assertDontSee('Memoria')
             ->assertDontSee('Disco')
-            ->assertDontSee('Batería');
+            ->assertDontSee('Batería')
+            ->assertDontSee('Tensión de batería');
+    }
+
+    /**
+     * `battery_voltage` la escriben siete endpoints IoT distintos
+     * (`HardwareService::updateDeviceStatus()`), pero hasta ahora no tenía
+     * ningún sitio donde verse en el panel.
+     */
+    #[Test]
+    public function battery_voltage_shows_up_as_a_reading_card(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Rover Solar',
+            'battery_voltage' => 12.6,
+        ]);
+
+        Livewire::test(EditHardwareDevice::class, ['record' => $device->getKey()])
+            ->assertSuccessful()
+            ->assertSee('Tensión de batería')
+            ->assertSee('12.6');
     }
 
     #[Test]
@@ -106,9 +126,10 @@ class DeviceStatsTest extends TestCase
             'uptime' => 14_212_800,
             'ip_local' => '192.168.1.50',
             'ip_public' => '80.30.20.10',
+            'battery_voltage' => 12.6,
         ]);
 
-        $before = $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public']);
+        $before = $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public', 'battery_voltage']);
 
         Livewire::test(EditHardwareDevice::class, ['record' => $device->getKey()])
             ->fillForm(['name_friendly' => 'El de la mesa'])
@@ -120,7 +141,7 @@ class DeviceStatsTest extends TestCase
         $this->assertSame('El de la mesa', $device->name_friendly);
         $this->assertEquals(
             $before,
-            $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public']),
+            $device->only(['temp', 'cpu', 'ram', 'disk', 'uptime', 'ip_local', 'ip_public', 'battery_voltage']),
         );
     }
 

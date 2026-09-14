@@ -241,6 +241,7 @@ veces deja el sistema igual (idempotente).
 | `ip_local` | string\|null | opcional, IP válida |
 | ~~`ip_public`~~ | — | **Ya no se acepta (2026-09-06).** Si se manda, se ignora: la pone el servidor. Ver el aviso de abajo |
 | `extra` | object\|null | opcional, máx. 30 claves; cada valor debe ser un dato simple (número, texto o booleano), texto máx. 255 caracteres |
+| `software_version` | string\|null | opcional, máx. 50 caracteres. **Nuevo el 2026-09-14** |
 
 > ### ⚠️ Cambio de contrato — `ip_public` (2026-09-06)
 >
@@ -284,6 +285,17 @@ veces deja el sistema igual (idempotente).
 > eliminaron: nunca se validaron, ni se mostraron en ningún sitio, ni los
 > cubría ningún test. Migración
 > `2026_09_14_000001_update_hardware_devices_battery_fields_table`.
+
+> ### `software_version` (2026-09-14)
+>
+> Versión del firmware/software que reporta el propio dispositivo. Antes solo
+> era editable a mano desde el panel (`hardware_devices.software_version`); no
+> estaba ni en `DeviceStatusPayload::rules()` ni en la lista blanca de
+> `HardwareService::updateDeviceStatus()`, así que un dispositivo no podía
+> subirla. Ahora sí, por este endpoint y por `hardware_device_info` en
+> cualquier subida IoT. **Sigue siendo editable desde el panel**: si el
+> dispositivo la manda, la API la sobrescribe con lo último reportado, igual
+> que pasa con el resto de campos de este bloque.
 
   `hardware_device_id` **no** se acepta como campo: viene de la URL
   (`{device}`) y ahí es donde se comprueba la pertenencia/ligado al token

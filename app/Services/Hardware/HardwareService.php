@@ -63,7 +63,7 @@ class HardwareService
      * con nulos valores previamente conocidos que no vengan en esta subida.
      *
      * @param  int  $deviceId  Identificador del dispositivo hardware.
-     * @param  array  $data  Estado del dispositivo (temp, voltage, battery_level, cpu, disk, ram, uptime, ip_local, ip_public, extra).
+     * @param  array  $data  Estado del dispositivo (temp, voltage, battery_level, cpu, disk, ram, uptime, ip_local, ip_public, extra, software_version).
      * @return HardwareDevice Dispositivo actualizado.
      */
     public function updateDeviceStatus(int $deviceId, array $data): HardwareDevice
@@ -72,7 +72,7 @@ class HardwareService
 
         $allowed = [
             'temp', 'voltage', 'battery_level', 'cpu', 'disk', 'ram', 'uptime',
-            'ip_local', 'ip_public', 'extra', 'battery_voltage',
+            'ip_local', 'ip_public', 'extra', 'battery_voltage', 'software_version',
         ];
 
         $status = array_intersect_key($data, array_flip($allowed));

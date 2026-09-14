@@ -234,6 +234,35 @@ class HardwareTest extends ApiTestCase
         $read->assertOk()->assertJsonPath('data.status.battery_voltage', 3.98);
     }
 
+    /**
+     * `software_version` sólo se editaba a mano desde el panel: la API no
+     * podía sobreescribirlo porque no estaba ni en `DeviceStatusPayload::rules()`
+     * ni en la lista blanca de `HardwareService::updateDeviceStatus()`.
+     */
+    #[Test]
+    public function store_device_status_saves_and_returns_software_version(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $headers = $this->moduleHeaders($user, TokenAbilities::HARDWARE_WRITE);
+
+        $device = HardwareDevice::create([
+            'user_id' => $user->id,
+            'name' => 'Test Device',
+            'software_version' => '1.0.0',
+        ]);
+
+        $response = $this->putJson(
+            $this->apiUrl("hardware/devices/{$device->id}/status"),
+            ['hardware_device_id' => $device->id, 'software_version' => '1.2.3'],
+            $headers
+        );
+
+        $this->assertSuccessResponse($response);
+
+        $device->refresh();
+        $this->assertSame('1.2.3', $device->software_version);
+    }
+
     #[Test]
     public function battery_voltage_that_is_not_numeric_is_rejected(): void
     {
