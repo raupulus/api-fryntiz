@@ -23,8 +23,7 @@ mano, comprueba si ya hay un campo o mecanismo para ello.
 `app/Models/Content/ContentSeo.php` (tabla `content_seo`), relación 1–1 con
 `Content`. Campos: `description`, `keywords`, `robots`, `distribution`,
 `revisit_after`, `image_id` + `image_alt`, `og_title`, `og_type`,
-`twitter_card`, `twitter_creator`. Expone `getGenericTags()` (author, copyright,
-distribution, description, robots, keywords…).
+`twitter_card`, `twitter_creator`.
 
 Reglas:
 
