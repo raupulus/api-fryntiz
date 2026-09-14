@@ -97,10 +97,10 @@ class AemetDashboard extends Page
                 'command' => 'aemet:high-sea',
             ],
             'ozone' => [
-                'label' => 'Ozono',
-                'description' => 'Ozono en superficie. Publicación diaria.',
+                'label' => 'Perfil de ozono',
+                'description' => 'Perfil vertical de ozono (sondeo). Publicación cada 7 días, con hasta 28 de retraso.',
                 'model' => AEMETOzone::class,
-                'command' => 'aemet:ozone',
+                'command' => 'aemet:ozone-profile',
             ],
             'sun_radiation' => [
                 'label' => 'Radiación solar',

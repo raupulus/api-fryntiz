@@ -244,12 +244,12 @@ PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PH
 api-fryntiz/
 ├── app/                      # Lógica principal de la aplicación (arquitectura MVC + Service Layer)
 │   ├── Actions/              # Operaciones atómicas reutilizables (Fortify, PublishContent, StoreSensorData)
-│   ├── Console/Commands/     # 44 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
+│   ├── Console/Commands/     # 41 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
 │   ├── Enums/                # Backed Enums tipados en PHP 8.4 (sufijo Enum)
 │   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
 │   ├── Filament/             # Configuración de los paneles de Filament
-│   │   ├── Admin/            # Panel Admin: 23 Resources, 31 RelationManagers, 4 Clusters, 7 Widgets, 5 Pages
+│   │   ├── Admin/            # Panel Admin: 24 Resources, 31 RelationManagers, 4 Clusters, 8 Widgets, 5 Pages
 │   │   ├── Tenant/           # Panel Tenant/Usuario: Pages/Dashboard.php
 │   │   ├── Components/       # Componentes Filament (EditorJsField, ImageCropperUpload, YoutubeVideoField)
 │   │   └── Concerns/         # Traits de Filament (HasImageFileUpload)
@@ -264,7 +264,7 @@ api-fryntiz/
 │   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
-│   ├── Models/               # 98 Modelos Eloquent con PHPDoc completo
+│   ├── Models/               # 97 Modelos Eloquent con PHPDoc completo
 │   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
 │   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
 │   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
@@ -282,7 +282,7 @@ api-fryntiz/
 ├── config/                   # Archivos de configuración de Laravel, Filament, Sanctum, CORS, AEMET y base de datos
 ├── database/                 # Base de datos PostgreSQL
 │   ├── factories/            # 94 Factories para generación de datos de prueba
-│   ├── migrations/           # 118 migraciones comentadas en todas sus tablas y columnas
+│   ├── migrations/           # 105 migraciones comentadas en todas sus tablas y columnas
 │   └── seeders/              # 18 Seeders ordenados para carga de catálogos y datos esenciales
 ├── docs/                     # Documentación técnica viva del proyecto (con fecha de revisión obligatoria)
 │   ├── apis/                 # Documentación técnica de referencia de APIs de terceros (AEMET OpenData)
@@ -317,7 +317,9 @@ La plataforma expone sus servicios a través de cuatro capas de enrutamiento pri
 
 ### 1. Frontend Web Público (`routes/web.php` y submódulos)
 - `GET  /`: Portada corporativa con presentación de servicios y métricas (`home`).
-- `GET  /about`: Redirección automática a portada (`302`).
+- `GET  /about`: Página propia con la información del proyecto (`about`). **Ya no
+  redirige** — hasta el 2026-09-14 era un `302` a la portada; ahora es contenido real
+  en `resources/views/about.blade.php`, enlazado desde el footer.
 - `GET  /docs`: Documentación interactiva de la API con Swagger/OpenAPI (requiere sesión).
 - `GET  /languages/ajax/get/languages`: Consulta asíncrona de idiomas soportados.
 - `GET  /file/get/{module}/{id}/{slug?}`: Streaming dinámico de ficheros públicos y privados.
@@ -331,7 +333,13 @@ La plataforma expone sus servicios a través de cuatro capas de enrutamiento pri
 - `GET  /hardware/energy`: Monitorización en tiempo real de balance fotovoltaico y consumos.
 - `GET  /keycounter`: Estadísticas agregadas de pulsaciones y actividad de periféricos.
 - `GET  /airflight`: Mapa y radar visual de tráfico aéreo ADS-B.
-- `GET  /cv/get/pdf/raupulus/default`: Descarga del currículum vitae generado en PDF.
+- `GET  /cv`: Listado de currículums públicos, en tarjetas horizontales (`cv.index`).
+  Enlazado desde el home en la tarjeta que antes llevaba a `/panel`.
+- `GET  /cv/{slug}`: Vista pública de un currículum, con botón de descarga del PDF
+  (`cv.show`).
+- `GET  /cv/pdf`: Descarga del currículum predeterminado en PDF (`cv.pdf.default`).
+- `GET  /cv/{slug}/pdf`: Descarga de un currículum público concreto en PDF (`cv.pdf`).
+  **La ruta antigua `/cv/get/pdf/raupulus/default` ya no existe** — ver `docs/info/cv.md`.
 - `ANY  /register*`, `/panel/register*`: **Bloqueo explícito** con respuesta `404 Not Found`.
 - `ANY  /dashboard*`: Redirección `301 Moved Permanently` a `/panel`.
 
@@ -345,7 +353,7 @@ La plataforma expone sus servicios a través de cuatro capas de enrutamiento pri
 - **Panel Admin (`/admin`):** SuperAdmin, Admin y Editor (`AdminPanelProvider`,
   `User::canAccessPanel()`).
   - Login dedicado en `/admin/login` y perfil en `/admin/profile`.
-  - 23 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags, Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Energías, Estación Meteorológica, Plantas Inteligentes (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV, Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter).
+  - 24 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags, Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Energías, Estación Meteorológica, Plantas Inteligentes (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV, Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter), Tipos de fichero.
 - **Panel Tenant / Usuario (`/panel`):** Panel para usuarios autenticados (`TenantPanelProvider`).
   - Dashboard de cliente y visualización de recursos propios.
 
@@ -447,7 +455,7 @@ Todos los comandos Artisan personalizados del proyecto están especificados y do
 ### Comandos de Módulos e Integraciones
 - **AEMET (Estación Meteorológica):** un comando por producto, con la cadencia real de AEMET —
   `aemet:adverse-events`, `aemet:contamination`, `aemet:hourly-prediction`, `aemet:coast`,
-  `aemet:beaches`, `aemet:high-sea`, `aemet:sun-radiation`, `aemet:ozone`, `aemet:check-api-key`.
+  `aemet:beaches`, `aemet:high-sea`, `aemet:sun-radiation`, `aemet:ozone-profile`, `aemet:check-api-key`.
   Los antiguos (`aemet:update*`) ya no existen: se retiraron en la fase 4 (ver
   `_to_delete/POR-QUE-ESTAN-AQUI.md`).
 - **AirFlight:** `airflight:fix`.

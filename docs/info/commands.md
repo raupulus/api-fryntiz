@@ -125,10 +125,20 @@ de un número inventado.
 | `aemet:coast` | Diario | Predicción de costa |
 | `aemet:high-sea` | 08:15 | Alta mar |
 | `aemet:sun-radiation` | 08:25 | Radiación solar |
-| `aemet:ozone` | 12:25 | Ozono en superficie |
+| `aemet:ozone-profile` | Lunes 12:25 | Perfil vertical de ozono (sondeo) |
 | `aemet:check-api-key` | 08:00 | **Vigila la caducidad de la clave** |
 
 Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de persistir.
+
+> **`aemet:ozone-profile` (2026-09-14).** Se llamaba `aemet:ozone` y corría a
+> diario: pedía y guardaba el perfil vertical de ozono (sondeo en Madrid,
+> `red/especial/perfilozono/estacion/peninsula`), pero el nombre y la cadencia
+> describían el ozono total de superficie (`red/especial/ozono`), un producto
+> distinto que nunca se ha implementado. Verificado contra la API real: AEMET
+> publica el perfil cada 7 días y se ha observado hasta con 28 de retraso, así
+> que pedirlo a diario sólo gastaba cuota sin traer nada nuevo. Renombrado y
+> movido a semanal. Detalle en
+> [`docs/future/revisar-aemet.md`](../future/revisar-aemet.md).
 
 ⚠️ `aemet:check-api-key` no trae datos: comprueba la clave. Existe porque la
 `AEMET_API_KEY` es un JWT que caduca a los ~100 días y **su caducidad no da

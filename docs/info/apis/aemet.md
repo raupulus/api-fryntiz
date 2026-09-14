@@ -137,10 +137,40 @@ cuota.
 | Predicción de costa | `aemet:coast` | diario | 6 h |
 | Alta mar | `aemet:high-sea` | diario 08:15 | 6 h |
 | Radiación solar | `aemet:sun-radiation` | diario 08:25 | 12 h |
-| Ozono | `aemet:ozone` | diario 12:25 | 12 h |
+| Perfil de ozono (sondeo) | `aemet:ozone-profile` | lunes 12:25 | días |
 | **Vigilancia de la clave** | `aemet:check-api-key` | diario 08:00 | — |
 
 Horas en `Europe/Madrid`, fijadas para que no se muevan con el cambio de hora.
+
+> **`aemet:ozone-profile` no es ozono de superficie (2026-09-14).** Hasta esta
+> fecha el comando se llamaba `aemet:ozone`, corría a diario a las 12:25 y su
+> descripción decía "Ozono en superficie. Publicación diaria." — pero
+> `AEMETHelper::getOzone()` siempre ha pedido
+> `red/especial/perfilozono/estacion/peninsula` (el perfil vertical de una
+> ozonosonda: presión, altura, temperatura, velocidad de ascenso…), no
+> `red/especial/ozono` (el ozono total diario, CSV con 7 estaciones). Lo
+> verifiqué lanzando ambas peticiones reales contra la API: el perfil traía
+> datos fechados **5 días atrás** y el ozono total, de **ayer** — coherente con
+> la `periodicidad` que declara AEMET para cada uno (ver
+> [`09-redes-especiales.md`](../../apis/aemet/09-redes-especiales.md)): el
+> perfil se publica cada 7 días y se ha observado hasta con 28 de retraso; el
+> total, a diario. El modelo `AEMETOzone` está construido para el perfil (los
+> campos son los del sondeo), así que no es un desliz aislado del comando: todo
+> el pipeline es del perfil. Se ha renombrado el comando y bajado su cadencia a
+> semanal para no quemar cuota contra un dato que casi nunca cambia. El ozono
+> total de superficie **sigue sin implementarse** — es una decisión de negocio
+> pendiente, ver [`docs/future/revisar-aemet.md`](../../future/revisar-aemet.md).
+>
+> De paso: `AEMETService::getOzone()` apunta (por casualidad) al endpoint
+> correcto del ozono total, pero **no lo llama nadie** — es código muerto. Ojo
+> también con `AEMETService::getContamination()` y `getSunRadiation()`, en el
+> mismo archivo: usan `red/especial/contaminacionfondo` y
+> `red/especial/radiacionsolar` sin verificar, y ambas rutas están documentadas
+> como **incorrectas (404)** en
+> [`09-redes-especiales.md`](../../apis/aemet/09-redes-especiales.md#dos-rutas-que-se-documentan-mal-a-menudo).
+> Nada de esto se ejecuta hoy (los comandos reales usan `AEMETHelper`, con sus
+> propias rutas ya verificadas), pero si alguien retoma la migración a
+> `AEMETService` sin comprobarlo de nuevo, hereda esos dos 404.
 
 ---
 
@@ -284,4 +314,4 @@ tail -f storage/logs/laravel-$(date +%Y-%m-%d).log | grep -i aemet
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-08-30
+> Creado: 2026-05-26 · Última revisión: 2026-09-14
