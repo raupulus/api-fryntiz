@@ -117,7 +117,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 - `HardwareDevice` → `HasMany` → `HardwareComponent`
 - `HardwareDevice` → `HasMany` → `ApiToken` (vía `apiTokens()`, solo lectura: tokens del usuario propietario con nombre `device:{id}`)
 
-Las de energía —`HardwareEnergy`, `EnergySystem` y las tablas de lecturas— están
+Las de energía —`HardwareEnergy` y las tablas de lecturas— están
 en [energy.md](energy.md).
 
 ## Rutas API V2

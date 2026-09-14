@@ -482,6 +482,15 @@ class HardwareEnergy extends BaseModel
      * | Vatios-hora | `energy_wh` | `A · V · s / 3600` | `P · s / 3600` |
      * | Amperios-hora | `energy_ah` | `A · s / 3600` | `Wh / V` |
      *
+     * **Si el aparato declara una sola de las dos energías, la otra sale de esa
+     * con la tensión nominal del elemento**, no de la corriente medida:
+     * `Ah = Wh ÷ V nominal` y `Wh = Ah × V nominal`. Es lo que hace que cada
+     * fila cuadre con la tensión de su elemento. El Renogy Rover declara los Wh
+     * del panel y los Ah de carga de la batería: integrar la corriente del panel
+     * a su tensión real (~34 V) daba unos Ah que no cuadraban con los Wh a 24 V,
+     * y la potencia neta de la batería, con signo, unos Wh que no cuadraban con
+     * sus Ah de carga. Sin nominal se usa la tensión resuelta de la lectura.
+     *
      * Si no llega nada de lo que hace falta, la magnitud se queda a `null`. No
      * se inventa un 0: eso convertiría «no tengo dato» en «medí cero».
      *
@@ -497,6 +506,17 @@ class HardwareEnergy extends BaseModel
         int $seconds
     ): array {
         $power ??= $this->computePower($amperage, $voltage);
+
+        // Una sola energía declarada: la otra, con la tensión nominal.
+        $tensionDelElemento = $this->nominal_voltage !== null && (float) $this->nominal_voltage > 0.0
+            ? (float) $this->nominal_voltage
+            : $voltage;
+
+        if ($energyWh !== null && $energyAh === null) {
+            $energyAh = $this->ampHoursFromWattHours($energyWh, $tensionDelElemento);
+        } elseif ($energyAh !== null && $energyWh === null && $tensionDelElemento !== null && $tensionDelElemento > 0.0) {
+            $energyWh = $energyAh * $tensionDelElemento;
+        }
 
         $energyWh ??= $this->computeWattHours($amperage, $voltage, $seconds)
             ?? $this->integratePower($power, $seconds);

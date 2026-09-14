@@ -451,6 +451,18 @@ Lo que **no** llega se deriva de lo que sí hay, en este orden de preferencia
 | Vatios-hora | `energy_wh` | `A · V · s / 3600` | `P · s / 3600` | `null` |
 | Amperios-hora | `energy_ah` | `A · s / 3600` | `Wh / V` | `null` |
 
+**Si el aparato declara una sola de las dos energías, la otra sale de ella con
+la tensión nominal del elemento** (`Ah = Wh ÷ V nominal`, `Wh = Ah × V nominal`),
+no de la corriente medida. Es la misma regla de la tabla de §4.2, aplicada a
+cada lectura: el panel del Rover a 34 V reales y su batería con la descarga en
+negativo daban filas que no cuadraban con su tensión. Sin nominal, se usa la
+tensión resuelta de la lectura.
+
+**Un `today_*` sólo sirve si el contador del aparato corta a las 00:00 UTC.** Lo
+declarado sustituye al total del día, y un contador que se reinicia a otra hora
+mezcla días. El Rover pone a cero los suyos hacia las 05:43 y las 19:14 UTC; por
+eso su firmware ya no los manda (2026-09-14) y el día se suma de las lecturas.
+
 **Nunca se inventa un 0.** Un 0 diría que se midió y dio cero, y eso baja todas
 las medias. Una magnitud que no se puede calcular se queda a `null`.
 

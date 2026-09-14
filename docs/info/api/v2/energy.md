@@ -349,6 +349,18 @@ Se resuelven en este orden. La primera que se pueda, gana:
 Donde `s` es [`duration`](#duration--cuánto-duró-el-intervalo) y `V` es la
 tensión resuelta (la que mandas o, si no, la nominal del elemento).
 
+**Si mandas una sola de las dos energías, la otra sale de ella con la tensión
+nominal del elemento**, no con tu corriente ni con tu tensión medida:
+
+| Mandas | Se calcula |
+|---|---|
+| `energy_wh` sin `energy_ah` | `energy_ah = energy_wh ÷ nominal_voltage` |
+| `energy_ah` sin `energy_wh` | `energy_wh = energy_ah × nominal_voltage` |
+
+Así cada fila cuadra con la tensión de su elemento: un panel de 24 V que declara
+12 Wh guarda 0,5 Ah aunque en ese momento esté a 34 V. Si el elemento no tiene
+nominal, se usa la tensión resuelta de la lectura.
+
 **Lo que mandas nunca se recalcula.** Si mandas `power: 99` con 12 V y 2 A, se
 guarda 99 aunque no cuadre: es tu medida y tu instrumento.
 
@@ -396,6 +408,13 @@ Una fila por elemento y día (`hardware_energy_today`), en UTC.
 
 Las dos magnitudes van **por separado**: puedes declarar el total de vatios-hora
 y dejar que los amperios-hora se sumen solos.
+
+> ⚠️ **Manda `today_*` sólo si tu contador del día se pone a cero a las 00:00
+> UTC.** El día se corta en UTC y lo que declaras sustituye al total de ese día.
+> Un contador que se reinicia a otra hora mezcla días: el Renogy Rover pone a
+> cero el de consumo hacia las 19:14 UTC, y el 13/09/2026 el día quedó con sólo
+> lo gastado desde esa hora. Si tu contador no corta a medianoche, **no mandes
+> `today_*`**: manda la energía de cada intervalo y el servidor suma el día.
 
 ```
 Tres subidas de 10 min a 24 W, sin declarar totales:
@@ -602,13 +621,14 @@ Un Renogy Rover manda de una vez lo que produce el panel, cómo está la baterí
 lo que sale por la salida de carga. Tres elementos, todos en el canal 0, **cada
 uno a su tensión**: el panel a 24 V, la batería a 12 V y el consumo a 12 V.
 
-Este ejemplo lleva **todo** lo que el controlador sabe. La correspondencia con
-los registros Modbus está en
+Este ejemplo es lo que manda el firmware de su Pico. La correspondencia con los
+registros Modbus está en
 [`../../hardware/renogy-rover.md`](../../hardware/renogy-rover.md).
 
 ```json
 {
   "hardware_device_id": 6,
+  "duration": 300,
   "read_at": "2026-09-13T08:15:00Z",
   "device": { "temp": 41.5, "uptime": 864000, "extra": { "system_voltage": 24 } },
   "energy": {
@@ -616,14 +636,12 @@ los registros Modbus está en
       "voltage": 34.5,
       "amperage": 4.2,
       "power": 144.9,
+      "energy_wh": 12.0,
       "temperature": 31.5,
       "charging_status": 3,
       "charging_status_label": "mppt",
       "light_status": false,
       "light_brightness": 0,
-      "today_energy_wh": 1250.0,
-      "today_amperage_max": 6.1,
-      "today_power_max": 148.0,
       "historical_energy_wh": 45000.0,
       "total_operating_days": 1745
     },
@@ -631,11 +649,9 @@ los registros Modbus está en
       "voltage": 13.4,
       "amperage": 5.0,
       "power": 67.0,
+      "energy_ah": 1.0,
       "soc": 92,
       "temperature": 24.5,
-      "today_voltage_min": 12.1,
-      "today_voltage_max": 14.3,
-      "today_energy_ah": 40.0,
       "historical_energy_ah": 1500.0,
       "battery_full_charges": 25,
       "battery_over_discharges": 1,
@@ -648,10 +664,8 @@ los registros Modbus está en
         "amperage": 2.5,
         "power": 30.3,
         "fan": 0,
-        "today_energy_wh": 310.0,
-        "today_energy_ah": 25.6,
-        "today_amperage_max": 4.4,
-        "today_power_max": 56.0,
+        "energy_wh": 12.0,
+        "energy_ah": 1.0,
         "historical_energy_wh": 12500.0,
         "historical_energy_ah": 1030.0,
         "total_operating_days": 1745
@@ -664,17 +678,21 @@ los registros Modbus está en
 Devuelve tres lecturas: una `generator`, una `battery` y una `load`, las tres
 con `created_at` a las 08:15 UTC.
 
-**Este ejemplo no manda `duration`** y no le hace falta: el Rover declara sus
-propios acumuladores del día y de por vida, así que el intervalo no interviene en
-ningún total. Sí manda `read_at`, porque su Pico lleva reloj por NTP.
+**La energía de cada intervalo es lo que avanzan los contadores del Rover** entre
+dos lecturas; la Pico hace la resta. **No manda ningún `today_*`**: sus
+contadores del día vuelven a cero hacia las 05:43 UTC (generación, carga) y las
+19:14 UTC (consumo, descarga), no a las 00:00, y el servidor mezclaba días. El
+total del día lo suma el servidor. Sí manda `read_at`, porque su Pico lleva reloj
+por NTP.
 
 **Qué declara cada elemento y qué calcula el servidor.** El Rover no mide todas
-las magnitudes de los tres, y eso está bien: lo que no declara se calcula.
+las magnitudes de los tres, y eso está bien: lo que no declara se calcula con la
+tensión nominal del elemento.
 
 | | Vatios-hora | Amperios-hora |
 |---|---|---|
-| `generator` | del aparato | calculado (no mide los Ah del panel) |
-| `battery` | calculado (no tiene registro) | del aparato |
+| `generator` | del aparato | calculado: `Wh ÷ 24 V` (no mide los Ah del panel) |
+| `battery` | calculado: `Ah × 12 V` (no tiene registro) | del aparato (sólo carga) |
 | `loads[]` | del aparato | del aparato |
 
 Los amperios-hora de carga van a `battery` porque el registro cuenta lo que
@@ -791,4 +809,4 @@ ligado a dispositivos concretos, sólo las de ésos.
 
 ---
 
-> Creado: 2026-09-06 · Última revisión: 2026-09-13
+> Creado: 2026-09-06 · Última revisión: 2026-09-14

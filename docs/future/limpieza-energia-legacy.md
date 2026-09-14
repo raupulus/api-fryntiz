@@ -37,7 +37,7 @@ queda.
 
 ## 2 · Las tablas del esquema viejo
 
-Ocho tablas, **unos 456 MB**, sin una sola línea de código que las lea desde que
+Siete tablas, **unos 456 MB**, sin una sola línea de código que las lea desde que
 se retiraron sus modelos:
 
 | Tabla | Filas | Peso |
@@ -47,7 +47,6 @@ se retiraron sus modelos:
 | `hardware_power_generators_solar` | 1.401 | 720 kB |
 | `hardware_power_loads_today` | 917 | 432 kB |
 | `hardware_power_generators_today` | 916 | 400 kB |
-| `energy_systems` | 2 | 64 kB |
 | `hardware_power_loads_historical` | 6 | 40 kB |
 | `hardware_power_generators_historical` | 4 | 40 kB |
 
@@ -55,10 +54,13 @@ se retiraron sus modelos:
 traspaso se puede repetir; en cuanto se borren, lo único que queda es el volcado
 que haya guardado. Por eso van las últimas y con una copia verificada delante.
 
+`energy_systems` ya no está: la quitó `2026_09_14_000002_drop_energy_systems_table`
+(2026-09-14). Su migración de creación sigue porque la de `hardware_energy` de
+2022 le pone una FK; sale con la consolidación del grupo 3, junto con esa FK.
+
 Con ellas se van sus migraciones:
 
 ```
-2022_01_30_225441_create_energy_systems_table.php
 2022_01_30_232819_create_hardware_power_loads_table.php
 2022_01_30_232820_create_hardware_power_loads_today_table.php
 2022_01_30_232821_create_hardware_power_loads_historical_table.php
@@ -162,4 +164,4 @@ Para que no se lleve nada por delante quien haga esto:
 
 ---
 
-> Creado: 2026-09-13 · Última revisión: 2026-09-13
+> Creado: 2026-09-13 · Última revisión: 2026-09-14

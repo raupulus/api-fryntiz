@@ -52,7 +52,6 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Hardware | `HardwareTypeResource` | `HardwareType` |
 | Hardware | `HardwareAvailableComponentResource` | `HardwareAvailableComponent` |
 | Hardware | `HardwareEnergyResource` | `HardwareEnergy` |
-| Hardware | `EnergySystemResource` | `EnergySystem` |
 | Hardware | `PrinterResource` | `Printer` |
 | Módulos | `AirFlightAirPlaneResource` | `AirFlightAirPlane` |
 | Módulos | `AirFlightRouteResource` | `AirFlightRoute` |
@@ -250,7 +249,7 @@ En vez de una clase por tabla repitiendo el mismo criterio:
 | Clase | Cubre | Criterio |
 |---|---|---|
 | `AdminCatalogPolicy` | `FileType`, `HardwareType`, `HardwareAvailableComponent`, `CurriculumAvailableRepositoryType`, `PrinterAvailableType` | Catálogos globales sin dueño: sólo administrador. |
-| `OwnedResourcePolicy` (abstracta) | Base de `PrinterPolicy`, `GalleryPolicy`, `EnergySystemPolicy`, `HardwareEnergyPolicy`, `AirFlightRoutePolicy` | Es tuyo o eres administrador. Cada hija sólo declara `ownerId()`. |
+| `OwnedResourcePolicy` (abstracta) | Base de `PrinterPolicy`, `GalleryPolicy`, `HardwareEnergyPolicy`, `AirFlightRoutePolicy` | Es tuyo o eres administrador. Cada hija sólo declara `ownerId()`. |
 | `ApiTokenPolicy` | `ApiToken` | Admin gestiona tokens salvo los de un `SuperAdmin`. |
 
 Si el recurso nuevo es un catálogo o tiene `user_id`, **no escribas una policy
@@ -282,7 +281,7 @@ energético.
 
 Aplicado en: `CurriculumResource`, `KeyboardResource`, `MouseResource`,
 `HardwareDeviceResource`, `SmartPlantPlantResource`, `PrinterResource`,
-`GalleryResource`, `EnergySystemResource`, `HardwareEnergyResource`,
+`GalleryResource`, `HardwareEnergyResource`,
 `AirFlightRouteResource` y —con su propia consulta— `ApiTokenResource`.
 
 ### Widgets, páginas y clusters
@@ -413,7 +412,7 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-13
+> Creado: 2026-08-30 · Última revisión: 2026-09-14
 
 
 ## Imágenes: por qué el uploader no enseña la que ya hay

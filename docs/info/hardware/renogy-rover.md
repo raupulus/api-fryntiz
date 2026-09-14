@@ -77,11 +77,21 @@ ella. Eso es correcto: en una batería la magnitud es el neto.
 
 ## 2. Estadísticas del día
 
-**El Rover lleva sus propios contadores del día.** Cuando los manda, sustituyen
-lo que el servidor calcularía, porque son mejores: el controlador integra
-continuamente y nosotros sólo vemos una muestra cada minuto.
+**El Rover lleva sus propios contadores del día, pero no se ponen a cero a las
+00:00.** Generación y carga de batería vuelven a cero hacia las **05:43 UTC**;
+consumo y descarga, hacia las **19:14 UTC**. Como el servidor corta el día en UTC
+y un `today_*` declarado sustituye al total, mandarlos mezclaba días: el
+13/09/2026 el consumo quedó en 108 Wh, sólo lo gastado desde las 19:14.
 
-| Registro | Qué es | Unidad | Campo del contrato | Elemento |
+**Desde el 2026-09-14 el firmware no manda ningún `today_*`.** Sigue leyendo
+estos registros, pero sólo para restar dos lecturas seguidas y mandar la energía
+del intervalo (`energy_wh` / `energy_ah`); el total del día lo suma el servidor.
+La resta aguanta el paso a cero: si el contador baja, se toma su valor entero.
+La columna de abajo dice a qué campo correspondería cada registro, no lo que se
+envía. El motivo completo está en `docs/info/decisiones-tecnicas.md` §19 del
+repositorio del firmware.
+
+| Registro | Qué es | Unidad | Campo del contrato (no se envía) | Elemento |
 |---|---|---|---|---|
 | `010BH` | Tensión mínima de batería del día | V (×0,1) | `battery.today_voltage_min` | #11 |
 | `010CH` | Tensión máxima de batería del día | V (×0,1) | `battery.today_voltage_max` | #11 |
@@ -98,9 +108,8 @@ continuamente y nosotros sólo vemos una muestra cada minuto.
 kWh, o sea **décimas de vatio-hora**. La conversión la hace el firmware antes de
 subirlo; si algún día se lee el registro desde aquí, hay que aplicarla.
 
-Los máximos que declara el controlador **ensanchan** el resumen del día, nunca
-lo recortan: si nuestra propia lectura supera el máximo declarado, gana la
-nuestra, porque es una medida concreta que existe.
+Los mínimos y máximos del día tampoco se mandan: arrastrarían los de la tarde
+anterior. El resumen del día los saca de las lecturas.
 
 ---
 
@@ -195,4 +204,4 @@ elemento #11 con su signo.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-13
+> Creado: 2026-08-30 · Última revisión: 2026-09-14

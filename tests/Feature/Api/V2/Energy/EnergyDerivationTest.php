@@ -32,6 +32,10 @@ use Tests\Feature\Api\ApiTestCase;
  * | Vatios-hora | `energy_wh` | `A · V · s / 3600` | `P · s / 3600` |
  * | Amperios-hora | `energy_ah` | `A · s / 3600` | `Wh / V` |
  *
+ * Con una excepción: si el aparato declara **una sola** de las dos energías, la
+ * otra sale de ella con la tensión **nominal** del elemento, para que la fila
+ * cuadre con su tensión.
+ *
  * El caso que más duele y el que motivó juntarlo todo: un aparato que mide
  * **sólo potencia** —los hay— registraba `energy_wh` a nulo y su resumen del día
  * sumaba cero, con un 201 y sin un aviso.
@@ -108,6 +112,100 @@ class EnergyDerivationTest extends ApiTestCase
     }
 
     // ── Lo que falta, se calcula de lo que hay ────────────────────────────
+
+    // ── Una sola energía declarada: la otra, a la tensión nominal ─────────
+
+    #[Test]
+    public function declared_watt_hours_alone_give_amp_hours_at_the_nominal_voltage(): void
+    {
+        // El panel del Rover: declara Wh, no Ah. Integrar su corriente a la
+        // tensión real (34 V) daba unos Ah que no cuadraban con 24 V.
+        $this->darDeAlta(nominal: 24.0);
+
+        $this->subir([
+            'voltage' => 34.0, 'amperage' => 1.5, 'energy_wh' => 12.0,
+        ])->assertStatus(201);
+
+        $lectura = $this->lectura();
+
+        $this->assertEqualsWithDelta(12.0, (float) $lectura->energy_wh, 0.0001);
+        $this->assertEqualsWithDelta(0.5, (float) $lectura->energy_ah, 0.0001, 'Ah = 12 Wh ÷ 24 V, no 1,5 A · 600 s');
+    }
+
+    #[Test]
+    public function declared_amp_hours_alone_give_watt_hours_at_the_nominal_voltage(): void
+    {
+        // La batería del Rover: declara Ah de carga, no Wh. La potencia neta
+        // con signo daba unos Wh que no cuadraban con esos Ah.
+        $this->darDeAlta(nominal: 12.0);
+
+        $this->subir([
+            'voltage' => 13.7, 'amperage' => -2.0, 'energy_ah' => 1.0,
+        ])->assertStatus(201);
+
+        $lectura = $this->lectura();
+
+        $this->assertEqualsWithDelta(1.0, (float) $lectura->energy_ah, 0.0001);
+        $this->assertEqualsWithDelta(12.0, (float) $lectura->energy_wh, 0.0001, 'Wh = 1 Ah × 12 V');
+    }
+
+    #[Test]
+    public function without_nominal_the_missing_energy_uses_the_reading_voltage(): void
+    {
+        $this->darDeAlta(nominal: null);
+
+        $this->subir(['voltage' => 10.0, 'energy_wh' => 20.0])->assertStatus(201);
+
+        $this->assertEqualsWithDelta(2.0, (float) $this->lectura()->energy_ah, 0.0001, 'Ah = 20 Wh ÷ 10 V medidos');
+    }
+
+    #[Test]
+    public function a_rover_day_squares_with_the_voltage_of_each_element(): void
+    {
+        // Lo que manda ahora el firmware del Rover: Wh del panel, Ah de carga
+        // de la batería y ningún `today_*`. Cada resumen del día tiene que dar
+        // la tensión nominal de su elemento.
+        $panel = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'hardware_device_monitorized_id' => $this->device->id,
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'sensor_position' => 0,
+            'nominal_voltage' => 24.0,
+            'is_active' => true,
+        ]);
+        $bateria = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'hardware_device_monitorized_id' => $this->device->id,
+            'role' => HardwareEnergy::ROLE_BATTERY,
+            'sensor_position' => 0,
+            'nominal_voltage' => 12.0,
+            'is_active' => true,
+        ]);
+
+        foreach ([[14.0, 1.0], [13.0, 0.0], [48.0, 3.0]] as [$wh, $ah]) {
+            $this->postJson(
+                $this->apiUrl('energy/readings'),
+                [
+                    'hardware_device_id' => $this->device->id,
+                    'duration' => 300,
+                    'energy' => [
+                        'generator' => ['voltage' => 36.7, 'amperage' => 1.68, 'power' => 62.0, 'energy_wh' => $wh],
+                        'battery' => ['voltage' => 13.7, 'amperage' => -1.9, 'power' => -26.0, 'energy_ah' => $ah],
+                    ],
+                ],
+                $this->moduleHeaders($this->user, TokenAbilities::ENERGY_WRITE)
+            )->assertStatus(201);
+        }
+
+        $diaPanel = HardwareEnergyToday::query()->where('hardware_energy_id', $panel->id)->firstOrFail();
+        $diaBateria = HardwareEnergyToday::query()->where('hardware_energy_id', $bateria->id)->firstOrFail();
+
+        $this->assertEqualsWithDelta(75.0, (float) $diaPanel->energy_wh, 0.0001);
+        $this->assertEqualsWithDelta(24.0, (float) $diaPanel->energy_wh / (float) $diaPanel->energy_ah, 0.0001, 'Panel a 24 V');
+
+        $this->assertEqualsWithDelta(4.0, (float) $diaBateria->energy_ah, 0.0001);
+        $this->assertEqualsWithDelta(48.0, (float) $diaBateria->energy_wh, 0.0001, 'Batería a 12 V y sin restar la descarga');
+    }
 
     #[Test]
     public function with_voltage_and_amperage_everything_else_comes_out(): void
