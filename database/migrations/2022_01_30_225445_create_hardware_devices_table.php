@@ -4,33 +4,23 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateHardwareDevicesTable
- *
- * Tabla con los dispositivos de hardware
+ * Dispositivos de hardware: inventario y último estado conocido que reporta el
+ * propio cacharro (temperatura, tensión, CPU, RAM, disco, batería…).
  */
-class CreateHardwareDevicesTable extends Migration
+return new class extends Migration
 {
-    private $tableName = 'hardware_devices';
+    private string $tableName = 'hardware_devices';
 
-    private $tableComment = 'Dispositivos de hardware';
-
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->comment('Dispositivos de hardware');
-            $table->engine = 'InnoDB';
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_unicode_ci';
+
             $table->bigIncrements('id')->comment('Identificador único');
+
             $table->unsignedBigInteger('user_id')
                 ->nullable()
                 ->comment('Usuario dueño del registro.');
@@ -140,41 +130,26 @@ class CreateHardwareDevicesTable extends Migration
             $table->json('extra')
                 ->nullable()
                 ->comment('Métricas de estado adicionales del dispositivo en formato JSON (RAM, procesos, etc.).');
-
-            // Batería del propio dispositivo, con la marca de cuándo se midió:
-            // sin ella no se distingue un dato de ahora de uno de hace semanas.
             $table->decimal('battery_voltage', 8, 3)
                 ->nullable()
                 ->comment('Tensión de la batería del propio dispositivo (V).');
-            $table->unsignedTinyInteger('battery_percentage')
+            $table->decimal('ram', 5, 2)
                 ->nullable()
-                ->comment('Carga de la batería del propio dispositivo (%).');
-            $table->timestamp('battery_read_at')
+                ->comment('Último uso de memoria conocido en porcentaje (0-100).');
+            $table->decimal('battery_nominal_voltage', 8, 3)
                 ->nullable()
-                ->comment('Cuándo se midió. Sin esto no se distingue un dato de ahora de uno de hace semanas.');
+                ->comment('Tensión nominal de diseño de la batería (V), EJ: 12.');
+
+            $table->timestamps();
+            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
 
             // Patrón de consulta: filtrar/agrupar por tipo de ubicación.
             $table->index('location_type');
-
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
-            $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
         });
-
-        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropForeign(['image_id']);
-            $table->dropForeign(['hardware_type_id']);
-            $table->dropForeign(['referred_thing_id']);
-        });
+        Schema::dropIfExists($this->tableName);
     }
-}
+};

@@ -36,7 +36,7 @@ El subsistema de energía se estructura en cuatro tablas principales:
 > ℹ️ **Las tablas antiguas ya no existen.** `hardware_power_generators*`,
 > `hardware_power_loads*` y `hardware_power_generators_solar` se traspasaron a
 > estas tres con el comando `energy:migrate-legacy-data` y se borraron el
-> **2026-09-14** (`2026_09_14_000004_drop_legacy_power_tables`), junto con el
+> **2026-09-14**, junto con el
 > comando y sus migraciones de creación. Sólo quedaron fuera 30 lecturas de
 > pruebas de 2023–2025 sin elemento asignado. La copia de lo que había es el
 > volcado de producción de ese día.

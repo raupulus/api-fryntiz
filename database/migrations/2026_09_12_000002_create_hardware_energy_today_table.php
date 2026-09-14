@@ -7,14 +7,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Tabla unificada de resúmenes diarios de energía.
+ * Resúmenes diarios de energía: una fila por elemento y día (UTC).
  *
- * Unifica `hardware_power_generators_today` y `hardware_power_loads_today`.
- * Almacena exactamente una fila por elemento y día del calendario. La marca de
- * última muestra agregada coincide con `updated_at` (sin columna `read_at`).
- *
- * // TODO: Las tablas legacy se conservan en frío como backup de seguridad
- * // y se eliminarán tras verificar la estabilidad en producción.
+ * `energy_wh_source` y `energy_ah_source` dicen, magnitud a magnitud, si el total
+ * del día lo declaró el aparato (`device`) o lo sumamos de las lecturas
+ * (`derived`). Sin ellas el cierre nocturno hacía `max(declarado, suma)` y
+ * sustituía el contador del aparato en cuanto nuestra suma salía mayor.
  */
 return new class extends Migration
 {
@@ -103,6 +101,13 @@ return new class extends Migration
             $table->smallInteger('fan_max')
                 ->nullable()
                 ->comment('Velocidad/estado máximo del ventilador hoy');
+
+            $table->string('energy_wh_source', 16)
+                ->default('derived')
+                ->comment('device = los vatios-hora del día los declara el aparato | derived = los sumamos de nuestras lecturas.');
+            $table->string('energy_ah_source', 16)
+                ->default('derived')
+                ->comment('device = los amperios-hora del día los declara el aparato | derived = los sumamos de nuestras lecturas.');
 
             $table->timestamps();
 

@@ -26,7 +26,6 @@ revisión.
 | `2019_07_04_132013_create_galleries_table.php` | `galleries` |
 | `2019_07_04_132014_create_gallery_images_table.php` | `gallery_images` |
 | `2021_05_08_202335_create_content_galleries_table.php` | `content_galleries` (pivote) |
-| `2026_07_02_153015_make_galleries_description_nullable.php` | `description` pasa a nullable |
 
 ## Campos
 

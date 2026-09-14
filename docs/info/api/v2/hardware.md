@@ -270,8 +270,7 @@ veces deja el sistema igual (idempotente).
 >
 > Uso de memoria en porcentaje (0-100), igual que `cpu` y `disk`. Antes sólo
 > cabía dentro de `extra`, que es JSON y no se puede ordenar ni graficar.
-> Columna `hardware_devices.ram`, migración
-> `2026_09_06_000001_add_ram_to_hardware_devices_table`.
+> Columna `hardware_devices.ram`.
 
 > ### `battery_voltage` (2026-09-14)
 >
@@ -283,8 +282,7 @@ veces deja el sistema igual (idempotente).
 >
 > Sus antiguos acompañantes `battery_percentage` y `battery_read_at` (D108) se
 > eliminaron: nunca se validaron, ni se mostraron en ningún sitio, ni los
-> cubría ningún test. Migración
-> `2026_09_14_000001_update_hardware_devices_battery_fields_table`.
+> cubría ningún test.
 
 > ### `software_version` (2026-09-14)
 >

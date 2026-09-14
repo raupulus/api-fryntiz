@@ -66,6 +66,11 @@ class CreateKeycounterMouseTable extends Migration
             // Serie temporal: la API filtra por dispositivo y ordena por
             // fecha. Sin este índice cada consulta escanea la tabla entera.
             $table->index(['user_id', 'start_at']);
+
+            // Apoyo de `keycounter:remove_duplicate`: `created_at` primero porque
+            // es el predicado del WHERE; el resto, las columnas del PARTITION BY
+            // en el mismo orden que la consulta.
+            $table->index(['created_at', 'hardware_device_id', 'start_at', 'end_at', 'total_clicks', 'id'], 'keycounter_mouse_dedupe_index');
         });
 
         DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");

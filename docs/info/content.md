@@ -180,8 +180,7 @@ php artisan debug:seed-content --count=10
 - Al consultar un contenido por API v2 (`ContentController::show`) se despacha
   `ProcessContentViewJob` que hace upsert de la vista del día. No se registran
   vistas en `pages()` ni `related()`.
-- La FK `content_daily_views.content_id` tiene `onDelete('cascade')` (migración
-  `2026_05_28_000001_add_cascade_delete_to_content_daily_views`): al hacer
+- La FK `content_daily_views.content_id` tiene `onDelete('cascade')`: al hacer
   `forceDelete` de un contenido se eliminan sus vistas; el soft delete las conserva.
 
 ## Buscador de vídeos de YouTube
@@ -401,8 +400,7 @@ para escribir a mano el `gallery_id`). Implementado por completo:
   `->inverseRelationship('contents')` explícito (evita que Filament adivine
   mal el nombre del método inverso; ver el bug real que motivó esto en
   `RelatedRelationManager` y `ContributorsRelationManager`).
-- Migración `2026_07_02_153015_make_galleries_description_nullable.php`:
-  `galleries.description` era `NOT NULL` sin default desde el origen de la
+- `galleries.description` era `NOT NULL` sin default desde el origen de la
   tabla (2019), lo que impedía crear una galería sin descripción. Como el
   módulo se usa por primera vez ahora, se corrige antes de que produzca datos.
 - **Estilos en línea a propósito** en `gallery-images-preview.blade.php` y en

@@ -101,8 +101,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 > `battery_level`, con el mismo patrón: se oculta si el dispositivo no la
 > reporta. Sus antiguos compañeros `battery_percentage` y `battery_read_at`
 > nunca llegaron a validarse, ni a mostrarse en ningún sitio, ni un test los
-> ejercitaba: se eliminaron sin reemplazo (migración
-> `2026_09_14_000001_update_hardware_devices_battery_fields_table`).
+> ejercitaba: se eliminaron sin reemplazo.
 >
 > `software_version` seguía sin poder subirse por API hasta el 2026-09-14: no
 > estaba ni en `DeviceStatusPayload::rules()` ni en la lista blanca de
@@ -181,7 +180,7 @@ No se guarda histórico: solo se sobrescribe el último estado y se actualiza
 
 > **`ram`** (nuevo, 2026-09-06): uso de memoria en porcentaje (0-100), igual que
 > `cpu` y `disk`. Antes sólo cabía dentro de `extra`, que es JSON y no se puede
-> ordenar ni graficar. Migración `2026_09_06_000001_add_ram_to_hardware_devices_table`.
+> ordenar ni graficar.
 
 > **Nombre canónico del dispositivo:** el identificador del dispositivo es
 > **`hardware_device_id`** en entrada y salida en todos los endpoints de

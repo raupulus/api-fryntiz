@@ -334,8 +334,7 @@ como `HasOneThrough` a través del dispositivo.
 > `meteorology_humidity` pasa de los tres millones— y dejaba la puerta abierta a
 > que las dos copias dijeran cosas distintas.
 >
-> Retirado de las trece tablas en
-> `2026_09_06_000002_drop_user_id_from_sensor_tables`. Comprobado antes sobre los
+> Retirado de las trece tablas el 2026-09-06. Comprobado antes sobre los
 > datos de producción: **cero** filas tenían un `user_id` distinto al del
 > dispositivo, y ninguna consulta del proyecto filtraba por esa columna.
 >

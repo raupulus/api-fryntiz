@@ -4,33 +4,28 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateHardwareComponentsTable
+ * Catálogo de elementos energéticos: cada fila es un papel (`generator`,
+ * `battery` o `load`) que cumple algo dentro de un dispositivo medidor.
  *
- * Tabla asociando componentes concretos a los dispositivos.
+ * `role` es la única fuente de verdad del papel. `sensor_position` es `NOT NULL`
+ * con `0` por defecto **porque lo necesita el índice único**: en PostgreSQL dos
+ * `NULL` no chocan entre sí, y con la columna nullable dos filas idénticas con el
+ * canal vacío pasarían la restricción.
  */
-class CreateHardwareEnergyTable extends Migration
+return new class extends Migration
 {
-    private $tableName = 'hardware_energy';
+    private string $tableName = 'hardware_energy';
 
-    private $tableComment = 'Asocia dispositivos que monitorizan consumo o generación de energía con sus dispositivos monitorizados';
-
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->comment('Asocia dispositivos que monitorizan consumo o generación de energía con sus dispositivos monitorizados');
-            $table->engine = 'InnoDB';
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_unicode_ci';
+
             $table->bigIncrements('id')->comment('Identificador único');
+
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
                 ->comment('Dispositivo que hace de medidor.');
@@ -38,6 +33,7 @@ class CreateHardwareEnergyTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+
             $table->unsignedBigInteger('hardware_device_monitorized_id')
                 ->nullable()
                 ->comment('Dispositivo cuyo consumo o generación se está midiendo.');
@@ -45,34 +41,18 @@ class CreateHardwareEnergyTable extends Migration
                 ->references('id')->on('hardware_devices')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+
             $table->foreignId('energy_source_type_id')
                 ->nullable()
                 ->comment('Tipo de fuente: solar, eólica, red…')
                 ->constrained('energy_source_types')->nullOnDelete();
-            $table->foreignId('energy_system_id')
-                ->nullable()
-                ->comment('Instalación a la que pertenece el elemento.')
-                ->constrained('energy_systems')->nullOnDelete();
-
-            $table->boolean('is_generator')
-                ->default(false)
-                ->nullable()
-                ->comment('true = genera energía; false = la consume. Lo detalla `role`.');
 
             $table->smallInteger('sensor_position')
-                ->nullable()
-                ->comment('Qué sensor del medidor corresponde a este elemento, cuando tiene varios.');
-
-            // ── Instalación energética (fase de energía) ─────────────────────
-            $table->string('name', 255)
-                ->nullable()
-                ->comment('«Panel sur», «Router principal».');
+                ->default(0)
+                ->comment('Qué sensor del medidor corresponde a este elemento. 0 si sólo tiene uno.');
             $table->string('role', 16)
                 ->default('load')
-                ->comment('generator | load | storage.');
-
-            // La tensión nominal es lo que arregla el cálculo de los vatios
-            // cuando la medida no es plausible.
+                ->comment('generator | load | battery.');
             $table->decimal('nominal_voltage', 8, 2)
                 ->nullable()
                 ->comment('Tensión nominal del elemento (V). Se usa si la medida no es plausible.');
@@ -84,43 +64,33 @@ class CreateHardwareEnergyTable extends Migration
                 ->comment('Por encima de esto, la tensión medida se considera errónea.');
             $table->decimal('rated_power_w', 10, 2)
                 ->nullable()
-                ->comment('Potencia nominal (W).');
-            $table->decimal('capacity_mah', 12, 2)
-                ->nullable()
-                ->comment('Capacidad de la batería del elemento (mAh).');
-            $table->decimal('capacity_wh', 12, 2)
-                ->nullable()
-                ->comment('Capacidad de la batería del elemento (Wh).');
+                ->comment('Potencia nominal/pico de diseño de catálogo (W). Para métricas de % de rendimiento en UI y alertas.');
             $table->boolean('is_active')
                 ->default(true)
                 ->comment('Un elemento retirado deja de aceptar lecturas nuevas.');
+            $table->decimal('capacity_ah', 8, 3)
+                ->nullable()
+                ->comment('Capacidad nominal de batería en Amperios-hora (Ah, resolución hasta 1 mAh)');
+            $table->boolean('auto_calculate_history')
+                ->default(true)
+                ->comment('true = el cron nocturno consolida/recalcula históricos; false = respeta contadores nativos de hardware');
+            $table->unsignedInteger('default_interval_seconds')
+                ->default(60)
+                ->comment('Segundos que se suponen entre lecturas cuando la subida no trae `duration`.');
 
-            $table->index(['energy_system_id', 'role']);
-            $table->index(['hardware_device_id', 'sensor_position']);
-            $table->timestamps()->comment('Marcas de tiempo de creación y actualización');
+            $table->timestamps();
             $table->softDeletes()->comment('Marca de tiempo para borrado lógico');
+
+            $table->index(['hardware_device_id', 'sensor_position']);
+            $table->unique(
+                ['hardware_device_id', 'hardware_device_monitorized_id', 'role', 'sensor_position'],
+                'hardware_energy_device_monitorized_role_position_unique',
+            );
         });
-
-        // `role` derivado de is_generator, para cuando la tabla se monta sobre
-        // datos que ya existían. La columna `role` llegó después que
-        // `is_generator` y su migración derivaba una de la otra; al plegarla
-        // aquí quedaba sólo el `default('load')`, así que un generador
-        // heredado se habría quedado marcado como consumo.
-        DB::table($this->tableName)->where('is_generator', true)->update(['role' => 'generator']);
-        DB::table($this->tableName)->where('is_generator', false)->update(['role' => 'load']);
-
-        DB::statement("COMMENT ON TABLE {$this->tableName} IS '{$this->tableComment}'");
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists($this->tableName, function (Blueprint $table) {
-            $table->dropForeign(['hardware_available_component_id']);
-        });
+        Schema::dropIfExists($this->tableName);
     }
-}
+};

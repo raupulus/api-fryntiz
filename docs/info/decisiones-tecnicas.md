@@ -246,22 +246,19 @@ despiste que tuvo `TRUSTED_PROXIES` en su día, y PHPStan lo cazó al escribirlo
 
 *Origen: AR-D03 de la auditoría 2026-09-02.*
 
-### D22 · Los índices de las series temporales van con `CONCURRENTLY`
+### D22 · Los índices de las series temporales van en su migración de creación
 
-La migración `2026_09_02_000001_add_indexes_to_time_series_tables` declara
-`public $withinTransaction = false` y crea los veinte índices con
-`CREATE INDEX CONCURRENTLY IF NOT EXISTS`.
+Cada tabla de serie temporal crea su índice `(hardware_device_id, created_at)`
+junto con la tabla, en su única migración.
 
-**Por qué.** Un `CREATE INDEX` normal bloquea la tabla para escritura mientras
-se construye. Sobre `meteorology_*` eso significa parar la ingesta de los
-cacharros durante el despliegue, y un microcontrolador que recibe un error no
-reintenta indefinidamente: pierde la lectura.
-
-`CONCURRENTLY` no puede ejecutarse dentro de una transacción, y PostgreSQL sí
-soporta DDL transaccional, así que Laravel envuelve la migración por defecto. De
-ahí el `$withinTransaction = false`. El precio es que un fallo a mitad deja los
-índices ya creados; por eso todo va con `IF NOT EXISTS` y la migración se puede
-relanzar sin limpiar nada a mano.
+**Un índice nuevo sobre una tabla con datos va aparte y con `CONCURRENTLY`.** Un
+`CREATE INDEX` normal bloquea la escritura mientras se construye, y sobre
+`meteorology_*` eso para la ingesta de los cacharros: un microcontrolador que
+recibe un error no reintenta indefinidamente, pierde la lectura. `CONCURRENTLY`
+no puede ir dentro de una transacción, así que esa migración lleva
+`public $withinTransaction = false` y `IF NOT EXISTS` para poder relanzarse.
+Cuando ya se ha desplegado, el índice se pasa a la migración de creación de su
+tabla (2026-09-14: una migración por tabla).
 
 **El orden de las columnas no es cosmético.** `(hardware_device_id, created_at)`
 sirve para las tres cosas de la misma consulta: acota por dispositivo, acota el
@@ -564,4 +561,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-09-07
+> Creado: 2026-09-01 · Última revisión: 2026-09-14

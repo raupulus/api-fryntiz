@@ -7,15 +7,19 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Tabla unificada de acumulados totales de energía con soporte de reinicios.
+ * Acumulados de energía de por vida, por sesión.
  *
- * Unifica `hardware_power_generators_historical` y `hardware_power_loads_historical`.
- * Si el odómetro del microcontrolador o controlador comercial se resetea a cero,
- * se abre una nueva sesión (`session_index = session_index + 1`) para preservar
- * íntegramente la serie anterior. Sin columna `read_at`.
+ * Si el odómetro del aparato se reinicia, se abre una sesión nueva
+ * (`session_index + 1`) y la anterior queda intacta. El total del elemento es la
+ * suma de sus sesiones.
  *
- * // TODO: Las tablas legacy se conservan en frío como backup de seguridad
- * // y se eliminarán tras verificar la estabilidad en producción.
+ * - `energy_wh_source` / `energy_ah_source`: por magnitud, si el acumulado lo
+ *   lleva el odómetro del aparato (`device`) o lo sumamos de las lecturas
+ *   (`derived`). Van por separado porque un aparato puede traer odómetro de una
+ *   magnitud y no de la otra (el Renogy Rover no mide los Wh de la batería).
+ * - `energy_wh_device_total` / `energy_ah_device_total`: el último valor que
+ *   reportó el odómetro. El acumulado suma su **avance** y el reinicio se detecta
+ *   comparando el odómetro consigo mismo, no contra nuestro total.
  */
 return new class extends Migration
 {
@@ -112,6 +116,20 @@ return new class extends Migration
             $table->smallInteger('fan_max')
                 ->nullable()
                 ->comment('Velocidad/estado máximo histórico del ventilador');
+
+            $table->string('energy_wh_source', 16)
+                ->default('derived')
+                ->comment('device = los vatios-hora los lleva el odómetro del aparato | derived = los sumamos de nuestras lecturas.');
+            $table->string('energy_ah_source', 16)
+                ->default('derived')
+                ->comment('device = los amperios-hora los lleva el odómetro del aparato | derived = los sumamos de nuestras lecturas.');
+
+            $table->decimal('energy_wh_device_total', 16, 4)
+                ->nullable()
+                ->comment('Último total de vatios-hora que reportó el aparato. Sirve para medir su avance y para saber si se ha reiniciado. NULL = nunca ha mandado odómetro de esta magnitud.');
+            $table->decimal('energy_ah_device_total', 14, 4)
+                ->nullable()
+                ->comment('Último total de amperios-hora que reportó el aparato. Mismo uso que el de vatios-hora.');
 
             $table->timestamps();
 

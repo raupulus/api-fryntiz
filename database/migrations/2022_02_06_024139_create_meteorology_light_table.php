@@ -29,13 +29,6 @@ class CreateMeteorologyLightTable extends Migration
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             $table->bigIncrements('id')->comment('Identificador único');
-            $table->unsignedBigInteger('user_id')
-                ->nullable()
-                ->comment('Usuario dueño del registro.');
-            $table->foreign('user_id')
-                ->references('id')->on('users')
-                ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
             $table->unsignedBigInteger('hardware_device_id')
                 ->nullable()
                 ->comment('Dispositivo del que procede la lectura.');
@@ -74,7 +67,6 @@ class CreateMeteorologyLightTable extends Migration
     public function down()
     {
         Schema::dropIfExists($this->tableName, function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
             $table->dropForeign(['hardware_device_id']);
         });
     }
