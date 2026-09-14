@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Filament;
 
 use App\Enums\UserRoleEnum;
-use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\EditAirFlightAirPlane;
+use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\ListAirFlightAirPlanes;
 use App\Filament\Admin\Resources\KeyCounter\Keyboards\Pages\ListKeyboards;
 use App\Filament\Admin\Resources\KeyCounter\Mice\Pages\ListMice;
 use App\Models\AirFlight\AirFlightAirPlane;
@@ -80,13 +80,18 @@ class HardwareDeviceSelectOptionsTest extends TestCase
     }
 
     #[Test]
-    public function airplane_edit_form_loads_with_a_hardware_device_without_a_friendly_name(): void
+    public function airplane_view_action_loads_with_a_hardware_device_without_a_friendly_name(): void
     {
+        // Los aviones son de solo lectura (los sube la API): ya no hay
+        // página de edición, pero la acción "Ver" reutiliza el mismo
+        // `form()` deshabilitado, así que el fallo original reaparecería
+        // igual si se pierde el fix.
         HardwareDevice::create(['name' => null, 'name_friendly' => null]);
         $plane = AirFlightAirPlane::create(['icao' => 'A1B2C3']);
 
         Livewire::actingAs($this->admin())
-            ->test(EditAirFlightAirPlane::class, ['record' => $plane->getKey()])
+            ->test(ListAirFlightAirPlanes::class)
+            ->mountTableAction('view', $plane)
             ->assertOk();
     }
 }

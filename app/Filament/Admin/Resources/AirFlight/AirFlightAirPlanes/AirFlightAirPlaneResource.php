@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes;
 
 use App\Filament\Admin\Clusters\AirFlight;
-use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\CreateAirFlightAirPlane;
-use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\EditAirFlightAirPlane;
 use App\Filament\Admin\Resources\AirFlight\AirFlightAirPlanes\Pages\ListAirFlightAirPlanes;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\Hardware\HardwareDevice;
@@ -14,7 +12,6 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -28,6 +25,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class AirFlightAirPlaneResource extends Resource
 {
@@ -44,6 +42,20 @@ class AirFlightAirPlaneResource extends Resource
     protected static ?string $pluralModelLabel = 'Aviones';
 
     protected static ?string $recordTitleAttribute = 'icao';
+
+    /**
+     * Los aviones los crea y actualiza la API a partir de lo que capta el
+     * hardware. El panel sólo los enseña.
+     */
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -80,7 +92,7 @@ class AirFlightAirPlaneResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('flag')->label('🇽')->square(),
+                ImageColumn::make('url_flag')->label('🇽')->square(),
                 TextColumn::make('icao')->searchable()->sortable()->copyable()->label('ICAO'),
                 TextColumn::make('country')->toggleable()->label('País'),
                 TextColumn::make('category')->badge()->label('Cat.'),
@@ -100,7 +112,6 @@ class AirFlightAirPlaneResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
@@ -121,8 +132,6 @@ class AirFlightAirPlaneResource extends Resource
     {
         return [
             'index' => ListAirFlightAirPlanes::route('/'),
-            'create' => CreateAirFlightAirPlane::route('/create'),
-            'edit' => EditAirFlightAirPlane::route('/{record}/edit'),
         ];
     }
 }

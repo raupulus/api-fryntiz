@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\AirFlight\AirFlightRoutes;
 
 use App\Filament\Admin\Clusters\AirFlight;
-use App\Filament\Admin\Resources\AirFlight\AirFlightRoutes\Pages\CreateAirFlightRoute;
-use App\Filament\Admin\Resources\AirFlight\AirFlightRoutes\Pages\EditAirFlightRoute;
 use App\Filament\Admin\Resources\AirFlight\AirFlightRoutes\Pages\ListAirFlightRoutes;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\AirFlight\AirFlightRoute;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,6 +20,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class AirFlightRouteResource extends Resource
 {
@@ -38,6 +37,20 @@ class AirFlightRouteResource extends Resource
     protected static ?string $modelLabel = 'Ruta de vuelo';
 
     protected static ?string $pluralModelLabel = 'Rutas de vuelo';
+
+    /**
+     * Las rutas las sube la API a partir de lo que capta el hardware. El
+     * panel sólo las enseña.
+     */
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -152,7 +165,7 @@ class AirFlightRouteResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -172,8 +185,6 @@ class AirFlightRouteResource extends Resource
     {
         return [
             'index' => ListAirFlightRoutes::route('/'),
-            'create' => CreateAirFlightRoute::route('/create'),
-            'edit' => EditAirFlightRoute::route('/{record}/edit'),
         ];
     }
 }
