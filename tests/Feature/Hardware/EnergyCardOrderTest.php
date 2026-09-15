@@ -9,6 +9,7 @@ use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
+use App\Models\Hardware\HardwareType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -24,9 +25,29 @@ class EnergyCardOrderTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Un aparato de la instalación solar.
+     *
+     * El tipo importa: los totales de la cabecera son los del sistema
+     * fotovoltaico y sólo suman los aparatos de este tipo.
+     */
     private function device(string $name): HardwareDevice
     {
-        return HardwareDevice::create(['name' => $name]);
+        return HardwareDevice::create([
+            'name' => $name,
+            'hardware_type_id' => HardwareType::firstOrCreate(['slug' => HardwareType::SOLAR_CONTROLLER_SLUG], ['name' => 'Controlador Solar'])->id,
+        ]);
+    }
+
+    /**
+     * Un aparato enchufado a la red de casa, que mide su propio consumo.
+     */
+    private function mainsDevice(string $name): HardwareDevice
+    {
+        return HardwareDevice::create([
+            'name' => $name,
+            'hardware_type_id' => HardwareType::firstOrCreate(['slug' => 'micro-pc'], ['name' => 'Micro PC'])->id,
+        ]);
     }
 
     private function generatorEnergy(HardwareDevice $device): HardwareEnergy
@@ -384,5 +405,49 @@ class EnergyCardOrderTest extends TestCase
 
         // Y las tres tensiones, cada una la suya.
         $this->assertSame('24.6 / 13.4 / 12.2', $tarjetas['Panel / Bat. / Consumo']['value']);
+    }
+
+    /**
+     * Lo de arriba es la instalación solar; lo de abajo, cada aparato.
+     *
+     * La Raspberry Pi 5 mide su propio consumo y el de su Hailo-8, pero está
+     * enchufada a la red de casa. Sus vatios entraban en los totales de
+     * cabecera como si fueran de la instalación, y su tensión se promediaba con
+     * la del Rover: la tarjeta «Panel / Bat. / Consumo» acabó enseñando 7 V de
+     * consumo, que es la media de 12,5, 5,1 y 3,3 y no la tensión de ningún
+     * sitio.
+     */
+    #[Test]
+    public function the_totals_at_the_top_only_count_the_solar_installation(): void
+    {
+        $solar = $this->device('Controlador solar');
+        $this->consumingNow($solar, 12);
+        $this->consumedToday($solar, 100);
+        $this->consumedAllTime($solar, 1_000);
+
+        $enchufada = $this->mainsDevice('Raspberry Pi 5');
+        $this->consumedToday($enchufada, 50);
+        $this->consumedAllTime($enchufada, 2_000);
+
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $enchufada->id,
+            'hardware_energy_id' => $this->loadEnergy($enchufada)->id,
+            'voltage' => 5.0, 'amperage' => 1.0, 'power' => 5,
+            'created_at' => now()->subMinutes(5),
+        ]);
+
+        $response = $this->get(route('hardware.energy.index'))->assertOk();
+        $load = $response->viewData('load');
+
+        $this->assertSame(12.0, (float) $load->current, 'Los 5 W de la red no son de la instalación.');
+        $this->assertSame(100.0, (float) $load->today);
+        $this->assertSame('1.0', $load->historical);
+
+        $tarjetas = collect($response->viewData('currentStats'))->keyBy('title');
+        $this->assertStringEndsWith('/ 12', $tarjetas['Panel / Bat. / Consumo']['value'], 'La tensión de consumo es la del bus solar, no una media con los 5 V.');
+
+        // Y sigue teniendo su tarjeta abajo, que para eso mide.
+        $this->assertContains($enchufada->id, $response->viewData('hardwareItems')->pluck('id')->all());
+        $this->assertSame(50.0, $response->viewData('devicesStats')[$enchufada->id]->consumed_today);
     }
 }

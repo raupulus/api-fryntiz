@@ -574,6 +574,23 @@ La plataforma expone una interfaz web pública para la monitorización en tiempo
 - **Vista:** `resources/views/hardware/energy/index.blade.php`.
 
 ### 8.1. Métricas Agregadas
+
+**Todo lo que va por encima de «Dispositivos» es la instalación solar.** Los
+agregados de cabecera —ahora mismo, hoy e histórico— sólo suman los aparatos
+cuyo tipo es `controlador-solar`
+(`HardwareType::SOLAR_CONTROLLER_SLUG`); las tarjetas de «Dispositivos», que son
+de cada aparato, siguen enseñándolos todos.
+
+El criterio va por tipo de aparato porque es lo que separa la instalación del
+resto: la Raspberry Pi 5 mide su propio consumo y el de su Hailo-8, pero está
+enchufada a la red de casa. Sumar sus vatios a los del Rover convertía el total
+en otra cosa, y promediar su tensión con la del bus solar daba una tarjeta
+«Panel / Bat. / Consumo» que enseñaba **7 V** de consumo: la media de 12,5, 5,1
+y 3,3, que no es la tensión de ningún sitio.
+
+Un aparato solar **sin tipo asignado** desaparece de estos totales, así que el
+tipo no es decorativo: es lo que lo mete en la instalación.
+
 La interfaz presenta tres bloques de tarjetas analíticas agregadas:
 1. **Ahora Mismo:** Potencia de generación actual (W), potencia de consumo actual (W), balance neto instantáneo (W y A), las **tres** tensiones de la instalación (panel / batería / consumo, que son distintas), carga de la batería (%), intensidad solar (%) y temperatura máxima registrada (°C).
 
@@ -758,7 +775,7 @@ haga ruido. Qué prueba cada archivo:
 | Archivo | Qué sujeta |
 |---|---|
 | `Hardware/EnergyHistoricalReadingTest.php` | Que el panel público y el widget de administración lean el histórico con el mismo criterio, y que la batería salga del rol `battery` |
-| `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy` y **el escalado de los amperios a la tensión de referencia** |
+| `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy`, **el escalado de los amperios a la tensión de referencia** y que los totales de cabecera cuenten sólo los aparatos de la instalación solar |
 | `Hardware/EnergyDeviceCardTest.php` | Sin generador: las filas de "generando" no salen y el resumen rápido pasa a CPU/temperatura/batería/RAM propios. Decimales a máximo dos sin forzar ceros. Varios consumos del mismo monitor, cada uno con su nombre y canal; con uno solo, sin cabecera |
 | `Unit/Support/FiguresTest.php` | `Figures::rounded()`: hasta N decimales sin forzar ceros, y que una cadena compuesta (no numérica) se devuelva tal cual |
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
@@ -774,4 +791,4 @@ haga ruido. Qué prueba cada archivo:
 
 ---
 
-> Creado: 2026-09-06 · Última revisión: 2026-09-14
+> Creado: 2026-09-06 · Última revisión: 2026-09-15

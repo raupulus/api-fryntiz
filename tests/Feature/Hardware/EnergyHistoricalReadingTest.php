@@ -10,6 +10,7 @@ use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
+use App\Models\Hardware\HardwareType;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\RolesTableSeeder;
@@ -51,7 +52,12 @@ class EnergyHistoricalReadingTest extends TestCase
     {
         parent::setUp();
 
-        $this->device = HardwareDevice::create(['name' => 'Controlador solar']);
+        // El tipo es lo que mete al aparato en los totales de la instalación
+        // solar del panel público. Sin él sería un consumo suelto más.
+        $this->device = HardwareDevice::create([
+            'name' => 'Controlador solar',
+            'hardware_type_id' => HardwareType::create(['name' => 'Controlador Solar'])->id,
+        ]);
 
         $this->generator = HardwareEnergy::create([
             'hardware_device_id' => $this->device->id,

@@ -10,6 +10,7 @@ use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
+use App\Models\Hardware\HardwareType;
 use App\Support\Format\Figures;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -44,6 +45,10 @@ class EnergyController extends Controller
         // Dispositivos que tienen elementos energéticos configurados o telemetría
         $hardwareItems = HardwareDevice::with([
             'image.fileType',
+            // Para separar la instalación solar del resto de cacharros. Sin el
+            // eager load sería una consulta por fila, y con el lazy loading
+            // desactivado, una excepción.
+            'type',
             // Para la tarjeta: saber si tiene generador, y el nombre/canal de
             // cada consumo. Sin este eager load sería una consulta por fila
             // (el proyecto tiene el lazy loading desactivado, así que además
@@ -60,6 +65,21 @@ class EnergyController extends Controller
             ->get();
 
         $hardwareIds = $hardwareItems->pluck('id')->toArray();
+
+        // **Todo lo que va por encima de «Dispositivos» es la instalación
+        // solar.**
+        //
+        // Las tarjetas de abajo son de cada aparato y ahí sí entra todo, pero
+        // los totales de arriba describen el sistema fotovoltaico: sumarles un
+        // consumo enchufado a la red de casa no sólo infla el total, es que lo
+        // convierte en otra cosa. La Raspberry Pi 5 mide su propio consumo y el
+        // de su Hailo-8 a 5 V y 3,3 V de la red; promediar su tensión con la del
+        // Rover daba una tarjeta «Panel / Bat. / Consumo» con 7 V de consumo,
+        // que no es la tensión de ningún sitio —(12,5 + 5,1 + 3,3) / 3—.
+        $solarIds = $hardwareItems
+            ->filter(static fn (HardwareDevice $hw): bool => $hw->type?->slug === HardwareType::SOLAR_CONTROLLER_SLUG)
+            ->pluck('id')
+            ->all();
 
         // Lecturas más recientes de la última hora por canal/rol de energía
         $generatorCurrent = HardwareEnergyReading::query()
@@ -127,15 +147,29 @@ class EnergyController extends Controller
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_BATTERY))
             ->get();
 
-        $batteryPercentageAvg = $batteryCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
-            ?? $generatorCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
-            ?? $loadCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
+        // Las consultas de arriba traen todos los dispositivos porque las
+        // tarjetas de «Dispositivos» los necesitan enteros. Los agregados de
+        // cabecera trabajan sobre estas, que son sólo las de la instalación
+        // solar. Se filtra en memoria: los datos ya están traídos y así no hay
+        // una segunda tanda de consultas.
+        $solarGeneratorCurrent = $generatorCurrent->whereIn('hardware_device_id', $solarIds);
+        $solarLoadCurrent = $loadCurrent->whereIn('hardware_device_id', $solarIds);
+        $solarBatteryCurrent = $batteryCurrent->whereIn('hardware_device_id', $solarIds);
+        $solarGeneratorToday = $generatorToday->whereIn('hardware_device_id', $solarIds);
+        $solarLoadToday = $loadToday->whereIn('hardware_device_id', $solarIds);
+        $solarGeneratorHistorical = $generatorHistorical->whereIn('hardware_device_id', $solarIds);
+        $solarLoadHistorical = $loadHistorical->whereIn('hardware_device_id', $solarIds);
+        $solarBatteryHistorical = $batteryHistorical->whereIn('hardware_device_id', $solarIds);
+
+        $batteryPercentageAvg = $solarBatteryCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
+            ?? $solarGeneratorCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
+            ?? $solarLoadCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
             ?? 0;
 
         $batteryFullChargesSum = (float) (
-            $batteryHistorical->sum('number_battery_full_charges') > 0
-                ? $batteryHistorical->sum('number_battery_full_charges')
-                : $generatorHistorical->sum('number_battery_full_charges')
+            $solarBatteryHistorical->sum('number_battery_full_charges') > 0
+                ? $solarBatteryHistorical->sum('number_battery_full_charges')
+                : $solarGeneratorHistorical->sum('number_battery_full_charges')
         );
 
         // **La tensión de referencia de la instalación.**
@@ -144,33 +178,33 @@ class EnergyController extends Controller
         // panel del Renogy genera a 24 V y el consumo va a 12 V, así que generar
         // 5 A no compensa consumir 5 A —son 10 A referidos a 12 V frente a 5—.
         // Todo lo que se pinte en amperios se lleva antes a esta tensión.
-        $referenceVoltage = $this->referenceVoltage($hardwareIds);
+        $referenceVoltage = $this->referenceVoltage($solarIds);
 
         // Objeto con los cálculos agregados de producción (generador)
         $generator = (object) [
-            'current' => round((float) $generatorCurrent->sum('power')),
-            'current_amperage' => round($this->amperageAtReference($generatorCurrent, $referenceVoltage), 1),
-            'current_voltage' => Figures::rounded($generatorCurrent->avg('voltage') ?? 0, 1),
-            'today' => round((float) $generatorToday->sum('energy_wh')),
-            'today_amperage' => round((float) $generatorToday->sum('energy_wh') / $referenceVoltage),
-            'historical' => number_format((float) $generatorHistorical->sum('energy_wh') / 1000, 1),
-            'days_operating' => (int) ($generatorHistorical->max('days_operating') ?? 0),
+            'current' => round((float) $solarGeneratorCurrent->sum('power')),
+            'current_amperage' => round($this->amperageAtReference($solarGeneratorCurrent, $referenceVoltage), 1),
+            'current_voltage' => Figures::rounded($solarGeneratorCurrent->avg('voltage') ?? 0, 1),
+            'today' => round((float) $solarGeneratorToday->sum('energy_wh')),
+            'today_amperage' => round((float) $solarGeneratorToday->sum('energy_wh') / $referenceVoltage),
+            'historical' => number_format((float) $solarGeneratorHistorical->sum('energy_wh') / 1000, 1),
+            'days_operating' => (int) ($solarGeneratorHistorical->max('days_operating') ?? 0),
             'battery_full_charge' => number_format($batteryFullChargesSum),
             'battery_percentage' => number_format((float) $batteryPercentageAvg),
-            'max_light' => number_format((float) ($generatorCurrent->max('light_brightness') ?? 0)),
-            'max_temp' => number_format((float) ($generatorCurrent->max('temperature') ?? 0), 1),
+            'max_light' => number_format((float) ($solarGeneratorCurrent->max('light_brightness') ?? 0)),
+            'max_temp' => number_format((float) ($solarGeneratorCurrent->max('temperature') ?? 0), 1),
         ];
 
         // Objeto con los cálculos agregados de consumo (carga)
         $load = (object) [
-            'current' => round((float) $loadCurrent->sum('power')),
-            'current_amperage' => number_format($this->amperageAtReference($loadCurrent, $referenceVoltage), 1),
-            'current_voltage' => Figures::rounded($loadCurrent->avg('voltage') ?? 0, 1),
-            'today' => round((float) $loadToday->sum('energy_wh')),
-            'today_amperage' => round((float) $loadToday->sum('energy_wh') / $referenceVoltage),
-            'historical' => number_format((float) $loadHistorical->sum('energy_wh') / 1000, 1),
-            'battery_percentage' => number_format((float) ($loadCurrent->whereNotNull('battery_percentage')->avg('battery_percentage') ?? 0)),
-            'max_temp' => number_format((float) ($loadCurrent->max('temperature') ?? 0), 1),
+            'current' => round((float) $solarLoadCurrent->sum('power')),
+            'current_amperage' => number_format($this->amperageAtReference($solarLoadCurrent, $referenceVoltage), 1),
+            'current_voltage' => Figures::rounded($solarLoadCurrent->avg('voltage') ?? 0, 1),
+            'today' => round((float) $solarLoadToday->sum('energy_wh')),
+            'today_amperage' => round((float) $solarLoadToday->sum('energy_wh') / $referenceVoltage),
+            'historical' => number_format((float) $solarLoadHistorical->sum('energy_wh') / 1000, 1),
+            'battery_percentage' => number_format((float) ($solarLoadCurrent->whereNotNull('battery_percentage')->avg('battery_percentage') ?? 0)),
+            'max_temp' => number_format((float) ($solarLoadCurrent->max('temperature') ?? 0), 1),
         ];
 
         // Objeto con lo que dice el elemento batería
@@ -180,8 +214,8 @@ class EnergyController extends Controller
         // replicadas del esquema viejo. Ahora es el elemento #11 y tiene lo suyo.
         $battery = (object) [
             'current_voltage' => Figures::rounded(
-                $batteryCurrent->whereNotNull('voltage')->avg('voltage')
-                    ?? $loadCurrent->whereNotNull('voltage')->avg('voltage')
+                $solarBatteryCurrent->whereNotNull('voltage')->avg('voltage')
+                    ?? $solarLoadCurrent->whereNotNull('voltage')->avg('voltage')
                     ?? 0,
                 1
             ),
