@@ -13,6 +13,6 @@ no versionada) y de `docs/info/` (documentación técnica de lo que existe).
 | [`content-conteo-palabras-y-tiempo-lectura.md`](content-conteo-palabras-y-tiempo-lectura.md) | Guardar conteo de caracteres y/o palabras por página y exponer tiempo estimado de lectura en la API de Content | Sin fecha; no bloquea el despliegue |
 | [`about-page-cms.md`](about-page-cms.md) | Plataforma de contenidos propia del backend para dinamizar `/about` (y otras páginas estáticas del frontend) sin desplegar código | Sin fecha; no bloquea el despliegue |
 | [`hardware-vista-dispositivos.md`](hardware-vista-dispositivos.md) | Falta la vista pública de dispositivos hardware: controlador vacío, vistas en blanco y sin ruta | Sin fecha; no bloquea el despliegue |
-| [`gdacs-api.md`](gdacs-api.md) | Integrar la API de GDACS (alertas globales de desastres); valoración frente a USGS/NASA EONET/ReliefWeb | Sin decidir si se implementa |
+| [`gdacs-api.md`](gdacs-api.md) | Referencia de la API de GDACS (alertas globales de desastres); valoración frente a USGS/NASA EONET/ReliefWeb | **Implementado 2026-09-15** — ver [`docs/info/apis/gdacs.md`](../info/apis/gdacs.md) |
 
 > Creado: 2026-08-30 · Última revisión: 2026-09-15
