@@ -83,6 +83,10 @@ class WeatherStationResource extends JsonResource
                 // qué periodo está hablando (C3).
                 'window_minutes' => (int) ($data['lightning']['window_minutes'] ?? 60),
                 'count_in_window' => (int) ($data['lightning']['count_in_window'] ?? 0),
+                // Fijos aparte de la ventana configurable, para que la
+                // pestaña de rayos del widget siempre pueda mostrar los dos.
+                'count_last_hour' => (int) ($data['lightning']['count_last_hour'] ?? 0),
+                'count_last_10_minutes' => (int) ($data['lightning']['count_last_10_minutes'] ?? 0),
                 'distance' => $this->toFloat($data['lightning']['distance']),
                 'energy' => $this->toInt($data['lightning']['energy']),
             ],

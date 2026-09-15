@@ -115,14 +115,21 @@ class WeatherStationService
         $lightningWindowMinutes = (int) config('weather_station.lightning_window_minutes', 60);
 
         // # El recuento de rayos de la ventana, agrupado en una sola consulta.
-        $lightningCounts = Lightning::query()
-            ->selectRaw('hardware_device_id, COUNT(*) AS total')
-            ->where('created_at', '>=', now()->subMinutes($lightningWindowMinutes))
-            ->whereIn('hardware_device_id', $stationIds)
-            ->groupBy('hardware_device_id')
-            ->pluck('total', 'hardware_device_id');
+        $lightningCounts = $this->lightningCountsByStation($stationIds, $lightningWindowMinutes);
 
-        return $stations->map(function (HardwareDevice $station) use ($latest, $lightningCounts, $lightningWindowMinutes): array {
+        // # Los mismos dos fijos (última hora, últimos 10 minutos) que se
+        // muestran siempre en la pestaña de rayos, sea cual sea la ventana
+        // configurada.
+        $lightningCountsHour = $this->lightningCountsByStation($stationIds, 60);
+        $lightningCountsTenMinutes = $this->lightningCountsByStation($stationIds, 10);
+
+        return $stations->map(function (HardwareDevice $station) use (
+            $latest,
+            $lightningCounts,
+            $lightningWindowMinutes,
+            $lightningCountsHour,
+            $lightningCountsTenMinutes
+        ): array {
             $id = $station->getKey();
 
             $readings = [];
@@ -135,9 +142,28 @@ class WeatherStationService
                 $station,
                 $readings,
                 (int) ($lightningCounts[$id] ?? 0),
-                $lightningWindowMinutes
+                $lightningWindowMinutes,
+                (int) ($lightningCountsHour[$id] ?? 0),
+                (int) ($lightningCountsTenMinutes[$id] ?? 0),
             );
         })->all();
+    }
+
+    /**
+     * Recuento de rayos por estación dentro de una ventana, en una sola consulta.
+     *
+     * @param  array<int, int|string|null>  $stationIds
+     * @return array<int|string, int>
+     */
+    private function lightningCountsByStation(array $stationIds, int $windowMinutes): array
+    {
+        return Lightning::query()
+            ->selectRaw('hardware_device_id, COUNT(*) AS total')
+            ->where('created_at', '>=', now()->subMinutes($windowMinutes))
+            ->whereIn('hardware_device_id', $stationIds)
+            ->groupBy('hardware_device_id')
+            ->pluck('total', 'hardware_device_id')
+            ->all();
     }
 
     /**
@@ -214,23 +240,58 @@ class WeatherStationService
         $readings = [];
 
         foreach (self::SENSORS as $sensor => $modelClass) {
-            $readings[$sensor] = $this->latestAmong(
-                $modelClass,
-                $sensor === 'pressure' ? $pressureIds : $ids
-            );
+            if ($sensor === 'pressure') {
+                $readings[$sensor] = $this->latestAmong($modelClass, $pressureIds);
+
+                continue;
+            }
+
+            $readings[$sensor] = $this->latestAmong($modelClass, $ids);
+
+            // La calidad de aire (TVOC/CO2-ECO2) se monitoriza más fácil desde
+            // dentro que a la interperie, así que si la zona filtrada por
+            // exterior no tiene dato de ese sensor se cae al último de
+            // interior de la misma zona. A diferencia de la presión, aquí SÍ
+            // manda el exterior cuando lo hay: el aire de dentro no es "el
+            // mismo" que el de fuera, solo sustituye cuando no hay nada.
+            if ($readings[$sensor] === null
+                && $locationType !== null
+                && in_array($sensor, ['airQuality', 'tvoc', 'eco2'], true)
+            ) {
+                $readings[$sensor] = $this->latestAmong($modelClass, $pressureIds);
+            }
         }
 
         $lightningWindowMinutes = (int) config('weather_station.lightning_window_minutes', 60);
 
-        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($lightningWindowMinutes))
-            ->whereIn('hardware_device_id', $ids)
-            ->count();
+        $lightningCount = $this->lightningCountInZone($ids, $lightningWindowMinutes);
+        $lightningCountHour = $this->lightningCountInZone($ids, 60);
+        $lightningCountTenMinutes = $this->lightningCountInZone($ids, 10);
 
         // La estación de referencia para nombre y ubicación es la que trae el
         // dato más reciente de todos: es la que está viva ahora mismo.
         $reference = $this->freshestStation($stations, $readings) ?? $stations->first();
 
-        return $this->buildReadings($reference, $readings, $lightningCount, $lightningWindowMinutes);
+        return $this->buildReadings(
+            $reference,
+            $readings,
+            $lightningCount,
+            $lightningWindowMinutes,
+            $lightningCountHour,
+            $lightningCountTenMinutes,
+        );
+    }
+
+    /**
+     * Recuento de rayos de un conjunto de estaciones dentro de una ventana.
+     *
+     * @param  list<int>  $stationIds
+     */
+    private function lightningCountInZone(array $stationIds, int $windowMinutes): int
+    {
+        return Lightning::where('created_at', '>=', now()->subMinutes($windowMinutes))
+            ->whereIn('hardware_device_id', $stationIds)
+            ->count();
     }
 
     /**
@@ -289,11 +350,18 @@ class WeatherStationService
         // defecto una hora, parametrizable.
         $lightningWindowMinutes = (int) config('weather_station.lightning_window_minutes', 60);
 
-        $lightningCount = Lightning::where('created_at', '>=', now()->subMinutes($lightningWindowMinutes))
-            ->where('hardware_device_id', $stationId)
-            ->count();
+        $lightningCount = $this->lightningCountInZone([$stationId], $lightningWindowMinutes);
+        $lightningCountHour = $this->lightningCountInZone([$stationId], 60);
+        $lightningCountTenMinutes = $this->lightningCountInZone([$stationId], 10);
 
-        return $this->buildReadings($station, $readings, $lightningCount, $lightningWindowMinutes);
+        return $this->buildReadings(
+            $station,
+            $readings,
+            $lightningCount,
+            $lightningWindowMinutes,
+            $lightningCountHour,
+            $lightningCountTenMinutes,
+        );
     }
 
     /**
@@ -306,8 +374,14 @@ class WeatherStationService
      * @param  array<string, mixed>  $readings  Último registro de cada sensor, o null.
      * @return array<string, mixed>
      */
-    private function buildReadings(HardwareDevice $station, array $readings, int $lightningCount, int $lightningWindowMinutes): array
-    {
+    private function buildReadings(
+        HardwareDevice $station,
+        array $readings,
+        int $lightningCount,
+        int $lightningWindowMinutes,
+        int $lightningCountHour = 0,
+        int $lightningCountTenMinutes = 0,
+    ): array {
         $now = now();
         $hour = (int) $now->format('H');
 
@@ -360,6 +434,10 @@ class WeatherStationService
                 'last_at' => $lastLightning?->created_at,
                 'window_minutes' => $lightningWindowMinutes,
                 'count_in_window' => $lightningCount,
+                // Fijos, sea cual sea la ventana configurada: la pestaña de
+                // rayos del widget siempre enseña estos dos periodos.
+                'count_last_hour' => $lightningCountHour,
+                'count_last_10_minutes' => $lightningCountTenMinutes,
                 'distance' => $lastLightning?->distance,
                 'energy' => $lastLightning?->energy,
             ],

@@ -183,6 +183,8 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
         "last_at": "2026-08-29T18:20:11.000000Z",
         "window_minutes": 60,
         "count_in_window": 0,
+        "count_last_hour": 0,
+        "count_last_10_minutes": 0,
         "distance": 12.4,
         "energy": 3200
       }
@@ -195,6 +197,12 @@ eso son 8 claves agregadas y no 11). No lo confundas con el catálogo de arriba.
   no hay ninguna lectura guardada todavía. `direction_grades` es entero
   (grados 0–360), `wind.average/min/max` van en km/h (convertidos desde el
   m/s que se almacena). Todos los decimales están redondeados a 2.
+
+  `count_in_window` respeta la ventana configurable (`window_minutes`,
+  `weather_station.lightning_window_minutes`). `count_last_hour` y
+  `count_last_10_minutes` son fijos, siempre última hora y últimos 10
+  minutos, para que un cliente pueda mostrar ambos periodos sin depender de
+  la configuración del servidor.
 
 - **Errores**: ninguno propio; con `zone` sin coincidencias responde `200`
   con `data: []`.
@@ -239,8 +247,15 @@ Tres reglas del agregado que conviene tener claras:
 1. **La presión ignora `{locationType}`**: sale de cualquier estación de la zona,
    interior incluida. Un barómetro mide lo mismo dentro que fuera y a la
    interperie se estropea antes, así que suele vivir en un cacharro de interior.
-2. **Los rayos se cuentan en toda la zona**, no en un dispositivo.
-3. La estación que aparece como referencia (`name`, `location_label`) es la que
+2. **La calidad de aire (`air_quality`, `tvoc`, `eco2`) tiene un fallback a
+   interior**, distinto del de la presión: si `{locationType}=outdoor` y la
+   zona no tiene dato de exterior para ese sensor, se sirve el último de
+   interior de la misma zona. Pero si SÍ hay dato de exterior, ese es el que
+   manda, aunque el de interior sea más reciente — a diferencia de la presión,
+   el aire de dentro no es "el mismo" que el de fuera, solo sustituye cuando
+   no hay nada.
+3. **Los rayos se cuentan en toda la zona**, no en un dispositivo.
+4. La estación que aparece como referencia (`name`, `location_label`) es la que
    trae el dato más reciente de todas: la que está viva ahora mismo.
 
 Zona por defecto del widget: `weather_station.main_zone` (variable de entorno

@@ -216,7 +216,15 @@ estaba en la base y no se miraba.
   interior incluida, se pase el valor que se pase. Un barómetro mide lo mismo
   dentro que fuera y a la interperie se estropea antes, así que suele vivir en un
   cacharro de interior.
-- Los **rayos** se cuentan en toda la zona, no en un dispositivo.
+- **La calidad de aire (`air_quality`, `tvoc`, `eco2`) hace fallback a interior**
+  cuando la zona filtrada por exterior no tiene dato de ese sensor: se sirve el
+  último de interior de la misma zona. A diferencia de la presión, aquí SÍ manda
+  el exterior si lo hay (aunque el de interior sea más reciente); solo sustituye
+  cuando no hay ningún dato de fuera. Se monitorizan más fácil desde dentro, pero
+  el aire de dentro no es "el mismo" que el de fuera.
+- Los **rayos** se cuentan en toda la zona, no en un dispositivo. Además de la
+  ventana configurable (`count_in_window`), siempre se devuelven dos fijos:
+  `count_last_hour` y `count_last_10_minutes`.
 - La estación que sale como referencia (`name`, `location_label`) es la que trae
   el dato más reciente de todas: la que está viva ahora mismo.
 - **404** si la zona no tiene estaciones.
@@ -270,9 +278,15 @@ filtros, orden, paginación e histórico a cambio de un token.
   `weatherstation/widget/zone/{zone}[/{locationType}]`, o al de estación si no hay
   zona. **Hasta el 2026-09-06 llamaba a `api/v2/weather-stations`**, lo que
   obligaba a dejar esa ruta de API abierta a cualquiera.
-- **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar
+- **Secciones:** General, Viento, TVOC/Calidad del Aire, UV/Radiación Solar, Rayos.
+  La de Rayos es siempre visible (no depende de que haya habido alguno) y muestra
+  a la vez `count_last_hour` y `count_last_10_minutes`.
+- **Viento:** además de la media/mín/máx, si la estación reporta dirección
+  (`wind.direction`/`direction_grades`) se pinta un icono de flecha rotado por
+  grados con la etiqueta cardinal (`N`, `NW`…) abajo a la derecha del bloque; si
+  no hay dirección subida, no se muestra nada.
 - **Ubicación dinámica:** muestra `data.name` + `data.location_label` en lugar de un literal fijo.
-- **Contrato:** consume `GET /station/{id?}` (envelope `{success, message, data}`). `data` incluye `name`, `location_label`, `instant` y los bloques de sensores (`wind.average`, `light.uv_index`, `air_quality.quality/eco2/tvoc`, `lightning.last_six_hours`, `temperature`, `humidity`, `pressure`) ya formateados como números.
+- **Contrato:** consume `GET /station/{id?}` (envelope `{success, message, data}`). `data` incluye `name`, `location_label`, `instant` y los bloques de sensores (`wind.average/min/max/direction/direction_grades`, `light.uv_index`, `air_quality.quality/eco2/tvoc`, `lightning.count_in_window/count_last_hour/count_last_10_minutes`, `temperature`, `humidity`, `pressure`) ya formateados como números.
 
 ### Iconos Material Symbols por sensor
 

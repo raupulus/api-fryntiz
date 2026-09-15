@@ -7,10 +7,12 @@ namespace Tests\Feature\WeatherStation;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareType;
 use App\Models\User;
+use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Lightning;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Temperature;
+use App\Models\WeatherStation\Tvoc;
 use App\Services\WeatherStation\WeatherStationService;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -117,6 +119,41 @@ class ZoneReadingsTest extends TestCase
             (float) $readings['pressure'],
             'La presión es la excepción: vale cualquier estación de la zona.'
         );
+    }
+
+    #[Test]
+    public function air_quality_falls_back_to_an_indoor_station_when_outdoor_has_none(): void
+    {
+        // La calidad del aire (TVOC/CO2-ECO2) se monitoriza más fácil desde
+        // dentro, así que si fuera no hay dato se cae al de interior.
+        $outside = $this->makeStation('outdoor', 'Azotea', 'Fuera');
+        $inside = $this->makeStation('indoor', 'Azotea', 'Dentro');
+
+        Temperature::create(['hardware_device_id' => $outside->id, 'value' => 25.0, 'created_at' => now()]);
+        AirQuality::create(['hardware_device_id' => $inside->id, 'gas_resistance' => 5000, 'air_quality' => 88.0, 'created_at' => now()]);
+        Tvoc::create(['hardware_device_id' => $inside->id, 'value' => 120, 'created_at' => now()]);
+
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
+
+        $this->assertSame(88.0, (float) $readings['air_quality']['quality']);
+        $this->assertSame(120, (int) $readings['air_quality']['tvoc']);
+    }
+
+    #[Test]
+    public function air_quality_prefers_outdoor_over_a_fresher_indoor_reading(): void
+    {
+        // A diferencia de la presión, el aire de dentro no es "el mismo" que
+        // el de fuera: si hay dato de exterior manda ese, aunque el de dentro
+        // sea más reciente.
+        $outside = $this->makeStation('outdoor', 'Azotea', 'Fuera');
+        $inside = $this->makeStation('indoor', 'Azotea', 'Dentro');
+
+        AirQuality::create(['hardware_device_id' => $outside->id, 'gas_resistance' => 5000, 'air_quality' => 95.0, 'created_at' => now()->subHour()]);
+        AirQuality::create(['hardware_device_id' => $inside->id, 'gas_resistance' => 5000, 'air_quality' => 60.0, 'created_at' => now()]);
+
+        $readings = $this->service()->getZoneReadings('Azotea', 'outdoor');
+
+        $this->assertSame(95.0, (float) $readings['air_quality']['quality']);
     }
 
     #[Test]

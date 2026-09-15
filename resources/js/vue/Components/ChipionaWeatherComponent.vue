@@ -55,20 +55,23 @@
                                     <span class="icon icon-pressure color-yellow"></span>
                                     {{ roundTo2(info.pressure) }} mb
                                 </div>
-                                <div class="mt-5" v-if="lightning.inWindow > 0" :title="`Rayos en los últimos ${lightning.windowMinutes} minutos`">
-                                    <span class="icon icon-lightning color-yellow"></span>
-                                    {{ lightning.inWindow }}
-                                </div>
                             </div>
 
                             <!-- Viento -->
-                            <div v-show="navigation.wind" class="navigation">
+                            <div v-show="navigation.wind" class="navigation navigation-wind">
                                 <span class="icon icon-wind color-blue"></span> Viento
                                 <h1 class="resume-weather-temp">{{ roundTo2(wind.average) }} km/h</h1>
                                 <h3 class="resume-weather-desc">
                                     Min: {{ roundTo2(wind.min) }} km/h<br/>
                                     Max: {{ roundTo2(wind.max) }} km/h
                                 </h3>
+                                <div v-if="wind.direction" class="wind-direction" :title="`Dirección del viento: ${wind.direction}`">
+                                    <span
+                                        class="icon icon-wind-direction color-blue"
+                                        :style="{ transform: `rotate(${wind.grades ?? 0}deg)` }"
+                                    ></span>
+                                    <span class="wind-direction-label">{{ wind.direction }}</span>
+                                </div>
                             </div>
 
                             <!-- TVOC -->
@@ -76,8 +79,8 @@
                                 <span class="icon icon-tvoc color-yellow"></span> Calidad del Aire
                                 <h1 class="resume-weather-temp">{{ roundTo2(air_quality.quality) }} %</h1>
                                 <h3 class="resume-weather-desc">
-                                    TVOC: {{ roundTo2(air_quality.tvoc) }}<br/>
-                                    CO2-ECO2: {{ roundTo2(air_quality.co2_eco2) }}
+                                    TVOC: {{ roundTo2(air_quality.tvoc) }} ppb<br/>
+                                    CO2-ECO2: {{ roundTo2(air_quality.co2_eco2) }} ppm
                                 </h3>
                             </div>
 
@@ -88,6 +91,16 @@
                                 <h3 class="resume-weather-desc">
                                     UVA: {{ roundTo2(light.uva) }}<br/>
                                     UVB: {{ roundTo2(light.uvb) }}
+                                </h3>
+                            </div>
+
+                            <!-- Rayos -->
+                            <div v-show="navigation.lightning" class="navigation">
+                                <span class="icon icon-lightning color-yellow"></span> Rayos
+                                <h1 class="resume-weather-temp">{{ lightning.inLastHour }}</h1>
+                                <h3 class="resume-weather-desc">
+                                    Última hora: {{ lightning.inLastHour }}<br/>
+                                    Últimos 10 min: {{ lightning.inLast10Minutes }}
                                 </h3>
                             </div>
                         </div>
@@ -113,6 +126,10 @@
                         <li :class="{ active: navigation.light }" @click="menuSelect('light')">
                             <span class="icon icon-uv"></span>
                             <span class="selector-element">UV</span>
+                        </li>
+                        <li :class="{ active: navigation.lightning }" @click="menuSelect('lightning')">
+                            <span class="icon icon-lightning"></span>
+                            <span class="selector-element">Rayos</span>
                         </li>
                     </ul>
                 </div>
@@ -185,14 +202,20 @@ const props = defineProps({
     },
 });
 
-const navigation = ref({ info: true, wind: false, tvoc: false, light: false });
+const navigation = ref({ info: true, wind: false, tvoc: false, light: false, lightning: false });
 const location = ref({ name: 'Chipiona, Es', label: '' });
 const instant = ref({ day_name: '', date_human_format: '', time: '', day_status: '' });
 const info = ref({ temperature: 0, humidity: 0, pressure: 0 });
-const wind = ref({ average: 0, min: 0, max: 0, direction: 'N' });
+const wind = ref({ average: 0, min: 0, max: 0, direction: '', grades: null });
 const air_quality = ref({ quality: 100, co2_eco2: 0, tvoc: 0 });
 const light = ref({ light: 0, index: 0, uva: 0, uvb: 0 });
-const lightning = ref({ last: '', inWindow: 0, windowMinutes: 60 });
+const lightning = ref({
+    last: '',
+    inWindow: 0,
+    windowMinutes: 60,
+    inLastHour: 0,
+    inLast10Minutes: 0,
+});
 
 const loading = ref(true);
 
@@ -240,6 +263,7 @@ const apply = (data) => {
     info.value = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure };
     wind.value = {
         direction: data.wind?.direction,
+        grades: data.wind?.direction_grades,
         average: data.wind?.average,
         min: data.wind?.min,
         max: data.wind?.max,
@@ -260,6 +284,10 @@ const apply = (data) => {
         // La ventana es configurable (C3): ya no son «las últimas seis horas».
         inWindow: data.lightning?.count_in_window ?? 0,
         windowMinutes: data.lightning?.window_minutes ?? 60,
+        // Estos dos son fijos, sea cual sea la ventana configurada: la
+        // pestaña de rayos siempre enseña hora y 10 minutos.
+        inLastHour: data.lightning?.count_last_hour ?? 0,
+        inLast10Minutes: data.lightning?.count_last_10_minutes ?? 0,
     };
 };
 
@@ -449,6 +477,35 @@ onBeforeUnmount(() => {
 
 .icon-wind.color-blue {
     filter: invert(67%) sepia(10%) saturate(3000%) hue-rotate(156deg) brightness(104%) contrast(67%);
+}
+
+/* Dirección del viento: flecha apuntando hacia donde sopla, rotada por grados. */
+.navigation-wind {
+    position: relative;
+}
+
+.wind-direction {
+    position: absolute;
+    right: 12px;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.icon-wind-direction {
+    width: 22px;
+    height: 22px;
+    transform-origin: center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L4 14h5v8h6v-8h5z' fill='%23000000'/%3E%3C/svg%3E");
+}
+
+.icon-wind-direction.color-blue {
+    filter: invert(67%) sepia(10%) saturate(3000%) hue-rotate(156deg) brightness(104%) contrast(67%);
+}
+
+.wind-direction-label {
+    font-weight: 700;
 }
 
 .icon-tvoc {
