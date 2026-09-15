@@ -140,6 +140,19 @@ Schedule::command('aemet:check-api-key')
     ->withoutOverlapping()
     ->onFailure($warnOnFailure('aemet:check-api-key'));
 
+// ── GDACS ────────────────────────────────────────────────────────────────────
+//
+// Alertas globales de desastres, acotadas al radio de interés configurado
+// (config('gdacs.reference')). 10 minutos es generoso: GDACS no documenta
+// ningún límite de tasa, y con el filtro por país la respuesta son unas
+// decenas de sucesos, nunca los cientos que sí obligan a paginar sin filtro
+// geográfico — ver docs/future/gdacs-api.md.
+Schedule::command('gdacs:sync')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('gdacs:sync'));
+
 // ── KeyCounter ───────────────────────────────────────────────────────────────
 //
 // `keycounter:maintenance` no existe. Los comandos reales son estos dos.

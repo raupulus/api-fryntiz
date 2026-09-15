@@ -15,6 +15,7 @@ use App\Models\Email;
 use App\Models\FileType;
 use App\Models\Gallery;
 use App\Models\GalleryImage;
+use App\Models\Gdacs\GdacsEvent;
 use App\Models\Hardware\HardwareAvailableComponent;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
@@ -51,6 +52,7 @@ use App\Policies\ContentPolicy;
 use App\Policies\CurriculumPolicy;
 use App\Policies\EmailPolicy;
 use App\Policies\GalleryPolicy;
+use App\Policies\GdacsEventPolicy;
 use App\Policies\HardwareEnergyPolicy;
 use App\Policies\HardwarePolicy;
 use App\Policies\KeyCounterKeyboardPolicy;
@@ -98,6 +100,7 @@ class AuthServiceProvider extends ServiceProvider
         Email::class => EmailPolicy::class,
         Gallery::class => GalleryPolicy::class,
         GalleryImage::class => GalleryPolicy::class,
+        GdacsEvent::class => GdacsEventPolicy::class,
         HardwareDevice::class => HardwarePolicy::class,
         HardwareEnergy::class => HardwareEnergyPolicy::class,
         Keyboard::class => KeyCounterKeyboardPolicy::class,
