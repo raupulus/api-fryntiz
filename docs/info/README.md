@@ -36,6 +36,7 @@
 | [mcp.md](mcp.md) | Model Context Protocol (MCP) | Integración con MCP (servidores y herramientas de IA) |
 | [apis/aemet.md](apis/aemet.md) | API AEMET OpenData | Cómo usamos AEMET aquí: cuota, cadencias, avisos CAP, caducidad de la clave y atribución |
 | [api/v2/README.md](api/v2/README.md) | Índice de rutas de la API V2 | Mapa completo de endpoints propios (`/api/v2/...`) por módulo, con auth, rate limit y enlace al contrato de cada uno. Es la referencia única del mapa de rutas: no se duplica en `AGENTS.md` |
+| [routes-web.md](routes-web.md) | Mapa de rutas Web | Rutas de `routes/web.php`, autenticación web (Fortify) y paneles de administración (Filament). Referencia única de estas rutas: no se duplica en `AGENTS.md` |
 | [api/v2/](api/v2/) | Contratos de la API V2 | Un archivo por módulo (auth, contact, newsletter, content, airflight, hardware, keycounter, smart-plant, weather-station, cv) con el contrato HTTP completo: rutas, auth, parámetros y forma exacta de la respuesta. Pensado para copiarse a otro proyecto. AEMET no tiene archivo aquí: no expone endpoints propios, es solo consumo interno (ver `apis/aemet.md`) |
 | [COMPONENTS.md](COMPONENTS.md) | Componentes UI Reutilizables | Catálogo de componentes Blade (<x-button>, <x-input>...) |
 | [DESIGN.md](DESIGN.md) | Sistema de Diseño Visual | Identidad Raupulus Slate / Obsidian Flux y tokens Tailwind CSS v4 |

@@ -14,6 +14,7 @@
 | Cómo funciona un módulo concreto | [`docs/info/<modulo>.md`](docs/info/README.md) |
 | Convenciones de un dominio (API, Filament, migraciones…) | `.claude/skills/<skill>/SKILL.md` — ver §2 |
 | Rutas de la API V2 propia (`/api/v2/...`) | [`docs/info/api/v2/README.md`](docs/info/api/v2/README.md) — índice y contrato por módulo |
+| Rutas del frontend web, auth Fortify y paneles Filament | [`docs/info/routes-web.md`](docs/info/routes-web.md) |
 | Historial de cómo se llegó hasta aquí | `docs/planning/archived/` — **excepción, no fuente de verdad**: ver aviso abajo |
 
 **Estado en una línea:** la API V2 está completa y operativa, la V1 fue eliminada por completo,
@@ -314,55 +315,16 @@ api-fryntiz/
 ## 6-bis. Mapa completo de rutas
 
 La plataforma expone sus servicios a través de cuatro capas de enrutamiento principales:
+frontend web público, autenticación web (Fortify), paneles de administración (Filament) y
+la API V2 REST.
 
-### 1. Frontend Web Público (`routes/web.php` y submódulos)
-- `GET  /`: Portada corporativa con presentación de servicios y métricas (`home`).
-- `GET  /about`: Página propia con la información del proyecto (`about`). **Ya no
-  redirige** — hasta el 2026-09-14 era un `302` a la portada; ahora es contenido real
-  en `resources/views/about.blade.php`, enlazado desde el footer.
-- `GET  /docs`: Documentación interactiva de la API con Swagger/OpenAPI (requiere sesión).
-- `GET  /languages/ajax/get/languages`: Consulta asíncrona de idiomas soportados.
-- `GET  /file/get/{module}/{id}/{slug?}`: Streaming dinámico de ficheros públicos y privados.
-- `GET  /file/thumbnail/get/{module}/{id}/{slug?}`: Generación y entrega de miniaturas WebP.
-- `POST /file/upload`: Subida autenticada de archivos al disco configurado.
-- `POST /file/delete/{id}`: Eliminación segura y autenticada de archivos y sus miniaturas asociadas.
-- `GET  /weatherstation`: Interfaz pública de la estación meteorológica (`weather_station.index`).
-- `GET  /weatherstation/sensor/{type}`: Consulta visual de historial y gráficas por sensor meteorológico.
-- `GET  /smartplant`: Listado de plantas inteligentes monitorizadas.
-- `GET  /smartplant/{smartplant}`: Detalle de sensores de suelo, luz y riego de una planta.
-- `GET  /hardware/energy`: Monitorización en tiempo real de balance fotovoltaico y consumos.
-- `GET  /keycounter`: Estadísticas agregadas de pulsaciones y actividad de periféricos.
-- `GET  /airflight`: Mapa y radar visual de tráfico aéreo ADS-B.
-- `GET  /cv`: Listado de currículums públicos, en tarjetas horizontales (`cv.index`).
-  Enlazado desde el home en la tarjeta que antes llevaba a `/panel`.
-- `GET  /cv/{slug}`: Vista pública de un currículum, con botón de descarga del PDF
-  (`cv.show`).
-- `GET  /cv/pdf`: Descarga del currículum predeterminado en PDF (`cv.pdf.default`).
-- `GET  /cv/{slug}/pdf`: Descarga de un currículum público concreto en PDF (`cv.pdf`).
-  **La ruta antigua `/cv/get/pdf/raupulus/default` ya no existe** — ver `docs/info/cv.md`.
-- `ANY  /register*`, `/panel/register*`: **Bloqueo explícito** con respuesta `404 Not Found`.
-- `ANY  /dashboard*`: Redirección `301 Moved Permanently` a `/panel`.
+### 1-3. Frontend web, autenticación y paneles Filament
 
-### 2. Autenticación Web (Laravel Fortify)
-- `GET|POST /login`: Formulario y autenticación web para sesiones de usuario (`login`).
-- `POST     /logout`: Cierre de sesión web.
-- `GET|POST /two-factor-challenge`: Desafío de autenticación de doble factor.
-- `GET|POST /user/two-factor-*`: Gestión de claves de recuperación y códigos QR 2FA.
-
-### 3. Paneles de Administración (Filament 5)
-- **Panel Admin (`/admin`):** SuperAdmin, Admin y Editor (`AdminPanelProvider`,
-  `User::canAccessPanel()`).
-  - Login dedicado en `/admin/login` y perfil en `/admin/profile`.
-  - 24 Recursos administrativos: Usuarios, Tokens API, Plataformas, Contenidos, Categorías, Tags,
-    Tecnologías, Dispositivos Hardware, Componentes, Tipos de Hardware, Tipos de archivo,
-    Dispositivos de Energía + Registros de Energía (dos Resources distintos, uno por
-    `HardwareDevice` filtrado a energía y otro por `HardwareEnergy`), Plantas Inteligentes
-    (Plants + Registers), Vuelos ADS-B (Aviones + Rutas), Currículum, Tipos de repositorio de CV,
-    Emails de contacto, Impresoras, Galerías, Teclado y Ratón (KeyCounter). **No hay Resource de
-    Estación Meteorológica** — pese a lo que decía una versión anterior de este fichero, ese
-    módulo no tiene panel de administración propio hoy.
-- **Panel Tenant / Usuario (`/panel`):** Panel para usuarios autenticados (`TenantPanelProvider`).
-  - Dashboard de cliente y visualización de recursos propios.
+El mapa completo de rutas de `routes/web.php` y submódulos, la autenticación web (Fortify)
+y los paneles de administración (Filament) vive en
+[`docs/info/routes-web.md`](docs/info/routes-web.md) — **no se duplica aquí**. Consúltalo
+cuando necesites leer o modificar rutas del frontend, y mantenlo actualizado en el mismo
+commit.
 
 ### 4. API V2 REST (`/api/v2/...`, repartida entre `routes/api/v2.php` y `routes/{airflight,cv,hardware,keycounter,smart_plant,weather_station}/v2.php`)
 
