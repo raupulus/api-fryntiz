@@ -41,7 +41,7 @@ La paleta se define en **`resources/css/app.css`** utilizando la directiva `@the
 | `--color-secondary-container` | `#d8d6fe` | Fondos de chips y badges secundarios |
 | `--color-tertiary-fixed` | `#cce5ff` | Acentos interactivos |
 | `--color-on-tertiary-fixed` | `#084e7d` | **Texto e iconos sobre `tertiary-fixed`** (6,77:1) |
-| `--color-on-tertiary-container` | `#1d8acd` | Enlaces y llamadas a la acción |
+| `--color-on-tertiary-container` | `#12658f` | Enlaces y llamadas a la acción (6,08:1 sobre `surface`) |
 | `--color-success-container` | `#d7f2dd` | Fondo de un estado encendido (riego activo, tanque lleno) |
 | `--color-on-success-container` | `#14532d` | Texto e iconos de un estado encendido (7,65:1) |
 | `--color-background` / `--color-surface` | `#f8f9ff` | Fondo base de la página |
@@ -104,7 +104,7 @@ El layout base `resources/views/layouts/app.blade.php` incluye una pequeña ruti
 
 ---
 
-> Creado: 2026-08-26 · Última revisión: 2026-09-13
+> Creado: 2026-08-26 · Última revisión: 2026-09-15
 
 ---
 
@@ -142,14 +142,15 @@ vista del frontend.** Para encontrarlos:
 grep -rnE "(bg|text)-(green|red|blue|yellow|amber|orange|emerald)-[0-9]{2,3}" resources/views/
 ```
 
-### Pendiente de decidir
+### Contraste de `on-tertiary-container` en el tema claro (resuelto 2026-09-15)
 
-`--color-on-tertiary-container` (`#1d8acd`) sobre `surface` blanco da **3,77:1**
-en el tema claro. Cumple AA para texto grande (3:1) pero **no** para el texto
-pequeño con el que se usa hoy: los enlaces `text-xs font-bold` de `home.blade.php`,
-`weather_station/index.blade.php` y `airflight/index.blade.php`. En el tema
-oscuro está perfecto (14,34:1).
+`--color-on-tertiary-container` daba **3,77:1** sobre `surface` blanco con el
+valor original (`#1d8acd`). Cumplía AA para texto grande (3:1) pero no para el
+texto pequeño con el que se usa: los enlaces `text-xs font-bold` de
+`home.blade.php`, `weather_station/index.blade.php` y `airflight/index.blade.php`.
+En el tema oscuro ya estaba perfecto (14,34:1) y no se ha tocado.
 
-Arreglarlo es bajar la luminosidad de ese token **sólo en el tema claro**, y
-como es el acento de toda la plataforma, es una decisión de identidad, no un
-arreglo mecánico. Queda anotado aquí.
+Se bajó la luminosidad **sólo en el tema claro**, a `#12658f` (6,08:1),
+manteniendo el mismo tono — es el acento de toda la plataforma, así que era una
+decisión de identidad y no un arreglo mecánico. Los iconos que comparten el
+mismo token sólo necesitan 3:1, así que no les afecta negativamente.

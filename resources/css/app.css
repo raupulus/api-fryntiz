@@ -13,7 +13,14 @@
     --color-tertiary: #000000;
     --color-tertiary-container: #001d31;
     --color-tertiary-fixed: #cce5ff;
-    --color-on-tertiary-container: #1d8acd;
+
+    /* Era #1d8acd: 3,77:1 sobre `surface`, por debajo del 4,5:1 que pide WCAG
+     * AA para texto pequeño, y así se usa en los enlaces `text-xs font-bold`
+     * de home.blade.php, weather_station/index.blade.php y
+     * airflight/index.blade.php. Mismo tono, un punto más oscuro: 6,08:1. Los
+     * iconos que también usan este color sólo necesitan 3:1, así que no les
+     * afecta. En oscuro no se toca, ya daba 14,34:1. */
+    --color-on-tertiary-container: #12658f;
 
     /* El color del texto que va SOBRE `tertiary-fixed`.
      *
