@@ -81,15 +81,19 @@ class UserResource extends Resource
     }
 
     /**
-     * ¿El registro está por encima de quien lo está mirando?
+     * ¿El registro está al mismo nivel o por encima de quien lo está mirando?
      *
-     * Un `SuperAdmin` no lo edita nadie que no lo sea. La regla la aplica
-     * {@see UserPolicy::update()}, que es la que manda; esto es
-     * para que el formulario no pinte como editable algo que se va a rechazar.
+     * Entre `Admin` y `SuperAdmin` sólo hay lectura: ni un `Admin` toca a otro
+     * `Admin`, ni por supuesto a un `SuperAdmin`. La regla la aplica
+     * {@see UserPolicy::update()}, que es la que manda y ya deniega el acceso
+     * a este formulario en ese caso; esto es para que, si alguna vez se
+     * reutiliza el formulario en un sitio que sí sortee esa policy (por
+     * ejemplo, un `ViewAction` sin página de edición propia), no pinte como
+     * editable algo que se va a rechazar.
      */
     protected static function isUntouchable(?User $record): bool
     {
-        return $record?->isSuperAdmin() === true
+        return $record?->isAdmin() === true
             && auth()->user()?->isSuperAdmin() !== true;
     }
 
@@ -170,7 +174,7 @@ class UserResource extends Resource
                         ->disabled(fn (?User $record): bool => self::isUntouchable($record))
                         ->dehydrated(fn (?User $record): bool => ! self::isUntouchable($record))
                         ->helperText(fn (?User $record): ?string => self::isUntouchable($record)
-                            ? 'El rol de un Super Administrador sólo lo cambia otro Super Administrador.'
+                            ? 'El rol de un Administrador o Super Administrador sólo lo cambia un Super Administrador.'
                             : null)
                         ->label('Rol'),
                     Toggle::make('is_active')

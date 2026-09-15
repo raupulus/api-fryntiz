@@ -297,9 +297,10 @@ una decisión.
 | Método | Quién puede |
 |---|---|
 | `viewAny` / `create` | Admin |
-| `view` / `update` | Admin, o el propio usuario. Y a un superadmin sólo lo toca otro superadmin |
+| `view` | Admin (a cualquiera, incluido otro Admin o el SuperAdmin), o el propio usuario |
+| `update` | Admin sobre `User`/`Editor`. Nunca sobre sí mismo (AR-P01). Sobre otro Admin o un SuperAdmin, sólo un SuperAdmin — entre Admin y SuperAdmin sólo hay lectura |
 | `delete` / `forceDelete` | **Sólo superadmin**, y nunca a sí mismo |
-| `restore` | Admin |
+| `restore` | Admin sobre `User`/`Editor`. Sobre otro Admin o un SuperAdmin, sólo un SuperAdmin |
 
 ### `ApiTokenPolicy`, el mismo criterio aplicado a los tokens
 

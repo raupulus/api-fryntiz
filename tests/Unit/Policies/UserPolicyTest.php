@@ -104,6 +104,40 @@ class UserPolicyTest extends TestCase
     }
 
     /**
+     * `update()` sólo miraba `$model->isSuperAdmin()`: un `Admin` editando a
+     * OTRO `Admin` no entraba en ese `if` y se le concedía por el
+     * `return $user->isAdmin()` final. Con eso, un `Admin` podía cambiarle la
+     * contraseña, el email o desactivar la cuenta a otro `Admin` —el único
+     * campo que el formulario protegía era `role_id`—. Entre `Admin` y
+     * `SuperAdmin` sólo hay lectura (ver `view()`); sólo un `SuperAdmin` edita
+     * a un `Admin`.
+     */
+    #[Test]
+    public function an_admin_cannot_edit_another_admin(): void
+    {
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+        $otherAdmin = $this->makeUser(UserRoleEnum::Admin);
+
+        $this->assertFalse($this->policy->update($admin, $otherAdmin));
+
+        // Pero sí puede verlo: entre administradores, leer no es un problema.
+        $this->assertTrue($this->policy->view($admin, $otherAdmin));
+    }
+
+    #[Test]
+    public function a_superadmin_edits_an_admin_and_another_superadmin(): void
+    {
+        // El otro lado de la regla: el SuperAdmin sí gestiona con normalidad
+        // a cualquier Admin u otro SuperAdmin.
+        $superadmin = $this->makeUser(UserRoleEnum::SuperAdmin);
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+        $otherSuperadmin = $this->makeUser(UserRoleEnum::SuperAdmin);
+
+        $this->assertTrue($this->policy->update($superadmin, $admin));
+        $this->assertTrue($this->policy->update($superadmin, $otherSuperadmin));
+    }
+
+    /**
      * `restore()` era el único método de la clase que no miraba el rol del
      * registro: devolvía `isAdmin()` a secas. La tabla de usuarios ofrece
      * `RestoreAction`, así que un `Admin` podía devolverle el acceso a un
@@ -119,6 +153,19 @@ class UserPolicyTest extends TestCase
 
         // A un usuario normal sí, que es para lo que está.
         $this->assertTrue($this->policy->restore($admin, $this->makeUser()));
+    }
+
+    /**
+     * Misma regla que en `update()`: devolverle el acceso a un `Admin` que un
+     * `SuperAdmin` borró es la misma escalada que editarle los datos.
+     */
+    #[Test]
+    public function an_admin_does_not_restore_another_admin(): void
+    {
+        $admin = $this->makeUser(UserRoleEnum::Admin);
+        $otherAdmin = $this->makeUser(UserRoleEnum::Admin);
+
+        $this->assertFalse($this->policy->restore($admin, $otherAdmin));
     }
 
     /**

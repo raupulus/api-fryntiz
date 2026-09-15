@@ -83,12 +83,34 @@ class RoleEscalationTest extends TestCase
     }
 
     /**
-     * Y si llegara a montarse el formulario, el `Select` de rol está
-     * deshabilitado y no se persiste: la interfaz no ofrece lo que la policy
-     * va a rechazar.
+     * La otra mitad del mismo reporte: «...y de otro administrador». Entre
+     * `Admin` y `SuperAdmin` sólo hay lectura (ver `UserPolicy::view()`), nunca
+     * escritura entre iguales. `UserPolicy::update()` sólo miraba
+     * `$model->isSuperAdmin()`, así que un `Admin` editando a OTRO `Admin` caía
+     * en el `return $user->isAdmin()` final y se le concedía: podía cambiarle
+     * la contraseña, el email o desactivarle la cuenta a otro `Admin`.
      */
     #[Test]
-    public function the_role_select_is_locked_on_a_superadmin(): void
+    public function an_admin_cannot_open_another_admins_edit_page(): void
+    {
+        $this->actAsRole(UserRoleEnum::Admin);
+
+        $anotherAdmin = User::factory()->create([
+            'role_id' => UserRoleEnum::Admin->value,
+        ]);
+
+        $this->get(UserResource::getUrl('edit', ['record' => $anotherAdmin], panel: 'admin'))
+            ->assertForbidden();
+    }
+
+    /**
+     * Y si llegara a montarse el formulario, el `Select` de rol está
+     * deshabilitado y no se persiste: la interfaz no ofrece lo que la policy
+     * va a rechazar. Aplica igual sobre un `Admin` que sobre un `SuperAdmin`:
+     * los dos están fuera del alcance de otro `Admin`.
+     */
+    #[Test]
+    public function the_role_select_is_locked_on_a_superadmin_and_another_admin(): void
     {
         $this->actAsRole(UserRoleEnum::Admin);
 
@@ -98,10 +120,9 @@ class RoleEscalationTest extends TestCase
 
         $this->assertTrue(UserResourceProbe::untouchable($superadmin));
 
-        // Sobre otro `Admin` sí se puede: repartir el mismo nivel no es escalar.
         $anotherAdmin = User::factory()->create(['role_id' => UserRoleEnum::Admin->value]);
 
-        $this->assertFalse(UserResourceProbe::untouchable($anotherAdmin));
+        $this->assertTrue(UserResourceProbe::untouchable($anotherAdmin));
     }
 
     #[Test]
@@ -183,6 +204,29 @@ class RoleEscalationTest extends TestCase
             ->assertHasNoFormErrors();
 
         $this->assertSame('Nombre cambiado', $anotherUser->fresh()->name);
+    }
+
+    /**
+     * El otro lado de la regla: cerrar el paso entre iguales no puede cerrarle
+     * la puerta al `SuperAdmin`, que sigue gestionando con normalidad a
+     * cualquier `Admin` u otro `SuperAdmin`.
+     */
+    #[Test]
+    public function a_superadmin_can_still_edit_an_admin(): void
+    {
+        $this->actAsRole(UserRoleEnum::SuperAdmin);
+
+        $admin = User::factory()->create(['role_id' => UserRoleEnum::Admin->value]);
+
+        $this->get(UserResource::getUrl('edit', ['record' => $admin], panel: 'admin'))
+            ->assertSuccessful();
+
+        Livewire::test(EditUser::class, ['record' => $admin->getKey()])
+            ->fillForm(['name' => 'Nombre cambiado por superadmin'])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame('Nombre cambiado por superadmin', $admin->fresh()->name);
     }
 
     #[Test]

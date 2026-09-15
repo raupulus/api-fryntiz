@@ -43,12 +43,22 @@ class UserPolicy
      * Que un administrador no pueda editarse desde el listado de usuarios no es
      * una pérdida: para eso está «Editar perfil» en su menú.
      */
+    /**
+     * Entre `Admin` y `SuperAdmin` sólo hay lectura (ver `view()`), nunca
+     * escritura entre iguales o hacia arriba.
+     *
+     * Esto era `$model->isSuperAdmin() && ! $user->isSuperAdmin()`, es decir,
+     * sólo miraba si el objetivo era `SuperAdmin`. Un `Admin` editando a OTRO
+     * `Admin` no entraba en ese `if` y caía en el `return $user->isAdmin()`
+     * final, que da `true`: un `Admin` podía cambiarle la contraseña, el
+     * email o el `is_active` a otro `Admin` —el `role_id` es el único campo
+     * que el formulario ya bloqueaba (AR-P01)— sin que la policy lo impidiera.
+     * `isAdmin()` cubre `Admin` y `SuperAdmin` a la vez, así que un `Admin` sólo
+     * edita hacia abajo (`User`, `Editor`); sólo un `SuperAdmin` edita a otro
+     * `Admin` o `SuperAdmin`.
+     */
     public function update(User $user, User $model): bool
     {
-        if ($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
-            return false;
-        }
-
         // El propio registro no se toca desde el recurso de usuarios. Es la
         // misma regla que D91 aplica al email —«cambiarse el propio email es la
         // vía clásica para apropiarse de una cuenta»— extendida al resto del
@@ -58,6 +68,10 @@ class UserPolicy
         // todo antes de evaluar esta policy. Y en su caso no hay nada que
         // escalar, ya está arriba del todo.
         if ((int) $user->id === (int) $model->id) {
+            return false;
+        }
+
+        if ($model->isAdmin() && ! $user->isSuperAdmin()) {
             return false;
         }
 
@@ -90,10 +104,15 @@ class UserPolicy
      * `SuperAdmin` borrado desde el listado —la tabla ofrece `RestoreAction`—
      * y devolverle el acceso. Es una acción sobre un `SuperAdmin`, que es
      * justamente lo que el resto de la clase impide.
+     *
+     * Misma regla que `update()`: `isAdmin()` cubre tanto `Admin` como
+     * `SuperAdmin`, así que un `Admin` tampoco reactiva a OTRO `Admin` que un
+     * `SuperAdmin` hubiera borrado. Devolverle el acceso a una cuenta de su
+     * mismo nivel es la misma escalada que editarla.
      */
     public function restore(User $user, User $model): bool
     {
-        if ($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
+        if ($model->isAdmin() && ! $user->isSuperAdmin()) {
             return false;
         }
 
