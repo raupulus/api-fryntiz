@@ -4,7 +4,7 @@
     "name": "chunk"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BZJvQOYa.css",
+    "file": "assets/app-BxmN-wUi.css",
     "name": "app",
     "names": [
       "app.css"
@@ -40,7 +40,7 @@
     ]
   },
   "resources/js/vue.js": {
-    "file": "assets/vue-Cea_N5xD.js",
+    "file": "assets/vue-DIztfQaJ.js",
     "name": "vue",
     "src": "resources/js/vue.js",
     "isEntry": true,
@@ -48,7 +48,7 @@
       "_chunk-QTnfLwEv.js"
     ],
     "css": [
-      "assets/vue-D1phL8kj.css"
+      "assets/vue-EQ9R9lPA.css"
     ],
     "assets": [
       "assets/chipiona-BKWz67is.webp"
