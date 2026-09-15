@@ -13,6 +13,51 @@
 > suba a partir de ahora. El análisis de abajo se conserva porque documenta
 > por qué se descartaron las otras tres.
 
+## Pendiente: backfill del histórico (propuesta, sin implementar)
+
+Lo resuelto arriba solo llena `registration`/`aircraft_type` en subidas
+**nuevas**. Los aviones que ya estaban en `airflight_airplanes` antes del
+2026-09-14 (miles de filas, ver auditoría de 2026-09) se quedan con esos dos
+campos a `null` hasta que el receptor vuelva a verlos — y algunos, los que
+pasaron una vez hace tiempo y no vuelven, puede que no se actualicen nunca.
+
+**Propuesta**: un comando Artisan de un solo uso, no una integración
+permanente, porque la base de origen (`/usr/share/skyaware/html/db/`, 7.9 MB,
+255 ficheros — comprobado en la Raspberry) es un volcado fijo que ya no se
+actualiza en origen.
+
+1. **Copiar la base una vez** desde la Raspberry a este servidor (`scp`/`rsync`
+   de `pi@172.18.1.58:/usr/share/skyaware/html/db/`) a una ruta fuera de
+   control de versiones (p. ej. `storage/app/airflight/registry-snapshot/`,
+   añadida a `.gitignore`: son datos de un tercero, no código del proyecto).
+   Si el paquete `dump1090-fa`/`piaware` de la Raspberry trae alguna vez una
+   base más nueva, se vuelve a copiar y se repite el paso 2.
+2. **Comando** `airflight:backfill_registry {--path=} {--force}`, mismo patrón
+   que `airflight:remove_duplicate_routes` (dry-run por defecto, cuenta y
+   muestra sin escribir; `--force` aplica de verdad):
+   - Recorre `AirFlightAirPlane::whereNull('registration')->orWhereNull('aircraft_type')`
+     en trozos (`chunkById`), para no cargar de golpe miles de filas.
+   - Por cada `icao`, camina el mismo trie por prefijo que ya usa el receptor
+     (nivel 1 carácter, baja de nivel si el fichero trae `children` — algoritmo
+     confirmado contra `dbloader.js` y contra ICAOs reales vuestros durante el
+     análisis de esta nota). Los ficheros JSON de la base (255, 7.9 MB) se
+     cargan una vez en memoria al arrancar el comando, no por cada fila.
+   - Solo rellena el campo que esté **a `null`** — si `registration` o
+     `aircraft_type` ya tienen valor (porque el avión ya volvió a pasar y el
+     flujo nuevo lo rellenó), no se toca. Nunca sobrescribe un dato ya bueno
+     con el snapshot, aunque discrepen.
+   - Informe final: filas procesadas, cuántas ganaron matrícula, cuántas tipo,
+     cuántas se quedaron sin nada (el ICAO no está en el snapshot — es del
+     dataset completo de 250.000, aquí solo hay una copia parcial/antigua).
+3. **No se programa ni se automatiza**: es un `--force` que se ejecuta a mano
+   el día que se decida, igual que el resto de comandos de mantenimiento de
+   este módulo. Si el snapshot de la Raspberry se refresca más adelante,
+   volver a correrlo es seguro (solo toca `null`, es idempotente).
+
+Falta decidir contigo: si quieres que lo implemente así, o prefieres acotarlo
+(por ejemplo, solo los aviones vistos en los últimos N meses, en vez de los
+~8870 completos).
+
 > Anotado al retirar `GET /airflight/db/{bkey}` en la fase 5. Tu instrucción
 > (M6): *«Si no se usa realmente déjalo documentado en "future" tal como se
 > planteaba que debería funcionar y ya revisaré si obtengo los más comunes o lo
@@ -67,4 +112,4 @@ son un puñado comparado con 250.000, y son justo los que importan.
   la llamada en la misma ventana.
 - No hay nada que migrar: no había datos.
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-01
+> Creado: 2026-08-30 · Última revisión: 2026-09-14
