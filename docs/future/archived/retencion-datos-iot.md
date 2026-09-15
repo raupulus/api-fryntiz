@@ -1,6 +1,14 @@
 # Crecimiento y retención de datos IoT
 
-> **Estado:** anotado, sin trabajo asignado. **Hoy no es un problema.**
+> **Decidido (2026-09-15):** no se particiona ni se retiene nada por ahora. El crecimiento en
+> años de las tablas IoT no implica por sí solo un problema de rendimiento en PostgreSQL, y
+> mientras no aparezca uno de los disparadores de la sección "Cuándo revisarlo" de abajo no
+> se invierte tiempo en esto. Decisión razonada en
+> [`docs/info/decisiones-tecnicas.md`](../../info/decisiones-tecnicas.md) (**D28**), que es la
+> referencia vigente. El análisis, las opciones valoradas y las consultas SQL de medición se
+> conservan tal cual abajo, sin tocar, por si hace falta retomarlas el día que toque.
+
+> **Estado original:** anotado, sin trabajo asignado. **Hoy no es un problema.**
 > **Decidido el:** 2026-08-19
 
 ## Situación actual

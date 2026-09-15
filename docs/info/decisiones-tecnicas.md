@@ -393,6 +393,42 @@ un parámetro nuevo por una diferencia de cinco elementos.
 
 ---
 
+## Base de datos
+
+### D28 · Las tablas de series temporales de IoT no se particionan por ahora
+
+Los datos IoT (meteorología, energía, KeyCounter, SmartPlant, AirFlight) siguen creciendo en
+tablas únicas, sin partición ni tablas por año.
+
+**Por qué.** La tabla más grande ronda hoy los 300.000 registros y PostgreSQL lo lleva sin
+esfuerzo: no se ha observado ninguna lentitud ni limitación atribuible al volumen. Que el
+histórico crezca año a año **no implica por sí solo** un problema de rendimiento en
+PostgreSQL, y hoy no hay ninguna consulta ni backup que lo esté sufriendo. Diseñar ahora un
+particionado para un problema que no existe es trabajo especulativo.
+
+**Cuándo se revisa.** No es un "nunca": se retoma en cuanto aparezca uno de estos
+disparadores, y no antes:
+
+- Alguna tabla de sensores supera los **5-10 millones** de registros.
+- Una consulta del panel o de la API empieza a tardar más de ~1 s por volumen.
+- El tamaño de la base de datos se acerca al límite del disco del VPS.
+- Los backups tardan tanto que dejan de ser prácticos.
+
+**La idea preferida, si llega el momento:** tablas por año con el año en el nombre
+(`temperatures_2027`, `temperatures_2028`…), no purgar datos — para meteorología y energía el
+histórico largo tiene valor por sí mismo. Las alternativas valoradas (particionado nativo de
+PostgreSQL 17, agregados + purga del detalle) y las consultas SQL de medición previa quedaron
+archivadas en [`docs/future/archived/retencion-datos-iot.md`](../future/archived/retencion-datos-iot.md).
+
+**Lo único que sí conviene hacer ya, con coste bajo:** verificar que existe el índice
+`(hardware_device_id, created_at)` en cada tabla de sensor (ver **D22**) y vigilar el tamaño
+total de la base desde el chequeo de salud del sistema, para enterarse del crecimiento antes
+de que sea un problema.
+
+*Origen: nota de futuro anotada el 2026-08-19, decidida y archivada el 2026-09-15.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors
