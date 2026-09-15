@@ -83,7 +83,8 @@ de matrículas (`/usr/share/skyaware/html/db/`, snapshot fijo de VRS
 no encuentra el ICAO en esa base, manda `null` — esta API nunca busca nada,
 solo guarda lo que llegue. Decisión completa y alternativas descartadas (API
 externa, servir los 250.000 ficheros del dataset) en
-[`docs/future/airflight-registro-de-matriculas.md`](../future/airflight-registro-de-matriculas.md).
+[`docs/future/archived/airflight-registro-de-matriculas.md`](../future/archived/airflight-registro-de-matriculas.md)
+(archivada: la funcionalidad ya está resuelta y en producción).
 
 `AirFlightService::addAircraft()` los guarda tanto en alta como en avión ya
 existente (a diferencia de `user_id`/`hardware_device_id`, que solo se fijan
@@ -464,6 +465,12 @@ mandan).
 Los tres **no piden token**: son los datos de una página propia, no una
 integración. El mapa los consumía antes desde `API_URL/v2/airflight/*`, lo que
 obligaba a dejar esa parte de la API abierta a cualquiera.
+
+Los tres llevan además `same-origin` (`App\Http\Middleware\
+EnsureRequestIsSameOrigin`, 2026-09-15) y `throttle:public-widget`: mismo
+criterio y mismos límites que el widget de `weather-station.md`, para el mismo
+motivo — sin token, la única señal de quién llama es de dónde dice venir la
+petición.
 
 `/airflight/detected` alimenta la tabla "Aviones detectados (última hora)" de
 la propia vista: la primera tanda la pinta el servidor en el HTML (sin

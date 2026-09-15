@@ -8,7 +8,7 @@
 > capturador (`dump1090-to-db`, fuera de este repo) la resuelve por ICAO
 > antes de subir, y esta API solo guarda lo que llegue en los nuevos campos
 > opcionales `registration`/`aircraft_type` de `POST /aircrafts` (contrato en
-> [`docs/info/api/v2/airflight.md`](../info/api/v2/airflight.md)). Sin
+> [`docs/info/api/v2/airflight.md`](../../info/api/v2/airflight.md)). Sin
 > dataset que mantener aquí. El histórico también se rellenó — ver la sección
 > de más abajo — pero con un script de un solo uso, no con un comando
 > permanente. El análisis de abajo se conserva porque documenta por qué se
@@ -37,7 +37,7 @@ uso. Se hizo así en su lugar, sin dejar nada nuevo en `app/`:
    aviones con matrícula, 6014 con tipo, sobre 8877 totales).
 
 Mismo patrón se usó para `route_last_at` (ver
-[`docs/info/airflight.md`](../info/airflight.md)), aunque ese caso no
+[`docs/info/airflight.md`](../../info/airflight.md)), aunque ese caso no
 necesitó ni la Raspberry: se recalculó entero desde `airflight_routes`, que
 ya tenía el historial completo — **5175 filas actualizadas**.
 
