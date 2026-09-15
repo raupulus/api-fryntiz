@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Exceptions\JsonAuthorizationException;
 use App\Exceptions\JsonValidationException;
+use App\Http\Middleware\EnsureRequestIsSameOrigin;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -108,6 +109,11 @@ return Application::configure(basePath: dirname(__DIR__))
             // Sanctum: control de abilities por token de dispositivo IoT (fix_1 fase 05).
             'abilities' => CheckAbilities::class,
             'ability' => CheckForAnyAbility::class,
+
+            // Corta las rutas JSON de un widget propio (weather_station,
+            // airflight) a quien no pide desde su propia página. Ver el
+            // docblock de la clase.
+            'same-origin' => EnsureRequestIsSameOrigin::class,
         ]);
 
         // El idioma de la respuesta sale de `Accept-Language` (o de `?lang=`).

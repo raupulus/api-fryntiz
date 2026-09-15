@@ -50,14 +50,34 @@ class AirFlightTest extends ApiTestCase
     #[Test]
     public function the_web_map_is_served_without_a_token(): void
     {
-        $this->getJson(route('airflight.aircrafts'))
+        $this->getJson(route('airflight.aircrafts'), $this->sameOriginHeaders())
             ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonStructure(['data']);
 
-        $this->getJson(route('airflight.receiver'))
+        $this->getJson(route('airflight.receiver'), $this->sameOriginHeaders())
             ->assertOk()
             ->assertJsonPath('data.refresh', 5000);
+    }
+
+    /**
+     * `EnsureRequestIsSameOrigin`: sin `Origin`/`Referer` que cuadre con el
+     * propio host, es exactamente el caso que motivó la protección — copiar la
+     * URL del panel de red del navegador y reutilizarla desde fuera.
+     */
+    #[Test]
+    public function the_web_map_rejects_a_request_without_a_matching_origin(): void
+    {
+        $this->getJson(route('airflight.aircrafts'))->assertForbidden();
+        $this->getJson(route('airflight.aircrafts'), ['Origin' => 'https://otra-web.example'])->assertForbidden();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function sameOriginHeaders(): array
+    {
+        return ['Origin' => url('/')];
     }
 
     /**
@@ -123,7 +143,7 @@ class AirFlightTest extends ApiTestCase
             'seen_at' => Carbon::now()->subHours(3),
         ]);
 
-        $response = $this->getJson(route('airflight.detected'))
+        $response = $this->getJson(route('airflight.detected'), $this->sameOriginHeaders())
             ->assertOk()
             ->assertJsonPath('success', true);
 
@@ -160,7 +180,7 @@ class AirFlightTest extends ApiTestCase
             'seen_at' => Carbon::now()->subMinute(),
         ]);
 
-        $response = $this->getJson(route('airflight.detected'))->assertOk();
+        $response = $this->getJson(route('airflight.detected'), $this->sameOriginHeaders())->assertOk();
 
         $row = collect($response->json('data'))->firstWhere('icao', 'REPARTIDO');
 
@@ -197,8 +217,9 @@ class AirFlightTest extends ApiTestCase
             'seen_at' => Carbon::now()->subMinute(),
         ]);
 
-        $row = collect($this->getJson(route('airflight.detected'))->assertOk()->json('data'))
-            ->firstWhere('icao', 'FECHAUTC');
+        $row = collect(
+            $this->getJson(route('airflight.detected'), $this->sameOriginHeaders())->assertOk()->json('data')
+        )->firstWhere('icao', 'FECHAUTC');
 
         $this->assertNotNull($row);
         $this->assertSame('2026-09-08T09:29:34.000000Z', $row['seen_last_at']);

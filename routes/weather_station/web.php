@@ -25,14 +25,21 @@ Route::group(['prefix' => '/'], function () {
     // es API: no lleva token, va cacheado y devuelve exactamente la lectura
     // que se pinta. Antes llamaba a `GET /api/v2/weather-stations`, y por eso
     // esa ruta de API tenía que estar abierta a cualquiera.
-    Route::get('/widget', [WeatherStationController::class, 'widget'])
-        ->name('weather_station.widget');
+    //
+    // Sin token no hay nada que compruebe quién llama, así que las tres
+    // llevan `same-origin` (sólo desde la propia página, ver
+    // `EnsureRequestIsSameOrigin`) y `throttle:public-widget` (freno al
+    // scraping sostenido, no a la navegación normal).
+    Route::middleware(['same-origin', 'throttle:public-widget'])->group(function () {
+        Route::get('/widget', [WeatherStationController::class, 'widget'])
+            ->name('weather_station.widget');
 
-    Route::get('/widget/zone/{zone}/{locationType?}', [WeatherStationController::class, 'widget'])
-        ->name('weather_station.widget.zone');
+        Route::get('/widget/zone/{zone}/{locationType?}', [WeatherStationController::class, 'widget'])
+            ->name('weather_station.widget.zone');
 
-    // El id va en el mismo sitio que la zona; `whereNumber` los separa.
-    Route::get('/widget/{station}', [WeatherStationController::class, 'widgetStation'])
-        ->whereNumber('station')
-        ->name('weather_station.widget.station');
+        // El id va en el mismo sitio que la zona; `whereNumber` los separa.
+        Route::get('/widget/{station}', [WeatherStationController::class, 'widgetStation'])
+            ->whereNumber('station')
+            ->name('weather_station.widget.station');
+    });
 });

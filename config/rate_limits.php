@@ -125,4 +125,17 @@ return [
      */
     'contact_per_hour' => (int) env('RATE_LIMIT_CONTACTO', 5),
 
+    /*
+     * Widgets JSON de una página propia sin token (weather_station, airflight
+     * — ver `EnsureRequestIsSameOrigin`). Por IP, que es lo único que hay: son
+     * anónimos por diseño.
+     *
+     * Generoso a propósito: recargar la página 2-3 veces seguidas no debe
+     * bloquear a nadie, y `/airflight` ya dispara varias llamadas por carga
+     * (aircrafts + receiver, más el sondeo de `detected` cada minuto). Lo que
+     * corta esto es el scraping sostenido, no la navegación normal — y al ser
+     * `perMinute`, el bloqueo dura como mucho el resto del minuto en curso.
+     */
+    'public_widget_per_minute' => (int) env('RATE_LIMIT_PUBLIC_WIDGET', 40),
+
 ];

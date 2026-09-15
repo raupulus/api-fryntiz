@@ -220,6 +220,7 @@ class AppServiceProvider extends ServiceProvider
             RateLimiter::for('api-store', fn () => Limit::none());
             RateLimiter::for('api-store-batch', fn () => Limit::none());
             RateLimiter::for('keycounter-summary', fn () => Limit::none());
+            RateLimiter::for('public-widget', fn () => Limit::none());
         } else {
             // Los números salen de config/rate_limits.php, que explica de dónde
             // sale cada uno. Antes estaban escritos aquí a mano.
@@ -266,6 +267,13 @@ class AppServiceProvider extends ServiceProvider
             // Contacto: por IP, que es lo único que hay (el endpoint es público).
             RateLimiter::for('contact', function (Request $request) {
                 return Limit::perHour((int) config('rate_limits.contact_per_hour'))->by($request->ip());
+            });
+
+            // Widgets JSON públicos (weather_station, airflight). Por IP: son
+            // anónimos y no llevan token.
+            RateLimiter::for('public-widget', function (Request $request) {
+                return Limit::perMinute((int) config('rate_limits.public_widget_per_minute'))
+                    ->by($request->ip());
             });
 
             // Login: por IP y por email, para que intentar contra muchas cuentas

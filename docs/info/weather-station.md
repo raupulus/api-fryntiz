@@ -258,6 +258,16 @@ página propia, no una integración. Por eso viven aquí y no en la API — se s
 lo justo que se pinta, ya filtrado y cacheado, mientras que la API ofrece
 filtros, orden, paginación e histórico a cambio de un token.
 
+Los tres widget llevan además `same-origin` (`App\Http\Middleware\
+EnsureRequestIsSameOrigin`, 2026-09-15) y `throttle:public-widget`. Sin token
+no hay nada que compruebe quién llama, así que se corta a quien pide sin un
+`Origin`/`Referer` del propio host — el caso de copiar la URL del panel de red
+del navegador y reutilizarla desde fuera —, y se limita a 40 peticiones/min por
+IP (`RATE_LIMIT_PUBLIC_WIDGET`) contra el scraping sostenido. No es infalible
+(`Origin`/`Referer` se falsean con curl), pero para el "copiar y pegar" real
+basta. Mismo criterio en `airflight` (`/airflight/aircrafts`, `/receiver`,
+`/detected`).
+
 ### Tipos de sensor soportados en ruta web
 
 `temperature`, `humidity`, `pressure`, `light`, `uva`, `uvb`, `wind`, `wind-direction`, `rain`, `eco2`, `tvoc`, `air-quality`, `lightning`

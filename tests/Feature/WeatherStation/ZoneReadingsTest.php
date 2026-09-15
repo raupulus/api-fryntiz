@@ -240,7 +240,10 @@ class ZoneReadingsTest extends TestCase
     {
         $this->zoneWithTwoStations();
 
-        $this->getJson(route('weather_station.widget.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']))
+        $this->getJson(
+            route('weather_station.widget.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']),
+            $this->sameOriginHeaders()
+        )
             ->assertOk()
             ->assertJsonPath('data.humidity', 20);
     }
@@ -248,8 +251,34 @@ class ZoneReadingsTest extends TestCase
     #[Test]
     public function the_web_widget_for_an_empty_zone_returns_404(): void
     {
-        $this->getJson(route('weather_station.widget.zone', ['zone' => 'Inexistente']))
-            ->assertNotFound();
+        $this->getJson(
+            route('weather_station.widget.zone', ['zone' => 'Inexistente']),
+            $this->sameOriginHeaders()
+        )->assertNotFound();
+    }
+
+    /**
+     * `EnsureRequestIsSameOrigin`: sin `Origin`/`Referer` que cuadre con el
+     * propio host, es exactamente el caso que motivó la protección — copiar la
+     * URL del panel de red del navegador y reutilizarla desde fuera.
+     */
+    #[Test]
+    public function the_web_widget_rejects_a_request_without_a_matching_origin(): void
+    {
+        $this->zoneWithTwoStations();
+
+        $url = route('weather_station.widget.zone', ['zone' => 'Azotea', 'locationType' => 'outdoor']);
+
+        $this->getJson($url)->assertForbidden();
+        $this->getJson($url, ['Origin' => 'https://otra-web.example'])->assertForbidden();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function sameOriginHeaders(): array
+    {
+        return ['Origin' => url('/')];
     }
 
     /**
