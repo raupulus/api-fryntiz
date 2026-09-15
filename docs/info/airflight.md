@@ -69,12 +69,12 @@ guardado — solo se escribe si llega con valor.
 aviones ya guardados se quedan con `registration`/`aircraft_type` a `null`
 hasta que el receptor vuelva a reportarlos — no ha corrido ningún backfill.
 
-### `category` y `route_last_at`: se dejan de depender de comandos manuales (2026-09-15)
+### `category`, `route_last_at`, `country`, `flag`: se dejan de depender de comandos manuales (2026-09-15)
 
 Auditoría real (dump de producción, 2026-09-15) encontró que la mayoría de
 aviones recientes tenían `country`, `category`, `route_last_at`, `flag`,
-`registration` y `aircraft_type` a `null` a la vez. Tres causas distintas, no
-una:
+`registration` y `aircraft_type` a `null` a la vez. Causas distintas, todas
+arregladas:
 
 - **`category`** (categoría de emisor ADS-B, ej. `"A3"`, decodificada del
   propio Mode S — no depende de ninguna base externa) sí la manda el
@@ -82,19 +82,28 @@ una:
   declaraban en `rules()`: `->validated()` la descartaba en silencio antes de
   llegar a `AirFlightService::addAircraft()`. **Arreglado**: ya se valida y se
   guarda, mismo patrón que `registration`/`aircraft_type` (solo si llega con
-  valor, nunca borra uno ya guardado).
+  valor, nunca borra uno ya guardado). El dato de lo que pasó **antes** de
+  este cambio no se puede recuperar: se descartaba antes de guardarse en
+  ningún sitio.
 - **`route_last_at`** ("el momento del último registro con ruta válida") no lo
   mantenía ningún código — el único método que lo leía,
   `AirFlightAirPlane::getRecentsAircrafts()`, no tiene ningún caller en toda
   la app. **Arreglado**: `addAircraft()` lo actualiza ahora en cada sondeo con
   posición real (`lat`/`lon` no nulos), igual que `latestPosition` frente a
-  `latestRoute`.
-- **`country`/`flag`** siguen dependiendo de `php artisan airflight:fix`
+  `latestRoute`. A diferencia de `category`, esto sí se pudo recuperar para
+  lo ya existente: `airflight_routes` ya tenía el historial completo, así que
+  un `UPDATE` de una vez (`MAX(seen_at)` con posición real, por avión) rellenó
+  route_last_at en 5180 aviones sin tocar la Raspberry para nada.
+- **`country`/`flag`** dependían solo de `php artisan airflight:fix`
   (`app/Console/Commands/AirflightFixCommand.php`), que calcula ambos a
   partir del rango ICAO (`AirFlightAirPlane::searchHex()`) — **no** de nada
-  que mande el receptor. Ese comando no está programado en ningún sitio
+  que mande el receptor — y no estaba programado en ningún sitio
   (`routes/console.php`): el último avión con `country` en el dump auditado
-  era del 2026-09-02. Sigue pendiente, deliberadamente fuera de este cambio.
+  era del 2026-09-02. **Arreglado**: `addAircraft()` los calcula ahora en
+  vivo con el mismo `searchHex()`, solo si están a `null`, sin esperar a
+  ningún comando. El comando sigue existiendo para el backfill puntual de lo
+  ya existente (o por si hiciera falta corregir algo a mano), pero ya no hace
+  falta programarlo: nada nuevo va a depender de él.
 
 ### Corrección sobre una confusión propia (2026-09-08 → 09)
 

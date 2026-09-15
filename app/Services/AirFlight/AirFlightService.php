@@ -23,8 +23,8 @@ class AirFlightService
      * El sondeo trae dos cosas distintas y van a dos tablas distintas:
      *
      * - **el avión** (`icao`, `registration`, `aircraft_type`, `category`,
-     *   `route_last_at`, y con el tiempo `country`/`flag`) →
-     *   `airflight_airplanes`, una fila por aparato;
+     *   `route_last_at`, `country`, `flag`) → `airflight_airplanes`, una fila
+     *   por aparato;
      * - **la posición** (`lat`, `lon`, `altitude`, `speed`, `track`, `squawk`,
      *   `flight`, `messages`) → `airflight_routes`, una fila por sondeo.
      *
@@ -66,6 +66,21 @@ class AirFlightService
         foreach (['registration', 'aircraft_type', 'category'] as $field) {
             if (array_key_exists($field, $data) && $data[$field] !== null && trim((string) $data[$field]) !== '') {
                 $aircraft->{$field} = trim((string) $data[$field]);
+            }
+        }
+
+        // País y bandera: a diferencia de lo anterior, no dependen de nada
+        // que mande el receptor — se calculan del propio ICAO (rango OACI),
+        // igual que hacía `airflight:fix` a mano. Se resuelven aquí para no
+        // depender de ese comando: nada los mantenía al día desde que se
+        // dejó de ejecutar (último avión con `country` en producción: el
+        // 2026-09-02).
+        if ($icao !== '' && ($aircraft->country === null || $aircraft->flag === null)) {
+            $hex = AirFlightAirPlane::searchHex($icao);
+
+            if ($hex) {
+                $aircraft->country ??= $hex['country'];
+                $aircraft->flag ??= $hex['flag_image'];
             }
         }
 

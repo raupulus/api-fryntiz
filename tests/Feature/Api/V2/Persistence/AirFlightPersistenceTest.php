@@ -229,6 +229,28 @@ class AirFlightPersistenceTest extends ApiTestCase
     }
 
     /**
+     * `country`/`flag` no dependen de nada que mande el receptor: se calculan
+     * del propio ICAO. Antes de este cambio solo los rellenaba el comando
+     * manual `airflight:fix`, que no está programado en ningún sitio.
+     * `3444d2` (icao por defecto de `probe()`) cae en el rango OACI de
+     * España (`0x340000`-`0x37FFFF`).
+     */
+    #[Test]
+    public function country_and_flag_are_computed_from_the_icao_without_any_command(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertSame('Spain', $aircraft?->country);
+        $this->assertSame('Spain.png', $aircraft?->flag);
+    }
+
+    /**
      * `route_last_at` ("el momento del último registro con ruta válida",
      * comentario de la migración) tiene que reflejar la última posición REAL
      * (lat/lon), no cualquier sondeo — igual que `latestPosition` frente a
