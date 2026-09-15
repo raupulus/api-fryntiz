@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 /**
  * `GdacsService::distanceKm()` contra distancias reales verificadas a mano
- * (ver docs/future/gdacs-api.md): Chipiona → WF1031998 (Málaga) son 124,8-
+ * (ver docs/future/archived/gdacs-api.md): Chipiona → WF1031998 (Málaga) son 124,8-
  * 124,9 km según la propia GDACS/el plugin de Home Assistant del usuario.
  */
 class GdacsServiceTest extends TestCase

@@ -7,7 +7,7 @@ declare(strict_types=1);
 | Configuración de GDACS (Global Disaster Alert and Coordination System)
 |--------------------------------------------------------------------------
 |
-| Sin API key: es una API pública y gratuita (ver docs/future/gdacs-api.md).
+| Sin API key: es una API pública y gratuita (ver docs/future/archived/gdacs-api.md).
 | Lo único que pide es citar la fuente, de ahí `attribution`.
 |
 */
@@ -79,7 +79,7 @@ return [
      * GDACS sólo pide esto: citar la fuente. No hay licencia restrictiva más
      * allá de un descargo de responsabilidad (los datos son automáticos,
      * "as is", no sustituyen alertas oficiales locales) — ver
-     * docs/future/gdacs-api.md.
+     * docs/future/archived/gdacs-api.md.
      */
     'attribution' => 'Global Disaster Awareness and Coordination System, GDACS (gdacs.org)',
 ];

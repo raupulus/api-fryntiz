@@ -146,7 +146,7 @@ Schedule::command('aemet:check-api-key')
 // (config('gdacs.reference')). 10 minutos es generoso: GDACS no documenta
 // ningún límite de tasa, y con el filtro por país la respuesta son unas
 // decenas de sucesos, nunca los cientos que sí obligan a paginar sin filtro
-// geográfico — ver docs/future/gdacs-api.md.
+// geográfico — ver docs/future/archived/gdacs-api.md.
 Schedule::command('gdacs:sync')
     ->everyTenMinutes()
     ->withoutOverlapping()

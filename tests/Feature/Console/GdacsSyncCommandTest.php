@@ -14,7 +14,7 @@ use Tests\TestCase;
  * `gdacs:sync`.
  *
  * Los eventos de los fixtures son reales, sacados de la API de GDACS el
- * 2026-09-15 (ver docs/future/gdacs-api.md): el incendio cercano es
+ * 2026-09-15 (ver docs/future/archived/gdacs-api.md): el incendio cercano es
  * `WF1031998`, el mismo que llegó por Telegram vía el plugin de Home
  * Assistant del usuario (124,8 km reportados, 124,9 km calculados aquí).
  */

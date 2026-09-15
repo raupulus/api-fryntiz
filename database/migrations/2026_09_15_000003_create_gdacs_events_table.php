@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
  * Una fila por `(event_type, event_id)`: GDACS reescribe el mismo `event_id`
  * según el suceso evoluciona (nuevos episodios, cambia el nivel de alerta,
  * deja de estar activo...), así que se actualiza in-place con cada sondeo en
- * vez de acumular una fila por episodio — ver `docs/future/gdacs-api.md`.
+ * vez de acumular una fila por episodio — ver `docs/future/archived/gdacs-api.md`.
  *
  * Sin nada de país: el filtro de la consulta ya acota a lo que interesa (por
  * defecto España, `config('gdacs.country')`), así que guardarlo aquí sería

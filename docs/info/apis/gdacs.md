@@ -8,7 +8,7 @@ vigilar.
 > parámetros, el descubrimiento de que `alertlevel` excluye el nivel verde por
 > defecto si no se pide explícito, y la valoración frente a otras APIs
 > gratuitas (USGS, NASA EONET, ReliefWeb) está en
-> [`docs/future/gdacs-api.md`](../../future/gdacs-api.md) — es donde hay que
+> [`docs/future/archived/gdacs-api.md`](../../future/archived/gdacs-api.md) — es donde hay que
 > mirar antes de tocar nada aquí.
 
 ---
@@ -54,7 +54,7 @@ Schedule::command('gdacs:sync')->everyTenMinutes()
 | Clave | Por defecto | Qué es |
 |---|---|---|
 | `base_url` | `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH` | Sin API key, es pública |
-| `alert_levels` | `green;orange;red` | **Fijo, no configurable a propósito.** Sin esto, GDACS excluye el verde por defecto — ver `docs/future/gdacs-api.md` |
+| `alert_levels` | `green;orange;red` | **Fijo, no configurable a propósito.** Sin esto, GDACS excluye el verde por defecto — ver `docs/future/archived/gdacs-api.md` |
 | `event_types` | Los seis códigos | Qué tipos de desastre se piden |
 | `country` | `Spain` (`GDACS_COUNTRY`) | Filtro de la propia API de GDACS (nombre en inglés, no ISO-3). Sin esto, una ventana de días ya toca el límite de 100 registros/página |
 | `lookback_days` | `60` (`GDACS_LOOKBACK_DAYS`) | Ventana de `fromdate`. GDACS reescribe el mismo evento in-place mientras sigue activo, así que no hace falta más |

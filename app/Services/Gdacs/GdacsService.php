@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Log;
  * No hay filtro de radio en la API de GDACS (comprobado: `bbox`/`boundingBox`
  * los ignora en silencio), así que la distancia se calcula aquí con
  * haversine contra cada suceso que devuelve el filtro por país. Detalle
- * completo de lo comprobado contra la API real en `docs/future/gdacs-api.md`.
+ * completo de lo comprobado contra la API real en `docs/future/archived/gdacs-api.md`.
  */
 class GdacsService
 {

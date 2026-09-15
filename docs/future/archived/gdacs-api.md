@@ -1,14 +1,14 @@
 # API del sistema GDACS (alertas de desastres)
 
-> **Implementado el 2026-09-15.** Este documento se conserva como la
-> referencia de la API de GDACS (endpoints, parámetros, el descubrimiento de
-> que `alertlevel` excluye el verde por defecto, la valoración frente a otras
-> APIs gratuitas) — es el mismo papel que cumple `docs/apis/aemet/` para
-> AEMET. Cómo lo usa esta plataforma, en
-> [`docs/info/apis/gdacs.md`](../info/apis/gdacs.md).
->
-> **Estado:** idea, sin decidir si se implementa. No bloquea nada.
-> **Pedido el:** 2026-09-15
+> **Resuelto e implementado (2026-09-15):** módulo propio (`gdacs:sync` cada
+> 10 min, tabla `gdacs_events`, panel de solo lectura), con histórico en base
+> de datos, los seis tipos de desastre, y sin página pública propia todavía
+> (sólo panel Admin) — ver «Qué se decidió» más abajo. Este documento se
+> conserva como la referencia de la API de GDACS (endpoints, parámetros, el
+> descubrimiento de que `alertlevel` excluye el verde por defecto, la
+> valoración frente a otras APIs gratuitas) — el mismo papel que cumple
+> `docs/apis/aemet/` para AEMET. Cómo lo usa esta plataforma, en
+> [`docs/info/apis/gdacs.md`](../../info/apis/gdacs.md).
 
 ## Qué es GDACS
 
@@ -148,23 +148,26 @@ local. El plugin de Home Assistant que ya usa el usuario (Telegram) es prueba
 de que, con `alertlevel` bien puesto, GDACS sí produce avisos útiles a esta
 distancia.
 
-## Qué hay que decidir antes de implementarlo
+## Qué se decidió
 
-- ¿Módulo nuevo (`disasters`, o el nombre que se decida) o encaja en algo que
-  ya exista? No hay ningún paralelismo de dominio con los módulos actuales
-  (clima, aviones, plantas, energía, contador de teclas).
-- ¿Se guarda histórico en base de datos (como AEMET/AirFlight, con un comando
-  programado tipo `aemet:*` que haga polling) o sólo se cachea al vuelo la
-  respuesta de GDACS, sin persistir nada? Si hay algo que enseñar en un mapa
-  con histórico, hace falta lo primero.
-- ¿Los seis tipos de desastre, o sólo un subconjunto (terremotos y ciclones,
-  por ejemplo, que son los más "noticiables")?
-- Si se expone una página pública con estos datos (tipo `/disasters`), aplican
-  los mismos criterios ya fijados para `weatherstation`/`airflight`:
-  `same-origin` + `throttle:public-widget` en cualquier ruta JSON que consuma
-  esa vista sin token — ver `docs/info/weather-station.md`.
-- La atribución a GDACS tiene que ser visible en la página pública que use
-  estos datos, no sólo en la documentación interna.
+- **Módulo propio** (`Gdacs`, no encajaba en ninguno existente): modelos,
+  enums, servicio, comando y recurso Filament bajo ese namespace.
+- **Sí se guarda histórico** en `gdacs_events`, con `gdacs:sync` cada 10 min
+  (`Schedule::command`, igual que AEMET/AirFlight) — upsert por
+  `(event_type, event_id)`, no una fila por episodio.
+- **Los seis tipos de desastre**, sin acotar a un subconjunto.
+- **Sin página pública propia todavía** — sólo el recurso de solo lectura en
+  el panel Admin (bajo "Módulos", debajo de AEMET), con `GdacsEventPolicy`
+  cerrando create/update/delete a todo el mundo, admin incluido. Si en algún
+  momento se expone en `/algo` público con JSON consumido desde el navegador,
+  aplican los mismos criterios ya fijados para `weatherstation`/`airflight`:
+  `same-origin` + `throttle:public-widget` — ver `docs/info/weather-station.md`.
+- **Atribución**: `config('gdacs.attribution')`, pendiente de mostrarse en
+  algún sitio visible el día que haya página pública (hoy sólo vive en config
+  y en esta documentación).
+
+Detalle completo de la implementación en
+[`docs/info/apis/gdacs.md`](../../info/apis/gdacs.md).
 
 ## Fuentes
 
