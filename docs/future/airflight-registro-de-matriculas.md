@@ -9,54 +9,43 @@
 > antes de subir, y esta API solo guarda lo que llegue en los nuevos campos
 > opcionales `registration`/`aircraft_type` de `POST /aircrafts` (contrato en
 > [`docs/info/api/v2/airflight.md`](../info/api/v2/airflight.md)). Sin
-> dataset que mantener aquí, sin backfill de lo ya guardado — solo lo que se
-> suba a partir de ahora. El análisis de abajo se conserva porque documenta
-> por qué se descartaron las otras tres.
+> dataset que mantener aquí. El histórico también se rellenó — ver la sección
+> de más abajo — pero con un script de un solo uso, no con un comando
+> permanente. El análisis de abajo se conserva porque documenta por qué se
+> descartaron las otras tres.
 
-## Pendiente: backfill del histórico (propuesta, sin implementar)
+## Backfill del histórico — resuelto (2026-09-15), sin comando permanente
 
-Lo resuelto arriba solo llena `registration`/`aircraft_type` en subidas
-**nuevas**. Los aviones que ya estaban en `airflight_airplanes` antes del
-2026-09-14 (miles de filas, ver auditoría de 2026-09) se quedan con esos dos
-campos a `null` hasta que el receptor vuelva a verlos — y algunos, los que
-pasaron una vez hace tiempo y no vuelven, puede que no se actualicen nunca.
+Lo resuelto arriba solo llenaba `registration`/`aircraft_type` en subidas
+**nuevas**. La propuesta original de esta sección (un comando Artisan
+`airflight:backfill_registry`) se descartó por lo mismo que ya se venía
+evitando en todo este hilo: es código permanente para un trabajo de un solo
+uso. Se hizo así en su lugar, sin dejar nada nuevo en `app/`:
 
-**Propuesta**: un comando Artisan de un solo uso, no una integración
-permanente, porque la base de origen (`/usr/share/skyaware/html/db/`, 7.9 MB,
-255 ficheros — comprobado en la Raspberry) es un volcado fijo que ya no se
-actualiza en origen.
+1. Export de los ICAOs con `registration`/`aircraft_type` a `null` desde
+   producción (`\copy` a CSV).
+2. Ese CSV, contra la copia local de `/usr/share/skyaware/html/db/`
+   (7.9 MB, 255 ficheros, traída a un scratchpad local con `rsync`), resuelto
+   con un script de Python de usar y tirar que camina el mismo trie por
+   prefijo que usa el receptor (algoritmo confirmado contra `dbloader.js` y
+   contra ICAOs reales vuestros).
+3. Con el resultado, un único `.sql` autocontenido — los datos ya dentro del
+   propio fichero como `VALUES (...)`, sin tablas temporales ni `\copy` en el
+   servidor — con un `UPDATE ... COALESCE(...)` que solo rellena lo que
+   estuviera a `null`, nunca pisa un dato ya bueno.
+4. Aplicado en producción el 2026-09-15: **6063 filas actualizadas** (4174
+   aviones con matrícula, 6014 con tipo, sobre 8877 totales).
 
-1. **Copiar la base una vez** desde la Raspberry a este servidor (`scp`/`rsync`
-   de `pi@172.18.1.58:/usr/share/skyaware/html/db/`) a una ruta fuera de
-   control de versiones (p. ej. `storage/app/airflight/registry-snapshot/`,
-   añadida a `.gitignore`: son datos de un tercero, no código del proyecto).
-   Si el paquete `dump1090-fa`/`piaware` de la Raspberry trae alguna vez una
-   base más nueva, se vuelve a copiar y se repite el paso 2.
-2. **Comando** `airflight:backfill_registry {--path=} {--force}`, mismo patrón
-   que `airflight:remove_duplicate_routes` (dry-run por defecto, cuenta y
-   muestra sin escribir; `--force` aplica de verdad):
-   - Recorre `AirFlightAirPlane::whereNull('registration')->orWhereNull('aircraft_type')`
-     en trozos (`chunkById`), para no cargar de golpe miles de filas.
-   - Por cada `icao`, camina el mismo trie por prefijo que ya usa el receptor
-     (nivel 1 carácter, baja de nivel si el fichero trae `children` — algoritmo
-     confirmado contra `dbloader.js` y contra ICAOs reales vuestros durante el
-     análisis de esta nota). Los ficheros JSON de la base (255, 7.9 MB) se
-     cargan una vez en memoria al arrancar el comando, no por cada fila.
-   - Solo rellena el campo que esté **a `null`** — si `registration` o
-     `aircraft_type` ya tienen valor (porque el avión ya volvió a pasar y el
-     flujo nuevo lo rellenó), no se toca. Nunca sobrescribe un dato ya bueno
-     con el snapshot, aunque discrepen.
-   - Informe final: filas procesadas, cuántas ganaron matrícula, cuántas tipo,
-     cuántas se quedaron sin nada (el ICAO no está en el snapshot — es del
-     dataset completo de 250.000, aquí solo hay una copia parcial/antigua).
-3. **No se programa ni se automatiza**: es un `--force` que se ejecuta a mano
-   el día que se decida, igual que el resto de comandos de mantenimiento de
-   este módulo. Si el snapshot de la Raspberry se refresca más adelante,
-   volver a correrlo es seguro (solo toca `null`, es idempotente).
+Mismo patrón se usó para `route_last_at` (ver
+[`docs/info/airflight.md`](../info/airflight.md)), aunque ese caso no
+necesitó ni la Raspberry: se recalculó entero desde `airflight_routes`, que
+ya tenía el historial completo — **5175 filas actualizadas**.
 
-Falta decidir contigo: si quieres que lo implemente así, o prefieres acotarlo
-(por ejemplo, solo los aviones vistos en los últimos N meses, en vez de los
-~8870 completos).
+Ningún script de estos se ha conservado en el repo: eran de un solo uso, se
+borraron del servidor después de aplicarse. Los aviones que sigan sin
+matrícula/tipo es porque ese ICAO tampoco está en el snapshot parcial de la
+Raspberry (dataset completo real: ~250.000 aeronaves) — se rellenarán solos
+si ese avión vuelve a pasar y esta vez sí está.
 
 > Anotado al retirar `GET /airflight/db/{bkey}` en la fase 5. Tu instrucción
 > (M6): *«Si no se usa realmente déjalo documentado en "future" tal como se
@@ -112,4 +101,4 @@ son un puñado comparado con 250.000, y son justo los que importan.
   la llamada en la misma ventana.
 - No hay nada que migrar: no había datos.
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-14
+> Creado: 2026-08-30 · Última revisión: 2026-09-15

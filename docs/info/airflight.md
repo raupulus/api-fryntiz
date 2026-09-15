@@ -31,7 +31,27 @@ corregir lo otro.
 | `emergency` | string\|null | cadena de estado | `none`, `general`, `lifeguard`... | `"general"` |
 | `seen` / `seen_pos` | — | — | no se persisten (siempre `null` en el sondeo real) | `null` |
 
-### La frontera de las unidades: dump1090 decodifica en pies/nudos, el capturador sube en SI
+### Contrato cerrado: todo lo que sube la Raspberry se valida y se guarda (2026-09-15)
+
+Comprobado campo por campo contra el payload real que construye
+`upload_data_to_api.php::getDbData()` en `dump1090-to-db` (commits `94175ca`
+"incluye category en el payload" y `328b06b` "resolución local y subida de
+matrícula/tipo"), no de memoria:
+
+| Campo que manda la Raspberry | ¿Validado en `StoreAirFlightRequest`/`StoreBatchAirFlightRequest`? | ¿Dónde se guarda? |
+|---|---|---|
+| `icao` | Sí | `airflight_airplanes.icao` |
+| `registration` | Sí | `airflight_airplanes.registration` |
+| `aircraft_type` | Sí | `airflight_airplanes.aircraft_type` |
+| `category` | Sí | `airflight_airplanes.category` |
+| `flight`, `squawk`, `lat`, `lon`, `altitude`, `vert_rate`, `track`, `speed`, `messages`, `rssi`, `emergency` | Sí | `airflight_routes` (una fila por sondeo, vía `routeFieldsOnly()`) |
+| `seen`, `seen_pos` | Sí (validados, pero no se persisten a propósito — ver tabla de arriba) | — |
+
+`country`/`flag`/`route_last_at` no están en esta lista porque la Raspberry
+**no los manda**: se calculan en `AirFlightService::addAircraft()` a partir
+del ICAO y del propio historial de rutas, no de nada que llegue en el
+sondeo (ver más abajo). No queda ningún campo del payload real sin validar
+ni sin destino.
 
 El receptor (Raspberry Pi + `dump1090-to-db`) decodifica Mode S con
 `dump1090`, que —como cualquier decodificador ADS-B— trabaja internamente en
@@ -93,7 +113,8 @@ arregladas:
   `latestRoute`. A diferencia de `category`, esto sí se pudo recuperar para
   lo ya existente: `airflight_routes` ya tenía el historial completo, así que
   un `UPDATE` de una vez (`MAX(seen_at)` con posición real, por avión) rellenó
-  route_last_at en 5180 aviones sin tocar la Raspberry para nada.
+  route_last_at en 5175 aviones sin tocar la Raspberry para nada (aplicado en
+  producción el 2026-09-15).
 - **`country`/`flag`** dependían solo de `php artisan airflight:fix`
   (`app/Console/Commands/AirflightFixCommand.php`), que calcula ambos a
   partir del rango ICAO (`AirFlightAirPlane::searchHex()`) — **no** de nada
